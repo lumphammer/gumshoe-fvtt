@@ -205,8 +205,8 @@ importers:
         specifier: ^5.4.10
         version: 5.4.10(@types/node@18.15.11)(less@4.2.0)
       vite-plugin-svgr:
-        specifier: ^4.2.0
-        version: 4.2.0(rollup@4.22.4)(typescript@5.6.3)(vite@5.4.10(@types/node@18.15.11)(less@4.2.0))
+        specifier: ^4.3.0
+        version: 4.3.0(rollup@4.22.4)(typescript@5.6.3)(vite@5.4.10(@types/node@18.15.11)(less@4.2.0))
       vitest:
         specifier: ^2.1.4
         version: 2.1.4(@types/node@18.15.11)(@vitest/ui@2.1.4)(happy-dom@15.7.4)(less@4.2.0)
@@ -1206,6 +1206,15 @@ packages:
 
   '@rollup/pluginutils@5.1.2':
     resolution: {integrity: sha512-/FIdS3PyZ39bjZlwqFnWqCOVnW7o963LtKMwQOD0NhQqw22gSr2YY1afu3FxRip4ZCZNsD5jq6Aaz6QV3D/Njw==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+
+  '@rollup/pluginutils@5.1.3':
+    resolution: {integrity: sha512-Pnsb6f32CD2W3uCaLZIzDmeFyQ2b8UWMFI7xtwUezpcGBDVDW6y9XgAWIlARiGAo6eNF5FK5aQTr0LFyNyqq5A==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
@@ -3653,6 +3662,11 @@ packages:
     peerDependencies:
       vite: ^2.6.0 || 3 || 4 || 5
 
+  vite-plugin-svgr@4.3.0:
+    resolution: {integrity: sha512-Jy9qLB2/PyWklpYy0xk0UU3TlU0t2UMpJXZvf+hWII1lAmRHrOUKi11Uw8N3rxoNk7atZNYO3pR3vI1f7oi+6w==}
+    peerDependencies:
+      vite: '>=2.6.0'
+
   vite@5.4.10:
     resolution: {integrity: sha512-1hvaPshuPUtxeQ0hsVH3Mud0ZanOLwVTneA1EgbAM5LhaZEqyPWGRQ7BtaMvUrTDeEaC8pxtj6a6jku3x4z6SQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -4727,6 +4741,14 @@ snapshots:
       '@types/estree': 1.0.5
       estree-walker: 2.0.2
       picomatch: 2.3.1
+    optionalDependencies:
+      rollup: 4.22.4
+
+  '@rollup/pluginutils@5.1.3(rollup@4.22.4)':
+    dependencies:
+      '@types/estree': 1.0.5
+      estree-walker: 2.0.2
+      picomatch: 4.0.2
     optionalDependencies:
       rollup: 4.22.4
 
@@ -7521,6 +7543,17 @@ snapshots:
   vite-plugin-svgr@4.2.0(rollup@4.22.4)(typescript@5.6.3)(vite@5.4.10(@types/node@18.15.11)(less@4.2.0)):
     dependencies:
       '@rollup/pluginutils': 5.1.2(rollup@4.22.4)
+      '@svgr/core': 8.1.0(typescript@5.6.3)
+      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.6.3))
+      vite: 5.4.10(@types/node@18.15.11)(less@4.2.0)
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
+      - typescript
+
+  vite-plugin-svgr@4.3.0(rollup@4.22.4)(typescript@5.6.3)(vite@5.4.10(@types/node@18.15.11)(less@4.2.0)):
+    dependencies:
+      '@rollup/pluginutils': 5.1.3(rollup@4.22.4)
       '@svgr/core': 8.1.0(typescript@5.6.3)
       '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.6.3))
       vite: 5.4.10(@types/node@18.15.11)(less@4.2.0)
