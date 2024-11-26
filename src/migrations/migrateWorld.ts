@@ -37,7 +37,7 @@ export const migrateWorld = async function (
   for (const a of game.actors?.contents ?? []) {
     try {
       const updateData = migrateActorData(a, flaggedMigrations);
-      if (!isEmpty(updateData)) {
+      if (!foundry.utils.isEmpty(updateData)) {
         await a.update(updateData, { enforceTypes: false });
       }
     } catch (err: any) {
@@ -50,7 +50,7 @@ export const migrateWorld = async function (
   for (const i of game.items?.contents ?? []) {
     try {
       const updateData = migrateItemData(i as AnyItem, flaggedMigrations);
-      if (!isEmpty(updateData)) {
+      if (!foundry.utils.isEmpty(updateData)) {
         console.log(`Migrating Item entity ${i.name}`);
         await i.update(updateData, { enforceTypes: false });
       }
@@ -64,7 +64,7 @@ export const migrateWorld = async function (
   for (const s of game.scenes?.contents ?? []) {
     try {
       const updateData = migrateSceneData(s, flaggedMigrations);
-      if (!isEmpty(updateData)) {
+      if (!foundry.utils.isEmpty(updateData)) {
         console.log(`Migrating Scene entity ${s.name}`);
         await s.update(updateData, { enforceTypes: false });
       }

@@ -275,7 +275,3 @@ export function assertAnyActor(actor: Actor | null): asserts actor is AnyActor {
     throw new Error("not an actor");
   }
 }
-
-declare global {
-  var isEmpty: typeof isObjectEmpty; // eslint-disable-line no-var
-}
