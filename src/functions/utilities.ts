@@ -105,6 +105,21 @@ export function assertGame(game: any): asserts game is Game {
 }
 
 /**
+ * Throw if `candidate` is not a ready game.
+ */
+export function assertReadyGame(
+  candidate: typeof game,
+): asserts candidate is ReadyGame {
+  assertGame(candidate);
+  if (!candidate.ready) {
+    throw new Error("game is not ready");
+  }
+}
+
+
+
+
+/**
  * The developer mode package allows any module to be put into "debug mode".
  * This is just a convenience function to get the curent value of the debug flag
  * for INVESTIGATOR.

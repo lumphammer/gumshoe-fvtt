@@ -18,7 +18,10 @@ const Settings = React.lazy(() =>
 // in settings
 export class SettingsClassBase extends FormApplication<
   FormApplicationOptions,
-  object,
+  // we specify the type of the "concrete" object that this FormApplication
+  // is editing. In this case, we don't have a concrete object, so we
+  // specify undefined. This tells the types to allow the empty constructor
+  // to be used.
   undefined
 > {
   // /** @override */
@@ -68,10 +71,7 @@ export const SettingsClass = ReactApplicationMixin(
   render,
 );
 
-export const investigatorSettingsClassInstance = new SettingsClass(
-  undefined,
-  {},
-);
+export const investigatorSettingsClassInstance = new SettingsClass();
 
 declare global {
   namespace Application {

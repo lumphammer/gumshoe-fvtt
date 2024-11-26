@@ -35,7 +35,6 @@ export class InvestigatorJournalSheet extends JournalSheet {
     const pages = (this.document.pages.contents as JournalEntryPage[]).toSorted(
       (a, b) => a.sort - b.sort,
     );
-    // @ts-expect-error sigh
     const page = pages[this._getCurrentPage()];
     const pageClasses = page?.flags[systemId]?.[extraCssClasses] ?? "";
     if (pageClasses !== undefined) {

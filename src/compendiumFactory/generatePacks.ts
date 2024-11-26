@@ -6,7 +6,7 @@ import {
   packNames,
   systemId,
 } from "../constants";
-import { assertGame, systemLogger } from "../functions/utilities";
+import { assertReadyGame, systemLogger } from "../functions/utilities";
 import * as moribundWorldData from "./moribundWorldData";
 import * as niceBlackAgentsData from "./niceBlackAgentsData";
 import * as nothingToFearData from "./nothingToFearData";
@@ -86,7 +86,7 @@ export const emptyPack = async (
 };
 
 export const findPack = (packName: string) => {
-  assertGame(game);
+  assertReadyGame(game);
   const pack = game.packs.find(
     (p: any) => p.collection === `${systemId}.${packName}`,
   );

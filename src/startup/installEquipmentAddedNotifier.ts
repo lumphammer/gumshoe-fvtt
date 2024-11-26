@@ -20,7 +20,6 @@ export function installEquipmentAddedNotifier() {
       .filter((user) => {
         const hasPermission = item.testUserPermission(
           user,
-          // @ts-expect-error types are wrong
           CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER,
           { exact: false },
         );

@@ -37,7 +37,6 @@ export const installCardCategoryHookHandler = () => {
           ],
           styleKeyCategoryId: category.id,
         };
-        // @ts-expect-error "V10 api"
         await item.updateSource({ system: updateData });
       }
     },
