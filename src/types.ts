@@ -328,8 +328,9 @@ export type EquipmentFieldType = Pick<EquipmentFieldMetadata, "type">["type"];
 
 export type Mandatory<T> = Exclude<T, undefined | null>;
 
-declare global {
-  interface JournalEntry {
-    pages: Map<string, any>;
-  }
-}
+// needed this with v9 types...
+// declare global {
+//   interface JournalEntry {
+//     pages: Map<string, any>;
+//   }
+// }
