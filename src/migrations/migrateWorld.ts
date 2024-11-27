@@ -22,7 +22,6 @@ export const migrateWorld = async function (
 ) {
   assertGame(game);
   (ui as any).notifications.info(
-    // @ts-expect-error version isn't on game yet
     `Applying ${title} System Migration for version ${game.system.version}.
     Please be patient and do not close your game or shut down your server.`,
     { permanent: true },
@@ -38,7 +37,7 @@ export const migrateWorld = async function (
     try {
       const updateData = migrateActorData(a, flaggedMigrations);
       if (!foundry.utils.isEmpty(updateData)) {
-        await a.update(updateData, { enforceTypes: false });
+        await a.update(updateData);
       }
     } catch (err: any) {
       err.message = `Failed ${title} system migration for Actor ${a.name}: ${err.message}`;
@@ -49,10 +48,10 @@ export const migrateWorld = async function (
   // Migrate World Items
   for (const i of game.items?.contents ?? []) {
     try {
-      const updateData = migrateItemData(i as AnyItem, flaggedMigrations);
+      const updateData = migrateItemData(i, flaggedMigrations);
       if (!foundry.utils.isEmpty(updateData)) {
         console.log(`Migrating Item entity ${i.name}`);
-        await i.update(updateData, { enforceTypes: false });
+        await i.update(updateData);
       }
     } catch (err: any) {
       err.message = `Failed ${title} system migration for Item ${i.name}: ${err.message}`;
@@ -66,7 +65,7 @@ export const migrateWorld = async function (
       const updateData = migrateSceneData(s, flaggedMigrations);
       if (!foundry.utils.isEmpty(updateData)) {
         console.log(`Migrating Scene entity ${s.name}`);
-        await s.update(updateData, { enforceTypes: false });
+        await s.update(updateData);
       }
     } catch (err: any) {
       err.message = `Failed {title} system migration for Scene ${s.name}: ${err.message}`;
