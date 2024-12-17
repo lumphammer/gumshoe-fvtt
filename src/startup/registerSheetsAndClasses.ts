@@ -5,6 +5,7 @@ import { InvestigatorCombatant } from "../module/InvestigatorCombatant";
 import { InvestigatorCombatTracker } from "../module/InvestigatorCombatTracker";
 import { InvestigatorItem } from "../module/InvestigatorItem";
 import { ItemSheetClass } from "../module/InvestigatorItemSheetClass";
+import { ItemSheetV2Class } from "../module/InvestigatorItemSheetV2Class";
 import { InvestigatorJournalSheet } from "../module/InvestigatorJournalSheet";
 import { JournalEditorSheetClass } from "../module/JournalEditorSheetClass";
 import { NPCSheetClass } from "../module/NPCSheetClass";
@@ -37,6 +38,19 @@ export const registerSheetsAndClasses = () => {
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet(constants.systemId, ItemSheetClass, {
     makeDefault: true,
+    types: [
+      constants.weapon,
+      constants.equipment,
+      constants.investigativeAbility,
+      constants.generalAbility,
+      constants.mwItem,
+      constants.personalDetail,
+      constants.card,
+    ],
+  });
+  // @ts-expect-error - we don't have a V2 types yet
+  Items.registerSheet(constants.systemId, ItemSheetV2Class, {
+    makeDefault: false,
     types: [
       constants.weapon,
       constants.equipment,
