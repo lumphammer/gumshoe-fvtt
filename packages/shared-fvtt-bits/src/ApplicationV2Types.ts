@@ -133,6 +133,12 @@ declare global {
           document: TDocument;
         }
       }
+      export namespace sheets {
+        export class ItemSheetV2<TItem> extends foundry.applications.api
+          .ApplicationV2 {
+          item: TItem;
+        }
+      }
 
       interface ApplicationWindowRenderOptions {
         title: string;
@@ -169,6 +175,7 @@ declare global {
           icon: string | false;
           controls: ApplicationHeaderControlsEntry[];
           minimizable: boolean;
+          resizable: boolean;
         }
         export interface ApplicationConfiguration {
           id: string;
