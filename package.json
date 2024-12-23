@@ -47,13 +47,13 @@
     "@types/d3-ease": "^3.0.2",
     "@types/eslint": "^8.56.12",
     "@types/html-escaper": "^3.0.2",
-    "@types/react": "^19.0.1",
+    "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@types/textdiff-create": "^1.0.2",
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
-    "@typescript-eslint/parser": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.1",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "@vitest/ui": "^2.1.8",
     "eslint": "^8.57.1",
@@ -70,7 +70,7 @@
     "rollup-plugin-visualizer": "^5.12.0",
     "tsx": "^4.19.2",
     "typescript": "5.7.2",
-    "vite": "^6.0.3",
+    "vite": "^6.0.5",
     "vite-plugin-svgr": "^4.3.0",
     "vitest": "^2.1.8"
   },
@@ -113,16 +113,18 @@
     },
     "overrides": {
       "vite": "$vite",
-      "vitest": "$vitest"
+      "vitest": "$vitest",
+      "react": "$react",
+      "@types/react": "$@types/react"
     }
   },
   "engines": {
     "node": "22.12.0",
-    "pnpm": "9.15.0"
+    "pnpm": "9.15.1"
   },
   "volta": {
     "node": "22.12.0",
-    "pnpm": "9.15.0"
+    "pnpm": "9.15.1"
   },
-  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
+  "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf"
 }
