@@ -113,7 +113,9 @@
     },
     "overrides": {
       "vite": "$vite",
-      "vitest": "$vitest"
+      "vitest": "$vitest",
+      "react": "$react",
+      "@types/react": "$@types/react"
     }
   },
   "engines": {
