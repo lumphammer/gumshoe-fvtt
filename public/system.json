@@ -228,9 +228,8 @@
     }
   ],
   "compatibility": {
-    "minimum": "11",
-    "verified": "12",
-    "maximum": "12"
+    "minimum": "13",
+    "verified": "13"
   },
   "initiative": "1d6",
   "url": "https://github.com/lumphammer/gumshoe-fvtt",
