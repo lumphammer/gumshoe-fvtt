@@ -2,8 +2,7 @@
 import "@lumphammer/shared-fvtt-bits/src/ApplicationV2Types";
 
 // import { DummyAppV2 } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2";
-import { DummyAppV2WithMixin } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2WithMixin";
-
+// import { DummyAppV2WithMixin } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2WithMixin";
 import { initializePackGenerators } from "./compendiumFactory/generatePacks";
 import { systemId } from "./constants";
 import { assertGame, systemLogger } from "./functions/utilities";
@@ -123,20 +122,6 @@ Hooks.on("ready", async () => {
   //   },
   // });
   // await dummyAppV2.render(true);
-  const dummyAppV2WithMixin = new DummyAppV2WithMixin({
-    // window: {
-    //   frame: true,
-    //   positioned: true,
-    //   title: "Dummy App V2 With Mixin",
-    //   // @ts-expect-error resizable is not a valid property
-    //   resizable: true,
-    //   width: 800,
-    //   height: 600,
-    // },
-    // position: {
-    //   width: 800,
-    //   height: 600,
-    // },
-  });
-  await dummyAppV2WithMixin.render(true);
+  // const dummyAppV2WithMixin = new DummyAppV2WithMixin({});
+  // await dummyAppV2WithMixin.render(true);
 });
