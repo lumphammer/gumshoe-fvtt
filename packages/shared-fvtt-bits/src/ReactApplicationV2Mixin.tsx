@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
 
-import { FoundryAppV2Context } from "./FoundryAppV2Context";
+import { FoundryAppContext } from "./FoundryAppContext";
 import { Constructor, RecursivePartial, Render } from "./types";
 
 // so Constructor<Application> is any class which is an Application
@@ -73,7 +73,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constuctor>(
     override _renderHTML() {
       const content = (
         <StrictMode>
-          <FoundryAppV2Context.Provider
+          <FoundryAppContext.Provider
             value={this}
             key={"FoundryAppContextProvider"}
           >
@@ -81,7 +81,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constuctor>(
               this as TBase extends Constructor<infer T2> ? T2 : TBase,
               this.serial,
             )}
-          </FoundryAppV2Context.Provider>
+          </FoundryAppContext.Provider>
         </StrictMode>
       );
 
