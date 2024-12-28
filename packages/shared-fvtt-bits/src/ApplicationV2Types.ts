@@ -134,9 +134,13 @@ declare global {
         }
       }
       export namespace sheets {
-        export class ItemSheetV2<TItem> extends foundry.applications.api
-          .ApplicationV2 {
+        export class ItemSheetV2<TItem extends Item> extends foundry
+          .applications.api.DocumentSheetV2<TItem> {
           item: TItem;
+        }
+        export class ActorSheetV2<TActor extends Actor> extends foundry
+          .applications.api.DocumentSheetV2<TActor> {
+          actor: TActor;
         }
       }
 
