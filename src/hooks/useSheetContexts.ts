@@ -8,10 +8,15 @@ export const useItemSheetContext = () => {
       "useItemSheetContext must be used within a FoundryAppContext",
     );
   }
-  if (!(app instanceof ItemSheet)) {
+  if (
+    !(
+      app instanceof ItemSheet ||
+      app instanceof foundry.applications.sheets.ItemSheetV2
+    )
+  ) {
     throw new Error("useItemSheetContext must be used within an ItemSheet");
   }
-  const item = app.document;
+  const item = app.item;
 
   return { app, item };
 };
@@ -55,8 +60,12 @@ export const useDocumentSheetContext = (docClass?: any) => {
       "useDocumentSheetContext must be used within a FoundryAppContext",
     );
   }
-  // let doc:
-  if (!(app instanceof DocumentSheet)) {
+  if (
+    !(
+      app instanceof DocumentSheet ||
+      app instanceof foundry.applications.api.DocumentSheetV2
+    )
+  ) {
     throw new Error(
       "useDocumentSheetContext must be used within an ActorSheet or ItemSheet",
     );
