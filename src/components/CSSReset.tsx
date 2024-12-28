@@ -27,6 +27,30 @@ type CSSResetProps = PropsWithChildren<{
   noStyleAppWindow?: boolean;
 }>;
 
+function safeGetAppId(
+  app: Application | foundry.applications.api.ApplicationV2 | undefined | null,
+) {
+  if (app instanceof Application) {
+    return app.appId.toString();
+  } else if (app instanceof foundry.applications.api.ApplicationV2) {
+    return app.id;
+  } else {
+    return undefined;
+  }
+}
+
+function safeGetAppElement(
+  app: Application | foundry.applications.api.ApplicationV2 | undefined | null,
+) {
+  if (app instanceof Application) {
+    return app?.element.get(0);
+  } else if (app instanceof foundry.applications.api.ApplicationV2) {
+    return app.element;
+  } else {
+    return undefined;
+  }
+}
+
 export const CSSReset = ({
   className,
   children,
@@ -52,11 +76,11 @@ export const CSSReset = ({
 
   const app = useContext(FoundryAppContext);
 
-  const [head, setHead] = useState(app?.element.get(0)?.closest("head"));
+  const [head, setHead] = useState(safeGetAppElement(app)?.closest("head"));
 
   useEffect(() => {
     const popoutHandler = (poppedApp: Application, newWindow: Window) => {
-      if (poppedApp.appId === app?.appId) {
+      if (safeGetAppId(poppedApp) === safeGetAppId(app)) {
         setHead(newWindow.document.head);
       }
     };
@@ -64,7 +88,7 @@ export const CSSReset = ({
       dialoggedApp: Application,
       info: PopOut.DialogHookInfo,
     ) => {
-      if (dialoggedApp.appId === app?.appId) {
+      if (safeGetAppId(dialoggedApp) === safeGetAppId(app)) {
         setHead(info.window.document.head);
       }
     };
@@ -74,7 +98,7 @@ export const CSSReset = ({
       Hooks.off("PopOut:popout", popoutHandler);
       Hooks.off("PopOut:dialog", dialogHandler);
     };
-  }, [app?.appId]);
+  }, [app]);
 
   const cache = useMemo(() => {
     return createCache({
