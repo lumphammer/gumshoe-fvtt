@@ -269,12 +269,25 @@ export const CSSReset = ({
     return styles;
   }, [mode, theme]);
 
+  // we put these styles into the `system` layer to play nice with Foundry's
+  // layering system. If we left them outside of a layer they would still work,
+  // but they would take priority over other like `modules` and `exceptions` which
+  // are supposed to be above `system`.
+  // We wouldn't need to do this if we were exporting our CSS into a file and
+  // getting Foundry to load it, but see https://github.com/lumphammer/gumshoe-fvtt/issues/928
+  // for why we don't do that.
+  const layeredStyles = useMemo((): CSSObject => {
+    return {
+      "@layer system": styles,
+    };
+  }, [styles]);
+
   return (
     <ErrorBoundary>
       <EmotionCacheProvider value={cache}>
         <ThemeContext.Provider value={theme}>
           <Global styles={theme.global} />
-          <div ref={ref} className={className} css={styles}>
+          <div ref={ref} className={className} css={layeredStyles}>
             {children}
           </div>
         </ThemeContext.Provider>
