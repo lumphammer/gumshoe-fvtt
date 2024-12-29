@@ -29,6 +29,7 @@ class ItemSheetV2ClassBase extends foundry.applications.sheets
   /** @override */
   static DEFAULT_OPTIONS = {
     ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS,
+    classes: ["investigator"],
     position: {
       width: 450,
       height: 600,
