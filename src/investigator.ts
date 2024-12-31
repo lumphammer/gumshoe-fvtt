@@ -53,15 +53,7 @@ injectGlobalHelper();
 // foundry itself and vite's css injection never kicks in. So we have to
 // import the css as a string and inject it ourselves.
 const styleElement = document.createElement("style");
-// we put these styles into the `system` layer to play nice with Foundry's
-// layering system. If we left them outside of a layer they would still work,
-// but they would take priority over other like `modules` and `exceptions` which
-// are supposed to be above `system`.
-// We wouldn't need to do this if we were exporting our CSS into a file and
-// getting Foundry to load it, but see https://github.com/lumphammer/gumshoe-fvtt/issues/928
-// for why we don't do that.
-const layeredStyles = `@layer system {${processedStyles}}`;
-styleElement.innerHTML = layeredStyles;
+styleElement.innerHTML = processedStyles;
 document.head.appendChild(styleElement);
 
 // Initialize system
