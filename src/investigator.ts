@@ -125,3 +125,48 @@ Hooks.on("ready", async () => {
   // const dummyAppV2WithMixin = new DummyAppV2WithMixin({});
   // await dummyAppV2WithMixin.render(true);
 });
+
+function getLayerNamesFromRule(rule: CSSRule): string[] {
+  if (rule instanceof CSSLayerStatementRule) {
+    return Array.from(rule.nameList);
+  }
+  if (rule instanceof CSSGroupingRule) {
+    const childRules = Array.from(rule.cssRules).flatMap((r) =>
+      getLayerNamesFromRule(r),
+    );
+    if (rule instanceof CSSLayerBlockRule) {
+      childRules.unshift(rule.name);
+    }
+    return childRules;
+  }
+  return [];
+}
+
+function getAllLayerNames() {
+  return Array.from(
+    new Set(
+      Array.from(document.styleSheets)
+        .flatMap((sheet) => Array.from(sheet.cssRules))
+        .flatMap(getLayerNamesFromRule),
+    ),
+  );
+}
+
+function sortChildLayersUnderParent(layerNames: string[]) {
+  const singles = layerNames.filter((name) => !name.includes("."));
+  const multis = layerNames.filter((name) => name.includes("."));
+  const result = singles.flatMap((name): string[] => {
+    const kids = multis.filter((m) => m.startsWith(name));
+    const kidsTrimmed = kids.map((k) => k.slice(name.length + 1));
+    const kidsSorted = sortChildLayersUnderParent(kidsTrimmed);
+    const kidsWithPrefix = kidsSorted.map((k) => `${name}.${k}`);
+    return [name, ...kidsWithPrefix];
+  });
+  return result;
+}
+
+Hooks.once("ready", () => {
+  const names = sortChildLayersUnderParent(getAllLayerNames());
+  console.table(names);
+  console.log(names.join("\n"));
+});
