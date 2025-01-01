@@ -105,3 +105,15 @@
     }
   }
 }
+
+@layer elements.forms{
+  .application.investigator,
+  .app.investigator {
+    .window-content {
+      &,
+      & * {
+        all: revert-layer;
+      }
+    }
+  }
+}
