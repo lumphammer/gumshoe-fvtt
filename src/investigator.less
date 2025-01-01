@@ -95,9 +95,11 @@
 @layer elements.typography {
   // we shouldn't have to do this revert for `.app` because the `compatibility`
   // layer should handle it. BUT it doesn't as of 13.334.
-  .application.investigator, .app.investigator {
+  .application.investigator,
+  .app.investigator {
     .window-content {
-      &, & * {
+      &,
+      & * {
         all: revert-layer;
       }
     }
