@@ -11,7 +11,7 @@ import { JournalEditorSheetClass } from "../module/JournalEditorSheetClass";
 import { NPCSheetClass } from "../module/NPCSheetClass";
 import { PartySheetClass } from "../module/PartySheetClass";
 import { PCSheetClass } from "../module/PCSheetClass";
-
+import { PCSheetClassV2 } from "../module/PCSheetClassV2";
 export const registerSheetsAndClasses = () => {
   // XXX TS needs going over here
   CONFIG.Actor.documentClass = InvestigatorActor;
@@ -25,6 +25,11 @@ export const registerSheetsAndClasses = () => {
   Actors.unregisterSheet("core", ActorSheet);
   Actors.registerSheet(constants.systemId, PCSheetClass, {
     makeDefault: true,
+    types: [constants.pc],
+  });
+  // @ts-expect-error - we don't have V2 types yet
+  Actors.registerSheet(constants.systemId, PCSheetClassV2, {
+    makeDefault: false,
     types: [constants.pc],
   });
   Actors.registerSheet(constants.systemId, NPCSheetClass, {
@@ -48,7 +53,7 @@ export const registerSheetsAndClasses = () => {
       constants.card,
     ],
   });
-  // @ts-expect-error - we don't have a V2 types yet
+  // @ts-expect-error - we don't have V2 types yet
   Items.registerSheet(constants.systemId, ItemSheetV2Class, {
     makeDefault: true,
     types: [
