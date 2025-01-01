@@ -93,10 +93,13 @@
 // the upside to taking control over layering is that we stick some
 // `revert-layer`s into lower layers when we want to nullify them
 @layer elements.typography {
-  .application.investigator .window-content {
-    // all: revert-layer;
-    &, & * {
-      all: revert-layer;
+  // we shouldn't have to do this revert for `.app` because the `compatibility`
+  // layer should handle it. BUT it doesn't as of 13.334.
+  .application.investigator, .app.investigator {
+    .window-content {
+      &, & * {
+        all: revert-layer;
+      }
     }
   }
 }
