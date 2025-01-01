@@ -28,7 +28,12 @@ export const useActorSheetContext = () => {
       "useActorSheetContext must be used within a FoundryAppContext",
     );
   }
-  if (!(app instanceof ActorSheet)) {
+  if (
+    !(
+      app instanceof ActorSheet ||
+      app instanceof foundry.applications.sheets.ActorSheetV2
+    )
+  ) {
     throw new Error("useActorSheetContext must be used within an ActorSheet");
   }
   const actor = app.document;
