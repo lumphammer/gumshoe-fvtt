@@ -16,7 +16,11 @@ export function useIsDocumentOwner() {
   const user = game.user;
 
   const isOwner = useMemo(() => {
-    if (application instanceof DocumentSheet && user) {
+    if (
+      (application instanceof DocumentSheet ||
+        application instanceof foundry.applications.api.DocumentSheetV2) &&
+      user
+    ) {
       return application.document.testUserPermission(
         game.user,
         // @ts-expect-error types still have DOCUMENT_PERMISSION_LEVELS
