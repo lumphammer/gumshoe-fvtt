@@ -228,7 +228,7 @@
     }
   ],
   "compatibility": {
-    "minimum": "13",
+    "minimum": "12",
     "verified": "13"
   },
   "initiative": "1d6",
