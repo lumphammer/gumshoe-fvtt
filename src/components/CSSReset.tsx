@@ -15,6 +15,7 @@ import {
   useState,
 } from "react";
 
+import { assertGame } from "../functions/utilities";
 import { irid } from "../irid/irid";
 import { ThemeContext } from "../themes/ThemeContext";
 import { ThemeV1 } from "../themes/types";
@@ -269,6 +270,7 @@ export const CSSReset = ({
     return styles;
   }, [mode, theme]);
 
+  // v13+ only (CSS Layers)
   // we put these styles into the `system` layer to play nice with Foundry's
   // layering system. If we left them outside of a layer they would still work,
   // but they would take priority over other like `modules` and `exceptions` which
@@ -277,9 +279,14 @@ export const CSSReset = ({
   // getting Foundry to load it, but see https://github.com/lumphammer/gumshoe-fvtt/issues/928
   // for why we don't do that.
   const layeredStyles = useMemo((): CSSObject => {
-    return {
-      "@layer system": styles,
-    };
+    assertGame(game);
+    if (foundry.utils.isNewerVersion(game.version, "13.0")) {
+      return {
+        "@layer system": styles,
+      };
+    } else {
+      return styles;
+    }
   }, [styles]);
 
   return (
