@@ -117,3 +117,42 @@
     }
   }
 }
+
+@layer layouts.responsive {
+  .application.investigator,
+  .app.investigator {
+    .window-content {
+      &,
+      & * {
+        all: revert-layer;
+      }
+    }
+  }
+}
+
+@layer layouts.views {
+  .application.investigator,
+  .app.investigator {
+    .window-content {
+      all: revert-layer;
+    }
+  }
+}
+
+@layer layouts.full {
+  .application.investigator,
+  .app.investigator {
+    .window-content {
+      all: revert-layer;
+    }
+  }
+}
+
+// @layer applications {
+//   .application.investigator,
+//   .app.investigator {
+//     .window-content {
+//       all: revert-layer;
+//     }
+//   }
+// }
