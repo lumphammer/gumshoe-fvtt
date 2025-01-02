@@ -106,7 +106,7 @@
   }
 }
 
-@layer elements.forms{
+@layer elements.forms {
   .application.investigator,
   .app.investigator {
     .window-content {
@@ -119,8 +119,7 @@
 }
 
 @layer layouts.responsive {
-  .application.investigator,
-  .app.investigator {
+  .application.investigator {
     .window-content {
       &,
       & * {
@@ -131,8 +130,7 @@
 }
 
 @layer layouts.views {
-  .application.investigator,
-  .app.investigator {
+  .application.investigator {
     .window-content {
       all: revert-layer;
     }
@@ -140,19 +138,9 @@
 }
 
 @layer layouts.full {
-  .application.investigator,
-  .app.investigator {
+  .application.investigator {
     .window-content {
       all: revert-layer;
     }
   }
 }
-
-// @layer applications {
-//   .application.investigator,
-//   .app.investigator {
-//     .window-content {
-//       all: revert-layer;
-//     }
-//   }
-// }
