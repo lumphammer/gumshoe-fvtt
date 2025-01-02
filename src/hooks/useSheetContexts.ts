@@ -1,6 +1,8 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import { useContext } from "react";
 
+import { InvestigatorActor } from "../module/InvestigatorActor";
+
 export const useItemSheetContext = () => {
   const app = useContext(FoundryAppContext);
   if (app === null) {
@@ -36,7 +38,7 @@ export const useActorSheetContext = () => {
   ) {
     throw new Error("useActorSheetContext must be used within an ActorSheet");
   }
-  const actor = app.document;
+  const actor: InvestigatorActor = app.document;
 
   return { app, actor };
 };
