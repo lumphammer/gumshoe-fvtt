@@ -190,6 +190,10 @@ export const CSSReset = ({
           font: theme.displayFont,
           color: theme.colors.accent,
           borderRadius: "5px",
+          // this recreates something from fvtt's old styles. for some reason it
+          // was making the "spend" button work correctly. It's not there in
+          // v13 / appv2 and the text wraps. wtf.
+          margin: "0 1px",
           // 100% was causing scrollbars in some places
           width: "99%",
           "&[disabled]": {
