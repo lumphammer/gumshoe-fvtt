@@ -92,7 +92,13 @@ export const AbilitySlugPlayNormal = ({
       </div>
       <div css={{ gridColumn: "spend" }}>
         {isInvestigativeAbilityItem(ability) && (
-          <Button disabled={spend === 0} onClick={onSpend}>
+          <Button
+            disabled={spend === 0}
+            onClick={onSpend}
+            style={{
+              whiteSpace: "nowrap",
+            }}
+          >
             <i className="fa fa-search" title="Spend" />
             {spend}
           </Button>
