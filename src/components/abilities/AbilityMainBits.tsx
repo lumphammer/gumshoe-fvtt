@@ -21,6 +21,9 @@ import { Translate } from "../Translate";
 import { AbilityBadges } from "./AbilityBadges";
 import { SpecialityList } from "./SpecialityList";
 
+const settingsUseBoost = settings.useBoost.get;
+const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
+
 export const AbilityMainBits = () => {
   const { item } = useItemSheetContext();
   assertAbilityItem(item);
@@ -29,7 +32,7 @@ export const AbilityMainBits = () => {
     void item.refreshPool();
   }, [item]);
 
-  const useBoost = settings.useBoost.get();
+  const useBoost = settingsUseBoost();
 
   const isCombatAbility = settings.combatAbilities
     .get()
@@ -70,7 +73,7 @@ export const AbilityMainBits = () => {
     });
   }, [item?.actor, item.name]);
 
-  const useMwStyleAbilities = settings.useMwStyleAbilities.get();
+  const useMwStyleAbilities = settingsUseMwStyleAbilities();
 
   const poolMax = useMwStyleAbilities
     ? undefined
