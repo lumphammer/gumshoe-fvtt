@@ -1,7 +1,9 @@
 module.exports = {
   extends: ["./packages/shared-fvtt-bits/dotfiles/import/.eslintrc.cjs"],
   ignorePatterns: [".eslintrc.cjs", "src/investigator.js"],
+  plugins: ["eslint-plugin-react-compiler"],
   rules: {
+    "react-compiler/react-compiler": "error",
     // All these no-unsafe-* rules are turned off because we have so many
     // situations we're interacting with FVTT or something else third party and
     // we just have to be honest and type stuff as `any`.
