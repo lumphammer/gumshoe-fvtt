@@ -20,6 +20,7 @@ export const CardsSettings = ({ setters }: CardsSettingsProps) => {
 
   const handleChangeUseCards = useCallback(
     (checked: boolean) => {
+      // eslint-disable-next-line react-compiler/react-compiler
       setters.useCards(checked);
     },
     [setters],
