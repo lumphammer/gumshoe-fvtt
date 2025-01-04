@@ -24,13 +24,18 @@ import { TrackersArea } from "./TrackersArea";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
 import { WeaponsAreaEdit } from "./Weapons/WeaponsAreaEdit";
 
+const settingsUseMwInjuryStatus = settings.useMwInjuryStatus.get;
+const settingsUseNpcCombatBonuses = settings.useNpcCombatBonuses.get;
+const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
+const settingsNpcStats = settings.npcStats.get;
+
 export const NPCSheetFull = () => {
   const { actor } = useActorSheetContext();
 
   assertNPCActor(actor);
   const themeName = actor.getSheetThemeName();
   const theme = useTheme(themeName);
-  const stats = settings.npcStats.get();
+  const stats = settingsNpcStats();
 
   return (
     <CSSReset
@@ -88,7 +93,7 @@ export const NPCSheetFull = () => {
           <Translate>Full Refresh</Translate>
         </Button>
 
-        {settings.useMwInjuryStatus.get() && (
+        {settingsUseMwInjuryStatus() && (
           <div css={{ marginBottom: "0.5em" }}>
             <MwInjuryStatusWidget
               status={actor.system.mwInjuryStatus}
@@ -100,7 +105,7 @@ export const NPCSheetFull = () => {
         {/* Stats */}
         <hr />
         {/* SotS NPC Combat bonus */}
-        {settings.useNpcCombatBonuses.get() && isNPCActor(actor) && (
+        {settingsUseNpcCombatBonuses() && isNPCActor(actor) && (
           <Fragment>
             <h3 css={{ gridColumn: "start / end" }}>
               <Translate>Combat bonus</Translate>
@@ -126,7 +131,7 @@ export const NPCSheetFull = () => {
         <TrackersArea />
         <hr />
         <CharacterCombatAbilityPicker />
-        {settings.useTurnPassingInitiative.get() && (
+        {settingsUseTurnPassing() && (
           <Fragment>
             <h4 css={{ width: "8em" }}>
               <Translate>Number of turns</Translate>
