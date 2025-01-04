@@ -36,6 +36,10 @@ import { StatField } from "./StatField";
 import { TrackersArea } from "./TrackersArea";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
 
+const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
+const settingsUseMwInjuryStatus = settings.useMwInjuryStatus.get;
+const settingsUseCards = settings.useCards.get;
+
 export const PCSheet = () => {
   const { actor } = useActorSheetContext();
 
@@ -205,7 +209,7 @@ export const PCSheet = () => {
           ...theme.panelStylePrimary,
         }}
       >
-        {settings.useMwStyleAbilities.get() && (
+        {settingsUseMwStyleAbilities() && (
           <Fragment>
             <Button onClick={actor.confirmMw2Refresh}>
               <Translate>2h Refresh</Translate>
@@ -225,7 +229,7 @@ export const PCSheet = () => {
           <Translate>Full Refresh</Translate>
         </Button>
         <hr />
-        {settings.useMwStyleAbilities.get() || (
+        {settingsUseMwStyleAbilities() || (
           <Fragment>
             <Button onClick={actor.confirm24hRefresh}>
               <Translate>24h Refresh</Translate>
@@ -233,7 +237,7 @@ export const PCSheet = () => {
             <hr />
           </Fragment>
         )}
-        {settings.useMwInjuryStatus.get() && (
+        {settingsUseMwInjuryStatus() && (
           <Fragment>
             <MwInjuryStatusWidget
               status={actor.system.mwInjuryStatus}
@@ -264,13 +268,13 @@ export const PCSheet = () => {
             {
               id: "abilities",
               label: "Abilities",
-              content: settings.useMwStyleAbilities.get() ? (
+              content: settingsUseMwStyleAbilities() ? (
                 <AbilitiesAreaMW />
               ) : (
                 <AbilitiesAreaPlay />
               ),
             },
-            settings.useCards.get() && {
+            settingsUseCards() && {
               id: "cards",
               label: "Cards",
               content: <CardsArea />,
