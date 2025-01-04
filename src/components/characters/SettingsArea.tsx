@@ -14,6 +14,8 @@ import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 
+const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
+
 export const SettingArea = () => {
   const { actor } = useActorSheetContext();
   assertGame(game);
@@ -65,7 +67,7 @@ export const SettingArea = () => {
           </select>
         </GridField>
 
-        {settings.useTurnPassingInitiative.get() && (
+        {settingsUseTurnPassing() && (
           <GridField label="Number of turns">
             <AsyncNumberInput
               value={actor.system.initiativePassingTurns}
