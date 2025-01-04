@@ -55,6 +55,8 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
   // a debounced save function
   const handleSaveContent = useMemo(
     () =>
+      // compiler can't tell that this is effectively a callback
+      // eslint-disable-next-line react-compiler/react-compiler
       debounce(async (content: string) => {
         memoryRef.current = await savePage(page, content, memoryRef.current);
       }, SAVE_DEBOUNCE_MS),
