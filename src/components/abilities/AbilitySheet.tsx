@@ -18,11 +18,13 @@ import { AbilityTest } from "./AbilityTest";
 import { AbilityTestMW } from "./AbilityTestMW";
 import { PushPoolButton } from "./PushPoolButton";
 
+const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
+
 function getTopAreaContent(ability: InvestigatorItem) {
   if (
     // if we're doing WM, we show the MW test/spend box
     ability.isOwned &&
-    settings.useMwStyleAbilities.get()
+    settingsUseMwStyleAbilities()
   ) {
     return <AbilityTestMW />;
   } else if (
@@ -63,7 +65,7 @@ export const AbilitySheet = () => {
 
           {/* Other bits */}
           <AbilityMainBits />
-          {settings.useMwStyleAbilities.get() && <AbilityMwExtraFields />}
+          {settingsUseMwStyleAbilities() && <AbilityMwExtraFields />}
         </Fragment>
       </ModeSelect>
     </ItemSheetFramework>
