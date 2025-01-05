@@ -216,19 +216,22 @@ export function createFvttViteConfig({
             })
           : null,
         useReact === "babel+compiler"
-          ? reactBabel({
-              jsxImportSource: "@emotion/react",
-              babel: {
-                plugins: [
-                  [
-                    "@emotion/babel-plugin",
-                    {
-                      autoLabel: "always",
-                    },
+          ? [
+              reactBabel({
+                jsxImportSource: "@emotion/react",
+                babel: {
+                  plugins: [
+                    [
+                      "@emotion/babel-plugin",
+                      {
+                        autoLabel: "always",
+                      },
+                    ],
+                    ["babel-plugin-react-compiler", {}],
                   ],
-                ],
-              },
-            })
+                },
+              }),
+            ]
           : null,
         // svgr plugin uses SVGR to import SVGs as React components
         svgr({
