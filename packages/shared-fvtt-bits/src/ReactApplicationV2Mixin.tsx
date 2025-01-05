@@ -68,9 +68,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constuctor>(
       return element;
     }
 
-    // _renderHTML is the semantically appropriate place to render updates to
-    // the HTML of the app... or in our case, to ask to react to refresh.
-    override _renderHTML() {
+    _rerender() {
       const content = (
         <StrictMode>
           <FoundryAppContext.Provider
@@ -87,6 +85,12 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constuctor>(
 
       this.reactRoot?.render(content);
       this.serial += 1;
+    }
+
+    // _renderHTML is the semantically appropriate place to render updates to
+    // the HTML of the app... or in our case, to ask to react to refresh.
+    override _renderHTML() {
+      this._rerender();
     }
 
     // This override should be optional eventually but rn is needed to prevent
