@@ -2,5 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>n3dst4/shared-fvtt-bits//dotfiles/renovate-shared/default"
-  ]
+  ],
+  "ignoreDeps": ["vitest"]
 }
