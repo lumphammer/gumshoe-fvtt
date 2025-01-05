@@ -5,6 +5,7 @@ const config = createFvttViteConfig({
   foundryPackageId,
   packageType: "system",
   importMetaUrl: import.meta.url,
+  useReact: "babel+compiler",
 });
 
 export default config;
