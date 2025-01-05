@@ -12,6 +12,8 @@ import { AbilitySlugEdit } from "./AbilitySlugEdit";
 import { AbilitySlugEditQuickShockInvestigative } from "./AbilitySlugEditQuickShockInvestigative";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
 
+const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
+
 type AbilitiesAreaEditProps = {
   npcMode?: boolean;
 };
@@ -28,7 +30,7 @@ export const AbilitiesAreaEdit = ({
   // this is all a bit iffy-elsey, but...
 
   //  in MW mode, we hide the investigative abilities
-  const mwMode = settings.useMwStyleAbilities.get();
+  const mwMode = settingsUseMwStyleAbilities();
   // we're in "simplified mode" if it's an NPC or we're using MW style
   const simplifiedMode = npcMode || mwMode;
 

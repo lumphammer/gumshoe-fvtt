@@ -12,6 +12,8 @@ import { Button } from "../inputs/Button";
 import { CombatantRow } from "./CombatantRow";
 import { getTurns } from "./getTurns";
 
+const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
+
 export const Tracker = () => {
   assertGame(game);
   assertNotNull(game.user);
@@ -46,7 +48,7 @@ export const Tracker = () => {
     `COMBAT.${linked ? "Linked" : "Unlinked"}`,
   );
 
-  const isTurnPassing = settings.useTurnPassingInitiative.get();
+  const isTurnPassing = settingsUseTurnPassing();
 
   // CALLBACKS
 

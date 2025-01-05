@@ -47,7 +47,9 @@ export const TabContainer = ({
 
   const theme = useContext(ThemeContext);
 
-  const radioGroup = useMemo(nanoid, []);
+  // would love to do this point-free, but react compiler wants to see a
+  // function literal
+  const radioGroup = useMemo(() => nanoid(), []);
 
   return (
     <div

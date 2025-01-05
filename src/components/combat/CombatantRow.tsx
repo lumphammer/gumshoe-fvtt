@@ -15,6 +15,8 @@ interface CombatantRowProps {
   index: number;
 }
 
+const settingsUseTurnPassingInitiative = settings.useTurnPassingInitiative.get;
+
 export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
   assertGame(game);
   const {
@@ -26,7 +28,7 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
     onDoubleClick,
   } = useCombatant(combat, turn.id);
 
-  const turnPassing = settings.useTurnPassingInitiative.get();
+  const turnPassing = settingsUseTurnPassingInitiative();
   const active = combat.activeTurnPassingCombatant === turn.id;
   const depleted = turn.passingTurnsRemaining <= 0;
 

@@ -21,6 +21,9 @@ import { Translate } from "../Translate";
 import { SituationalModifiersEditor } from "./SituationalModifiersEditor";
 import { UnlocksEditor } from "./UnlocksEditor";
 
+const settingsUseNpcCombatBonuses = settings.useNpcCombatBonuses.get;
+const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
+
 export const AbilityConfig = () => {
   const { item } = useItemSheetContext();
   assertGame(game);
@@ -128,7 +131,7 @@ export const AbilityConfig = () => {
           onChange={item.setMax}
         />
       </GridField>
-      {settings.useNpcCombatBonuses.get() && isGeneralAbilityItem(item) && (
+      {settingsUseNpcCombatBonuses() && isGeneralAbilityItem(item) && (
         <Fragment>
           <GridField label="Combat bonus">
             <AsyncNumberInput
@@ -238,7 +241,7 @@ export const AbilityConfig = () => {
         </GridField>
       )}
 
-      {settings.useMwStyleAbilities.get() && isGeneralAbilityItem(item) && (
+      {settingsUseMwStyleAbilities() && isGeneralAbilityItem(item) && (
         <GridField label="Refresh group">
           <select
             value={item.system.mwRefreshGroup}
