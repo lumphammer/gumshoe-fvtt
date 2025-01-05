@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /// <reference types="vitest" />
-import react from "@vitejs/plugin-react-swc";
+import reactBabel from "@vitejs/plugin-react";
+import reactSwc from "@vitejs/plugin-react-swc";
 import fs from "fs";
 import path from "path";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -21,13 +22,14 @@ type CreateFvttViteConfigArgs = {
   packageType: "module" | "system";
   port?: number;
   sourceMap?: boolean;
+  useReact?: false | "swc" | "babel+compiler";
 };
 
 // this is lifted from
 // https://github.com/vitejs/vite-plugin-react-swc/blob/21eef9eefd7ff3d46dc0a3132dac83d9bb49f980/src/index.ts
 // if it breaks with a future @vitejs/vite-plugin-react-swc update, we'll need
 // to update it or change behaviour to match the upstream.
-const preambleCode = `
+const preambleCodeSWC = `
     import { injectIntoGlobalHook } from "__PATH__";
     injectIntoGlobalHook(window);
     window.$RefreshReg$ = () => {};
@@ -51,15 +53,24 @@ export function createFvttViteConfig({
   packageType,
   port = 40000,
   sourceMap = false,
+  useReact = false,
 }: CreateFvttViteConfigArgs) {
   //
   // setup
   //
 
-  const customizedPreambleCode = preambleCode.replace(
-    "__PATH__",
-    `/${packageType}s/${foundryPackageId}/@react-refresh`,
-  );
+  let customizedPreambleCode: string;
+  if (useReact === "babel+compiler") {
+    customizedPreambleCode = reactBabel.preambleCode.replace(
+      "__BASE__",
+      `/systems/${foundryPackageId}/`,
+    );
+  } else {
+    customizedPreambleCode = preambleCodeSWC.replace(
+      /__PATH__/,
+      `/${packageType}s/${foundryPackageId}/@react-refresh`,
+    );
+  }
   const preambleHtml =
     '\n<script type="module">\n' + customizedPreambleCode + "\n</script>\n";
   const headTag = "<head>";
@@ -191,17 +202,34 @@ export function createFvttViteConfig({
       },
 
       plugins: [
-        react({
-          jsxImportSource: "@emotion/react",
-          plugins: [
-            [
-              "@swc/plugin-emotion",
-              {
-                autoLabel: "always",
+        useReact === "swc"
+          ? reactSwc({
+              jsxImportSource: "@emotion/react",
+              plugins: [
+                [
+                  "@swc/plugin-emotion",
+                  {
+                    autoLabel: "always",
+                  },
+                ],
+              ],
+            })
+          : null,
+        useReact === "babel+compiler"
+          ? reactBabel({
+              jsxImportSource: "@emotion/react",
+              babel: {
+                plugins: [
+                  [
+                    "@emotion/babel-plugin",
+                    {
+                      autoLabel: "always",
+                    },
+                  ],
+                ],
               },
-            ],
-          ],
-        }),
+            })
+          : null,
         // svgr plugin uses SVGR to import SVGs as React components
         svgr({
           svgrOptions: {

@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@emotion/babel-plugin": "^11.13.5",
     "@emotion/react": "^11.14.0",
     "@league-of-foundry-developers/foundry-vtt-types": "^9.280.1",
     "@lumphammer/investigator-fvtt-types": "^1.13.2",
@@ -23,6 +24,7 @@
     "@types/react-dom": "^19.0.3",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
+    "@vitejs/plugin-react": "^4.3.4",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.0.1",
