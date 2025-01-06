@@ -32,7 +32,7 @@
   },
   "dependencies": {},
   "volta": {
-    "pnpm": "9.15.2",
+    "pnpm": "9.15.3",
     "node": "22.12.0"
   }
 }
