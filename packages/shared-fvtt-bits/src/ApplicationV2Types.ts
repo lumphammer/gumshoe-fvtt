@@ -133,6 +133,16 @@ declare global {
           document: TDocument;
         }
       }
+      export namespace sheets {
+        export class ItemSheetV2<TItem extends Item> extends foundry
+          .applications.api.DocumentSheetV2<TItem> {
+          item: TItem;
+        }
+        export class ActorSheetV2<TActor extends Actor> extends foundry
+          .applications.api.DocumentSheetV2<TActor> {
+          actor: TActor;
+        }
+      }
 
       interface ApplicationWindowRenderOptions {
         title: string;
@@ -169,6 +179,7 @@ declare global {
           icon: string | false;
           controls: ApplicationHeaderControlsEntry[];
           minimizable: boolean;
+          resizable: boolean;
         }
         export interface ApplicationConfiguration {
           id: string;

@@ -15,6 +15,7 @@ import {
   useState,
 } from "react";
 
+import { assertGame } from "../functions/utilities";
 import { irid } from "../irid/irid";
 import { ThemeContext } from "../themes/ThemeContext";
 import { ThemeV1 } from "../themes/types";
@@ -26,6 +27,30 @@ type CSSResetProps = PropsWithChildren<{
   mode: "large" | "small" | "none";
   noStyleAppWindow?: boolean;
 }>;
+
+function safeGetAppId(
+  app: Application | foundry.applications.api.ApplicationV2 | undefined | null,
+) {
+  if (app instanceof Application) {
+    return app.appId.toString();
+  } else if (app instanceof foundry.applications.api.ApplicationV2) {
+    return app.id;
+  } else {
+    return undefined;
+  }
+}
+
+function safeGetAppElement(
+  app: Application | foundry.applications.api.ApplicationV2 | undefined | null,
+) {
+  if (app instanceof Application) {
+    return app?.element.get(0);
+  } else if (app instanceof foundry.applications.api.ApplicationV2) {
+    return app.element;
+  } else {
+    return undefined;
+  }
+}
 
 export const CSSReset = ({
   className,
@@ -52,11 +77,11 @@ export const CSSReset = ({
 
   const app = useContext(FoundryAppContext);
 
-  const [head, setHead] = useState(app?.element.get(0)?.closest("head"));
+  const [head, setHead] = useState(safeGetAppElement(app)?.closest("head"));
 
   useEffect(() => {
     const popoutHandler = (poppedApp: Application, newWindow: Window) => {
-      if (poppedApp.appId === app?.appId) {
+      if (safeGetAppId(poppedApp) === safeGetAppId(app)) {
         setHead(newWindow.document.head);
       }
     };
@@ -64,7 +89,7 @@ export const CSSReset = ({
       dialoggedApp: Application,
       info: PopOut.DialogHookInfo,
     ) => {
-      if (dialoggedApp.appId === app?.appId) {
+      if (safeGetAppId(dialoggedApp) === safeGetAppId(app)) {
         setHead(info.window.document.head);
       }
     };
@@ -74,7 +99,7 @@ export const CSSReset = ({
       Hooks.off("PopOut:popout", popoutHandler);
       Hooks.off("PopOut:dialog", dialogHandler);
     };
-  }, [app?.appId]);
+  }, [app]);
 
   const cache = useMemo(() => {
     return createCache({
@@ -245,12 +270,31 @@ export const CSSReset = ({
     return styles;
   }, [mode, theme]);
 
+  // v13+ only (CSS Layers)
+  // we put these styles into the `system` layer to play nice with Foundry's
+  // layering system. If we left them outside of a layer they would still work,
+  // but they would take priority over other like `modules` and `exceptions` which
+  // are supposed to be above `system`.
+  // We wouldn't need to do this if we were exporting our CSS into a file and
+  // getting Foundry to load it, but see https://github.com/lumphammer/gumshoe-fvtt/issues/928
+  // for why we don't do that.
+  const layeredStyles = useMemo((): CSSObject => {
+    assertGame(game);
+    if (foundry.utils.isNewerVersion(game.version, "13.0")) {
+      return {
+        "@layer system": styles,
+      };
+    } else {
+      return styles;
+    }
+  }, [styles]);
+
   return (
     <ErrorBoundary>
       <EmotionCacheProvider value={cache}>
         <ThemeContext.Provider value={theme}>
           <Global styles={theme.global} />
-          <div ref={ref} className={className} css={styles}>
+          <div ref={ref} className={className} css={layeredStyles}>
             {children}
           </div>
         </ThemeContext.Provider>

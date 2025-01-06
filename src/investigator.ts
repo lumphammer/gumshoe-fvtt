@@ -1,6 +1,8 @@
 // ned to bring in these global types manually
 import "@lumphammer/shared-fvtt-bits/src/ApplicationV2Types";
 
+// import { DummyAppV2 } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2";
+// import { DummyAppV2WithMixin } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2WithMixin";
 import { initializePackGenerators } from "./compendiumFactory/generatePacks";
 import { systemId } from "./constants";
 import { assertGame, systemLogger } from "./functions/utilities";
@@ -102,3 +104,93 @@ installEquipmentAddedNotifier();
 installCardCategoryHookHandler();
 installItemCombatAbilityHandler();
 installActorCombatAbilityHandler();
+
+Hooks.on("ready", async () => {
+  // const dummyAppV2 = new DummyAppV2({
+  //   window: {
+  //     frame: true,
+  //     positioned: true,
+  //     title: "Dummy App V2",
+  //     // @ts-expect-error resizable is not a valid property
+  //     resizable: true,
+  //     width: 800,
+  //     height: 600,
+  //   },
+  //   position: {
+  //     width: 800,
+  //     height: 600,
+  //   },
+  // });
+  // await dummyAppV2.render(true);
+  // const dummyAppV2WithMixin = new DummyAppV2WithMixin({});
+  // await dummyAppV2WithMixin.render(true);
+});
+
+/**
+ * Recursively get all layer names from a CSSRule and its children.
+ */
+function getLayerNamesFromRule(rule: CSSRule): string[] {
+  if (rule instanceof CSSLayerStatementRule) {
+    return Array.from(rule.nameList);
+  }
+  if (rule instanceof CSSGroupingRule) {
+    const childRules = Array.from(rule.cssRules).flatMap((r) =>
+      getLayerNamesFromRule(r),
+    );
+    if (rule instanceof CSSLayerBlockRule) {
+      childRules.unshift(rule.name);
+    }
+    return childRules;
+  }
+  return [];
+}
+
+/**
+ * Get all layer names from all stylesheets in the document, in reverse order of
+ * declaration (last declared is first).
+ */
+function getAllLayerNamesInDocument(): string[] {
+  const layerNames = Array.from(document.styleSheets)
+    .flatMap((sheet) => Array.from(sheet.cssRules))
+    .flatMap(getLayerNamesFromRule);
+  const setOfLayerNames = new Set(layerNames);
+  const reversed = Array.from(setOfLayerNames.values()).toReversed();
+  return reversed;
+}
+
+/**
+ * Given a list of layer names in reverse declaration order, sort them so that
+ * child layers are under parent layers (reflecting how CSS layers work).
+ */
+function sortLayersIntoEffectivePriorityOrder(layerNames: string[]): string[] {
+  const singles = layerNames.filter((name) => !name.includes("."));
+  const multis = layerNames.filter((name) => name.includes("."));
+  const result = singles
+    .flatMap((name): string[] => {
+      const kids = multis.filter((m) => m.startsWith(name));
+      const kidsTrimmed = kids.map((k) => k.slice(name.length + 1));
+      const kidsSorted = sortLayersIntoEffectivePriorityOrder(kidsTrimmed);
+      const kidsWithPrefix = kidsSorted.map((k) => `${name}.${k}`);
+      return [name, ...kidsWithPrefix];
+    })
+    .map((name: string) => {
+      // indent by two spaces per dot in the name (which == nesting level)
+      const dotCount = name.split(".").length - 1;
+      const padding = " ".repeat(dotCount * 2);
+      return `${padding}${name}`;
+    });
+  return result;
+}
+
+Hooks.once("ready", () => {
+  const names = sortLayersIntoEffectivePriorityOrder(
+    getAllLayerNamesInDocument(),
+  );
+
+  console.log(
+    "All CSS Cascade Layers currently in document (highest priority first):\n" +
+      "======================================================================\n" +
+      "%s",
+    names.join("\n"),
+  );
+});

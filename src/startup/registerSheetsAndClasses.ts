@@ -5,12 +5,13 @@ import { InvestigatorCombatant } from "../module/InvestigatorCombatant";
 import { InvestigatorCombatTracker } from "../module/InvestigatorCombatTracker";
 import { InvestigatorItem } from "../module/InvestigatorItem";
 import { ItemSheetClass } from "../module/InvestigatorItemSheetClass";
+import { ItemSheetV2Class } from "../module/InvestigatorItemSheetV2Class";
 import { InvestigatorJournalSheet } from "../module/InvestigatorJournalSheet";
 import { JournalEditorSheetClass } from "../module/JournalEditorSheetClass";
 import { NPCSheetClass } from "../module/NPCSheetClass";
 import { PartySheetClass } from "../module/PartySheetClass";
 import { PCSheetClass } from "../module/PCSheetClass";
-
+import { PCSheetClassV2 } from "../module/PCSheetClassV2";
 export const registerSheetsAndClasses = () => {
   // XXX TS needs going over here
   CONFIG.Actor.documentClass = InvestigatorActor;
@@ -26,6 +27,11 @@ export const registerSheetsAndClasses = () => {
     makeDefault: true,
     types: [constants.pc],
   });
+  // @ts-expect-error - we don't have V2 types yet
+  Actors.registerSheet(constants.systemId, PCSheetClassV2, {
+    makeDefault: false,
+    types: [constants.pc],
+  });
   Actors.registerSheet(constants.systemId, NPCSheetClass, {
     makeDefault: true,
     types: [constants.npc],
@@ -37,6 +43,19 @@ export const registerSheetsAndClasses = () => {
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet(constants.systemId, ItemSheetClass, {
     makeDefault: true,
+    types: [
+      constants.weapon,
+      constants.equipment,
+      constants.investigativeAbility,
+      constants.generalAbility,
+      constants.mwItem,
+      constants.personalDetail,
+      constants.card,
+    ],
+  });
+  // @ts-expect-error - we don't have V2 types yet
+  Items.registerSheet(constants.systemId, ItemSheetV2Class, {
+    makeDefault: false,
     types: [
       constants.weapon,
       constants.equipment,
