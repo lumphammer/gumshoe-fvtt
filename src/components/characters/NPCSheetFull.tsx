@@ -1,4 +1,5 @@
-import { Fragment, ReactNode } from "react";
+import { produce } from "immer";
+import { Fragment, ReactNode, useEffect, useState } from "react";
 
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
@@ -31,8 +32,24 @@ const settingsNpcStats = settings.npcStats.get;
 
 export const NPCSheetFull = () => {
   const { actor } = useActorSheetContext();
-
   assertNPCActor(actor);
+
+  const [system, setSystem] = useState(actor.system);
+  useEffect(() => {
+    Hooks.on("updateActor", (affectedActor: Actor, changes: any) => {
+      assertNPCActor(affectedActor);
+      if (affectedActor.id !== actor.id) {
+        return;
+      }
+      const newSystem = produce(system, () => {
+        // assertNPCActor(affectedActor);
+        return affectedActor.system;
+      });
+      setSystem(newSystem);
+      affectedActor.system = newSystem;
+    });
+  }, [actor, system]);
+
   const themeName = actor.getSheetThemeName();
   const theme = useTheme(themeName);
   const stats = settingsNpcStats();

@@ -1,3 +1,4 @@
+// import { produce } from "immer";
 import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
 
@@ -29,6 +30,16 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constuctor>(
   render: Render<TBase>,
 ) {
   class Reactified extends Base {
+    // constructor(...params: any[]) {
+    //   super(...params);
+    //   // params[0].document[immerable] = true;
+    //   const copy = produce<any>(params[0].document.system, (draft) => {
+    //     /* */
+    //   });
+    //   this.systemData = copy;
+    //   console.log("ctor", copy);
+    // }
+
     static DEFAULT_OPTIONS: RecursivePartial<foundry.applications.types.ApplicationConfiguration> =
       {
         ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS,
@@ -46,6 +57,8 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constuctor>(
      * rendering system.
      */
     protected reactRoot: Root | undefined;
+
+    // protected systemData: any = undefined;
 
     /**
      * A serial number to keep track of how many times we've rendered. This is
