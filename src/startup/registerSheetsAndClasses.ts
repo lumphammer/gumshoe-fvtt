@@ -42,7 +42,7 @@ export const registerSheetsAndClasses = () => {
   });
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet(constants.systemId, ItemSheetClass, {
-    makeDefault: false,
+    makeDefault: true,
     types: [
       constants.weapon,
       constants.equipment,
@@ -55,7 +55,7 @@ export const registerSheetsAndClasses = () => {
   });
   // @ts-expect-error - we don't have V2 types yet
   Items.registerSheet(constants.systemId, ItemSheetV2Class, {
-    makeDefault: true,
+    makeDefault: false,
     types: [
       constants.weapon,
       constants.equipment,
