@@ -18,8 +18,7 @@ const Settings = React.lazy(() =>
 // in settings
 export class SettingsClassBase extends FormApplication<
   FormApplicationOptions,
-  object,
-  undefined
+  object
 > {
   // /** @override */
   static get defaultOptions() {

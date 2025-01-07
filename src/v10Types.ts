@@ -290,6 +290,6 @@ declare global {
   }
 }
 
-function bar(a: Actor) {
-  return a.system.details.notes;
-}
+// function bar(a: Actor) {
+//   return a.system.details.notes;
+// }
