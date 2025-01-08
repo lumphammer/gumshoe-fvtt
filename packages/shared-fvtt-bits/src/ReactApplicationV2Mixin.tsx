@@ -4,9 +4,11 @@ import { createRoot, Root } from "react-dom/client";
 import { FoundryAppContext } from "./FoundryAppContext";
 import { Constructor, RecursivePartial, Render } from "./types";
 
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
+import { DeepPartial } from "@league-of-foundry-developers/foundry-vtt-types/utils";
+
 // so Constructor<Application> is any class which is an Application
-type ApplicationV2Constuctor =
-  Constructor<foundry.applications.api.ApplicationV2>;
+type ApplicationV2Constuctor = Constructor<ApplicationV2>;
 
 /**
  * Wrap an existing Foundry Application class in this Mixin to override the
@@ -57,7 +59,9 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constuctor>(
 
     // From Atropos: _renderFrame only occurs once and is the most natural point
     // (given the current API) to bind the content div to your react component.
-    async _renderFrame(options: unknown) {
+    override async _renderFrame(
+      options: DeepPartial<foundry.applications.api.ApplicationV2.RenderOptions>,
+    ) {
       const element = await super._renderFrame(options);
       const target = this.hasFrame
         ? element.querySelector(".window-content")
@@ -70,7 +74,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constuctor>(
 
     // _renderHTML is the semantically appropriate place to render updates to
     // the HTML of the app... or in our case, to ask to react to refresh.
-    override _renderHTML() {
+    override async _renderHTML() {
       const content = (
         <StrictMode>
           <FoundryAppContext.Provider
