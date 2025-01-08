@@ -2,13 +2,7 @@
 
 declare const Babele: any;
 
-// DSN uses this extra dice term option to sequence rolls
-declare namespace RollTerm {
-  interface Options {
-    rollOrder?: number;
-  }
-}
-
+// this is for the pop out module - currently broken
 declare namespace PopOut {
   interface DialogHookInfo {
     /** the parent app */
