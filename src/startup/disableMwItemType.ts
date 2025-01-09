@@ -26,7 +26,6 @@ function mwItemOnOrOff() {
       oldMwItemTypelabel = label;
       delete CONFIG.Item.typeLabels["mwItem"];
       oldMwItemIndex = index;
-      // @ts-expect-error game.documentTypes exists
       game.documentTypes.Item.splice(index, 1);
     }
   }

@@ -32,7 +32,6 @@ export const installAbilityCategoryHookHandler = () => {
           systemLogger.log(
             `found ability "${createData.name}" with no category, updating to "${categoryId}"`,
           );
-          // @ts-expect-error v10 types
           item.updateSource({
             system: { categoryId },
           });
