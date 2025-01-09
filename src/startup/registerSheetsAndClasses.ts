@@ -27,7 +27,6 @@ export const registerSheetsAndClasses = () => {
     makeDefault: true,
     types: [constants.pc],
   });
-  // @ts-expect-error - we don't have V2 types yet
   Actors.registerSheet(constants.systemId, PCSheetClassV2, {
     makeDefault: false,
     types: [constants.pc],
