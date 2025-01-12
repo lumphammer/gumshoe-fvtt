@@ -2,6 +2,8 @@ import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 
 import { CardsAreaSettings } from "./components/cards/types";
 import * as constants from "./constants";
+import { InvestigatorActor } from "./module/InvestigatorActor";
+import { InvestigatorItem } from "./module/InvestigatorItem";
 
 // SOCKET STUFF ----------------------------------------------------------------
 
@@ -142,6 +144,38 @@ export type PartySystemData = {
   abilityNames: string[];
   actorIds: string[];
 };
+
+// declaration merging magic
+
+interface PCProperties {
+  type: typeof constants.pc;
+  system: PCSystemData;
+}
+
+interface NPCProperties {
+  type: typeof constants.npc;
+  system: NPCSystemData;
+}
+
+interface PartyProperties {
+  type: typeof constants.party;
+  system: PartySystemData;
+}
+
+declare global {
+  // interface DocumentClassConfig {
+  //   Item: typeof InvestigatorItem;
+  //   Actor: typeof InvestigatorActor;
+  // }
+  interface SourceConfig {
+    Item: {};
+    Actor: PCProperties | NPCProperties | PartyProperties;
+  }
+  interface DataConfig {
+    Item: {};
+    Actor: PCProperties | NPCProperties | PartyProperties;
+  }
+}
 
 // #############################################################################
 // #############################################################################
