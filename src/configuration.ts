@@ -2,17 +2,7 @@ import { InvestigatorActor } from "./module/InvestigatorActor";
 import { InvestigatorCombat } from "./module/InvestigatorCombat";
 import { InvestigatorCombatant } from "./module/InvestigatorCombatant";
 import { InvestigatorItem } from "./module/InvestigatorItem";
-import {
-  CardSystemData,
-  EquipmentSystemData,
-  GeneralAbilitySystemData,
-  InvestigativeAbilitySystemData,
-  NPCSystemData,
-  PartySystemData,
-  PCSystemData,
-  PersonalDetailSystemData,
-  WeaponSystemData,
-} from "./types";
+import { NPCSystemData, PartySystemData, PCSystemData } from "./types";
 
 interface PCDataSource {
   type: "pc";
@@ -34,42 +24,43 @@ type InvestigatorActorDataSource =
   | NPCDataSource
   | PartyDataSource;
 
-interface EquipmentDataSource {
-  type: "equipment";
-  system: EquipmentSystemData;
-}
+// interface EquipmentDataSource {
+//   type: "equipment";
+//   system: EquipmentSystemData;
+// }
 
-interface WeaponDataSource {
-  type: "weapon";
-  system: WeaponSystemData;
-}
+// interface WeaponDataSource {
+//   type: "weapon";
+//   system: WeaponSystemData;
+// }
 
-interface CardDataSource {
-  type: "card";
-  system: CardSystemData;
-}
+// interface CardDataSource {
+//   type: "card";
+//   system: CardSystemData;
+// }
 
-interface GeneralAbilityDataSource {
-  type: "generalAbility";
-  system: GeneralAbilitySystemData;
-}
+// interface GeneralAbilityDataSource {
+//   type: "generalAbility";
+//   system: GeneralAbilitySystemData;
+// }
 
-interface InvestigativeAbilityDataSource {
-  type: "investigativeAbility";
-  system: InvestigativeAbilitySystemData;
-}
+// interface InvestigativeAbilityDataSource {
+//   type: "investigativeAbility";
+//   system: InvestigativeAbilitySystemData;
+// }
 
-interface PersonalDetailDataSource {
-  type: "personalDetail";
-  system: PersonalDetailSystemData;
-}
+// interface PersonalDetailDataSource {
+//   type: "personalDetail";
+//   system: PersonalDetailSystemData;
+// }
 
-type InvestigatorItemDataSource = {};
-// EquipmentDataSource | WeaponDataSource;
-// | CardDataSource;
+// type InvestigatorItemDataSource =
+// |EquipmentDataSource
+// | WeaponDataSource
+// | CardDataSource
 // | GeneralAbilityDataSource
 // | InvestigativeAbilityDataSource
-// | PersonalDetailDataSource
+// | PersonalDetailDataSource;
 
 declare global {
   interface DocumentClassConfig {
