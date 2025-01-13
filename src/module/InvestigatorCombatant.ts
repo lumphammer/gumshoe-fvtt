@@ -88,9 +88,3 @@ export class InvestigatorCombatant extends Combatant {
     }
   }
 }
-
-declare global {
-  interface DocumentClassConfig {
-    Combatant: typeof InvestigatorCombatant;
-  }
-}

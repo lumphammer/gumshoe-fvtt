@@ -655,9 +655,3 @@ export class InvestigatorActor extends Actor {
     return warnings;
   }
 }
-
-declare global {
-  interface DocumentClassConfig {
-    Actor: typeof InvestigatorActor;
-  }
-}
