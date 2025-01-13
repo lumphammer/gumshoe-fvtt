@@ -985,9 +985,3 @@ export class InvestigatorItem extends Item {
     await this.update({ system: updateData });
   };
 }
-
-declare global {
-  interface DocumentClassConfig {
-    Item: typeof InvestigatorItem;
-  }
-}

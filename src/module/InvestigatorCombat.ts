@@ -63,9 +63,3 @@ export class InvestigatorCombat extends Combat {
     void this.setFlag(constants.systemId, "activeTurnPassingCombatant", id);
   }
 }
-
-declare global {
-  interface DocumentClassConfig {
-    Combat: typeof InvestigatorCombat;
-  }
-}
