@@ -9,19 +9,19 @@ import * as constants from "./constants";
  * data send out over the game websocket to request all clients to call the
  * hook `hook` with the given payload
  */
-export interface SocketHookAction<T> {
+export type SocketHookAction<T> = {
   hook: string;
   payload: T;
-}
+};
 
 /**
  * args passed to the `requestTurnPass` hook. this is sent out over the
  * websocket and broadcast to everyone. the GM's client picks it up and acts on
  * it.
  */
-export interface RequestTurnPassArgs {
+export type RequestTurnPassArgs = {
   combatantId: string;
-}
+};
 
 // FOUNDRY STUFF ---------------------------------------------------------------
 
@@ -49,17 +49,17 @@ export enum NoteFormat {
  * get the same format across all notes fields. This type represents the bare
  * minimum of a note, the source and the rendered output.
  */
-export interface BaseNote {
+export type BaseNote = {
   source: string;
   html: string;
-}
+};
 
 /**
  * For notes where they need their own format.
  */
-export interface NoteWithFormat extends BaseNote {
+export type NoteWithFormat = BaseNote & {
   format: NoteFormat;
-}
+};
 
 // MORIBUND WORLD --------------------------------------------------------------
 
@@ -81,7 +81,7 @@ export type MWDifficulty = "easy" | number;
 // #############################################################################
 // #############################################################################
 
-export interface PCSystemData {
+export type PCSystemData = {
   // this is not used anywhere, but it's in template.json and has been since
   // forever
   buildPoints: number;
@@ -106,9 +106,9 @@ export interface PCSystemData {
   stats: Record<string, number>;
   initiativePassingTurns: number;
   cardsAreaSettings: CardsAreaSettings;
-}
+};
 
-export interface NPCSystemData {
+export type NPCSystemData = {
   notes: NoteWithFormat;
   gmNotes: NoteWithFormat;
   initiativeAbility: string;
@@ -135,13 +135,13 @@ export interface NPCSystemData {
   combatBonus: number;
   damageBonus: number;
   initiativePassingTurns: number;
-}
+};
 
-export interface PartySystemData {
+export type PartySystemData = {
   // party stuff
   abilityNames: string[];
   actorIds: string[];
-}
+};
 
 // #############################################################################
 // #############################################################################
@@ -154,20 +154,20 @@ export type AbilityType =
   | typeof constants.generalAbility;
 
 /** Stuff that is in common between Equipment and Weapons */
-export interface BaseEquipmentSystemData {
+export type BaseEquipmentSystemData = {
   notes: NoteWithFormat;
-}
+};
 
 /**
  * system data forequipment
  */
-export interface EquipmentSystemData extends BaseEquipmentSystemData {
+export type EquipmentSystemData = BaseEquipmentSystemData & {
   categoryId: string;
   fields: Record<string, string | number | boolean>;
-}
+};
 
 /** system data forweapons */
-export interface WeaponSystemData extends BaseEquipmentSystemData {
+export type WeaponSystemData = BaseEquipmentSystemData & {
   ability: string;
   damage: number;
   pointBlankDamage: number;
@@ -186,24 +186,24 @@ export interface WeaponSystemData extends BaseEquipmentSystemData {
     max: number;
     value: number;
   };
-}
+};
 
-export interface Unlock {
+export type Unlock = {
   id: string;
   rating: number;
   description: string;
-}
+};
 
-export interface SituationalModifier {
+export type SituationalModifier = {
   id: string;
   situation: string;
   modifier: number;
-}
+};
 
 export type SpecialitiesMode = "one" | "twoThreeFour";
 
 /** system data foreither type of ability */
-interface BaseAbilitySystemData {
+export type BaseAbilitySystemData = {
   rating: number;
   pool: number;
   min: number;
@@ -224,17 +224,17 @@ interface BaseAbilitySystemData {
   unlocks: Unlock[];
   situationalModifiers: SituationalModifier[];
   allowPoolToExceedRating: boolean;
-}
+};
 
 /** system data forinvestigative abilities */
-export interface InvestigativeAbilitySystemData extends BaseAbilitySystemData {
+export type InvestigativeAbilitySystemData = BaseAbilitySystemData & {
   isQuickShock: boolean;
-}
+};
 
 export type MwRefreshGroup = 2 | 4 | 8;
 
 /** system data forgeneral abilities */
-export interface GeneralAbilitySystemData extends BaseAbilitySystemData {
+export type GeneralAbilitySystemData = BaseAbilitySystemData & {
   canBeInvestigative: boolean;
   goesFirstInCombat: boolean;
   // MW-specific fields
@@ -244,7 +244,7 @@ export interface GeneralAbilitySystemData extends BaseAbilitySystemData {
   combatBonus: number;
   damageBonus: number;
   isPushPool: boolean;
-}
+};
 
 export type MwType =
   | "tweak"
@@ -259,27 +259,27 @@ export type MwType =
 export type RangeTuple = [number, number, number, number];
 
 /** system data forMoribund World stuff */
-export interface MwItemSystemData {
+export type MwItemSystemData = {
   mwType: MwType;
   notes: NoteWithFormat;
   charges: number;
   ranges: RangeTuple;
-}
+};
 
 /** system data forpersonal details */
-export interface PersonalDetailSystemData {
+export type PersonalDetailSystemData = {
   notes: NoteWithFormat;
   slotIndex: number;
   compendiumPackId: string | null;
-}
+};
 
-export interface CardCategoryMembership {
+export type CardCategoryMembership = {
   categoryId: string;
   nonlethal: boolean;
   worth: number;
-}
+};
 
-export interface CardSystemData {
+export type CardSystemData = {
   cardCategoryMemberships: CardCategoryMembership[];
   styleKeyCategoryId: string | null;
   supertitle: string;
@@ -291,7 +291,7 @@ export interface CardSystemData {
   flags: string[];
   active: boolean;
   continuity: boolean;
-}
+};
 
 // #############################################################################
 // #############################################################################
