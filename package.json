@@ -40,7 +40,7 @@
     "@lumphammer/investigator-fvtt-types": "workspace:^",
     "@svgr/plugin-jsx": "^8.1.0",
     "@svgr/plugin-svgo": "^8.1.0",
-    "@swc/plugin-emotion": "^7.0.3",
+    "@swc/plugin-emotion": "^8.0.3",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
