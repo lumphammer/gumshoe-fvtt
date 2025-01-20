@@ -57,7 +57,7 @@
     "@vitejs/plugin-react-swc": "^3.7.2",
     "@vitest/ui": "^2.1.8",
     "eslint": "^8.57.1",
-    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-prettier": "^10.0.1",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
