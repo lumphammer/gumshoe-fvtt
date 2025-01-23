@@ -275,21 +275,3 @@
 //     throw new Error("not an actor");
 //   }
 // }
-
-export const foo = 5;
-
-declare global {
-  interface DataModelConfig {
-    Actor: {
-      pc: {
-        details: {
-          notes: string;
-        };
-      };
-    };
-  }
-}
-
-// function bar(a: Actor) {
-//   return a.system.details.notes;
-// }

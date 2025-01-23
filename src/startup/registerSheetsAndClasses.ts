@@ -27,6 +27,7 @@ export const registerSheetsAndClasses = () => {
     makeDefault: true,
     types: [constants.pc],
   });
+  // @ts-expect-error - XXX mixin class doesn't quite satisfy the type
   Actors.registerSheet(constants.systemId, PCSheetClassV2, {
     makeDefault: false,
     types: [constants.pc],
@@ -52,7 +53,7 @@ export const registerSheetsAndClasses = () => {
       constants.card,
     ],
   });
-  // @ts-expect-error - we don't have V2 types yet
+  // @ts-expect-error - XXX mixin class doesn't quite satisfy the type
   Items.registerSheet(constants.systemId, ItemSheetV2Class, {
     makeDefault: false,
     types: [
