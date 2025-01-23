@@ -24,7 +24,7 @@
   "license": "ISC",
   "devDependencies": {
     "@emotion/react": "^11.14.0",
-    "@league-of-foundry-developers/foundry-vtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types#main",
+    "@league-of-foundry-developers/foundry-vtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types#documents-v2-temp",
     "@lumphammer/shared-fvtt-bits": "workspace:*",
     "@tsconfig/recommended": "^1.0.8",
     "prettier": "^3.4.2",

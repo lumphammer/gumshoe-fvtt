@@ -17,7 +17,7 @@
   "license": "ISC",
   "devDependencies": {
     "@emotion/react": "^11.14.0",
-    "@league-of-foundry-developers/foundry-vtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types#main",
+    "@league-of-foundry-developers/foundry-vtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types#documents-v2-temp",
     "@lumphammer/investigator-fvtt-types": "^1.13.2",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",

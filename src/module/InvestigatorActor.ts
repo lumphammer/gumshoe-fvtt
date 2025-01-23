@@ -8,7 +8,6 @@ import {
   generalAbility,
   investigativeAbility,
   occupationSlotIndex,
-  pc,
   personalDetail,
 } from "../constants";
 import { confirmADoodleDo } from "../functions/confirmADoodleDo";
@@ -53,7 +52,7 @@ import { InvestigatorItem } from "./InvestigatorItem";
 export class InvestigatorActor extends Actor {
   shouldBrodcastRefreshes(): boolean {
     assertGame(game);
-    return !game.user?.isGM || this.type === pc;
+    return !game.user?.isGM || isPCActor(this);
   }
 
   confirmRefresh = async (): Promise<void> => {
@@ -233,10 +232,12 @@ export class InvestigatorActor extends Actor {
   // ###########################################################################
   // ITEMS
 
+  // XXX type does not need to be optional
   getAbilityByName(name: string, type?: AbilityType): AbilityItem | undefined {
     return this.items.find(
       (item) =>
         isAbilityItem(item) &&
+        // @ts-expect-error this.type
         (type ? item.type === type : true) &&
         item.name === name,
     ) as AbilityItem | undefined;

@@ -30,7 +30,8 @@
     // https://www.typescriptlang.org/tsconfig/#skipLibCheck
     // https://discord.com/channels/732325252788387980/793933527065690184/1242919548383002756
     // https://youtu.be/zu-EgnbmcLY?si=-xh17c1DbuPcA256&t=123
-    "skipLibCheck": true,
+    // https://discord.com/channels/732325252788387980/803646399014109205/1332042391913369690
+    "skipLibCheck": false,
     "isolatedModules": true,
     // https://devblogs.microsoft.com/typescript/announcing-typescript-5-5/#isolated-declarations
     // this causes a problem with eslint (probably typescript-eslint?)
