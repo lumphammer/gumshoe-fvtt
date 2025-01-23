@@ -10,12 +10,6 @@ type RichTextEditorProps = {
 };
 
 /**
- * This doesn't seem to be made directly available so we need to use TS
- * shenanigans to extract it.
- */
-type TinyMceEditor = Awaited<ReturnType<typeof TextEditor.create>>;
-
-/**
  * ham-fisted attempt to cram Foundry's TextEditor, which is itself a wrapper
  * around TnyMCE, into a React component. It follows the same pattern as other
  * reacty controls in that it triggers onChange whenever the user types, and
@@ -46,7 +40,7 @@ export const RichTextEditor = ({
   const [initialValue] = useState(value);
 
   useEffect(() => {
-    let tinyMceEditor: TinyMceEditor | null = null;
+    let tinyMceEditor: tinyMCE.Editor | null = null;
     if (ref.current) {
       void TextEditor.create(
         {
@@ -55,17 +49,20 @@ export const RichTextEditor = ({
           height: "100%",
         } as any,
         initialValue,
-      )
-        .then((mce) => {
-          mce.on("change", () => {
-            const content = mce.getContent();
-            onChange(content);
-          });
-          return mce;
-        })
-        .then((mce) => {
-          tinyMceEditor = mce;
+      ).then((mce) => {
+        // we know it always will be an mce (until mce gets deprecated anyway)
+        // but the types don't know that
+        if (!(mce instanceof tinyMCE.Editor)) {
+          return;
+        }
+        mce.on("change", () => {
+          const content = mce.getContent();
+          onChange(content);
         });
+        tinyMceEditor = mce;
+      });
+
+      // effect tearddown function
       return () => {
         if (tinyMceEditor) {
           tinyMceEditor.destroy();

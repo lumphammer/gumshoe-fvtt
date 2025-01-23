@@ -98,8 +98,7 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
         const text =
           dragData === null
             ? ""
-            : // @ts-expect-error options
-              await TextEditor.getContentLink(dragData, options);
+            : await TextEditor.getContentLink(dragData, options);
 
         if (text) {
           editor.executeEdits("", [

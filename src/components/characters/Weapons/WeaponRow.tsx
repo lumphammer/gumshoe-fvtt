@@ -83,6 +83,7 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
   const abilityName = weapon.system.ability;
   const ability: InvestigatorItem | undefined = weapon.actor?.items.find(
     (item: InvestigatorItem) => {
+      // @ts-expect-error .type
       return item.type === generalAbility && item.name === abilityName;
     },
   );

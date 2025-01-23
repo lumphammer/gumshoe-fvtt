@@ -1,4 +1,3 @@
-import * as constants from "./constants";
 import { InvestigatorActor } from "./module/InvestigatorActor";
 import { InvestigatorItem } from "./module/InvestigatorItem";
 import {
@@ -205,28 +204,15 @@ export function assertCardItem(
 // /////////////////////////////////////////////////////////////////////////////
 // ACTORS
 
-type InvestigatorActorSystem<
-  Type extends string,
-  SystemData,
-> = InvestigatorActor & {
-  type: Type;
+type InvestigatorActorSystem<SystemData> = InvestigatorActor & {
   system: SystemData;
 };
 
-export type PCActor = InvestigatorActorSystem<
-  typeof constants.pc,
-  PCSystemData
->;
+export type PCActor = InvestigatorActorSystem<PCSystemData>;
 
-export type NPCActor = InvestigatorActorSystem<
-  typeof constants.npc,
-  NPCSystemData
->;
+export type NPCActor = InvestigatorActorSystem<NPCSystemData>;
 
-export type PartyActor = InvestigatorActorSystem<
-  typeof constants.party,
-  PartySystemData
->;
+export type PartyActor = InvestigatorActorSystem<PartySystemData>;
 
 export type ActiveCharacterActor = PCActor | NPCActor;
 

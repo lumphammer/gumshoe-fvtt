@@ -44,6 +44,7 @@ export const importCompendium = async (candidate: unknown) => {
     `Beginning import of compendium pack ${verified.label}`,
   );
   const pack =
+    // @ts-expect-error .create
     await CompendiumCollection.createCompendium<CompendiumCollection.Metadata>(
       {
         type: verified.entity,
@@ -58,6 +59,7 @@ export const importCompendium = async (candidate: unknown) => {
     JournalEntry,
   }[verified.entity];
 
+  // @ts-expect-error .create
   const entities = await maker.create(verified.contents as any, {
     temporary: true,
   });

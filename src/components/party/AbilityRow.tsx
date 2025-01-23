@@ -89,9 +89,10 @@ export const AbilityRow = ({
                 }
                 const newAbility = (
                   await actor.createEmbeddedDocuments("Item", [
+                    // @ts-expect-error schema
                     abilityRowData.abilityItem.toJSON(),
                   ])
-                )[0] as AbilityItem;
+                )?.[0] as AbilityItem;
                 if (isAbilityItem(newAbility)) {
                   newAbility.sheet?.render(true);
                 }

@@ -47,7 +47,7 @@ export const PartySheet = () => {
       const actorIds = party.system.actorIds.filter(
         (id) => id !== deletedActor.id,
       );
-      void party.update({ actorIds });
+      void party.update({ system: { actorIds } });
     };
 
     const onUpdateDeleteCreateItem = async (
@@ -103,6 +103,7 @@ export const PartySheet = () => {
       return actor ? [actor] : [];
     });
     setActors(
+      // @ts-expect-error actor
       sortEntitiesByName(actors).filter((actor) => actor !== undefined),
     );
   }, [actorIds]);
@@ -268,7 +269,6 @@ export const PartySheet = () => {
                       width: "auto",
                     },
                   }}
-                  // @ts-expect-error v10 types
                   data-actor-id={actor._id ?? ""}
                   onClick={onClickRemoveActor}
                 >

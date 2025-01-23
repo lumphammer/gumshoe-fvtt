@@ -71,7 +71,6 @@ export const AbilityTestCard = React.memo(
             <Fragment>
               <Translate>AbilityTest</Translate>
               {": "}
-              {/* @ts-expect-error v10 types */}
               <DiceTerms terms={msg.rolls?.[0]?.terms} />
               {" ="}
             </Fragment>
@@ -87,7 +86,6 @@ export const AbilityTestCard = React.memo(
             },
           }}
         >
-          {/* @ts-expect-error v10 types */}
           {msg.rolls?.[0]?.total}
         </a>
       </div>

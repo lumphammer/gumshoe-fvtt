@@ -5,7 +5,7 @@
     "moduleResolution": "bundler",
     "module": "esnext",
     "types": [
-      "@league-of-foundry-developers/foundry-vtt-types",
+      "fvtt-types",
       "@lumphammer/investigator-fvtt-types",
       "vite/client"
     ],

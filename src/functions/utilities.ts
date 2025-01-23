@@ -89,8 +89,8 @@ export const hasOwnProperty = (x: any, y: string) =>
 /**
  * Check that `game` has been initialised
  */
-export function isGame(game: any): game is Game {
-  return game instanceof Game;
+export function isGame(game: any): game is ReadyGame {
+  return game instanceof Game && game.ready;
 }
 
 /**
@@ -98,7 +98,7 @@ export function isGame(game: any): game is Game {
  * but technically possible during a calamitous upfuckage to TS keeps us honest
  * and requires a check.
  */
-export function assertGame(game: any): asserts game is Game {
+export function assertGame(game: any): asserts game is ReadyGame {
   if (!isGame(game)) {
     throw new Error("game used before init hook");
   }
@@ -115,9 +115,6 @@ export function assertReadyGame(
     throw new Error("game is not ready");
   }
 }
-
-
-
 
 /**
  * The developer mode package allows any module to be put into "debug mode".

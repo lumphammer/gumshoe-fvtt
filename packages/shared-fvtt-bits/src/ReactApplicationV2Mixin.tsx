@@ -5,7 +5,7 @@ import { FoundryAppContext } from "./FoundryAppContext";
 import { Constructor, RecursivePartial, Render } from "./types";
 
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
-import { DeepPartial } from "@league-of-foundry-developers/foundry-vtt-types/utils";
+import { DeepPartial } from "fvtt-types/utils";
 
 // so Constructor<Application> is any class which is an Application
 type ApplicationV2Constuctor = Constructor<ApplicationV2>;
@@ -74,7 +74,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constuctor>(
 
     // _renderHTML is the semantically appropriate place to render updates to
     // the HTML of the app... or in our case, to ask to react to refresh.
-    override async _renderHTML() {
+    override _renderHTML() {
       const content = (
         <StrictMode>
           <FoundryAppContext.Provider
@@ -91,6 +91,9 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constuctor>(
 
       this.reactRoot?.render(content);
       this.serial += 1;
+      // types expect a promise but we don't need to wait for the render to
+      // complete
+      return Promise.resolve();
     }
 
     // This override should be optional eventually but rn is needed to prevent

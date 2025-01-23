@@ -84,6 +84,30 @@ declare global {
     Actor: InvestigatorActorDataSource;
     Item: InvestigatorItemDataSource;
   }
+  interface FlagConfig {
+    JournalEntry: {
+      investigator: {
+        extraCssClasses: string;
+      };
+    };
+  }
+  // this is not complete, because most of our settings is handled through our
+  // own settings system (which is backed by game.settings but has its own
+  // types). These declarations are just enough for the cases where we use
+  // game.settings directly.
+  interface SettingConfig {
+    "investigator.personalDetails": any;
+    "investigator.shortNotes": any;
+  }
+}
+
+// @ts-expect-error this is only on fvtt-types#main so far
+declare module "fvtt-types/configuration" {
+  namespace foundry.dice.terms.RollTerm {
+    interface Options {
+      rollOrder?: number;
+    }
+  }
 }
 
 export function testActorFunction(actor: Actor) {

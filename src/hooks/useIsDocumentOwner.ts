@@ -23,7 +23,6 @@ export function useIsDocumentOwner() {
     ) {
       return application.document.testUserPermission(
         game.user,
-        // @ts-expect-error types still have DOCUMENT_PERMISSION_LEVELS
         CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER,
       );
     } else {

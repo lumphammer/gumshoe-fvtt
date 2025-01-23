@@ -4,14 +4,13 @@ import { Fragment, ReactNode } from "react";
 import { assertGame } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
 import { settings } from "../../settings/settings";
-import { InvestigatorTurn } from "./getTurns";
 import { StandardInitiative } from "./StandardInitiative";
 import { TurnPassingInitiative } from "./TurnPassingInitiative";
 import { useCombatant } from "./useCombatant";
 
 interface CombatantRowProps {
-  turn: InvestigatorTurn;
-  combat: StoredDocument<InvestigatorCombat>;
+  turn: any;
+  combat: InvestigatorCombat;
   index: number;
 }
 
@@ -96,7 +95,7 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
           )}
           <div className="token-effects">
             {Array.from(turn.effects).map<ReactNode>((effect, i) => (
-              <img key={i} className="token-effect" src={effect} />
+              <img key={i} className="token-effect" src={effect as string} />
             ))}
           </div>
         </div>

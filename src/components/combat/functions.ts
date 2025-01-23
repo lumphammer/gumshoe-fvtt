@@ -36,11 +36,13 @@ export function compareCombatantsStandard(
     const aAbilityName = a.actor.system.initiativeAbility;
     const aAbility = a.actor.items.find(
       (item: InvestigatorItem) =>
+        // @ts-expect-error .type
         item.type === constants.generalAbility && item.name === aAbilityName,
     );
     const bAbilityName = b.actor.system.initiativeAbility;
     const bAbility = b.actor.items.find(
       (item: InvestigatorItem) =>
+        // @ts-expect-error .type
         item.type === constants.generalAbility && item.name === bAbilityName,
     );
     // working out initiative - "goes first" beats non-"goes first"; then

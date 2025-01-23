@@ -5,8 +5,6 @@ import { CardsAreaSettings } from "../components/cards/types";
 import {
   card,
   equipment,
-  generalAbility,
-  investigativeAbility,
   occupationSlotIndex,
   personalDetail,
 } from "../constants";
@@ -204,6 +202,7 @@ export class InvestigatorActor extends Actor {
         ...extraData,
       }),
     };
+    // @ts-expect-error .create
     await ChatMessage.create(chatData, {});
   };
 
@@ -331,13 +330,13 @@ export class InvestigatorActor extends Actor {
       ) {
         continue;
       }
-      if (item.type === investigativeAbility) {
+      if (isInvestigativeAbilityItem(item)) {
         const cat = item.system.categoryId || "Uncategorised";
         if (investigativeAbilities[cat] === undefined) {
           investigativeAbilities[cat] = [];
         }
         investigativeAbilities[cat].push(item);
-      } else if (item.type === generalAbility) {
+      } else if (isGeneralAbilityItem(item)) {
         if (hidePushPool && item.system.isPushPool) {
           continue;
         }
@@ -531,7 +530,7 @@ export class InvestigatorActor extends Actor {
         .filter(
           (actor) =>
             actor !== undefined &&
-            actor.id !== null &&
+            // @ts-expect-error actor
             isPCActor(actor) &&
             !currentIds.includes(actor.id),
         ) as Actor[]
@@ -548,6 +547,7 @@ export class InvestigatorActor extends Actor {
       "Item",
       [
         {
+          // @ts-expect-error .type
           type: equipment,
           name: "New item",
           system: {
@@ -566,6 +566,7 @@ export class InvestigatorActor extends Actor {
       "Item",
       [
         {
+          // @ts-expect-error .type
           type: card,
           name: "New card",
         },
@@ -612,6 +613,7 @@ export class InvestigatorActor extends Actor {
       "Item",
       [
         {
+          // @ts-expect-error .type
           type: personalDetail,
           name,
           system: {

@@ -24,7 +24,6 @@ export const useCombatant = (
     if (!token) return;
     // Push the defeated status to the token
     const status = CONFIG.statusEffects.find(
-      // @ts-expect-error types
       (e) => e.id === CONFIG.specialStatusEffects.DEFEATED,
     );
     if (!status && !token.object) return;
@@ -55,10 +54,8 @@ export const useCombatant = (
       event.preventDefault();
       if (!canvas?.ready) return;
       const token = combatantStash.current?.token?.object;
-      // @ts-expect-error isVisible is legit?
       if (token?.isVisible) {
-        // @ts-expect-error privacy means nothing
-        if (!token._controlled) {
+        if (!token.controlled) {
           // @ts-expect-error privacy means nothing
           token._onHoverIn(event);
         }

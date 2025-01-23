@@ -1,6 +1,8 @@
 import system from "../public/system.json";
 
-export const systemId = system.id;
+// we could use id from package, but the typings work better if this is
+// constant typed
+export const systemId = "investigator";
 export const version = system.version;
 export const defaultMigratedSystemVersion = "0.0.0";
 export const defaultSystemPreset = "pathOfCthulhuPreset";

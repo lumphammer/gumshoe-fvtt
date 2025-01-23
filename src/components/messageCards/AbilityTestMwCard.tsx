@@ -59,7 +59,6 @@ export const AbilityTestMwCard = React.memo(
       ability?.sheet?.render(true);
     }, [ability?.sheet]);
 
-    // @ts-expect-error v10 types
     const cappedResult = Math.max(Math.min(msg.rolls?.[0]?.total ?? 1, 6), 1);
     const effectiveResult =
       difficulty === "easy" && cappedResult === 3 ? 4 : cappedResult;
@@ -109,7 +108,7 @@ export const AbilityTestMwCard = React.memo(
               {name ?? ability?.name ?? "Missing"}
             </a>
           </b>{" "}
-          <DiceTerms terms={msg.roll?.terms} />
+          <DiceTerms terms={msg.rolls?.[0]?.terms} />
           {difficulty === "easy" && (
             <span>
               (<Translate>Easy</Translate>)
