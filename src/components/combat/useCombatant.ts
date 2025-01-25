@@ -30,7 +30,7 @@ export const useCombatant = (
     const effect =
       token.actor && status ? status : CONFIG.controlIcons.defeated;
     if (token.object) {
-      await (token.object as Token).toggleEffect(effect, {
+      await token.object.toggleEffect(effect, {
         overlay: true,
         active: isDefeated,
       });

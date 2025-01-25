@@ -1,3 +1,8 @@
+// at one point I had to have this to make the
+// `declare module "fvtt-types/configuration"` below work, but thaty may have
+// been when we were on fvtt-types#main with the new stuff for config
+// import "fvtt-types/configuration";
+
 import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 
 import * as constants from "./constants";

@@ -6,7 +6,7 @@ import { isCardItem } from "../v10Types";
 export const installCardCategoryHookHandler = () => {
   Hooks.on(
     "preCreateItem",
-    async (
+    (
       item: Item,
       createData: { name: string; type: string; data?: any; img?: string },
       options: any,
@@ -37,7 +37,7 @@ export const installCardCategoryHookHandler = () => {
           ],
           styleKeyCategoryId: category.id,
         };
-        await item.updateSource({ system: updateData });
+        item.updateSource({ system: updateData });
       }
     },
   );

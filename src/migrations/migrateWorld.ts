@@ -2,7 +2,6 @@ import system from "../../public/system.json";
 import * as constants from "../constants";
 import { assertGame, systemLogger } from "../functions/utilities";
 import { settings } from "../settings/settings";
-import { AnyItem } from "../v10Types";
 import { flaggedMigrations } from "./flaggedMigrations";
 import { migrateActorData } from "./migrateActorData";
 import { migrateCompendium } from "./migrateCompendium";

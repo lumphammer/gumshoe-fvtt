@@ -1,5 +1,3 @@
-import "fvtt-types/configuration";
-
 import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 
 import { CardsAreaSettings } from "./components/cards/types";

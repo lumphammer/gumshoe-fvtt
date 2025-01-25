@@ -2,7 +2,6 @@ import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactA
 import React from "react";
 
 import { Suspense } from "../components/Suspense";
-import { RecursivePartial } from "../types";
 import { InvestigatorActor } from "./InvestigatorActor";
 // import { reactTemplatePath, systemId } from "../constants";
 

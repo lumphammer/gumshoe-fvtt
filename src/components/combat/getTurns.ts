@@ -63,7 +63,7 @@ export function getTurns(combat: Combat) {
     if (combatant.actor) {
       combatant.actor.temporaryEffects.forEach((e) => {
         let hasDefeatedStatus = false;
-        const statuses = e.statuses as Set<string>;
+        const statuses = e.statuses;
 
         if (statuses.has(CONFIG.specialStatusEffects.DEFEATED)) {
           hasDefeatedStatus = true;

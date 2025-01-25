@@ -30,7 +30,7 @@ export class InvestigatorJournalSheet extends JournalSheet {
     // find the page element, work out which page is active, and add the page's
     // classes onto it
     const contentElement = this.element.find(".journal-entry-page");
-    const pages = (this.document.pages.contents as JournalEntryPage[]).toSorted(
+    const pages = this.document.pages.contents.toSorted(
       (a, b) => a.sort - b.sort,
     );
     const page = pages[this._getCurrentPage()];
