@@ -530,7 +530,7 @@ export class InvestigatorActor extends Actor {
         .filter(
           (actor) =>
             actor !== undefined &&
-            // @ts-expect-error actor
+            // @ts-expect-error DocumentClassConfig
             isPCActor(actor) &&
             !currentIds.includes(actor.id),
         ) as Actor[]

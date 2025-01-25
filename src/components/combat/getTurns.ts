@@ -1,3 +1,4 @@
+import { assertGame } from "../../functions/utilities";
 import { isActiveCharacterActor } from "../../v10Types";
 
 // commented out because CombatTracker.Turn no longer exists and the whole
@@ -38,10 +39,10 @@ export function getTurns(combat: Combat) {
     let img = combatant.img as string;
     // Cached thumbnail image for video tokens
     if (VideoHelper.hasVideoExtension(img)) {
+      assertGame(game);
       // @ts-expect-error combatant._thumb is a thing
       if (combatant._thumb) img = combatant._thumb;
       else {
-        // @ts-expect-error game
         void game.video
           .createThumbnail(img, { width: 100, height: 100 })
           .then((img: string) => {

@@ -1,3 +1,5 @@
+import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
+
 import * as constants from "./constants";
 import { InvestigatorActor } from "./module/InvestigatorActor";
 import { InvestigatorCombat } from "./module/InvestigatorCombat";
@@ -91,13 +93,13 @@ declare global {
       };
     };
   }
-  // this is not complete, because most of our settings is handled through our
+  // this is not complete, because most of our settings are handled through our
   // own settings system (which is backed by game.settings but has its own
   // types). These declarations are just enough for the cases where we use
   // game.settings directly.
   interface SettingConfig {
-    "investigator.personalDetails": any;
-    "investigator.shortNotes": any;
+    "investigator.personalDetails": PersonalDetail[];
+    "investigator.shortNotes": string[];
   }
 }
 

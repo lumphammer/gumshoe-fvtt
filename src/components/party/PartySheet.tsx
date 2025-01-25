@@ -103,7 +103,7 @@ export const PartySheet = () => {
       return actor ? [actor] : [];
     });
     setActors(
-      // @ts-expect-error actor
+      // @ts-expect-error DocumentClassConfig
       sortEntitiesByName(actors).filter((actor) => actor !== undefined),
     );
   }, [actorIds]);

@@ -185,16 +185,11 @@ export const flaggedMigrations: FlaggedMigrations = {
      */
     convertShortNotesToPersonalDetails: async () => {
       assertGame(game);
-      const shortNotes: string[] = game.settings.get(
-        "investigator",
-        "shortNotes",
-      ) as string[];
-      const personalDetails: PersonalDetail[] = shortNotes.map(
-        (shortNote: string, i: number) => ({
-          name: shortNote,
-          type: "item",
-        }),
-      );
+      const shortNotes = game.settings.get("investigator", "shortNotes");
+      const personalDetails: PersonalDetail[] = shortNotes.map((name) => ({
+        name,
+        type: "item",
+      }));
       await game.settings.set(
         "investigator",
         "personalDetails",

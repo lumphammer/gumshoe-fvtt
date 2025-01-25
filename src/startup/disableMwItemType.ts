@@ -13,14 +13,14 @@ function mwItemOnOrOff() {
   if (settings.mwUseAlternativeItemTypes.get()) {
     if (oldMwItemTypelabel !== null && oldMwItemIndex !== null) {
       CONFIG.Item.typeLabels["mwItem"] = oldMwItemTypelabel;
-      // @ts-expect-error game.documentTypes exists
+      // @ts-expect-error .type
       game.documentTypes.Item.splice(oldMwItemIndex, 0, "mwItem");
       oldMwItemTypelabel = null;
       oldMwItemIndex = null;
     }
   } else {
     const label = CONFIG.Item.typeLabels["mwItem"];
-    // @ts-expect-error game.documentTypes exists
+    // @ts-expect-error .type
     const index = game.documentTypes.Item.indexOf("mwItem");
     if (index !== -1) {
       oldMwItemTypelabel = label;
