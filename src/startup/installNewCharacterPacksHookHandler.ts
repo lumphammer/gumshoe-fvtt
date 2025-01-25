@@ -18,6 +18,7 @@ export function installNewCharacterPacksHookHandler() {
         return;
       }
 
+      // @ts-expect-error .type`
       if (actor.type === pc) {
         // this used to be done in parallel with Promise.all but I was seeing some
         // weird behaviour (duplicated or missing abilities, or weird reference
@@ -45,6 +46,7 @@ export function installNewCharacterPacksHookHandler() {
         }
       }
 
+      // @ts-expect-error .type`
       if (actor.type === npc) {
         for (const packId of settings.newNPCPacks.get()) {
           assertGame(game);

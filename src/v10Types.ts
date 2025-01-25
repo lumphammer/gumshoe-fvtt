@@ -81,89 +81,81 @@ export type AnyItem =
   | PersonalDetailItem;
 
 export function isGeneralAbilityItem(
-  item: Optional<InvestigatorItem>,
+  item: Optional<Item>,
 ): item is GeneralAbilityItem {
   // @ts-expect-error .type
   return item?.type === "generalAbility";
 }
 
 export function assertGeneralAbilityItem(
-  item: Optional<InvestigatorItem>,
+  item: Optional<Item>,
 ): asserts item is GeneralAbilityItem {
   assertPredicate(isGeneralAbilityItem, item);
 }
 
 export function isInvestigativeAbilityItem(
-  item: Optional<InvestigatorItem>,
+  item: Optional<Item>,
 ): item is InvestigativeAbilityItem {
   // @ts-expect-error .type
   return item?.type === "investigativeAbility";
 }
 
 export function assertInvestigativeAbilityItem(
-  item: Optional<InvestigatorItem>,
+  item: Optional<Item>,
 ): asserts item is InvestigativeAbilityItem {
   assertPredicate(isInvestigativeAbilityItem, item);
 }
 
-export function isAbilityItem(
-  item: Optional<InvestigatorItem>,
-): item is AbilityItem {
+export function isAbilityItem(item: Optional<Item>): item is AbilityItem {
   return isGeneralAbilityItem(item) || isInvestigativeAbilityItem(item);
 }
 
 export function assertAbilityItem(
-  item: Optional<InvestigatorItem>,
+  item: Optional<Item>,
 ): asserts item is AbilityItem {
   assertPredicate(isAbilityItem, item);
 }
 
-export function isEquipmentItem(
-  item: Optional<InvestigatorItem>,
-): item is EquipmentItem {
+export function isEquipmentItem(item: Optional<Item>): item is EquipmentItem {
   // @ts-expect-error .type
   return item?.type === "equipment";
 }
 
 export function assertEquipmentItem(
-  item: Optional<InvestigatorItem>,
+  item: Optional<Item>,
 ): asserts item is EquipmentItem {
   assertPredicate(isEquipmentItem, item);
 }
 
 export function isEquipmentOrAbilityItem(
-  item: Optional<InvestigatorItem>,
+  item: Optional<Item>,
 ): item is EquipmentItem | AbilityItem {
   return isAbilityItem(item) || isEquipmentItem(item);
 }
 
 export function assertEquipmentOrAbilityItem(
-  item: Optional<InvestigatorItem>,
+  item: Optional<Item>,
 ): asserts item is EquipmentItem | AbilityItem {
   assertPredicate(isEquipmentOrAbilityItem, item);
 }
 
-export function isWeaponItem(
-  item: Optional<InvestigatorItem>,
-): item is WeaponItem {
+export function isWeaponItem(item: Optional<Item>): item is WeaponItem {
   // @ts-expect-error .type
   return item?.type === "weapon";
 }
 
 export function assertWeaponItem(
-  item: Optional<InvestigatorItem>,
+  item: Optional<Item>,
 ): asserts item is WeaponItem {
   assertPredicate(isWeaponItem, item);
 }
 
-export function isMwItem(item: Optional<InvestigatorItem>): item is MwItem {
+export function isMwItem(item: Optional<Item>): item is MwItem {
   // @ts-expect-error .type
   return item?.type === "mwItem";
 }
 
-export function assertMwItem(
-  item: Optional<InvestigatorItem>,
-): asserts item is MwItem {
+export function assertMwItem(item: Optional<Item>): asserts item is MwItem {
   assertPredicate(isMwItem, item);
 }
 
@@ -178,26 +170,24 @@ export function assertAnyItem(
 }
 
 export function isPersonalDetailItem(
-  item: Optional<InvestigatorItem>,
+  item: Optional<Item>,
 ): item is PersonalDetailItem {
   // @ts-expect-error .type
   return item?.type === "personalDetail";
 }
 
 export function assertPersonalDetailItem(
-  item: Optional<InvestigatorItem>,
+  item: Optional<Item>,
 ): asserts item is PersonalDetailItem {
   assertPredicate(isPersonalDetailItem, item);
 }
 
-export function isCardItem(item: Optional<InvestigatorItem>): item is CardItem {
+export function isCardItem(item: Optional<Item>): item is CardItem {
   // @ts-expect-error .type
   return item?.type === "card";
 }
 
-export function assertCardItem(
-  item: Optional<InvestigatorItem>,
-): asserts item is CardItem {
+export function assertCardItem(item: Optional<Item>): asserts item is CardItem {
   assertPredicate(isCardItem, item);
 }
 

@@ -92,6 +92,16 @@ declare global {
         extraCssClasses: string;
       };
     };
+    Combat: {
+      investigator: {
+        activeTurnPassingCombatant: string | null;
+      };
+    };
+    Combatant: {
+      investigator: {
+        passingTurnsRemaining: number;
+      };
+    };
   }
   // this is not complete, because most of our settings are handled through our
   // own settings system (which is backed by game.settings but has its own
@@ -100,6 +110,8 @@ declare global {
   interface SettingConfig {
     "investigator.personalDetails": PersonalDetail[];
     "investigator.shortNotes": string[];
+    "dice-so-nice.enabledSimultaneousRollForMessage": boolean;
+    "dice-so-nice.enabledSimultaneousRolls": boolean;
   }
 }
 

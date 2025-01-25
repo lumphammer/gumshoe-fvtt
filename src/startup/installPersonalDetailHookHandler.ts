@@ -32,6 +32,7 @@ export function installPersonalDetailHookHandler() {
       if (
         !(
           game.userId === userId &&
+          // @ts-expect-error .type`
           item.type === personalDetail &&
           item.isEmbedded &&
           item.actor &&

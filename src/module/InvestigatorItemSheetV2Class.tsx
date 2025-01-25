@@ -4,6 +4,8 @@ import React from "react";
 
 import { Suspense } from "../components/Suspense";
 
+import ItemSheetV2 = foundry.applications.sheets.ItemSheetV2;
+
 // React stuff -----------------------------------------------------------------
 
 const InvestigatorItemSheet = React.lazy(() =>
@@ -24,8 +26,7 @@ const render = (sheet: ItemSheetV2ClassBase) => {
  * Extend the basic ActorSheet with some very simple modifications
  * @extends {ActorSheet}
  */
-class ItemSheetV2ClassBase extends foundry.applications.sheets
-  .ItemSheetV2<Item> {
+class ItemSheetV2ClassBase extends ItemSheetV2 {
   /** @override */
   static DEFAULT_OPTIONS = {
     ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS,

@@ -24,14 +24,12 @@ export class InvestigatorJournalSheet extends JournalSheet {
       ".journal-entry-content",
     );
     const journalEntryClasses =
-      // @ts-expect-error sigh
       this.document.flags[systemId]?.[extraCssClasses] ?? "";
     journalEntryContentElement.addClass(journalEntryClasses);
 
     // find the page element, work out which page is active, and add the page's
     // classes onto it
     const contentElement = this.element.find(".journal-entry-page");
-    // @ts-expect-error sigh
     const pages = (this.document.pages.contents as JournalEntryPage[]).toSorted(
       (a, b) => a.sort - b.sort,
     );

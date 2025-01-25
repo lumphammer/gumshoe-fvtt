@@ -11,12 +11,8 @@ import { InvestigatorCombatant } from "./InvestigatorCombatant";
  * Override base Combat so we can do custom GUMSHOE-style initiative
  */
 export class InvestigatorCombat extends Combat {
-  override _onCreate(
-    // was this["data"]["_source"]
-    data: any,
-    options: any,
-    userId: string,
-  ) {
+  override _onCreate(data: Item.CreateData, options: any, userId: string) {
+    // @ts-expect-error .create
     super._onCreate(data, options, userId);
     if (settings.useTurnPassingInitiative.get()) {
       void this.update({

@@ -8,13 +8,13 @@ import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import { DeepPartial } from "fvtt-types/utils";
 
 // so Constructor<Application> is any class which is an Application
-type ApplicationV2Constuctor = Constructor<ApplicationV2>;
+type ApplicationV2Constructor = Constructor<ApplicationV2>;
 
 /**
  * Wrap an existing Foundry Application class in this Mixin to override the
  * normal rednering behaviour and and use React instead.
  */
-export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constuctor>(
+export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
   /**
    * Name to be attached to the created class. This is needed because minified
    * classes have weird names which can break foundry when thney get used as

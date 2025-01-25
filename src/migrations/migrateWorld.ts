@@ -46,15 +46,16 @@ export const migrateWorld = async function (
   }
 
   // Migrate World Items
-  for (const i of game.items?.contents ?? []) {
+  for (const item of game.items?.contents ?? []) {
     try {
-      const updateData = migrateItemData(i, flaggedMigrations);
+      // @ts-expect-error DocumentClassConfig
+      const updateData = migrateItemData(item, flaggedMigrations);
       if (!foundry.utils.isEmpty(updateData)) {
-        console.log(`Migrating Item entity ${i.name}`);
-        await i.update(updateData);
+        console.log(`Migrating Item entity ${item.name}`);
+        await item.update(updateData);
       }
     } catch (err: any) {
-      err.message = `Failed ${title} system migration for Item ${i.name}: ${err.message}`;
+      err.message = `Failed ${title} system migration for Item ${item.name}: ${err.message}`;
       console.error(err);
     }
   }

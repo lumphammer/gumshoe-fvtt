@@ -19,6 +19,7 @@ export function installEquipmentAddedNotifier() {
     const recipientIds = (game.users ?? [])
       .filter((user) => {
         const hasPermission = item.testUserPermission(
+          // @ts-expect-error DocumentClassConfig
           user,
           CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER,
           { exact: false },
@@ -30,6 +31,7 @@ export function installEquipmentAddedNotifier() {
 
     const proms = recipientIds.map((recipientId) => {
       return ChatMessage.create(
+        // @ts-expect-error .create
         {
           author: game.user?.id,
           speaker: ChatMessage.getSpeaker({

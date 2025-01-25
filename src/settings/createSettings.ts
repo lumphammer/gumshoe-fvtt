@@ -7,6 +7,7 @@ const getSetting =
   <T = string>(key: string) =>
   (): T => {
     assertGame(game);
+    // @ts-expect-error settings are typed now, but we're doing our own thing
     return game.settings.get(c.systemId, key) as T;
   };
 
@@ -14,6 +15,7 @@ const setSetting =
   <T = string>(key: string) =>
   (value: T) => {
     assertGame(game);
+    // @ts-expect-error settings are typed now, but we're doing our own thing
     return game.settings.set(c.systemId, key, value);
   };
 
@@ -73,6 +75,7 @@ export const createSetting =
     Hooks.once("init", () => {
       assertGame(game);
       // the actual foundry setting is registered here
+      // @ts-expect-error settings are typed now, but we're doing our own thing
       game.settings.register(c.systemId, key, {
         name,
         scope,
@@ -86,6 +89,7 @@ export const createSetting =
     return {
       key,
       get: getSetting<TSetting>(key),
+      // @ts-expect-error settings are typed now, but we're doing our own thing
       set: setSetting<TSetting>(key),
       exportable,
       validator: validator as TValidator,
