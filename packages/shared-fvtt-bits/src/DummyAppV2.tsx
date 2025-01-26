@@ -1,24 +1,23 @@
 import "./ApplicationV2Types";
 
+import { DeepPartial } from "fvtt-types/utils";
 import { createRoot, Root } from "react-dom/client";
 
 import { DummyComponent } from "./DummyComponent";
-import { RecursivePartial } from "./types";
 
-export class DummyAppV2 extends foundry.applications.api.ApplicationV2<void> {
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
+import AppV2Config = foundry.applications.api.ApplicationV2.Configuration;
+import RenderOptions = foundry.applications.api.ApplicationV2.RenderOptions;
+
+export class DummyAppV2 extends ApplicationV2 {
   // STATICS
-  static DEFAULT_OPTIONS: RecursivePartial<
-    Omit<foundry.applications.types.ApplicationConfiguration, "uniqueId">
-  > = {
-    ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS,
-    // classes: ["document-sheet"],
+  static DEFAULT_OPTIONS: DeepPartial<AppV2Config> = {
     position: {
       height: 100,
       width: 200,
     },
-
     window: {
-      ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS.window,
+      positioned: true,
       title: "DummyAppV2",
       frame: true,
     },
@@ -32,7 +31,7 @@ export class DummyAppV2 extends foundry.applications.api.ApplicationV2<void> {
 
   // From Atropos: _renderFrame only occurs once and is the most natural point
   // (given the current API) to bind the content div to your react component.
-  async _renderFrame(options: unknown) {
+  async _renderFrame(options: DeepPartial<RenderOptions>) {
     const element = await super._renderFrame(options);
     const target = this.hasFrame
       ? element.querySelector(".window-content")
