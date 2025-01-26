@@ -1,6 +1,3 @@
-// ned to bring in these global types manually
-import "@lumphammer/shared-fvtt-bits/src/ApplicationV2Types";
-
 // import { DummyAppV2 } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2";
 // import { DummyAppV2WithMixin } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2WithMixin";
 import { initializePackGenerators } from "./compendiumFactory/generatePacks";
