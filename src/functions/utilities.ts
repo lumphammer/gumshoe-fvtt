@@ -89,8 +89,8 @@ export const hasOwnProperty = (x: any, y: string) =>
 /**
  * Check that `game` has been initialised
  */
-export function isGame(game: any): game is ReadyGame {
-  return game instanceof Game && game.ready;
+export function isGame(game: any): game is Game {
+  return game instanceof Game;
 }
 
 /**
