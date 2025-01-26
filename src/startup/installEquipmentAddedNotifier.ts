@@ -24,7 +24,7 @@ export function installEquipmentAddedNotifier() {
           CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER,
           { exact: false },
         );
-        const isNotMe = user.id !== game.user?.id;
+        const isNotMe = user.id !== game.user.id;
         return hasPermission && isNotMe;
       })
       .map((user) => user.id);
@@ -33,12 +33,12 @@ export function installEquipmentAddedNotifier() {
       return ChatMessage.create(
         // @ts-expect-error .create
         {
-          author: game.user?.id,
+          author: game.user.id,
           speaker: ChatMessage.getSpeaker({
-            alias: game.user?.name ?? "",
+            alias: game.user.name,
           }),
           content: getTranslated("ItemNameAddedToActorName", {
-            ItemName: item.name ?? "",
+            ItemName: item.name,
             ActorName: item.parent?.name ?? "",
           }),
           whisper: [recipientId],

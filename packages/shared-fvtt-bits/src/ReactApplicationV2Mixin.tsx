@@ -1,17 +1,20 @@
 import { DeepPartial } from "fvtt-types/utils";
-import { StrictMode } from "react";
+import { ReactNode, StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
 
 import { FoundryAppContext } from "./FoundryAppContext";
-import { Constructor, RecursivePartial, Render } from "./types";
+import { Constructor, RecursivePartial } from "./types";
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
+
+import ApplicationConfiguration = foundry.applications.types.ApplicationConfiguration;
+import RenderOptions = foundry.applications.api.ApplicationV2.RenderOptions;
 
 // so Constructor<Application> is any class which is an Application
 type ApplicationV2Constructor = Constructor<ApplicationV2>;
 
 /**
  * Wrap an existing Foundry Application class in this Mixin to override the
- * normal rednering behaviour and and use React instead.
+ * normal rendering behaviour and and use React instead.
  */
 export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
   /**
@@ -24,21 +27,20 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
    * The base class.
    */
   Base: TBase,
-  /** A function which will be given an *instance* of Base and expected to
-   * return some JSX.
+  /**
+   * Render method - should return some JSX.
    */
-  render: Render<TBase>,
+  render: () => ReactNode,
 ) {
   class Reactified extends Base {
-    static DEFAULT_OPTIONS: RecursivePartial<foundry.applications.types.ApplicationConfiguration> =
-      {
-        ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS,
-        window: {
-          ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS.window,
-          frame: true,
-          title: name,
-        },
-      };
+    static DEFAULT_OPTIONS: RecursivePartial<ApplicationConfiguration> = {
+      ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS,
+      window: {
+        ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS.window,
+        frame: true,
+        title: name,
+      },
+    };
 
     // PROPERTIES
 
@@ -58,9 +60,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
 
     // From Atropos: _renderFrame only occurs once and is the most natural point
     // (given the current API) to bind the content div to your react component.
-    override async _renderFrame(
-      options: DeepPartial<foundry.applications.api.ApplicationV2.RenderOptions>,
-    ) {
+    override async _renderFrame(options: DeepPartial<RenderOptions>) {
       const element = await super._renderFrame(options);
       const target = this.hasFrame
         ? element.querySelector(".window-content")
@@ -80,10 +80,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
             value={this}
             key={"FoundryAppContextProvider"}
           >
-            {render(
-              this as TBase extends Constructor<infer T2> ? T2 : TBase,
-              this.serial,
-            )}
+            {render()}
           </FoundryAppContext.Provider>
         </StrictMode>
       );

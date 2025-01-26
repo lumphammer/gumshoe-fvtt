@@ -98,7 +98,7 @@ export const TurnPassingInitiative = ({
         </a>
       </div>
 
-      {game.user?.isGM && (
+      {game.user.isGM && (
         <Dropdown
           showArrow={false}
           label={<FaEllipsisH />}

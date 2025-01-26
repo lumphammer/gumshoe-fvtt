@@ -50,7 +50,7 @@ import { InvestigatorItem } from "./InvestigatorItem";
 export class InvestigatorActor extends Actor {
   shouldBrodcastRefreshes(): boolean {
     assertGame(game);
-    return !game.user?.isGM || isPCActor(this);
+    return !game.user.isGM || isPCActor(this);
   }
 
   confirmRefresh = async (): Promise<void> => {
@@ -192,13 +192,13 @@ export class InvestigatorActor extends Actor {
   ): Promise<void> => {
     assertGame(game);
     const chatData = {
-      user: game.user?.id,
+      user: game.user.id,
       speaker: ChatMessage.getSpeaker({
-        alias: game.user?.name ?? "",
+        alias: game.user.name ?? "",
       }),
       content: getTranslated(text, {
         ActorName: this.name ?? "",
-        UserName: game.user?.name ?? "",
+        UserName: game.user.name ?? "",
         ...extraData,
       }),
     };

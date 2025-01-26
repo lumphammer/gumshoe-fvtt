@@ -30,15 +30,3 @@ declare namespace PopOut {
     window: Window;
   }
 }
-
-// declare namespace foundry {
-//   namespace dice {
-//     namespace terms {
-//       namespace RollTerm {
-//         interface Options {
-//           rollOrder?: number;
-//         }
-//       }
-//     }
-//   }
-// }

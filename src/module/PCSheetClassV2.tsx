@@ -4,14 +4,9 @@ import { PCSheet } from "../components/characters/PCSheet";
 import { reactTemplatePath, systemId } from "../constants";
 
 import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
-/**
- * Extend the basic ActorSheet with some very simple modifications
- * @extends {ActorSheet}
- */
+
 class PCSheetClassV2Base extends ActorSheetV2 {
-  /** @override */
   static DEFAULT_OPTIONS = {
-    ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS,
     classes: [systemId, "sheet", "actor"],
     template: reactTemplatePath,
     position: {
@@ -24,7 +19,7 @@ class PCSheetClassV2Base extends ActorSheetV2 {
   };
 }
 
-const render = (sheet: PCSheetClassV2Base) => {
+const render = () => {
   return <PCSheet />;
 };
 

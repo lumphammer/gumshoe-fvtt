@@ -30,7 +30,7 @@ export const installDropActorSheetDataHandler = () => {
         targetActor.type !== party ||
         (dropData.type !== "Actor" &&
           (dropData.type !== "Folder" || dropData.entity !== "Actor")) ||
-        !game.user?.isGM
+        !game.user.isGM
       ) {
         return;
       }

@@ -69,7 +69,7 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
       <div className="token-name flexcol">
         <h4>{turn.name}</h4>
         <div className="combatant-controls flexrow">
-          {game.user?.isGM && (
+          {game.user.isGM && (
             <Fragment>
               <a
                 className={cx({

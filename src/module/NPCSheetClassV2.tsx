@@ -3,7 +3,6 @@ import React from "react";
 
 import { Suspense } from "../components/Suspense";
 import { InvestigatorActor } from "./InvestigatorActor";
-// import { reactTemplatePath, systemId } from "../constants";
 
 import DocumentSheetV2 = foundry.applications.api.DocumentSheetV2;
 
@@ -13,16 +12,9 @@ const NPCSheet = React.lazy(() =>
   })),
 );
 
-/**
- * Extend the basic ActorSheet with some very simple modifications
- * @extends {ActorSheet}
- */
 class NPCSheetV2ClassBase extends DocumentSheetV2<InvestigatorActor> {
   static DEFAULT_OPTIONS = {
-    ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS,
-
     window: {
-      ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS.window,
       frame: true,
       title: "name",
     },
@@ -31,19 +23,9 @@ class NPCSheetV2ClassBase extends DocumentSheetV2<InvestigatorActor> {
       width: 700,
     },
   };
-
-  /** @override */
-  // static get defaultOptions() {
-  //   return foundry.utils.mergeObject(super.defaultOptions, {
-  //     classes: [systemId, "sheet", "actor"],
-  //     template: reactTemplatePath,
-  //     width: 700,
-  //     height: 660,
-  //   });
-  // }
 }
 
-const render = (sheet: NPCSheetV2ClassBase) => {
+const render = () => {
   return (
     <Suspense>
       <NPCSheet />
