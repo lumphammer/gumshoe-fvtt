@@ -58,6 +58,7 @@ const compareAbilityDataSources = (
   a: AbilityItem,
   b: AbilityItem,
 ): -1 | 0 | 1 => {
+  // @ts-expect-error .type
   const typeComparison = compareTypes(a.type, b.type);
   if (typeComparison !== 0) {
     return typeComparison;
@@ -95,8 +96,11 @@ export const buildRowData = (
       system: { categoryId: category },
     } = abilityItem;
     // const abilityType = ability.type, category, name]
+    // @ts-expect-error .type
     if (abilityType !== lastType) {
+      // @ts-expect-error .type
       result.push({ rowType: typeHeaderKey, abilityType });
+      // @ts-expect-error .type
       lastType = abilityType;
       lastCategory = null;
     }
@@ -111,6 +115,7 @@ export const buildRowData = (
       if (actor === undefined) {
         continue;
       }
+      // @ts-expect-error .type
       const ability = actor.getAbilityByName(name ?? "", abilityType);
       if (actor.id !== null) {
         const rating = ability?.system.rating ?? 0;

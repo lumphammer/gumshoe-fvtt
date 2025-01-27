@@ -28,11 +28,9 @@ async function addPage(
   name: string,
 ) {
   const sort =
-    // @ts-expect-error the journal types are so fucked
     Math.max(0, ...journalEntry.pages.contents.map((p) => p.sort)) +
     CONST.SORT_INTEGER_DENSITY;
   const nameRegex = new RegExp(`^${name}\\s+(\\d+)$`, "i");
-  // @ts-expect-error urrrrrgh
   const pages: any[] = journalEntry.pages.contents;
   const pageNumbers = pages
     .map((p) => nameRegex.exec(p.name)?.[1])
@@ -91,18 +89,19 @@ export const PageNavigation = ({
 
   const handleAddNewTextPage = useCallback(async () => {
     const newPage = await addPage(journalEntry, "text", "New page");
-    // @ts-expect-error ???
-    onNavigate(newPage[0]._id);
+    if (newPage && newPage[0].id) {
+      onNavigate(newPage[0].id);
+    }
   }, [journalEntry, onNavigate]);
 
   const handleAddNewImagePage = useCallback(async () => {
     const newPage = await addPage(journalEntry, "image", "New image");
-    // @ts-expect-error ???
-    onNavigate(newPage[0]._id);
+    if (newPage && newPage[0].id) {
+      onNavigate(newPage[0].id);
+    }
   }, [journalEntry, onNavigate]);
 
   const handleRenumberPages = useCallback(async () => {
-    // @ts-expect-error the journal types are so fucked
     const pages = journalEntry.pages.contents.toSorted(
       (a: any, b: any) => a.sort - b.sort,
     );

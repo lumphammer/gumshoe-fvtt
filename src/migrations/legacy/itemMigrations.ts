@@ -19,7 +19,11 @@ export const addCategoryToGeneralAbilities = (
   updateData: any,
 ) => {
   if (
+    // @ts-expect-error .type
     item.type === generalAbility &&
+    // types inside migrations are funny, and anyway I want to get rid of these
+    // legacy migrations soon
+    // @ts-expect-error narrowing doesn't work here
     isNullOrEmptyString(item.system.categoryId)
   ) {
     const cat = getDefaultGeneralAbilityCategory();
@@ -45,6 +49,7 @@ export const setTrackersForPreAlpha4Updates = (
     item.name ?? "",
   );
 
+  // @ts-expect-error narrowing doesn't work here
   if (item.type === generalAbility && needsMigration && isRelevant) {
     updateData.system.showTracker = true;
   }
@@ -53,6 +58,7 @@ export const setTrackersForPreAlpha4Updates = (
 
 export const setIconForAbilities = (item: AnyItem, updateData: any) => {
   if (
+    // @ts-expect-error narrowing doesn't work here
     (item.type === generalAbility || item.type === investigativeAbility) &&
     (isNullOrEmptyString(item.img) || item.img === "icons/svg/mystery-man.svg")
   ) {
@@ -89,7 +95,9 @@ export const setEquipmentCategory = (item: AnyItem, updateData: any) => {
   }
 
   if (
+    // @ts-expect-error narrowing doesn't work here
     item.type === "equipment" &&
+    // @ts-expect-error narrowing doesn't work here
     isNullOrEmptyString(item.system.categoryId)
   ) {
     if (!updateData.system) {

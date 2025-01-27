@@ -78,7 +78,7 @@ export class InvestigatorItem extends Item {
     }
 
     const roll = new Roll(rollExpression, rollValues);
-    await roll.evaluate({ async: true });
+    await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
         actor: this.actor,
@@ -109,7 +109,7 @@ export class InvestigatorItem extends Item {
       return;
     }
     const roll = new Roll("@spend", { spend });
-    await roll.evaluate({ async: true });
+    await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
         actor: this.actor,
@@ -158,7 +158,7 @@ export class InvestigatorItem extends Item {
       return;
     }
     const roll = new Roll("1");
-    await roll.evaluate({ async: true });
+    await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
         actor: this.actor,
@@ -214,7 +214,7 @@ export class InvestigatorItem extends Item {
       diffMod === 0
         ? new Roll("1d6")
         : new Roll(`1d6 ${operator} @diffMod`, { diffMod: Math.abs(diffMod) });
-    await roll.evaluate({ async: true });
+    await roll.evaluate();
     const cost = (reRoll === 1 ? 4 : reRoll === null ? 0 : 1) - boonLevy;
     if (cost > this.system.pool) {
       ui.notifications?.error(
@@ -251,6 +251,7 @@ export class InvestigatorItem extends Item {
   async mWNegateIllustrious(): Promise<void> {
     assertAbilityItem(this);
     const newPool = Math.max(0, this.system.pool - constants.mwNegateCost);
+    // @ts-expect-error .create
     await ChatMessage.create({
       content: `
         <div
@@ -268,6 +269,7 @@ export class InvestigatorItem extends Item {
   async mWWallop(): Promise<void> {
     assertAbilityItem(this);
     const newPool = Math.max(0, this.system.pool - constants.mwWallopCost);
+    // @ts-expect-error .create
     await ChatMessage.create({
       content: `
         <div

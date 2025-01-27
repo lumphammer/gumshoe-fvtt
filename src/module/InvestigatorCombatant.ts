@@ -13,7 +13,6 @@ import { InvestigatorItem } from "./InvestigatorItem";
  */
 export class InvestigatorCombatant extends Combatant {
   doGumshoeInitiative = async () => {
-    // @ts-expect-error v10 types
     if (this._id) {
       const initiative = this.actor
         ? InvestigatorCombatant.getGumshoeInitiative(this.actor)
@@ -52,6 +51,7 @@ export class InvestigatorCombatant extends Combatant {
     }
     const ability = actor.items.find(
       (item: InvestigatorItem) =>
+        // @ts-expect-error .type
         item.type === constants.generalAbility && item.name === abilityName,
     );
     if (ability && isGeneralAbilityItem(ability)) {

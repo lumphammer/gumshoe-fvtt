@@ -1,10 +1,9 @@
-// import ReactDOM from "react-dom";
 import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 import React from "react";
 
 import { Suspense } from "../components/Suspense";
 
-// React stuff -----------------------------------------------------------------
+import ItemSheetV2 = foundry.applications.sheets.ItemSheetV2;
 
 const InvestigatorItemSheet = React.lazy(() =>
   import("../components/ItemSheet").then(({ ItemSheet }) => ({
@@ -12,7 +11,7 @@ const InvestigatorItemSheet = React.lazy(() =>
   })),
 );
 
-const render = (sheet: ItemSheetV2ClassBase) => {
+const render = () => {
   return (
     <Suspense>
       <InvestigatorItemSheet />
@@ -20,12 +19,7 @@ const render = (sheet: ItemSheetV2ClassBase) => {
   );
 };
 
-/**
- * Extend the basic ActorSheet with some very simple modifications
- * @extends {ActorSheet}
- */
-class ItemSheetV2ClassBase extends foundry.applications.sheets
-  .ItemSheetV2<Item> {
+class ItemSheetV2ClassBase extends ItemSheetV2 {
   /** @override */
   static DEFAULT_OPTIONS = {
     ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS,

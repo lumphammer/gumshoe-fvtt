@@ -183,7 +183,7 @@ export const PCSheet = () => {
               />
             ),
           )}
-          {game.user?.isGM &&
+          {game.user.isGM &&
             shortHiddenNotesNames.map((name: string, i: number) => (
               <GridField noTranslate key={`${name}--${i}`} label={name}>
                 <IndexedAsyncTextInput

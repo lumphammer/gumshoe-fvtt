@@ -55,7 +55,7 @@ export const useJournalSheetContext = () => {
       "useJournalSheetContext must be used within a JournalSheet",
     );
   }
-  const journalEntry = app.document as JournalEntry;
+  const journalEntry = app.document;
 
   return { app, journalEntry };
 };

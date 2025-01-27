@@ -28,7 +28,6 @@ export const installEquipmentCategoryHookHandler = () => {
         for (const field in fields) {
           updateData.fields[field] ||= fields[field].default;
         }
-        // @ts-expect-error "V10 api"
         item.updateSource({ system: updateData });
       }
     },

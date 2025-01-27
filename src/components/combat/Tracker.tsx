@@ -20,25 +20,23 @@ export const Tracker = () => {
 
   // STATE & DERIVED DATA
 
-  const combat = game.combats?.active;
-  // @ts-expect-error v10 types
+  // configured types still don't work
+  const combat = game.combats?.active as Combat | undefined;
   const combatId = combat?._id;
+
   const combatRef = useRefStash(combat);
   const combatCount = game.combats?.combats.length ?? 0;
 
   const combatIndex = combatId
-    ? // @ts-expect-error v10 types
-      game.combats?.combats.findIndex((c) => c._id === combatId)
+    ? game.combats?.combats.findIndex((c) => c._id === combatId)
     : undefined;
   const previousId =
     combatIndex !== undefined && combatIndex > 0
-      ? // @ts-expect-error v10 types
-        game.combats?.combats[combatIndex - 1]._id
+      ? game.combats?.combats[combatIndex - 1]._id
       : null;
   const nextId =
     combatIndex !== undefined && combatIndex < combatCount - 1
-      ? // @ts-expect-error v10 types
-        game.combats?.combats[combatIndex + 1]._id
+      ? game.combats?.combats[combatIndex + 1]._id
       : null;
 
   const linked = combat?.scene !== null;
@@ -57,7 +55,9 @@ export const Tracker = () => {
     event.preventDefault();
     const scene = game.scenes?.current;
     const cls = getDocumentClass("Combat");
+    // @ts-expect-error .create
     const combat = await cls.create({ scene: scene?.id });
+    // @ts-expect-error idgaf
     await combat?.activate({ render: false });
   }, []);
 
@@ -73,7 +73,7 @@ export const Tracker = () => {
       const btn = event.currentTarget;
       const combatId = btn.dataset["combatId"];
       if (combatId === undefined) return;
-      const combat = game.combats?.get(combatId);
+      const combat = game.combats?.get(combatId) as Combat; // XXX why is this cast needed?
       if (!combat) return;
       await combat.activate({ render: false });
     },
@@ -297,13 +297,14 @@ export const Tracker = () => {
           // combatant sorting is done in "Combat" but for rendering stability
           // we need to un-sort the combatants and then tell each row where it
           // used to exist in the order
+          // @ts-expect-error idgaf
           sortByKey(turns, "id").map<ReactNode>((turn, i) => (
             <CombatantRow
               key={turn.id}
               index={turns.findIndex((x) => x.id === turn.id)}
               turn={turn}
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              combat={combat!}
+              // @ts-expect-error idgaf
+              combat={combat}
             />
           ))
         }

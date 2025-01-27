@@ -12,21 +12,23 @@ function mwItemOnOrOff() {
   assertGame(game);
   if (settings.mwUseAlternativeItemTypes.get()) {
     if (oldMwItemTypelabel !== null && oldMwItemIndex !== null) {
-      CONFIG.Item.typeLabels["mwItem"] = oldMwItemTypelabel;
-      // @ts-expect-error game.documentTypes exists
+      // @ts-expect-error .type
+      CONFIG.Item.typeLabels.mwItem = oldMwItemTypelabel;
+      // @ts-expect-error .type
       game.documentTypes.Item.splice(oldMwItemIndex, 0, "mwItem");
       oldMwItemTypelabel = null;
       oldMwItemIndex = null;
     }
   } else {
-    const label = CONFIG.Item.typeLabels["mwItem"];
-    // @ts-expect-error game.documentTypes exists
+    // @ts-expect-error .type
+    const label = CONFIG.Item.typeLabels.mwItem;
+    // @ts-expect-error .type
     const index = game.documentTypes.Item.indexOf("mwItem");
     if (index !== -1) {
       oldMwItemTypelabel = label;
-      delete CONFIG.Item.typeLabels["mwItem"];
+      // @ts-expect-error .type
+      delete CONFIG.Item.typeLabels.mwItem;
       oldMwItemIndex = index;
-      // @ts-expect-error game.documentTypes exists
       game.documentTypes.Item.splice(index, 1);
     }
   }

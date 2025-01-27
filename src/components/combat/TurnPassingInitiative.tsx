@@ -8,11 +8,10 @@ import { assertGame } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
 import { Dropdown } from "../inputs/Dropdown";
 import { Menu, MenuItem } from "../inputs/Menu";
-import { InvestigatorTurn } from "./getTurns";
 import { useInititative } from "./useInititative";
 
 interface StandardInitiativeProps {
-  turn: InvestigatorTurn;
+  turn: any;
   combat: InvestigatorCombat;
 }
 
@@ -99,7 +98,7 @@ export const TurnPassingInitiative = ({
         </a>
       </div>
 
-      {game.user?.isGM && (
+      {game.user.isGM && (
         <Dropdown
           showArrow={false}
           label={<FaEllipsisH />}

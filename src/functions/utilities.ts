@@ -98,9 +98,21 @@ export function isGame(game: any): game is Game {
  * but technically possible during a calamitous upfuckage to TS keeps us honest
  * and requires a check.
  */
-export function assertGame(game: any): asserts game is Game {
+export function assertGame(game: any): asserts game is ReadyGame {
   if (!isGame(game)) {
     throw new Error("game used before init hook");
+  }
+}
+
+/**
+ * Throw if `candidate` is not a ready game.
+ */
+export function assertReadyGame(
+  candidate: typeof game,
+): asserts candidate is ReadyGame {
+  assertGame(candidate);
+  if (!candidate.ready) {
+    throw new Error("game is not ready");
   }
 }
 

@@ -1,6 +1,8 @@
 import system from "../public/system.json";
 
-export const systemId = system.id;
+// we could use id from package, but the typings work better if this is
+// constant typed
+export const systemId = "investigator";
 export const version = system.version;
 export const defaultMigratedSystemVersion = "0.0.0";
 export const defaultSystemPreset = "pathOfCthulhuPreset";
@@ -28,48 +30,41 @@ export const card = "card";
 
 // assets
 // all generated through https://game-icons.net/
-export const investigativeAbilityIcon =
-  `/systems/${systemId}/assets/icons/magnifying-glass.webp` as const;
-export const generalAbilityIcon =
-  `/systems/${systemId}/assets/icons/fist.webp` as const;
-export const weaponIcon =
-  `/systems/${systemId}/assets/icons/trench-knife.webp` as const;
-export const equipmentIcon =
-  `/systems/${systemId}/assets/icons/shopping-bag.webp` as const;
-export const pcIcon =
-  `/systems/${systemId}/assets/icons/sherlock-holmes.webp` as const;
-export const npcIcon = `/systems/${systemId}/assets/icons/cowled.webp` as const;
-export const partyIcon =
-  `/systems/${systemId}/assets/icons/dark-squad.webp` as const;
-export const personalDetailIcon =
-  `/systems/${systemId}/assets/icons/notebook.webp` as const;
-export const cardIcon = `/systems/${systemId}/assets/icons/card.webp` as const;
+export const investigativeAbilityIcon = `/systems/${systemId}/assets/icons/magnifying-glass.webp`;
+export const generalAbilityIcon = `/systems/${systemId}/assets/icons/fist.webp`;
+export const weaponIcon = `/systems/${systemId}/assets/icons/trench-knife.webp`;
+export const equipmentIcon = `/systems/${systemId}/assets/icons/shopping-bag.webp`;
+export const pcIcon = `/systems/${systemId}/assets/icons/sherlock-holmes.webp`;
+export const npcIcon = `/systems/${systemId}/assets/icons/cowled.webp`;
+export const partyIcon = `/systems/${systemId}/assets/icons/dark-squad.webp`;
+export const personalDetailIcon = `/systems/${systemId}/assets/icons/notebook.webp`;
+export const cardIcon = `/systems/${systemId}/assets/icons/card.webp`;
 
 // packs
 
 export const packNames = {
-  niceBlackAgentsAbilities: "niceBlackAgentsAbilities" as const,
-  nothingToFearAbilities: "nothingToFearAbilities" as const,
-  pallidStarsAbilities: "pallidStarsAbilities" as const,
-  pathOfCthulhuAbilities: "pathOfCthulhuAbilities" as const,
-  srdAbilities: "srdAbilities" as const,
-  castingTheRunesAbilities: "castingTheRunesAbilities" as const,
-  moribundWorldAbilities: "moribundWorldAbilities" as const,
-  esoterroristsAbilities: "esoterroristsAbilities" as const,
-  niceBlackAgentsNPCAbilities: "niceBlackAgentsNPCAbilities" as const,
-  mutantCityBluesAbilities: "mutantCityBluesAbilities" as const,
-  mutantCityBluesNPCAbilities: "mutantCityBluesNPCAbilities" as const,
-  mutantCityBluesPowers: "mutantCityBluesPowers" as const,
-};
+  niceBlackAgentsAbilities: "niceBlackAgentsAbilities",
+  nothingToFearAbilities: "nothingToFearAbilities",
+  pallidStarsAbilities: "pallidStarsAbilities",
+  pathOfCthulhuAbilities: "pathOfCthulhuAbilities",
+  srdAbilities: "srdAbilities",
+  castingTheRunesAbilities: "castingTheRunesAbilities",
+  moribundWorldAbilities: "moribundWorldAbilities",
+  esoterroristsAbilities: "esoterroristsAbilities",
+  niceBlackAgentsNPCAbilities: "niceBlackAgentsNPCAbilities",
+  mutantCityBluesAbilities: "mutantCityBluesAbilities",
+  mutantCityBluesNPCAbilities: "mutantCityBluesNPCAbilities",
+  mutantCityBluesPowers: "mutantCityBluesPowers",
+} as const;
 
 export const npcPackName = "opponentAbilities";
 
 // hooks
-export const newPCPacksUpdated = `${systemId}.newPCPacksUpdated` as const;
-export const newNPCPacksUpdated = `${systemId}.newNPCPacksUpdated` as const;
-export const settingsSaved = `${systemId}.settingsSaved` as const;
+export const newPCPacksUpdated = `${systemId}.newPCPacksUpdated`;
+export const newNPCPacksUpdated = `${systemId}.newNPCPacksUpdated`;
+export const settingsSaved = `${systemId}.settingsSaved`;
 export const requestTurnPass = `${systemId}.requestTurnPass`;
-export const socketScope = `system.${systemId}` as const;
+export const socketScope = `system.${systemId}`;
 export const settingsCloseAttempted = `${systemId}.settingsCloseAttempted`;
 
 // css classes

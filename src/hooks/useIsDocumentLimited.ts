@@ -17,7 +17,6 @@ export function useIsDocumentLimited() {
     if (application instanceof DocumentSheet && user) {
       return application.document.testUserPermission(
         game.user,
-        // @ts-expect-error types still have DOCUMENT_PERMISSION_LEVELS
         CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED,
         // we care about *exactly* limited access, not "limited or better"
         { exact: true },

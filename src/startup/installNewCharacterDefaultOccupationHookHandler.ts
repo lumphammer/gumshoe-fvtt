@@ -13,6 +13,7 @@ export function installNewCharacterDefaultOccupationHookHandler() {
       assertGame(game);
       if (
         game.userId === userId &&
+        // @ts-expect-error .type
         actor.type === pc &&
         actor.getOccupations().length === 0
       ) {

@@ -17,7 +17,6 @@
   "license": "ISC",
   "devDependencies": {
     "@emotion/react": "^11.14.0",
-    "@league-of-foundry-developers/foundry-vtt-types": "^9.280.1",
     "@lumphammer/investigator-fvtt-types": "^1.13.2",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
@@ -31,6 +30,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "fvtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types#documents-v2-temp",
     "prettier": "^3.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -42,7 +42,6 @@
   },
   "peerDependencies": {
     "@emotion/react": "^11.14.0",
-    "@league-of-foundry-developers/foundry-vtt-types": "^9.280.1",
     "@lumphammer/investigator-fvtt-types": "^1.13.2",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",

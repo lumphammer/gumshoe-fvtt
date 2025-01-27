@@ -5,7 +5,7 @@
     "moduleResolution": "bundler",
     "module": "esnext",
     "types": [
-      "@league-of-foundry-developers/foundry-vtt-types",
+      "fvtt-types",
       "@lumphammer/investigator-fvtt-types",
       "vite/client"
     ],
@@ -27,9 +27,13 @@
     "allowJs": true,
     "noEmit": true,
     "noPropertyAccessFromIndexSignature": true,
+    // turn it on, they say...
     // https://www.typescriptlang.org/tsconfig/#skipLibCheck
     // https://discord.com/channels/732325252788387980/793933527065690184/1242919548383002756
     // https://youtu.be/zu-EgnbmcLY?si=-xh17c1DbuPcA256&t=123
+    // turn it off, they say...
+    // https://discord.com/channels/732325252788387980/803646399014109205/1332042391913369690
+    // butttt... there are still some errors in fvtt-types itself so back on
     "skipLibCheck": true,
     "isolatedModules": true,
     // https://devblogs.microsoft.com/typescript/announcing-typescript-5-5/#isolated-declarations

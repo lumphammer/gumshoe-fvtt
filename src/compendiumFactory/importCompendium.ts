@@ -43,23 +43,23 @@ export const importCompendium = async (candidate: unknown) => {
   ui.notifications?.info(
     `Beginning import of compendium pack ${verified.label}`,
   );
-  const pack = await CompendiumCollection.createCompendium(
-    {
-      type: verified.entity,
-      label: verified.label,
-      name,
-      path: "",
-      private: false,
-      package: "world",
-    },
-    {},
-  );
+  const pack =
+    // @ts-expect-error .create
+    await CompendiumCollection.createCompendium<CompendiumCollection.Metadata>(
+      {
+        type: verified.entity,
+        label: verified.label,
+        name,
+      },
+      { broadcast: false, data: [] },
+    );
   const maker = {
     Actor,
     Item,
     JournalEntry,
   }[verified.entity];
 
+  // @ts-expect-error .create
   const entities = await maker.create(verified.contents as any, {
     temporary: true,
   });

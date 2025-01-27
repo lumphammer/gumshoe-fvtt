@@ -34,7 +34,6 @@ export const installItemCombatAbilityHandler = () => {
         ability: combatAbility,
       };
 
-      // @ts-expect-error v10 types
       item.updateSource({
         system: updateData,
       });

@@ -28,10 +28,9 @@ export function installKeepTokenImageInSyncWithActor() {
         return;
       }
 
-      // @ts-expect-error prototypeToken not yetin types
       const token = actor.prototypeToken;
       if (["icons/svg/cowled.svg", actor.img].includes(token.texture.src)) {
-        token.update({ texture: { src: update.img } });
+        token.update({ texture: { src: update.img } }, {});
       }
     },
   ); //

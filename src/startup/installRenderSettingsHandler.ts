@@ -5,7 +5,7 @@ import { investigatorSettingsClassInstance } from "../module/SettingsClass";
 export const installRenderSettingsHandler = () => {
   Hooks.on("renderSettings", (app: Application, html: JQuery) => {
     assertGame(game);
-    const canModifySettings = game.user?.can("SETTINGS_MODIFY") ?? false;
+    const canModifySettings = game.user.can("SETTINGS_MODIFY") ?? false;
     if (!canModifySettings) {
       return;
     }

@@ -71,7 +71,6 @@ export const JournalEditorSheet = () => {
     [journalEntry],
   );
 
-  // @ts-expect-error - foundry types are bad
   const globalClasses = journalEntry.flags[systemId]?.[extraCssClasses] ?? "";
 
   const handleGlobalClassesChange = useCallback(

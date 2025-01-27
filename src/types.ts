@@ -2,7 +2,6 @@ import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 
 import { CardsAreaSettings } from "./components/cards/types";
 import * as constants from "./constants";
-
 // SOCKET STUFF ----------------------------------------------------------------
 
 /**
@@ -327,9 +326,3 @@ export type RecursiveRequired<T> = T extends Function
 export type EquipmentFieldType = Pick<EquipmentFieldMetadata, "type">["type"];
 
 export type Mandatory<T> = Exclude<T, undefined | null>;
-
-declare global {
-  interface JournalEntry {
-    pages: Map<string, any>;
-  }
-}

@@ -17,7 +17,8 @@ import { settings } from "../settings/settings";
  */
 export const migrateWorldIfNeeded = async () => {
   assertGame(game);
-  if (!game.user?.isGM) {
+
+  if (!game.user.isGM) {
     return;
   }
   // first, we do some work to see if this is the first run oif a new world,

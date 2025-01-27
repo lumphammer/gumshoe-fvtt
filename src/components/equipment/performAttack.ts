@@ -59,38 +59,48 @@ export const performAttack =
       isNPCActor(ability.parent) &&
       isGeneralAbilityItem(ability);
 
+    const parent = ability.parent;
     if (useNpcBonuses) {
       hitTerm += " + @npcCombatBonus";
-      hitParams["npcCombatBonus"] = ability.parent.system.combatBonus;
+      if (isNPCActor(parent)) {
+        hitParams["npcCombatBonus"] = parent.system.combatBonus;
+      }
       hitTerm += " + @abilityCombatBonus";
       hitParams["abilityCombatBonus"] = ability.system.combatBonus;
     }
     const hitRoll = new Roll(hitTerm, hitParams);
 
-    await hitRoll.evaluate({ async: true });
+    await hitRoll.evaluate();
+
+    hitRoll.dice[0].options = {
+      // @ts-expect-error merging not working right on this branch of fvtt-types
+      rollOrder: 1,
+    };
+
+    // @ts-expect-error merging not working right on this branch of fvtt-types
     hitRoll.dice[0].options.rollOrder = 1;
 
     let damageTerm = "1d6 + @damage + @rangeDamage";
     const damageParams: { [name: string]: number } = { damage, rangeDamage };
     if (useNpcBonuses) {
       damageTerm += " + @npcDamageBonus";
-      damageParams["npcDamageBonus"] = ability.parent.system.damageBonus;
+      if (isNPCActor(parent)) {
+        damageParams["npcDamageBonus"] = parent.system.damageBonus;
+      }
       damageTerm += " + @abilityDamageBonus";
       damageParams["abilityDamageBonus"] = ability.system.damageBonus;
     }
 
     const damageRoll = new Roll(damageTerm, damageParams);
-    await damageRoll.evaluate({ async: true });
+    await damageRoll.evaluate();
+    // @ts-expect-error merging not working right on this branch of fvtt-types
     damageRoll.dice[0].options.rollOrder = 2;
 
-    const pool = PoolTerm.fromRolls([hitRoll, damageRoll]);
+    const pool = foundry.dice.terms.PoolTerm.fromRolls([hitRoll, damageRoll]);
     const actualRoll = Roll.fromTerms([pool]);
 
-    // @ts-expect-error v10 types
     const abilityId = ability?._id ?? "";
-    // @ts-expect-error v10 types
     const actorId = weapon.actor?._id ?? "";
-    // @ts-expect-error v10 types
     const weaponId = weapon._id;
 
     void actualRoll.toMessage({

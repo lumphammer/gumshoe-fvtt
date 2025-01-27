@@ -21,7 +21,6 @@ export const installActorCombatAbilityHandler = () => {
         isActiveCharacterActor(actor) &&
         isNullOrEmptyString(actor.system.initiativeAbility)
       ) {
-        // @ts-expect-error v10 types
         actor.updateSource({
           system: {
             initiativeAbility: defaultInitiativeAbility,

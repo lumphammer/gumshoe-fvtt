@@ -5,10 +5,7 @@ import { CardsAreaSettings } from "../components/cards/types";
 import {
   card,
   equipment,
-  generalAbility,
-  investigativeAbility,
   occupationSlotIndex,
-  pc,
   personalDetail,
 } from "../constants";
 import { confirmADoodleDo } from "../functions/confirmADoodleDo";
@@ -53,7 +50,7 @@ import { InvestigatorItem } from "./InvestigatorItem";
 export class InvestigatorActor extends Actor {
   shouldBrodcastRefreshes(): boolean {
     assertGame(game);
-    return !game.user?.isGM || this.type === pc;
+    return !game.user.isGM || isPCActor(this);
   }
 
   confirmRefresh = async (): Promise<void> => {
@@ -195,16 +192,17 @@ export class InvestigatorActor extends Actor {
   ): Promise<void> => {
     assertGame(game);
     const chatData = {
-      user: game.user?.id,
+      user: game.user.id,
       speaker: ChatMessage.getSpeaker({
-        alias: game.user?.name ?? "",
+        alias: game.user.name ?? "",
       }),
       content: getTranslated(text, {
         ActorName: this.name ?? "",
-        UserName: game.user?.name ?? "",
+        UserName: game.user.name ?? "",
         ...extraData,
       }),
     };
+    // @ts-expect-error .create
     await ChatMessage.create(chatData, {});
   };
 
@@ -233,10 +231,12 @@ export class InvestigatorActor extends Actor {
   // ###########################################################################
   // ITEMS
 
+  // XXX type does not need to be optional
   getAbilityByName(name: string, type?: AbilityType): AbilityItem | undefined {
     return this.items.find(
       (item) =>
         isAbilityItem(item) &&
+        // @ts-expect-error this.type
         (type ? item.type === type : true) &&
         item.name === name,
     ) as AbilityItem | undefined;
@@ -330,13 +330,13 @@ export class InvestigatorActor extends Actor {
       ) {
         continue;
       }
-      if (item.type === investigativeAbility) {
+      if (isInvestigativeAbilityItem(item)) {
         const cat = item.system.categoryId || "Uncategorised";
         if (investigativeAbilities[cat] === undefined) {
           investigativeAbilities[cat] = [];
         }
         investigativeAbilities[cat].push(item);
-      } else if (item.type === generalAbility) {
+      } else if (isGeneralAbilityItem(item)) {
         if (hidePushPool && item.system.isPushPool) {
           continue;
         }
@@ -530,7 +530,7 @@ export class InvestigatorActor extends Actor {
         .filter(
           (actor) =>
             actor !== undefined &&
-            actor.id !== null &&
+            // @ts-expect-error DocumentClassConfig
             isPCActor(actor) &&
             !currentIds.includes(actor.id),
         ) as Actor[]
@@ -547,6 +547,7 @@ export class InvestigatorActor extends Actor {
       "Item",
       [
         {
+          // @ts-expect-error .type
           type: equipment,
           name: "New item",
           system: {
@@ -565,6 +566,7 @@ export class InvestigatorActor extends Actor {
       "Item",
       [
         {
+          // @ts-expect-error .type
           type: card,
           name: "New card",
         },
@@ -611,6 +613,7 @@ export class InvestigatorActor extends Actor {
       "Item",
       [
         {
+          // @ts-expect-error .type
           type: personalDetail,
           name,
           system: {
