@@ -5,13 +5,16 @@ import { InvestigatorCombatant } from "../module/InvestigatorCombatant";
 import { InvestigatorCombatTracker } from "../module/InvestigatorCombatTracker";
 import { InvestigatorItem } from "../module/InvestigatorItem";
 import { ItemSheetClass } from "../module/InvestigatorItemSheetClass";
+// eslint-disable-next-line unused-imports/no-unused-imports
 import { ItemSheetV2Class } from "../module/InvestigatorItemSheetV2Class";
 import { InvestigatorJournalSheet } from "../module/InvestigatorJournalSheet";
 import { JournalEditorSheetClass } from "../module/JournalEditorSheetClass";
 import { NPCSheetClass } from "../module/NPCSheetClass";
+// eslint-disable-next-line unused-imports/no-unused-imports
 import { NPCSheetClassV2 } from "../module/NPCSheetClassV2";
 import { PartySheetClass } from "../module/PartySheetClass";
 import { PCSheetClass } from "../module/PCSheetClass";
+// eslint-disable-next-line unused-imports/no-unused-imports
 import { PCSheetClassV2 } from "../module/PCSheetClassV2";
 export const registerSheetsAndClasses = () => {
   CONFIG.Actor.documentClass = InvestigatorActor;
@@ -27,16 +30,8 @@ export const registerSheetsAndClasses = () => {
     makeDefault: true,
     types: [constants.pc],
   });
-  Actors.registerSheet(constants.systemId, PCSheetClassV2, {
-    makeDefault: false,
-    types: [constants.pc],
-  });
   Actors.registerSheet(constants.systemId, NPCSheetClass, {
     makeDefault: true,
-    types: [constants.npc],
-  });
-  Actors.registerSheet(constants.systemId, NPCSheetClassV2, {
-    makeDefault: false,
     types: [constants.npc],
   });
   Actors.registerSheet(constants.systemId, PartySheetClass, {
@@ -46,18 +41,6 @@ export const registerSheetsAndClasses = () => {
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet(constants.systemId, ItemSheetClass, {
     makeDefault: true,
-    types: [
-      constants.weapon,
-      constants.equipment,
-      constants.investigativeAbility,
-      constants.generalAbility,
-      constants.mwItem,
-      constants.personalDetail,
-      constants.card,
-    ],
-  });
-  Items.registerSheet(constants.systemId, ItemSheetV2Class, {
-    makeDefault: false,
     types: [
       constants.weapon,
       constants.equipment,
@@ -78,4 +61,27 @@ export const registerSheetsAndClasses = () => {
     makeDefault: false,
     label: "Investigator Journal Sheet",
   });
+
+  // V2 sheets
+
+  // Items.registerSheet(constants.systemId, ItemSheetV2Class, {
+  //   makeDefault: false,
+  //   types: [
+  //     constants.weapon,
+  //     constants.equipment,
+  //     constants.investigativeAbility,
+  //     constants.generalAbility,
+  //     constants.mwItem,
+  //     constants.personalDetail,
+  //     constants.card,
+  //   ],
+  // });
+  // Actors.registerSheet(constants.systemId, NPCSheetClassV2, {
+  //   makeDefault: false,
+  //   types: [constants.npc],
+  // });
+  // Actors.registerSheet(constants.systemId, PCSheetClassV2, {
+  //   makeDefault: false,
+  //   types: [constants.pc],
+  // });
 };
