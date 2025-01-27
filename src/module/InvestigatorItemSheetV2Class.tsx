@@ -35,7 +35,7 @@ class ItemSheetV2ClassBase extends ItemSheetV2 {
 }
 
 export const ItemSheetV2Class = ReactApplicationV2Mixin(
-  "ItemSheetV2Class",
+  "ItemSheetClassV2",
   ItemSheetV2ClassBase,
   render,
 );

@@ -6,89 +6,91 @@
 // We wouldn't need to do this if we were exporting our CSS into a file and
 // getting Foundry to load it, but see https://github.com/lumphammer/gumshoe-fvtt/issues/928
 // for why we don't do that.
-@layer system {
-  .window-content.non-resizable {
-    padding: 0;
-    position: relative;
-  }
 
-  .window-content.resizable {
-    position: relative;
-    overflow: hidden;
-    padding: 0;
-    .react-target {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-    }
-  }
+// disabling layers for now to remain v12 compatible
+//@layer system {
+.window-content.non-resizable {
+  padding: 0;
+  position: relative;
+}
 
-  a.entity-link,
-  a.content-link,
-  a.inline-roll {
-    background: unset;
-    border-style: dashed;
-    border-width: 1px;
-  }
-
+.window-content.resizable {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
   .react-target {
-    flex: 1;
-  }
-
-  // .window-app,
-  // #sidebar,
-  // .main-controls li,
-  // .sub-controls li,
-  // #players,
-  // #hotbar > *,
-  // #navigation a,
-  // #navigation li {
-  //   backdrop-filter: blur(10px);
-  //   background-image: linear-gradient(to bottom, #000b 0%, #0006 100%);
-  // }
-
-  hr {
-    width: calc(100% - 2em);
-  }
-
-  .journal-sheet.investigator {
-    .journal-page-header,
-    .journal-header {
-      display: none;
-    }
-    .journal-entry-pages {
-      margin: 0;
-    }
-  }
-
-  button.investigator-secret-hide-reveal-button {
-    width: fit-content;
-  }
-
-  // foundry v12 adds "position: relative" to .directory-item, which breaks our
-  // absolutely-positioned combat tracker
-  .investigator-combatant-list .directory-item {
     position: absolute;
-  }
-
-  // foundry's default styles mean our compendium pack names get cut off
-  .compendium-sidebar .directory-item.compendium[data-pack*="investigator"] h3 {
-    // was 16px
-    font-size: 1em;
-    // was 80%
-    max-width: 100%;
-  }
-
-  // we add the .investigator CSS class in our JS sheet classes so we can pick
-  // out "our" apps from the others. We are specifically overriding `padding`
-  // here rather than doing a revert-layer (as below) because we probably want
-  // the rest of the styles to be applied.
-  .application.investigator .window-content {
-    padding: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
   }
 }
+
+a.entity-link,
+a.content-link,
+a.inline-roll {
+  background: unset;
+  border-style: dashed;
+  border-width: 1px;
+}
+
+.react-target {
+  flex: 1;
+}
+
+// .window-app,
+// #sidebar,
+// .main-controls li,
+// .sub-controls li,
+// #players,
+// #hotbar > *,
+// #navigation a,
+// #navigation li {
+//   backdrop-filter: blur(10px);
+//   background-image: linear-gradient(to bottom, #000b 0%, #0006 100%);
+// }
+
+hr {
+  width: calc(100% - 2em);
+}
+
+.journal-sheet.investigator {
+  .journal-page-header,
+  .journal-header {
+    display: none;
+  }
+  .journal-entry-pages {
+    margin: 0;
+  }
+}
+
+button.investigator-secret-hide-reveal-button {
+  width: fit-content;
+}
+
+// foundry v12 adds "position: relative" to .directory-item, which breaks our
+// absolutely-positioned combat tracker
+.investigator-combatant-list .directory-item {
+  position: absolute;
+}
+
+// foundry's default styles mean our compendium pack names get cut off
+.compendium-sidebar .directory-item.compendium[data-pack*="investigator"] h3 {
+  // was 16px
+  font-size: 1em;
+  // was 80%
+  max-width: 100%;
+}
+
+// we add the .investigator CSS class in our JS sheet classes so we can pick
+// out "our" apps from the others. We are specifically overriding `padding`
+// here rather than doing a revert-layer (as below) because we probably want
+// the rest of the styles to be applied.
+.application.investigator .window-content {
+  padding: 0;
+}
+// }
 
 // the upside to taking control over layering is that we stick some
 // `revert-layer`s into lower layers when we want to nullify them

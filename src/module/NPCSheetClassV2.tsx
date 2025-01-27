@@ -2,9 +2,8 @@ import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactA
 import React from "react";
 
 import { Suspense } from "../components/Suspense";
-import { InvestigatorActor } from "./InvestigatorActor";
 
-import DocumentSheetV2 = foundry.applications.api.DocumentSheetV2;
+import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
 
 const NPCSheet = React.lazy(() =>
   import("../components/characters/NPCSheet").then(({ NPCSheet }) => ({
@@ -12,7 +11,7 @@ const NPCSheet = React.lazy(() =>
   })),
 );
 
-class NPCSheetV2ClassBase extends DocumentSheetV2<InvestigatorActor> {
+class NPCSheetV2ClassBase extends ActorSheetV2 {
   static DEFAULT_OPTIONS = {
     window: {
       frame: true,
@@ -34,7 +33,7 @@ const render = () => {
 };
 
 export const NPCSheetClassV2 = ReactApplicationV2Mixin(
-  "NPCSheetClass",
+  "NPCSheetClassV2",
   NPCSheetV2ClassBase,
   render,
 );
