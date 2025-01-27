@@ -1,6 +1,5 @@
 // import { DummyAppV2 } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2";
 // import { DummyAppV2WithMixin } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2WithMixin";
-import { initializePackGenerators } from "./compendiumFactory/generatePacks";
 import { systemId } from "./constants";
 import { assertGame, systemLogger } from "./functions/utilities";
 import processedStyles from "./investigator.less?inline";
@@ -85,7 +84,6 @@ installDropActorSheetDataHandler();
 registerDevModeDebugFlag();
 installActorImageHookHandler();
 installCompendiumExportButton();
-initializePackGenerators();
 installAbilityCardChatWrangler();
 loadCustomThemes();
 handleMwItemType();

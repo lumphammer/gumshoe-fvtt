@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 import {
   ExportedCompendium,
   importCompendium,
-} from "../compendiumFactory/importCompendium";
+} from "../functions/importCompendium";
 import { saveAsJsonFile } from "../functions/saveFile";
 import { assertGame, getUserFile } from "../functions/utilities";
 

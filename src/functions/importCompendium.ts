@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 
-import { assertGame, systemLogger } from "../functions/utilities";
 import { RecursivePartial } from "../types";
+import { assertGame, systemLogger } from "./utilities";
 
 export type ExportedCompendium = {
   name: string;
