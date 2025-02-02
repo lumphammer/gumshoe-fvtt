@@ -258,3 +258,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# we ignore this because this package is used as a package subrepo, so it's
+# confusing to see a lockfile here. each consuming project will have its own
+# top-level lockfile.
+pnpm-lock.yaml
