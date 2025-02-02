@@ -1,0 +1,46 @@
+_id: 22OX0oxOGaNGNTBj
+name: Ranged Attack
+type: weapon
+img: systems/investigator/assets/icons/trench-knife.webp
+system:
+  notes:
+    format: plain
+    source: ""
+    html: ""
+  ability: Shooting
+  damage: 1
+  pointBlankDamage: 2
+  closeRangeDamage: 0
+  nearRangeDamage: 0
+  longRangeDamage: 0
+  isPointBlank: true
+  isCloseRange: true
+  isNearRange: true
+  isLongRange: false
+  usesAmmo: true
+  ammoPerShot: 1
+  cost: 0
+  ammo:
+    min: 0
+    max: 10
+    value: 10
+effects: []
+folder: null
+sort: 0
+flags:
+  core:
+    sourceId: Item.osG1ts47nI8JqcbN
+_stats:
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.1.0
+  createdTime: 1727264892211
+  modifiedTime: 1727264892211
+  lastModifiedBy: GKXsVq42x956ejvq
+  compendiumSource: null
+  duplicateSource: null
+ownership:
+  default: 2
+  m1wXh39fIJnvUjsD: 3
+  wwcV3FPFudsTix8P: 3
+_key: "!items!22OX0oxOGaNGNTBj"

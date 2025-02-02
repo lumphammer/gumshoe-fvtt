@@ -1,0 +1,45 @@
+name: Languages
+type: investigativeAbility
+_id: fj15gTD08vMmRPUJ
+img: /systems/investigator/assets/icons/magnifying-glass.webp
+system:
+  notes:
+    format: richText
+    source: ""
+    html: ""
+  rating: 0
+  pool: 0
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities: []
+  min: 0
+  max: 1
+  occupational: false
+  categoryId: Academic
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: false
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  hideIfZeroRated: true
+  isQuickShock: true
+  category: Academic
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+  GKXsVq42x956ejvq: 3
+flags: {}
+_stats:
+  compendiumSource: null
+  duplicateSource: null
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.1.0
+  createdTime: 1724521580374
+  modifiedTime: 1727264896502
+  lastModifiedBy: GKXsVq42x956ejvq
+_key: "!items!fj15gTD08vMmRPUJ"

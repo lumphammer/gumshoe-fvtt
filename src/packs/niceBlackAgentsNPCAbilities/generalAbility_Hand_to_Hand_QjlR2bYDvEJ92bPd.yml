@@ -1,0 +1,57 @@
+name: Hand-to-Hand
+type: generalAbility
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes:
+    format: plain
+    source: ""
+    html: ""
+  rating: 1
+  pool: 1
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities:
+    - ""
+  min: 0
+  max: 8
+  occupational: false
+  categoryId: General
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: true
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  canBeInvestigative: false
+  goesFirstInCombat: false
+  hideIfZeroRated: false
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  category: General
+effects: []
+folder: null
+flags:
+  core:
+    sourceId: Compendium.investigator.pathOfCthulhuAbilities.bmFrMXRF8OiV1B1j
+_stats:
+  compendiumSource: Compendium.investigator.pathOfCthulhuAbilities.bmFrMXRF8OiV1B1j
+  duplicateSource: null
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.2.1
+  createdTime: 1732122133350
+  modifiedTime: 1732122347485
+  lastModifiedBy: fdD7YxceKPQmVCc5
+ownership:
+  default: 0
+  I1eWzLt8trp2SOGd: 3
+  wwcV3FPFudsTix8P: 3
+  fdD7YxceKPQmVCc5: 3
+_id: QjlR2bYDvEJ92bPd
+sort: 100000
+_key: "!items!QjlR2bYDvEJ92bPd"

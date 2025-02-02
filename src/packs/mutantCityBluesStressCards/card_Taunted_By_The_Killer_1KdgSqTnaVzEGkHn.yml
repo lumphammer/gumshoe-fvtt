@@ -1,0 +1,47 @@
+name: Taunted By The Killer
+type: card
+_id: 1KdgSqTnaVzEGkHn
+img: /systems/investigator/assets/icons/card.webp
+system:
+  cardCategoryMemberships:
+    - categoryId: stress
+      nonlethal: false
+      worth: 1
+  styleKeyCategoryId: stress
+  nonlethal: false
+  supertitle: ""
+  subtitle: ""
+  description:
+    format: richText
+    source: ""
+    html: ""
+  effects:
+    format: richText
+    source: ""
+    html: ""
+  type: ""
+  flags: []
+  active: true
+  continuity: false
+  categoryMemberships:
+    - categoryId: stress
+      nonlethal: false
+      worth: 1
+  categoryId: stress
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+  1R0RuWGq4Ijnl9Ae: 3
+flags: {}
+_stats:
+  compendiumSource: null
+  duplicateSource: null
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.1.0
+  createdTime: 1725380519265
+  modifiedTime: 1727264898288
+  lastModifiedBy: GKXsVq42x956ejvq
+_key: "!items!1KdgSqTnaVzEGkHn"

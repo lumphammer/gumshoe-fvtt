@@ -1,10 +1,15 @@
 import { exec } from "child_process";
+import { existsSync } from "fs";
 
 /**
  * Shell out to `find` to check for any open LOCK files in the given directory.
  */
 export const checkLocks = (dir: string) => {
   return new Promise<string>((resolve, reject) => {
+    // if destDir is not a directory, throw an error
+    if (!existsSync(dir)) {
+      resolve("");
+    }
     const data: string[] = [];
     const proc = exec(
       `find ${dir} -name LOCK -exec sh -c 'for f; do db=$(dirname "$f"); pids=$(fuser "$f" 2>/dev/null | xargs -n1 | sed "s/[^0-9].*//"); [ -n "$pids" ] && for pid in $pids; do echo "$db $pid"; done; done' _ {} +`,

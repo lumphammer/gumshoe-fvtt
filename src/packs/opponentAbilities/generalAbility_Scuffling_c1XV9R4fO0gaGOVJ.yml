@@ -1,0 +1,56 @@
+_id: c1XV9R4fO0gaGOVJ
+name: Scuffling
+type: generalAbility
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes:
+    format: plain
+    source: ""
+    html: ""
+  rating: 1
+  pool: 1
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities:
+    - ""
+  min: 0
+  max: 8
+  occupational: false
+  categoryId: General
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: true
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  canBeInvestigative: false
+  goesFirstInCombat: false
+  hideIfZeroRated: false
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  category: General
+effects: []
+folder: null
+sort: 0
+flags:
+  core:
+    sourceId: Compendium.investigator.pathOfCthulhuAbilities.bmFrMXRF8OiV1B1j
+_stats:
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.1.0
+  createdTime: 1727264892212
+  modifiedTime: 1727264892265
+  lastModifiedBy: GKXsVq42x956ejvq
+  compendiumSource: null
+  duplicateSource: null
+ownership:
+  default: 0
+  I1eWzLt8trp2SOGd: 3
+  wwcV3FPFudsTix8P: 3
+_key: "!items!c1XV9R4fO0gaGOVJ"

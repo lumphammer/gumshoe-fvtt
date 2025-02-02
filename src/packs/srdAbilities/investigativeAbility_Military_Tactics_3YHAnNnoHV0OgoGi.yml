@@ -1,0 +1,46 @@
+type: investigativeAbility
+name: Military Tactics
+img: /systems/investigator/assets/icons/magnifying-glass.webp
+system:
+  notes:
+    format: richText
+    source: ""
+    html: ""
+  rating: 0
+  pool: 0
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities: []
+  min: 0
+  max: 8
+  occupational: false
+  categoryId: Academic
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: false
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  hideIfZeroRated: true
+  isQuickShock: false
+  type: investigativeAbility
+  img: /systems/investigator/assets/icons/magnifying-glass.webp
+effects: []
+folder: null
+ownership:
+  default: 0
+  fdD7YxceKPQmVCc5: 3
+flags: {}
+_stats:
+  compendiumSource: null
+  duplicateSource: null
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.2.0-alpha.3
+  createdTime: 1728301185379
+  modifiedTime: 1728301185379
+  lastModifiedBy: fdD7YxceKPQmVCc5
+_id: 3YHAnNnoHV0OgoGi
+sort: 0
+_key: "!items!3YHAnNnoHV0OgoGi"

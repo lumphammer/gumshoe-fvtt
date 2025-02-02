@@ -1,0 +1,53 @@
+name: WE NOW HAVE FULL ABILITY COMPENDIUMS!
+flags:
+  core:
+    sourceId: JournalEntry.qwTAyshXIUK3orqa
+pages:
+  - name: WE NOW HAVE FULL ABILITY COMPENDIUMS!
+    type: text
+    title:
+      show: false
+      level: 1
+    text:
+      format: 1
+      content: "<p>Hello! If you are upgrading from an older version of the INVESTIGATOR system, you may remember that we used to only have a subset of the abilities for each game setting, because we were restricted to what appeared in the <a href=\"https://site.pelgranepress.com/index.php/the-gumshoe-system-reference-document/\">GUMSHOE SRD</a>.</p><p>Well, thanks to the good people at Pelgrane Press, we now have the full list, and all the abilities appear under their own names! 🎉</p><p>As a result, the following instruction are only here for people who want to set up their own custom list of abilities:</p><p></p><h2>How to add new abilities</h2><ol><li>In the <strong>Items</strong> tab, create a new folder. Give it a name like \"My Space Game Abilities\" or whatever.</li><li><p>Add abilities as follows:</p><ol><li>Click \"<strong>New Item</strong>\" (looks like a quill pen) next to the folder name.</li><li>Pick \"investigativeAbility\" or \"generalAbility\"</li><li>Configure the ability as needed.</li><li>Repeat until you have all the additional abilities you need.</li></ol></li><li>Right-click the folder and <strong>Export to Compendium.</strong></li><li>Flip over to the <strong>Game Settings</strong> tab and click <strong>INVESTIGATOR System Setting.</strong></li><li>See where it says <strong>Compendium packs for new PCs</strong>? Put a tick (check) next to the name of your new \"Extra abilities\" compendium. Untick any others (you can use multiple packs if you want, but you probably won't need to.)</li></ol><p>Done! New PCs will now automatically be given the abilities in your new compendium. Also, if you create a party tracker, it will show those abilities in the list.</p><p>\_</p>"
+      markdown: ""
+    _id: 7LgyTyg3VQ5sEoJk
+    image: {}
+    video:
+      controls: true
+      volume: 0.5
+    src: null
+    system: {}
+    sort: 0
+    ownership:
+      default: -1
+    flags: {}
+    _stats:
+      coreVersion: "12.331"
+      systemId: null
+      systemVersion: null
+      createdTime: null
+      modifiedTime: null
+      lastModifiedBy: null
+      compendiumSource: null
+      duplicateSource: null
+    _key: "!journal.pages!XqybxsmY5owqvzdl.7LgyTyg3VQ5sEoJk"
+ownership:
+  default: 0
+  RIiGp29oY8FCs9QI: 3
+  sd3DZQkzaLrrgkOz: 3
+_stats:
+  systemId: investigator
+  systemVersion: 7.0.0-alpha.1
+  coreVersion: "12.331"
+  createdTime: 1685523063767
+  modifiedTime: 1685523372359
+  lastModifiedBy: sd3DZQkzaLrrgkOz
+  compendiumSource: JournalEntry.qwTAyshXIUK3orqa
+  duplicateSource: null
+folder: null
+sort: 0
+_id: XqybxsmY5owqvzdl
+categories: []
+_key: "!journal!XqybxsmY5owqvzdl"

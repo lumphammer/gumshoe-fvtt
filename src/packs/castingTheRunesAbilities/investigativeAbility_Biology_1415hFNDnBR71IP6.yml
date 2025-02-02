@@ -1,0 +1,47 @@
+_id: 1415hFNDnBR71IP6
+name: Biology
+type: investigativeAbility
+img: /systems/investigator/assets/icons/magnifying-glass.webp
+system:
+  notes:
+    format: plain
+    source: ""
+    html: ""
+  rating: 0
+  pool: 0
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities: []
+  min: 0
+  max: 8
+  occupational: false
+  categoryId: Academic
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: false
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  hideIfZeroRated: true
+  isQuickShock: false
+  category: Academic
+effects: []
+folder: null
+sort: 0
+flags:
+  core:
+    sourceId: Item.e9OZYDuWsEXCFxHc
+_stats:
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.1.0
+  createdTime: 1727264894101
+  modifiedTime: 1727264894205
+  lastModifiedBy: GKXsVq42x956ejvq
+  compendiumSource: null
+  duplicateSource: null
+ownership:
+  default: 0
+  hRCHFyWNv9ZN7hVA: 3
+_key: "!items!1415hFNDnBR71IP6"
