@@ -28,7 +28,7 @@
     "pwd": "pwd",
     "do-release": "./packages/shared-fvtt-bits/scripts/do-release.sh",
     "update-legacy-release-branch": "./scripts/update-legacy-release-branch.sh",
-    "copy-packs-back": "./tasks.ts copyPacksBack"
+    "extract-packs": "./tasks.ts extractPacks"
   },
   "author": "",
   "license": "",

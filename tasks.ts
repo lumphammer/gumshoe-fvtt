@@ -12,6 +12,7 @@ import {
   buildPackTranslations,
   clean,
   copyPacksBack,
+  extractPacks,
   link,
   unlink,
 } from "@lumphammer/shared-fvtt-bits/task-core/tasks";
@@ -29,5 +30,12 @@ void boot({
     packagePath: "build_package",
   },
 
-  commands: [link, unlink, clean, buildPackTranslations, copyPacksBack],
+  commands: [
+    link,
+    unlink,
+    clean,
+    buildPackTranslations,
+    copyPacksBack,
+    extractPacks,
+  ],
 });
