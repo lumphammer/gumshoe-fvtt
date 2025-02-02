@@ -201,7 +201,7 @@ export type SituationalModifier = {
 
 export type SpecialitiesMode = "one" | "twoThreeFour";
 
-/** system data foreither type of ability */
+/** system data for either type of ability */
 export type BaseAbilitySystemData = {
   rating: number;
   pool: number;
