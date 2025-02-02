@@ -27,6 +27,7 @@ export function installResourceUpdateHookHandler() {
           system: {
             resources: {
               [item.name.toLowerCase()]: {
+                min: item.system.min,
                 value: item.system.pool,
                 max: item.system.rating,
               },
