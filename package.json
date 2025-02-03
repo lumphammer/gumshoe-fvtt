@@ -45,14 +45,14 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/d3-ease": "^3.0.2",
     "@types/eslint": "^8.56.12",
-    "@types/html-escaper": "^3.0.2",
+    "@types/html-escaper": "^3.0.3",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/textdiff-create": "^1.0.2",
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
-    "@typescript-eslint/parser": "^8.21.0",
+    "@typescript-eslint/parser": "^8.22.0",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "@vitest/ui": "^3.0.4",
     "eslint": "^8.57.1",
@@ -64,7 +64,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
     "fvtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types#documents-v2-temp",
-    "happy-dom": "^16.7.3",
+    "happy-dom": "^16.8.1",
     "jest-diff": "^29.7.0",
     "less": "^4.2.2",
     "prettier": "^3.4.2",
@@ -121,11 +121,11 @@
   },
   "engines": {
     "node": "22.13.1",
-    "pnpm": "9.15.4"
+    "pnpm": "9.15.5"
   },
   "volta": {
     "node": "22.13.1",
-    "pnpm": "9.15.4"
+    "pnpm": "9.15.5"
   },
-  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
+  "packageManager": "pnpm@9.15.5+sha512.845196026aab1cc3f098a0474b64dfbab2afe7a1b4e91dd86895d8e4aa32a7a6d03049e2d0ad770bbe4de023a7122fb68c1a1d6e0d033c7076085f9d5d4800d4"
 }
