@@ -28,7 +28,7 @@ jobs:
     # https://github.com/orgs/community/discussions/9050
     # Reusable workflows docs:
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows
-    uses: lumphammer/gh-actions/.github/workflows/ci-cd-reusable.yml@2024-11-24.2
+    uses: lumphammer/gh-actions/.github/workflows/ci-cd-reusable.yml@2025-02-03.1
     needs: pre_job
     # skip the job is it a duplicate, but not if it's a tag (we always want to
     # make sure we build a tag so we get a release.)
