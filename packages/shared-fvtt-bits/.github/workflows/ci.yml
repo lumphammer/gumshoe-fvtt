@@ -50,6 +50,7 @@ jobs:
 
       - name: Activate pnpm
         run: |
+          npm install -g corepack@latest
           corepack enable
 
         # corepack prepare pnpm@${{ inputs.pnpm_version }} --activate
@@ -62,6 +63,7 @@ jobs:
           export
           node --version
           pnpm --version
+          corepack --version
 
       - name: Install dependencies
         run: pnpm install
