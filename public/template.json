@@ -10,28 +10,7 @@
         },
         "hideZeroRated": false,
         "mwInjuryStatus": "uninjured",
-        "resources": {
-          "health": {
-            "min": 0,
-            "max": 12,
-            "value": 0
-          },
-          "sanity": {
-            "min": 0,
-            "max": 12,
-            "value": 0
-          },
-          "stability": {
-            "min": 0,
-            "max": 12,
-            "value": 0
-          },
-          "magic": {
-            "min": 0,
-            "max": 12,
-            "value": 0
-          }
-        },
+        "resources": {},
         "initiativePassingTurns": 1
       }
     },
