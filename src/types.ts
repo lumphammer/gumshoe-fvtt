@@ -96,12 +96,7 @@ export type PCSystemData = {
   /** deprecated */
   hitThreshold: number;
   mwInjuryStatus: MwInjuryStatus;
-  resources: {
-    health: Resource;
-    sanity: Resource;
-    stability: Resource;
-    magic: Resource;
-  };
+  resources: Record<string, Resource>;
   stats: Record<string, number>;
   initiativePassingTurns: number;
   cardsAreaSettings: CardsAreaSettings;
@@ -124,12 +119,7 @@ export type NPCSystemData = {
   /** deprecated */
   stabilityLoss: number;
   mwInjuryStatus: MwInjuryStatus;
-  resources: {
-    health: Resource;
-    sanity: Resource;
-    stability: Resource;
-    magic: Resource;
-  };
+  resources: Record<string, Resource>;
   stats: Record<string, number>;
   combatBonus: number;
   damageBonus: number;
