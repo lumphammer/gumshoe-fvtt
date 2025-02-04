@@ -45,7 +45,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/d3-ease": "^3.0.2",
     "@types/eslint": "^8.56.12",
-    "@types/html-escaper": "^3.0.2",
+    "@types/html-escaper": "^3.0.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/textdiff-create": "^1.0.2",
