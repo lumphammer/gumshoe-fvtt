@@ -117,7 +117,9 @@
       "mwRefreshGroup": 2,
       "combatBonus": 0,
       "damageBonus": 0,
-      "isPushPool": false
+      "isPushPool": false,
+      "linkToResource": false,
+      "resourceId": ""
     },
     "equipment": {
       "templates": ["notes"],

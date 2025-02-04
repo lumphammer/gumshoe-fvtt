@@ -256,5 +256,7 @@
   "investigator.Toggle": "Toggle",
   "investigator.Initiative": "Initiative",
   "investigator.NotFound": "Not Found!",
-  "investigator.Other": "Other"
+  "investigator.Other": "Other",
+  "investigator.ResourceID": "Resource ID",
+  "investigator.LinkToResource": "Link to resource?"
 }

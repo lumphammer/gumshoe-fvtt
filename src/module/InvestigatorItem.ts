@@ -986,4 +986,14 @@ export class InvestigatorItem extends Item {
     };
     await this.update({ system: updateData });
   };
+
+  setResourceId = async (resourceId: string | null): Promise<void> => {
+    assertGeneralAbilityItem(this);
+    await this.update({ system: { resourceId } });
+  };
+
+  setLinkToResource = async (linkToResource: boolean): Promise<void> => {
+    assertGeneralAbilityItem(this);
+    await this.update({ system: { linkToResource } });
+  };
 }

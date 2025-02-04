@@ -232,6 +232,23 @@ export const AbilityConfig = () => {
           onChange={item.setAllowPoolToExceedRating}
         />
       </GridField>
+      {isGeneralAbilityItem(item) && (
+        <GridField
+          label="Link to resource?"
+          css={{ display: "flex", flexDirection: "row", gap: "0.5em" }}
+        >
+          <Toggle
+            checked={item.system.linkToResource}
+            onChange={item.setLinkToResource}
+          />
+          {item.system.linkToResource && (
+            <AsyncTextInput
+              value={item.system.resourceId ?? ""}
+              onChange={item.setResourceId}
+            />
+          )}
+        </GridField>
+      )}
       {isInvestigativeAbilityItem(item) && (
         <GridField label="IsQuickShock">
           <Toggle

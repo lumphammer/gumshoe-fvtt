@@ -233,6 +233,8 @@ export type GeneralAbilitySystemData = BaseAbilitySystemData & {
   combatBonus: number;
   damageBonus: number;
   isPushPool: boolean;
+  linkToResource: boolean;
+  resourceId: string;
 };
 
 export type MwType =
