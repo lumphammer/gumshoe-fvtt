@@ -21,6 +21,8 @@ export function vitePluginCompileFvttPacks({
   srcDir = "./src/packs",
   destDir = "./build/packs",
 }: vitePluginCompileFvttPacksOptions = {}): Plugin {
+  let shouldCompilePacks = false;
+
   return {
     name: "compile-fvtt-packs",
 
@@ -32,16 +34,22 @@ export function vitePluginCompileFvttPacks({
       console.log(chalk.blue("\nChecking for open FVTT pack databases..."));
       const locks = await checkLocks(destDir);
       if (locks) {
-        console.error(
-          `\nERROR: the following FVTT pack databases are open in another process:\n${locks}\n`,
+        console.log(
+          chalk.red(
+            "\nThe following FVTT pack databases are open in another process (probably your FVTT world is open):\n",
+            `${chalk.dim(locks)}\n`,
+          ),
         );
-        process.exit(1);
+        shouldCompilePacks = false;
       } else {
         console.log(chalk.green("👌 no open FVTT pack databases found.\n"));
+        shouldCompilePacks = true;
       }
     },
 
     async closeBundle() {
+      if (!shouldCompilePacks) return;
+
       console.log(
         chalk.blue(`\nBuilding FVTT pack databases to ${destDir}...`),
       );
