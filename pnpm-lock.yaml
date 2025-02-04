@@ -130,8 +130,8 @@ importers:
         specifier: ^8.56.12
         version: 8.56.12
       '@types/html-escaper':
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^3.0.4
+        version: 3.0.4
       '@types/react':
         specifier: ^19.0.8
         version: 19.0.8
@@ -1651,8 +1651,8 @@ packages:
   '@types/fs-extra@11.0.4':
     resolution: {integrity: sha512-yTbItCNreRooED33qjunPthRcSjERP1r4MqCZc7wv0u2sUkzTFp45tgUfS5+r7FrZPdmCCNflLhVSP/o+SemsQ==}
 
-  '@types/html-escaper@3.0.2':
-    resolution: {integrity: sha512-A8vk09eyYzk8J/lFO4OUMKCmRN0rRzfZf4n3Olwapgox/PtTiU8zPYlL1UEkJ/WeHvV6v9Xnj3o/705PKz9r4Q==}
+  '@types/html-escaper@3.0.4':
+    resolution: {integrity: sha512-UKSaMPMXXKnq1jDj74seVikfdq5pWvoXcIgOUbwYzHuAEGiv8/juom1i/MsWBF8boFSI0uHQCSZauzr5OYnnJA==}
 
   '@types/jquery@3.5.32':
     resolution: {integrity: sha512-b9Xbf4CkMqS02YH8zACqN1xzdxc3cO735Qe5AbSUFmyOiaWAbcpqh9Wna+Uk0vgACvoQHpWDg2rGdHkYPLmCiQ==}
@@ -5257,7 +5257,7 @@ snapshots:
       '@types/jsonfile': 6.1.4
       '@types/node': 18.15.11
 
-  '@types/html-escaper@3.0.2': {}
+  '@types/html-escaper@3.0.4': {}
 
   '@types/jquery@3.5.32':
     dependencies:
