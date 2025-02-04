@@ -11,6 +11,8 @@ import type { HttpProxy, UserConfig } from "vite";
 import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 
+import { vitePluginCompileFvttPacks as compilePacks } from "../../src/vitePluginCompileFvttPacks";
+
 function kebabCaseToCamelCase(str: string) {
   return str.replace(/-([a-z0-9])/g, (g) => g[1].toUpperCase());
 }
@@ -239,6 +241,7 @@ export function createFvttViteConfig({
           template: "treemap",
           filename: "stats/treemap.html",
         }),
+        compilePacks(),
       ],
     };
     // console.log("USER CONFIG", JSON.stringify(userConfig, null, 2));
