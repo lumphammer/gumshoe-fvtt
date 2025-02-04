@@ -1,0 +1,53 @@
+type: generalAbility
+name: Shooting
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes:
+    format: richText
+    source: ""
+    html: ""
+  rating: 0
+  pool: 0
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities: []
+  min: 0
+  max: 99
+  occupational: false
+  categoryId: General
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: true
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  canBeInvestigative: false
+  goesFirstInCombat: false
+  hideIfZeroRated: false
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  type: generalAbility
+  img: /systems/investigator/assets/icons/fist.webp
+effects: []
+folder: null
+ownership:
+  default: 0
+  fdD7YxceKPQmVCc5: 3
+flags: {}
+_stats:
+  compendiumSource: null
+  duplicateSource: null
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.2.4
+  createdTime: 1728301173362
+  modifiedTime: 1738263717025
+  lastModifiedBy: fdD7YxceKPQmVCc5
+_id: 53IPb6BLgV07zVjZ
+sort: 0
+_key: "!items!53IPb6BLgV07zVjZ"

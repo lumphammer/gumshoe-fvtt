@@ -1,0 +1,45 @@
+_id: tCHUx1lXdFM6D7Wg
+name: Firearm (light)
+type: weapon
+img: systems/investigator/assets/icons/trench-knife.webp
+system:
+  notes:
+    format: plain
+    source: ""
+    html: ""
+  ability: Firearms
+  damage: 0
+  pointBlankDamage: 2
+  closeRangeDamage: 0
+  nearRangeDamage: 0
+  longRangeDamage: 0
+  isPointBlank: true
+  isCloseRange: true
+  isNearRange: true
+  isLongRange: false
+  usesAmmo: true
+  ammoPerShot: 1
+  cost: 0
+  ammo:
+    min: 0
+    max: 6
+    value: 10
+effects: []
+folder: null
+sort: 0
+flags:
+  core:
+    sourceId: Item.osG1ts47nI8JqcbN
+_stats:
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.1.0
+  createdTime: 1727264892282
+  modifiedTime: 1727264892282
+  lastModifiedBy: GKXsVq42x956ejvq
+  compendiumSource: null
+  duplicateSource: null
+ownership:
+  default: 2
+  m1wXh39fIJnvUjsD: 3
+_key: "!items!tCHUx1lXdFM6D7Wg"

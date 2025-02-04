@@ -1,0 +1,54 @@
+_id: Bd3tZfuOxezM46Xh
+name: Navigation
+type: generalAbility
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes:
+    format: plain
+    source: ""
+    html: ""
+  rating: 0
+  pool: 0
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities: []
+  min: 0
+  max: 99
+  occupational: false
+  categoryId: General
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: false
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  canBeInvestigative: false
+  goesFirstInCombat: false
+  hideIfZeroRated: false
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  category: General
+effects: []
+folder: null
+sort: 0
+flags:
+  core:
+    sourceId: Item.HhqzcsfhcATY4Prq
+_stats:
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.2.0-alpha.3
+  createdTime: 1727264894103
+  modifiedTime: 1728301349254
+  lastModifiedBy: fdD7YxceKPQmVCc5
+  compendiumSource: null
+  duplicateSource: null
+ownership:
+  default: 0
+  hRCHFyWNv9ZN7hVA: 3
+_key: "!items!Bd3tZfuOxezM46Xh"

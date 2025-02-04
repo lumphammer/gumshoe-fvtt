@@ -1,0 +1,45 @@
+_id: ajPjlPoWMnsE8b7h
+name: Police Baton
+type: weapon
+img: systems/investigator/assets/icons/trench-knife.webp
+system:
+  notes:
+    format: plain
+    source: ""
+    html: ""
+  ability: Weapons
+  damage: -1
+  pointBlankDamage: 0
+  closeRangeDamage: 0
+  nearRangeDamage: 0
+  longRangeDamage: 0
+  isPointBlank: true
+  isCloseRange: false
+  isNearRange: false
+  isLongRange: false
+  usesAmmo: false
+  ammoPerShot: 1
+  cost: 0
+  ammo:
+    min: 0
+    max: 10
+    value: 10
+effects: []
+folder: null
+sort: 0
+flags:
+  core:
+    sourceId: Item.yHJbf60UkEwH0iDe
+_stats:
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.1.0
+  createdTime: 1727264892282
+  modifiedTime: 1727264892282
+  lastModifiedBy: GKXsVq42x956ejvq
+  compendiumSource: null
+  duplicateSource: null
+ownership:
+  default: 2
+  m1wXh39fIJnvUjsD: 3
+_key: "!items!ajPjlPoWMnsE8b7h"

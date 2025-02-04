@@ -1,0 +1,46 @@
+name: Bureaucracy
+type: investigativeAbility
+_id: kepERG7fxB5MiHsR
+img: /systems/investigator/assets/icons/magnifying-glass.webp
+system:
+  notes:
+    format: richText
+    source: ""
+    html: ""
+  rating: 0
+  pool: 0
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities: []
+  min: 0
+  max: 1
+  occupational: false
+  categoryId: Interpersonal
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: false
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  hideIfZeroRated: true
+  isQuickShock: true
+  category: Interpersonal
+  fields: {}
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+  GKXsVq42x956ejvq: 3
+flags: {}
+_stats:
+  compendiumSource: null
+  duplicateSource: null
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.1.0
+  createdTime: 1724521619121
+  modifiedTime: 1727264896590
+  lastModifiedBy: GKXsVq42x956ejvq
+_key: "!items!kepERG7fxB5MiHsR"

@@ -1,0 +1,47 @@
+_id: u4OPA11bwhyVxeMk
+name: Archaeology
+type: investigativeAbility
+img: /systems/investigator/assets/icons/magnifying-glass.webp
+system:
+  notes:
+    format: plain
+    source: ""
+    html: ""
+  rating: 0
+  pool: 0
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities: []
+  min: 0
+  max: 8
+  occupational: false
+  categoryId: Academic
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: false
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  hideIfZeroRated: true
+  isQuickShock: false
+  category: Academic
+effects: []
+folder: null
+sort: 0
+flags:
+  core:
+    sourceId: Item.iBIKov08HOU1ikFn
+_stats:
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.1.0
+  createdTime: 1727264894111
+  modifiedTime: 1727264894826
+  lastModifiedBy: GKXsVq42x956ejvq
+  compendiumSource: null
+  duplicateSource: null
+ownership:
+  default: 0
+  hRCHFyWNv9ZN7hVA: 3
+_key: "!items!u4OPA11bwhyVxeMk"

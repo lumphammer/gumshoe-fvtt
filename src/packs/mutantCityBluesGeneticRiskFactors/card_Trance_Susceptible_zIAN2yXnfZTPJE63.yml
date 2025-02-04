@@ -1,0 +1,47 @@
+name: Trance Susceptible
+type: card
+_id: zIAN2yXnfZTPJE63
+img: /systems/investigator/assets/icons/card.webp
+system:
+  cardCategoryMemberships:
+    - categoryId: grf
+      nonlethal: false
+      worth: 1
+  styleKeyCategoryId: grf
+  nonlethal: false
+  supertitle: ""
+  subtitle: ""
+  description:
+    format: richText
+    source: ""
+    html: ""
+  effects:
+    format: richText
+    source: ""
+    html: ""
+  type: ""
+  flags: []
+  active: true
+  continuity: false
+  categoryMemberships:
+    - categoryId: grf
+      nonlethal: false
+      worth: 1
+  categoryId: grf
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+  1R0RuWGq4Ijnl9Ae: 3
+flags: {}
+_stats:
+  compendiumSource: null
+  duplicateSource: null
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.1.0
+  createdTime: 1725381136975
+  modifiedTime: 1727264898379
+  lastModifiedBy: GKXsVq42x956ejvq
+_key: "!items!zIAN2yXnfZTPJE63"

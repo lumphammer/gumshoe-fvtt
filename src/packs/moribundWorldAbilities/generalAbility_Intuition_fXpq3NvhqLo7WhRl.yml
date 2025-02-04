@@ -1,0 +1,53 @@
+type: generalAbility
+name: Intuition
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes:
+    format: richText
+    source: ""
+    html: ""
+  rating: 0
+  pool: 0
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities: []
+  min: 0
+  max: 99
+  occupational: false
+  categoryId: Defense
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: false
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  canBeInvestigative: false
+  goesFirstInCombat: false
+  hideIfZeroRated: true
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  type: generalAbility
+  img: /systems/investigator/assets/icons/fist.webp
+effects: []
+folder: null
+ownership:
+  default: 0
+  fdD7YxceKPQmVCc5: 3
+flags: {}
+_stats:
+  compendiumSource: null
+  duplicateSource: null
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.2.0-alpha.3
+  createdTime: 1728301146066
+  modifiedTime: 1728301146066
+  lastModifiedBy: fdD7YxceKPQmVCc5
+_id: fXpq3NvhqLo7WhRl
+sort: 0
+_key: "!items!fXpq3NvhqLo7WhRl"

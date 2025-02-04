@@ -1,0 +1,56 @@
+_id: 2gnH9cza9kqoaazy
+name: Health
+type: generalAbility
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes:
+    format: plain
+    source: ""
+    html: ""
+  rating: 1
+  pool: 1
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities:
+    - ""
+  min: 0
+  max: 15
+  occupational: false
+  categoryId: General
+  showTracker: true
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: false
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  canBeInvestigative: false
+  goesFirstInCombat: false
+  hideIfZeroRated: false
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  category: General
+effects: []
+folder: null
+sort: 0
+flags:
+  core:
+    sourceId: Compendium.investigator.pathOfCthulhuAbilities.25rI3AbJn8oAGor3
+_stats:
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.1.0
+  createdTime: 1727264892212
+  modifiedTime: 1727264892225
+  lastModifiedBy: GKXsVq42x956ejvq
+  compendiumSource: null
+  duplicateSource: null
+ownership:
+  default: 0
+  I1eWzLt8trp2SOGd: 3
+  wwcV3FPFudsTix8P: 3
+_key: "!items!2gnH9cza9kqoaazy"

@@ -1,0 +1,56 @@
+name: Surveillance
+type: generalAbility
+_id: 8XcOGhq6OVBGLmmP
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes:
+    format: richText
+    source: ""
+    html: ""
+  rating: 0
+  pool: 0
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities: []
+  min: 0
+  max: 99
+  occupational: false
+  categoryId: Presence
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: false
+  unlocks:
+    - description: Electronic Surveillance
+      rating: 8
+      id: 3JPH5wgLcICthciD5S2s9
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  canBeInvestigative: false
+  goesFirstInCombat: false
+  hideIfZeroRated: false
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  category: Presence
+  fields: {}
+effects: []
+folder: null
+sort: 0
+ownership:
+  default: 0
+  GKXsVq42x956ejvq: 3
+flags: {}
+_stats:
+  compendiumSource: null
+  duplicateSource: null
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.2.0-alpha.3
+  createdTime: 1724522384099
+  modifiedTime: 1728302387980
+  lastModifiedBy: fdD7YxceKPQmVCc5
+_key: "!items!8XcOGhq6OVBGLmmP"

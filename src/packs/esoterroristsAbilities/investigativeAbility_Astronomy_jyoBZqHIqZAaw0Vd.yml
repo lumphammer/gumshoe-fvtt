@@ -1,0 +1,46 @@
+name: Astronomy
+type: investigativeAbility
+img: /systems/investigator/assets/icons/magnifying-glass.webp
+system:
+  notes:
+    format: richText
+    source: ""
+    html: ""
+  rating: 0
+  pool: 0
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities: []
+  min: 0
+  max: 8
+  occupational: false
+  categoryId: Technical
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: false
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  hideIfZeroRated: true
+  isQuickShock: false
+  category: Technical
+  fields: {}
+effects: []
+flags: {}
+_stats:
+  systemId: investigator
+  systemVersion: 8.1.0
+  coreVersion: "12.331"
+  createdTime: 1687168326637
+  modifiedTime: 1727264895349
+  lastModifiedBy: GKXsVq42x956ejvq
+  compendiumSource: null
+  duplicateSource: null
+folder: null
+sort: 0
+ownership:
+  default: 0
+  sd3DZQkzaLrrgkOz: 3
+_id: jyoBZqHIqZAaw0Vd
+_key: "!items!jyoBZqHIqZAaw0Vd"
