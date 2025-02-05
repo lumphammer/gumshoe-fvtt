@@ -34,6 +34,8 @@ system:
   combatBonus: 0
   damageBonus: 0
   isPushPool: false
+  linkToResource: false
+  resourceId: ""
   type: generalAbility
   img: /systems/investigator/assets/icons/fist.webp
 effects: []
@@ -47,9 +49,9 @@ _stats:
   duplicateSource: null
   coreVersion: "12.331"
   systemId: investigator
-  systemVersion: 8.2.1
+  systemVersion: 8.2.4
   createdTime: 1732122347453
-  modifiedTime: 1732122347485
+  modifiedTime: 1738772887052
   lastModifiedBy: fdD7YxceKPQmVCc5
 _id: QssYOmU23l59dw9c
 sort: 200000

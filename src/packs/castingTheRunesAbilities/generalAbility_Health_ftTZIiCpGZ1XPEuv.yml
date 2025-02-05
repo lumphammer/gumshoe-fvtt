@@ -32,6 +32,8 @@ system:
   combatBonus: 0
   damageBonus: 0
   isPushPool: false
+  linkToResource: true
+  resourceId: health
   category: General
 effects: []
 folder: null
@@ -42,10 +44,10 @@ flags:
 _stats:
   coreVersion: "12.331"
   systemId: investigator
-  systemVersion: 8.1.0
+  systemVersion: 8.2.4
   createdTime: 1727264894109
-  modifiedTime: 1727264894631
-  lastModifiedBy: GKXsVq42x956ejvq
+  modifiedTime: 1738772886942
+  lastModifiedBy: fdD7YxceKPQmVCc5
   compendiumSource: null
   duplicateSource: null
 ownership:

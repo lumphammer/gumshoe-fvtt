@@ -33,6 +33,8 @@ system:
   combatBonus: 0
   damageBonus: 0
   isPushPool: false
+  linkToResource: true
+  resourceId: health
   category: Physical
   fields: {}
 effects: []
@@ -47,8 +49,8 @@ _stats:
   duplicateSource: null
   coreVersion: "12.331"
   systemId: investigator
-  systemVersion: 8.1.0
+  systemVersion: 8.2.4
   createdTime: 1724522316154
-  modifiedTime: 1727264896356
-  lastModifiedBy: GKXsVq42x956ejvq
+  modifiedTime: 1738772887106
+  lastModifiedBy: fdD7YxceKPQmVCc5
 _key: "!items!BV20JhkL3aPyZL8e"

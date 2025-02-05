@@ -32,6 +32,8 @@ system:
   combatBonus: 0
   damageBonus: 0
   isPushPool: false
+  linkToResource: false
+  resourceId: ""
   category: Presence Powers
   fields: {}
 effects: []
@@ -46,8 +48,8 @@ _stats:
   duplicateSource: null
   coreVersion: "12.331"
   systemId: investigator
-  systemVersion: 8.1.0
+  systemVersion: 8.2.4
   createdTime: 1725377583640
-  modifiedTime: 1727264897223
-  lastModifiedBy: GKXsVq42x956ejvq
+  modifiedTime: 1738772887121
+  lastModifiedBy: fdD7YxceKPQmVCc5
 _key: "!items!Ha7lTFp7RcO5o0NO"

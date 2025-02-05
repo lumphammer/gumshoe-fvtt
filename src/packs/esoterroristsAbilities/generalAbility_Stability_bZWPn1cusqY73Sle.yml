@@ -31,15 +31,17 @@ system:
   combatBonus: 0
   damageBonus: 0
   isPushPool: false
+  linkToResource: true
+  resourceId: stability
   category: General
 effects: []
 flags: {}
 _stats:
   systemId: investigator
-  systemVersion: 8.2.0-alpha.3
+  systemVersion: 8.2.4
   coreVersion: "12.331"
   createdTime: 1687168326736
-  modifiedTime: 1728302309340
+  modifiedTime: 1738772887002
   lastModifiedBy: fdD7YxceKPQmVCc5
   compendiumSource: null
   duplicateSource: null
