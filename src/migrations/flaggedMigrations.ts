@@ -114,6 +114,28 @@ export const flaggedMigrations: FlaggedMigrations = {
 
       return updateData;
     },
+    /**
+     * Previously, resources with the names "health", "stability", "sanity",
+     * or "magic" were given special handling and used to update the resource
+     * value with the same name. This caused issues when folks had custom
+     * abilities, such as "gesundheit" which they wanted to track as resources.
+     *
+     * The new system allow any ability to define a resource key which it will
+     * sync with.
+     */
+    setResourceIdForAbilities: (item: any, updateData: any) => {
+      const affectedAbilityNames = ["health", "stability", "sanity", "magic"];
+      const normalisedName = item.name.trim().toLowerCase();
+      const isAffected = affectedAbilityNames.includes(normalisedName);
+      if (item.type === c.generalAbility && isAffected) {
+        if (!updateData.system) {
+          updateData.system = {};
+        }
+        updateData.system.resourceId = normalisedName;
+        updateData.system.linkToResource = true;
+      }
+      return updateData;
+    },
   },
   actor: {
     /**
