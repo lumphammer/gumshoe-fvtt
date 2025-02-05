@@ -8,6 +8,7 @@ import { ItemSheetClass } from "../module/InvestigatorItemSheetClass";
 // eslint-disable-next-line unused-imports/no-unused-imports
 import { ItemSheetV2Class } from "../module/InvestigatorItemSheetV2Class";
 import { InvestigatorJournalSheet } from "../module/InvestigatorJournalSheet";
+import { InvestigatorTokenDocument } from "../module/InvestigatorTokenDocument";
 import { JournalEditorSheetClass } from "../module/JournalEditorSheetClass";
 import { NPCSheetClass } from "../module/NPCSheetClass";
 // eslint-disable-next-line unused-imports/no-unused-imports
@@ -22,6 +23,7 @@ export const registerSheetsAndClasses = () => {
   CONFIG.Combatant.documentClass = InvestigatorCombatant;
   CONFIG.Combat.documentClass = InvestigatorCombat;
   // CONFIG.ChatMessage.documentClass = InvestigatorChatMessage;
+  CONFIG.Token.documentClass = InvestigatorTokenDocument;
   CONFIG.ui.combat = InvestigatorCombatTracker;
 
   // Register custom sheets (if any)
