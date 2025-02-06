@@ -30,21 +30,25 @@ export const SettingArea = () => {
   );
   const theme = useContext(ThemeContext);
   const isDevMode = getDevMode();
-
+  const defaultThemeName = settings.defaultThemeName.get();
+  const defaultThemeDisplayName =
+    runtimeConfig.themes[defaultThemeName]?.displayName;
   return (
     <Fragment>
       <InputGrid>
         <GridField label="Theme">
           <select
             onChange={onSetTheme}
-            value={actor.getSheetThemeName() || "default"}
+            value={actor.system.sheetTheme || "default"}
           >
             {Object.keys(runtimeConfig.themes).map((themeName) => (
               <option key={themeName} value={themeName}>
                 {runtimeConfig.themes[themeName].displayName}
               </option>
             ))}
-            <option value="default">{getTranslated("UseSystemDefault")}</option>
+            <option value="default">
+              {getTranslated("Default")} ({defaultThemeDisplayName})
+            </option>
           </select>
         </GridField>
 
