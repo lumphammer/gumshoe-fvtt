@@ -73,8 +73,7 @@ export const migrateWorld = async function (
     }
   }
 
-  // Migrate World Compendium Packs
-  // XXX another any
+  // Migrate compendium packs
   for (const pack of game.packs) {
     systemLogger.log(`Migrating Compendium pack ${pack.metadata.label}`);
     if (pack.locked) continue;

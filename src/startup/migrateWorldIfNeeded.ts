@@ -21,7 +21,7 @@ export const migrateWorldIfNeeded = async () => {
   if (!game.user.isGM) {
     return;
   }
-  // first, we do some work to see if this is the first run oif a new world,
+  // first, we do some work to see if this is the first run of a new world,
   let firstRun = settings.firstRun.get();
   if (firstRun) {
     // if there are any actors, scenes, or items, then this isn't the first run
