@@ -34,6 +34,8 @@ system:
   combatBonus: 0
   damageBonus: 0
   isPushPool: true
+  linkToResource: false
+  resourceId: ""
   category: Pushes
   fields: {}
 effects: []
@@ -48,8 +50,8 @@ _stats:
   duplicateSource: null
   coreVersion: "12.331"
   systemId: investigator
-  systemVersion: 8.1.0
+  systemVersion: 8.2.4
   createdTime: 1725296761621
-  modifiedTime: 1727264896343
-  lastModifiedBy: GKXsVq42x956ejvq
+  modifiedTime: 1738772887072
+  lastModifiedBy: fdD7YxceKPQmVCc5
 _key: "!items!AHrlQTAqJ0dEPJ3i"

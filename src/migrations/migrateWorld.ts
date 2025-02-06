@@ -75,9 +75,9 @@ export const migrateWorld = async function (
 
   // Migrate World Compendium Packs
   // XXX another any
-  for (const pack of game.packs as any) {
+  for (const pack of game.packs) {
     systemLogger.log(`Migrating Compendium pack ${pack.metadata.label}`);
-    if (pack.metadata.packageType !== "world") continue;
+    if (pack.locked) continue;
     if (!["Actor", "Item", "Scene"].includes(pack.metadata.type)) continue;
     await migrateCompendium(pack, flaggedMigrations);
   }

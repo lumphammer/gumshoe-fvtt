@@ -32,6 +32,8 @@ system:
   combatBonus: 0
   damageBonus: 0
   isPushPool: false
+  linkToResource: false
+  resourceId: ""
   category: Physical Powers
   fields: {}
 effects: []
@@ -46,8 +48,8 @@ _stats:
   duplicateSource: null
   coreVersion: "12.331"
   systemId: investigator
-  systemVersion: 8.1.0
+  systemVersion: 8.2.4
   createdTime: 1725379052880
-  modifiedTime: 1727264898043
-  lastModifiedBy: GKXsVq42x956ejvq
+  modifiedTime: 1738772887132
+  lastModifiedBy: fdD7YxceKPQmVCc5
 _key: "!items!oeTa3HBM1Fd2yB3T"

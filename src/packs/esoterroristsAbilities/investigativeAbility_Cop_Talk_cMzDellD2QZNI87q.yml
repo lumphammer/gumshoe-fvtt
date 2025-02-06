@@ -30,11 +30,11 @@ effects: []
 flags: {}
 _stats:
   systemId: investigator
-  systemVersion: 8.1.0
+  systemVersion: 8.2.4
   coreVersion: "12.331"
   createdTime: 1687168327010
-  modifiedTime: 1727264895296
-  lastModifiedBy: GKXsVq42x956ejvq
+  modifiedTime: 1738772886968
+  lastModifiedBy: fdD7YxceKPQmVCc5
   compendiumSource: null
   duplicateSource: null
 folder: null
