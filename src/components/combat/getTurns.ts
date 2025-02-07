@@ -41,8 +41,10 @@ export function getTurns(combat: Combat) {
     if (VideoHelper.hasVideoExtension(img)) {
       assertGame(game);
       // @ts-expect-error combatant._thumb is a thing
-      if (combatant._thumb) img = combatant._thumb;
-      else {
+      if (combatant._thumb) {
+        // @ts-expect-error combatant._thumb is a thing
+        img = combatant._thumb;
+      } else {
         void game.video
           .createThumbnail(img, { width: 100, height: 100 })
           .then((img: string) => {
@@ -57,8 +59,9 @@ export function getTurns(combat: Combat) {
     if (combatant.token) {
       // @ts-expect-error v10 types
       combatant.token.effects.forEach((e) => effects.add(e));
-      if (combatant.token.overlayEffect)
+      if (combatant.token.overlayEffect) {
         effects.add(combatant.token.overlayEffect);
+      }
     }
     if (combatant.actor) {
       combatant.actor.temporaryEffects.forEach((e) => {
