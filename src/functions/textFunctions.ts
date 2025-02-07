@@ -66,10 +66,6 @@ const createXss = memoizeNullaryOnce(async () => {
 
 async function enrichHtml(originalHtml: string): Promise<string> {
   if (typeof TextEditor !== "undefined") {
-    /* eslint-disable-next-line @typescript-eslint/await-thenable --
-    passing `async: true` means this *does* return a promise, but the types
-    don't know that.
-    */
     const newHtml = await TextEditor.enrichHTML(originalHtml, {
       // @ts-expect-error foundry types don't know about `async` yet
       async: true,
