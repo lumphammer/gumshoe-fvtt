@@ -14,6 +14,7 @@ import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 
+const defaultThemeIdentifier = "PQkMK35MWjRI2";
 const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
 
 export const SettingArea = () => {
@@ -30,21 +31,25 @@ export const SettingArea = () => {
   );
   const theme = useContext(ThemeContext);
   const isDevMode = getDevMode();
-
+  const defaultThemeName = settings.defaultThemeName.get();
+  const defaultThemeDisplayName =
+    runtimeConfig.themes[defaultThemeName]?.displayName;
   return (
     <Fragment>
       <InputGrid>
         <GridField label="Theme">
           <select
             onChange={onSetTheme}
-            value={actor.getSheetThemeName() || "default"}
+            value={actor.system.sheetTheme || defaultThemeIdentifier}
           >
             {Object.keys(runtimeConfig.themes).map((themeName) => (
               <option key={themeName} value={themeName}>
                 {runtimeConfig.themes[themeName].displayName}
               </option>
             ))}
-            <option value="default">{getTranslated("UseSystemDefault")}</option>
+            <option value={defaultThemeIdentifier}>
+              {getTranslated("Default")} ({defaultThemeDisplayName})
+            </option>
           </select>
         </GridField>
 
