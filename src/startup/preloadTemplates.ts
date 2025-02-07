@@ -4,6 +4,5 @@ export const preloadTemplates = async function () {
     // Add paths to "systems/investigator/templates"
   ];
 
-  // eslint-disable-next-line no-undef
   return loadTemplates(templatePaths);
 };

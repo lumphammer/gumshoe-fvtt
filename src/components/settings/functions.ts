@@ -13,7 +13,6 @@ export function assertNumericFieldOkayness(
   }
   if (typeof value !== "number" && value !== undefined) {
     throw new Error(
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `Invalid value ${JSON.stringify(value)} for field ${field.name} (must be a number)`,
     );
   }
