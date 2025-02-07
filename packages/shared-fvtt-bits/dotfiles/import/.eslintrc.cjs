@@ -35,7 +35,7 @@ module.exports = {
     //
     //core rules
     "comma-dangle": ["error", "always-multiline"],
-    curly: ["error", "multi-line"],
+    curly: ["error", "multi-line", "consistent"],
     "dot-notation": "off",
     quotes: ["error", "double", { avoidEscape: true }],
     semi: ["error", "always"],
