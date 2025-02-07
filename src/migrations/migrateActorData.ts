@@ -50,7 +50,8 @@ export const migrateActorData = function (
       }
     },
   );
-  if (items.length > 0)
+  if (items.length > 0) {
     updateData.items = [...(updateData.items ?? []), ...items];
+  }
   return updateData;
 };

@@ -57,8 +57,9 @@ export function getTurns(combat: Combat) {
     if (combatant.token) {
       // @ts-expect-error v10 types
       combatant.token.effects.forEach((e) => effects.add(e));
-      if (combatant.token.overlayEffect)
+      if (combatant.token.overlayEffect) {
         effects.add(combatant.token.overlayEffect);
+      }
     }
     if (combatant.actor) {
       combatant.actor.temporaryEffects.forEach((e) => {
