@@ -26,7 +26,8 @@
     "typecheck:watch": "tsc --noEmit --watch",
     "env": "env",
     "pwd": "pwd",
-    "do-release": "./packages/shared-fvtt-bits/scripts/do-release.sh",
+    "do-prerelease": "./packages/shared-fvtt-bits/scripts/do-prerelease.sh",
+    "do-full-release": "./packages/shared-fvtt-bits/scripts/do-full-release.sh",
     "update-legacy-release-branch": "./scripts/update-legacy-release-branch.sh",
     "extract-packs": "./tasks.ts extractPacks"
   },
