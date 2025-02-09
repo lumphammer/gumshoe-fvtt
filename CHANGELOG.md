@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 8.4 (2025-02-09)
+
+Two fixes for reported bugs:
+
+* @Seamonster reported that the fear Itself "Shooting" ability was set to go first in combat, like in Night's Black Agents. This is fixed, along with the corresponding ability in Ashen Stars and SRD Abilities.
+* @Muwak reported that the custom health ability Gesundheit wasn't updating the "health" resource. This is now fixed or at least fixable because of the new feature...
+
+New feature!
+
+* Any general ability can now be use to synchronise any resource attribute! Just pop over to the config, check **"Link to resource"**, and type in an identifier. The next time the pool changes, it will start synchronising with a resource of the same name.
+
+Other stuff in this release:
+
+Lots of behind the scene stuff.
+
+
 ## 8.2.4 (2024-11-24)
 
 * **BUG FIX**: Settings import is broken if the export contained card categories (#962)
