@@ -10,6 +10,7 @@ Two fixes for reported bugs:
 New feature!
 
 * Any general ability can now be use to synchronise any resource attribute! Just pop over to the config, check **"Link to resource"**, and type in an identifier. The next time the pool changes, it will start synchronising with a resource of the same name.
+* Resources set up this way will also sync *back* now - so you can right click an avatar, type a value into the health field, and hit return, and it will update your health ability.
 
 Other stuff in this release:
 
