@@ -65,7 +65,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
     "fvtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types#documents-v2-temp",
-    "happy-dom": "^16.8.1",
+    "happy-dom": "^17.1.0",
     "jest-diff": "^29.7.0",
     "less": "^4.2.2",
     "prettier": "^3.4.2",
