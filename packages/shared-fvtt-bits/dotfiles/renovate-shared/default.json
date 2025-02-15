@@ -3,5 +3,6 @@
   "extends": ["config:recommended", "schedule:weekly", "group:allNonMajor"],
   "prHourlyLimit": 0,
   "rangeStrategy": "bump",
-  "ignorePaths": ["packages/shared-fvtt-bits/**"]
+  "ignorePaths": ["packages/shared-fvtt-bits/**"],
+  "ignoreDeps": ["@swc/plugin-emotion", "@vitejs/plugin-react-swc"]
 }

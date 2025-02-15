@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import { visualizer } from "rollup-plugin-visualizer";
 import { fileURLToPath } from "url";
-import type { HttpProxy, UserConfig } from "vite";
+import type { HttpProxy, Plugin, UserConfig } from "vite";
 import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 
@@ -23,6 +23,8 @@ type CreateFvttViteConfigArgs = {
   packageType: "module" | "system";
   port?: number;
   sourceMap?: boolean;
+  includeReact?: boolean;
+  plugins?: Plugin[];
 };
 
 // this is lifted from
@@ -53,6 +55,8 @@ export function createFvttViteConfig({
   packageType,
   port = 40000,
   sourceMap = false,
+  includeReact = true,
+  plugins = [],
 }: CreateFvttViteConfigArgs) {
   //
   // setup
@@ -193,17 +197,19 @@ export function createFvttViteConfig({
       },
 
       plugins: [
-        react({
-          jsxImportSource: "@emotion/react",
-          plugins: [
-            [
-              "@swc/plugin-emotion",
-              {
-                autoLabel: "always",
-              },
+        ...plugins,
+        includeReact &&
+          react({
+            jsxImportSource: "@emotion/react",
+            plugins: [
+              [
+                "@swc/plugin-emotion",
+                {
+                  autoLabel: "always",
+                },
+              ],
             ],
-          ],
-        }),
+          }),
         // svgr plugin uses SVGR to import SVGs as React components
         svgr({
           svgrOptions: {

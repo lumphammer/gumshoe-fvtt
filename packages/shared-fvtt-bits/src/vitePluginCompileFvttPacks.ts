@@ -1,5 +1,6 @@
 import { compilePack } from "@foundryvtt/foundryvtt-cli";
 import chalk from "chalk";
+import { existsSync } from "fs";
 import { readdir } from "fs/promises";
 import { Plugin } from "vite";
 
@@ -21,16 +22,13 @@ export function vitePluginCompileFvttPacks({
   srcDir = "./src/packs",
   destDir = "./build/packs",
 }: vitePluginCompileFvttPacksOptions = {}): Plugin {
-  let shouldCompilePacks = false;
-
   return {
     name: "compile-fvtt-packs",
 
     // don't do this when launching dev server, it would be annoying
     apply: "build",
 
-    // at start: kick off the build (into a temp folder)
-    async buildStart(options) {
+    async closeBundle() {
       console.log(chalk.blue("\nChecking for open FVTT pack databases..."));
       const locks = await checkLocks(destDir);
       if (locks) {
@@ -40,19 +38,18 @@ export function vitePluginCompileFvttPacks({
             `${chalk.dim(locks)}\n`,
           ),
         );
-        shouldCompilePacks = false;
+        return;
       } else {
         console.log(chalk.green("👌 no open FVTT pack databases found.\n"));
-        shouldCompilePacks = true;
       }
-    },
 
-    async closeBundle() {
-      if (!shouldCompilePacks) return;
+      // id srcDir doesn't exist or is empty, don't compile packs
+      if (!existsSync(srcDir) || (await readdir(srcDir)).length === 0) {
+        console.log(chalk.cyan(`No packs found in ${srcDir}`));
+        return;
+      }
 
-      console.log(
-        chalk.blue(`\nBuilding FVTT pack databases to ${destDir}...`),
-      );
+      console.log(chalk.blue(`Building FVTT pack databases to ${destDir}...`));
       const packs = await readdir(srcDir);
       for (const pack of packs) {
         if (pack === ".gitattributes") continue;

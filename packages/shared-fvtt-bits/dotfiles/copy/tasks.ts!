@@ -15,7 +15,6 @@ import {
   link,
   packidge,
   unlink,
-  updateManifestFromCITagPush,
 } from "@lumphammer/shared-fvtt-bits/task-core/tasks";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -37,7 +36,6 @@ void boot({
     clean,
     packidge,
     buildPackTranslations,
-    updateManifestFromCITagPush,
     copyPacksBack,
   ],
 });
