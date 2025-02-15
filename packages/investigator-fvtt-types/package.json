@@ -27,11 +27,11 @@
     "@lumphammer/shared-fvtt-bits": "workspace:*",
     "@tsconfig/recommended": "^1.0.8",
     "fvtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types#documents-v2-temp",
-    "prettier": "^3.4.2",
+    "prettier": "^3.5.1",
     "typescript": "^5.7.3"
   },
   "volta": {
     "pnpm": "10.4.0",
-    "node": "22.13.1"
+    "node": "22.14.0"
   }
 }
