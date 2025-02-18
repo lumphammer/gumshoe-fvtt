@@ -47,15 +47,15 @@
     "@types/d3-ease": "^3.0.2",
     "@types/eslint": "^8.56.12",
     "@types/html-escaper": "^3.0.4",
-    "@types/react": "^19.0.8",
-    "@types/react-dom": "^19.0.3",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
     "@types/textdiff-create": "^1.0.2",
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
-    "@typescript-eslint/parser": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.1",
     "@vitejs/plugin-react-swc": "^3.7.2",
-    "@vitest/ui": "^3.0.5",
+    "@vitest/ui": "^3.0.6",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.0.1",
     "eslint-config-standard": "^17.1.0",
@@ -122,11 +122,11 @@
   },
   "engines": {
     "node": "22.14.0",
-    "pnpm": "10.4.0"
+    "pnpm": "10.4.1"
   },
   "volta": {
     "node": "22.14.0",
-    "pnpm": "10.4.0"
+    "pnpm": "10.4.1"
   },
-  "packageManager": "pnpm@10.4.0+sha512.6b849d0787d97f8f4e1f03a9b8ff8f038e79e153d6f11ae539ae7c435ff9e796df6a862c991502695c7f9e8fac8aeafc1ac5a8dab47e36148d183832d886dd52"
+  "packageManager": "pnpm@10.4.1+sha512.c753b6c3ad7afa13af388fa6d808035a008e30ea9993f58c6663e2bc5ff21679aa834db094987129aa4d488b86df57f7b634981b2f827cdcacc698cc0cfb88af"
 }
