@@ -26,7 +26,7 @@
     "@emotion/react": "^11.14.0",
     "@lumphammer/shared-fvtt-bits": "workspace:*",
     "@tsconfig/recommended": "^1.0.8",
-    "fvtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types#documents-v2-temp",
+    "fvtt-types": "github:n3dst4/foundry-vtt-types#documents-v2-temp",
     "prettier": "^3.5.3",
     "typescript": "^5.8.2"
   },
