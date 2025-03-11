@@ -55,9 +55,7 @@ export const Tracker = () => {
     event.preventDefault();
     const scene = game.scenes?.current;
     const cls = getDocumentClass("Combat");
-    // @ts-expect-error .create
     const combat = await cls.create({ scene: scene?.id });
-    // @ts-expect-error idgaf
     await combat?.activate({ render: false });
   }, []);
 

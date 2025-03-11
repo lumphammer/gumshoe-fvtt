@@ -202,7 +202,6 @@ export class InvestigatorActor extends Actor {
         ...extraData,
       }),
     };
-    // @ts-expect-error .create
     await ChatMessage.create(chatData, {});
   };
 
@@ -547,7 +546,6 @@ export class InvestigatorActor extends Actor {
       "Item",
       [
         {
-          // @ts-expect-error .type
           type: equipment,
           name: "New item",
           system: {
@@ -566,7 +564,6 @@ export class InvestigatorActor extends Actor {
       "Item",
       [
         {
-          // @ts-expect-error .type
           type: card,
           name: "New card",
         },
@@ -613,7 +610,6 @@ export class InvestigatorActor extends Actor {
       "Item",
       [
         {
-          // @ts-expect-error .type
           type: personalDetail,
           name,
           system: {

@@ -36,7 +36,6 @@ export const WeaponsArea = () => {
               "Item",
               [
                 {
-                  // @ts-expect-error .type
                   type: weapon,
                   name: "New weapon",
                 },

@@ -12,7 +12,6 @@ import { InvestigatorCombatant } from "./InvestigatorCombatant";
  */
 export class InvestigatorCombat extends Combat {
   override _onCreate(data: Item.CreateData, options: any, userId: string) {
-    // @ts-expect-error .create
     super._onCreate(data, options, userId);
     if (settings.useTurnPassingInitiative.get()) {
       void this.update({
