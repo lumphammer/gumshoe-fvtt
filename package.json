@@ -47,15 +47,15 @@
     "@types/d3-ease": "^3.0.2",
     "@types/eslint": "^8.56.12",
     "@types/html-escaper": "^3.0.4",
-    "@types/react": "^19.0.10",
+    "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
     "@types/textdiff-create": "^1.0.2",
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
-    "@typescript-eslint/parser": "^8.26.1",
+    "@typescript-eslint/parser": "^8.27.0",
     "@vitejs/plugin-react-swc": "^3.7.2",
-    "@vitest/ui": "^3.0.8",
+    "@vitest/ui": "^3.0.9",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.1",
     "eslint-config-standard": "^17.1.0",
@@ -92,7 +92,7 @@
     "immer": "^10.1.1",
     "json5": "^2.2.3",
     "marked": "^15.0.7",
-    "nanoid": "^5.1.4",
+    "nanoid": "^5.1.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
@@ -122,11 +122,11 @@
   },
   "engines": {
     "node": "22.14.0",
-    "pnpm": "10.6.3"
+    "pnpm": "10.6.5"
   },
   "volta": {
     "node": "22.14.0",
-    "pnpm": "10.6.3"
+    "pnpm": "10.6.5"
   },
-  "packageManager": "pnpm@10.6.3+sha512.bb45e34d50a9a76e858a95837301bfb6bd6d35aea2c5d52094fa497a467c43f5c440103ce2511e9e0a2f89c3d6071baac3358fc68ac6fb75e2ceb3d2736065e6"
+  "packageManager": "pnpm@10.6.5+sha512.cdf928fca20832cd59ec53826492b7dc25dc524d4370b6b4adbf65803d32efaa6c1c88147c0ae4e8d579a6c9eec715757b50d4fa35eea179d868eada4ed043af"
 }
