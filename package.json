@@ -53,14 +53,14 @@
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
-    "@typescript-eslint/parser": "^8.27.0",
+    "@typescript-eslint/parser": "^8.28.0",
     "@vitejs/plugin-react-swc": "^3.7.2",
-    "@vitest/ui": "^3.0.9",
+    "@vitest/ui": "^3.1.1",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.1",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-react": "^7.37.4",
-    "eslint-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
+    "eslint-plugin-react-compiler": "19.0.0-beta-e993439-20250328",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
@@ -72,7 +72,7 @@
     "rollup-plugin-visualizer": "^5.13.1",
     "tsx": "^4.19.3",
     "typescript": "5.8.2",
-    "vite": "^6.2.2",
+    "vite": "^6.2.4",
     "vite-plugin-svgr": "^4.3.0",
     "vitest": "^2.1.8"
   },
@@ -93,8 +93,8 @@
     "json5": "^2.2.3",
     "marked": "^15.0.7",
     "nanoid": "^5.1.5",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "textdiff-create": "^1.1.11",
     "textdiff-patch": "^1.1.10",
@@ -122,11 +122,11 @@
   },
   "engines": {
     "node": "22.14.0",
-    "pnpm": "10.6.5"
+    "pnpm": "10.7.0"
   },
   "volta": {
     "node": "22.14.0",
-    "pnpm": "10.6.5"
+    "pnpm": "10.7.0"
   },
-  "packageManager": "pnpm@10.6.5+sha512.cdf928fca20832cd59ec53826492b7dc25dc524d4370b6b4adbf65803d32efaa6c1c88147c0ae4e8d579a6c9eec715757b50d4fa35eea179d868eada4ed043af"
+  "packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6"
 }
