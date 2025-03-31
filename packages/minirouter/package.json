@@ -25,14 +25,14 @@
     "@emotion/react": "^11.14.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@types/react": "^19.0.12",
-    "framer-motion": "^12.5.0",
-    "react": "^19.0.0",
+    "framer-motion": "^12.6.2",
+    "react": "^19.1.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
-    "vite": "^6.2.2",
+    "vite": "^6.2.4",
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
     "@emotion/react": "^11.14.0",
-    "react": "^19.0.0"
+    "react": "^19.1.0"
   }
 }
