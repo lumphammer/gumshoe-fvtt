@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import { visualizer } from "rollup-plugin-visualizer";
 import { fileURLToPath } from "url";
-import type { HttpProxy, Plugin, UserConfig } from "vite";
+import type { HttpProxy, PluginOption, UserConfig } from "vite";
 import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 
@@ -24,7 +24,8 @@ type CreateFvttViteConfigArgs = {
   port?: number;
   sourceMap?: boolean;
   includeReact?: boolean;
-  plugins?: Plugin[];
+  plugins?: PluginOption[];
+  allowedHosts?: true | string[];
 };
 
 // this is lifted from
@@ -57,6 +58,7 @@ export function createFvttViteConfig({
   sourceMap = false,
   includeReact = true,
   plugins = [],
+  allowedHosts,
 }: CreateFvttViteConfigArgs) {
   //
   // setup
@@ -96,11 +98,17 @@ export function createFvttViteConfig({
         // without this we get a bunch of noise from react whenever we test for
         // a react error
         silent: true,
+        typecheck: {
+          // for some reason --typecheck has stopped working with vitest, but
+          // since this is a better way I'm not investigating further.
+          enabled: true,
+        },
       },
 
       server: {
         port,
         open: `http://localhost:${port}`,
+        allowedHosts,
         proxy: {
           // In dev mode, plugin-react needs a preamble inserted in the head. When
           // you run a "normal" vite app, each plugin gets a chance to transform the

@@ -117,7 +117,8 @@
       "vite": "$vite",
       "vitest": "$vitest",
       "react": "$react",
-      "@types/react": "$@types/react"
+      "@types/react": "$@types/react",
+      "fvtt-types": "$fvtt-types"
     }
   },
   "engines": {
