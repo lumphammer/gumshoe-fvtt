@@ -15,7 +15,7 @@
     "build-pack-translations": "./tasks.ts buildPackTranslations",
     "pull-translations": "tx pull --workers 16 --force -all",
     "test-types": "vitest --typecheck.only",
-    "test": "vitest --typecheck",
+    "test": "vitest",
     "eslint:check": "eslint src --report-unused-disable-directives",
     "eslint:fix": "eslint src --fix --report-unused-disable-directives",
     "format:check": "prettier --check src",
@@ -29,7 +29,8 @@
     "do-prerelease": "./packages/shared-fvtt-bits/scripts/do-prerelease.sh",
     "do-full-release": "./packages/shared-fvtt-bits/scripts/do-full-release.sh",
     "update-legacy-release-branch": "./scripts/update-legacy-release-branch.sh",
-    "extract-packs": "./tasks.ts extractPacks"
+    "extract-packs": "./tasks.ts extractPacks",
+    "check": "pnpm run typecheck && pnpm run test --run && pnpm run lint:check && pnpm run format:check && pnpm run build"
   },
   "author": "",
   "license": "",
