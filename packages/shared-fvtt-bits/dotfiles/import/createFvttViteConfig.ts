@@ -254,7 +254,7 @@ export function createFvttViteConfig({
           gzipSize: true,
           template: "treemap",
           filename: "stats/treemap.html",
-        }),
+        }) as PluginOption,
         compilePacks(),
       ],
     };

@@ -2,7 +2,7 @@ import { compilePack } from "@foundryvtt/foundryvtt-cli";
 import chalk from "chalk";
 import { existsSync } from "fs";
 import { readdir } from "fs/promises";
-import { Plugin } from "vite";
+import { PluginOption } from "vite";
 
 import { checkLocks } from "./checkLocks";
 
@@ -21,7 +21,7 @@ type vitePluginCompileFvttPacksOptions = {
 export function vitePluginCompileFvttPacks({
   srcDir = "./src/packs",
   destDir = "./build/packs",
-}: vitePluginCompileFvttPacksOptions = {}): Plugin {
+}: vitePluginCompileFvttPacksOptions = {}): PluginOption {
   return {
     name: "compile-fvtt-packs",
 
