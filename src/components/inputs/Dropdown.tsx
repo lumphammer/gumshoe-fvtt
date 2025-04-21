@@ -99,7 +99,6 @@ export const Dropdown = ({
     };
   }, [container, bodyClick]);
 
-  // eslint-disable-next-line react-compiler/react-compiler
   const buttonRect = buttonRef.current?.getBoundingClientRect();
   const containerRect = container.getBoundingClientRect();
 
