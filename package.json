@@ -48,20 +48,20 @@
     "@types/d3-ease": "^3.0.2",
     "@types/eslint": "^8.56.12",
     "@types/html-escaper": "^3.0.4",
-    "@types/react": "^19.1.1",
+    "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@types/textdiff-create": "^1.0.2",
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
-    "@typescript-eslint/parser": "^8.29.1",
+    "@typescript-eslint/parser": "^8.31.0",
     "@vitejs/plugin-react-swc": "^3.7.2",
-    "@vitest/ui": "^3.1.1",
+    "@vitest/ui": "^3.1.2",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.2",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-compiler": "19.0.0-beta-e993439-20250405",
+    "eslint-plugin-react-compiler": "19.0.0-beta-af1b7da-20250417",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
@@ -73,7 +73,7 @@
     "rollup-plugin-visualizer": "^5.13.1",
     "tsx": "^4.19.3",
     "typescript": "5.8.3",
-    "vite": "^6.2.6",
+    "vite": "^6.3.2",
     "vite-plugin-svgr": "^4.3.0",
     "vitest": "^3.1.1"
   },
@@ -85,7 +85,7 @@
     "@lumphammer/minirouter": "workspace:^",
     "@lumphammer/shared-fvtt-bits": "workspace:^",
     "@monaco-editor/react": "^4.7.0",
-    "@radix-ui/react-switch": "^1.1.4",
+    "@radix-ui/react-switch": "^1.2.2",
     "case": "^1.6.3",
     "d3-ease": "^3.0.1",
     "focusable-selectors": "^0.8.4",
@@ -102,7 +102,7 @@
     "turndown": "^7.2.0",
     "xss": "^1.0.15",
     "yamljs": "^0.3.0",
-    "zod": "^3.24.2",
+    "zod": "^3.24.3",
     "zod-validation-error": "^3.4.0"
   },
   "pnpm": {
@@ -124,11 +124,11 @@
   },
   "engines": {
     "node": "22.14.0",
-    "pnpm": "10.8.0"
+    "pnpm": "10.9.0"
   },
   "volta": {
     "node": "22.14.0",
-    "pnpm": "10.8.0"
+    "pnpm": "10.9.0"
   },
-  "packageManager": "pnpm@10.8.0+sha512.0e82714d1b5b43c74610193cb20734897c1d00de89d0e18420aebc5977fa13d780a9cb05734624e81ebd81cc876cd464794850641c48b9544326b5622ca29971"
+  "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f"
 }
