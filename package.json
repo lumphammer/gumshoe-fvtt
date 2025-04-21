@@ -61,7 +61,7 @@
     "eslint-config-prettier": "^10.1.2",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-compiler": "19.0.0-beta-ebf51a3-20250411",
+    "eslint-plugin-react-compiler": "19.0.0-beta-af1b7da-20250417",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
