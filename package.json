@@ -61,7 +61,7 @@
     "eslint-config-prettier": "^10.1.2",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-compiler": "19.0.0-beta-af1b7da-20250417",
+    "eslint-plugin-react-compiler": "19.0.0-beta-ebf51a3-20250411",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
@@ -73,7 +73,7 @@
     "rollup-plugin-visualizer": "^5.13.1",
     "tsx": "^4.19.3",
     "typescript": "5.8.3",
-    "vite": "6.3.2",
+    "vite": "6.3.3",
     "vite-plugin-svgr": "^4.3.0",
     "vitest": "^3.1.1"
   },
@@ -92,7 +92,7 @@
     "html-escaper": "^3.0.3",
     "immer": "^10.1.1",
     "json5": "^2.2.3",
-    "marked": "^15.0.8",
+    "marked": "^15.0.11",
     "nanoid": "^5.1.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -123,12 +123,12 @@
     }
   },
   "engines": {
-    "node": "22.14.0",
-    "pnpm": "10.9.0"
+    "node": "22.15.0",
+    "pnpm": "10.10.0"
   },
   "volta": {
-    "node": "22.14.0",
-    "pnpm": "10.9.0"
+    "node": "22.15.0",
+    "pnpm": "10.10.0"
   },
-  "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f"
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }
