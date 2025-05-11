@@ -43,18 +43,18 @@ if (import.meta.hot) {
   if (import.meta.hot) {
     import.meta.hot.accept(
       [
-        "tealTheme.ts",
-        "niceTheme.ts",
-        "niceThemeDark.ts",
-        "highContrastTheme.ts",
-        "fearTheme.ts",
-        "pallidTheme.ts",
-        "deltaGroovyTheme.ts",
-        "greenTriangleTheme.ts",
-        "antiquarianTheme.ts",
-        "olderThanMemoryTheme.ts",
-        "unsafeRealityTheme.ts",
-        "mutantCityBlueTheme.ts",
+        "./tealTheme.ts",
+        "./niceTheme.ts",
+        "./niceThemeDark.ts",
+        "./highContrastTheme.ts",
+        "./fearTheme.ts",
+        "./pallidTheme.ts",
+        "./deltaGroovyTheme.ts",
+        "./greenTriangleTheme.ts",
+        "./antiquarianTheme.ts",
+        "./olderThanMemoryTheme.ts",
+        "./unsafeRealityTheme.ts",
+        "./mutantCityBlueTheme.ts",
       ],
       // keep this list in sync with the exports above.
       // unfortunately the HMR API is staticaly analysed so we can't do anything
