@@ -1,0 +1,35 @@
+{
+    "label": "SRD Weapons",
+    "mapping": {
+        "category": "system.category"
+    },
+    "entries": {
+        "Firearm (heavy)": {
+            "name": "Firearm (heavy)"
+        },
+        "Firearm (light)": {
+            "name": "Firearm (light)"
+        },
+        "Fist/kick": {
+            "name": "Fist/kick"
+        },
+        "Heavy club": {
+            "name": "Heavy club"
+        },
+        "Knife": {
+            "name": "Knife"
+        },
+        "Machete": {
+            "name": "Machete"
+        },
+        "Police Baton": {
+            "name": "Police Baton"
+        },
+        "Small improvised weapon": {
+            "name": "Small improvised weapon"
+        },
+        "Sword": {
+            "name": "Sword"
+        }
+    }
+}

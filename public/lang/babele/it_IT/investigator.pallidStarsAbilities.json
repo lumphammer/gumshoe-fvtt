@@ -1,0 +1,332 @@
+{
+    "label": "Ashen Stars Abilities",
+    "mapping": {
+        "category": "system.category"
+    },
+    "entries": {
+        "Anthropology": {
+            "name": "Antropologia",
+            "category": "Abilità Accademiche"
+        },
+        "Archaeology": {
+            "name": "Archeologia",
+            "category": "Abilità Accademiche"
+        },
+        "Astronomy": {
+            "name": "Astronomia",
+            "category": "Abilità Tecniche"
+        },
+        "Athletics": {
+            "name": "Fisico",
+            "category": "Abilità Generiche"
+        },
+        "Battle Console": {
+            "name": "Battle Console",
+            "category": "Abilità Generiche"
+        },
+        "Bio Signatures": {
+            "name": "Bio Signatures",
+            "category": "Abilità Tecniche"
+        },
+        "Botany": {
+            "name": "Botany",
+            "category": "Abilità Accademiche"
+        },
+        "Bullshit Detector": {
+            "name": "Bullshit Detector",
+            "category": "Abilità Interpersonali"
+        },
+        "Bureaucracy": {
+            "name": "Burocrazia",
+            "category": "Abilità Interpersonali"
+        },
+        "Business Affairs": {
+            "name": "Business Affairs",
+            "category": "Abilità Generiche"
+        },
+        "Chemistry": {
+            "name": "Chimica",
+            "category": "Abilità Tecniche"
+        },
+        "Communications Intercept": {
+            "name": "Communications Intercept",
+            "category": "Abilità Generiche"
+        },
+        "Consciousness Simulation": {
+            "name": "Consciousness Simulation",
+            "category": "Special"
+        },
+        "Cop Talk": {
+            "name": "Parlare alla Polizia",
+            "category": "Abilità Interpersonali"
+        },
+        "Cybe Culture": {
+            "name": "Cybe Culture",
+            "category": "Abilità Accademiche"
+        },
+        "Data Retrieval": {
+            "name": "Data Retrieval",
+            "category": "Abilità Tecniche"
+        },
+        "Decryption": {
+            "name": "Decryption",
+            "category": "Abilità Tecniche"
+        },
+        "Downside": {
+            "name": "Downside",
+            "category": "Abilità Interpersonali"
+        },
+        "Dreamsight": {
+            "name": "Dreamsight",
+            "category": "Special"
+        },
+        "Emotion Suppression (Balla)": {
+            "name": "Emotion Suppression (Balla)",
+            "category": "Abilità Generiche"
+        },
+        "Energy Signatures": {
+            "name": "Energy Signatures",
+            "category": "Abilità Tecniche"
+        },
+        "Enhancement Integration (Cybe)": {
+            "name": "Enhancement Integration (Cybe)",
+            "category": "Abilità Generiche"
+        },
+        "Evidence Collection": {
+            "name": "Raccogliere Prove",
+            "category": "Abilità Tecniche"
+        },
+        "Explosive Devices": {
+            "name": "Explosive Devices",
+            "category": "Abilità Tecniche"
+        },
+        "Farsight (Vas Mal)": {
+            "name": "Farsight (Vas Mal)",
+            "category": "Abilità Generiche"
+        },
+        "Filch": {
+            "name": "Gioco di Mano",
+            "category": "Abilità Generiche"
+        },
+        "Flattery": {
+            "name": "Adulare",
+            "category": "Abilità Interpersonali"
+        },
+        "Flirting": {
+            "name": "Flirting",
+            "category": "Abilità Interpersonali"
+        },
+        "Forensic Accounting": {
+            "name": "Forensic Accounting",
+            "category": "Abilità Accademiche"
+        },
+        "Forensic Anthropology": {
+            "name": "Forensic Anthropology",
+            "category": "Abilità Tecniche"
+        },
+        "Forensic Engineering": {
+            "name": "Forensic Engineering",
+            "category": "Abilità Tecniche"
+        },
+        "Forensic Psychology": {
+            "name": "Forensic Psychology",
+            "category": "Abilità Accademiche"
+        },
+        "Geology": {
+            "name": "Geologia",
+            "category": "Abilità Accademiche"
+        },
+        "Ground Craft": {
+            "name": "Ground Craft",
+            "category": "Abilità Generiche"
+        },
+        "Health": {
+            "name": "Salute Fisica",
+            "category": "Abilità Generiche"
+        },
+        "Helm Control": {
+            "name": "Helm Control",
+            "category": "Abilità Generiche"
+        },
+        "History, Balla": {
+            "name": "History, Balla",
+            "category": "Abilità Accademiche"
+        },
+        "History, Combine": {
+            "name": "History, Combine",
+            "category": "Abilità Accademiche"
+        },
+        "History, Durugh": {
+            "name": "History, Durugh",
+            "category": "Abilità Accademiche"
+        },
+        "History, Human": {
+            "name": "History, Human",
+            "category": "Abilità Accademiche"
+        },
+        "History, Kch-Thk": {
+            "name": "History, Kch-Thk",
+            "category": "Abilità Accademiche"
+        },
+        "History, Tavak": {
+            "name": "History, Tavak",
+            "category": "Abilità Accademiche"
+        },
+        "Holo Surveillance": {
+            "name": "Holo Surveillance",
+            "category": "Abilità Tecniche"
+        },
+        "Imaging": {
+            "name": "Imaging",
+            "category": "Abilità Tecniche"
+        },
+        "Impersonate": {
+            "name": "Impersonate",
+            "category": "Abilità Interpersonali"
+        },
+        "Industrial Design": {
+            "name": "Industrial Design",
+            "category": "Abilità Tecniche"
+        },
+        "Infiltration": {
+            "name": "Infiltration",
+            "category": "Abilità Generiche"
+        },
+        "Inspiration": {
+            "name": "Inspiration",
+            "category": "Abilità Interpersonali"
+        },
+        "Interrogation": {
+            "name": "Interrogare",
+            "category": "Abilità Interpersonali"
+        },
+        "Intimidation": {
+            "name": " Intimidire",
+            "category": "Abilità Interpersonali"
+        },
+        "Kinetics": {
+            "name": "Kinetics",
+            "category": "Abilità Tecniche"
+        },
+        "Law": {
+            "name": "Legge",
+            "category": "Abilità Accademiche"
+        },
+        "Linguistics": {
+            "name": "Linguistics",
+            "category": "Abilità Accademiche"
+        },
+        "Medic": {
+            "name": "Medic",
+            "category": "Abilità Generiche"
+        },
+        "Migrate Consciousness (Kch-Thk)": {
+            "name": "Migrate Consciousness (Kch-Thk)",
+            "category": "Abilità Generiche"
+        },
+        "Naval Tactics": {
+            "name": "Naval Tactics",
+            "category": "Abilità Generiche"
+        },
+        "Negotiation": {
+            "name": "Negotiation",
+            "category": "Abilità Interpersonali"
+        },
+        "Neural Rewiring (Cybe)": {
+            "name": "Neural Rewiring (Cybe)",
+            "category": "Abilità Generiche"
+        },
+        "Neurosight": {
+            "name": "Neurosight",
+            "category": "Special"
+        },
+        "Pathway Amplification (Vas Mal)": {
+            "name": "Pathway Amplification (Vas Mal)",
+            "category": "Abilità Generiche"
+        },
+        "Phase (Durugh)": {
+            "name": "Phase (Durugh)",
+            "category": "Abilità Generiche"
+        },
+        "Preparedness": {
+            "name": "Equipaggiarsi",
+            "category": "Abilità Generiche"
+        },
+        "Probability Override (Vas Mal)": {
+            "name": "Probability Override (Vas Mal)",
+            "category": "Abilità Generiche"
+        },
+        "Psychic Vitality (Vas Mal)": {
+            "name": "Psychic Vitality (Vas Mal)",
+            "category": "Abilità Generiche"
+        },
+        "Public Relations": {
+            "name": "Public Relations",
+            "category": "Abilità Generiche"
+        },
+        "Reassurance": {
+            "name": "Rassicurare",
+            "category": "Abilità Interpersonali"
+        },
+        "Resist Battle Frenzy (Tavak)": {
+            "name": "Resist Battle Frenzy (Tavak)",
+            "category": "Abilità Generiche"
+        },
+        "Respect": {
+            "name": "Respect",
+            "category": "Abilità Interpersonali"
+        },
+        "Scuffling": {
+            "name": "Lottare",
+            "category": "Abilità Generiche"
+        },
+        "Sense Trouble": {
+            "name": "Fiutare Guai",
+            "category": "Abilità Generiche"
+        },
+        "Shooting": {
+            "name": "Shooting",
+            "category": "Abilità Generiche"
+        },
+        "Shuttle Craft": {
+            "name": "Shuttle Craft",
+            "category": "Abilità Generiche"
+        },
+        "Surveillance": {
+            "name": "Surveillance",
+            "category": "Abilità Generiche"
+        },
+        "Systems Design": {
+            "name": "Systems Design",
+            "category": "Abilità Generiche"
+        },
+        "Systems Repair": {
+            "name": "Systems Repair",
+            "category": "Abilità Generiche"
+        },
+        "Timesight": {
+            "name": "Timesight",
+            "category": "Special"
+        },
+        "Vas Mal Culture": {
+            "name": "Vas Mal Culture",
+            "category": "Abilità Accademiche"
+        },
+        "Viro Manipulation": {
+            "name": "Viro Manipulation",
+            "category": "Abilità Generiche"
+        },
+        "Virology": {
+            "name": "Virology",
+            "category": "Abilità Tecniche"
+        },
+        "Xenoculture": {
+            "name": "Xenoculture",
+            "category": "Abilità Accademiche"
+        },
+        "Zoology": {
+            "name": "Zoology",
+            "category": "Abilità Accademiche"
+        }
+    }
+}

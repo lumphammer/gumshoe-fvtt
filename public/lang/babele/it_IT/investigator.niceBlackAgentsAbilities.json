@@ -1,0 +1,252 @@
+{
+    "label": "Night's Black Agents Abilities",
+    "mapping": {
+        "category": "system.category"
+    },
+    "entries": {
+        "Accounting": {
+            "name": "Contabilità",
+            "category": "Abilità Accademiche"
+        },
+        "Archaeology": {
+            "name": "Archeologia",
+            "category": "Abilità Accademiche"
+        },
+        "Architecture": {
+            "name": "Architettura",
+            "category": "Abilità Accademiche"
+        },
+        "Art History": {
+            "name": "Storia dell’Arte",
+            "category": "Abilità Accademiche"
+        },
+        "Astronomy": {
+            "name": "Astronomia",
+            "category": "Abilità Tecniche"
+        },
+        "Athletics": {
+            "name": "Fisico",
+            "category": "Abilità Generiche"
+        },
+        "Bullshit Detector": {
+            "name": "Bullshit Detector",
+            "category": "Abilità Interpersonali"
+        },
+        "Bureaucracy": {
+            "name": "Burocrazia",
+            "category": "Abilità Interpersonali"
+        },
+        "Chemistry": {
+            "name": "Chimica",
+            "category": "Abilità Tecniche"
+        },
+        "Conceal": {
+            "name": "Celare",
+            "category": "Abilità Generiche"
+        },
+        "Cop Talk": {
+            "name": "Parlare alla Polizia",
+            "category": "Abilità Interpersonali"
+        },
+        "Cover": {
+            "name": "Cover",
+            "category": "Abilità Generiche"
+        },
+        "Criminology": {
+            "name": "Criminology",
+            "category": "Abilità Accademiche"
+        },
+        "Cryptography": {
+            "name": "Crittografia",
+            "category": "Abilità Tecniche"
+        },
+        "Data Recovery": {
+            "name": "Data Recovery",
+            "category": "Abilità Tecniche"
+        },
+        "Diagnosis": {
+            "name": "Diagnosis",
+            "category": "Abilità Accademiche"
+        },
+        "Digital Intrusion": {
+            "name": "Digital Intrusion",
+            "category": "Abilità Generiche"
+        },
+        "Disguise": {
+            "name": "Camuffarsi",
+            "category": "Abilità Generiche"
+        },
+        "Driving": {
+            "name": "Guidare",
+            "category": "Abilità Generiche"
+        },
+        "Electronic Surveillance": {
+            "name": "Electronic Surveillance",
+            "category": "Abilità Tecniche"
+        },
+        "Explosive Devices": {
+            "name": "Explosive Devices",
+            "category": "Abilità Generiche"
+        },
+        "Filch": {
+            "name": "Gioco di Mano",
+            "category": "Abilità Generiche"
+        },
+        "Flattery": {
+            "name": "Adulare",
+            "category": "Abilità Interpersonali"
+        },
+        "Flirting": {
+            "name": "Flirting",
+            "category": "Abilità Interpersonali"
+        },
+        "Forgery": {
+            "name": "Forgery",
+            "category": "Abilità Tecniche"
+        },
+        "Gambling": {
+            "name": "Gambling",
+            "category": "Abilità Generiche"
+        },
+        "Hand-to-Hand": {
+            "name": "Hand-to-Hand",
+            "category": "Abilità Generiche"
+        },
+        "Health": {
+            "name": "Salute Fisica",
+            "category": "Abilità Generiche"
+        },
+        "High Society": {
+            "name": "High Society",
+            "category": "Abilità Interpersonali"
+        },
+        "History": {
+            "name": "Storia",
+            "category": "Abilità Accademiche"
+        },
+        "Human Terrain": {
+            "name": "Human Terrain",
+            "category": "Abilità Accademiche"
+        },
+        "Infiltration": {
+            "name": "Infiltration",
+            "category": "Abilità Generiche"
+        },
+        "Interrogation": {
+            "name": "Interrogare",
+            "category": "Abilità Interpersonali"
+        },
+        "Intimidation": {
+            "name": " Intimidire",
+            "category": "Abilità Interpersonali"
+        },
+        "Languages": {
+            "name": "Lingue",
+            "category": "Abilità Accademiche"
+        },
+        "Law": {
+            "name": "Legge",
+            "category": "Abilità Accademiche"
+        },
+        "Mechanics": {
+            "name": "Mechanics",
+            "category": "Abilità Generiche"
+        },
+        "Medic": {
+            "name": "Medic",
+            "category": "Abilità Generiche"
+        },
+        "Military Science": {
+            "name": "Military Science",
+            "category": "Abilità Accademiche"
+        },
+        "Negotiation": {
+            "name": "Negotiation",
+            "category": "Abilità Interpersonali"
+        },
+        "Network": {
+            "name": "Network",
+            "category": "Abilità Generiche"
+        },
+        "Notice": {
+            "name": "Notice",
+            "category": "Abilità Tecniche"
+        },
+        "Occult Studies": {
+            "name": "Occult Studies",
+            "category": "Abilità Accademiche"
+        },
+        "Outdoor Survival": {
+            "name": "Outdoor Survival",
+            "category": "Abilità Tecniche"
+        },
+        "Pharmacy": {
+            "name": "Farmacologia",
+            "category": "Abilità Tecniche"
+        },
+        "Photography": {
+            "name": " Fotografia",
+            "category": "Abilità Tecniche"
+        },
+        "Piloting": {
+            "name": "Pilotare",
+            "category": "Abilità Generiche"
+        },
+        "Preparedness": {
+            "name": "Equipaggiarsi",
+            "category": "Abilità Generiche"
+        },
+        "Reassurance": {
+            "name": "Rassicurare",
+            "category": "Abilità Interpersonali"
+        },
+        "Research": {
+            "name": "Research",
+            "category": "Abilità Accademiche"
+        },
+        "Sense Trouble": {
+            "name": "Fiutare Guai",
+            "category": "Abilità Generiche"
+        },
+        "Shooting": {
+            "name": "Shooting",
+            "category": "Abilità Generiche"
+        },
+        "Shrink": {
+            "name": "Shrink",
+            "category": "Abilità Generiche"
+        },
+        "Stability": {
+            "name": "Equilibrio Psichico",
+            "category": "Abilità Generiche"
+        },
+        "Streetwise": {
+            "name": "Conoscenze di Strada",
+            "category": "Abilità Interpersonali"
+        },
+        "Surveillance": {
+            "name": "Surveillance",
+            "category": "Abilità Generiche"
+        },
+        "Tradecraft": {
+            "name": "Tradecraft",
+            "category": "Abilità Interpersonali"
+        },
+        "Traffic Analysis": {
+            "name": "Traffic Analysis",
+            "category": "Abilità Tecniche"
+        },
+        "Urban Survival": {
+            "name": "Urban Survival",
+            "category": "Abilità Tecniche"
+        },
+        "Vampirology": {
+            "name": "Vampirology",
+            "category": "Abilità Accademiche"
+        },
+        "Weapons": {
+            "name": "Uso Armi Bianche",
+            "category": "Abilità Generiche"
+        }
+    }
+}

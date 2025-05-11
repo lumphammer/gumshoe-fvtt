@@ -1,0 +1,248 @@
+{
+    "label": "Dying Earth (built-in)",
+    "mapping": {
+        "category": "system.category"
+    },
+    "entries": {
+        "Appraisal": {
+            "name": "Appraisal",
+            "category": "Abilità Generiche"
+        },
+        "Arrogance": {
+            "name": "Arrogance",
+            "category": "Resist"
+        },
+        "Athletics": {
+            "name": "Fisico",
+            "category": "Abilità Generiche"
+        },
+        "Avarice": {
+            "name": "Avarice",
+            "category": "Resist"
+        },
+        "Caution": {
+            "name": "Caution",
+            "category": "Attack"
+        },
+        "Charming": {
+            "name": "Charming",
+            "category": "Persuade"
+        },
+        "Concealment": {
+            "name": "Concealment",
+            "category": "Abilità Generiche"
+        },
+        "Contrary": {
+            "name": "Contrary",
+            "category": "Rebuff"
+        },
+        "Craftsmanship": {
+            "name": "Craftsmanship",
+            "category": "Abilità Generiche"
+        },
+        "Cunning": {
+            "name": "Cunning",
+            "category": "Attack"
+        },
+        "Curious": {
+            "name": "Curious",
+            "category": "Magic"
+        },
+        "Daring": {
+            "name": "Daring",
+            "category": "Magic"
+        },
+        "Devious": {
+            "name": "Devious",
+            "category": "Magic"
+        },
+        "Dodge": {
+            "name": "Dodge",
+            "category": "Defense"
+        },
+        "Driving": {
+            "name": "Guidare",
+            "category": "Abilità Generiche"
+        },
+        "Eloquent": {
+            "name": "Eloquent",
+            "category": "Persuade"
+        },
+        "Engineering": {
+            "name": "Engineering",
+            "category": "Abilità Generiche"
+        },
+        "Etiquette": {
+            "name": "Etiquette",
+            "category": "Abilità Generiche"
+        },
+        "Ferocity": {
+            "name": "Ferocity",
+            "category": "Attack"
+        },
+        "Finesse": {
+            "name": "Finesse",
+            "category": "Attack"
+        },
+        "Forceful": {
+            "name": "Forceful",
+            "category": "Magic"
+        },
+        "Forthright": {
+            "name": "Forthright",
+            "category": "Persuade"
+        },
+        "Gambling": {
+            "name": "Gambling",
+            "category": "Abilità Generiche"
+        },
+        "Glib": {
+            "name": "Glib",
+            "category": "Persuade"
+        },
+        "Gourmandism": {
+            "name": "Gourmandism",
+            "category": "Resist"
+        },
+        "Health": {
+            "name": "Salute Fisica",
+            "category": "Abilità Generiche"
+        },
+        "Imposture": {
+            "name": "Imposture",
+            "category": "Abilità Generiche"
+        },
+        "Indolence": {
+            "name": "Indolence",
+            "category": "Resist"
+        },
+        "Insightful": {
+            "name": "Insightful",
+            "category": "Magic"
+        },
+        "Intimidating": {
+            "name": "Intimidating",
+            "category": "Persuade"
+        },
+        "Intuition": {
+            "name": "Intuition",
+            "category": "Defense"
+        },
+        "Lawyerly": {
+            "name": "Lawyerly",
+            "category": "Rebuff"
+        },
+        "Living Rough": {
+            "name": "Living Rough",
+            "category": "Abilità Generiche"
+        },
+        "Misdirection": {
+            "name": "Misdirection",
+            "category": "Defense"
+        },
+        "Obfuscatory": {
+            "name": "Obfuscatory",
+            "category": "Persuade"
+        },
+        "Obtuse": {
+            "name": "Obtuse",
+            "category": "Rebuff"
+        },
+        "Parry": {
+            "name": "Parry",
+            "category": "Defense"
+        },
+        "Pedantry": {
+            "name": "Pedantry",
+            "category": "Abilità Generiche"
+        },
+        "Penetrating": {
+            "name": "Penetrating",
+            "category": "Rebuff"
+        },
+        "Perception": {
+            "name": "Perception",
+            "category": "Abilità Generiche"
+        },
+        "Pettifoggery": {
+            "name": "Pettifoggery",
+            "category": "Resist"
+        },
+        "Physician": {
+            "name": "Physician",
+            "category": "Abilità Generiche"
+        },
+        "Pure-Hearted": {
+            "name": "Pure-Hearted",
+            "category": "Rebuff"
+        },
+        "Quick Fingers": {
+            "name": "Quick Fingers",
+            "category": "Abilità Generiche"
+        },
+        "Rakishness": {
+            "name": "Rakishness",
+            "category": "Resist"
+        },
+        "Riding": {
+            "name": "Cavalcare",
+            "category": "Abilità Generiche"
+        },
+        "Scuttlebutt": {
+            "name": "Scuttlebutt",
+            "category": "Abilità Generiche"
+        },
+        "Seamanship": {
+            "name": "Seamanship",
+            "category": "Abilità Generiche"
+        },
+        "Seduction": {
+            "name": "Seduction",
+            "category": "Abilità Generiche"
+        },
+        "Speed": {
+            "name": "Speed",
+            "category": "Attack"
+        },
+        "Stealth": {
+            "name": "Furtività",
+            "category": "Abilità Generiche"
+        },
+        "Stewardship": {
+            "name": "Stewardship",
+            "category": "Abilità Generiche"
+        },
+        "Strength": {
+            "name": "Strength",
+            "category": "Attack"
+        },
+        "Studious": {
+            "name": "Studious",
+            "category": "Magic"
+        },
+        "Sure-Footedness": {
+            "name": "Sure-Footedness",
+            "category": "Defense"
+        },
+        "Tracking": {
+            "name": "Tracking",
+            "category": "Abilità Generiche"
+        },
+        "Vexation": {
+            "name": "Vexation",
+            "category": "Defense"
+        },
+        "Wary": {
+            "name": "Wary",
+            "category": "Rebuff"
+        },
+        "Wealth": {
+            "name": "Wealth",
+            "category": "Abilità Generiche"
+        },
+        "Wherewithal": {
+            "name": "Wherewithal",
+            "category": "Abilità Generiche"
+        }
+    }
+}

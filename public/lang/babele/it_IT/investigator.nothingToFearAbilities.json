@@ -1,0 +1,196 @@
+{
+    "label": "Fear Itself Abilities",
+    "mapping": {
+        "category": "system.category"
+    },
+    "entries": {
+        "Athletics": {
+            "name": "Fisico",
+            "category": "Abilità Generiche"
+        },
+        "Aura Reading": {
+            "name": "Aura Reading",
+            "category": "Psychic Powers"
+        },
+        "Bullshit Detector": {
+            "name": "Bullshit Detector",
+            "category": "Abilità Interpersonali"
+        },
+        "Bureaucracy": {
+            "name": "Burocrazia",
+            "category": "Abilità Interpersonali"
+        },
+        "Computer Use": {
+            "name": "Computer Use",
+            "category": "Abilità Tecniche"
+        },
+        "Cop Talk": {
+            "name": "Parlare alla Polizia",
+            "category": "Abilità Interpersonali"
+        },
+        "Driving": {
+            "name": "Guidare",
+            "category": "Abilità Generiche"
+        },
+        "Filch": {
+            "name": "Gioco di Mano",
+            "category": "Abilità Generiche"
+        },
+        "Flattery": {
+            "name": "Adulare",
+            "category": "Abilità Interpersonali"
+        },
+        "Fleeing": {
+            "name": "Darsela a Gambe",
+            "category": "Abilità Generiche"
+        },
+        "Flirting": {
+            "name": "Flirting",
+            "category": "Abilità Interpersonali"
+        },
+        "Health": {
+            "name": "Salute Fisica",
+            "category": "Abilità Generiche"
+        },
+        "Hiding": {
+            "name": "Hiding",
+            "category": "Abilità Generiche"
+        },
+        "History": {
+            "name": "Storia",
+            "category": "Abilità Accademiche"
+        },
+        "Humanities": {
+            "name": "Humanities",
+            "category": "Abilità Accademiche"
+        },
+        "Impersonate": {
+            "name": "Impersonate",
+            "category": "Abilità Interpersonali"
+        },
+        "Infiltration": {
+            "name": "Infiltration",
+            "category": "Abilità Generiche"
+        },
+        "Interrogation": {
+            "name": "Interrogare",
+            "category": "Abilità Interpersonali"
+        },
+        "Intimidation": {
+            "name": " Intimidire",
+            "category": "Abilità Interpersonali"
+        },
+        "Investigative Procedure": {
+            "name": "Investigative Procedure",
+            "category": "Abilità Tecniche"
+        },
+        "Languages": {
+            "name": "Lingue",
+            "category": "Abilità Accademiche"
+        },
+        "Law": {
+            "name": "Legge",
+            "category": "Abilità Accademiche"
+        },
+        "Mechanics": {
+            "name": "Mechanics",
+            "category": "Abilità Generiche"
+        },
+        "Medic": {
+            "name": "Medic",
+            "category": "Abilità Generiche"
+        },
+        "Medicine": {
+            "name": "Medicina",
+            "category": "Abilità Tecniche"
+        },
+        "Medium": {
+            "name": "Medium",
+            "category": "Psychic Powers"
+        },
+        "Messenger": {
+            "name": "Messenger",
+            "category": "Psychic Powers"
+        },
+        "Negotiation": {
+            "name": "Negotiation",
+            "category": "Abilità Interpersonali"
+        },
+        "Notice": {
+            "name": "Notice",
+            "category": "Abilità Tecniche"
+        },
+        "Occult Studies": {
+            "name": "Occult Studies",
+            "category": "Abilità Accademiche"
+        },
+        "Outdoor Survival": {
+            "name": "Outdoor Survival",
+            "category": "Abilità Tecniche"
+        },
+        "Photography": {
+            "name": " Fotografia",
+            "category": "Abilità Tecniche"
+        },
+        "Premonitions": {
+            "name": "Premonitions",
+            "category": "Psychic Powers"
+        },
+        "Preparedness": {
+            "name": "Equipaggiarsi",
+            "category": "Abilità Generiche"
+        },
+        "Reassurance": {
+            "name": "Rassicurare",
+            "category": "Abilità Interpersonali"
+        },
+        "Remote Viewing": {
+            "name": "Remote Viewing",
+            "category": "Psychic Powers"
+        },
+        "Research": {
+            "name": "Research",
+            "category": "Abilità Accademiche"
+        },
+        "Science": {
+            "name": "Science",
+            "category": "Abilità Tecniche"
+        },
+        "Scuffling": {
+            "name": "Lottare",
+            "category": "Abilità Generiche"
+        },
+        "Sense Trouble": {
+            "name": "Fiutare Guai",
+            "category": "Abilità Generiche"
+        },
+        "Sensitive": {
+            "name": "Sensitive",
+            "category": "Psychic Powers"
+        },
+        "Shooting": {
+            "name": "Shooting",
+            "category": "Abilità Generiche"
+        },
+        "Shrink": {
+            "name": "Shrink",
+            "category": "Abilità Generiche"
+        },
+        "Stability": {
+            "name": "Equilibrio Psichico",
+            "category": "Abilità Generiche"
+        },
+        "Streetwise": {
+            "name": "Conoscenze di Strada",
+            "category": "Abilità Interpersonali"
+        },
+        "Synchronicity": {
+            "name": "Synchronicity",
+            "category": "Psychic Powers"
+        },
+        "Trivia": {
+            "name": "Trivia",
+            "category": "Abilità Accademiche"
+        }
+    }
+}
