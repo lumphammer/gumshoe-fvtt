@@ -225,6 +225,11 @@
       "lang": "pl",
       "name": "Polski",
       "path": "lang/moribundWorld/pl.json"
+    },
+    {
+      "lang": "it",
+      "name": "Italiano",
+      "path": "lang/it_IT.json"
     }
   ],
   "compatibility": {
