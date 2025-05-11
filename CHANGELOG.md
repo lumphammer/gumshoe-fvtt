@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 8.7 (2025-05-11)
+
+* **NEW TRANSLATIONS**: Many languages have had their translations updated by kind volunteers and a whole new translation for Italian has been added!
+
+An apology: I wasn't getting notifications from Transifex so a LOT of translations had been added and updated without me realising. It wasn't until `vond` sent me a PR with the updated French translations that I went to check.
+
 ## 8.4 (2025-02-09)
 
 Two fixes for reported bugs:
