@@ -1,0 +1,224 @@
+{
+    "label": "Esoterrorists Abilities (built-in)",
+    "mapping": {
+        "category": "system.category"
+    },
+    "entries": {
+        "Anthropology": {
+            "name": "Antropologia",
+            "category": "Abilità Accademiche"
+        },
+        "Archaeology": {
+            "name": "Archeologia",
+            "category": "Abilità Accademiche"
+        },
+        "Architecture": {
+            "name": "Architettura",
+            "category": "Abilità Accademiche"
+        },
+        "Art History": {
+            "name": "Storia dell’Arte",
+            "category": "Abilità Accademiche"
+        },
+        "Astronomy": {
+            "name": "Astronomia",
+            "category": "Abilità Tecniche"
+        },
+        "Athletics": {
+            "name": "Fisico",
+            "category": "Abilità Generiche"
+        },
+        "Ballistics": {
+            "name": "Ballistics",
+            "category": "Abilità Tecniche"
+        },
+        "Bullshit Detector": {
+            "name": "Bullshit Detector",
+            "category": "Abilità Interpersonali"
+        },
+        "Bureaucracy": {
+            "name": "Burocrazia",
+            "category": "Abilità Interpersonali"
+        },
+        "Chemistry": {
+            "name": "Chimica",
+            "category": "Abilità Tecniche"
+        },
+        "Cop Talk": {
+            "name": "Parlare alla Polizia",
+            "category": "Abilità Interpersonali"
+        },
+        "Cryptography": {
+            "name": "Crittografia",
+            "category": "Abilità Tecniche"
+        },
+        "Data Retrival": {
+            "name": "Data Retrival",
+            "category": "Abilità Tecniche"
+        },
+        "Document Analysis": {
+            "name": "Document Analysis",
+            "category": "Abilità Tecniche"
+        },
+        "Driving": {
+            "name": "Guidare",
+            "category": "Abilità Generiche"
+        },
+        "Electronic Surveillance": {
+            "name": "Electronic Surveillance",
+            "category": "Abilità Tecniche"
+        },
+        "Evidence Collection": {
+            "name": "Raccogliere Prove",
+            "category": "Abilità Tecniche"
+        },
+        "Explosive Devices": {
+            "name": "Explosive Devices",
+            "category": "Abilità Tecniche"
+        },
+        "Filch": {
+            "name": "Gioco di Mano",
+            "category": "Abilità Generiche"
+        },
+        "Fingerprinting": {
+            "name": "Fingerprinting",
+            "category": "Abilità Tecniche"
+        },
+        "Flattery": {
+            "name": "Adulare",
+            "category": "Abilità Interpersonali"
+        },
+        "Flirting": {
+            "name": "Flirting",
+            "category": "Abilità Interpersonali"
+        },
+        "Forensic Accounting": {
+            "name": "Forensic Accounting",
+            "category": "Abilità Accademiche"
+        },
+        "Forensic Anthropology": {
+            "name": "Forensic Anthropology",
+            "category": "Abilità Tecniche"
+        },
+        "Forensic Entomology": {
+            "name": "Forensic Entomology",
+            "category": "Abilità Tecniche"
+        },
+        "Forensic Psychology": {
+            "name": "Forensic Psychology",
+            "category": "Abilità Accademiche"
+        },
+        "Health": {
+            "name": "Salute Fisica",
+            "category": "Abilità Generiche"
+        },
+        "History": {
+            "name": "Storia",
+            "category": "Abilità Accademiche"
+        },
+        "Impersonate": {
+            "name": "Impersonate",
+            "category": "Abilità Interpersonali"
+        },
+        "Infiltration": {
+            "name": "Infiltration",
+            "category": "Abilità Generiche"
+        },
+        "Interrogation": {
+            "name": "Interrogare",
+            "category": "Abilità Interpersonali"
+        },
+        "Intimidation": {
+            "name": " Intimidire",
+            "category": "Abilità Interpersonali"
+        },
+        "Languages": {
+            "name": "Lingue",
+            "category": "Abilità Accademiche"
+        },
+        "Law": {
+            "name": "Legge",
+            "category": "Abilità Accademiche"
+        },
+        "Linguistics": {
+            "name": "Linguistics",
+            "category": "Abilità Accademiche"
+        },
+        "Local Knowledge": {
+            "name": "Local Knowledge",
+            "category": "Abilità Accademiche"
+        },
+        "Mechanics": {
+            "name": "Mechanics",
+            "category": "Abilità Generiche"
+        },
+        "Medic": {
+            "name": "Medic",
+            "category": "Abilità Generiche"
+        },
+        "Natural History": {
+            "name": "Natural History",
+            "category": "Abilità Accademiche"
+        },
+        "Negotiation": {
+            "name": "Negotiation",
+            "category": "Abilità Interpersonali"
+        },
+        "Occult Studies": {
+            "name": "Occult Studies",
+            "category": "Abilità Accademiche"
+        },
+        "Pathology": {
+            "name": "Pathology",
+            "category": "Abilità Accademiche"
+        },
+        "Photography": {
+            "name": " Fotografia",
+            "category": "Abilità Tecniche"
+        },
+        "Preparedness": {
+            "name": "Equipaggiarsi",
+            "category": "Abilità Generiche"
+        },
+        "Reassurance": {
+            "name": "Rassicurare",
+            "category": "Abilità Interpersonali"
+        },
+        "Research": {
+            "name": "Research",
+            "category": "Abilità Accademiche"
+        },
+        "Scuffling": {
+            "name": "Lottare",
+            "category": "Abilità Generiche"
+        },
+        "Shooting": {
+            "name": "Shooting",
+            "category": "Abilità Generiche"
+        },
+        "Shrink": {
+            "name": "Shrink",
+            "category": "Abilità Generiche"
+        },
+        "Stability": {
+            "name": "Equilibrio Psichico",
+            "category": "Abilità Generiche"
+        },
+        "Streetwise": {
+            "name": "Conoscenze di Strada",
+            "category": "Abilità Interpersonali"
+        },
+        "Surveillance": {
+            "name": "Surveillance",
+            "category": "Abilità Generiche"
+        },
+        "Textual Analysis": {
+            "name": "Textual Analysis",
+            "category": "Abilità Accademiche"
+        },
+        "Trivia": {
+            "name": "Trivia",
+            "category": "Abilità Accademiche"
+        }
+    }
+}

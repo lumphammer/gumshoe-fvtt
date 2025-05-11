@@ -1,0 +1,260 @@
+{
+    "label": "Casting the Runes Abilities",
+    "mapping": {
+        "category": "system.category"
+    },
+    "entries": {
+        "Anthropology": {
+            "name": "Antropologia",
+            "category": "Abilità Accademiche"
+        },
+        "Archaeology": {
+            "name": "Archeologia",
+            "category": "Abilità Accademiche"
+        },
+        "Architecture": {
+            "name": "Architettura",
+            "category": "Abilità Accademiche"
+        },
+        "Art": {
+            "name": "Arte",
+            "category": "Abilità Tecniche"
+        },
+        "Art History": {
+            "name": "Storia dell’Arte",
+            "category": "Abilità Accademiche"
+        },
+        "Assess Honesty": {
+            "name": "Giudicare",
+            "category": "Abilità Interpersonali"
+        },
+        "Astronomy": {
+            "name": "Astronomia",
+            "category": "Abilità Tecniche"
+        },
+        "Athletics": {
+            "name": "Fisico",
+            "category": "Abilità Generiche"
+        },
+        "Bargain": {
+            "name": " Contrattare",
+            "category": "Abilità Interpersonali"
+        },
+        "Biology": {
+            "name": "Biologia",
+            "category": "Abilità Accademiche"
+        },
+        "Bookkeeping": {
+            "name": "Bookkeeping",
+            "category": "Abilità Tecniche"
+        },
+        "Bureaucracy": {
+            "name": "Burocrazia",
+            "category": "Abilità Generiche"
+        },
+        "Charm": {
+            "name": "Charm",
+            "category": "Abilità Interpersonali"
+        },
+        "Chemistry": {
+            "name": "Chimica",
+            "category": "Abilità Tecniche"
+        },
+        "Class": {
+            "name": "Class",
+            "category": "Abilità Interpersonali"
+        },
+        "Conceal": {
+            "name": "Celare",
+            "category": "Abilità Generiche"
+        },
+        "Connections": {
+            "name": "Connections",
+            "category": "Abilità Generiche"
+        },
+        "Contemplation": {
+            "name": "Contemplation",
+            "category": "Abilità Accademiche"
+        },
+        "Craft": {
+            "name": "Artigianato",
+            "category": "Abilità Tecniche"
+        },
+        "Criminology": {
+            "name": "Criminology",
+            "category": "Abilità Accademiche"
+        },
+        "Cryptography": {
+            "name": "Crittografia",
+            "category": "Abilità Tecniche"
+        },
+        "Demolition": {
+            "name": "Demolition",
+            "category": "Abilità Generiche"
+        },
+        "Disguise": {
+            "name": "Camuffarsi",
+            "category": "Abilità Generiche"
+        },
+        "Driving": {
+            "name": "Guidare",
+            "category": "Abilità Generiche"
+        },
+        "Evidence Collection": {
+            "name": "Raccogliere Prove",
+            "category": "Abilità Tecniche"
+        },
+        "Fieldcraft": {
+            "name": "Fieldcraft",
+            "category": "Abilità Tecniche"
+        },
+        "Filch": {
+            "name": "Gioco di Mano",
+            "category": "Abilità Generiche"
+        },
+        "Firearms": {
+            "name": "Uso Armi da Fuoco",
+            "category": "Abilità Generiche"
+        },
+        "First Aid": {
+            "name": "Pronto Soccorso",
+            "category": "Abilità Generiche"
+        },
+        "Fleeing": {
+            "name": "Darsela a Gambe",
+            "category": "Abilità Generiche"
+        },
+        "Folklore": {
+            "name": "Folklore",
+            "category": "Abilità Accademiche"
+        },
+        "Forensics": {
+            "name": "Medicina Legale",
+            "category": "Abilità Tecniche"
+        },
+        "Gambling": {
+            "name": "Gambling",
+            "category": "Abilità Generiche"
+        },
+        "Geology": {
+            "name": "Geologia",
+            "category": "Abilità Accademiche"
+        },
+        "Health": {
+            "name": "Salute Fisica",
+            "category": "Abilità Generiche"
+        },
+        "History": {
+            "name": "Storia",
+            "category": "Abilità Accademiche"
+        },
+        "Hypnosis": {
+            "name": "Ipnosi",
+            "category": "Abilità Generiche"
+        },
+        "Interrogation": {
+            "name": "Interrogare",
+            "category": "Abilità Interpersonali"
+        },
+        "Intimidation": {
+            "name": " Intimidire",
+            "category": "Abilità Interpersonali"
+        },
+        "Language": {
+            "name": "Language",
+            "category": "Abilità Accademiche"
+        },
+        "Law": {
+            "name": "Legge",
+            "category": "Abilità Accademiche"
+        },
+        "Library Use": {
+            "name": "Biblioteconomia",
+            "category": "Abilità Accademiche"
+        },
+        "Mechanics": {
+            "name": "Mechanics",
+            "category": "Abilità Generiche"
+        },
+        "Medicine": {
+            "name": "Medicina",
+            "category": "Abilità Accademiche"
+        },
+        "Navigation": {
+            "name": "Navigation",
+            "category": "Abilità Generiche"
+        },
+        "Occult": {
+            "name": "Occultismo",
+            "category": "Abilità Accademiche"
+        },
+        "Pharmacy": {
+            "name": "Farmacologia",
+            "category": "Abilità Tecniche"
+        },
+        "Photography": {
+            "name": " Fotografia",
+            "category": "Abilità Tecniche"
+        },
+        "Physics": {
+            "name": "Fisica",
+            "category": "Abilità Accademiche"
+        },
+        "Preparedness": {
+            "name": "Equipaggiarsi",
+            "category": "Abilità Generiche"
+        },
+        "Psychoanalysis": {
+            "name": "Psicoanalisi",
+            "category": "Abilità Generiche"
+        },
+        "Reassurance": {
+            "name": "Rassicurare",
+            "category": "Abilità Interpersonali"
+        },
+        "Riding": {
+            "name": "Cavalcare",
+            "category": "Abilità Generiche"
+        },
+        "Sailing": {
+            "name": "Sailing",
+            "category": "Abilità Generiche"
+        },
+        "Scuffling": {
+            "name": "Lottare",
+            "category": "Abilità Generiche"
+        },
+        "Sense Trouble": {
+            "name": "Fiutare Guai",
+            "category": "Abilità Generiche"
+        },
+        "Shadowing": {
+            "name": "Furtività",
+            "category": "Abilità Generiche"
+        },
+        "Stability": {
+            "name": "Equilibrio Psichico",
+            "category": "Abilità Generiche"
+        },
+        "Stealth": {
+            "name": "Furtività",
+            "category": "Abilità Generiche"
+        },
+        "Streetwise": {
+            "name": "Conoscenze di Strada",
+            "category": "Abilità Interpersonali"
+        },
+        "Theology": {
+            "name": "Teologia",
+            "category": "Abilità Accademiche"
+        },
+        "Trade": {
+            "name": "Trade",
+            "category": "Abilità Generiche"
+        },
+        "Weapons": {
+            "name": "Uso Armi Bianche",
+            "category": "Abilità Generiche"
+        }
+    }
+}

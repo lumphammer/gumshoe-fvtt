@@ -1,0 +1,256 @@
+{
+    "label": "Sulle tracce di Cthulhu: Abilità",
+    "mapping": {
+        "category": "system.category"
+    },
+    "entries": {
+        "Accounting": {
+            "name": "Contabilità",
+            "category": "Accademiche"
+        },
+        "Anthropology": {
+            "name": "Antropologia",
+            "category": "Accademiche"
+        },
+        "Archaeology": {
+            "name": "Archeologia",
+            "category": "Accademiche"
+        },
+        "Architecture": {
+            "name": "Architettura",
+            "category": "Accademiche"
+        },
+        "Art": {
+            "name": "Arte",
+            "category": "Tecniche"
+        },
+        "Art History": {
+            "name": "Storia dell’Arte",
+            "category": "Accademiche"
+        },
+        "Assess Honesty": {
+            "name": "Giudicare",
+            "category": "Interpersonali"
+        },
+        "Astronomy": {
+            "name": "Astronomia",
+            "category": "Tecniche"
+        },
+        "Athletics": {
+            "name": "Fisico",
+            "category": "Generiche"
+        },
+        "Bargain": {
+            "name": " Contrattare",
+            "category": "Interpersonali"
+        },
+        "Biology": {
+            "name": "Biologia",
+            "category": "Accademiche"
+        },
+        "Bureaucracy": {
+            "name": "Burocrazia",
+            "category": "Interpersonali"
+        },
+        "Chemistry": {
+            "name": "Chimica",
+            "category": "Tecniche"
+        },
+        "Conceal": {
+            "name": "Celare",
+            "category": "Generiche"
+        },
+        "Cop Talk": {
+            "name": "Parlare alla Polizia",
+            "category": "Interpersonali"
+        },
+        "Craft": {
+            "name": "Artigianato",
+            "category": "Tecniche"
+        },
+        "Credit Rating": {
+            "name": "Reputazione ",
+            "category": "Interpersonali"
+        },
+        "Cryptography": {
+            "name": "Crittografia",
+            "category": "Accademiche"
+        },
+        "Cthulhu Mythos": {
+            "name": "Miti di Cthulhu",
+            "category": "Accademiche"
+        },
+        "Disguise": {
+            "name": "Camuffarsi",
+            "category": "Generiche"
+        },
+        "Driving": {
+            "name": "Guidare",
+            "category": "Generiche"
+        },
+        "Electrical Repair": {
+            "name": "Riparazione Elettrica",
+            "category": "Generiche"
+        },
+        "Evidence Collection": {
+            "name": "Raccogliere Prove",
+            "category": "Tecniche"
+        },
+        "Explosives": {
+            "name": "Uso Esplosivi",
+            "category": "Generiche"
+        },
+        "Filch": {
+            "name": "Gioco di Mano",
+            "category": "Generiche"
+        },
+        "Firearms": {
+            "name": "Uso Armi da Fuoco",
+            "category": "Generiche"
+        },
+        "First Aid": {
+            "name": "Pronto Soccorso",
+            "category": "Generiche"
+        },
+        "Flattery": {
+            "name": "Adulare",
+            "category": "Interpersonali"
+        },
+        "Fleeing": {
+            "name": "Darsela a Gambe",
+            "category": "Generiche"
+        },
+        "Forensics": {
+            "name": "Medicina Legale",
+            "category": "Tecniche"
+        },
+        "Geology": {
+            "name": "Geologia",
+            "category": "Accademiche"
+        },
+        "Health": {
+            "name": "Salute Fisica",
+            "category": "Generiche"
+        },
+        "History": {
+            "name": "Storia",
+            "category": "Accademiche"
+        },
+        "Hypnosis": {
+            "name": "Ipnosi",
+            "category": "Generiche"
+        },
+        "Interrogation": {
+            "name": "Interrogare",
+            "category": "Interpersonali"
+        },
+        "Intimidation": {
+            "name": " Intimidire",
+            "category": "Interpersonali"
+        },
+        "Languages": {
+            "name": "Lingue",
+            "category": "Accademiche"
+        },
+        "Law": {
+            "name": "Legge",
+            "category": "Accademiche"
+        },
+        "Library Use": {
+            "name": "Biblioteconomia",
+            "category": "Accademiche"
+        },
+        "Locksmith": {
+            "name": "Scassinare",
+            "category": "Tecniche"
+        },
+        "Mechanical Repair": {
+            "name": "Riparazione Meccanica",
+            "category": "Generiche"
+        },
+        "Medicine": {
+            "name": "Medicina",
+            "category": "Accademiche"
+        },
+        "Occult": {
+            "name": "Occultismo",
+            "category": "Accademiche"
+        },
+        "Oral History": {
+            "name": "Raccogliere Voci",
+            "category": "Interpersonali"
+        },
+        "Outdoorsman": {
+            "name": "Vita all’Aperto",
+            "category": "Tecniche"
+        },
+        "Pharmacy": {
+            "name": "Farmacologia",
+            "category": "Tecniche"
+        },
+        "Photography": {
+            "name": " Fotografia",
+            "category": "Tecniche"
+        },
+        "Physics": {
+            "name": "Fisica",
+            "category": "Accademiche"
+        },
+        "Piloting": {
+            "name": "Pilotare",
+            "category": "Generiche"
+        },
+        "Preparedness": {
+            "name": "Equipaggiarsi",
+            "category": "Generiche"
+        },
+        "Psychoanalysis": {
+            "name": "Psicoanalisi",
+            "category": "Generiche"
+        },
+        "Reassurance": {
+            "name": "Rassicurare",
+            "category": "Interpersonali"
+        },
+        "Riding": {
+            "name": "Cavalcare",
+            "category": "Generiche"
+        },
+        "Sanity": {
+            "name": "Sanità Mentale",
+            "category": "Generiche"
+        },
+        "Scuffling": {
+            "name": "Lottare",
+            "category": "Generiche"
+        },
+        "Sense Trouble": {
+            "name": "Fiutare Guai",
+            "category": "Generiche"
+        },
+        "Shadowing": {
+            "name": "Pedinare",
+            "category": "Generiche"
+        },
+        "Stability": {
+            "name": "Equilibrio Psichico",
+            "category": "Generiche"
+        },
+        "Stealth": {
+            "name": "Furtività",
+            "category": "Generiche"
+        },
+        "Streetwise": {
+            "name": "Conoscenze di Strada",
+            "category": "Interpersonali"
+        },
+        "Theology": {
+            "name": "Teologia",
+            "category": "Accademiche"
+        },
+        "Weapons": {
+            "name": "Uso Armi Bianche",
+            "category": "Generiche"
+        }
+    }
+}

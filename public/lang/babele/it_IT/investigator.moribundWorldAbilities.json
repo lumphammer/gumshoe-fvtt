@@ -6,15 +6,15 @@
     "entries": {
         "Appraisal": {
             "name": "Appraisal",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Arrogance": {
             "name": "Arrogance",
             "category": "Resist"
         },
         "Athletics": {
-            "name": "Atletismo",
-            "category": "Generales"
+            "name": "Fisico",
+            "category": "Abilità Generiche"
         },
         "Avarice": {
             "name": "Avarice",
@@ -30,7 +30,7 @@
         },
         "Concealment": {
             "name": "Concealment",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Contrary": {
             "name": "Contrary",
@@ -38,7 +38,7 @@
         },
         "Craftsmanship": {
             "name": "Craftsmanship",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Cunning": {
             "name": "Cunning",
@@ -61,8 +61,8 @@
             "category": "Defense"
         },
         "Driving": {
-            "name": "Conducción",
-            "category": "Generales"
+            "name": "Guidare",
+            "category": "Abilità Generiche"
         },
         "Eloquent": {
             "name": "Eloquent",
@@ -70,11 +70,11 @@
         },
         "Engineering": {
             "name": "Engineering",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Etiquette": {
             "name": "Etiquette",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Ferocity": {
             "name": "Ferocity",
@@ -93,8 +93,8 @@
             "category": "Persuade"
         },
         "Gambling": {
-            "name": "Juegos de Apuestas",
-            "category": "Generales"
+            "name": "Gambling",
+            "category": "Abilità Generiche"
         },
         "Glib": {
             "name": "Glib",
@@ -105,12 +105,12 @@
             "category": "Resist"
         },
         "Health": {
-            "name": "Salud",
-            "category": "Generales"
+            "name": "Salute Fisica",
+            "category": "Abilità Generiche"
         },
         "Imposture": {
             "name": "Imposture",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Indolence": {
             "name": "Indolence",
@@ -134,7 +134,7 @@
         },
         "Living Rough": {
             "name": "Living Rough",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Misdirection": {
             "name": "Misdirection",
@@ -154,7 +154,7 @@
         },
         "Pedantry": {
             "name": "Pedantry",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Penetrating": {
             "name": "Penetrating",
@@ -162,7 +162,7 @@
         },
         "Perception": {
             "name": "Perception",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Pettifoggery": {
             "name": "Pettifoggery",
@@ -170,7 +170,7 @@
         },
         "Physician": {
             "name": "Physician",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Pure-Hearted": {
             "name": "Pure-Hearted",
@@ -178,39 +178,39 @@
         },
         "Quick Fingers": {
             "name": "Quick Fingers",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Rakishness": {
             "name": "Rakishness",
             "category": "Resist"
         },
         "Riding": {
-            "name": "Monta",
-            "category": "Generales"
+            "name": "Cavalcare",
+            "category": "Abilità Generiche"
         },
         "Scuttlebutt": {
             "name": "Scuttlebutt",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Seamanship": {
             "name": "Seamanship",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Seduction": {
             "name": "Seduction",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Speed": {
             "name": "Speed",
             "category": "Attack"
         },
         "Stealth": {
-            "name": "Sigilo",
-            "category": "Generales"
+            "name": "Furtività",
+            "category": "Abilità Generiche"
         },
         "Stewardship": {
             "name": "Stewardship",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Strength": {
             "name": "Strength",
@@ -226,7 +226,7 @@
         },
         "Tracking": {
             "name": "Tracking",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Vexation": {
             "name": "Vexation",
@@ -238,11 +238,11 @@
         },
         "Wealth": {
             "name": "Wealth",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         },
         "Wherewithal": {
             "name": "Wherewithal",
-            "category": "Generales"
+            "category": "Abilità Generiche"
         }
     }
 }

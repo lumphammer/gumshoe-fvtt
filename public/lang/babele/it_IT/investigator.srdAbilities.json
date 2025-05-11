@@ -1,52 +1,52 @@
 {
-    "label": "Habilidades SRD ",
+    "label": "SRD Abilities",
     "mapping": {
         "category": "system.category"
     },
     "entries": {
         "Analytic Taste": {
             "name": "Analytic Taste",
-            "category": "Exótico"
+            "category": "Exotic"
         },
         "Anthropology": {
-            "name": "Antropología",
-            "category": "Académicas"
+            "name": "Antropologia",
+            "category": "Abilità Accademiche"
         },
         "Archaeology": {
-            "name": "Arqueología",
-            "category": "Académicas"
+            "name": "Archeologia",
+            "category": "Abilità Accademiche"
         },
         "Architecture": {
-            "name": "Arquitectura",
-            "category": "Académicas"
+            "name": "Architettura",
+            "category": "Abilità Accademiche"
         },
         "Art History": {
-            "name": "Historia del arte",
-            "category": "Académicas"
+            "name": "Storia dell’Arte",
+            "category": "Abilità Accademiche"
         },
         "Artillery": {
-            "name": "Artillería",
-            "category": "Física "
+            "name": "Artillery",
+            "category": "Physical"
         },
         "Astronomy": {
-            "name": "Astronomía",
-            "category": "Académicas"
+            "name": "Astronomia",
+            "category": "Abilità Accademiche"
         },
         "Athletics": {
-            "name": "Atletismo",
-            "category": "Física "
+            "name": "Fisico",
+            "category": "Physical"
         },
         "Aura Reading": {
-            "name": "Lectura de auras",
-            "category": "Exótico"
+            "name": "Aura Reading",
+            "category": "Exotic"
         },
         "Authority": {
-            "name": "Autoridad",
-            "category": "Interpersonales"
+            "name": "Authority",
+            "category": "Abilità Interpersonali"
         },
         "Ballistics": {
-            "name": "Balística",
-            "category": "Técnicas"
+            "name": "Ballistics",
+            "category": "Abilità Tecniche"
         },
         "Battlefield": {
             "name": "Battlefield",
@@ -54,23 +54,23 @@
         },
         "Belle-Lettres": {
             "name": "Belle-Lettres",
-            "category": "Académicas"
+            "category": "Abilità Accademiche"
         },
         "Bonhomie": {
             "name": "Bonhomie",
-            "category": "Interpersonales"
+            "category": "Abilità Interpersonali"
         },
         "Botany": {
-            "name": "Botánica",
-            "category": "Académicas"
+            "name": "Botany",
+            "category": "Abilità Accademiche"
         },
         "Bullshit Detector": {
-            "name": "Detección de Mentiras",
-            "category": "Interpersonales"
+            "name": "Bullshit Detector",
+            "category": "Abilità Interpersonali"
         },
         "Bureaucracy": {
-            "name": "Burocracia",
-            "category": "Interpersonales"
+            "name": "Burocrazia",
+            "category": "Abilità Interpersonali"
         },
         "Burglary": {
             "name": "Burglary",
@@ -82,239 +82,239 @@
         },
         "Camping": {
             "name": "Camping",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Charm": {
-            "name": "Carisma",
-            "category": "Interpersonales"
+            "name": "Charm",
+            "category": "Abilità Interpersonali"
         },
         "Chemistry": {
-            "name": "Química",
-            "category": "Técnicas"
+            "name": "Chimica",
+            "category": "Abilità Tecniche"
         },
         "Chronal Stability": {
             "name": "Chronal Stability",
-            "category": "Exótico"
+            "category": "Exotic"
         },
         "Comparative Religion": {
             "name": "Comparative Religion",
-            "category": "Académicas"
+            "category": "Abilità Accademiche"
         },
         "Composure": {
             "name": "Composure",
             "category": "Presence"
         },
         "Conceal": {
-            "name": "Ocultar",
+            "name": "Celare",
             "category": "Focus"
         },
         "Cop Talk": {
-            "name": "Jerga policial",
-            "category": "Interpersonales"
+            "name": "Parlare alla Polizia",
+            "category": "Abilità Interpersonali"
         },
         "Counterinsurgency": {
             "name": "Counterinsurgency",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Craft": {
-            "name": "Habilidad artesanal",
-            "category": "Técnicas"
+            "name": "Artigianato",
+            "category": "Abilità Tecniche"
         },
         "Cryptography": {
-            "name": "Criptografía",
-            "category": "Técnicas"
+            "name": "Crittografia",
+            "category": "Abilità Tecniche"
         },
         "Culture": {
             "name": "Culture",
-            "category": "Académicas"
+            "category": "Abilità Accademiche"
         },
         "Data Retrieval": {
             "name": "Data Retrieval",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Disguise": {
-            "name": "Disfraz",
+            "name": "Camuffarsi",
             "category": "Focus"
         },
         "Document Analysis": {
-            "name": "Análisis de Documentos",
-            "category": "Técnicas"
+            "name": "Document Analysis",
+            "category": "Abilità Tecniche"
         },
         "Driving": {
-            "name": "Conducir",
+            "name": "Guidare",
             "category": "Focus"
         },
         "Electronic Surveillance": {
-            "name": "Vigilancia Electrónica",
-            "category": "Técnicas"
+            "name": "Electronic Surveillance",
+            "category": "Abilità Tecniche"
         },
         "Evidence Collection": {
-            "name": "Recogida de pruebas",
-            "category": "Técnicas"
+            "name": "Raccogliere Prove",
+            "category": "Abilità Tecniche"
         },
         "Explosive Devices": {
-            "name": "Explosivos",
-            "category": "Técnicas"
+            "name": "Explosive Devices",
+            "category": "Abilità Tecniche"
         },
         "Explosives": {
-            "name": "Explosivos",
+            "name": "Uso Esplosivi",
             "category": "Focus"
         },
         "Farming": {
             "name": "Farming",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Fashion": {
             "name": "Fashion",
-            "category": "Académicas"
+            "category": "Abilità Accademiche"
         },
         "Fighting": {
             "name": "Fighting",
-            "category": "Física "
+            "category": "Physical"
         },
         "Filch": {
-            "name": "Birlar",
+            "name": "Gioco di Mano",
             "category": "Focus"
         },
         "Fingerprinting": {
-            "name": "Huellas Dactilares",
-            "category": "Técnicas"
+            "name": "Fingerprinting",
+            "category": "Abilità Tecniche"
         },
         "First Aid": {
-            "name": "Primeros auxilios",
+            "name": "Pronto Soccorso",
             "category": "Focus"
         },
         "Flattery": {
-            "name": "Adular",
-            "category": "Interpersonales"
+            "name": "Adulare",
+            "category": "Abilità Interpersonali"
         },
         "Fleeing": {
-            "name": "Huida",
-            "category": "Física "
+            "name": "Darsela a Gambe",
+            "category": "Physical"
         },
         "Flirting": {
-            "name": "Ligar",
-            "category": "Interpersonales"
+            "name": "Flirting",
+            "category": "Abilità Interpersonali"
         },
         "Forensic Accounting": {
-            "name": "Contabilidad",
-            "category": "Académicas"
+            "name": "Forensic Accounting",
+            "category": "Abilità Accademiche"
         },
         "Forensic Anthropology": {
-            "name": "Antropología",
-            "category": "Técnicas"
+            "name": "Forensic Anthropology",
+            "category": "Abilità Tecniche"
         },
         "Forensic Entomology": {
-            "name": "Entomología Forense",
-            "category": "Técnicas"
+            "name": "Forensic Entomology",
+            "category": "Abilità Tecniche"
         },
         "Forensic Psychology": {
-            "name": "Psicología Forense",
-            "category": "Académicas"
+            "name": "Forensic Psychology",
+            "category": "Abilità Accademiche"
         },
         "Forgery": {
             "name": "Forgery",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Gambling": {
-            "name": "Juegos de Apuestas",
+            "name": "Gambling",
             "category": "Presence"
         },
         "Geology": {
-            "name": "Geología",
-            "category": "Académicas"
+            "name": "Geologia",
+            "category": "Abilità Accademiche"
         },
         "Hacking": {
             "name": "Hacking",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Health": {
-            "name": "Salud",
-            "category": "Física "
+            "name": "Salute Fisica",
+            "category": "Physical"
         },
         "High Society": {
             "name": "High Society",
-            "category": "Interpersonales"
+            "category": "Abilità Interpersonali"
         },
         "History": {
-            "name": "Historia",
-            "category": "Académicas"
+            "name": "Storia",
+            "category": "Abilità Accademiche"
         },
         "Hunting": {
             "name": "Hunting",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Hypnosis": {
-            "name": "Hipnosis",
+            "name": "Ipnosi",
             "category": "Presence"
         },
         "Impersonate": {
-            "name": "Suplantar",
-            "category": "Interpersonales"
+            "name": "Impersonate",
+            "category": "Abilità Interpersonali"
         },
         "Infiltration": {
-            "name": "Infiltración",
-            "category": "Física "
+            "name": "Infiltration",
+            "category": "Physical"
         },
         "Inspiration": {
             "name": "Inspiration",
-            "category": "Interpersonales"
+            "category": "Abilità Interpersonali"
         },
         "Insurgency": {
             "name": "Insurgency",
             "category": "Focus"
         },
         "Interrogation": {
-            "name": "Interrogatorio",
-            "category": "Interpersonales"
+            "name": "Interrogare",
+            "category": "Abilità Interpersonali"
         },
         "Intimidation": {
-            "name": "Intimidación",
-            "category": "Interpersonales"
+            "name": " Intimidire",
+            "category": "Abilità Interpersonali"
         },
         "Intuition": {
             "name": "Intuition",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Languages": {
-            "name": "Idiomas",
-            "category": "Académicas"
+            "name": "Lingue",
+            "category": "Abilità Accademiche"
         },
         "Law": {
-            "name": "Derecho",
-            "category": "Académicas"
+            "name": "Legge",
+            "category": "Abilità Accademiche"
         },
         "Leadership": {
             "name": "Leadership",
-            "category": "Interpersonales"
+            "category": "Abilità Interpersonali"
         },
         "Linguistics": {
-            "name": "Lingüística ",
-            "category": "Académicas"
+            "name": "Linguistics",
+            "category": "Abilità Accademiche"
         },
         "Locksmith": {
-            "name": "Cerrajería",
-            "category": "Técnicas"
+            "name": "Scassinare",
+            "category": "Abilità Tecniche"
         },
         "Mechanics": {
-            "name": "Mecánica",
+            "name": "Mechanics",
             "category": "Focus"
         },
         "Medic": {
-            "name": "Primeros Auxilios",
+            "name": "Medic",
             "category": "Focus"
         },
         "Medical Expertise": {
             "name": "Medical Expertise",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Military History": {
             "name": "Military History",
-            "category": "Académicas"
+            "category": "Abilità Accademiche"
         },
         "Military Tactics": {
             "name": "Military Tactics",
-            "category": "Académicas"
+            "category": "Abilità Accademiche"
         },
         "Morale": {
             "name": "Morale",
@@ -322,15 +322,15 @@
         },
         "Mutant Power: Blood Spray": {
             "name": "Mutant Power: Blood Spray",
-            "category": "Exótico"
+            "category": "Exotic"
         },
         "Natural History": {
-            "name": "Historia Natural",
-            "category": "Académicas"
+            "name": "Natural History",
+            "category": "Abilità Accademiche"
         },
         "Negotiation": {
-            "name": "Negociar",
-            "category": "Interpersonales"
+            "name": "Negotiation",
+            "category": "Abilità Interpersonali"
         },
         "Network": {
             "name": "Network",
@@ -338,62 +338,62 @@
         },
         "Notice": {
             "name": "Notice",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Occult Studies": {
-            "name": "Ocultismo",
-            "category": "Académicas"
+            "name": "Occult Studies",
+            "category": "Abilità Accademiche"
         },
         "Oral History": {
-            "name": "Historia horal",
-            "category": "Interpersonales"
+            "name": "Raccogliere Voci",
+            "category": "Abilità Interpersonali"
         },
         "Outdoor Survival": {
             "name": "Outdoor Survival",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Painting": {
             "name": "Painting",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Paradox Prevention": {
             "name": "Paradox Prevention",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Pathology": {
-            "name": "Patología",
-            "category": "Académicas"
+            "name": "Pathology",
+            "category": "Abilità Accademiche"
         },
         "Pathway Amplification": {
             "name": "Pathway Amplification",
-            "category": "Exótico"
+            "category": "Exotic"
         },
         "People Person": {
             "name": "People Person",
-            "category": "Interpersonales"
+            "category": "Abilità Interpersonali"
         },
         "Photography": {
-            "name": "Fotografía",
-            "category": "Técnicas"
+            "name": " Fotografia",
+            "category": "Abilità Tecniche"
         },
         "Piloting": {
-            "name": "Pilotaje",
-            "category": "Física "
+            "name": "Pilotare",
+            "category": "Physical"
         },
         "Poetry": {
             "name": "Poetry",
-            "category": "Académicas"
+            "category": "Abilità Accademiche"
         },
         "Political Science": {
             "name": "Political Science",
-            "category": "Académicas"
+            "category": "Abilità Accademiche"
         },
         "Politics": {
             "name": "Politics",
             "category": "Presence"
         },
         "Preparedness": {
-            "name": "Preparación",
+            "name": "Equipaggiarsi",
             "category": "Presence"
         },
         "Public Relations": {
@@ -402,107 +402,107 @@
         },
         "Reality Anchor": {
             "name": "Reality Anchor",
-            "category": "Exótico"
+            "category": "Exotic"
         },
         "Reassurance": {
-            "name": "Consolar",
-            "category": "Interpersonales"
+            "name": "Rassicurare",
+            "category": "Abilità Interpersonali"
         },
         "Research": {
-            "name": "Investigar",
-            "category": "Académicas"
+            "name": "Research",
+            "category": "Abilità Accademiche"
         },
         "Respect": {
             "name": "Respect",
-            "category": "Interpersonales"
+            "category": "Abilità Interpersonali"
         },
         "Riding": {
-            "name": "Monta",
-            "category": "Física "
+            "name": "Cavalcare",
+            "category": "Physical"
         },
         "Salt of the Earth": {
             "name": "Salt of the Earth",
-            "category": "Interpersonales"
+            "category": "Abilità Interpersonali"
         },
         "Science!": {
             "name": "Science!",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Scrounging": {
             "name": "Scrounging",
             "category": "Presence"
         },
         "Scuffling": {
-            "name": "Escaramuza",
-            "category": "Física "
+            "name": "Lottare",
+            "category": "Physical"
         },
         "Sculpture": {
             "name": "Sculpture",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Sense Trouble": {
-            "name": "Sentir el peligro",
+            "name": "Fiutare Guai",
             "category": "Presence"
         },
         "Shooting": {
-            "name": "Disparar",
-            "category": "Física "
+            "name": "Shooting",
+            "category": "Physical"
         },
         "Shrink": {
-            "name": "Psiquiatría",
+            "name": "Shrink",
             "category": "Presence"
         },
         "Society": {
             "name": "Society",
-            "category": "Interpersonales"
+            "category": "Abilità Interpersonali"
         },
         "Spying": {
             "name": "Spying",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Stability": {
-            "name": "Estabilidad",
+            "name": "Equilibrio Psichico",
             "category": "Presence"
         },
         "Streetwise": {
-            "name": "Bajos fondos",
-            "category": "Interpersonales"
+            "name": "Conoscenze di Strada",
+            "category": "Abilità Interpersonali"
         },
         "Surveillance": {
-            "name": "Vigilancia",
+            "name": "Surveillance",
             "category": "Focus"
         },
         "Taunt": {
             "name": "Taunt",
-            "category": "Interpersonales"
+            "category": "Abilità Interpersonali"
         },
         "Terrain": {
             "name": "Terrain",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Textual Analysis": {
-            "name": "Análisis de Textos",
-            "category": "Académicas"
+            "name": "Textual Analysis",
+            "category": "Abilità Accademiche"
         },
         "Timecraft": {
             "name": "Timecraft",
-            "category": "Académicas"
+            "category": "Abilità Accademiche"
         },
         "Tradecraft": {
             "name": "Tradecraft",
-            "category": "Interpersonales"
+            "category": "Abilità Interpersonali"
         },
         "Traffic Analysis": {
             "name": "Traffic Analysis",
-            "category": "Técnicas"
+            "category": "Abilità Tecniche"
         },
         "Traps and Bombs": {
             "name": "Traps and Bombs",
             "category": "Focus"
         },
         "Trivia": {
-            "name": "Cultura General",
-            "category": "Académicas"
+            "name": "Trivia",
+            "category": "Abilità Accademiche"
         },
         "Unobtrusiveness": {
             "name": "Unobtrusiveness",
@@ -510,7 +510,7 @@
         },
         "Viroware Enhancement: Dominator": {
             "name": "Viroware Enhancement: Dominator",
-            "category": "Exótico"
+            "category": "Exotic"
         }
     }
 }

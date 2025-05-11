@@ -1,5 +1,5 @@
 {
-    "label": "Night's Black Agents Abilities",
+    "label": "Habilidades de Agentes de la Noche",
     "mapping": {
         "category": "system.category"
     },
@@ -53,7 +53,7 @@
             "category": "Generales"
         },
         "Criminology": {
-            "name": "Criminology",
+            "name": "Criminología",
             "category": "Académicas"
         },
         "Cryptography": {
@@ -105,7 +105,7 @@
             "category": "Técnicas"
         },
         "Gambling": {
-            "name": "Gambling",
+            "name": "Juegos de Apuestas",
             "category": "Generales"
         },
         "Hand-to-Hand": {
