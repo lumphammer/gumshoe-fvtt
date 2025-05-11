@@ -208,15 +208,21 @@ What this enables (list subject to change):
 To perform a release:
 
 1. Decide if you're doing a testing release or a real release. DO DO A TESTING RELEASE AND CHECK IT ON A TEST SERVER.
-2. Pick the new version number according to semantic versioning. If you're doing a testing release, use a suffix e.g. `x.y.z-test-1`.
+2. Pick the new version number by incrementing the second part of of the curent number, e.g. `8.3` -> `8.4`. WE NO LONGER USE SEMVER.
 3. Update the version in
    * [`package.json`](package.json)
    * [`system.json`](public/system.json).
-4. Update the [`CHANGELOG`](CHANGELOG.md).
+4. For a full release, update the [`CHANGELOG`](CHANGELOG.md).
 5. Run this one handy command, which will commit, push, and create a new tag and push it also:
 
     ```sh
-    pnpm run do-release
+    pnpm run do-prerelease
+    ```
+
+    or
+
+    ```sh
+    pnpm run do-full-release
     ```
 
 6. If this is a test release, stop here. You can find the manifest URL to install this test release on [the GitHub releases page][gh-releases].
