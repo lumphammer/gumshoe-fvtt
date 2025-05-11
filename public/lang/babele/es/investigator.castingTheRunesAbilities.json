@@ -1,5 +1,5 @@
 {
-    "label": "Casting the Runes Abilities",
+    "label": "Habilidades de Casting the Runes",
     "mapping": {
         "category": "system.category"
     },
@@ -17,11 +17,11 @@
             "category": "Académicas"
         },
         "Art": {
-            "name": "Habilidad artística",
+            "name": "Habilidad Artística",
             "category": "Técnicas"
         },
         "Art History": {
-            "name": "Historia del arte",
+            "name": "Historia del Arte",
             "category": "Académicas"
         },
         "Assess Honesty": {
@@ -45,7 +45,7 @@
             "category": "Académicas"
         },
         "Bookkeeping": {
-            "name": "Bookkeeping",
+            "name": "Contabilidad",
             "category": "Técnicas"
         },
         "Bureaucracy": {
@@ -53,7 +53,7 @@
             "category": "Generales"
         },
         "Charm": {
-            "name": "Charm",
+            "name": "Carisma",
             "category": "Interpersonales"
         },
         "Chemistry": {
@@ -61,7 +61,7 @@
             "category": "Técnicas"
         },
         "Class": {
-            "name": "Class",
+            "name": "Clase",
             "category": "Interpersonales"
         },
         "Conceal": {
@@ -69,19 +69,19 @@
             "category": "Generales"
         },
         "Connections": {
-            "name": "Connections",
+            "name": "Contactos",
             "category": "Generales"
         },
         "Contemplation": {
-            "name": "Contemplation",
+            "name": "Contemplación",
             "category": "Académicas"
         },
         "Craft": {
-            "name": "Habilidad artesanal",
+            "name": "Habilidad Artesanal",
             "category": "Técnicas"
         },
         "Criminology": {
-            "name": "Criminology",
+            "name": "Criminología",
             "category": "Académicas"
         },
         "Cryptography": {
@@ -89,7 +89,7 @@
             "category": "Técnicas"
         },
         "Demolition": {
-            "name": "Demolition",
+            "name": "Demolición",
             "category": "Generales"
         },
         "Disguise": {
@@ -105,7 +105,7 @@
             "category": "Técnicas"
         },
         "Fieldcraft": {
-            "name": "Fieldcraft",
+            "name": "Habilidad de Campo",
             "category": "Técnicas"
         },
         "Filch": {
@@ -117,7 +117,7 @@
             "category": "Generales"
         },
         "First Aid": {
-            "name": "Primeros auxilios",
+            "name": "Primeros Auxilios",
             "category": "Generales"
         },
         "Fleeing": {
@@ -125,7 +125,7 @@
             "category": "Generales"
         },
         "Folklore": {
-            "name": "Folklore",
+            "name": "Tradiciones Populares",
             "category": "Académicas"
         },
         "Forensics": {
@@ -133,7 +133,7 @@
             "category": "Técnicas"
         },
         "Gambling": {
-            "name": "Gambling",
+            "name": "Juegos de Apuestas",
             "category": "Generales"
         },
         "Geology": {
@@ -161,7 +161,7 @@
             "category": "Interpersonales"
         },
         "Language": {
-            "name": "Language",
+            "name": "Idiomas",
             "category": "Académicas"
         },
         "Law": {
@@ -181,7 +181,7 @@
             "category": "Académicas"
         },
         "Navigation": {
-            "name": "Navigation",
+            "name": "Orientación",
             "category": "Generales"
         },
         "Occult": {
@@ -217,7 +217,7 @@
             "category": "Generales"
         },
         "Sailing": {
-            "name": "Sailing",
+            "name": "Navegar",
             "category": "Generales"
         },
         "Scuffling": {
@@ -225,7 +225,7 @@
             "category": "Generales"
         },
         "Sense Trouble": {
-            "name": "Sentir el peligro",
+            "name": "Sentir el Peligro",
             "category": "Generales"
         },
         "Shadowing": {
@@ -241,7 +241,7 @@
             "category": "Generales"
         },
         "Streetwise": {
-            "name": "Bajos fondos",
+            "name": "Bajos Fondos",
             "category": "Interpersonales"
         },
         "Theology": {
@@ -249,7 +249,7 @@
             "category": "Académicas"
         },
         "Trade": {
-            "name": "Trade",
+            "name": "Comerciar",
             "category": "Generales"
         },
         "Weapons": {
