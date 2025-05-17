@@ -22,7 +22,6 @@ const render = () => {
 class ItemSheetV2ClassBase extends ItemSheetV2 {
   /** @override */
   static DEFAULT_OPTIONS = {
-    ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS,
     classes: ["investigator"],
     position: {
       width: 450,
