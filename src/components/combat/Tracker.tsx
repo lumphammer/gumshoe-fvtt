@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import { cx } from "@emotion/css";
 import { Fragment, MouseEvent, ReactNode, useCallback } from "react";
 
@@ -176,7 +177,7 @@ export const Tracker = () => {
                 data-action="cycle-combat"
                 data-index={i}
                 title={localize("COMBAT.Encounter")}
-                onClick={async (event) => {
+                onClick={(event) => {
                   assertGame(game);
                   event.preventDefault();
                   if (combatId === undefined) return;
