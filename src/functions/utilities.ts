@@ -90,7 +90,8 @@ export const hasOwnProperty = (x: any, y: string) =>
  * Check that `game` has been initialised
  */
 export function isGame(game: any): game is Game {
-  return game instanceof Game;
+  // @ts-expect-error types need an update
+  return game instanceof foundry.Game;
 }
 
 /**
