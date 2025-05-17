@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import { cx } from "@emotion/css";
 import { Fragment, MouseEvent, ReactNode, useCallback } from "react";
 
@@ -66,19 +67,19 @@ export const Tracker = () => {
     new CombatTrackerConfig().render(true);
   }, []);
 
-  const onCombatCycle = useCallback(
-    async (event: MouseEvent<HTMLAnchorElement>) => {
-      assertGame(game);
-      event.preventDefault();
-      const btn = event.currentTarget;
-      const combatId = btn.dataset["combatId"];
-      if (combatId === undefined) return;
-      const combat = game.combats?.get(combatId) as Combat; // XXX why is this cast needed?
-      if (!combat) return;
-      await combat.activate({ render: false });
-    },
-    [],
-  );
+  // const onGoToEncounter = useCallback(
+  //   async (id: string) => {
+  //     assertGame(game);
+  //     event.preventDefault();
+  //     const btn = event.currentTarget;
+  //     const index = btn.dataset["index"];
+  //     if (combatId === undefined) return;
+  //     const combat = game.combats?.get(index) as Combat; // XXX why is this cast needed?
+  //     if (!combat) return;
+  //     await combat.activate({ render: false });
+  //   },
+  //   [],
+  // );
 
   const onDeleteCombat = useCallback(
     (event: MouseEvent) => {
@@ -157,10 +158,10 @@ export const Tracker = () => {
 
   return (
     <Fragment>
-      {/* TOP ROW: + < Encounter 2/3 > X */}
+      {/* TOP ROW: ➕ 1️⃣ 2️⃣ 3️⃣ ⚙️ */}
       <header id="combat-round" className="combat-tracker-header">
         {game.user.isGM && (
-          <nav className="encounters flexrow">
+          <nav className="encounters tabbed">
             <a
               className="combat-button combat-create"
               title={localize("COMBAT.Create")}
@@ -168,7 +169,39 @@ export const Tracker = () => {
             >
               <i className="fas fa-plus"></i>
             </a>
-            {combatCount > 0 && (
+            {game.combats.map((buttonCombat, i) => (
+              <button
+                type="button"
+                key={i}
+                className={cx("inline-control", {
+                  active: buttonCombat._id === combatId,
+                })}
+                data-action="cycle-combat"
+                data-index={i}
+                title={localize("COMBAT.Encounter")}
+                onClick={(event) => {
+                  assertGame(game);
+                  event.preventDefault();
+                  if (combatId === undefined) return;
+                  const combat = game.combats?.get(buttonCombat._id) as Combat; // XXX why is this cast needed?
+                  if (!combat) return;
+                  void combat.activate({ render: false });
+                }}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              type="button"
+              className={"inline-control icon fa-solid fa-gear"}
+              title={localize("COMBAT.Encounter")}
+              data-action="trackerSettings"
+              onClick={(event) => {
+                showConfig(event);
+              }}
+            ></button>
+
+            {/* {combatCount > 0 && (
               <Fragment>
                 <a
                   className="combat-button combat-cycle"
@@ -204,7 +237,7 @@ export const Tracker = () => {
               >
                 <i className="fas fa-trash"></i>
               </a>
-            )}
+            )} */}
           </nav>
         )}
 

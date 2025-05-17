@@ -5,18 +5,16 @@ import { InvestigatorCombatant } from "../module/InvestigatorCombatant";
 import { InvestigatorCombatTracker } from "../module/InvestigatorCombatTracker";
 import { InvestigatorItem } from "../module/InvestigatorItem";
 import { ItemSheetClass } from "../module/InvestigatorItemSheetClass";
-// eslint-disable-next-line unused-imports/no-unused-imports
 import { ItemSheetV2Class } from "../module/InvestigatorItemSheetV2Class";
 import { InvestigatorJournalSheet } from "../module/InvestigatorJournalSheet";
 import { InvestigatorTokenDocument } from "../module/InvestigatorTokenDocument";
 import { JournalEditorSheetClass } from "../module/JournalEditorSheetClass";
 import { NPCSheetClass } from "../module/NPCSheetClass";
-// eslint-disable-next-line unused-imports/no-unused-imports
 import { NPCSheetClassV2 } from "../module/NPCSheetClassV2";
 import { PartySheetClass } from "../module/PartySheetClass";
 import { PCSheetClass } from "../module/PCSheetClass";
-// eslint-disable-next-line unused-imports/no-unused-imports
 import { PCSheetClassV2 } from "../module/PCSheetClassV2";
+
 export const registerSheetsAndClasses = () => {
   CONFIG.Actor.documentClass = InvestigatorActor;
   CONFIG.Item.documentClass = InvestigatorItem;

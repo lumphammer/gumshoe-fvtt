@@ -2,7 +2,7 @@ import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactA
 import React from "react";
 
 import { Suspense } from "../components/Suspense";
-import { reactTemplatePath, systemId } from "../constants";
+import { systemId } from "../constants";
 
 import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
 
