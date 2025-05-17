@@ -17,6 +17,14 @@ type Render<T> = (
   serial: number,
 ) => React.ReactNode;
 
+function ensureHTMLElement(html: JQuery | HTMLElement) {
+  if (html instanceof HTMLElement) {
+    return html;
+  }
+  debugger;
+  return html.get(0);
+}
+
 /**
  * Wrap an existing Foundry Application class in this Mixin to override the
  * normal rednering behaviour and and use React instead.
@@ -44,7 +52,10 @@ export function ReactApplicationMixin<TBase extends ApplicationConstructor>(
      * @see {@link Application._replaceHTML}
      * @override
      */
-    _replaceHTML(element: JQuery, html: JQuery) {
+    _replaceHTML(
+      elementMaybe: JQuery | HTMLElement,
+      html: JQuery | HTMLElement,
+    ) {
       // this is a very specific hack for Foundry v11. In
       // `Application#_activateCoreListeners` it assumes that `html` (which is
       // actually a jQuery object) has been injected into the DOM, so it tries
@@ -58,18 +69,25 @@ export function ReactApplicationMixin<TBase extends ApplicationConstructor>(
       // there's an alarming cautionary comment on it saying basically don't do
       // that. TBH that probably applies more to normal apps rather than this
       // Reactified system, but this hack seems more targetted anyway.
-      html.wrap("<div/>");
+      // debugger;
+      // html.wrap("<div/>");
+
+      const element = ensureHTMLElement(elementMaybe);
 
       // in some circumstances, _injectHTML never gets called, so we need to let
       // this method (_replaceHTML) have it's normal effect once in that case.
       if (!this.isDOMInitialized) {
-        super._replaceHTML(element, html);
+        // @ts-expect-error foundry is giving us jquery or dom at random
+        super._replaceHTML(elementMaybe, html);
         this.isDOMInitialized = true;
       }
 
       // this is the only other thing we need to do here - react deals with
       // updating the rest of the window.
-      element.find(".window-title").text(this.title);
+      const titleElement = element?.querySelector(".window-title");
+      if (titleElement) {
+        titleElement.textContent = this.title;
+      }
     }
 
     /**
