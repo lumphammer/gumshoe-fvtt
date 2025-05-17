@@ -17,14 +17,6 @@ type Render<T> = (
   serial: number,
 ) => React.ReactNode;
 
-function ensureHTMLElement(html: JQuery | HTMLElement) {
-  if (html instanceof HTMLElement) {
-    return html;
-  }
-  debugger;
-  return html.get(0);
-}
-
 /**
  * Wrap an existing Foundry Application class in this Mixin to override the
  * normal rednering behaviour and and use React instead.
@@ -52,10 +44,7 @@ export function ReactApplicationMixin<TBase extends ApplicationConstructor>(
      * @see {@link Application._replaceHTML}
      * @override
      */
-    _replaceHTML(
-      elementMaybe: JQuery | HTMLElement,
-      html: JQuery | HTMLElement,
-    ) {
+    _replaceHTML(element: JQuery, html: JQuery) {
       // this is a very specific hack for Foundry v11. In
       // `Application#_activateCoreListeners` it assumes that `html` (which is
       // actually a jQuery object) has been injected into the DOM, so it tries
@@ -70,21 +59,18 @@ export function ReactApplicationMixin<TBase extends ApplicationConstructor>(
       // that. TBH that probably applies more to normal apps rather than this
       // Reactified system, but this hack seems more targetted anyway.
       // debugger;
-      // html.wrap("<div/>");
-
-      const element = ensureHTMLElement(elementMaybe);
+      html.wrap("<div/>");
 
       // in some circumstances, _injectHTML never gets called, so we need to let
       // this method (_replaceHTML) have it's normal effect once in that case.
       if (!this.isDOMInitialized) {
-        // @ts-expect-error foundry is giving us jquery or dom at random
-        super._replaceHTML(elementMaybe, html);
+        super._replaceHTML(element, html);
         this.isDOMInitialized = true;
       }
 
       // this is the only other thing we need to do here - react deals with
       // updating the rest of the window.
-      const titleElement = element?.querySelector(".window-title");
+      const titleElement = element.find(".window-title").get(0);
       if (titleElement) {
         titleElement.textContent = this.title;
       }
