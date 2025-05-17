@@ -3,7 +3,7 @@ import { assertGame } from "../functions/utilities";
 import { investigatorSettingsClassInstance } from "../module/SettingsClass";
 
 export const installRenderSettingsHandler = () => {
-  Hooks.on("renderSettings", (app: Application, html: JQuery) => {
+  Hooks.on("renderSettings", (app: Application, html: HTMLElement) => {
     assertGame(game);
     const canModifySettings = game.user.can("SETTINGS_MODIFY") ?? false;
     if (!canModifySettings) {
@@ -13,10 +13,11 @@ export const installRenderSettingsHandler = () => {
     const text = getTranslated("SystemNameSystemSettings", {
       SystemName: systemNameTranslated,
     });
-    const button = $(`<button><i class="fas fa-search"></i>${text}</button>`);
-    html.find('button[data-action="configure"]').after(button);
+    const button = document.createElement("button");
+    button.innerHTML = `<i class="fas fa-search"></i>${text}`;
+    html.querySelector('button[data-app="configure"]')?.after(button);
 
-    button.on("click", (ev) => {
+    button.addEventListener("click", (ev) => {
       ev.preventDefault();
       investigatorSettingsClassInstance.render(true);
     });
