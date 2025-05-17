@@ -66,24 +66,24 @@ export const registerSheetsAndClasses = () => {
 
   // V2 sheets
 
-  // Items.registerSheet(constants.systemId, ItemSheetV2Class, {
-  //   makeDefault: false,
-  //   types: [
-  //     constants.weapon,
-  //     constants.equipment,
-  //     constants.investigativeAbility,
-  //     constants.generalAbility,
-  //     constants.mwItem,
-  //     constants.personalDetail,
-  //     constants.card,
-  //   ],
-  // });
-  // Actors.registerSheet(constants.systemId, NPCSheetClassV2, {
-  //   makeDefault: false,
-  //   types: [constants.npc],
-  // });
-  // Actors.registerSheet(constants.systemId, PCSheetClassV2, {
-  //   makeDefault: false,
-  //   types: [constants.pc],
-  // });
+  Items.registerSheet(constants.systemId, ItemSheetV2Class, {
+    makeDefault: false,
+    types: [
+      constants.weapon,
+      constants.equipment,
+      constants.investigativeAbility,
+      constants.generalAbility,
+      constants.mwItem,
+      constants.personalDetail,
+      constants.card,
+    ],
+  });
+  Actors.registerSheet(constants.systemId, NPCSheetClassV2, {
+    makeDefault: false,
+    types: [constants.npc],
+  });
+  Actors.registerSheet(constants.systemId, PCSheetClassV2, {
+    makeDefault: false,
+    types: [constants.pc],
+  });
 };
