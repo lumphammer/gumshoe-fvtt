@@ -58,7 +58,6 @@ export function ReactApplicationMixin<TBase extends ApplicationConstructor>(
       // there's an alarming cautionary comment on it saying basically don't do
       // that. TBH that probably applies more to normal apps rather than this
       // Reactified system, but this hack seems more targetted anyway.
-      // debugger;
       html.wrap("<div/>");
 
       // in some circumstances, _injectHTML never gets called, so we need to let

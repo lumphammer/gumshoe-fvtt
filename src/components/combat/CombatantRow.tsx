@@ -1,15 +1,15 @@
 import { cx } from "@emotion/css";
-import { Fragment, ReactNode } from "react";
+import { Fragment, ReactNode, useMemo } from "react";
 
 import { assertGame } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
 import { settings } from "../../settings/settings";
 import { StandardInitiative } from "./StandardInitiative";
 import { TurnPassingInitiative } from "./TurnPassingInitiative";
-import { useCombatant } from "./useCombatant";
+import { TurnInfo } from "./types";
 
 interface CombatantRowProps {
-  turn: any;
+  turn: TurnInfo;
   combat: InvestigatorCombat;
   index: number;
 }
@@ -18,34 +18,39 @@ const settingsUseTurnPassingInitiative = settings.useTurnPassingInitiative.get;
 
 export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
   assertGame(game);
-  const {
-    onToggleDefeatedStatus,
-    onToggleHidden,
-    onCombatantHoverIn,
-    onCombatantHoverOut,
-    localize,
-    onDoubleClick,
-  } = useCombatant(combat, turn.id);
+  const localize = game.i18n.localize.bind(game.i18n);
 
   const turnPassing = settingsUseTurnPassingInitiative();
   const active = combat.activeTurnPassingCombatant === turn.id;
   const depleted = turn.passingTurnsRemaining <= 0;
 
+  // turn.effects;
+
+  const effectsTooltip = useMemo(() => {
+    if (!turn.effects.length) return "";
+    const ul = document.createElement("ul");
+    ul.classList.add("effects-tooltip", "plain");
+    for (const effect of turn.effects) {
+      const img = document.createElement("img");
+      img.src = effect.img;
+      img.alt = effect.name;
+      const span = document.createElement("span");
+      span.textContent = effect.name;
+      const li = document.createElement("li");
+      li.append(img, span);
+      ul.append(li);
+    }
+    return ul.outerHTML;
+  }, [turn.effects]);
+
   return (
     <li
-      className={cx({
-        combatant: true,
-        actor: true,
-        "directory-item": true,
-        flexrow: true,
+      className={cx("combatant", {
         active: turn.active && !turnPassing,
-        hidden: turn.hidden,
+        hide: turn.hidden,
         defeated: turn.defeated,
       })}
       data-combatant-id={turn.id}
-      onMouseEnter={onCombatantHoverIn}
-      onMouseLeave={onCombatantHoverOut}
-      onDoubleClick={onDoubleClick}
       css={{
         height: "4em",
         position: "absolute",
@@ -61,41 +66,41 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
     >
       <img
         className="token-image"
-        // the foundry original does some crazy stuff with
-        // IntersectionObserver to load images on demand
         src={turn.img}
-        title={turn.name}
+        alt={turn.name}
+        loading="lazy"
       />
-      <div className="token-name flexcol">
-        <h4>{turn.name}</h4>
-        <div className="combatant-controls flexrow">
+      <div className="token-name">
+        <strong className="name">{turn.name}</strong>
+        <div className="combatant-controls">
           {game.user.isGM && (
             <Fragment>
-              <a
-                className={cx({
-                  "combatant-control": true,
-                  active: turn.hidden,
-                })}
-                title={localize("COMBAT.ToggleVis")}
-                onClick={onToggleHidden}
-              >
-                <i className="fas fa-eye-slash"></i>
-              </a>
-              <a
-                className={cx({
-                  "combatant-control": true,
-                  active: turn.defeated,
-                })}
-                title={localize("COMBAT.ToggleDead")}
-                onClick={onToggleDefeatedStatus}
-              >
-                <i className="fas fa-skull"></i>
-              </a>
+              <button
+                type="button"
+                className="inline-control combatant-control icon fa-solid fa-eye-slash "
+                data-action="toggleHidden"
+                data-tooltip=""
+                aria-label={localize("COMBAT.ToggleVis")}
+              ></button>
+              <button
+                type="button"
+                className="inline-control combatant-control icon fa-solid fa-skull "
+                data-action="toggleDefeated"
+                data-tooltip=""
+                aria-label={localize("COMBAT.ToggleDead")}
+              ></button>
             </Fragment>
           )}
-          <div className="token-effects">
+          <button
+            type="button"
+            className="inline-control combatant-control icon fa-solid fa-bullseye-arrow"
+            data-action="pingCombatant"
+            data-tooltip=""
+            aria-label={localize("COMBAT.PingCombatant")}
+          ></button>
+          <div className="token-effects" data-tooltip-html={effectsTooltip}>
             {Array.from(turn.effects).map<ReactNode>((effect, i) => (
-              <img key={i} className="token-effect" src={effect as string} />
+              <img key={i} className="token-effect" src={effect.img} />
             ))}
           </div>
         </div>

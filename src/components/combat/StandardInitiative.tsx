@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import {
   FaEdit,
-  FaEllipsisH,
+  FaEllipsisV,
   FaEraser,
   FaRecycle,
   FaTrash,
@@ -37,34 +37,53 @@ export const StandardInitiative = ({
     <Fragment>
       <div
         className="token-initiative"
-        css={{
-          flex: 0,
-        }}
+        css={
+          {
+            // flex: 0,
+            // width: "auto",
+          }
+        }
       >
         {turn.hasRolled ? (
-          <span className="initiative">{turn.initiative}</span>
+          // <span
+          //   css={{
+          //     fontSize: "1.6em",
+          //   }}
+          // >
+          //   {turn.initiative}
+          // </span>
+          <input
+            type="text"
+            inputMode="numeric"
+            pattern="^[+=\-]?\d*"
+            defaultValue={turn.initiative}
+            aria-label="Initiative Score"
+            disabled={!game.user.isGM}
+          ></input>
         ) : (
-          <a
+          <button
             css={{
               display: "block",
               height: "var(--sidebar-item-height)",
               fontSize: "calc(var(--sidebar-item-height) - 20px)",
-              margin: "0 0.5em",
+              // margin: "0 0.5em",
             }}
             title={localize("COMBAT.InitiativeRoll")}
             onClick={onDoInitiative}
           >
             <i className="fas fa-dice-d6" />
-          </a>
+          </button>
         )}
       </div>
 
       {game.user.isGM && (
         <Dropdown
           showArrow={false}
-          label={<FaEllipsisH />}
+          label={<FaEllipsisV />}
+          className="inline-control"
           css={{
             flex: 0,
+            minHeight: "var(--button-size)",
           }}
         >
           {

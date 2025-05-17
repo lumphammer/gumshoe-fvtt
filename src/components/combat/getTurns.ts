@@ -1,5 +1,6 @@
 import { assertGame } from "../../functions/utilities";
 import { isActiveCharacterActor } from "../../v10Types";
+import { TurnInfo } from "./types";
 
 // commented out because CombatTracker.Turn no longer exists and the whole
 // combat tracker needs a do-over.
@@ -12,8 +13,8 @@ import { isActiveCharacterActor } from "../../v10Types";
 
 // adapted from foundry's CombatTracker, so there's some mutable data and
 // weird imperative stuff
-export function getTurns(combat: Combat) {
-  const turns: any[] = [];
+export function getTurns(combat: Combat): TurnInfo[] {
+  const turns: TurnInfo[] = [];
   let hasDecimals = false;
 
   for (const [i, combatant] of combat.turns.entries()) {
@@ -54,39 +55,50 @@ export function getTurns(combat: Combat) {
       }
     }
 
-    // Actor and Token status effects
-    const effects = new Set<string>();
-    if (combatant.token) {
-      // @ts-expect-error v10 types
-      combatant.token.effects.forEach((e) => effects.add(e));
-      if (combatant.token.overlayEffect) {
-        effects.add(combatant.token.overlayEffect);
-      }
-    }
-    if (combatant.actor) {
-      combatant.actor.temporaryEffects.forEach((e) => {
-        let hasDefeatedStatus = false;
-        const statuses = e.statuses;
+    // // Actor and Token status effects
+    // const effects = new Set<string>();
+    // if (combatant.token) {
+    //   // @ts-expect-error v10 types
+    //   combatant.token.effects.forEach((e) => effects.add(e));
+    //   if (combatant.token.overlayEffect) {
+    //     effects.add(combatant.token.overlayEffect);
+    //   }
+    // }
+    // if (combatant.actor) {
+    //   combatant.actor.temporaryEffects.forEach((e) => {
+    //     let hasDefeatedStatus = false;
+    //     const statuses = e.statuses;
 
-        if (statuses.has(CONFIG.specialStatusEffects.DEFEATED)) {
-          hasDefeatedStatus = true;
-        }
+    //     if (statuses.has(CONFIG.specialStatusEffects.DEFEATED)) {
+    //       hasDefeatedStatus = true;
+    //     }
 
-        if (hasDefeatedStatus) {
-          defeated = true;
-        } else if (e.icon) {
-          effects.add(e.icon);
-        }
-      });
-    }
+    //     if (hasDefeatedStatus) {
+    //       defeated = true;
+    //     } else if (e.icon) {
+    //       effects.add(e.icon);
+    //     }
+    //   });
+    // }
 
     const totalPassingTurns = isActiveCharacterActor(combatant.actor)
       ? (combatant.actor?.system.initiativePassingTurns ?? 1)
       : 1;
 
+    const effects = [];
+    for (const effect of combatant.actor?.temporaryEffects ?? []) {
+      if (effect.statuses.has(CONFIG.specialStatusEffects.DEFEATED)) {
+        defeated = true;
+      } else if (effect.img) {
+        effects.push({ img: effect.img, name: effect.name });
+      }
+    }
+
+    type _T = typeof combatant.name;
+
     const turn = {
       id: combatant.id,
-      name: combatant.name,
+      name: combatant.name ?? "",
       img,
       active,
       owner,
@@ -103,12 +115,12 @@ export function getTurns(combat: Combat) {
 
     turns.push(turn);
   }
-  const precision = CONFIG.Combat.initiative.decimals;
-  turns.forEach((t) => {
-    if (t.initiative !== null) {
-      t.initiative = t.initiative.toFixed(hasDecimals ? precision : 0);
-    }
-  });
+  // const precision = CONFIG.Combat.initiative.decimals;
+  // turns.forEach((t) => {
+  //   if (t.initiative !== null) {
+  //     t.initiative = t.initiative.toFixed(hasDecimals ? precision : 0);
+  //   }
+  // });
 
   return turns;
 }

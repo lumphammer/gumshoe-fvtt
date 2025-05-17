@@ -13,7 +13,7 @@ export class InvestigatorCombatTrackerBase extends CombatTracker {
   // }
   /** @override */
   static DEFAULT_OPTIONS = {
-    classes: ["investigator"],
+    classes: ["investigator"], //
     // position: {
     //   width: 450,
     //   height: 600,

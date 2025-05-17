@@ -1,6 +1,6 @@
 import { keyframes } from "@emotion/react";
 import { Fragment } from "react";
-import { FaEdit, FaEllipsisH, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
+import { FaEdit, FaEllipsisV, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
 import { getTranslated } from "../../functions/getTranslated";
@@ -101,7 +101,7 @@ export const TurnPassingInitiative = ({
       {game.user.isGM && (
         <Dropdown
           showArrow={false}
-          label={<FaEllipsisH />}
+          label={<FaEllipsisV />}
           css={{
             flex: 0,
           }}

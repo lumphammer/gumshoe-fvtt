@@ -33,7 +33,7 @@ type DropdownProps = {
   role?: string;
 };
 
-const duration = 300;
+const duration = 200;
 
 export const Dropdown = ({
   children,

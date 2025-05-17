@@ -8,10 +8,7 @@ const compareInv = <T>(a: T, b: T) => compare(a, b) * -1;
 
 export const compareCombatantsPassing =
   (active: string | null) =>
-  (
-    a: InstanceType<typeof InvestigatorCombatant>,
-    b: InstanceType<typeof InvestigatorCombatant>,
-  ): number => {
+  (a: InvestigatorCombatant, b: InvestigatorCombatant): number => {
     return (
       compareInv(a.id === active, b.id === active) ||
       compareInv(a.passingTurnsRemaining, b.passingTurnsRemaining) ||
@@ -24,8 +21,8 @@ export function compareCombatantsStandard(
   // was previously ConfiguredDocumentClass<typeof Combatant> (not
   // "InvestigatorCombatant") but I can't get TS to resolve the league type
   // ConfiguredDocumentClass so just using my type directly
-  a: InstanceType<typeof InvestigatorCombatant>,
-  b: InstanceType<typeof InvestigatorCombatant>,
+  a: InvestigatorCombatant,
+  b: InvestigatorCombatant,
 ): number {
   if (
     a.actor !== null &&
