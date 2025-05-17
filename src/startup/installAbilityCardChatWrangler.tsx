@@ -135,7 +135,6 @@ export const installAbilityCardChatWrangler = () => {
         </StrictMode>
       );
     }
-    systemLogger.log("Rendering", content);
     createRoot(el).render(content);
   });
 };
