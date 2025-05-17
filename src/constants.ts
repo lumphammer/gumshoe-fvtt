@@ -9,8 +9,6 @@ export const defaultSystemPreset = "pathOfCthulhuPreset";
 export const templatesPath = `systems/${systemId}/templates` as const;
 export const reactTemplatePath =
   `${templatesPath}/react-application.hbs` as const;
-export const reactifiedCombatSidebarTemplatePath =
-  `${templatesPath}/reactified-combat-sidebar.hbs` as const;
 export const customSystem = "customSystem";
 export const genericOccupationDefault = "Investigator";
 export const showEmptyInvestigativeCategoriesDefault = true;
