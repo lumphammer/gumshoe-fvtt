@@ -202,7 +202,6 @@ export class InvestigatorActor extends Actor {
         ...extraData,
       }),
     };
-    // @ts-expect-error .create
     await ChatMessage.create(chatData, {});
   };
 
@@ -524,7 +523,7 @@ export class InvestigatorActor extends Actor {
     const effectiveIds = (
       newIds
         .map((id) => {
-          assertGame(game);
+          // assertGame(game);
           return game.actors?.get(id);
         })
         .filter(
