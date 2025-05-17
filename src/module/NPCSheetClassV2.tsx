@@ -2,6 +2,7 @@ import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactA
 import React from "react";
 
 import { Suspense } from "../components/Suspense";
+import { reactTemplatePath, systemId } from "../constants";
 
 import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
 
@@ -13,13 +14,13 @@ const NPCSheet = React.lazy(() =>
 
 class NPCSheetV2ClassBase extends ActorSheetV2 {
   static DEFAULT_OPTIONS = {
+    classes: [systemId, "sheet", "actor"],
     window: {
-      frame: true,
-      title: "name",
+      resizable: true,
     },
     position: {
-      height: 660,
       width: 700,
+      height: 660,
     },
   };
 }
