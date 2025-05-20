@@ -2,15 +2,6 @@ import { assertGame } from "../../functions/utilities";
 import { isActiveCharacterActor } from "../../v10Types";
 import { TurnInfo } from "./types";
 
-// commented out because CombatTracker.Turn no longer exists and the whole
-// combat tracker needs a do-over.
-// export interface InvestigatorTurn
-//   extends Omit<CombatTracker.Turn, "ressource" | "css"> {
-//   passingTurnsRemaining: number;
-//   totalPassingTurns: number;
-//   resource: CombatTracker.Turn["ressource"];
-// }
-
 // adapted from foundry's CombatTracker, so there's some mutable data and
 // weird imperative stuff
 export function getTurns(combat: Combat): TurnInfo[] {

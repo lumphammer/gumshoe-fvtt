@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import {
   FaEdit,
   FaEllipsisV,
@@ -33,26 +33,29 @@ export const StandardInitiative = ({
     openSheet,
   } = useInititative(combat, turn.id);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    console.log(
+      "effect",
+      "document.activeElement",
+      document.activeElement,
+      "inputRef.current",
+      inputRef.current,
+      "turn.initiative",
+      turn.initiative,
+    );
+    if (inputRef.current && document.activeElement !== inputRef.current) {
+      inputRef.current.value = turn.initiative;
+    }
+  }, [turn.initiative]);
+
   return (
     <Fragment>
-      <div
-        className="token-initiative"
-        css={
-          {
-            // flex: 0,
-            // width: "auto",
-          }
-        }
-      >
+      <div className="token-initiative">
         {turn.hasRolled ? (
-          // <span
-          //   css={{
-          //     fontSize: "1.6em",
-          //   }}
-          // >
-          //   {turn.initiative}
-          // </span>
           <input
+            ref={inputRef}
             type="text"
             inputMode="numeric"
             pattern="^[+=\-]?\d*"
@@ -66,7 +69,6 @@ export const StandardInitiative = ({
               display: "block",
               height: "var(--sidebar-item-height)",
               fontSize: "calc(var(--sidebar-item-height) - 20px)",
-              // margin: "0 0.5em",
             }}
             title={localize("COMBAT.InitiativeRoll")}
             onClick={onDoInitiative}

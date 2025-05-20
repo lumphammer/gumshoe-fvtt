@@ -77,14 +77,25 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
             <Fragment>
               <button
                 type="button"
-                className="inline-control combatant-control icon fa-solid fa-eye-slash "
+                className={cx(
+                  "inline-control combatant-control icon fa-solid",
+                  {
+                    "fa-eye-slash active": turn.hidden,
+                    "fa-eye": !turn.hidden,
+                  },
+                )}
                 data-action="toggleHidden"
                 data-tooltip=""
                 aria-label={localize("COMBAT.ToggleVis")}
               ></button>
               <button
                 type="button"
-                className="inline-control combatant-control icon fa-solid fa-skull "
+                className={cx(
+                  "inline-control combatant-control icon fa-solid fa-skull",
+                  {
+                    active: turn.defeated,
+                  },
+                )}
                 data-action="toggleDefeated"
                 data-tooltip=""
                 aria-label={localize("COMBAT.ToggleDead")}
