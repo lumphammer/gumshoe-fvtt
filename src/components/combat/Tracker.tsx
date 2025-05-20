@@ -1,5 +1,4 @@
-import { cx } from "@emotion/css";
-import { Fragment, MouseEvent, ReactNode, useCallback } from "react";
+import { Fragment, ReactNode } from "react";
 
 import {
   assertGame,
@@ -8,8 +7,12 @@ import {
 } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
 import { settings } from "../../settings/settings";
+import { BottomBits } from "./BottomBits";
 import { CombatantRow } from "./CombatantRow";
+import { EncounterNavigation } from "./EncounterNavigation";
+import { localize } from "./functions";
 import { getTurns } from "./getTurns";
+import { TurnHeader } from "./TurnHeader";
 
 const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
 
@@ -23,15 +26,6 @@ export const Tracker = () => {
   const combatCount = game.combats?.combats.length ?? 0;
   const hasCombat = !!combat;
   const isTurnPassing = settingsUseTurnPassing();
-
-  // CALLBACKS
-  const showConfig = useCallback((ev: MouseEvent) => {
-    ev.preventDefault();
-    new CombatTrackerConfig().render(true);
-  }, []);
-
-  const localize = game.i18n.localize.bind(game.i18n);
-  const format = game.i18n.format.bind(game.i18n);
 
   if (combat === null) {
     return null;
@@ -49,39 +43,7 @@ export const Tracker = () => {
         {game.user.isGM &&
           (hasCombat ? (
             /* TOP ROW: ➕ 1️⃣ 2️⃣ 3️⃣ ⚙️ */
-            <nav className="encounters tabbed">
-              <button
-                className="inline-control icon fa-solid fa-plus"
-                data-action="createCombat"
-                data-tooltip
-                aria-label="Create Encounter"
-                title={localize("COMBAT.Create")}
-              ></button>
-              {game.combats.map((buttonCombat, i) => (
-                <button
-                  type="button"
-                  key={i}
-                  className={cx("inline-control", {
-                    active: buttonCombat._id === combatId,
-                  })}
-                  data-action="cycleCombat"
-                  data-combat-id={buttonCombat._id}
-                  data-index={i}
-                  title={localize("COMBAT.Encounter")}
-                >
-                  {i + 1}
-                </button>
-              ))}
-              <button
-                type="button"
-                className={"inline-control icon fa-solid fa-gear"}
-                title={localize("COMBAT.Encounter")}
-                data-action="trackerSettings"
-                onClick={(event) => {
-                  showConfig(event);
-                }}
-              ></button>
-            </nav>
+            <EncounterNavigation combatId={combatId} />
           ) : (
             // end top row
             <button
@@ -95,36 +57,20 @@ export const Tracker = () => {
           ))}
 
         {/* SECOND ROW: Roll all / NPCs, Round 1, dropdown */}
-        <div
-          className={cx({
-            encounters: true,
-            "encounter-controls": true,
-            combat: hasCombat,
-          })}
-        >
-          {combatCount ? (
-            <Fragment>
-              {combat?.round ? (
-                <strong className="encounter-title">
-                  {format("COMBAT.Round", { round: combat.round })}
-                </strong>
-              ) : (
-                <strong className="encounter-title">
-                  {localize("COMBAT.NotStarted")}
-                </strong>
-              )}
-              <div className="spacer"></div>
-              <button
-                type="button"
-                className="encounter-context-menu inline-control combat-control icon fa-solid fa-ellipsis-vertical"
-              ></button>
-            </Fragment>
-          ) : (
-            <strong className="encounter-title">
-              {localize("COMBAT.None")}
-            </strong>
-          )}
-        </div>
+        <TurnHeader
+          hasCombat={hasCombat}
+          combatCount={combatCount}
+          combat={combat!}
+          game={game}
+        />
+        {!isTurnPassing && (
+          <BottomBits
+            isTurnPassing={isTurnPassing}
+            hasCombat={hasCombat}
+            combat={combat!}
+            game={game}
+          />
+        )}
       </header>
       {/* ACTUAL COMBATANTS, or "turns" in early-medieval foundry-speak */}
       <ol
@@ -148,97 +94,6 @@ export const Tracker = () => {
           ))
         }
       </ol>
-      {/* BOTTOM BITS: |< < End combat > >| */}
-      {!isTurnPassing && (
-        <nav
-          className="combat-controls"
-          data-tooltip-direction="UP"
-          data-application-part="footer"
-        >
-          {hasCombat &&
-            (game.user.isGM ? (
-              <Fragment>
-                {combat.round ? (
-                  <Fragment>
-                    <button
-                      type="button"
-                      className="inline-control combat-control icon fa-solid fa-backward-step"
-                      data-action="previousRound"
-                      data-tooltip=""
-                      aria-label={localize("COMBAT.TurnPrev")}
-                    ></button>
-                    <button
-                      type="button"
-                      className="inline-control combat-control icon fa-solid fa-arrow-left"
-                      data-action="previousTurn"
-                      data-tooltip=""
-                      aria-label={localize("COMBAT.TurnPrev")}
-                    ></button>
-                    <button
-                      type="button"
-                      className="combat-control combat-control-lg"
-                      data-action="endCombat"
-                    >
-                      <i className="fa-solid fa-xmark" inert></i>
-                      <span>{localize("COMBAT.End")}</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="inline-control combat-control icon fa-solid fa-arrow-right"
-                      data-action="nextTurn"
-                      data-tooltip=""
-                      aria-label={localize("COMBAT.TurnNext")}
-                    ></button>
-                    <button
-                      type="button"
-                      className="inline-control combat-control icon fa-solid fa-forward-step"
-                      data-action="nextRound"
-                      data-tooltip=""
-                      aria-label={localize("COMBAT.RoundNext")}
-                    ></button>
-                  </Fragment>
-                ) : (
-                  <button
-                    type="button"
-                    className="combat-control combat-control-lg"
-                    data-action="startCombat"
-                  >
-                    <i className="fa-solid fa-swords" inert></i>
-                    <span>{localize("COMBAT.Begin")}</span>
-                  </button>
-                )}
-              </Fragment>
-            ) : (
-              game.user &&
-              combat.combatant?.players?.includes(game.user) && (
-                <Fragment>
-                  <button
-                    type="button"
-                    className="inline-control combat-control icon fa-solid fa-arrow-left"
-                    data-action="previousTurn"
-                    data-tooltip=""
-                    aria-label={localize("COMBAT.TurnPrev")}
-                  ></button>
-                  <button
-                    type="button"
-                    className="combat-control combat-control-lg"
-                    data-action="nextTurn"
-                  >
-                    <i className="fa-solid fa-check"></i>
-                    <span>{localize("COMBAT.TurnEnd")}</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-control combat-control icon fa-solid fa-arrow-right"
-                    data-action="nextTurn"
-                    data-tooltip=""
-                    aria-label={localize("COMBAT.TurnNext")}
-                  ></button>
-                </Fragment>
-              )
-            ))}
-        </nav>
-      )}
     </Fragment>
   );
 };

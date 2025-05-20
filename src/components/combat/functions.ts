@@ -1,3 +1,4 @@
+import { assertGame } from "../../functions/utilities";
 import { InvestigatorCombatant } from "../../module/InvestigatorCombatant";
 import { isActiveCharacterActor } from "../../v10Types";
 
@@ -80,3 +81,13 @@ export function compareCombatantsStandard(
 
   // return a.id! > b.id! ? 1 : -1;
 }
+
+export const localize = (stringId: string) => {
+  assertGame(game);
+  return game.i18n?.localize(stringId) ?? "";
+};
+
+export const format = (stringId: string, data?: Record<string, unknown>) => {
+  assertGame(game);
+  return game.i18n?.format(stringId, data) ?? "";
+};
