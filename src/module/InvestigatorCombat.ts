@@ -1,7 +1,3 @@
-import {
-  compareCombatantsPassing,
-  compareCombatantsStandard,
-} from "../components/combat/functions";
 import * as constants from "../constants";
 import { settings } from "../settings/settings";
 import { isActiveCharacterActor } from "../v10Types";
@@ -14,15 +10,6 @@ export class InvestigatorCombat extends Combat {
   override _onCreate(data: Item.CreateData, options: any, userId: string) {
     // @ts-expect-error .create
     super._onCreate(data, options, userId);
-    if (settings.useTurnPassingInitiative.get()) {
-      void this.update({
-        round: 1,
-      });
-    }
-  }
-
-  override get started() {
-    return true;
   }
 
   protected override _sortCombatants = (
@@ -30,9 +17,9 @@ export class InvestigatorCombat extends Combat {
     b: InvestigatorCombatant,
   ): number => {
     if (settings.useTurnPassingInitiative.get()) {
-      return compareCombatantsPassing(this.activeTurnPassingCombatant)(a, b);
+      return a.name && b.name ? a.name.localeCompare(b.name) : 0;
     } else {
-      return compareCombatantsStandard(a, b);
+      return (b.initiative ?? 0) - (a.initiative ?? 0);
     }
   };
 

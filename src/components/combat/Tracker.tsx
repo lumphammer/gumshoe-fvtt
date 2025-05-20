@@ -66,21 +66,12 @@ export const Tracker = () => {
             </button>
           ))}
 
-        {/* SECOND ROW: Roll all / NPCs, Round 1, dropdown */}
-        {/* <TurnHeader
+        <TurnBar
+          isTurnPassing={isTurnPassing}
           hasCombat={hasCombat}
-          combatCount={combatCount}
           combat={combat!}
           game={game}
-        /> */}
-        {!isTurnPassing && (
-          <TurnBar
-            isTurnPassing={isTurnPassing}
-            hasCombat={hasCombat}
-            combat={combat!}
-            game={game}
-          />
-        )}
+        />
       </header>
       {/* ACTUAL COMBATANTS, or "turns" in early-medieval foundry-speak */}
       <ol

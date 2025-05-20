@@ -42,7 +42,13 @@ export const EncounterNavigation = ({
           aria-label="Activate Previous Encounter"
           disabled={!prevCombatId}
         ></button>
-        <div className="encounter-count">
+        <div
+          className="encounter-count"
+          css={{
+            // https://github.com/foundryvtt/foundryvtt/issues/12872
+            color: "var(--color-text-secondary)",
+          }}
+        >
           <span className="value">
             {format("investigator.EncounterNofM", {
               N: combatIndex + 1,

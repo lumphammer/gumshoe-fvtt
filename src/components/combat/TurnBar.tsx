@@ -1,3 +1,4 @@
+import { keyframes } from "@emotion/react";
 import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
 
 import { assertGame } from "../../functions/utilities";
@@ -13,6 +14,16 @@ interface TurnBarProps {
   game: Game;
 }
 
+const throbbingBg = keyframes({
+  "0%": {
+    backgroundColor: "transparent",
+  },
+  "100%": {
+    backgroundColor:
+      "oklch(from var(--button-hover-background-color) l c h / 0.5)",
+  },
+});
+
 export const TurnBar = ({
   isTurnPassing,
   hasCombat,
@@ -20,6 +31,26 @@ export const TurnBar = ({
   game,
 }: TurnBarProps) => {
   assertGame(game);
+
+  const allTurnsDone = combat.turns.every(
+    (turn) => turn.passingTurnsRemaining <= 0,
+  );
+  const turnsDone = combat.turns.reduce(
+    (acc, turn) => {
+      if (turn.passingTurnsRemaining <= 0) {
+        acc.done++;
+      } else {
+        acc.remaining++;
+      }
+      return acc;
+    },
+    { done: 0, remaining: 0 },
+  );
+
+  console.log(
+    `${turnsDone.done}/${turnsDone.done + turnsDone.remaining}: ${allTurnsDone ? "DONE" : "-"}`,
+  );
+
   return (
     <nav className="combat-controls">
       {hasCombat &&
@@ -29,18 +60,20 @@ export const TurnBar = ({
               <>
                 <button
                   type="button"
-                  className="inline-control combat-control icon fa-solid fa-backward-step"
+                  className="inline-control combat-control icon fa-solid fa-arrow-left"
                   data-action="previousRound"
                   data-tooltip=""
-                  aria-label={localize("COMBAT.TurnPrev")}
+                  aria-label={localize("COMBAT.RoundPrev")}
                 ></button>
-                <button
-                  type="button"
-                  className="inline-control combat-control icon fa-solid fa-arrow-left"
-                  data-action="previousTurn"
-                  data-tooltip=""
-                  aria-label={localize("COMBAT.TurnPrev")}
-                ></button>
+                {!isTurnPassing && (
+                  <button
+                    type="button"
+                    className="inline-control combat-control icon fa-solid fa-arrow-left"
+                    data-action="previousTurn"
+                    data-tooltip=""
+                    aria-label={localize("COMBAT.TurnPrev")}
+                  ></button>
+                )}
                 <strong
                   // className="encounter-title"
                   css={{
@@ -61,6 +94,7 @@ export const TurnBar = ({
                     css={{
                       flex: 1,
                       minHeight: "var(--button-size)",
+                      color: "var(--color-text-primary)",
                     }}
                   >
                     {
@@ -102,20 +136,48 @@ export const TurnBar = ({
                     }
                   </Dropdown>
                 </strong>
-                <button
-                  type="button"
-                  className="inline-control combat-control icon fa-solid fa-arrow-right"
-                  data-action="nextTurn"
-                  data-tooltip=""
-                  aria-label={localize("COMBAT.TurnNext")}
-                ></button>
-                <button
-                  type="button"
-                  className="inline-control combat-control icon fa-solid fa-forward-step"
-                  data-action="nextRound"
-                  data-tooltip=""
-                  aria-label={localize("COMBAT.RoundNext")}
-                ></button>
+                {!isTurnPassing && (
+                  <>
+                    <button
+                      type="button"
+                      className="inline-control combat-control icon fa-solid fa-arrow-right"
+                      data-action="nextTurn"
+                      data-tooltip=""
+                      aria-label={localize("COMBAT.TurnNext")}
+                    ></button>
+                    <button
+                      type="button"
+                      className="inline-control combat-control icon fa-solid fa-arrow-right"
+                      data-action="nextRound"
+                      data-tooltip=""
+                      aria-label={localize("COMBAT.RoundNext")}
+                    ></button>
+                  </>
+                )}
+                {isTurnPassing && (
+                  <button
+                    type="button"
+                    className="inline-control combat-control"
+                    data-action="nextRound"
+                    data-tooltip=""
+                    aria-label={localize("COMBAT.RoundNext")}
+                    css={{
+                      ":not(:hover)": {
+                        animation: allTurnsDone
+                          ? `${throbbingBg} 1000ms infinite`
+                          : "none",
+                        animationDirection: "alternate",
+                      },
+                      animationTimingFunction: "ease-in-out",
+                      color: allTurnsDone
+                        ? "var(--color-text-primary)"
+                        : "var(--color-text-secondary)",
+                    }}
+                  >
+                    {localize("COMBAT.RoundNext")}
+                    <i className="fa-solid fa-arrow-right" inert></i>
+                  </button>
+                )}
               </>
             ) : (
               <button

@@ -59,9 +59,19 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
         width: "100%",
         transform: `translateY(${index * 4}em)`,
         transition: "transform 1000ms",
-        boxShadow: active ? "0 0 0.5em 0 #7f7 inset" : undefined,
-        backgroundColor: active ? "#9f72" : undefined,
-        opacity: depleted && !active ? 0.5 : 1,
+        ".theme-light &": {
+          boxShadow: active
+            ? "0 0 0.5em 0 oklch(0.2 0.3 130 / 0.7) inset"
+            : undefined,
+          backgroundColor: active ? "oklch(0.9 0.1 130 / 0.5)" : undefined,
+        },
+        ".theme-dark &": {
+          boxShadow: active
+            ? "0 0 0.5em 0 oklch(0.9 0.3 130 / 0.7) inset"
+            : undefined,
+          backgroundColor: active ? "oklch(0.3 0.1 130 / 0.5)" : undefined,
+        },
+        opacity: depleted && !active ? 0.7 : 1,
       }}
     >
       <img

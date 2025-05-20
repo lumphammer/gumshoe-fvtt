@@ -15,12 +15,16 @@ interface StandardInitiativeProps {
   combat: InvestigatorCombat;
 }
 
+const playButtonGradientWidth = "3em";
+const playButtonColor1 = "oklch(0.2 0.3 130)";
+const playButtonColor2 = "oklch(0.8 0.3 130)";
+
 const scrollBg = keyframes({
   "0%": {
     backgroundPositionX: "0em",
   },
   "100%": {
-    backgroundPositionX: "0.5em",
+    backgroundPositionX: playButtonGradientWidth,
   },
 });
 
@@ -49,12 +53,14 @@ export const TurnPassingInitiative = ({
       </div>
 
       <div css={{ flex: 0 }}>
-        <a
+        <button
+          className="inline-control"
           css={{
             display: "block",
             height: "var(--sidebar-item-height)",
-            fontSize: "calc(var(--sidebar-item-height) - 20px)",
-            margin: "0 0.5em",
+            fontSize: "1.4em",
+            margin: 0,
+            padding: "0 0.2em",
           }}
           title={getTranslated("Turn")}
           onClick={onTakeTurn}
@@ -64,38 +70,21 @@ export const TurnPassingInitiative = ({
               className="fas fa-play"
               css={{
                 color: "transparent",
-                backgroundImage:
-                  "repeating-linear-gradient(90deg, #3f3, #161 50%, #0f0 100%)",
-                backgroundSize: "0.5em",
+                backgroundImage: `repeating-linear-gradient(to right, ${playButtonColor1}, ${playButtonColor2} 50%, ${playButtonColor1} 100%)`,
+                backgroundSize: playButtonGradientWidth,
                 backgroundPositionX: 0,
                 backgroundPositionY: 0,
                 backgroundClip: "text",
-                animation: `${scrollBg} 2400ms infinite`,
+                animation: `${scrollBg} 2000ms infinite`,
                 animationTimingFunction: "linear",
-                textShadow: "0 0 0.5em #0f0",
-                "-webkit-text-stroke": "1px #9f7",
+                // textShadow: "0 0 0.5em #0f0",
+                // "-webkit-text-stroke": "1px #9f7",
               }}
             />
           )}
-          {!isActive && !depleted && (
-            <i
-              className="fas fa-pause"
-              css={{
-                color: "#f90",
-                "-webkit-text-stroke": "1px #ff9",
-              }}
-            />
-          )}
-          {!isActive && depleted && (
-            <i
-              className="fas fa-check"
-              css={{
-                color: "#ccf",
-                "-webkit-text-stroke": "1px #fff",
-              }}
-            />
-          )}
-        </a>
+          {!isActive && !depleted && <i className="fas fa-pause" />}
+          {!isActive && depleted && <i className="fas fa-check" />}
+        </button>
       </div>
 
       {game.user.isGM && (
