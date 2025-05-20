@@ -1,20 +1,27 @@
-import { cx } from "@emotion/css";
-import { MouseEvent, useCallback } from "react";
-
 import { assertGame } from "../../functions/utilities";
-import { localize } from "./functions";
+import { format, localize } from "./functions";
 
 interface EncounterNavigationProps {
   combatId: string | undefined | null;
+  combatIndex: number;
+  combatCount: number;
+  prevCombatId: string | undefined | null;
+  nextCombatId: string | undefined | null;
 }
 
-export const EncounterNavigation = ({ combatId }: EncounterNavigationProps) => {
+export const EncounterNavigation = ({
+  combatId,
+  combatIndex,
+  combatCount,
+  prevCombatId,
+  nextCombatId,
+}: EncounterNavigationProps) => {
   assertGame(game);
 
-  const showConfig = useCallback((ev: MouseEvent) => {
-    ev.preventDefault();
-    new CombatTrackerConfig().render(true);
-  }, []);
+  // const showConfig = useCallback((ev: MouseEvent) => {
+  //   ev.preventDefault();
+  //   new CombatTrackerConfig().render(true);
+  // }, []);
 
   return (
     <nav className="encounters tabbed">
@@ -25,28 +32,54 @@ export const EncounterNavigation = ({ combatId }: EncounterNavigationProps) => {
         aria-label="Create Encounter"
         title={localize("COMBAT.Create")}
       ></button>
-      {game.combats.map((buttonCombat, i) => (
+      <div className="cycle-combats">
         <button
           type="button"
-          key={i}
-          className={cx("inline-control", {
-            active: buttonCombat._id === combatId,
-          })}
+          className="inline-control icon fa-solid fa-caret-left"
           data-action="cycleCombat"
-          data-combat-id={buttonCombat._id}
-          data-index={i}
-          title={localize("COMBAT.Encounter")}
-        >
-          {i + 1}
-        </button>
-      ))}
+          data-combat-id={prevCombatId}
+          data-tooltip=""
+          aria-label="Activate Previous Encounter"
+          disabled={!prevCombatId}
+        ></button>
+        <div className="encounter-count">
+          <span className="value">
+            {format("investigator.EncounterNofM", {
+              N: combatIndex + 1,
+              M: combatCount,
+            })}
+          </span>
+        </div>
+        <button
+          type="button"
+          className="inline-control icon fa-solid fa-caret-right"
+          data-action="cycleCombat"
+          data-combat-id={nextCombatId}
+          disabled={!nextCombatId}
+          data-tooltip=""
+          aria-label="Activate Next Encounter"
+        ></button>
+      </div>{" "}
       <button
         type="button"
-        className={"inline-control icon fa-solid fa-gear"}
-        title={localize("COMBAT.Encounter")}
-        data-action="trackerSettings"
+        className={"inline-control icon fa-solid fa-xmark"}
+        title={localize("COMBAT.End")}
+        // data-action doesn't work here - I guess it's in the wrong bit of the
+        // DOM tree
+        // data-action="endCombat"
         onClick={(event) => {
-          showConfig(event);
+          void foundry.applications.api.DialogV2.confirm({
+            // @ts-expect-error this is copied from the foundry code
+            window: { title: "COMBAT.EndTitle" },
+            content: `<p>${game.i18n.localize("COMBAT.EndConfirmation")}</p>`,
+            // @ts-expect-error this is copied from the foundry code
+            yes: {
+              callback: () => {
+                void game?.combats.active?.delete();
+              },
+            },
+            modal: true,
+          });
         }}
       ></button>
     </nav>

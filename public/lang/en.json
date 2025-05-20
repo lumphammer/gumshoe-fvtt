@@ -257,5 +257,6 @@
   "investigator.NotFound": "Not Found!",
   "investigator.Other": "Other",
   "investigator.ResourceID": "Resource ID",
-  "investigator.LinkToResource": "Link to resource?"
+  "investigator.LinkToResource": "Link to resource?",
+  "investigator.EncounterNofM": "Encounter {N} of {M}"
 }

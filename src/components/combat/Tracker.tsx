@@ -7,12 +7,11 @@ import {
 } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
 import { settings } from "../../settings/settings";
-import { BottomBits } from "./BottomBits";
 import { CombatantRow } from "./CombatantRow";
 import { EncounterNavigation } from "./EncounterNavigation";
 import { localize } from "./functions";
 import { getTurns } from "./getTurns";
-import { TurnHeader } from "./TurnHeader";
+import { TurnBar } from "./TurnBar";
 
 const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
 
@@ -24,6 +23,11 @@ export const Tracker = () => {
   const combat = game.combats?.active as InvestigatorCombat | undefined;
   const combatId = combat?._id;
   const combatCount = game.combats?.combats.length ?? 0;
+  const combatIndex = game.combats?.combats.findIndex(
+    (x) => x._id === combatId,
+  );
+  const prevCombatId = game.combats?.combats[combatIndex - 1]?._id;
+  const nextCombatId = game.combats?.combats[combatIndex + 1]?._id;
   const hasCombat = !!combat;
   const isTurnPassing = settingsUseTurnPassing();
 
@@ -43,7 +47,13 @@ export const Tracker = () => {
         {game.user.isGM &&
           (hasCombat ? (
             /* TOP ROW: ➕ 1️⃣ 2️⃣ 3️⃣ ⚙️ */
-            <EncounterNavigation combatId={combatId} />
+            <EncounterNavigation
+              combatId={combatId}
+              combatIndex={combatIndex}
+              combatCount={combatCount}
+              prevCombatId={prevCombatId}
+              nextCombatId={nextCombatId}
+            />
           ) : (
             // end top row
             <button
@@ -57,14 +67,14 @@ export const Tracker = () => {
           ))}
 
         {/* SECOND ROW: Roll all / NPCs, Round 1, dropdown */}
-        <TurnHeader
+        {/* <TurnHeader
           hasCombat={hasCombat}
           combatCount={combatCount}
           combat={combat!}
           game={game}
-        />
+        /> */}
         {!isTurnPassing && (
-          <BottomBits
+          <TurnBar
             isTurnPassing={isTurnPassing}
             hasCombat={hasCombat}
             combat={combat!}
