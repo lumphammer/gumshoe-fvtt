@@ -33,7 +33,11 @@ export class InvestigatorCombat extends Combat {
       combatant.passingTurnsRemaining = max;
     });
     this.activeTurnPassingCombatant = null;
-    return super.nextRound();
+    await super.nextRound();
+    // super.nextRound sets turn to 1, easier to do this than to recreate the
+    // whole thing
+    await this.update({ turn: null });
+    return this;
   }
 
   get activeTurnPassingCombatant() {
@@ -42,5 +46,8 @@ export class InvestigatorCombat extends Combat {
 
   set activeTurnPassingCombatant(id: string | null) {
     void this.setFlag(constants.systemId, "activeTurnPassingCombatant", id);
+    const nextTurn = this.turns.findIndex((t) => t._id === id);
+    const updateData = { round: this.round, turn: nextTurn };
+    void this.update(updateData);
   }
 }

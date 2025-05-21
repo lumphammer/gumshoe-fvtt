@@ -61,8 +61,10 @@ export const TurnPassingInitiative = ({
             fontSize: "1.4em",
             margin: 0,
             padding: "0 0.2em",
+            color: "var(--color-text-secondary)",
           }}
           title={getTranslated("Turn")}
+          disabled={combat.round === 0}
           onClick={onTakeTurn}
         >
           {isActive && (

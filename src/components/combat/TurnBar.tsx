@@ -10,7 +10,7 @@ import { format, localize } from "./functions";
 interface TurnBarProps {
   isTurnPassing: boolean;
   hasCombat: boolean;
-  combat: InvestigatorCombat;
+  combat: InvestigatorCombat | null;
   game: Game;
 }
 
@@ -32,31 +32,16 @@ export const TurnBar = ({
 }: TurnBarProps) => {
   assertGame(game);
 
-  const allTurnsDone = combat.turns.every(
-    (turn) => turn.passingTurnsRemaining <= 0,
-  );
-  const turnsDone = combat.turns.reduce(
-    (acc, turn) => {
-      if (turn.passingTurnsRemaining <= 0) {
-        acc.done++;
-      } else {
-        acc.remaining++;
-      }
-      return acc;
-    },
-    { done: 0, remaining: 0 },
-  );
-
-  console.log(
-    `${turnsDone.done}/${turnsDone.done + turnsDone.remaining}: ${allTurnsDone ? "DONE" : "-"}`,
-  );
+  const allTurnsDone =
+    (combat?.turns.length ?? 0) > 0 &&
+    combat?.turns.every((turn) => turn.passingTurnsRemaining <= 0);
 
   return (
     <nav className="combat-controls">
       {hasCombat &&
         (game.user.isGM ? (
           <>
-            {combat.round ? (
+            {combat?.round ? (
               <>
                 <button
                   type="button"
@@ -184,6 +169,13 @@ export const TurnBar = ({
                 type="button"
                 className="combat-control combat-control-lg"
                 data-action="startCombat"
+                disabled={(combat?.turns.length ?? 0) === 0}
+                css={{
+                  cursor:
+                    (combat?.turns.length ?? 0) === 0
+                      ? "not-allowed"
+                      : "pointer",
+                }}
               >
                 <i className="fa-solid fa-swords" inert></i>
                 <span>{localize("COMBAT.Begin")}</span>
@@ -193,34 +185,41 @@ export const TurnBar = ({
         ) : (
           game.user && (
             <>
-              {combat.combatant?.players?.includes(game.user) && (
-                <button
-                  type="button"
-                  className="inline-control combat-control icon fa-solid fa-arrow-left"
-                  data-action="previousTurn"
-                  data-tooltip=""
-                  aria-label={localize("COMBAT.TurnPrev")}
-                ></button>
-              )}
+              {combat?.combatant?.players?.includes(game.user) &&
+                !isTurnPassing && (
+                  <>
+                    <button
+                      type="button"
+                      className="inline-control combat-control icon fa-solid fa-arrow-left"
+                      data-action="previousTurn"
+                      data-tooltip=""
+                      aria-label={localize("COMBAT.TurnPrev")}
+                    ></button>
+                  </>
+                )}
               <strong
                 css={{
                   flex: 1,
                   display: "flex",
                   justifyContent: "center",
+                  color: "var(--color-text-primary)",
                 }}
               >
-                {format("COMBAT.Round", { round: combat.round })}
+                {combat?.round
+                  ? format("COMBAT.Round", { round: combat?.round })
+                  : localize("COMBAT.NotStarted")}
               </strong>
 
-              {combat.combatant?.players?.includes(game.user) && (
-                <button
-                  type="button"
-                  className="inline-control combat-control icon fa-solid fa-arrow-right"
-                  data-action="nextTurn"
-                  data-tooltip=""
-                  aria-label={localize("COMBAT.TurnNext")}
-                ></button>
-              )}
+              {combat?.combatant?.players?.includes(game.user) &&
+                !isTurnPassing && (
+                  <button
+                    type="button"
+                    className="inline-control combat-control icon fa-solid fa-arrow-right"
+                    data-action="nextTurn"
+                    data-tooltip=""
+                    aria-label={localize("COMBAT.TurnNext")}
+                  ></button>
+                )}
             </>
           )
         ))}

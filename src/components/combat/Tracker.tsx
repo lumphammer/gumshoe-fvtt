@@ -1,4 +1,5 @@
 import { Fragment, ReactNode } from "react";
+import { PiEmptyLight, PiPeaceLight } from "react-icons/pi";
 
 import {
   assertGame,
@@ -44,27 +45,16 @@ export const Tracker = () => {
     <Fragment>
       {/* HEADER ROWS */}
       <header id="combat-round" className="combat-tracker-header">
-        {game.user.isGM &&
-          (hasCombat ? (
-            /* TOP ROW: ➕ 1️⃣ 2️⃣ 3️⃣ ⚙️ */
-            <EncounterNavigation
-              combatId={combatId}
-              combatIndex={combatIndex}
-              combatCount={combatCount}
-              prevCombatId={prevCombatId}
-              nextCombatId={nextCombatId}
-            />
-          ) : (
-            // end top row
-            <button
-              type="button"
-              className="combat-control-lg"
-              data-action="createCombat"
-            >
-              <i className="fa-solid fa-plus" inert></i>
-              <span>{localize("COMBAT.Create")}</span>
-            </button>
-          ))}
+        {hasCombat && (
+          /* TOP ROW: ➕ 1️⃣ 2️⃣ 3️⃣ ⚙️ */
+          <EncounterNavigation
+            combatId={combatId}
+            combatIndex={combatIndex}
+            combatCount={combatCount}
+            prevCombatId={prevCombatId}
+            nextCombatId={nextCombatId}
+          />
+        )}
 
         <TurnBar
           isTurnPassing={isTurnPassing}
@@ -74,6 +64,58 @@ export const Tracker = () => {
         />
       </header>
       {/* ACTUAL COMBATANTS, or "turns" in early-medieval foundry-speak */}
+      {!hasCombat && (
+        <div
+          css={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            width: "100%",
+            flexDirection: "column",
+            textAlign: "center",
+            color: "var(--color-text-secondary)",
+          }}
+        >
+          <PiPeaceLight size={100} />
+          <p css={{ fontSize: "1.4em", fontWeight: "300" }}>
+            {localize("investigator.NoCombat")}
+          </p>
+          {game.user.isGM && (
+            <button
+              type="button"
+              // className="combat-control-lg"
+              css={{
+                justifySelf: "stretch",
+                width: "auto",
+              }}
+              data-action="createCombat"
+            >
+              <i className="fa-solid fa-plus" inert></i>
+              <span>{localize("COMBAT.Create")}</span>
+            </button>
+          )}
+        </div>
+      )}
+      {hasCombat && turns.length === 0 && (
+        <div
+          css={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            width: "100%",
+            flexDirection: "column",
+            textAlign: "center",
+            color: "var(--color-text-secondary)",
+          }}
+        >
+          <PiEmptyLight size={100} />
+          <p css={{ fontSize: "1.4em", fontWeight: "300" }}>
+            {localize("investigator.NoParticipants")}
+          </p>
+        </div>
+      )}
       <ol
         // see investigator-combatant-list in the LESS for why we add this class
         className="combat-tracker plain investigator-combatant-list"
