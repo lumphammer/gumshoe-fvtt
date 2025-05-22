@@ -72,7 +72,6 @@ Hooks.once("ready", async () => {
 
   assertGame(game);
   for (const combat of game.combats?.values() ?? []) {
-    // @ts-expect-error DocumentClassConfig
     combat.setupTurns();
   }
 });

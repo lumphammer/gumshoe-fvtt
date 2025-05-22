@@ -73,11 +73,9 @@ export const performAttack =
     await hitRoll.evaluate();
 
     hitRoll.dice[0].options = {
-      // @ts-expect-error merging not working right on this branch of fvtt-types
       rollOrder: 1,
     };
 
-    // @ts-expect-error merging not working right on this branch of fvtt-types
     hitRoll.dice[0].options.rollOrder = 1;
 
     let damageTerm = "1d6 + @damage + @rangeDamage";
@@ -93,7 +91,6 @@ export const performAttack =
 
     const damageRoll = new Roll(damageTerm, damageParams);
     await damageRoll.evaluate();
-    // @ts-expect-error merging not working right on this branch of fvtt-types
     damageRoll.dice[0].options.rollOrder = 2;
 
     const pool = foundry.dice.terms.PoolTerm.fromRolls([hitRoll, damageRoll]);

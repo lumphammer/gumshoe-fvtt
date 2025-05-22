@@ -120,7 +120,6 @@ declare global {
   }
 }
 
-// @ts-expect-error this is only on fvtt-types#main so far
 declare module "fvtt-types/configuration" {
   namespace foundry.dice.terms.RollTerm {
     interface Options {

@@ -77,10 +77,8 @@ export const EncounterNav = ({
           // data-action="endCombat"
           onClick={(event) => {
             void foundry.applications.api.DialogV2.confirm({
-              // @ts-expect-error this is copied from the foundry code
               window: { title: "COMBAT.EndTitle" },
               content: `<p>${game.i18n.localize("COMBAT.EndConfirmation")}</p>`,
-              // @ts-expect-error this is copied from the foundry code
               yes: {
                 callback: () => {
                   void game?.combats.active?.delete();

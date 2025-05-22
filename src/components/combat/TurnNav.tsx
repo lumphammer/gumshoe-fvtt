@@ -90,7 +90,6 @@ export const TurnNav = ({
                         <MenuItem
                           icon={<FaCog />}
                           onClick={() => {
-                            // @ts-expect-error this is fine
                             return new foundry.applications.apps.CombatTrackerConfig().render(
                               { force: true },
                             );
