@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## Unreleased
+
+### Foundry VTT v13 compatibility-we-really-mean-it-this-time.
+
+Turns out I'd been a bit trigger happy with marking the system as v13 compatible during the v13 development cycle and the combat tracker had become broken in one of the later dev releases.
+
+This release features a completely reworked combat tracker, plus a bunch of fixes for deprecations warnings. This means **we're dropping support for v12 here**.
+
+
 ## 8.7 (2025-05-11)
 
 * **NEW TRANSLATIONS**: Many languages have had their translations updated by kind volunteers and a whole new translation for Italian has been added!
