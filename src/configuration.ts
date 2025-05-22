@@ -87,16 +87,20 @@ declare global {
     Combat: typeof InvestigatorCombat;
     Combatant: typeof InvestigatorCombatant;
   }
+}
+
+declare module "fvtt-types/configuration" {
+  interface DocumentClassConfig {
+    Actor: typeof InvestigatorActor;
+    Item: typeof InvestigatorItem;
+    Combat: typeof InvestigatorCombat;
+    Combatant: typeof InvestigatorCombatant;
+  }
   interface SourceConfig {
     Actor: InvestigatorActorDataSource;
     Item: InvestigatorItemDataSource;
   }
   interface FlagConfig {
-    JournalEntry: {
-      investigator: {
-        extraCssClasses: string;
-      };
-    };
     Combat: {
       investigator: {
         activeTurnPassingCombatant: string | null;
@@ -105,6 +109,16 @@ declare global {
     Combatant: {
       investigator: {
         passingTurnsRemaining: number;
+      };
+    };
+    JournalEntry: {
+      investigator: {
+        extraCssClasses: string;
+      };
+    };
+    JournalEntryPage: {
+      investigator: {
+        extraCssClasses: string;
       };
     };
   }
@@ -118,16 +132,10 @@ declare global {
     "dice-so-nice.enabledSimultaneousRollForMessage": boolean;
     "dice-so-nice.enabledSimultaneousRolls": boolean;
   }
-}
 
-declare module "fvtt-types/configuration" {
   namespace foundry.dice.terms.RollTerm {
     interface Options {
       rollOrder?: number;
     }
   }
-}
-
-export function testActorFunction(actor: Actor) {
-  console.log(actor.system);
 }

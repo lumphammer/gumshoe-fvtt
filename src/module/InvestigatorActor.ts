@@ -89,7 +89,7 @@ export class InvestigatorActor extends Actor {
         confirmText: "Refresh",
         cancelText: "Cancel",
         confirmIconClass: "fa-sync",
-        values: { ActorName: this.name ?? "", Hours: group },
+        values: { ActorName: this.name ?? "", Hours: group.toString() },
       });
       if (yes) {
         await this.mWrefresh(group);
@@ -520,20 +520,19 @@ export class InvestigatorActor extends Actor {
 
   addActorIds = (newIds: string[]): Promise<this | undefined> => {
     const currentIds = this.getActorIds();
-    const effectiveIds = (
-      newIds
-        .map((id) => {
-          // assertGame(game);
-          return game.actors?.get(id);
-        })
-        .filter(
-          (actor) =>
-            actor !== undefined &&
-            // @ts-expect-error DocumentClassConfig
-            isPCActor(actor) &&
-            !currentIds.includes(actor.id),
-        ) as Actor[]
-    ).map((actor) => actor.id) as string[];
+    const newActors = newIds.map((id) => {
+      return game.actors?.get(id);
+    }) as Actor[]; // cast prevents excessively deep etc etc.
+    const filteredActors = newActors.filter((actor) => {
+      const id = actor?.id;
+      return (
+        actor !== undefined &&
+        isPCActor(actor) &&
+        id !== null &&
+        !currentIds.includes(id)
+      );
+    });
+    const effectiveIds = filteredActors.map((actor) => actor.id) as string[];
     return this.setActorIds([...currentIds, ...effectiveIds]);
   };
 

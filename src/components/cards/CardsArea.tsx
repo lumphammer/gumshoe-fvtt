@@ -73,7 +73,7 @@ export const CardsArea = () => {
       resolveFalseOnCancel: true,
       values: {
         ActorName: actor.name ?? "",
-        Count: cardsCount,
+        Count: cardsCount.toString(),
       },
     });
     if (yes) {

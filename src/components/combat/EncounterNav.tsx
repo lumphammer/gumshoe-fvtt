@@ -50,8 +50,8 @@ export const EncounterNav = ({
         >
           <span className="value">
             {format("investigator.EncounterNofM", {
-              N: combatIndex + 1,
-              M: combatCount,
+              N: (combatIndex + 1).toString(),
+              M: combatCount.toString(),
             })}
           </span>
         </div>

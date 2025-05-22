@@ -16,14 +16,7 @@ const Settings = React.lazy(() =>
 
 // this has to be a FormApplication so that we can "register" it as a "menu"
 // in settings
-export class SettingsClassBase extends FormApplication<
-  FormApplicationOptions,
-  // we specify the type of the "concrete" object that this FormApplication
-  // is editing. In this case, we don't have a concrete object, so we
-  // specify undefined. This tells the types to allow the empty constructor
-  // to be used.
-  undefined
-> {
+export class SettingsClassBase extends FormApplication {
   // /** @override */
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
@@ -65,12 +58,13 @@ const render = (sheet: SettingsClassBase) => {
   );
 };
 
-export const SettingsClass = ReactApplicationMixin(
+export class SettingsClass extends ReactApplicationMixin(
   "SettingsClass",
   SettingsClassBase,
   render,
-);
+) {}
 
+// @ts-expect-error no args is fine
 export const investigatorSettingsClassInstance = new SettingsClass();
 
 declare global {

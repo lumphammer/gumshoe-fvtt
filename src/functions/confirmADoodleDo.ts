@@ -6,7 +6,7 @@ interface confirmADoodleDoArgs {
   confirmText: string;
   cancelText: string;
   confirmIconClass: string;
-  values?: Record<string, string | number>;
+  values?: Record<string, string>;
   resolveFalseOnCancel?: boolean;
   translate?: boolean;
 }
