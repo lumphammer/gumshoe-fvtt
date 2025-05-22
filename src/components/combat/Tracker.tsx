@@ -9,10 +9,10 @@ import {
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
 import { settings } from "../../settings/settings";
 import { CombatantRow } from "./CombatantRow";
-import { EncounterNavigation } from "./EncounterNavigation";
+import { EncounterNav } from "./EncounterNav";
 import { localize } from "./functions";
 import { getTurns } from "./getTurns";
-import { TurnBar } from "./TurnBar";
+import { TurnNav } from "./TurnNav";
 
 const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
 
@@ -47,7 +47,7 @@ export const Tracker = () => {
       <header id="combat-round" className="combat-tracker-header">
         {hasCombat && (
           /* TOP ROW: ➕ 1️⃣ 2️⃣ 3️⃣ ⚙️ */
-          <EncounterNavigation
+          <EncounterNav
             combatId={combatId}
             combatIndex={combatIndex}
             combatCount={combatCount}
@@ -56,7 +56,7 @@ export const Tracker = () => {
           />
         )}
 
-        <TurnBar
+        <TurnNav
           isTurnPassing={isTurnPassing}
           hasCombat={hasCombat}
           combat={combat!}
@@ -121,6 +121,8 @@ export const Tracker = () => {
         className="combat-tracker plain investigator-combatant-list"
         css={{
           position: "relative",
+          minHeight: `${turns.length * 4}em`,
+          flex: 0,
         }}
       >
         {

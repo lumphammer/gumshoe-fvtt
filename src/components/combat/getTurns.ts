@@ -46,32 +46,6 @@ export function getTurns(combat: Combat): TurnInfo[] {
       }
     }
 
-    // // Actor and Token status effects
-    // const effects = new Set<string>();
-    // if (combatant.token) {
-    //   // @ts-expect-error v10 types
-    //   combatant.token.effects.forEach((e) => effects.add(e));
-    //   if (combatant.token.overlayEffect) {
-    //     effects.add(combatant.token.overlayEffect);
-    //   }
-    // }
-    // if (combatant.actor) {
-    //   combatant.actor.temporaryEffects.forEach((e) => {
-    //     let hasDefeatedStatus = false;
-    //     const statuses = e.statuses;
-
-    //     if (statuses.has(CONFIG.specialStatusEffects.DEFEATED)) {
-    //       hasDefeatedStatus = true;
-    //     }
-
-    //     if (hasDefeatedStatus) {
-    //       defeated = true;
-    //     } else if (e.icon) {
-    //       effects.add(e.icon);
-    //     }
-    //   });
-    // }
-
     const totalPassingTurns = isActiveCharacterActor(combatant.actor)
       ? (combatant.actor?.system.initiativePassingTurns ?? 1)
       : 1;
@@ -106,12 +80,6 @@ export function getTurns(combat: Combat): TurnInfo[] {
 
     turns.push(turn);
   }
-  // const precision = CONFIG.Combat.initiative.decimals;
-  // turns.forEach((t) => {
-  //   if (t.initiative !== null) {
-  //     t.initiative = t.initiative.toFixed(hasDecimals ? precision : 0);
-  //   }
-  // });
 
   return turns;
 }

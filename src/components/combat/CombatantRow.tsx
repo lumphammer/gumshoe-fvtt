@@ -24,8 +24,7 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
   const active = combat.activeTurnPassingCombatant === turn.id;
   const depleted = turn.passingTurnsRemaining <= 0;
 
-  // turn.effects;
-
+  // based on foundry's CombatTracker#_formatEffectsTooltip
   const effectsTooltip = useMemo(() => {
     if (!turn.effects.length) return "";
     const ul = document.createElement("ul");

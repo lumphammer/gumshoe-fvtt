@@ -1,7 +1,7 @@
 import { assertGame } from "../../functions/utilities";
 import { format, localize } from "./functions";
 
-interface EncounterNavigationProps {
+interface EncounterNavProps {
   combatId: string | undefined | null;
   combatIndex: number;
   combatCount: number;
@@ -9,19 +9,14 @@ interface EncounterNavigationProps {
   nextCombatId: string | undefined | null;
 }
 
-export const EncounterNavigation = ({
+export const EncounterNav = ({
   combatId,
   combatIndex,
   combatCount,
   prevCombatId,
   nextCombatId,
-}: EncounterNavigationProps) => {
+}: EncounterNavProps) => {
   assertGame(game);
-
-  // const showConfig = useCallback((ev: MouseEvent) => {
-  //   ev.preventDefault();
-  //   new CombatTrackerConfig().render(true);
-  // }, []);
 
   return (
     <nav className="encounters tabbed">

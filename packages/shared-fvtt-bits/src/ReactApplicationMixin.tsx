@@ -69,10 +69,7 @@ export function ReactApplicationMixin<TBase extends ApplicationConstructor>(
 
       // this is the only other thing we need to do here - react deals with
       // updating the rest of the window.
-      const titleElement = element.find(".window-title").get(0);
-      if (titleElement) {
-        titleElement.textContent = this.title;
-      }
+      element.find(".window-title").text(this.title);
     }
 
     /**

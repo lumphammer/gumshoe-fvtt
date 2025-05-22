@@ -79,8 +79,6 @@ export const TurnPassingInitiative = ({
                 backgroundClip: "text",
                 animation: `${scrollBg} 2000ms infinite`,
                 animationTimingFunction: "linear",
-                // textShadow: "0 0 0.5em #0f0",
-                // "-webkit-text-stroke": "1px #9f7",
               }}
             />
           )}

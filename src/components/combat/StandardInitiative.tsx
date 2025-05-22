@@ -36,15 +36,6 @@ export const StandardInitiative = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    console.log(
-      "effect",
-      "document.activeElement",
-      document.activeElement,
-      "inputRef.current",
-      inputRef.current,
-      "turn.initiative",
-      turn.initiative,
-    );
     if (inputRef.current && document.activeElement !== inputRef.current) {
       inputRef.current.value = turn.initiative;
     }

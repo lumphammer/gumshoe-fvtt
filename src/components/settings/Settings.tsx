@@ -86,7 +86,7 @@ export const Settings = () => {
                 ...absoluteCover,
                 display: "flex",
                 flexDirection: "column",
-                padding: 0,
+                padding: "0.5em",
               }}
             >
               <div css={{ flex: 1, overflow: "auto", position: "relative" }}>

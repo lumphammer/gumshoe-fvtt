@@ -36,7 +36,9 @@ export class InvestigatorCombat extends Combat {
     await super.nextRound();
     // super.nextRound sets turn to 1, easier to do this than to recreate the
     // whole thing
-    await this.update({ turn: null });
+    if (settings.useTurnPassingInitiative.get()) {
+      await this.update({ turn: null });
+    }
     return this;
   }
 

@@ -7,7 +7,7 @@ import { Dropdown } from "../inputs/Dropdown";
 import { Menu, MenuItem } from "../inputs/Menu";
 import { format, localize } from "./functions";
 
-interface TurnBarProps {
+interface TurnNavProps {
   isTurnPassing: boolean;
   hasCombat: boolean;
   combat: InvestigatorCombat | null;
@@ -24,12 +24,12 @@ const throbbingBg = keyframes({
   },
 });
 
-export const TurnBar = ({
+export const TurnNav = ({
   isTurnPassing,
   hasCombat,
   combat,
   game,
-}: TurnBarProps) => {
+}: TurnNavProps) => {
   assertGame(game);
 
   const allTurnsDone =
@@ -45,7 +45,7 @@ export const TurnBar = ({
               <>
                 <button
                   type="button"
-                  className="inline-control combat-control icon fa-solid fa-arrow-left"
+                  className="inline-control combat-control icon fa-solid fa-chevrons-left"
                   data-action="previousRound"
                   data-tooltip=""
                   aria-label={localize("COMBAT.RoundPrev")}
@@ -60,7 +60,6 @@ export const TurnBar = ({
                   ></button>
                 )}
                 <strong
-                  // className="encounter-title"
                   css={{
                     flex: 1,
                     display: "flex",
@@ -132,7 +131,7 @@ export const TurnBar = ({
                     ></button>
                     <button
                       type="button"
-                      className="inline-control combat-control icon fa-solid fa-arrow-right"
+                      className="inline-control combat-control icon fa-solid fa-chevrons-right"
                       data-action="nextRound"
                       data-tooltip=""
                       aria-label={localize("COMBAT.RoundNext")}
@@ -160,7 +159,7 @@ export const TurnBar = ({
                     }}
                   >
                     {localize("COMBAT.RoundNext")}
-                    <i className="fa-solid fa-arrow-right" inert></i>
+                    <i className="fa-solid fa-chevrons-right" inert></i>
                   </button>
                 )}
               </>
