@@ -33,7 +33,7 @@ const deets: { [mode in WallopNegateMode]: MWResult } = {
 export const AbilityNegateOrWallopMwCard = React.memo(
   ({ msg, ability, pool, mode, name }: AbilityNegateOrWallopMwCardProps) => {
     const onClickAbilityName = useCallback(() => {
-      ability?.sheet?.render(true);
+      void ability?.sheet?.render(true);
     }, [ability?.sheet]);
 
     const costFactor =

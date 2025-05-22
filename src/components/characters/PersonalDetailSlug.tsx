@@ -14,7 +14,7 @@ export const PersonalDetailSlug = ({ item }: PersonalDetailSlugProps) => {
       item={item}
       key={item.id}
       onClick={() => {
-        item.sheet?.render(true);
+        void item.sheet?.render(true);
       }}
     >
       {item.name}

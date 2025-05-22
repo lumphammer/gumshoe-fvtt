@@ -683,8 +683,8 @@ export class InvestigatorItem extends Item {
         this.activeSituationalModifiers.push(id);
       }
     }
-    this.sheet?.render();
-    this.actor?.sheet?.render();
+    void this.sheet?.render();
+    void this.actor?.sheet?.render();
   };
 
   isSituationalModifierActive = (id: string): boolean => {

@@ -21,7 +21,7 @@ export const PushCard = React.memo(
     const theme = useTheme();
 
     const onClickAbilityName = useCallback(() => {
-      ability?.sheet?.render(true);
+      void ability?.sheet?.render(true);
     }, [ability?.sheet]);
 
     return (

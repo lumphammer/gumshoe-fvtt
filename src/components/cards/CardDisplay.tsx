@@ -33,7 +33,7 @@ export const CardDisplay = ({
   );
 
   const handleClick = useCallback(() => {
-    card.sheet?.render(true);
+    void card.sheet?.render(true);
   }, [card.sheet]);
 
   const showText = viewMode === "full";

@@ -60,7 +60,7 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
   }, [combatantStash]);
 
   const openSheet = useCallback(() => {
-    combatantStash.current?.token?.actor?.sheet?.render(true);
+    void combatantStash.current?.token?.actor?.sheet?.render(true);
   }, [combatantStash]);
 
   return {

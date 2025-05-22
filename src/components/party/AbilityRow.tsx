@@ -70,7 +70,7 @@ export const AbilityRow = ({
                 ? actor.items.get(actorInfo.abilityId)
                 : undefined;
               if (ability) {
-                ability.sheet?.render(true);
+                void ability.sheet?.render(true);
               } else {
                 const confirmed = await confirmADoodleDo({
                   message:
@@ -94,7 +94,7 @@ export const AbilityRow = ({
                   ])
                 )?.[0] as AbilityItem;
                 if (isAbilityItem(newAbility)) {
-                  newAbility.sheet?.render(true);
+                  void newAbility.sheet?.render(true);
                 }
               }
             }}

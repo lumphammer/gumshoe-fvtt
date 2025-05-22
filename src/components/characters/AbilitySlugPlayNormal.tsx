@@ -52,7 +52,7 @@ export const AbilitySlugPlayNormal = ({
     <Fragment key={ability.id}>
       <a
         onClick={() => {
-          ability.sheet?.render(true);
+          void ability.sheet?.render(true);
         }}
         data-item-id={ability.id}
         onDragStart={onDragStart}
