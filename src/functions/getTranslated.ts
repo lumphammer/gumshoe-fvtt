@@ -10,7 +10,7 @@ import { assertGame, getDevMode } from "./utilities";
 
 export function getTranslated(
   text: string,
-  values: Record<string, string | number> = {},
+  values: Record<string, string> = {},
 ) {
   assertGame(game);
   const debug = settings.debugTranslations.get() && getDevMode();

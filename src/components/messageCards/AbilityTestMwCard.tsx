@@ -56,7 +56,7 @@ export const AbilityTestMwCard = React.memo(
     name,
   }: AbilityTestMwCardProps) => {
     const onClickAbilityName = useCallback(() => {
-      ability?.sheet?.render(true);
+      void ability?.sheet?.render(true);
     }, [ability?.sheet]);
 
     const cappedResult = Math.max(Math.min(msg.rolls?.[0]?.total ?? 1, 6), 1);

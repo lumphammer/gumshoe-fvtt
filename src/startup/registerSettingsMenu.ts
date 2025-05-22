@@ -11,6 +11,7 @@ export const registerSettingsMenu = function () {
     label: "Open GUMSHOE System Settings", // The text label used in the button
     // hint: "A description of what will occur in the submenu dialog.",
     icon: "fas fa-search", // A Font Awesome icon used in the submenu button
+    // @ts-expect-error SettingsClass is fine here
     type: SettingsClass, // A FormApplication subclass which should be created
     restricted: true, // Restrict this submenu to gamemaster only?
   });

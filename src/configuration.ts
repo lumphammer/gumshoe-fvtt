@@ -80,7 +80,7 @@ type InvestigatorItemDataSource =
   | InvestigativeAbilityDataSource
   | PersonalDetailDataSource;
 
-declare global {
+declare module "fvtt-types/configuration" {
   interface DocumentClassConfig {
     Actor: typeof InvestigatorActor;
     Item: typeof InvestigatorItem;
@@ -92,11 +92,6 @@ declare global {
     Item: InvestigatorItemDataSource;
   }
   interface FlagConfig {
-    JournalEntry: {
-      investigator: {
-        extraCssClasses: string;
-      };
-    };
     Combat: {
       investigator: {
         activeTurnPassingCombatant: string | null;
@@ -105,6 +100,16 @@ declare global {
     Combatant: {
       investigator: {
         passingTurnsRemaining: number;
+      };
+    };
+    JournalEntry: {
+      investigator: {
+        extraCssClasses: string;
+      };
+    };
+    JournalEntryPage: {
+      investigator: {
+        extraCssClasses: string;
       };
     };
   }
@@ -118,17 +123,10 @@ declare global {
     "dice-so-nice.enabledSimultaneousRollForMessage": boolean;
     "dice-so-nice.enabledSimultaneousRolls": boolean;
   }
-}
 
-// @ts-expect-error this is only on fvtt-types#main so far
-declare module "fvtt-types/configuration" {
   namespace foundry.dice.terms.RollTerm {
     interface Options {
       rollOrder?: number;
     }
   }
-}
-
-export function testActorFunction(actor: Actor) {
-  console.log(actor.system);
 }

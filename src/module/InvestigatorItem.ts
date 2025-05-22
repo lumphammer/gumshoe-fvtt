@@ -251,7 +251,6 @@ export class InvestigatorItem extends Item {
   async mWNegateIllustrious(): Promise<void> {
     assertAbilityItem(this);
     const newPool = Math.max(0, this.system.pool - constants.mwNegateCost);
-    // @ts-expect-error .create
     await ChatMessage.create({
       content: `
         <div
@@ -269,7 +268,6 @@ export class InvestigatorItem extends Item {
   async mWWallop(): Promise<void> {
     assertAbilityItem(this);
     const newPool = Math.max(0, this.system.pool - constants.mwWallopCost);
-    // @ts-expect-error .create
     await ChatMessage.create({
       content: `
         <div
@@ -685,8 +683,8 @@ export class InvestigatorItem extends Item {
         this.activeSituationalModifiers.push(id);
       }
     }
-    this.sheet?.render();
-    this.actor?.sheet?.render();
+    void this.sheet?.render();
+    void this.actor?.sheet?.render();
   };
 
   isSituationalModifierActive = (id: string): boolean => {

@@ -5,7 +5,7 @@ export const localize = (stringId: string) => {
   return game.i18n?.localize(stringId) ?? "";
 };
 
-export const format = (stringId: string, data?: Record<string, unknown>) => {
+export const format = (stringId: string, data?: Record<string, string>) => {
   assertGame(game);
   return game.i18n?.format(stringId, data) ?? "";
 };

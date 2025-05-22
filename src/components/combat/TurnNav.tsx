@@ -70,7 +70,9 @@ export const TurnNav = ({
                     showArrow={false}
                     label={
                       <>
-                        {format("COMBAT.Round", { round: combat.round })}
+                        {format("COMBAT.Round", {
+                          round: combat.round.toString(),
+                        })}
                         <FaChevronDown />
                       </>
                     }
@@ -90,7 +92,6 @@ export const TurnNav = ({
                         <MenuItem
                           icon={<FaCog />}
                           onClick={() => {
-                            // @ts-expect-error this is fine
                             return new foundry.applications.apps.CombatTrackerConfig().render(
                               { force: true },
                             );
@@ -211,7 +212,7 @@ export const TurnNav = ({
                 }}
               >
                 {combat?.round
-                  ? format("COMBAT.Round", { round: combat?.round })
+                  ? format("COMBAT.Round", { round: combat?.round.toString() })
                   : localize("COMBAT.NotStarted")}
               </strong>
 

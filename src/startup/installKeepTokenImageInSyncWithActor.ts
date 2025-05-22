@@ -30,7 +30,7 @@ export function installKeepTokenImageInSyncWithActor() {
 
       const token = actor.prototypeToken;
       if (["icons/svg/cowled.svg", actor.img].includes(token.texture.src)) {
-        token.update({ texture: { src: update.img } }, {});
+        void token.update({ texture: { src: update.img } }, {});
       }
     },
   ); //

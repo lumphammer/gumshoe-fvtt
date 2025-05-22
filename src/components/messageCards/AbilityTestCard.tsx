@@ -16,7 +16,7 @@ interface AbilityTestCardProps {
 export const AbilityTestCard = React.memo(
   ({ msg, ability, mode, name, imageUrl }: AbilityTestCardProps) => {
     const onClickAbilityName = useCallback(() => {
-      ability?.sheet?.render(true);
+      void ability?.sheet?.render(true);
     }, [ability?.sheet]);
 
     return (

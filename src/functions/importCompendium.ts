@@ -59,7 +59,6 @@ export const importCompendium = async (candidate: unknown) => {
     JournalEntry,
   }[verified.entity];
 
-  // @ts-expect-error .create
   const entities = await maker.create(verified.contents as any, {
     temporary: true,
   });

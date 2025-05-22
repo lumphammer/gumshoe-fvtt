@@ -1,5 +1,6 @@
 import * as constants from "../constants";
 import { assertGame } from "../functions/utilities";
+import { InvestigatorCombat } from "../module/InvestigatorCombat";
 import { RequestTurnPassArgs } from "../types";
 
 /**
@@ -14,7 +15,7 @@ export function installTurnPassingHandler() {
         constants.requestTurnPass,
         ({ combatantId }: RequestTurnPassArgs) => {
           assertGame(game);
-          const combat = game.combat;
+          const combat = game.combat as InvestigatorCombat;
           const combatant = combat?.combatants.get(combatantId);
           if (
             combat &&

@@ -84,50 +84,53 @@ export function installResourceUpdateHookHandler() {
    * This does not work for legacy resource names because it never used to
    * (this was an oversight but no need to add for legacy compatibility).
    */
-  Hooks.on("updateActor", (actor: Actor, diff: any, options, userId) => {
-    assertGame(game);
-    if (
-      // ensure the update is triggered by the current user
-      game.userId !== userId ||
-      // the actor is an active character (PC or NPC)
-      !isActiveCharacterActor(actor) ||
-      // a resource update is present
-      !diff.system?.resources
-    ) {
-      return;
-    }
+  Hooks.on(
+    "updateActor",
+    (actor: Actor, diff: any, options: any, userId: string) => {
+      assertGame(game);
+      if (
+        // ensure the update is triggered by the current user
+        game.userId !== userId ||
+        // the actor is an active character (PC or NPC)
+        !isActiveCharacterActor(actor) ||
+        // a resource update is present
+        !diff.system?.resources
+      ) {
+        return;
+      }
 
-    // get the resource entries that have been updated
-    const entries: [string, { value: number }][] = Object.entries(
-      diff.system.resources,
-    );
+      // get the resource entries that have been updated
+      const entries: [string, { value: number }][] = Object.entries(
+        diff.system.resources,
+      );
 
-    // for each resource entry, update the corresponding general abilities
-    for (const [resourceId, resource] of entries) {
-      // get the general abilities that are linked to the resource
-      const abilities = actor.items.filter((item) => {
-        return (
-          isGeneralAbilityItem(item) &&
-          item.system.linkToResource &&
-          item.system.resourceId === resourceId
-        );
-      });
-
-      // for each general ability, update the pool value
-      abilities?.forEach((ability) => {
-        assertGeneralAbilityItem(ability);
-        const cappedValue = Math.max(
-          Math.min(resource.value, ability.system.rating),
-          ability.system.min,
-        );
-        void ability.update({
-          system: {
-            pool: cappedValue,
-          },
+      // for each resource entry, update the corresponding general abilities
+      for (const [resourceId, resource] of entries) {
+        // get the general abilities that are linked to the resource
+        const abilities = actor.items.filter((item) => {
+          return (
+            isGeneralAbilityItem(item) &&
+            item.system.linkToResource &&
+            item.system.resourceId === resourceId
+          );
         });
-      });
-    }
-  });
+
+        // for each general ability, update the pool value
+        abilities?.forEach((ability) => {
+          assertGeneralAbilityItem(ability);
+          const cappedValue = Math.max(
+            Math.min(resource.value, ability.system.rating),
+            ability.system.min,
+          );
+          void ability.update({
+            system: {
+              pool: cappedValue,
+            },
+          });
+        });
+      }
+    },
+  );
 
   /*
    * When a general ability is added to an actor, create the corresponding

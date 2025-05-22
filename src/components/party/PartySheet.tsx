@@ -236,7 +236,7 @@ export const PartySheet = () => {
                 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  actor.sheet?.render(true);
+                  void actor.sheet?.render(true);
                 }}
               >
                 <div
