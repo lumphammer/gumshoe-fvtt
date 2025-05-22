@@ -79,6 +79,9 @@ export const TurnNav = ({
                       flex: 1,
                       minHeight: "var(--button-size)",
                       color: "var(--color-text-primary)",
+                      ":hover": {
+                        color: "var(--button-hover-text-color)",
+                      },
                     }}
                   >
                     {
@@ -156,6 +159,9 @@ export const TurnNav = ({
                       color: allTurnsDone
                         ? "var(--color-text-primary)"
                         : "var(--color-text-secondary)",
+                      ":hover": {
+                        color: "var(--button-hover-text-color)",
+                      },
                     }}
                   >
                     {localize("COMBAT.RoundNext")}

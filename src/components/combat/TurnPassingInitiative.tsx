@@ -62,6 +62,9 @@ export const TurnPassingInitiative = ({
             margin: 0,
             padding: "0 0.2em",
             color: "var(--color-text-secondary)",
+            ":hover": {
+              color: "var(--button-hover-text-color)",
+            },
           }}
           title={getTranslated("Turn")}
           disabled={combat.round === 0}
