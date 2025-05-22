@@ -80,15 +80,6 @@ type InvestigatorItemDataSource =
   | InvestigativeAbilityDataSource
   | PersonalDetailDataSource;
 
-declare global {
-  interface DocumentClassConfig {
-    Actor: typeof InvestigatorActor;
-    Item: typeof InvestigatorItem;
-    Combat: typeof InvestigatorCombat;
-    Combatant: typeof InvestigatorCombatant;
-  }
-}
-
 declare module "fvtt-types/configuration" {
   interface DocumentClassConfig {
     Actor: typeof InvestigatorActor;
