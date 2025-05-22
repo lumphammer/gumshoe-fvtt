@@ -1,7 +1,7 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import {
   FaEdit,
-  FaEllipsisH,
+  FaEllipsisV,
   FaEraser,
   FaRecycle,
   FaTrash,
@@ -33,38 +33,50 @@ export const StandardInitiative = ({
     openSheet,
   } = useInititative(combat, turn.id);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current && document.activeElement !== inputRef.current) {
+      inputRef.current.value = turn.initiative;
+    }
+  }, [turn.initiative]);
+
   return (
     <Fragment>
-      <div
-        className="token-initiative"
-        css={{
-          flex: 0,
-        }}
-      >
+      <div className="token-initiative">
         {turn.hasRolled ? (
-          <span className="initiative">{turn.initiative}</span>
+          <input
+            ref={inputRef}
+            type="text"
+            inputMode="numeric"
+            pattern="^[+=\-]?\d*"
+            defaultValue={turn.initiative}
+            aria-label="Initiative Score"
+            disabled={!game.user.isGM}
+          ></input>
         ) : (
-          <a
+          <button
             css={{
               display: "block",
               height: "var(--sidebar-item-height)",
               fontSize: "calc(var(--sidebar-item-height) - 20px)",
-              margin: "0 0.5em",
             }}
             title={localize("COMBAT.InitiativeRoll")}
             onClick={onDoInitiative}
           >
             <i className="fas fa-dice-d6" />
-          </a>
+          </button>
         )}
       </div>
 
       {game.user.isGM && (
         <Dropdown
           showArrow={false}
-          label={<FaEllipsisH />}
+          label={<FaEllipsisV />}
+          className="inline-control"
           css={{
             flex: 0,
+            minHeight: "var(--button-size)",
           }}
         >
           {

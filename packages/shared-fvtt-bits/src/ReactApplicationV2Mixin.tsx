@@ -33,15 +33,6 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
   render: () => ReactNode,
 ) {
   class Reactified extends Base {
-    static DEFAULT_OPTIONS: RecursivePartial<ApplicationConfiguration> = {
-      ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS,
-      window: {
-        ...foundry.applications.api.ApplicationV2.DEFAULT_OPTIONS.window,
-        frame: true,
-        title: name,
-      },
-    };
-
     // PROPERTIES
 
     /**

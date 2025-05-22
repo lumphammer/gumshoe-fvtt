@@ -10,6 +10,7 @@ import { InvestigatorCombat } from "../../module/InvestigatorCombat";
 
 export const useInititative = (combat: InvestigatorCombat, id: string) => {
   assertGame(game);
+
   const combatantStash = useRefStash(combat.combatants.get(id));
 
   const onConfigureCombatant = useCallback(
@@ -41,11 +42,14 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
 
   const onTakeTurn = useCallback(() => {
     assertGame(game);
+    if (combat.round === 0) {
+      return;
+    }
     systemLogger.log("turnPassingHandler - calling hook");
     // call `requestTurnPass` on everyone's client - the GM's client will pick
     // this up and perform the turn pass
     requestTurnPass(combatantStash.current?.id);
-  }, [combatantStash]);
+  }, [combatantStash, combat.round]);
 
   const onAddTurn = useCallback(() => {
     combatantStash.current?.addPassingTurn();

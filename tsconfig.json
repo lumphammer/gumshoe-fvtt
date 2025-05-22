@@ -1,3 +1,6 @@
 {
-	"extends": "./packages/shared-fvtt-bits/dotfiles/import/tsconfig.fvtt.json"
+	"extends": "./packages/shared-fvtt-bits/dotfiles/import/tsconfig.fvtt.json",
+	"compilerOptions": {
+		"noErrorTruncation": true
+	}
 }

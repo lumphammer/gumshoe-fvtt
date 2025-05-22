@@ -1,7 +1,3 @@
-import {
-  compareCombatantsPassing,
-  compareCombatantsStandard,
-} from "../components/combat/functions";
 import * as constants from "../constants";
 import { settings } from "../settings/settings";
 import { isActiveCharacterActor } from "../v10Types";
@@ -14,25 +10,16 @@ export class InvestigatorCombat extends Combat {
   override _onCreate(data: Item.CreateData, options: any, userId: string) {
     // @ts-expect-error .create
     super._onCreate(data, options, userId);
-    if (settings.useTurnPassingInitiative.get()) {
-      void this.update({
-        round: 1,
-      });
-    }
-  }
-
-  override get started() {
-    return true;
   }
 
   protected override _sortCombatants = (
-    a: InstanceType<typeof InvestigatorCombatant>,
-    b: InstanceType<typeof InvestigatorCombatant>,
+    a: InvestigatorCombatant,
+    b: InvestigatorCombatant,
   ): number => {
     if (settings.useTurnPassingInitiative.get()) {
-      return compareCombatantsPassing(this.activeTurnPassingCombatant)(a, b);
+      return a.name && b.name ? a.name.localeCompare(b.name) : 0;
     } else {
-      return compareCombatantsStandard(a, b);
+      return (b.initiative ?? 0) - (a.initiative ?? 0);
     }
   };
 
@@ -46,7 +33,13 @@ export class InvestigatorCombat extends Combat {
       combatant.passingTurnsRemaining = max;
     });
     this.activeTurnPassingCombatant = null;
-    return super.nextRound();
+    await super.nextRound();
+    // super.nextRound sets turn to 1, easier to do this than to recreate the
+    // whole thing
+    if (settings.useTurnPassingInitiative.get()) {
+      await this.update({ turn: null });
+    }
+    return this;
   }
 
   get activeTurnPassingCombatant() {
@@ -55,5 +48,8 @@ export class InvestigatorCombat extends Combat {
 
   set activeTurnPassingCombatant(id: string | null) {
     void this.setFlag(constants.systemId, "activeTurnPassingCombatant", id);
+    const nextTurn = this.turns.findIndex((t) => t._id === id);
+    const updateData = { round: this.round, turn: nextTurn };
+    void this.update(updateData);
   }
 }
