@@ -28,7 +28,6 @@ import {
   assertMwItem,
   assertNPCActor,
   assertPartyActor,
-  assertPCActor,
   assertPersonalDetailItem,
   CardItem,
   GeneralAbilityItem,
@@ -40,14 +39,17 @@ import {
   isGeneralAbilityItem,
   isInvestigativeAbilityItem,
   isMwItem,
-  isPCActor,
   isPersonalDetailItem,
   isWeaponItem,
   PersonalDetailItem,
 } from "../v10Types";
 import { InvestigatorItem } from "./InvestigatorItem";
 
-export class InvestigatorActor extends Actor {
+export class InvestigatorActor<
+  SubType extends Actor.SubType = Actor.SubType,
+> extends Actor<SubType> {
+  override type!: SubType;
+
   shouldBrodcastRefreshes(): boolean {
     assertGame(game);
     return !game.user.isGM || isPCActor(this);

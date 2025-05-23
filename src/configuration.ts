@@ -6,6 +6,9 @@
 import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 
 import * as constants from "./constants";
+import { NPCModel } from "./module/actors/npc";
+import { PartyModel } from "./module/actors/party";
+import { PCModel } from "./module/actors/pc";
 import { InvestigatorActor } from "./module/InvestigatorActor";
 import { InvestigatorCombat } from "./module/InvestigatorCombat";
 import { InvestigatorCombatant } from "./module/InvestigatorCombatant";
@@ -15,32 +18,9 @@ import {
   EquipmentSystemData,
   GeneralAbilitySystemData,
   InvestigativeAbilitySystemData,
-  NPCSystemData,
-  PartySystemData,
-  PCSystemData,
   PersonalDetailSystemData,
   WeaponSystemData,
 } from "./types";
-
-interface PCDataSource {
-  type: typeof constants.pc;
-  system: PCSystemData;
-}
-
-interface NPCDataSource {
-  type: typeof constants.npc;
-  system: NPCSystemData;
-}
-
-interface PartyDataSource {
-  type: typeof constants.party;
-  system: PartySystemData;
-}
-
-type InvestigatorActorDataSource =
-  | PCDataSource
-  | NPCDataSource
-  | PartyDataSource;
 
 interface EquipmentDataSource {
   type: typeof constants.equipment;
@@ -81,6 +61,19 @@ type InvestigatorItemDataSource =
   | PersonalDetailDataSource;
 
 declare module "fvtt-types/configuration" {
+  interface DataModelConfig {
+    Actor: {
+      pc: typeof PCModel;
+      npc: typeof NPCModel;
+      party: typeof PartyModel;
+    };
+  }
+  interface ConfiguredActor<SubType extends Actor.SubType> {
+    document: InvestigatorActor<SubType>;
+  }
+}
+
+declare module "fvtt-types/configuration" {
   interface DocumentClassConfig {
     Actor: typeof InvestigatorActor;
     Item: typeof InvestigatorItem;
@@ -88,7 +81,6 @@ declare module "fvtt-types/configuration" {
     Combatant: typeof InvestigatorCombatant;
   }
   interface SourceConfig {
-    Actor: InvestigatorActorDataSource;
     Item: InvestigatorItemDataSource;
   }
   interface FlagConfig {

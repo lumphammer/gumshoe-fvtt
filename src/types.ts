@@ -1,6 +1,5 @@
 import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 
-import { CardsAreaSettings } from "./components/cards/types";
 import * as constants from "./constants";
 // SOCKET STUFF ----------------------------------------------------------------
 
@@ -79,52 +78,6 @@ export type MWDifficulty = "easy" | number;
 // Actor data stuff
 // #############################################################################
 // #############################################################################
-
-export type PCSystemData = {
-  // this is not used anywhere, but it's in template.json and has been since
-  // forever
-  buildPoints: number;
-  /** @deprecated occupation is now a personalDetail item */
-  occupation: string;
-  longNotes: BaseNote[];
-  longNotesFormat: NoteFormat;
-  shortNotes: string[];
-  hiddenShortNotes: string[];
-  initiativeAbility: string;
-  hideZeroRated: boolean;
-  sheetTheme: string | null;
-  /** deprecated */
-  hitThreshold: number;
-  mwInjuryStatus: MwInjuryStatus;
-  resources: Record<string, Resource>;
-  stats: Record<string, number>;
-  initiativePassingTurns: number;
-  cardsAreaSettings: CardsAreaSettings;
-};
-
-export type NPCSystemData = {
-  notes: NoteWithFormat;
-  gmNotes: NoteWithFormat;
-  initiativeAbility: string;
-  hideZeroRated: boolean;
-  sheetTheme: string | null;
-  /** deprecated */
-  hitThreshold: number;
-  /** deprecated */
-  armor: number;
-  /** deprecated */
-  alertness: number;
-  /** deprecated */
-  stealth: number;
-  /** deprecated */
-  stabilityLoss: number;
-  mwInjuryStatus: MwInjuryStatus;
-  resources: Record<string, Resource>;
-  stats: Record<string, number>;
-  combatBonus: number;
-  damageBonus: number;
-  initiativePassingTurns: number;
-};
 
 export type PartySystemData = {
   // party stuff
