@@ -21,7 +21,6 @@ export class InvestigatorTokenDocument extends TokenDocument {
     // However, INVESTIGATOR uses dynamic attributes and so we need to override
     // it to walk all the world actors and find all their attributes.
     if (data === undefined && _path.length === 0) {
-      console.log("getTrackedAttributes", data, _path);
       const valueAttributesStrings = new Array<string>();
       for (const actor of game.actors?.values() ?? []) {
         if (!isActiveCharacterActor(actor)) {
