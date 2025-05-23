@@ -2,6 +2,18 @@ import { assertGame } from "../../functions/utilities";
 import { isActiveCharacterActor } from "../../v10Types";
 import { TurnInfo } from "./types";
 
+const getValue = <T>(resource: T): T | number => {
+  if (
+    typeof resource === "object" &&
+    resource !== null &&
+    "value" in resource &&
+    typeof resource.value === "number"
+  ) {
+    return resource.value;
+  }
+  return resource;
+};
+
 // adapted from foundry's CombatTracker, so there's some mutable data and
 // weird imperative stuff
 export function getTurns(combat: Combat): TurnInfo[] {
@@ -16,7 +28,7 @@ export function getTurns(combat: Combat): TurnInfo[] {
     // Prepare turn data
     const resource =
       combatant.permission >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER
-        ? combatant.resource
+        ? getValue(combatant.resource)
         : null;
 
     const active = i === combat.turn;
@@ -61,7 +73,7 @@ export function getTurns(combat: Combat): TurnInfo[] {
 
     type _T = typeof combatant.name;
 
-    const turn = {
+    const turn: TurnInfo = {
       id: combatant.id,
       name: combatant.name ?? "",
       img,
