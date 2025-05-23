@@ -1,12 +1,14 @@
 import { getTranslated } from "../../../functions/getTranslated";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
+import { assertPCActor } from "../../../module/actors/pc";
 import { settings } from "../../../settings/settings";
 import { isEquipmentItem } from "../../../v10Types";
 import { EquipmentCategory } from "./EquipmentCategory";
 
 export const EquipmentArea = () => {
   const { actor } = useActorSheetContext();
-  const items = actor.getEquipment();
+  assertPCActor(actor);
+  const items = actor.system.getEquipment();
   const categories = settings.equipmentCategories.get();
 
   const uncategorizedItems = items.filter(

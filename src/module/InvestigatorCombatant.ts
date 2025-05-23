@@ -1,11 +1,11 @@
 import * as constants from "../constants";
 import { assertGame, isNullOrEmptyString } from "../functions/utilities";
 import { settings } from "../settings/settings";
+import { isGeneralAbilityItem } from "../v10Types";
 import {
   assertActiveCharacterActor,
   isActiveCharacterActor,
-  isGeneralAbilityItem,
-} from "../v10Types";
+} from "./actors/exports";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 /**

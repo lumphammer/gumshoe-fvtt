@@ -22,12 +22,11 @@ export const MwInjuryStatusWidget = ({
   }, [display, setStatus]);
 
   const color =
-    display === MwInjuryStatus.uninjured
+    display === "uninjured"
       ? "#0f07"
-      : display === MwInjuryStatus.hurt
+      : display === "hurt"
         ? "#770f"
-        : display === MwInjuryStatus.down ||
-            display === MwInjuryStatus.unconscious
+        : display === "down" || display === "unconscious"
           ? "#950f"
           : // dead
             "#f00f";
@@ -55,15 +54,11 @@ export const MwInjuryStatusWidget = ({
           setDisplay(e.currentTarget.value as MwInjuryStatus);
         }}
       >
-        <option value={MwInjuryStatus.uninjured}>
-          {getTranslated("Uninjured")}
-        </option>
-        <option value={MwInjuryStatus.hurt}>{getTranslated("Hurt")}</option>
-        <option value={MwInjuryStatus.down}>{getTranslated("Down")}</option>
-        <option value={MwInjuryStatus.unconscious}>
-          {getTranslated("Unconscious")}
-        </option>
-        <option value={MwInjuryStatus.dead}>{getTranslated("Dead")}</option>
+        <option value={"uninjured"}>{getTranslated("Uninjured")}</option>
+        <option value={"hurt"}>{getTranslated("Hurt")}</option>
+        <option value={"down"}>{getTranslated("Down")}</option>
+        <option value={"unconscious"}>{getTranslated("Unconscious")}</option>
+        <option value={"dead"}>{getTranslated("Dead")}</option>
       </select>
     </div>
   );

@@ -1,4 +1,7 @@
 import * as constants from "../constants";
+import { NPCModel } from "../module/actors/npc";
+import { PartyModel } from "../module/actors/party";
+import { PCModel } from "../module/actors/pc";
 import { InvestigatorActor } from "../module/InvestigatorActor";
 import { InvestigatorCombat } from "../module/InvestigatorCombat";
 import { InvestigatorCombatant } from "../module/InvestigatorCombatant";
@@ -23,6 +26,10 @@ export const registerSheetsAndClasses = () => {
   // CONFIG.ChatMessage.documentClass = InvestigatorChatMessage;
   CONFIG.Token.documentClass = InvestigatorTokenDocument;
   CONFIG.ui.combat = InvestigatorCombatTracker;
+
+  CONFIG.Actor.dataModels["pc"] = PCModel;
+  CONFIG.Actor.dataModels["npc"] = NPCModel;
+  CONFIG.Actor.dataModels["party"] = PartyModel;
 
   // Register custom sheets (if any)
   Actors.unregisterSheet("core", ActorSheet);

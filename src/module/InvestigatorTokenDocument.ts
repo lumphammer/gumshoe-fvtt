@@ -1,4 +1,4 @@
-import { isActiveCharacterActor } from "../v10Types";
+import { isActiveCharacterActor } from "./actors/exports";
 
 /**
  * There's some foundrytude about resource attributes that aren't defined in
@@ -26,6 +26,7 @@ export class InvestigatorTokenDocument extends TokenDocument {
         if (!isActiveCharacterActor(actor)) {
           continue;
         }
+        // @ts-expect-error excessively deep
         const stats = Object.keys(actor.system.stats).map(
           (stat) => `stats.${stat}`,
         );

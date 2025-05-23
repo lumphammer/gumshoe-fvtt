@@ -1,3 +1,4 @@
+import { assertPCActor } from "../../module/actors/pc";
 import { InvestigatorActor } from "../../module/InvestigatorActor";
 import { GridField } from "../inputs/GridField";
 import { PersonalDetailSlug } from "./PersonalDetailSlug";
@@ -12,7 +13,9 @@ export const PersonalDetailField = ({
   name: string;
   slotIndex: number;
 }) => {
-  const personalDetailItems = actor.getPersonalDetailsInSlotIndex(slotIndex);
+  assertPCActor(actor);
+  const personalDetailItems =
+    actor.system.getPersonalDetailsInSlotIndex(slotIndex);
 
   return (
     <GridField
@@ -33,7 +36,7 @@ export const PersonalDetailField = ({
       {personalDetailItems.length === 0 && (
         <Slug
           onClick={() => {
-            void actor.createPersonalDetail(slotIndex); //
+            void actor.system.createPersonalDetail(slotIndex); //
           }}
         >
           Create

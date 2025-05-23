@@ -1,13 +1,15 @@
 import { weapon } from "../../../constants";
 import { sortEntitiesByName } from "../../../functions/utilities";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
+import { assertActiveCharacterActor } from "../../../module/actors/exports";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { WeaponRowEdit } from "./WeaponRowEdit";
 
 export const WeaponsAreaEdit = () => {
   const { actor } = useActorSheetContext();
-  const items = actor.getWeapons();
+  assertActiveCharacterActor(actor);
+  const items = actor.system.getWeapons();
   return (
     <div>
       <div

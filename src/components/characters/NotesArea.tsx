@@ -1,20 +1,21 @@
 import { useCallback } from "react";
 
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { assertPCActor } from "../../module/actors/pc";
 import { settings } from "../../settings/settings";
 import { NoteWithFormat } from "../../types";
-import { assertPCActor } from "../../v10Types";
 import { IndexedNotesEditorWithControls } from "../inputs/IndexedNotesEditorWithControls";
 import { InputGrid } from "../inputs/InputGrid";
 import { NotesTypeContext } from "../NotesTypeContext";
 
 export const NotesArea = () => {
   const { actor } = useActorSheetContext();
+  assertPCActor(actor);
   const longNotesNames = settings.longNotes.get();
 
   const updateLongNote = useCallback(
     (value: NoteWithFormat, index: number) => {
-      void actor.setLongNote(index, value);
+      void actor.system.setLongNote(index, value);
     },
     [actor],
   );

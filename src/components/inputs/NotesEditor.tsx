@@ -44,7 +44,7 @@ export const NotesEditor = ({
   const toggleSecret = useCallback(
     async (index: number) => {
       systemLogger.log("Toggling secret", index);
-      if (format !== NoteFormat.richText) {
+      if (format !== "richText") {
         // we don't support secrets in md or plain
         return;
       }
@@ -96,7 +96,7 @@ export const NotesEditor = ({
         <NotesDisplay html={html} toggleSecret={toggleSecret} />
       </div>
     );
-  } else if (format === NoteFormat.plain) {
+  } else if (format === "plain") {
     editor = (
       <AsyncTextArea
         className={className}
@@ -104,7 +104,7 @@ export const NotesEditor = ({
         value={source}
       />
     );
-  } else if (format === NoteFormat.markdown) {
+  } else if (format === "markdown") {
     editor = (
       <MarkdownEditor
         className={className}
@@ -112,7 +112,7 @@ export const NotesEditor = ({
         value={source}
       />
     );
-  } else if (format === NoteFormat.richText) {
+  } else if (format === "richText") {
     editor = (
       <RichTextEditor
         className={className}

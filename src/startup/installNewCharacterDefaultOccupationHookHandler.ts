@@ -1,5 +1,6 @@
-import { occupationSlotIndex, pc } from "../constants";
+import { occupationSlotIndex } from "../constants";
 import { assertGame } from "../functions/utilities";
+import { isPCActor } from "../module/actors/pc";
 import { InvestigatorActor } from "../module/InvestigatorActor";
 
 export function installNewCharacterDefaultOccupationHookHandler() {
@@ -13,11 +14,10 @@ export function installNewCharacterDefaultOccupationHookHandler() {
       assertGame(game);
       if (
         game.userId === userId &&
-        // @ts-expect-error .type
-        actor.type === pc &&
-        actor.getOccupations().length === 0
+        isPCActor(actor) &&
+        actor.system.getOccupations().length === 0
       ) {
-        await actor.createPersonalDetail(occupationSlotIndex, false);
+        await actor.system.createPersonalDetail(occupationSlotIndex, false);
       }
     },
   );

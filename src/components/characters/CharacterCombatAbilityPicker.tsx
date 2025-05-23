@@ -1,6 +1,6 @@
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { assertActiveCharacterActor } from "../../module/actors/exports";
 import { settings } from "../../settings/settings";
-import { assertActiveCharacterActor } from "../../v10Types";
 import { OtherableDropDown } from "../inputs/OtherableDropDown";
 import { Translate } from "../Translate";
 
@@ -14,9 +14,9 @@ export const CharacterCombatAbilityPicker = () => {
       </h3>
       <OtherableDropDown
         value={actor.system.initiativeAbility}
-        onChange={actor.setInitiativeAbility}
+        onChange={actor.system.setInitiativeAbility}
         pickerValues={settings.combatAbilities.get().toSorted()}
-        validValues={actor.getGeneralAbilityNames()}
+        validValues={actor.system.getGeneralAbilityNames()}
       />
     </>
   );

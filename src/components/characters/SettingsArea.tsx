@@ -3,11 +3,11 @@ import React, { Fragment, useCallback, useContext } from "react";
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame, getDevMode } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { assertPCActor } from "../../module/actors/pc";
 import { runtimeConfig } from "../../runtime";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { NoteFormat } from "../../types";
-import { assertPCActor } from "../../v10Types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -25,7 +25,7 @@ export const SettingArea = () => {
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = e.currentTarget.value;
       const themeName = value === "default" ? null : value;
-      void actor.setSheetTheme(themeName);
+      void actor.system.setSheetTheme(themeName);
     },
     [actor],
   );
@@ -57,18 +57,14 @@ export const SettingArea = () => {
           <select
             value={actor.system.longNotesFormat}
             onChange={(e) => {
-              void actor.setLongNotesFormat(
+              void actor.system.setLongNotesFormat(
                 e.currentTarget.value as NoteFormat,
               );
             }}
           >
-            <option value={NoteFormat.plain}>{getTranslated("Plain")}</option>
-            <option value={NoteFormat.markdown}>
-              {getTranslated("Markdown")}
-            </option>
-            <option value={NoteFormat.richText}>
-              {getTranslated("RichText")}
-            </option>
+            <option value={"plain"}>{getTranslated("Plain")}</option>
+            <option value={"markdown"}>{getTranslated("Markdown")}</option>
+            <option value={"richText"}>{getTranslated("RichText")}</option>
           </select>
         </GridField>
 
@@ -76,14 +72,14 @@ export const SettingArea = () => {
           <GridField label="Number of turns">
             <AsyncNumberInput
               value={actor.system.initiativePassingTurns}
-              onChange={actor.setPassingTurns}
+              onChange={actor.system.setPassingTurns}
             />
           </GridField>
         )}
 
         {isDevMode && (
           <GridField label="Nuke">
-            <Button onClick={actor.confirmNuke}>
+            <Button onClick={actor.system.confirmNuke}>
               <Translate>Nuke</Translate>
             </Button>
           </GridField>

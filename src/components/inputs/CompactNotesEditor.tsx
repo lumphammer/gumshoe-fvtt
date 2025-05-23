@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 
 import { toHtml } from "../../functions/textFunctions";
 import { useStateWithGetter } from "../../hooks/useStateWithGetter";
-import { NoteFormat, NoteWithFormat } from "../../types";
+import { NoteWithFormat } from "../../types";
 import { AsyncTextArea } from "./AsyncTextArea";
 import { MarkdownEditor } from "./MarkdownEditor";
 import { RichTextEditor } from "./RichTextEditor";
@@ -64,13 +64,13 @@ export const CompactNotesEditor = ({
         position: "relative",
       }}
     >
-      {note.format === NoteFormat.plain && (
+      {note.format === "plain" && (
         <AsyncTextArea onChange={onChange} value={note.source} />
       )}
-      {note.format === NoteFormat.markdown && (
+      {note.format === "markdown" && (
         <MarkdownEditor onChange={onChange} value={note.source} />
       )}
-      {note.format === NoteFormat.richText &&
+      {note.format === "richText" &&
         (richTextEditMode ? (
           <div
             css={{

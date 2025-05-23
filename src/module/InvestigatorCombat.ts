@@ -1,6 +1,6 @@
 import * as constants from "../constants";
 import { settings } from "../settings/settings";
-import { isActiveCharacterActor } from "../v10Types";
+import { isActiveCharacterActor } from "./actors/exports";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 
 /**

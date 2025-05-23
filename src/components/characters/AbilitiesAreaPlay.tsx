@@ -2,9 +2,9 @@ import { Fragment, useContext } from "react";
 
 import { sortEntitiesByName } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { assertActiveCharacterActor } from "../../module/actors/exports";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
-import { assertActiveCharacterActor } from "../../v10Types";
 import { AbilitySlugPlayNormal } from "./AbilitySlugPlayNormal";
 import { AbilitySlugPlayQuickShockInvestigative } from "./AbilitySlugPlayQuickShockInvestigative";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
@@ -19,10 +19,10 @@ export const AbilitiesAreaPlay = ({
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const { investigativeAbilities, generalAbilities } =
-    actor.getCategorizedAbilities(true, true);
+    actor.system.getCategorizedAbilities(true, true);
   const theme = useContext(ThemeContext);
 
-  const pushPool = actor.getPushPool();
+  const pushPool = actor.system.getPushPool();
   const pushPoolIsZero = pushPool === undefined || pushPool.system.pool === 0;
 
   const showEmpty = settings.showEmptyInvestigativeCategories.get();

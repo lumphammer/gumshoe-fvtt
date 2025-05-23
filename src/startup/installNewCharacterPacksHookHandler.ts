@@ -1,5 +1,6 @@
-import { npc, pc } from "../constants";
 import { assertGame } from "../functions/utilities";
+import { isNPCActor } from "../module/actors/npc";
+import { isPCActor } from "../module/actors/pc";
 import { InvestigatorActor } from "../module/InvestigatorActor";
 import { settings } from "../settings/settings";
 
@@ -18,8 +19,7 @@ export function installNewCharacterPacksHookHandler() {
         return;
       }
 
-      // @ts-expect-error .type`
-      if (actor.type === pc) {
+      if (isPCActor(actor)) {
         // this used to be done in parallel with Promise.all but I was seeing some
         // weird behaviour (duplicated or missing abilities, or weird reference
         // errors) so I have switched it to serial to see if that helps
@@ -46,8 +46,7 @@ export function installNewCharacterPacksHookHandler() {
         }
       }
 
-      // @ts-expect-error .type`
-      if (actor.type === npc) {
+      if (isNPCActor(actor)) {
         for (const packId of settings.newNPCPacks.get()) {
           assertGame(game);
           console.log("PACK", packId);

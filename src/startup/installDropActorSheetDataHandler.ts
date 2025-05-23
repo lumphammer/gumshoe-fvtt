@@ -1,5 +1,6 @@
-import { party, pc } from "../constants";
 import { assertGame, getFolderDescendants } from "../functions/utilities";
+import { isPartyActor } from "../module/actors/party";
+import { isPCActor } from "../module/actors/pc";
 import { InvestigatorActor } from "../module/InvestigatorActor";
 
 // this isn't the full type for DropData but it's close enough for what we need
@@ -26,8 +27,7 @@ export const installDropActorSheetDataHandler = () => {
     ) => {
       assertGame(game);
       if (
-        // @ts-expect-error .type
-        targetActor.type !== party ||
+        !isPartyActor(targetActor) ||
         (dropData.type !== "Actor" &&
           (dropData.type !== "Folder" || dropData.entity !== "Actor")) ||
         !game.user.isGM
@@ -40,10 +40,10 @@ export const installDropActorSheetDataHandler = () => {
           ? [id]
           : getFolderDescendants(game.folders?.get(id))
               .filter((actor) => {
-                return (actor as any).type === pc;
+                return isPCActor(actor);
               })
               .map((actor) => (actor as any).id);
-      void targetActor.addActorIds(actorIds);
+      void targetActor.system.addActorIds(actorIds);
     },
   );
 };

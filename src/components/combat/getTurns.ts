@@ -1,5 +1,5 @@
 import { assertGame } from "../../functions/utilities";
-import { isActiveCharacterActor } from "../../v10Types";
+import { isActiveCharacterActor } from "../../module/actors/exports";
 import { TurnInfo } from "./types";
 
 const getValue = <T>(resource: T): T | number => {
