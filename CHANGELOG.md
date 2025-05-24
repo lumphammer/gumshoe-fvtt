@@ -1,12 +1,18 @@
 # CHANGELOG
 
-## Unreleased
+(Skipped version numbers are testing releases.)
 
-### Foundry VTT v13 compatibility-we-really-mean-it-this-time.
+## 9.4 (2025-05-24)
 
-Turns out I'd been a bit trigger happy with marking the system as v13 compatible during the v13 development cycle and the combat tracker had become broken in one of the later dev releases.
+Headline:  **Foundry VTT v13 compatibility-we-really-mean-it-this-time AND a reworked combat tracker**.
 
-This release features a completely reworked combat tracker, plus a bunch of fixes for deprecations warnings. This means **we're dropping support for v12 here**.
+Turns out I'd been a bit trigger happy with marking the system as v13 compatible during the v13 development cycle and the combat tracker had become broken ([#1173][1]) in one of the later dev releases.
+
+[1]: https://github.com/lumphammer/gumshoe-fvtt/issues/1173
+
+This release features a completely reworked combat tracker using Foundry's ApplicationV2 system, plus a bunch of fixes for deprecations warnings. This means **we're dropping support for v12 here**.
+
+Thanks to @dorf-lundgren on GitHub for the report and @Seamonster for testing.
 
 
 ## 8.7 (2025-05-11)
