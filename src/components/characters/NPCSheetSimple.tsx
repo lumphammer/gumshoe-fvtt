@@ -1,6 +1,6 @@
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
-import { assertNPCActor } from "../../v10Types";
+import { assertNPCActor } from "../../module/actors/npc";
 import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
 import { NotesDisplay } from "../inputs/NotesDisplay";
@@ -10,7 +10,7 @@ export const NPCSheetSimple = () => {
   const { actor } = useActorSheetContext();
 
   assertNPCActor(actor);
-  const themeName = actor.getSheetThemeName();
+  const themeName = actor.system.getSheetThemeName();
   const theme = useTheme(themeName);
   const notes = actor.system.notes.html;
   const hasNotes = notes.length > 0;

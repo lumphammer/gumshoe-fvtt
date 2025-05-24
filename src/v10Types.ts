@@ -1,4 +1,3 @@
-import { InvestigatorActor } from "./module/InvestigatorActor";
 import { InvestigatorItem } from "./module/InvestigatorItem";
 import {
   CardSystemData,
@@ -6,11 +5,7 @@ import {
   GeneralAbilitySystemData,
   InvestigativeAbilitySystemData,
   MwItemSystemData,
-  NPCSystemData,
-  PartySystemData,
-  PCSystemData,
   PersonalDetailSystemData,
-  RecursivePartial,
   WeaponSystemData,
 } from "./types";
 
@@ -189,82 +184,4 @@ export function isCardItem(item: Optional<Item>): item is CardItem {
 
 export function assertCardItem(item: Optional<Item>): asserts item is CardItem {
   assertPredicate(isCardItem, item);
-}
-
-// /////////////////////////////////////////////////////////////////////////////
-// ACTORS
-
-type InvestigatorActorSystem<SystemData> = InvestigatorActor & {
-  system: SystemData;
-};
-
-export type PCActor = InvestigatorActorSystem<PCSystemData>;
-
-export type NPCActor = InvestigatorActorSystem<NPCSystemData>;
-
-export type PartyActor = InvestigatorActorSystem<PartySystemData>;
-
-export type ActiveCharacterActor = PCActor | NPCActor;
-
-export type AnyActor = PCActor | NPCActor | PartyActor;
-
-export type ActorPayload = RecursivePartial<AnyActor>;
-
-export function isPCActor(actor: Actor | null): actor is PCActor {
-  // @ts-expect-error .type
-  return actor?.type === "pc";
-}
-
-export function assertPCActor(actor: Actor | null): asserts actor is PCActor {
-  if (!isPCActor(actor)) {
-    throw new Error("not a PC actor");
-  }
-}
-
-export function isNPCActor(actor: Actor | null): actor is NPCActor {
-  // @ts-expect-error .type
-  return actor?.type === "npc";
-}
-
-export function assertNPCActor(actor: Actor | null): asserts actor is NPCActor {
-  if (!isNPCActor(actor)) {
-    throw new Error("not an NPC actor");
-  }
-}
-
-export function isPartyActor(actor: Actor | null): actor is PartyActor {
-  // @ts-expect-error .type
-  return actor?.type === "party";
-}
-
-export function assertPartyActor(
-  actor: Actor | null,
-): asserts actor is PartyActor {
-  if (!isPartyActor(actor)) {
-    throw new Error("not a party actor");
-  }
-}
-
-export function isActiveCharacterActor(
-  actor: Actor | null,
-): actor is ActiveCharacterActor {
-  return isPCActor(actor) || isNPCActor(actor);
-}
-
-export function assertActiveCharacterActor(
-  actor: Actor | null,
-): asserts actor is ActiveCharacterActor {
-  if (!isActiveCharacterActor(actor)) {
-    throw new Error("not a PC or NPC actor");
-  }
-}
-
-export function isAnyActor(actor: Actor | null): actor is AnyActor {
-  return true;
-}
-
-export function assertAnyActor(actor: Actor | null): asserts actor is AnyActor {
-  if (!isAnyActor(actor)) {
-    throw new Error("not an actor");
-  }
 }

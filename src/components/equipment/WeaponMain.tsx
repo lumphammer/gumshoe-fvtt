@@ -3,14 +3,10 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { generalAbility } from "../../constants";
 import { getTranslated } from "../../functions/getTranslated";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { isPCActor } from "../../module/actors/pc";
 import { InvestigatorItem } from "../../module/InvestigatorItem";
 import { ThemeContext } from "../../themes/ThemeContext";
-import {
-  ActorPayload,
-  assertWeaponItem,
-  isAbilityItem,
-  isPCActor,
-} from "../../v10Types";
+import { assertWeaponItem, isAbilityItem } from "../../v10Types";
 import { absoluteCover } from "../absoluteCover";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button, ToolbarButton } from "../inputs/Button";
@@ -105,7 +101,7 @@ export const WeaponMain = () => {
   useEffect(() => {
     const callback = (
       actor: Actor,
-      diff: ActorPayload,
+      diff: unknown,
       options: unknown,
       id: string,
     ) => {

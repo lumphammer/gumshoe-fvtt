@@ -121,11 +121,11 @@ function htmlToPlaintext(html: string) {
  */
 export async function toHtml(format: NoteFormat, source: string) {
   let rawHtml = "";
-  if (format === NoteFormat.plain) {
+  if (format === "plain") {
     rawHtml = plainTextToHtml(source);
-  } else if (format === NoteFormat.markdown) {
+  } else if (format === "markdown") {
     rawHtml = await markdownToHtml(source);
-  } else if (format === NoteFormat.richText) {
+  } else if (format === "richText") {
     rawHtml = source;
   }
   const html = await cleanAndEnrichHtml(rawHtml);
@@ -142,26 +142,26 @@ export async function convertNotes(
 ) {
   let newSource = "";
   let rawHtml = "";
-  if (newFormat === NoteFormat.plain) {
-    if (oldFormat === NoteFormat.markdown || oldFormat === NoteFormat.plain) {
+  if (newFormat === "plain") {
+    if (oldFormat === "markdown" || oldFormat === "plain") {
       newSource = oldSource;
-    } else if (oldFormat === NoteFormat.richText) {
+    } else if (oldFormat === "richText") {
       newSource = await htmlToPlaintext(oldSource);
     }
     rawHtml = plainTextToHtml(newSource);
-  } else if (newFormat === NoteFormat.markdown) {
-    if (oldFormat === NoteFormat.plain || oldFormat === NoteFormat.markdown) {
+  } else if (newFormat === "markdown") {
+    if (oldFormat === "plain" || oldFormat === "markdown") {
       newSource = oldSource;
-    } else if (oldFormat === NoteFormat.richText) {
+    } else if (oldFormat === "richText") {
       newSource = await htmlToMarkdown(oldSource);
     }
     rawHtml = await markdownToHtml(newSource);
-  } else if (newFormat === NoteFormat.richText) {
-    if (oldFormat === NoteFormat.plain) {
+  } else if (newFormat === "richText") {
+    if (oldFormat === "plain") {
       newSource = plainTextToHtml(oldSource);
-    } else if (oldFormat === NoteFormat.markdown) {
+    } else if (oldFormat === "markdown") {
       newSource = await markdownToHtml(oldSource);
-    } else if (oldFormat === NoteFormat.richText) {
+    } else if (oldFormat === "richText") {
       newSource = oldSource;
     }
     rawHtml = newSource;

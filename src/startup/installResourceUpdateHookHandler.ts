@@ -1,9 +1,9 @@
 import { assertGame } from "../functions/utilities";
+import { isActiveCharacterActor } from "../module/actors/exports";
 import {
   AnyItem,
   assertGeneralAbilityItem,
   GeneralAbilityItem,
-  isActiveCharacterActor,
   isGeneralAbilityItem,
 } from "../v10Types";
 

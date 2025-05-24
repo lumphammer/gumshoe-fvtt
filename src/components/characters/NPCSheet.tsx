@@ -1,7 +1,7 @@
 import { assertGame } from "../../functions/utilities";
 import { useIsDocumentLimited } from "../../hooks/useIsDocumentLimited";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import { assertNPCActor } from "../../v10Types";
+import { assertNPCActor } from "../../module/actors/npc";
 import { NPCSheetFull } from "./NPCSheetFull";
 import { NPCSheetSimple } from "./NPCSheetSimple";
 

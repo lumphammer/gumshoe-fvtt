@@ -186,13 +186,9 @@ export const NotesEditorWithControls = ({
             onChange={handleChangeFormat}
             css={{ height: "auto" }}
           >
-            <option value={NoteFormat.plain}>{getTranslated("Plain")}</option>
-            <option value={NoteFormat.markdown}>
-              {getTranslated("Markdown")}
-            </option>
-            <option value={NoteFormat.richText}>
-              {getTranslated("RichText")}
-            </option>
+            <option value="plain">{getTranslated("Plain")}</option>
+            <option value="markdown">{getTranslated("Markdown")}</option>
+            <option value="richText">{getTranslated("RichText")}</option>
           </select>
         )}
         {/* </div> */}

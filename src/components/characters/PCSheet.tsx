@@ -4,13 +4,9 @@ import { occupationSlotIndex } from "../../constants";
 import { assertGame } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
+import { assertPCActor } from "../../module/actors/pc";
 import { settings } from "../../settings/settings";
-import {
-  AnyItem,
-  assertPCActor,
-  isPCActor,
-  PersonalDetailItem,
-} from "../../v10Types";
+import { AnyItem, PersonalDetailItem } from "../../v10Types";
 import { CardsArea } from "../cards/CardsArea";
 import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
@@ -48,14 +44,14 @@ export const PCSheet = () => {
 
   const updateShortNote = useCallback(
     async (value: string, index: number) => {
-      await actor.setShortNote(index, value);
+      await actor.system.setShortNote(index, value);
     },
     [actor],
   );
 
   const updateMwHiddenShortNote = useCallback(
     async (value: string, index: number) => {
-      await actor.setMwHiddenShortNote(index, value);
+      await actor.system.setMwHiddenShortNote(index, value);
     },
     [actor],
   );
@@ -63,7 +59,7 @@ export const PCSheet = () => {
   const genericOccupation = settings.genericOccupation.get();
 
   const [occupation, setOccupation] = useState<PersonalDetailItem | undefined>(
-    actor.getOccupations()[0],
+    actor.system.getOccupations()[0],
   );
 
   // some acrobatics here to make sure we update the occupation when it changes
@@ -71,7 +67,7 @@ export const PCSheet = () => {
   useEffect(() => {
     const callback = (affectedItem: AnyItem) => {
       if (affectedItem.isOwned && affectedItem.actor?.id === actor.id) {
-        setOccupation(actor.getOccupations()[0]);
+        setOccupation(actor.system.getOccupations()[0]);
       }
     };
     Hooks.on("createItem", callback);
@@ -84,7 +80,7 @@ export const PCSheet = () => {
     };
   }, [actor]);
 
-  const themeName = actor.getSheetThemeName();
+  const themeName = actor.system.getSheetThemeName();
   const theme = useTheme(themeName);
   const personalDetails = settings.personalDetails.get();
   const shortHiddenNotesNames = settings.mwHiddenShortNotes.get();
@@ -169,7 +165,7 @@ export const PCSheet = () => {
             type === "text" ? (
               <GridField noTranslate key={`${name}--${i}`} label={name}>
                 <IndexedAsyncTextInput
-                  value={isPCActor(actor) ? actor.system.shortNotes[i] : ""}
+                  value={actor.system.shortNotes[i]}
                   onChange={updateShortNote}
                   index={i}
                 />
@@ -187,9 +183,7 @@ export const PCSheet = () => {
             shortHiddenNotesNames.map((name: string, i: number) => (
               <GridField noTranslate key={`${name}--${i}`} label={name}>
                 <IndexedAsyncTextInput
-                  value={
-                    isPCActor(actor) ? actor.system.hiddenShortNotes[i] : ""
-                  }
+                  value={actor.system.hiddenShortNotes[i]}
                   onChange={updateMwHiddenShortNote}
                   index={i}
                 />
@@ -211,27 +205,27 @@ export const PCSheet = () => {
       >
         {settingsUseMwStyleAbilities() && (
           <Fragment>
-            <Button onClick={actor.confirmMw2Refresh}>
+            <Button onClick={actor.system.confirmMw2Refresh}>
               <Translate>2h Refresh</Translate>
             </Button>
             <hr />
-            <Button onClick={actor.confirmMw4Refresh}>
+            <Button onClick={actor.system.confirmMw4Refresh}>
               <Translate>4h Refresh</Translate>
             </Button>
             <hr />
-            <Button onClick={actor.confirmMw8Refresh}>
+            <Button onClick={actor.system.confirmMw8Refresh}>
               <Translate>8h Refresh</Translate>
             </Button>
             <hr />
           </Fragment>
         )}
-        <Button onClick={actor.confirmRefresh}>
+        <Button onClick={actor.system.confirmRefresh}>
           <Translate>Full Refresh</Translate>
         </Button>
         <hr />
         {settingsUseMwStyleAbilities() || (
           <Fragment>
-            <Button onClick={actor.confirm24hRefresh}>
+            <Button onClick={actor.system.confirm24hRefresh}>
               <Translate>24h Refresh</Translate>
             </Button>
             <hr />
@@ -241,7 +235,7 @@ export const PCSheet = () => {
           <Fragment>
             <MwInjuryStatusWidget
               status={actor.system.mwInjuryStatus}
-              setStatus={actor.setMwInjuryStatus}
+              setStatus={actor.system.setMwInjuryStatus}
             />
             <hr />
           </Fragment>
