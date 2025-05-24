@@ -35,11 +35,7 @@ export type Resource = {
 /**
  * Enum for the types of notes formats we support.
  */
-export enum NoteFormat {
-  plain = "plain",
-  richText = "richText",
-  markdown = "markdown",
-}
+export type NoteFormat = "plain" | "richText" | "markdown";
 
 /**
  * Sometimes notes don't have a format specified, when the format is handeled

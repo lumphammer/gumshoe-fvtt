@@ -1,12 +1,12 @@
 import * as c from "../../constants";
-
-import NumberField = foundry.data.fields.NumberField;
-import StringField = foundry.data.fields.StringField;
-import BooleanField = foundry.data.fields.BooleanField;
 import { settings } from "../../settings/settings";
 import { Resource } from "../../types";
 import { InvestigatorActor } from "../InvestigatorActor";
 import { notesWithFormatField, recordField } from "./shared";
+
+import NumberField = foundry.data.fields.NumberField;
+import StringField = foundry.data.fields.StringField;
+import BooleanField = foundry.data.fields.BooleanField;
 
 export enum NoteFormat {
   plain = "plain",
@@ -78,6 +78,22 @@ export class NPCModel extends foundry.abstract.TypeDataModel<
   getSheetThemeName(): string | null {
     return this.sheetTheme || settings.defaultThemeName.get();
   }
+
+  setNotes = (notes: NoteWithFormat) => {
+    return this.parent.update({ system: { notes } });
+  };
+
+  setGMNotes = (gmNotes: NoteWithFormat) => {
+    return this.parent.update({ system: { gmNotes } });
+  };
+
+  setCombatBonus = async (combatBonus: number) => {
+    await this.parent.update({ system: { combatBonus } });
+  };
+
+  setDamageBonus = async (damageBonus: number) => {
+    await this.parent.update({ system: { damageBonus } });
+  };
 }
 
 export type NPCActor = InvestigatorActor<typeof c.npc>;
