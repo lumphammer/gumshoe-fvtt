@@ -5,7 +5,8 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import { sortEntitiesByName } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import { assertPCActor, isCardItem } from "../../v10Types";
+import { assertPCActor } from "../../module/actors/pc";
+import { isCardItem } from "../../v10Types";
 import { absoluteCover } from "../absoluteCover";
 import { ToolbarButton } from "../inputs/Button";
 import { ArrowLink } from "../nestedPanels/ArrowLink";
@@ -52,7 +53,7 @@ export const CardsArea = () => {
           ...update,
         };
         // update the actor in the background
-        void actor.setCardsAreaSettings(newSettings);
+        void actor.system.setCardsAreaSettings(newSettings);
         return newSettings;
       });
     },
@@ -60,11 +61,11 @@ export const CardsArea = () => {
   );
 
   const handleClickCreateCard = useCallback(() => {
-    void actor.createCard();
+    void actor.system.createCard();
   }, [actor]);
 
   const handleClickEndScenario = useCallback(async () => {
-    const cardsCount = actor.getNonContinuityCards().length;
+    const cardsCount = actor.system.getNonContinuityCards().length;
     const yes = await confirmADoodleDo({
       message: "EndScenarioDiscardCountNonContinuityCards",
       confirmText: "EndScenario",
@@ -77,7 +78,7 @@ export const CardsArea = () => {
       },
     });
     if (yes) {
-      void actor.endScenario();
+      void actor.system.endScenario();
     }
   }, [actor]);
 

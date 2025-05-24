@@ -34,7 +34,8 @@ import {
   isGeneralAbilityItem,
   isInvestigativeAbilityItem,
 } from "../v10Types";
-import { InvestigatorActor } from "./InvestigatorActor";
+import { isActiveCharacterActor } from "./actors/exports";
+import { assertPCActor } from "./actors/pc";
 
 /**
  * Extend the basic Item with some very simple modifications.
@@ -181,13 +182,15 @@ export class InvestigatorItem extends Item {
 
   async pushInvestigative(): Promise<void> {
     assertInvestigativeAbilityItem(this);
+    const actor = this.actor;
+    assertPCActor(actor);
     if (!this.system.isQuickShock) {
       throw new Error(`The ability ${this.name} is not a quick shock`);
     }
     if (this.actor === null) {
       throw new Error(`The ability ${this.name} is not owned`);
     }
-    const poolAbility = this.actor.getPushPool();
+    const poolAbility = actor.system.getPushPool();
     if (poolAbility === undefined) {
       throw new Error(`The actor ${this.actor.name} has no push pool`);
     }
@@ -505,10 +508,9 @@ export class InvestigatorItem extends Item {
 
   getThemeName(): string {
     const systemThemeName = settings.defaultThemeName.get();
-    if (this.isOwned) {
-      return (
-        (this.actor as InvestigatorActor).getSheetThemeName() || systemThemeName
-      );
+    const actor = this.actor;
+    if (this.isOwned && actor && isActiveCharacterActor(actor)) {
+      return actor.system.getSheetThemeName() || systemThemeName;
     } else {
       return systemThemeName;
     }

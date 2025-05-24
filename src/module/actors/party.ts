@@ -75,8 +75,15 @@ export class PartyModel extends foundry.abstract.TypeDataModel<
 
 export type PartyActor = InvestigatorActor<typeof c.party>;
 
-export const isPartyActor = (x: unknown): x is PartyActor =>
-  x instanceof InvestigatorActor && x.type === c.party;
+export function isPartyActor(x: unknown): x is PartyActor {
+  return x instanceof InvestigatorActor && x.type === c.party;
+}
+
+export function assertPartyActor(x: unknown): asserts x is PartyActor {
+  if (!isPartyActor(x)) {
+    throw new Error("Expected a Party actor");
+  }
+}
 
 function _f(x: PartyModel) {
   console.log(x.abilityNames[0]);

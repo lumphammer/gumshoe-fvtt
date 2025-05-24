@@ -2,10 +2,12 @@ import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppCo
 import React, { useCallback, useContext } from "react";
 
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
+import { assertPCActor } from "../../../module/actors/pc";
 import { MwItemGroup } from "./MwItemGroup";
 
 export const MwItemArea = () => {
   const { actor } = useActorSheetContext();
+  assertPCActor(actor);
   const app = useContext(FoundryAppContext);
 
   const onDragStart = useCallback(
@@ -17,7 +19,7 @@ export const MwItemArea = () => {
     [app],
   );
 
-  const items = actor.getMwItems();
+  const items = actor.system.getMwItems();
   return (
     <div>
       <MwItemGroup

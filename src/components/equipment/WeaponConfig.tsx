@@ -4,6 +4,7 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/utilities";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { assertActiveCharacterActor } from "../../module/actors/exports";
 import { settings } from "../../settings/settings";
 import { assertWeaponItem } from "../../v10Types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
@@ -20,7 +21,8 @@ export const WeaponConfig = () => {
   assertGame(game);
   const { item } = useItemSheetContext();
   const actor = item.actor;
-  const generalAbilityNames = actor?.getGeneralAbilityNames();
+  assertActiveCharacterActor(actor);
+  const generalAbilityNames = actor?.system.getGeneralAbilityNames();
 
   assertWeaponItem(item);
   const name = useAsyncUpdate(item.name || "", item.setName);

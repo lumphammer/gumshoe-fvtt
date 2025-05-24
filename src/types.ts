@@ -58,13 +58,12 @@ export type NoteWithFormat = BaseNote & {
 // MORIBUND WORLD --------------------------------------------------------------
 
 /** MW Injury status */
-export enum MwInjuryStatus {
-  uninjured = "uninjured",
-  hurt = "hurt",
-  down = "down",
-  unconscious = "unconscious",
-  dead = "dead",
-}
+export type MwInjuryStatus =
+  | "uninjured"
+  | "hurt"
+  | "down"
+  | "unconscious"
+  | "dead";
 
 /** difficulty levels for MW */
 export type MWDifficulty = "easy" | number;

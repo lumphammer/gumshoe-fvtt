@@ -7,9 +7,9 @@ import {
   isNullOrEmptyString,
   systemLogger,
 } from "../functions/utilities";
+import { isActiveCharacterActor } from "../module/actors/exports";
 import { pathOfCthulhuPreset } from "../presets";
 import { settings } from "../settings/settings";
-import { isActiveCharacterActor } from "../v10Types";
 import { FlaggedMigrations } from "./types";
 
 export const flaggedMigrations: FlaggedMigrations = {

@@ -1,15 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { settings } from "../../settings/settings";
 import {
-  ActorPayload,
-  AnyActor,
-  assertAbilityItem,
   assertActiveCharacterActor,
   isActiveCharacterActor,
-  isInvestigativeAbilityItem,
-} from "../../v10Types";
+} from "../../module/actors/exports";
+import { settings } from "../../settings/settings";
+import { assertAbilityItem, isInvestigativeAbilityItem } from "../../v10Types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button, ToolbarButton } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -45,8 +42,8 @@ export const AbilityMainBits = () => {
 
   useEffect(() => {
     const callback = (
-      actor: AnyActor,
-      diff: ActorPayload,
+      actor: Actor,
+      diff: unknown,
       options: unknown,
       id: string,
     ) => {

@@ -1,30 +1,13 @@
 import * as c from "../../constants";
 import { settings } from "../../settings/settings";
-import { Resource } from "../../types";
+import { NoteWithFormat, Resource } from "../../types";
 import { InvestigatorActor } from "../InvestigatorActor";
 import { notesWithFormatField, recordField } from "./shared";
 
 import NumberField = foundry.data.fields.NumberField;
 import StringField = foundry.data.fields.StringField;
 import BooleanField = foundry.data.fields.BooleanField;
-
-export enum NoteFormat {
-  plain = "plain",
-  richText = "richText",
-  markdown = "markdown",
-}
-
-export type BaseNote = {
-  source: string;
-  html: string;
-};
-
-/**
- * For notes where they need their own format.
- */
-export type NoteWithFormat = BaseNote & {
-  format: NoteFormat;
-};
+import { ActiveCharacterModel } from "./activeCharacterActor";
 
 export const npcSchema = {
   // notes: NoteWithFormat;
@@ -67,10 +50,7 @@ export const npcSchema = {
   }),
 };
 
-export class NPCModel extends foundry.abstract.TypeDataModel<
-  typeof npcSchema,
-  Actor
-> {
+export class NPCModel extends ActiveCharacterModel<typeof npcSchema, NPCActor> {
   static defineSchema(): typeof npcSchema {
     return npcSchema;
   }
@@ -98,8 +78,15 @@ export class NPCModel extends foundry.abstract.TypeDataModel<
 
 export type NPCActor = InvestigatorActor<typeof c.npc>;
 
-export const isNPCActor = (x: unknown): x is NPCActor =>
-  x instanceof InvestigatorActor && x.type === c.npc;
+export function isNPCActor(x: unknown): x is NPCActor {
+  return x instanceof InvestigatorActor && x.type === c.npc;
+}
+
+export function assertNPCActor(x: unknown): asserts x is NPCActor {
+  if (!isNPCActor(x)) {
+    throw new Error("Expected an NPC actor");
+  }
+}
 
 function _f(x: NPCModel) {
   console.log(x.resources[0].value);

@@ -1,6 +1,8 @@
 import { npcIcon, partyIcon, pcIcon } from "../constants";
 import { assertGame, isNullOrEmptyString } from "../functions/utilities";
-import { isNPCActor, isPartyActor, isPCActor } from "../v10Types";
+import { isNPCActor } from "../module/actors/npc";
+import { isPartyActor } from "../module/actors/party";
+import { isPCActor } from "../module/actors/pc";
 
 export const installActorImageHookHandler = () => {
   Hooks.on(

@@ -3,6 +3,7 @@ import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppCo
 import React, { useCallback, useContext } from "react";
 
 import { sortEntitiesByName } from "../../../functions/utilities";
+import { assertPCActor } from "../../../module/actors/pc";
 import { InvestigatorActor } from "../../../module/InvestigatorActor";
 import { InvestigatorItem } from "../../../module/InvestigatorItem";
 import { ThemeContext } from "../../../themes/ThemeContext";
@@ -25,6 +26,7 @@ export const EquipmentCategory = ({
   actor,
   fields,
 }: EquipmentCategoryProps) => {
+  assertPCActor(actor);
   const app = useContext(FoundryAppContext);
 
   const onDragStart = useCallback(
@@ -70,7 +72,7 @@ export const EquipmentCategory = ({
               flexBasis: "max-content",
             }}
             onClick={async () => {
-              await actor.createEquipment(categoryId);
+              await actor.system.createEquipment(categoryId);
             }}
           >
             <i className="fa fa-plus" />

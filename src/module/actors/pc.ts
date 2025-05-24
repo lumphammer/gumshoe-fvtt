@@ -2,36 +2,22 @@ import { CardsAreaSettings } from "../../components/cards/types";
 import * as c from "../../constants";
 import { occupationSlotIndex } from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { getTranslated } from "../../functions/getTranslated";
 import { convertNotes } from "../../functions/textFunctions";
-import { assertGame } from "../../functions/utilities";
 import { settings } from "../../settings/settings";
-import {
-  AbilityType,
-  MwInjuryStatus,
-  MwRefreshGroup,
-  MwType,
-  Resource,
-} from "../../types";
+import { AbilityType, MwRefreshGroup, MwType, Resource } from "../../types";
 import {
   AbilityItem,
   assertMwItem,
   assertPersonalDetailItem,
   CardItem,
-  GeneralAbilityItem,
-  InvestigativeAbilityItem,
   isAbilityItem,
   isCardItem,
-  isEquipmentItem,
   isGeneralAbilityItem,
-  isInvestigativeAbilityItem,
   isMwItem,
   isPersonalDetailItem,
-  isWeaponItem,
   PersonalDetailItem,
 } from "../../v10Types";
 import { InvestigatorActor } from "../InvestigatorActor";
-import { InvestigatorItem } from "../InvestigatorItem";
 import { recordField } from "./shared";
 
 import NumberField = foundry.data.fields.NumberField;
@@ -40,6 +26,7 @@ import ArrayField = foundry.data.fields.ArrayField;
 import BooleanField = foundry.data.fields.BooleanField;
 import SchemaField = foundry.data.fields.SchemaField;
 import SourceData = foundry.data.fields.SchemaField.SourceData;
+import { ActiveCharacterModel } from "./activeCharacterActor";
 
 export const pcSchema = {
   buildPoints: new NumberField({ nullable: false, required: true, min: 0 }),
@@ -84,7 +71,11 @@ export const pcSchema = {
     required: true,
     initial: {},
   }),
-  initiativePassingTurns: new NumberField({ nullable: false, min: 0 }),
+  initiativePassingTurns: new NumberField({
+    nullable: false,
+    required: true,
+    min: 0,
+  }),
   cardsAreaSettings: new SchemaField({
     category: new StringField({
       nullable: false,
@@ -130,7 +121,7 @@ type NoteFormat =
     ? PersistedType
     : never;
 
-export class PCModel extends foundry.abstract.TypeDataModel<
+export class PCModel extends ActiveCharacterModel<
   typeof pcSchema,
   InvestigatorActor<"pc">
 > {
@@ -141,24 +132,6 @@ export class PCModel extends foundry.abstract.TypeDataModel<
   getSheetThemeName(): string | null {
     return this.sheetTheme || settings.defaultThemeName.get();
   }
-
-  shouldBroadcastRefreshes(): boolean {
-    assertGame(game);
-    return !game.user.isGM;
-  }
-
-  confirmRefresh = async (): Promise<void> => {
-    const yes = await confirmADoodleDo({
-      message: "Refresh all of (actor name)'s abilities?",
-      confirmText: "Refresh",
-      cancelText: "Cancel",
-      confirmIconClass: "fa-sync",
-      values: { ActorName: this.parent.name ?? "" },
-    });
-    if (yes) {
-      await this.refresh();
-    }
-  };
 
   confirm24hRefresh = async (): Promise<void> => {
     const yes = await confirmADoodleDo({
@@ -194,31 +167,6 @@ export class PCModel extends foundry.abstract.TypeDataModel<
   confirmMw2Refresh = this.confirmMwRefresh(2);
   confirmMw4Refresh = this.confirmMwRefresh(4);
   confirmMw8Refresh = this.confirmMwRefresh(8);
-
-  refresh = async (): Promise<void> => {
-    const updates = Array.from(this.parent.items).flatMap((item) => {
-      if (
-        isAbilityItem(item) &&
-        item.system.rating !== item.system.pool &&
-        !item.system.excludeFromGeneralRefresh
-      ) {
-        return [
-          {
-            _id: item.id,
-            system: {
-              pool: item.system.rating,
-            },
-          },
-        ];
-      } else {
-        return [];
-      }
-    });
-    if (this.shouldBroadcastRefreshes()) {
-      await this.broadcastUserMessage("RefreshedAllOfActorNamesAbilities");
-    }
-    await this.parent.updateEmbeddedDocuments("Item", updates);
-  };
 
   async mWrefresh(group: MwRefreshGroup): Promise<void> {
     const updates = Array.from(this.parent.items).flatMap((item) => {
@@ -280,25 +228,6 @@ export class PCModel extends foundry.abstract.TypeDataModel<
     await this.parent.updateEmbeddedDocuments("Item", updates);
   };
 
-  broadcastUserMessage = async (
-    text: string,
-    extraData: Record<string, string> = {},
-  ): Promise<void> => {
-    assertGame(game);
-    const chatData = {
-      user: game.user.id,
-      speaker: ChatMessage.getSpeaker({
-        alias: game.user.name ?? "",
-      }),
-      content: getTranslated(text, {
-        ActorName: this.parent.name ?? "",
-        UserName: game.user.name ?? "",
-        ...extraData,
-      }),
-    };
-    await ChatMessage.create(chatData, {});
-  };
-
   confirmNuke = async (): Promise<void> => {
     const yes = await confirmADoodleDo({
       message: "NukeAllOfActorNamesAbilitiesAndEquipment",
@@ -332,27 +261,19 @@ export class PCModel extends foundry.abstract.TypeDataModel<
     ) as AbilityItem | undefined;
   }
 
-  getEquipment(): InvestigatorItem[] {
-    return this.parent.items.filter(isEquipmentItem);
-  }
+  // getAbilities(): InvestigatorItem[] {
+  //   return this.parent.items.filter(isAbilityItem);
+  // }
 
-  getWeapons(): InvestigatorItem[] {
-    return this.parent.items.filter(isWeaponItem);
-  }
+  // getGeneralAbilities(): InvestigatorItem[] {
+  //   return this.getAbilities().filter(isGeneralAbilityItem);
+  // }
 
-  getAbilities(): InvestigatorItem[] {
-    return this.parent.items.filter(isAbilityItem);
-  }
-
-  getGeneralAbilities(): InvestigatorItem[] {
-    return this.getAbilities().filter(isGeneralAbilityItem);
-  }
-
-  getGeneralAbilityNames(): string[] {
-    return this.getGeneralAbilities()
-      .map((a) => a.name)
-      .filter((n): n is string => n !== null);
-  }
+  // getGeneralAbilityNames(): string[] {
+  //   return this.getGeneralAbilities()
+  //     .map((a) => a.name)
+  //     .filter((n): n is string => n !== null);
+  // }
 
   getPersonalDetails(): PersonalDetailItem[] {
     return this.parent.items.filter(isPersonalDetailItem);
@@ -376,69 +297,6 @@ export class PCModel extends foundry.abstract.TypeDataModel<
       items[item.system.mwType].push(item);
     }
     return items;
-  }
-
-  getTrackerAbilities(): AbilityItem[] {
-    return this.getAbilities().filter(
-      (item): item is AbilityItem =>
-        isAbilityItem(item) && item.system.showTracker,
-    );
-  }
-
-  getCategorizedAbilities(
-    hideZeroRated: boolean,
-    hidePushPool: boolean,
-  ): {
-    investigativeAbilities: { [category: string]: InvestigativeAbilityItem[] };
-    generalAbilities: { [category: string]: GeneralAbilityItem[] };
-  } {
-    // why is this a hook? what was I thinking 3 years ago? it's lieterally just
-    // a function.
-
-    const investigativeAbilities: {
-      [category: string]: InvestigativeAbilityItem[];
-    } = {};
-    const generalAbilities: { [category: string]: GeneralAbilityItem[] } = {};
-    const systemInvestigativeCats =
-      settings.investigativeAbilityCategories.get();
-    const systemGeneralCats = settings.generalAbilityCategories.get();
-    for (const cat of systemInvestigativeCats) {
-      investigativeAbilities[cat] = [];
-    }
-    for (const cat of systemGeneralCats) {
-      generalAbilities[cat] = [];
-    }
-
-    for (const item of this.parent.items.values()) {
-      if (!isAbilityItem(item)) {
-        continue;
-      }
-      if (
-        hideZeroRated &&
-        item.system.hideIfZeroRated &&
-        item.system.rating === 0
-      ) {
-        continue;
-      }
-      if (isInvestigativeAbilityItem(item)) {
-        const cat = item.system.categoryId || "Uncategorised";
-        if (investigativeAbilities[cat] === undefined) {
-          investigativeAbilities[cat] = [];
-        }
-        investigativeAbilities[cat].push(item);
-      } else if (isGeneralAbilityItem(item)) {
-        if (hidePushPool && item.system.isPushPool) {
-          continue;
-        }
-        const cat = item.system.categoryId || "Uncategorised";
-        if (generalAbilities[cat] === undefined) {
-          generalAbilities[cat] = [];
-        }
-        generalAbilities[cat].push(item);
-      }
-    }
-
-    return { investigativeAbilities, generalAbilities };
   }
 
   getOccupations = (): PersonalDetailItem[] => {
@@ -513,23 +371,8 @@ export class PCModel extends foundry.abstract.TypeDataModel<
     return this.parent.update({ system: { hitThreshold } });
   };
 
-  setInitiativeAbility = async (initiativeAbility: string) => {
-    await this.parent.update({ system: { initiativeAbility } });
-    const isInCombat = !!this.parent.token?.combatant;
-    if (isInCombat) {
-      await this.parent.rollInitiative({ rerollInitiative: true });
-    }
-  };
-
-  setPassingTurns = async (initiativePassingTurns: number) => {
-    await this.parent.update({ system: { initiativePassingTurns } });
-  };
-
   // ###########################################################################
   // Moribund World stuff
-  setMwInjuryStatus = async (mwInjuryStatus: MwInjuryStatus) => {
-    await this.parent.update({ system: { mwInjuryStatus } });
-  };
 
   createEquipment = async (categoryId: string): Promise<void> => {
     await this.parent.createEmbeddedDocuments(
@@ -611,41 +454,19 @@ export class PCModel extends foundry.abstract.TypeDataModel<
       },
     );
   };
-
-  getPushPool(): GeneralAbilityItem | undefined {
-    return this.parent.items.find(
-      (item: InvestigatorItem): item is GeneralAbilityItem =>
-        isGeneralAbilityItem(item) && item.system.isPushPool,
-    );
-  }
-
-  getPushPoolWarnings(): string[] {
-    const warnings: string[] = [];
-    const pools = this.parent.items.filter(
-      (item: InvestigatorItem): item is GeneralAbilityItem =>
-        isGeneralAbilityItem(item) && item.system.isPushPool,
-    );
-    const quickShockAbilities = this.parent.items.filter(
-      (item: InvestigatorItem): item is InvestigativeAbilityItem =>
-        isInvestigativeAbilityItem(item) && item.system.isQuickShock,
-    );
-    if (pools.length > 1) {
-      warnings.push(getTranslated("TooManyPushPools"));
-    }
-    if (quickShockAbilities.length > 1 && pools.length < 1) {
-      warnings.push(getTranslated("QuickShockAbilityWithoutPushPool"));
-    }
-    if (quickShockAbilities.length === 0 && pools.length > 0) {
-      warnings.push(getTranslated("PushPoolWithoutQuickShockAbility"));
-    }
-    return warnings;
-  }
 }
 
 export type PCActor = InvestigatorActor<typeof c.pc>;
 
-export const isPCActor = (x: unknown): x is PCActor =>
-  x instanceof InvestigatorActor && x.type === c.pc;
+export function isPCActor(x: unknown): x is PCActor {
+  return x instanceof InvestigatorActor && x.type === c.pc;
+}
+
+export function assertPCActor(x: unknown): asserts x is PCActor {
+  if (!isPCActor(x)) {
+    throw new Error("Expected a PC actor");
+  }
+}
 
 function _f(x: PCModel) {
   console.log(x.resources[0].value);

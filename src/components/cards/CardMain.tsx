@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { NoteFormat } from "../../types";
 import { assertCardItem } from "../../v10Types";
 import { absoluteCover } from "../absoluteCover";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
@@ -27,7 +26,7 @@ export const CardMain = () => {
   const handleDescriptionChange = useCallback(
     (newSource: string) => {
       void item.setDescription({
-        format: NoteFormat.richText,
+        format: "richText",
         source: newSource,
         html: newSource,
       });
@@ -38,7 +37,7 @@ export const CardMain = () => {
   const handleEffectsChange = useCallback(
     (newSource: string) => {
       void item.setEffects({
-        format: NoteFormat.richText,
+        format: "richText",
         source: newSource,
         html: newSource,
       });
