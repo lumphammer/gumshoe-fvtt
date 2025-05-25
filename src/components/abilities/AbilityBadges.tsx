@@ -1,6 +1,6 @@
 import { ReactNode, useContext } from "react";
 
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { assertAbilityItem, isGeneralAbilityItem } from "../../v10Types";
 import { Translate } from "../Translate";

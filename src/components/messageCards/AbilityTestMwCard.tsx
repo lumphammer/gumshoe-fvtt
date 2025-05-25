@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { MWDifficulty } from "../../types";
 import { Translate } from "../Translate";
 import { DiceTerms } from "./DiceTerms";

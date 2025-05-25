@@ -1,7 +1,7 @@
 import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 import { useCallback } from "react";
 
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";

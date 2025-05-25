@@ -2,13 +2,13 @@
 import { ReactApplicationMixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationMixin";
 import React from "react";
 
-import { Suspense } from "../components/Suspense";
-import { reactTemplatePath, systemId } from "../constants";
+import { Suspense } from "../../components/Suspense";
+import { reactTemplatePath, systemId } from "../../constants";
 
 // React stuff -----------------------------------------------------------------
 
 const InvestigatorItemSheet = React.lazy(() =>
-  import("../components/ItemSheet").then(({ ItemSheet }) => ({
+  import("../../components/ItemSheet").then(({ ItemSheet }) => ({
     default: ItemSheet,
   })),
 );

@@ -1,7 +1,7 @@
 import * as constants from "../../constants";
 import { assertGame } from "../../functions/utilities";
 import { isNPCActor } from "../../module/actors/npc";
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { settings } from "../../settings/settings";
 import {
   assertAbilityItem,

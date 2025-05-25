@@ -1,6 +1,6 @@
 import * as constants from "../../constants";
 import { assertGame } from "../../functions/utilities";
-import { InvestigatorActor } from "../../module/InvestigatorActor";
+import { InvestigatorActor } from "../../module/actors/InvestigatorActor";
 import { settings } from "../../settings/settings";
 import { AbilityType } from "../../types";
 import { AbilityItem, AnyItem, isAbilityItem } from "../../v10Types";

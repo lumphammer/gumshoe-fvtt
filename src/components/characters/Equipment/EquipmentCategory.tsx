@@ -3,9 +3,9 @@ import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppCo
 import React, { useCallback, useContext } from "react";
 
 import { sortEntitiesByName } from "../../../functions/utilities";
+import { InvestigatorActor } from "../../../module/actors/InvestigatorActor";
 import { assertPCActor } from "../../../module/actors/pc";
-import { InvestigatorActor } from "../../../module/InvestigatorActor";
-import { InvestigatorItem } from "../../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../../module/items/InvestigatorItem";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";

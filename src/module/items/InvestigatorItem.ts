@@ -3,9 +3,9 @@
 /* eslint "@typescript-eslint/explicit-function-return-type": "error" */
 import { nanoid } from "nanoid";
 
-import * as constants from "../constants";
-import { assertGame, fixLength, getById } from "../functions/utilities";
-import { settings } from "../settings/settings";
+import * as constants from "../../constants";
+import { assertGame, fixLength, getById } from "../../functions/utilities";
+import { settings } from "../../settings/settings";
 import {
   CardSystemData,
   EquipmentSystemData,
@@ -17,7 +17,7 @@ import {
   SituationalModifier,
   SpecialitiesMode,
   Unlock,
-} from "../types";
+} from "../../types";
 import {
   assertAbilityItem,
   assertAnyItem,
@@ -33,9 +33,9 @@ import {
   isEquipmentItem,
   isGeneralAbilityItem,
   isInvestigativeAbilityItem,
-} from "../v10Types";
-import { isActiveCharacterActor } from "./actors/exports";
-import { assertPCActor } from "./actors/pc";
+} from "../../v10Types";
+import { isActiveCharacterActor } from "../actors/exports";
+import { assertPCActor } from "../actors/pc";
 
 /**
  * Extend the basic Item with some very simple modifications.

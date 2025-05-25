@@ -6,13 +6,13 @@
 import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 
 import * as constants from "./constants";
+import { InvestigatorActor } from "./module/actors/InvestigatorActor";
 import { NPCModel } from "./module/actors/npc";
 import { PartyModel } from "./module/actors/party";
 import { PCModel } from "./module/actors/pc";
-import { InvestigatorActor } from "./module/InvestigatorActor";
 import { InvestigatorCombat } from "./module/InvestigatorCombat";
 import { InvestigatorCombatant } from "./module/InvestigatorCombatant";
-import { InvestigatorItem } from "./module/InvestigatorItem";
+import { InvestigatorItem } from "./module/items/InvestigatorItem";
 import {
   CardSystemData,
   EquipmentSystemData,

@@ -1,6 +1,6 @@
 import * as c from "../../constants";
 import { assertGame } from "../../functions/utilities";
-import { InvestigatorActor } from "../InvestigatorActor";
+import { InvestigatorActor } from "./InvestigatorActor";
 import { isPCActor } from "./pc";
 
 import StringField = foundry.data.fields.StringField;

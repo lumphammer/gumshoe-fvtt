@@ -2,7 +2,7 @@ import { Fragment, useCallback, useContext } from "react";
 
 import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { assertGame } from "../../../functions/utilities";
-import { InvestigatorItem } from "../../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../../module/items/InvestigatorItem";
 import { settings } from "../../../settings/settings";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { assertWeaponItem } from "../../../v10Types";

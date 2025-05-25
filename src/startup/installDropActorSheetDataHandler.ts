@@ -1,7 +1,7 @@
 import { assertGame, getFolderDescendants } from "../functions/utilities";
+import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 import { isPartyActor } from "../module/actors/party";
 import { isPCActor } from "../module/actors/pc";
-import { InvestigatorActor } from "../module/InvestigatorActor";
 
 // this isn't the full type for DropData but it's close enough for what we need
 interface DropData {

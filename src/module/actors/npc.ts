@@ -1,7 +1,7 @@
 import * as c from "../../constants";
 import { settings } from "../../settings/settings";
 import { NoteWithFormat, Resource } from "../../types";
-import { InvestigatorActor } from "../InvestigatorActor";
+import { InvestigatorActor } from "./InvestigatorActor";
 import { notesWithFormatField, recordField } from "./shared";
 
 import NumberField = foundry.data.fields.NumberField;

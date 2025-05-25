@@ -10,7 +10,7 @@ import React, {
 
 import { generalAbility } from "../../../constants";
 import { cleanAndEnrichHtml } from "../../../functions/textFunctions";
-import { InvestigatorItem } from "../../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../../module/items/InvestigatorItem";
 import { assertWeaponItem, isAbilityItem } from "../../../v10Types";
 import { performAttack } from "../../equipment/performAttack";
 import { Button } from "../../inputs/Button";

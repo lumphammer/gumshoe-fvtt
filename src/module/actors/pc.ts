@@ -17,8 +17,8 @@ import {
   isPersonalDetailItem,
   PersonalDetailItem,
 } from "../../v10Types";
-import { InvestigatorActor } from "../InvestigatorActor";
 import { ActiveCharacterModel } from "./activeCharacterActor";
+import { InvestigatorActor } from "./InvestigatorActor";
 import { recordField } from "./shared";
 
 import NumberField = foundry.data.fields.NumberField;

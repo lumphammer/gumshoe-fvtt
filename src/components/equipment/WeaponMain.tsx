@@ -4,7 +4,7 @@ import { generalAbility } from "../../constants";
 import { getTranslated } from "../../functions/getTranslated";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isPCActor } from "../../module/actors/pc";
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { assertWeaponItem, isAbilityItem } from "../../v10Types";
 import { absoluteCover } from "../absoluteCover";

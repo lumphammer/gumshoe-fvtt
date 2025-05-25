@@ -1,7 +1,7 @@
 import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 
-import { PCSheet } from "../components/characters/PCSheet";
-import { systemId } from "../constants";
+import { PCSheet } from "../../components/characters/PCSheet";
+import { systemId } from "../../constants";
 
 import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
 

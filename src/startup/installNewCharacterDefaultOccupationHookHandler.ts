@@ -1,7 +1,7 @@
 import { occupationSlotIndex } from "../constants";
 import { assertGame } from "../functions/utilities";
+import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 import { isPCActor } from "../module/actors/pc";
-import { InvestigatorActor } from "../module/InvestigatorActor";
 
 export function installNewCharacterDefaultOccupationHookHandler() {
   Hooks.on(

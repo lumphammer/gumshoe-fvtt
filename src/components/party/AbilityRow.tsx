@@ -1,7 +1,7 @@
 import { Fragment, ReactNode } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { InvestigatorActor } from "../../module/InvestigatorActor";
+import { InvestigatorActor } from "../../module/actors/InvestigatorActor";
 import { runtimeConfig } from "../../runtime";
 import { settings } from "../../settings/settings";
 import { AbilityItem, isAbilityItem } from "../../v10Types";

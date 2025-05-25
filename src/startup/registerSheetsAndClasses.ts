@@ -1,22 +1,22 @@
 import * as constants from "../constants";
+import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 import { NPCModel } from "../module/actors/npc";
+import { NPCSheetClass } from "../module/actors/NPCSheetClass";
+import { NPCSheetClassV2 } from "../module/actors/NPCSheetClassV2";
 import { PartyModel } from "../module/actors/party";
+import { PartySheetClass } from "../module/actors/PartySheetClass";
 import { PCModel } from "../module/actors/pc";
-import { InvestigatorActor } from "../module/InvestigatorActor";
+import { PCSheetClass } from "../module/actors/PCSheetClass";
+import { PCSheetClassV2 } from "../module/actors/PCSheetClassV2";
 import { InvestigatorCombat } from "../module/InvestigatorCombat";
 import { InvestigatorCombatant } from "../module/InvestigatorCombatant";
 import { InvestigatorCombatTracker } from "../module/InvestigatorCombatTracker";
-import { InvestigatorItem } from "../module/InvestigatorItem";
-import { ItemSheetClass } from "../module/InvestigatorItemSheetClass";
-import { ItemSheetV2Class } from "../module/InvestigatorItemSheetV2Class";
 import { InvestigatorJournalSheet } from "../module/InvestigatorJournalSheet";
 import { InvestigatorTokenDocument } from "../module/InvestigatorTokenDocument";
+import { InvestigatorItem } from "../module/items/InvestigatorItem";
+import { ItemSheetClass } from "../module/items/InvestigatorItemSheetClass";
+import { ItemSheetV2Class } from "../module/items/InvestigatorItemSheetV2Class";
 import { JournalEditorSheetClass } from "../module/JournalEditorSheetClass";
-import { NPCSheetClass } from "../module/NPCSheetClass";
-import { NPCSheetClassV2 } from "../module/NPCSheetClassV2";
-import { PartySheetClass } from "../module/PartySheetClass";
-import { PCSheetClass } from "../module/PCSheetClass";
-import { PCSheetClassV2 } from "../module/PCSheetClassV2";
 
 export const registerSheetsAndClasses = () => {
   CONFIG.Actor.documentClass = InvestigatorActor;

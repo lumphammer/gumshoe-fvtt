@@ -6,7 +6,7 @@ import {
   assertActiveCharacterActor,
   isActiveCharacterActor,
 } from "./actors/exports";
-import { InvestigatorItem } from "./InvestigatorItem";
+import { InvestigatorItem } from "./items/InvestigatorItem";
 
 /**
  * Override base Combatant class to override the initiative formula.

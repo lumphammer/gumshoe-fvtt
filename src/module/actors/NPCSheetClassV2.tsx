@@ -1,13 +1,13 @@
 import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 import React from "react";
 
-import { Suspense } from "../components/Suspense";
-import { systemId } from "../constants";
+import { Suspense } from "../../components/Suspense";
+import { systemId } from "../../constants";
 
 import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
 
 const NPCSheet = React.lazy(() =>
-  import("../components/characters/NPCSheet").then(({ NPCSheet }) => ({
+  import("../../components/characters/NPCSheet").then(({ NPCSheet }) => ({
     default: NPCSheet,
   })),
 );

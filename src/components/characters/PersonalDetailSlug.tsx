@@ -1,4 +1,4 @@
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { assertPersonalDetailItem } from "../../v10Types";
 import { Slug } from "./Slug";
 

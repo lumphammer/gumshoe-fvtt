@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { SituationalModifier } from "../../types";
 

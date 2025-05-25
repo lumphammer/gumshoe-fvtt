@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 
 import * as constants from "../../constants";
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
 import { MwButton } from "./MwButton";
 import { MwCostSlug } from "./MwCostSlug";

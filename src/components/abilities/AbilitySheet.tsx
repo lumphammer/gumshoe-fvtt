@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { settings } from "../../settings/settings";
 import {
   isGeneralAbilityItem,

@@ -1,7 +1,7 @@
 import { assertGame } from "../functions/utilities";
+import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 import { isNPCActor } from "../module/actors/npc";
 import { isPCActor } from "../module/actors/pc";
-import { InvestigatorActor } from "../module/InvestigatorActor";
 import { settings } from "../settings/settings";
 
 export function installNewCharacterPacksHookHandler() {

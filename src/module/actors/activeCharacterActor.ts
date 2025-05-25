@@ -13,7 +13,7 @@ import {
   isInvestigativeAbilityItem,
   isWeaponItem,
 } from "../../v10Types";
-import { InvestigatorItem } from "../InvestigatorItem";
+import { InvestigatorItem } from "../items/InvestigatorItem";
 import { NPCActor, npcSchema } from "./npc";
 import { PCActor, pcSchema } from "./pc";
 

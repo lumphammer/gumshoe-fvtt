@@ -1,11 +1,11 @@
 import { ReactApplicationMixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationMixin";
 import React from "react";
 
-import { Suspense } from "../components/Suspense";
-import { reactTemplatePath, systemId } from "../constants";
+import { Suspense } from "../../components/Suspense";
+import { reactTemplatePath, systemId } from "../../constants";
 
 const PartySheet = React.lazy(async () => {
-  const { PartySheet } = await import("../components/party/PartySheet");
+  const { PartySheet } = await import("../../components/party/PartySheet");
   return {
     default: PartySheet,
   };

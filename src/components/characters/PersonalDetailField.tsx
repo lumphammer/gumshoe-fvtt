@@ -1,5 +1,5 @@
+import { InvestigatorActor } from "../../module/actors/InvestigatorActor";
 import { assertPCActor } from "../../module/actors/pc";
-import { InvestigatorActor } from "../../module/InvestigatorActor";
 import { GridField } from "../inputs/GridField";
 import { PersonalDetailSlug } from "./PersonalDetailSlug";
 import { Slug } from "./Slug";

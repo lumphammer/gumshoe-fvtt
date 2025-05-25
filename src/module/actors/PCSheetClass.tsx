@@ -1,7 +1,7 @@
 import { ReactApplicationMixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationMixin";
 
-import { PCSheet } from "../components/characters/PCSheet";
-import { reactTemplatePath, systemId } from "../constants";
+import { PCSheet } from "../../components/characters/PCSheet";
+import { reactTemplatePath, systemId } from "../../constants";
 
 /**
  * Extend the basic ActorSheet with some very simple modifications

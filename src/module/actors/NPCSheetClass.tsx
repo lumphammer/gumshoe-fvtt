@@ -1,11 +1,11 @@
 import { ReactApplicationMixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationMixin";
 import React from "react";
 
-import { Suspense } from "../components/Suspense";
-import { reactTemplatePath, systemId } from "../constants";
+import { Suspense } from "../../components/Suspense";
+import { reactTemplatePath, systemId } from "../../constants";
 
 const NPCSheet = React.lazy(() =>
-  import("../components/characters/NPCSheet").then(({ NPCSheet }) => ({
+  import("../../components/characters/NPCSheet").then(({ NPCSheet }) => ({
     default: NPCSheet,
   })),
 );
