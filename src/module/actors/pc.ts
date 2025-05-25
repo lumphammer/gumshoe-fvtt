@@ -5,21 +5,9 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { convertNotes } from "../../functions/textFunctions";
 import { settings } from "../../settings/settings";
 import { AbilityType, MwRefreshGroup, MwType, Resource } from "../../types";
-import {
-  AbilityItem,
-  assertMwItem,
-  assertPersonalDetailItem,
-  CardItem,
-  isAbilityItem,
-  isCardItem,
-  isGeneralAbilityItem,
-  isMwItem,
-  isPersonalDetailItem,
-  PersonalDetailItem,
-} from "../../v10Types";
+import { createRecordField } from "../schemaFields";
 import { ActiveCharacterModel } from "./activeCharacterActor";
 import { InvestigatorActor } from "./InvestigatorActor";
-import { recordField } from "./shared";
 
 import NumberField = foundry.data.fields.NumberField;
 import StringField = foundry.data.fields.StringField;
@@ -83,12 +71,12 @@ export const pcSchema = {
     initial: "uninjured",
     choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
   }),
-  resources: recordField<Record<string, Resource>>({
+  resources: createRecordField<Record<string, Resource>>({
     nullable: false,
     required: true,
     initial: {},
   }),
-  stats: recordField<Record<string, number>>({
+  stats: createRecordField<Record<string, number>>({
     nullable: false,
     required: true,
     initial: {},

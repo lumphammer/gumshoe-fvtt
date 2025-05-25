@@ -13,9 +13,16 @@ import { InvestigatorCombatant } from "../module/InvestigatorCombatant";
 import { InvestigatorCombatTracker } from "../module/InvestigatorCombatTracker";
 import { InvestigatorJournalSheet } from "../module/InvestigatorJournalSheet";
 import { InvestigatorTokenDocument } from "../module/InvestigatorTokenDocument";
+import { CardModel } from "../module/items/card";
+import { EquipmentModel } from "../module/items/equipment";
+import { GeneralAbilityModel } from "../module/items/generalAbility";
+import { InvestigativeAbilityModel } from "../module/items/investigativeAbility";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
 import { ItemSheetClass } from "../module/items/InvestigatorItemSheetClass";
 import { ItemSheetV2Class } from "../module/items/InvestigatorItemSheetV2Class";
+import { MwItemModel } from "../module/items/mwItem";
+import { PersonalDetailModel } from "../module/items/personalDetail";
+import { WeaponModel } from "../module/items/weapon";
 import { JournalEditorSheetClass } from "../module/JournalEditorSheetClass";
 
 export const registerSheetsAndClasses = () => {
@@ -30,6 +37,14 @@ export const registerSheetsAndClasses = () => {
   CONFIG.Actor.dataModels["pc"] = PCModel;
   CONFIG.Actor.dataModels["npc"] = NPCModel;
   CONFIG.Actor.dataModels["party"] = PartyModel;
+
+  CONFIG.Item.dataModels["equipment"] = EquipmentModel;
+  CONFIG.Item.dataModels["generalAbility"] = GeneralAbilityModel;
+  CONFIG.Item.dataModels["investigativeAbility"] = InvestigativeAbilityModel;
+  CONFIG.Item.dataModels["weapon"] = WeaponModel;
+  CONFIG.Item.dataModels["mwItem"] = MwItemModel;
+  CONFIG.Item.dataModels["personalDetail"] = PersonalDetailModel;
+  CONFIG.Item.dataModels["card"] = CardModel;
 
   // Register custom sheets (if any)
   Actors.unregisterSheet("core", ActorSheet);

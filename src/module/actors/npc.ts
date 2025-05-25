@@ -1,8 +1,8 @@
 import * as c from "../../constants";
 import { settings } from "../../settings/settings";
 import { NoteWithFormat, Resource } from "../../types";
+import { createNotesWithFormatField, createRecordField } from "../schemaFields";
 import { InvestigatorActor } from "./InvestigatorActor";
-import { notesWithFormatField, recordField } from "./shared";
 
 import NumberField = foundry.data.fields.NumberField;
 import StringField = foundry.data.fields.StringField;
@@ -11,9 +11,9 @@ import { ActiveCharacterModel } from "./activeCharacterActor";
 
 export const npcSchema = {
   // notes: NoteWithFormat;
-  notes: notesWithFormatField(),
+  notes: createNotesWithFormatField(),
   // gmNotes: NoteWithFormat;
-  gmNotes: notesWithFormatField(),
+  gmNotes: createNotesWithFormatField(),
   // initiativeAbility: string;
   initiativeAbility: new StringField({ nullable: false, required: true }),
   // hideZeroRated: boolean;
@@ -27,13 +27,13 @@ export const npcSchema = {
     choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
   }),
   // resources: Record<string, Resource>;
-  resources: recordField<Record<string, Resource>>({
+  resources: createRecordField<Record<string, Resource>>({
     nullable: false,
     required: true,
     initial: {},
   }),
   // stats: Record<string, number>;
-  stats: recordField<Record<string, number>>({
+  stats: createRecordField<Record<string, number>>({
     nullable: false,
     required: true,
     initial: {},

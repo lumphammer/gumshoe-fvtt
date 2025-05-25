@@ -256,16 +256,18 @@
   ],
   "documentTypes": {
     "Actor": {
-      "pc": {
-        "htmlFields": []
-      },
-      "npc": {
-        "htmlFields": []
-      },
-      "party": {
-        "htmlFields": []
-      }
+      "pc": {},
+      "npc": {},
+      "party": {}
     },
-    "Item": {}
+    "Item": {
+      "investigativeAbility": {},
+      "generalAbility": {},
+      "equipment": {},
+      "weapon": {},
+      "mwItem": {},
+      "personalDetail": {},
+      "card": {}
+    }
   }
 }

@@ -78,21 +78,9 @@ export type AbilityType =
   | typeof constants.investigativeAbility
   | typeof constants.generalAbility;
 
-/** Stuff that is in common between Equipment and Weapons */
-export type BaseEquipmentSystemData = {
-  notes: NoteWithFormat;
-};
-
-/**
- * system data forequipment
- */
-export type EquipmentSystemData = BaseEquipmentSystemData & {
-  categoryId: string;
-  fields: Record<string, string | number | boolean>;
-};
-
 /** system data forweapons */
-export type WeaponSystemData = BaseEquipmentSystemData & {
+export type WeaponSystemData = {
+  notes: NoteWithFormat;
   ability: string;
   damage: number;
   pointBlankDamage: number;

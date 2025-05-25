@@ -3,24 +3,27 @@ import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/utilities";
 import { settings } from "../../settings/settings";
 import { MwInjuryStatus } from "../../types";
+import { isEquipmentItem } from "../items/equipment";
+import { AbilityItem, isAbilityItem } from "../items/exports";
 import {
-  AbilityItem,
   GeneralAbilityItem,
-  InvestigativeAbilityItem,
-  isAbilityItem,
-  isEquipmentItem,
   isGeneralAbilityItem,
-  isInvestigativeAbilityItem,
-  isWeaponItem,
-} from "../../v10Types";
+} from "../items/generalAbility";
 import { InvestigatorItem } from "../items/InvestigatorItem";
+import { isWeaponItem } from "../items/weapon";
 import { NPCActor, npcSchema } from "./npc";
 import { PCActor, pcSchema } from "./pc";
+
+import TypeDataModel = foundry.abstract.TypeDataModel;
+import {
+  InvestigativeAbilityItem,
+  isInvestigativeAbilityItem,
+} from "../items/investigativeAbility";
 
 export class ActiveCharacterModel<
   TSchema extends typeof pcSchema | typeof npcSchema,
   TActor extends PCActor | NPCActor,
-> extends foundry.abstract.TypeDataModel<TSchema, TActor> {
+> extends TypeDataModel<TSchema, TActor> {
   getAbilities(): InvestigatorItem[] {
     return this.parent.items.filter(isAbilityItem);
   }
@@ -182,7 +185,7 @@ export class ActiveCharacterModel<
 
   getPushPool(): GeneralAbilityItem | undefined {
     return this.parent.items.find(
-      (item: InvestigatorItem): item is GeneralAbilityItem =>
+      (item): item is GeneralAbilityItem =>
         isGeneralAbilityItem(item) && item.system.isPushPool,
     );
   }
