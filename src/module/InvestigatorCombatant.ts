@@ -1,11 +1,11 @@
 import * as constants from "../constants";
 import { assertGame, isNullOrEmptyString } from "../functions/utilities";
 import { settings } from "../settings/settings";
-import { isGeneralAbilityItem } from "../v10Types";
 import {
   assertActiveCharacterActor,
   isActiveCharacterActor,
 } from "./actors/exports";
+import { isGeneralAbilityItem } from "./items/generalAbility";
 import { InvestigatorItem } from "./items/InvestigatorItem";
 
 /**
@@ -51,7 +51,6 @@ export class InvestigatorCombatant extends Combatant {
     }
     const ability = actor.items.find(
       (item: InvestigatorItem) =>
-        // @ts-expect-error .type
         item.type === constants.generalAbility && item.name === abilityName,
     );
     if (ability && isGeneralAbilityItem(ability)) {

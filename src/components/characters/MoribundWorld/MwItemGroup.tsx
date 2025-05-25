@@ -49,7 +49,6 @@ export const MwItemGroup = ({
               "Item",
               [
                 {
-                  // @ts-expect-error .type
                   type: mwItem,
                   name: "New item",
                   system: {

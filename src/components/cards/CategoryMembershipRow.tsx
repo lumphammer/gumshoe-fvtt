@@ -1,7 +1,7 @@
 import { CardCategory } from "@lumphammer/investigator-fvtt-types";
 import { useCallback } from "react";
 
-import { CardItem } from "../../v10Types";
+import { CardItem } from "../../module/items/card";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -25,9 +25,9 @@ export const CategoryMembershipRow = ({
   const handleToggleActive = useCallback(
     async (active: boolean) => {
       if (active) {
-        await card.addCardCategoryMembership(category.id);
+        await card.system.addCardCategoryMembership(category.id);
       } else {
-        await card.removeCardCategoryMembership(category.id);
+        await card.system.removeCardCategoryMembership(category.id);
       }
       console.log("toggle active");
     },
@@ -36,14 +36,17 @@ export const CategoryMembershipRow = ({
 
   const handleToggleNonlethal = useCallback(
     async (nonlethal: boolean) => {
-      await card.setCardCategoryMembershipNonlethal(category.id, nonlethal);
+      await card.system.setCardCategoryMembershipNonlethal(
+        category.id,
+        nonlethal,
+      );
     },
     [card, category.id],
   );
 
   const handleSetWorth = useCallback(
     async (worth: number) => {
-      await card.setCardCategoryMembershipWorth(category.id, worth);
+      await card.system.setCardCategoryMembershipWorth(category.id, worth);
     },
     [card, category.id],
   );

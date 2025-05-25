@@ -47,7 +47,6 @@ export const migrateWorld = async function (
   // Migrate World Items
   for (const item of game.items?.contents ?? []) {
     try {
-      // @ts-expect-error DocumentClassConfig
       const updateData = migrateItemData(item, flaggedMigrations);
       if (!foundry.utils.isEmpty(updateData)) {
         console.log(`Migrating Item entity ${item.name}`);

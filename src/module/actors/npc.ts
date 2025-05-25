@@ -1,13 +1,17 @@
 import * as c from "../../constants";
 import { settings } from "../../settings/settings";
-import { NoteWithFormat, Resource } from "../../types";
-import { createNotesWithFormatField, createRecordField } from "../schemaFields";
+import { NoteWithFormat } from "../../types";
+import {
+  createNotesWithFormatField,
+  createResourcesField,
+  createStatsField,
+} from "../schemaFields";
 import { InvestigatorActor } from "./InvestigatorActor";
 
 import NumberField = foundry.data.fields.NumberField;
 import StringField = foundry.data.fields.StringField;
 import BooleanField = foundry.data.fields.BooleanField;
-import { ActiveCharacterModel } from "./activeCharacterActor";
+import { ActiveCharacterModel } from "./ActiveCharacterModel";
 
 export const npcSchema = {
   // notes: NoteWithFormat;
@@ -25,27 +29,21 @@ export const npcSchema = {
     nullable: false,
     required: true,
     choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
+    initial: "uninjured",
   }),
   // resources: Record<string, Resource>;
-  resources: createRecordField<Record<string, Resource>>({
-    nullable: false,
-    required: true,
-    initial: {},
-  }),
+  resources: createResourcesField(),
   // stats: Record<string, number>;
-  stats: createRecordField<Record<string, number>>({
-    nullable: false,
-    required: true,
-    initial: {},
-  }),
+  stats: createStatsField(),
   // combatBonus: number;
-  combatBonus: new NumberField({ nullable: false, required: true }),
+  combatBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
   // damageBonus: number;
-  damageBonus: new NumberField({ nullable: false, required: true }),
+  damageBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
   // initiativePassingTurns: number;
   initiativePassingTurns: new NumberField({
     nullable: false,
     required: true,
+    initial: 1,
     min: 0,
   }),
 };
@@ -86,8 +84,4 @@ export function assertNPCActor(x: unknown): asserts x is NPCActor {
   if (!isNPCActor(x)) {
     throw new Error("Expected an NPC actor");
   }
-}
-
-function _f(x: NPCModel) {
-  console.log(x.resources[0].value);
 }

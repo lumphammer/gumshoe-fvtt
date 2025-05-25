@@ -1,6 +1,7 @@
 import { useCallback, useContext } from "react";
 
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { assertAbilityItem } from "../../module/items/exports";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Button } from "../inputs/Button";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -10,9 +11,10 @@ import { Translate } from "../Translate";
 export const PushPoolButton = () => {
   const { item } = useItemSheetContext();
   const theme = useContext(ThemeContext);
+  assertAbilityItem(item);
 
   const handleClickPush = useCallback(() => {
-    void item.push();
+    void item.system.push();
   }, [item]);
 
   return (

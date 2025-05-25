@@ -7,23 +7,23 @@ import {
   investigativeAbilityIcon,
 } from "../../constants";
 import { isNullOrEmptyString } from "../../functions/utilities";
+import { EquipmentItem } from "../../module/items/equipment";
+import { isGeneralAbilityItem } from "../../module/items/generalAbility";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { niceBlackAgentsPreset } from "../../presets";
 import {
   getDefaultGeneralAbilityCategory,
   settings,
 } from "../../settings/settings";
-import { AnyItem } from "../../v10Types";
 
 export const addCategoryToGeneralAbilities = (
-  item: AnyItem,
+  item: InvestigatorItem,
   updateData: any,
 ) => {
   if (
-    // @ts-expect-error .type
-    item.type === generalAbility &&
+    isGeneralAbilityItem(item) &&
     // types inside migrations are funny, and anyway I want to get rid of these
     // legacy migrations soon
-    // @ts-expect-error narrowing doesn't work here
     isNullOrEmptyString(item.system.categoryId)
   ) {
     const cat = getDefaultGeneralAbilityCategory();
@@ -36,7 +36,7 @@ export const addCategoryToGeneralAbilities = (
 };
 
 export const setTrackersForPreAlpha4Updates = (
-  item: AnyItem,
+  item: InvestigatorItem,
   updateData: any,
 ) => {
   const currentlyMigratedVersion = settings.systemMigrationVersion.get();
@@ -49,16 +49,17 @@ export const setTrackersForPreAlpha4Updates = (
     item.name ?? "",
   );
 
-  // @ts-expect-error narrowing doesn't work here
   if (item.type === generalAbility && needsMigration && isRelevant) {
     updateData.system.showTracker = true;
   }
   return updateData;
 };
 
-export const setIconForAbilities = (item: AnyItem, updateData: any) => {
+export const setIconForAbilities = (
+  item: InvestigatorItem,
+  updateData: any,
+) => {
   if (
-    // @ts-expect-error narrowing doesn't work here
     (item.type === generalAbility || item.type === investigativeAbility) &&
     (isNullOrEmptyString(item.img) || item.img === "icons/svg/mystery-man.svg")
   ) {
@@ -70,21 +71,24 @@ export const setIconForAbilities = (item: AnyItem, updateData: any) => {
   return updateData;
 };
 
-export const upgradeNotesToRichText = (item: AnyItem, updateData: any) => {
-  if (typeof item.system.notes === "string") {
+export const upgradeNotesToRichText = (
+  item: InvestigatorItem,
+  updateData: any,
+) => {
+  if ("notes" in item.system && typeof item.system["notes"] === "string") {
     if (!updateData.system) {
       updateData.system = {};
     }
     updateData.system.notes = {
       format: "plain",
-      source: item.system.notes,
-      html: escape(item.system.notes),
+      source: item.system["notes"],
+      html: escape(item.system["notes"]),
     };
   }
   return updateData;
 };
 
-export const setEquipmentCategory = (item: AnyItem, updateData: any) => {
+export const setEquipmentCategory = (item: EquipmentItem, updateData: any) => {
   const categories = settings.equipmentCategories.get();
   // we are only proceeding if we have default categories, so it's either a brave new world, or we're migrating
   if (
@@ -95,9 +99,7 @@ export const setEquipmentCategory = (item: AnyItem, updateData: any) => {
   }
 
   if (
-    // @ts-expect-error narrowing doesn't work here
     item.type === "equipment" &&
-    // @ts-expect-error narrowing doesn't work here
     isNullOrEmptyString(item.system.categoryId)
   ) {
     if (!updateData.system) {

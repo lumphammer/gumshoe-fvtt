@@ -3,9 +3,6 @@ import { nanoid } from "nanoid";
 import * as constants from "../../constants";
 import { assertGame, fixLength } from "../../functions/utilities";
 import { settings } from "../../settings/settings";
-
-import TypeDataModel = foundry.abstract.TypeDataModel;
-
 import {
   MWDifficulty,
   NoteWithFormat,
@@ -13,21 +10,48 @@ import {
   SpecialitiesMode,
   Unlock,
 } from "../../types";
-import { GeneralAbilityItem, generalAbilitySchema } from "./generalAbility";
-import {
-  InvestigativeAbilityItem,
-  investigativeAbilitySchema,
-} from "./investigativeAbility";
+import { AbilitySchema } from "./createAbilitySchema";
+import { InvestigatorItem } from "./InvestigatorItem";
+
+import TypeDataModel = foundry.abstract.TypeDataModel;
+
+// /////////////////////////////////////////////////////////////////////////////
+// IMPORTANT NOTE ABOUT TYPE ERRORS
+//
+// The type signature of this class "should" work, and allow the methods to see
+// the members of TSchema as its own members, as with any other use of
+// TypeDataModel. Unfortunately the types get too deep and TS refuses to
+// reduce the types of the schema parts correctly.
+//
+// One fix, as per [LukeAbby's suggestion][1], is to add a `this` parameter to
+// each method:
+
+// ```
+//   async testAbility(this: AbilityModel<AbilitySchema, InvestigatorItem>, spend: number): Promise<void> {
+//     ...
+//   }
+// ```
+//
+// This effectively un-generices the method. The downside is that it doesn't
+// work with function properties, which we us extensively because they can be
+// used as event handlers directly. It also creates some `excessively deep`
+// errors across the codebase.
+//
+// For those reasons, I have simply strewn @ts-expect-error across this file.
+//
+// [1]: https://discord.com/channels/732325252788387980/803646399014109205/1376943254368420043
+// /////////////////////////////////////////////////////////////////////////////
 
 /**
  * AbilityModel
  */
-export class AbilityModel<
-  TSchema extends
-    | typeof generalAbilitySchema
-    | typeof investigativeAbilitySchema,
-  TParent extends GeneralAbilityItem | InvestigativeAbilityItem,
+export abstract class AbilityModel<
+  TSchema extends AbilitySchema,
+  TParent extends InvestigatorItem,
 > extends TypeDataModel<TSchema, TParent> {
+  /**
+   * The situational modifiers that are currently active
+   */
   activeSituationalModifiers: string[] = [];
 
   /**
@@ -42,7 +66,9 @@ export class AbilityModel<
     const isBoosted = settings.useBoost.get() && this.boost;
     const boost = isBoosted ? 1 : 0;
     const situationalModifiers = this.activeSituationalModifiers.map((id) => {
+      // @ts-expect-error - see comment at top of file
       const situationalModifier = this.situationalModifiers.find(
+        // @ts-expect-error - see comment at top of file
         (situationalModifier) => situationalModifier?.id === id,
       );
       return situationalModifier;
@@ -72,7 +98,7 @@ export class AbilityModel<
           <div
             class="${constants.abilityChatMessageClassName}"
             ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent?.id ?? ""}"
+            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
             ${constants.htmlDataMode}="${constants.htmlDataModeTest}"
             ${constants.htmlDataName}="${this.parent.name}"
             ${constants.htmlDataImageUrl}="${this.parent.img}"
@@ -80,6 +106,7 @@ export class AbilityModel<
           />
         `,
     });
+    // @ts-expect-error - see comment at top of file
     const pool = this.pool - (Number(spend) || 0);
     await this.parent.update({ system: { pool } });
   }
@@ -102,7 +129,7 @@ export class AbilityModel<
           <div
             class="${constants.abilityChatMessageClassName}"
             ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent?.id ?? ""}"
+            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
             ${constants.htmlDataMode}="${constants.htmlDataModeSpend}"
             ${constants.htmlDataName}="${this.parent.name}"
             ${constants.htmlDataImageUrl}="${this.parent.img}"
@@ -111,6 +138,7 @@ export class AbilityModel<
         `,
     });
     const boost = settings.useBoost.get() && this.boost ? 1 : 0;
+    // @ts-expect-error - see comment at top of file
     const pool = this.pool - (Number(spend) || 0) + boost;
     await this.parent.update({ system: { pool } });
   }
@@ -137,14 +165,17 @@ export class AbilityModel<
         : new Roll(`1d6 ${operator} @diffMod`, { diffMod: Math.abs(diffMod) });
     await roll.evaluate();
     const cost = (reRoll === 1 ? 4 : reRoll === null ? 0 : 1) - boonLevy;
+    // @ts-expect-error - see comment at top of file
     if (cost > this.pool) {
       ui.notifications?.error(
         `Attempted to ${reRoll ? `re-roll a ${reRoll} with` : "roll"} ${
           this.parent.name
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         } with a levy of ${boonLevy} but pool is currently at ${this.pool}`,
       );
       return;
     }
+    // @ts-expect-error - see comment at top of file
     const newPool = Math.max(0, this.pool - cost);
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
@@ -154,7 +185,7 @@ export class AbilityModel<
           <div
             class="${constants.abilityChatMessageClassName}"
             ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent?.id ?? ""}"
+            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
             ${constants.htmlDataMode}="${constants.htmlDataModeMwTest}"
             ${constants.htmlDataMwDifficulty} = ${difficulty}
             ${constants.htmlDataMwBoonLevy} = ${boonLevy}
@@ -168,13 +199,14 @@ export class AbilityModel<
   }
 
   async mWNegateIllustrious(): Promise<void> {
+    // @ts-expect-error - see comment at top of file
     const newPool = Math.max(0, this.pool - constants.mwNegateCost);
     await ChatMessage.create({
       content: `
           <div
             class="${constants.abilityChatMessageClassName}"
             ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent?.id}"
+            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
             ${constants.htmlDataMode}="${constants.htmlDataModeMwNegate}"
             ${constants.htmlDataMwPool} = ${newPool}
           />
@@ -184,13 +216,14 @@ export class AbilityModel<
   }
 
   async mWWallop(): Promise<void> {
+    // @ts-expect-error - see comment at top of file
     const newPool = Math.max(0, this.pool - constants.mwWallopCost);
     await ChatMessage.create({
       content: `
           <div
             class="${constants.abilityChatMessageClassName}"
             ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent?.id}"
+            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
             ${constants.htmlDataMode}="${constants.htmlDataModeMwWallop}"
             ${constants.htmlDataMwPool} = ${newPool}
           />
@@ -205,6 +238,7 @@ export class AbilityModel<
   async refreshPool(): Promise<void> {
     await this.parent.update({
       system: {
+        // @ts-expect-error - see comment at top of file
         pool: this.rating ?? 0,
       },
     });
@@ -230,12 +264,6 @@ export class AbilityModel<
     await this.parent.update({ system: { occupational } });
   };
 
-  setCanBeInvestigative = async (
-    canBeInvestigative: boolean,
-  ): Promise<void> => {
-    await this.parent.update({ system: { canBeInvestigative } });
-  };
-
   setShowTracker = async (showTracker: boolean): Promise<void> => {
     await this.parent.update({ system: { showTracker } });
   };
@@ -250,11 +278,8 @@ export class AbilityModel<
     await this.parent.update({ system: { refreshesDaily } });
   };
 
-  setGoesFirstInCombat = async (goesFirstInCombat: boolean): Promise<void> => {
-    await this.parent.update({ system: { goesFirstInCombat } });
-  };
-
   getSpecialities = (): string[] => {
+    // @ts-expect-error - see comment at top of file
     return fixLength(this.specialities, this.getSpecialitesCount(), "");
   };
 
@@ -271,9 +296,11 @@ export class AbilityModel<
         case 2:
           return 5;
         default:
+          // @ts-expect-error - see comment at top of file
           return Math.max(0, (this.rating - 2) * 4 + 5);
       }
     } else {
+      // @ts-expect-error - see comment at top of file
       return this.rating;
     }
   };
@@ -290,6 +317,7 @@ export class AbilityModel<
     await this.parent.update({
       system: {
         rating: newRating,
+        // @ts-expect-error - see comment at top of file
         specialities: fixLength(this.specialities, newRating, ""),
       },
     });
@@ -300,6 +328,7 @@ export class AbilityModel<
       system: {
         rating: newRating,
         pool: newRating,
+        // @ts-expect-error - see comment at top of file
         specialities: fixLength(this.specialities, newRating, ""),
       },
     });
@@ -330,12 +359,14 @@ export class AbilityModel<
   };
 
   getActiveUnlocks = (): Unlock[] => {
+    // @ts-expect-error - see comment at top of file
     return this.unlocks.filter(({ rating: targetRating, description }) => {
       return this.rating >= targetRating && description !== "";
     });
   };
 
   getVisibleSituationalModifiers = (): SituationalModifier[] => {
+    // @ts-expect-error - see comment at top of file
     return this.situationalModifiers.filter(({ situation }) => {
       return situation !== "";
     });
@@ -364,6 +395,7 @@ export class AbilityModel<
     index: number,
     description: string,
   ): Promise<void> => {
+    // @ts-expect-error - see comment at top of file
     const unlocks = [...this.unlocks];
     unlocks[index] = {
       ...unlocks[index],
@@ -373,6 +405,7 @@ export class AbilityModel<
   };
 
   setUnlockRating = async (index: number, rating: number): Promise<void> => {
+    // @ts-expect-error - see comment at top of file
     const unlocks = [...this.unlocks];
     unlocks[index] = {
       ...unlocks[index],
@@ -382,6 +415,7 @@ export class AbilityModel<
   };
 
   deleteUnlock = async (index: number): Promise<void> => {
+    // @ts-expect-error - see comment at top of file
     const unlocks = [...this.unlocks];
     unlocks.splice(index, 1);
     await this.parent.update({ system: { unlocks } });
@@ -389,6 +423,7 @@ export class AbilityModel<
 
   addUnlock = async () => {
     const unlocks: Unlock[] = [
+      // @ts-expect-error - see comment at top of file
       ...this.unlocks,
       {
         description: "",
@@ -403,6 +438,7 @@ export class AbilityModel<
     index: number,
     situation: string,
   ) => {
+    // @ts-expect-error - see comment at top of file
     const situationalModifiers = [...this.situationalModifiers];
     situationalModifiers[index] = {
       ...situationalModifiers[index],
@@ -415,6 +451,7 @@ export class AbilityModel<
     index: number,
     modifier: number,
   ): Promise<void> => {
+    // @ts-expect-error - see comment at top of file
     const situationalModifiers = [...this.situationalModifiers];
     situationalModifiers[index] = {
       ...situationalModifiers[index],
@@ -424,6 +461,7 @@ export class AbilityModel<
   };
 
   deleteSituationalModifier = async (index: number): Promise<void> => {
+    // @ts-expect-error - see comment at top of file
     const situationalModifiers = [...this.situationalModifiers];
     situationalModifiers.splice(index, 1);
     await this.parent.update({ system: { situationalModifiers } });
@@ -431,6 +469,7 @@ export class AbilityModel<
 
   addSituationalModifier = async (): Promise<void> => {
     const situationalModifiers: SituationalModifier[] = [
+      // @ts-expect-error - see comment at top of file
       ...this.situationalModifiers,
       {
         situation: "",
@@ -443,5 +482,11 @@ export class AbilityModel<
 
   setSpecialitiesMode = async (mode: SpecialitiesMode): Promise<void> => {
     await this.parent.update({ system: { specialitiesMode: mode } });
+  };
+
+  setAllowPoolToExceedRating = async (
+    allowPoolToExceedRating: boolean,
+  ): Promise<void> => {
+    await this.parent.update({ system: { allowPoolToExceedRating } });
   };
 }

@@ -1,8 +1,8 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import React, { Fragment, useCallback, useContext } from "react";
 
+import { assertAbilityItem } from "../../module/items/exports";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import { assertAbilityItem } from "../../v10Types";
 import { AbilityBadges } from "../abilities/AbilityBadges";
 import { SpecialityList } from "../abilities/SpecialityList";
 import { Toggle } from "../inputs/Toggle";
@@ -28,9 +28,9 @@ export const AbilitySlugEditQuickShockInvestigative = ({
   const handleToggle = useCallback(
     (checked: boolean) => {
       if (checked) {
-        void ability.setRatingAndRefreshPool(1);
+        void ability.system.setRatingAndRefreshPool(1);
       } else {
-        void ability.setRatingAndRefreshPool(0);
+        void ability.system.setRatingAndRefreshPool(0);
       }
     },
     [ability],
@@ -53,11 +53,12 @@ export const AbilitySlugEditQuickShockInvestigative = ({
         <Toggle checked={ability.system.rating > 0} onChange={handleToggle} />
       </div>
       <AbilityBadges ability={ability} css={{ gridColumn: "1/-1" }} />
-      {ability.system.hasSpecialities && ability.getSpecialitesCount() > 0 && (
-        <div css={{ paddingLeft: "2em", gridColumn: "1/-1" }}>
-          <SpecialityList ability={ability} />
-        </div>
-      )}
+      {ability.system.hasSpecialities &&
+        ability.system.getSpecialitesCount() > 0 && (
+          <div css={{ paddingLeft: "2em", gridColumn: "1/-1" }}>
+            <SpecialityList ability={ability} />
+          </div>
+        )}
     </Fragment>
   );
 };

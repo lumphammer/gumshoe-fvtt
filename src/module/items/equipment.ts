@@ -1,9 +1,13 @@
+import { settings } from "../../settings/settings";
+import { NoteWithFormat } from "../../types";
 import { createNotesWithFormatField, createRecordField } from "../schemaFields";
+import { InvestigatorItem } from "./InvestigatorItem";
 
 import StringField = foundry.data.fields.StringField;
 import TypeDataModel = foundry.abstract.TypeDataModel;
-import { settings } from "../../settings/settings";
-import { InvestigatorItem } from "./InvestigatorItem";
+import SourceData = foundry.data.fields.SchemaField.SourceData;
+// import TypedObjectField = foundry.data.fields.TypedObjectField;
+// import AnyField = foundry.data.fields.AnyField;
 
 const equipmentSchema = {
   // notes: NoteWithFormat;
@@ -11,6 +15,28 @@ const equipmentSchema = {
   // categoryId: string;
   categoryId: new StringField({ nullable: false, required: true }),
   // fields: Record<string, string | number | boolean>;
+  // fields: new TypedObjectField(
+  //   new AnyField({
+  //     nullable: false,
+  //     required: true,
+  //     initial: {},
+  //     validate: (value: unknown): value is string | number | boolean => {
+  //       return (
+  //         typeof value === "string" ||
+  //         typeof value === "number" ||
+  //         typeof value === "boolean"
+  //       );
+  //     },
+  //   }),
+  //   {
+  //     nullable: false,
+  //     required: true,
+  //     initial: {},
+  //     validateKey: (key: unknown): key is string => {
+  //       return typeof key === "string";
+  //     },
+  //   },
+  // ),
   fields: createRecordField<Record<string, string | number | boolean>>({
     nullable: false,
     required: true,
@@ -29,7 +55,7 @@ export class EquipmentModel extends TypeDataModel<
   setCategoryId = async (categoryId: string): Promise<void> => {
     const updateData = {
       categoryId,
-      fields: {} as Record<string, string | number | boolean>,
+      fields: {} as Record<string, any>,
     };
     const fields = settings.equipmentCategories.get()[categoryId]?.fields ?? {};
     for (const field in fields) {
@@ -48,7 +74,16 @@ export class EquipmentModel extends TypeDataModel<
   deleteField = async (field: string) => {
     await this.parent.update({ [`system.fields.-=${field}`]: null });
   };
+
+  setNotes = async (notes: NoteWithFormat) => {
+    await this.parent.update({ system: { notes } });
+  };
 }
+
+/**
+ * System data for an equipment item
+ */
+export type EquipmentSystemData = SourceData<typeof equipmentSchema>;
 
 export type EquipmentItem = InvestigatorItem<"equipment">;
 

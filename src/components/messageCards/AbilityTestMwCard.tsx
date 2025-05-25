@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import { AbilityItem } from "../../module/items/exports";
 import { MWDifficulty } from "../../types";
 import { Translate } from "../Translate";
 import { DiceTerms } from "./DiceTerms";
@@ -10,7 +10,7 @@ import { MWResult } from "./types";
 
 interface AbilityTestMwCardProps {
   msg: ChatMessage;
-  ability: InvestigatorItem | undefined;
+  ability: AbilityItem | undefined;
   difficulty: MWDifficulty;
   boonLevy: number;
   reRoll: number | undefined;
@@ -65,7 +65,7 @@ export const AbilityTestMwCard = React.memo(
     const deets = results[effectiveResult];
 
     const onClickReRoll = useCallback(() => {
-      void ability?.mwTestAbility(difficulty, boonLevy, effectiveResult);
+      void ability?.system.mwTestAbility(difficulty, boonLevy, effectiveResult);
     }, [ability, boonLevy, difficulty, effectiveResult]);
 
     const boonLevyFactor =

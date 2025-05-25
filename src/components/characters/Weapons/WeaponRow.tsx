@@ -10,19 +10,18 @@ import React, {
 
 import { generalAbility } from "../../../constants";
 import { cleanAndEnrichHtml } from "../../../functions/textFunctions";
+import { isAbilityItem } from "../../../module/items/exports";
 import { InvestigatorItem } from "../../../module/items/InvestigatorItem";
-import { assertWeaponItem, isAbilityItem } from "../../../v10Types";
+import { WeaponItem } from "../../../module/items/weapon";
 import { performAttack } from "../../equipment/performAttack";
 import { Button } from "../../inputs/Button";
 import { CheckButtons } from "../../inputs/CheckButtons";
 
 type WeaponRowProps = {
-  weapon: InvestigatorItem;
+  weapon: WeaponItem;
 };
 
 export const WeaponRow = ({ weapon }: WeaponRowProps) => {
-  assertWeaponItem(weapon);
-
   const app = useContext(FoundryAppContext);
   const onDragStart = useCallback(
     (e: React.DragEvent<HTMLAnchorElement>) => {
@@ -83,7 +82,6 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
   const abilityName = weapon.system.ability;
   const ability: InvestigatorItem | undefined = weapon.actor?.items.find(
     (item: InvestigatorItem) => {
-      // @ts-expect-error .type
       return item.type === generalAbility && item.name === abilityName;
     },
   );
@@ -115,7 +113,7 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
     }
   }, [ability, spend, weapon, bonusPool]);
 
-  const rawHtml = weapon.getNotes().html;
+  const rawHtml = weapon.system.notes.html;
 
   const [html, setHtml] = useState("");
 
@@ -148,7 +146,7 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
         <div css={{ gridColumn: 2 }}>
           <Button
             css={{ width: "1.5em", padding: "0" }}
-            onClick={weapon.reload}
+            onClick={weapon.system.reload}
           >
             <i className="fa fa-redo fa-xs" />
           </Button>

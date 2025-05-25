@@ -2,7 +2,7 @@ import { Fragment, ReactNode } from "react";
 
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
-import { assertNPCActor, isNPCActor } from "../../module/actors/npc";
+import { assertNPCActor } from "../../module/actors/npc";
 import { settings } from "../../settings/settings";
 import { absoluteCover } from "../absoluteCover";
 import { CSSReset } from "../CSSReset";
@@ -31,7 +31,6 @@ const settingsNpcStats = settings.npcStats.get;
 
 export const NPCSheetFull = () => {
   const { actor } = useActorSheetContext();
-
   assertNPCActor(actor);
   const themeName = actor.system.getSheetThemeName();
   const theme = useTheme(themeName);
@@ -108,7 +107,7 @@ export const NPCSheetFull = () => {
         {/* Stats */}
         <hr />
         {/* SotS NPC Combat bonus */}
-        {settingsUseNpcCombatBonuses() && isNPCActor(actor) && (
+        {settingsUseNpcCombatBonuses() && (
           <Fragment>
             <h3 css={{ gridColumn: "start / end" }}>
               <Translate>Combat bonus</Translate>

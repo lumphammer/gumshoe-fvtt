@@ -21,7 +21,7 @@ export const AttackCard = React.memo(
     const img = weapon?.img ?? imageUrl;
 
     // @ts-expect-error v10 types
-    const poolRolls = (msg.rolls?.[0]?.terms[0] as PoolTerm).rolls;
+    const poolRolls = (msg.rolls?.[0]?.terms[0]).rolls;
     const hitRoll = poolRolls[0];
     const damageRoll = poolRolls[1];
 

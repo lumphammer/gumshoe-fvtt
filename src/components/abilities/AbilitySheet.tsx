@@ -1,12 +1,10 @@
 import { Fragment } from "react";
 
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { isGeneralAbilityItem } from "../../module/items/generalAbility";
+import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { settings } from "../../settings/settings";
-import {
-  isGeneralAbilityItem,
-  isInvestigativeAbilityItem,
-} from "../../v10Types";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
 import { ItemSheetMode } from "../ItemSheetFramework/types";

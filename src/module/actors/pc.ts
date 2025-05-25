@@ -1,12 +1,19 @@
 import { CardsAreaSettings } from "../../components/cards/types";
 import * as c from "../../constants";
-import { occupationSlotIndex } from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { convertNotes } from "../../functions/textFunctions";
 import { settings } from "../../settings/settings";
-import { AbilityType, MwRefreshGroup, MwType, Resource } from "../../types";
-import { createRecordField } from "../schemaFields";
-import { ActiveCharacterModel } from "./activeCharacterActor";
+import { AbilityType, MwRefreshGroup, MwType } from "../../types";
+import { CardItem, isCardItem } from "../items/card";
+import { AbilityItem, isAbilityItem } from "../items/exports";
+import { isGeneralAbilityItem } from "../items/generalAbility";
+import { assertMwItem, isMwItem } from "../items/mwItem";
+import {
+  isPersonalDetailItem,
+  PersonalDetailItem,
+} from "../items/personalDetail";
+import { createResourcesField, createStatsField } from "../schemaFields";
+import { ActiveCharacterModel } from "./ActiveCharacterModel";
 import { InvestigatorActor } from "./InvestigatorActor";
 
 import NumberField = foundry.data.fields.NumberField;
@@ -15,12 +22,6 @@ import ArrayField = foundry.data.fields.ArrayField;
 import BooleanField = foundry.data.fields.BooleanField;
 import SchemaField = foundry.data.fields.SchemaField;
 import SourceData = foundry.data.fields.SchemaField.SourceData;
-
-// when this errors, it means that TypedObjectField has been added to fvtt-types
-// and we can use it instead of ObjectField
-// @ts-expect-error TypedObjectField is not typed, ahaha, yet
-// eslint-disable-next-line unused-imports/no-unused-vars
-import TypedObjectField = foundry.data.fields.TypedObjectField;
 
 export const pcSchema = {
   buildPoints: new NumberField({
@@ -71,16 +72,8 @@ export const pcSchema = {
     initial: "uninjured",
     choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
   }),
-  resources: createRecordField<Record<string, Resource>>({
-    nullable: false,
-    required: true,
-    initial: {},
-  }),
-  stats: createRecordField<Record<string, number>>({
-    nullable: false,
-    required: true,
-    initial: {},
-  }),
+  resources: createResourcesField(),
+  stats: createStatsField(),
   initiativePassingTurns: new NumberField({
     nullable: false,
     required: true,
@@ -115,7 +108,7 @@ export const pcSchema = {
   }),
 };
 
-type BaseNote =
+type InferredBaseNote =
   typeof pcSchema.longNotes.element extends SchemaField<
     infer Schema,
     any,
@@ -126,7 +119,7 @@ type BaseNote =
     ? SourceData<Schema>
     : never;
 
-type NoteFormat =
+type InferredNoteFormat =
   typeof pcSchema.longNotesFormat extends StringField<
     any,
     any,
@@ -136,6 +129,14 @@ type NoteFormat =
     ? PersistedType
     : never;
 
+/**
+ * System data for a PC
+ */
+export type PCSystemData = SourceData<typeof pcSchema>;
+
+/**
+ * The model for a PC actor
+ */
 export class PCModel extends ActiveCharacterModel<
   typeof pcSchema,
   InvestigatorActor<"pc">
@@ -270,7 +271,6 @@ export class PCModel extends ActiveCharacterModel<
     return this.parent.items.find(
       (item) =>
         isAbilityItem(item) &&
-        // @ts-expect-error this.type
         (type ? item.type === type : true) &&
         item.name === name,
     ) as AbilityItem | undefined;
@@ -315,12 +315,11 @@ export class PCModel extends ActiveCharacterModel<
   }
 
   getOccupations = (): PersonalDetailItem[] => {
-    return this.getPersonalDetailsInSlotIndex(occupationSlotIndex);
+    return this.getPersonalDetailsInSlotIndex(c.occupationSlotIndex);
   };
 
   getPersonalDetailsInSlotIndex = (slotIndex: number): PersonalDetailItem[] => {
     const personalDetailItems = this.getPersonalDetails().filter((item) => {
-      assertPersonalDetailItem(item);
       return item.system.slotIndex === slotIndex;
     });
     return personalDetailItems;
@@ -334,26 +333,26 @@ export class PCModel extends ActiveCharacterModel<
     return this.longNotes?.[i] ?? "";
   };
 
-  setLongNote = (i: number, note: BaseNote) => {
+  setLongNote = (i: number, note: InferredBaseNote) => {
     const longNotes = [...(this.longNotes || [])];
     longNotes[i] = note;
     return this.parent.update({ system: { longNotes } });
   };
 
-  setLongNotesFormat = async (longNotesFormat: NoteFormat) => {
-    const longNotesPromises = (this.longNotes || []).map<Promise<BaseNote>>(
-      async (note) => {
-        const { newHtml, newSource } = await convertNotes(
-          this.longNotesFormat,
-          longNotesFormat,
-          note?.source ?? "",
-        );
-        return {
-          html: newHtml,
-          source: newSource,
-        };
-      },
-    );
+  setLongNotesFormat = async (longNotesFormat: InferredNoteFormat) => {
+    const longNotesPromises = (this.longNotes || []).map<
+      Promise<InferredBaseNote>
+    >(async (note) => {
+      const { newHtml, newSource } = await convertNotes(
+        this.longNotesFormat,
+        longNotesFormat,
+        note?.source ?? "",
+      );
+      return {
+        html: newHtml,
+        source: newSource,
+      };
+    });
     const longNotes = await Promise.all(longNotesPromises);
     return this.parent.update({ system: { longNotes, longNotesFormat } });
   };
@@ -390,10 +389,10 @@ export class PCModel extends ActiveCharacterModel<
       "Item",
       [
         {
-          // @ts-expect-error .type
-          type: equipment,
+          type: c.equipment,
           name: "New item",
           system: {
+            // @ts-expect-error typings for createEmbeddedDocuments
             category: categoryId,
           },
         },
@@ -409,8 +408,7 @@ export class PCModel extends ActiveCharacterModel<
       "Item",
       [
         {
-          // @ts-expect-error .type
-          type: card,
+          type: c.card,
           name: "New card",
         },
       ],
@@ -445,15 +443,14 @@ export class PCModel extends ActiveCharacterModel<
     renderSheet = true,
   ): Promise<void> => {
     const name =
-      slotIndex === occupationSlotIndex
+      slotIndex === c.occupationSlotIndex
         ? settings.genericOccupation.get()
         : `New ${settings.personalDetails.get()[slotIndex]?.name ?? "detail"}`;
     await this.parent.createEmbeddedDocuments(
       "Item",
       [
         {
-          // @ts-expect-error .type
-          type: personalDetail,
+          type: c.personalDetail,
           name,
           system: {
             slotIndex,
@@ -477,14 +474,4 @@ export function assertPCActor(x: unknown): asserts x is PCActor {
   if (!isPCActor(x)) {
     throw new Error("Expected a PC actor");
   }
-}
-
-function _f(x: PCModel) {
-  console.log(x.resources[0].value);
-  x.cardsAreaSettings.category = "categorized";
-  // @ts-expect-error this should be wrong
-  x.cardsAreaSettings.category = "foo";
-  x.longNotesFormat = "richText";
-  // @ts-expect-error this should be wrong
-  x.longNotesFormat = "sdfsdf";
 }

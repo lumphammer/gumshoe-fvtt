@@ -1,5 +1,5 @@
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import { assertPersonalDetailItem } from "../../v10Types";
+import { assertPersonalDetailItem } from "../../module/items/personalDetail";
 import { Slug } from "./Slug";
 
 interface PersonalDetailSlugProps {

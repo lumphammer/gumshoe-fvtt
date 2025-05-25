@@ -51,3 +51,11 @@ export function isInvestigativeAbilityItem(
 ): x is InvestigativeAbilityItem {
   return x instanceof InvestigatorItem && x.type === "investigativeAbility";
 }
+
+export function assertInvestigativeAbilityItem(
+  x: unknown,
+): asserts x is InvestigativeAbilityItem {
+  if (!isInvestigativeAbilityItem(x)) {
+    throw new Error("Not a investigative ability item");
+  }
+}

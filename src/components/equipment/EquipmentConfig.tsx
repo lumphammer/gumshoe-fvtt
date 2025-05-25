@@ -3,8 +3,8 @@ import { useCallback } from "react";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/utilities";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { assertEquipmentItem } from "../../module/items/equipment";
 import { settings } from "../../settings/settings";
-import { assertEquipmentItem } from "../../v10Types";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -65,7 +65,6 @@ export const EquipmentConfig = () => {
                 gridArea: "cog",
               }}
               onClick={async () => {
-                assertEquipmentItem(item);
                 await navigator.clipboard.writeText(item.system.categoryId);
                 ui.notifications?.info(
                   `Copied category ID "${item.system.categoryId}" to clipboard`,
@@ -101,7 +100,7 @@ export const EquipmentConfig = () => {
             fieldValue={allFields[fieldId]}
             index={index}
             onDelete={(id) => {
-              void item.deleteField(id);
+              void item.system.deleteField(id);
             }}
           />
         ))}

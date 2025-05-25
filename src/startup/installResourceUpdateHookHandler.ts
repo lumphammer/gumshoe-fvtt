@@ -1,11 +1,11 @@
 import { assertGame } from "../functions/utilities";
 import { isActiveCharacterActor } from "../module/actors/exports";
 import {
-  AnyItem,
   assertGeneralAbilityItem,
   GeneralAbilityItem,
   isGeneralAbilityItem,
-} from "../v10Types";
+} from "../module/items/generalAbility";
+import { InvestigatorItem } from "../module/items/InvestigatorItem";
 
 // previously these were the only four resource attributes in the system.
 // for legacy compatibility (e.g. if people have content in compendium packs
@@ -36,7 +36,7 @@ export function installResourceUpdateHookHandler() {
   Hooks.on(
     "updateItem",
     (
-      item: AnyItem,
+      item: InvestigatorItem,
       diff: any,
       options: Record<string, unknown>,
       userId: string,
@@ -136,35 +136,38 @@ export function installResourceUpdateHookHandler() {
    * When a general ability is added to an actor, create the corresponding
    * resource attribute on the actor.
    */
-  Hooks.on("createItem", (item: AnyItem, options: any, userId: string) => {
-    if (
-      // ensure the update is triggered by the current user
-      game.userId !== userId ||
-      // ensure the item is a general ability item
-      !isGeneralAbilityItem(item) ||
-      // ensure the item has a parent
-      !item.parent
-    ) {
-      return;
-    }
+  Hooks.on(
+    "createItem",
+    (item: InvestigatorItem, options: any, userId: string) => {
+      if (
+        // ensure the update is triggered by the current user
+        game.userId !== userId ||
+        // ensure the item is a general ability item
+        !isGeneralAbilityItem(item) ||
+        // ensure the item has a parent
+        !item.parent
+      ) {
+        return;
+      }
 
-    const resourceName = getResourceName(item);
+      const resourceName = getResourceName(item);
 
-    if (resourceName === null) {
-      return;
-    }
+      if (resourceName === null) {
+        return;
+      }
 
-    // create the resource attribute on the actor
-    void item.parent.update({
-      system: {
-        resources: {
-          [resourceName]: {
-            min: item.system.min,
-            value: item.system.pool,
-            max: item.system.rating,
+      // create the resource attribute on the actor
+      void item.parent.update({
+        system: {
+          resources: {
+            [resourceName]: {
+              min: item.system.min,
+              value: item.system.pool,
+              max: item.system.rating,
+            },
           },
         },
-      },
-    });
-  });
+      });
+    },
+  );
 }

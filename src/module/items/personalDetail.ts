@@ -10,7 +10,7 @@ export const personalDetailSchema = {
   // notes: NoteWithFormat;
   notes: createNotesWithFormatField(),
   // slotIndex: number;
-  slotIndex: new NumberField({ nullable: false, required: true }),
+  slotIndex: new NumberField({ nullable: false, required: true, initial: 0 }),
   // compendiumPackId: string | null;
   compendiumPackId: new StringField({ nullable: true, required: true }),
 };
@@ -44,7 +44,7 @@ export class PersonalDetailModel extends TypeDataModel<
   };
 }
 
-export type PersonalDetailItem = Item<"personalDetail">;
+export type PersonalDetailItem = InvestigatorItem<"personalDetail">;
 
 export function isPersonalDetailItem(x: unknown): x is PersonalDetailItem {
   return x instanceof InvestigatorItem && x.type === "personalDetail";

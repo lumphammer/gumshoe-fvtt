@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertAbilityItem } from "../../v10Types";
+import { assertAbilityItem } from "../../module/items/exports";
 import { Button } from "../inputs/Button";
 import { useListShowHideTransition } from "../transitions/useListShowHideTransition";
 import { Translate } from "../Translate";
@@ -40,16 +40,16 @@ export const UnlocksEditor = () => {
               <UnlocksEditorRow
                 index={i}
                 unlock={unlock}
-                onChangeDescription={item.setUnlockDescription}
-                onChangeRating={item.setUnlockRating}
-                onDelete={item.deleteUnlock}
+                onChangeDescription={item.system.setUnlockDescription}
+                onChangeRating={item.system.setUnlockRating}
+                onDelete={item.system.deleteUnlock}
               />
             </div>
           );
         },
       )}
       <Button
-        onClick={item.addUnlock}
+        onClick={item.system.addUnlock}
         css={{
           margin: 0,
         }}

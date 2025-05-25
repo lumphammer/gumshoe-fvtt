@@ -24,7 +24,7 @@ export const SettingArea = () => {
   const onSetTheme = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = e.currentTarget.value;
-      const themeName = value === "default" ? null : value;
+      const themeName = value === defaultThemeIdentifier ? null : value;
       void actor.system.setSheetTheme(themeName);
     },
     [actor],

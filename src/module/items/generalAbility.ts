@@ -25,11 +25,12 @@ export const generalAbilitySchema = {
     nullable: false,
     required: true,
     choices: [2, 4, 8],
+    initial: 2,
   }),
   // combatBonus: number;
-  combatBonus: new NumberField({ nullable: false, required: true }),
+  combatBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
   // damageBonus: number;
-  damageBonus: new NumberField({ nullable: false, required: true }),
+  damageBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
   // isPushPool: boolean;
   isPushPool: new BooleanField({ nullable: false, required: true }),
   // linkToResource: boolean;
@@ -106,12 +107,6 @@ export class GeneralAbilityModel extends AbilityModel<
     await this.parent.update({ system: { isPushPool } });
   };
 
-  setAllowPoolToExceedRating = async (
-    allowPoolToExceedRating: boolean,
-  ): Promise<void> => {
-    await this.parent.update({ system: { allowPoolToExceedRating } });
-  };
-
   setResourceId = async (resourceId: string | null): Promise<void> => {
     await this.parent.update({ system: { resourceId } });
   };
@@ -119,10 +114,29 @@ export class GeneralAbilityModel extends AbilityModel<
   setLinkToResource = async (linkToResource: boolean): Promise<void> => {
     await this.parent.update({ system: { linkToResource } });
   };
+
+  setCanBeInvestigative = async (
+    canBeInvestigative: boolean,
+  ): Promise<void> => {
+    await this.parent.update({ system: { canBeInvestigative } });
+  };
+
+  setGoesFirstInCombat = async (goesFirstInCombat: boolean): Promise<void> => {
+    console.log(this.rating);
+    await this.parent.update({ system: { goesFirstInCombat } });
+  };
 }
 
 export type GeneralAbilityItem = InvestigatorItem<"generalAbility">;
 
 export function isGeneralAbilityItem(x: unknown): x is GeneralAbilityItem {
   return x instanceof InvestigatorItem && x.type === "generalAbility";
+}
+
+export function assertGeneralAbilityItem(
+  x: unknown,
+): asserts x is GeneralAbilityItem {
+  if (!isGeneralAbilityItem(x)) {
+    throw new Error("Not a general ability item");
+  }
 }

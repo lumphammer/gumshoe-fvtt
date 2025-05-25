@@ -2,10 +2,9 @@ import { Fragment, useCallback, useContext } from "react";
 
 import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { assertGame } from "../../../functions/utilities";
-import { InvestigatorItem } from "../../../module/items/InvestigatorItem";
+import { WeaponItem } from "../../../module/items/weapon";
 import { settings } from "../../../settings/settings";
 import { ThemeContext } from "../../../themes/ThemeContext";
-import { assertWeaponItem } from "../../../v10Types";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
@@ -14,31 +13,29 @@ import { OtherableDropDown } from "../../inputs/OtherableDropDown";
 import { Toggle } from "../../inputs/Toggle";
 
 type WeaponRowEditProps = {
-  weapon: InvestigatorItem;
+  weapon: WeaponItem;
   index: number;
 };
 
 export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
-  assertWeaponItem(weapon);
-
   const theme = useContext(ThemeContext);
 
   const weaponRangeReduce = useCallback(async () => {
     if (weapon.system.isLongRange) {
-      await weapon.setIsLongRange(false);
+      await weapon.system.setIsLongRange(false);
     } else if (weapon.system.isNearRange) {
-      await weapon.setIsNearRange(false);
+      await weapon.system.setIsNearRange(false);
     } else if (weapon.system.isCloseRange) {
-      await weapon.setIsCloseRange(false);
+      await weapon.system.setIsCloseRange(false);
     }
   }, [weapon]);
   const weaponRangeExpand = useCallback(async () => {
     if (!weapon.system.isCloseRange) {
-      await weapon.setIsCloseRange(true);
+      await weapon.system.setIsCloseRange(true);
     } else if (!weapon.system.isNearRange) {
-      await weapon.setIsNearRange(true);
+      await weapon.system.setIsNearRange(true);
     } else if (!weapon.system.isLongRange) {
-      await weapon.setIsLongRange(true);
+      await weapon.system.setIsLongRange(true);
     }
   }, [weapon]);
   const onClickDelete = useCallback(async () => {
@@ -93,14 +90,14 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
       />
       <AsyncNumberInput
         value={weapon.system.damage}
-        onChange={weapon.setDamage}
+        onChange={weapon.system.setDamage}
         noPlusMinus
         css={{ gridColumn: "base", gridRow }}
       />
       {weapon.system.isPointBlank && (
         <AsyncNumberInput
           value={weapon.system.pointBlankDamage}
-          onChange={weapon.setPointBlankDamage}
+          onChange={weapon.system.setPointBlankDamage}
           noPlusMinus
           css={{ gridColumn: "pb", gridRow }}
         />
@@ -108,7 +105,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
       {weapon.system.isCloseRange && (
         <AsyncNumberInput
           value={weapon.system.closeRangeDamage}
-          onChange={weapon.setCloseRangeDamage}
+          onChange={weapon.system.setCloseRangeDamage}
           noPlusMinus
           css={{ gridColumn: "cr", gridRow }}
         />
@@ -116,7 +113,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
       {weapon.system.isNearRange && (
         <AsyncNumberInput
           value={weapon.system.nearRangeDamage}
-          onChange={weapon.setNearRangeDamage}
+          onChange={weapon.system.setNearRangeDamage}
           noPlusMinus
           css={{ gridColumn: "nr", gridRow }}
         />
@@ -124,7 +121,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
       {weapon.system.isLongRange && (
         <AsyncNumberInput
           value={weapon.system.longRangeDamage}
-          onChange={weapon.setLongRangeDamage}
+          onChange={weapon.system.setLongRangeDamage}
           noPlusMinus
           css={{ gridColumn: "lr", gridRow }}
         />
@@ -184,7 +181,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
       >
         <OtherableDropDown
           value={weapon.system.ability}
-          onChange={(e) => weapon.setAbility(e)}
+          onChange={(e) => weapon.system.setAbility(e)}
           pickerValues={settings.combatAbilities.get().toSorted()}
         />
         <div css={{ marginTop: "0.5em" }}>
@@ -192,7 +189,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
             Use ammo?{" "}
             <Toggle
               checked={weapon.system.usesAmmo}
-              onChange={weapon.setUsesAmmo}
+              onChange={weapon.system.setUsesAmmo}
             />
           </label>
         </div>
@@ -202,13 +199,13 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
             <AsyncNumberInput
               min={0}
               value={weapon.system.ammo.value}
-              onChange={weapon.setAmmo}
+              onChange={weapon.system.setAmmo}
             />
             Maximum
             <AsyncNumberInput
               min={0}
               value={weapon.system.ammo.max}
-              onChange={weapon.setAmmoMax}
+              onChange={weapon.system.setAmmoMax}
             />
           </Fragment>
         )}
@@ -219,8 +216,8 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
           gridColumn: "notes / -1",
           gridRow: gridRow + 1,
         }}
-        note={weapon.getNotes()}
-        onChange={weapon.setNotes}
+        note={weapon.system.notes}
+        onChange={weapon.system.setNotes}
       />
     </Fragment>
   );

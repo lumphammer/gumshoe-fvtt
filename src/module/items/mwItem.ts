@@ -22,11 +22,12 @@ export const mwItemSchema = {
       "sandestin",
       "retainer",
     ],
+    initial: "tweak",
   }),
   // notes: NoteWithFormat;
   notes: createNotesWithFormatField(),
   // charges: number;
-  charges: new NumberField({ nullable: false, required: true }),
+  charges: new NumberField({ nullable: false, required: true, initial: 0 }),
   // ranges: RangeTuple;
   ranges: new ArrayField(new NumberField({ nullable: false, required: true }), {
     nullable: false,
@@ -71,7 +72,7 @@ export class MwItemModel extends TypeDataModel<typeof mwItemSchema, MwItem> {
     };
 }
 
-export type MwItem = Item<"mwItem">;
+export type MwItem = InvestigatorItem<"mwItem">;
 
 export function isMwItem(x: unknown): x is MwItem {
   return x instanceof InvestigatorItem && x.type === "mwItem";

@@ -7,13 +7,11 @@ import {
   weaponIcon,
 } from "../constants";
 import { assertGame, isNullOrEmptyString } from "../functions/utilities";
-import {
-  isCardItem,
-  isEquipmentItem,
-  isGeneralAbilityItem,
-  isPersonalDetailItem,
-  isWeaponItem,
-} from "../v10Types";
+import { isCardItem } from "../module/items/card";
+import { isEquipmentItem } from "../module/items/equipment";
+import { isGeneralAbilityItem } from "../module/items/generalAbility";
+import { isPersonalDetailItem } from "../module/items/personalDetail";
+import { isWeaponItem } from "../module/items/weapon";
 
 export const installItemImageHookHandler = () => {
   Hooks.on(

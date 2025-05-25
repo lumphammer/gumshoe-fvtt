@@ -1,8 +1,9 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import React, { Fragment, useCallback, useContext, useState } from "react";
 
+import { assertAbilityItem } from "../../module/items/exports";
+import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import { assertAbilityItem, isGeneralAbilityItem } from "../../v10Types";
 import { Button } from "../inputs/Button";
 
 type AbilitySlugPlayMwProps = {
@@ -24,7 +25,7 @@ export const AbilitySlugPlayMw = ({ ability }: AbilitySlugPlayMwProps) => {
   const [boonLevy, setBoonlevy] = useState(0);
 
   const onTest = useCallback(() => {
-    void ability.mwTestAbility(0, boonLevy);
+    void ability.system.mwTestAbility(0, boonLevy);
     setBoonlevy(0);
   }, [ability, boonLevy]);
 

@@ -5,8 +5,9 @@ import {
   assertActiveCharacterActor,
   isActiveCharacterActor,
 } from "../../module/actors/exports";
+import { assertAbilityItem } from "../../module/items/exports";
+import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
 import { settings } from "../../settings/settings";
-import { assertAbilityItem, isInvestigativeAbilityItem } from "../../v10Types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button, ToolbarButton } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -26,7 +27,7 @@ export const AbilityMainBits = () => {
   assertAbilityItem(item);
 
   const onClickRefresh = useCallback(() => {
-    void item.refreshPool();
+    void item.system.refreshPool();
   }, [item]);
 
   const useBoost = settingsUseBoost();
@@ -84,9 +85,9 @@ export const AbilityMainBits = () => {
   const handleQuickShockToggle = useCallback(
     (checked: boolean) => {
       if (checked) {
-        void item.setRatingAndRefreshPool(1);
+        void item.system.setRatingAndRefreshPool(1);
       } else {
-        void item.setRatingAndRefreshPool(0);
+        void item.system.setRatingAndRefreshPool(0);
       }
     },
     [item],
@@ -121,7 +122,7 @@ export const AbilityMainBits = () => {
                 min={item.system.min}
                 max={poolMax}
                 value={item.system.pool}
-                onChange={item.setPool}
+                onChange={item.system.setPool}
                 css={{
                   flex: 1,
                 }}
@@ -142,7 +143,7 @@ export const AbilityMainBits = () => {
             <AsyncNumberInput
               min={0}
               value={item.system.rating}
-              onChange={item.setRating}
+              onChange={item.system.setRating}
             />
             <AbilityBadges
               css={{
@@ -174,13 +175,13 @@ export const AbilityMainBits = () => {
       )}
 
       <NotesEditorWithControls
-        source={item.getNotes().source}
-        format={item.getNotes().format}
-        html={item.getNotes().html}
+        source={item.system.notes.source}
+        format={item.system.notes.format}
+        html={item.system.notes.html}
         // setSource={ability.setNotesSource}
         // setFormat={ability.setNotesFormat}
         allowChangeFormat
-        onSave={item.setNotes}
+        onSave={item.system.setNotes}
         css={{
           gridRow: "notes",
         }}
@@ -188,7 +189,9 @@ export const AbilityMainBits = () => {
       {item.system.hasSpecialities && (
         <GridFieldStacked
           label={
-            item.getSpecialities().length === 1 ? "Speciality" : "Specialities"
+            item.system.getSpecialities().length === 1
+              ? "Speciality"
+              : "Specialities"
           }
         >
           <div
@@ -203,7 +206,7 @@ export const AbilityMainBits = () => {
       )}
       {useBoost && (
         <GridField label="Boost?">
-          <Toggle checked={item.system.boost} onChange={item.setBoost} />
+          <Toggle checked={item.system.boost} onChange={item.system.setBoost} />
         </GridField>
       )}
     </InputGrid>

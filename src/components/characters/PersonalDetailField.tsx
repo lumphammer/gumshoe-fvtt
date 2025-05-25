@@ -1,5 +1,4 @@
-import { InvestigatorActor } from "../../module/actors/InvestigatorActor";
-import { assertPCActor } from "../../module/actors/pc";
+import { PCActor } from "../../module/actors/pc";
 import { GridField } from "../inputs/GridField";
 import { PersonalDetailSlug } from "./PersonalDetailSlug";
 import { Slug } from "./Slug";
@@ -9,11 +8,10 @@ export const PersonalDetailField = ({
   name,
   slotIndex,
 }: {
-  actor: InvestigatorActor;
+  actor: PCActor;
   name: string;
   slotIndex: number;
 }) => {
-  assertPCActor(actor);
   const personalDetailItems =
     actor.system.getPersonalDetailsInSlotIndex(slotIndex);
 

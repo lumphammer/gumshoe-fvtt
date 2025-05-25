@@ -3,9 +3,8 @@ import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppCo
 import React, { useCallback, useContext } from "react";
 
 import { sortEntitiesByName } from "../../../functions/utilities";
-import { InvestigatorActor } from "../../../module/actors/InvestigatorActor";
-import { assertPCActor } from "../../../module/actors/pc";
-import { InvestigatorItem } from "../../../module/items/InvestigatorItem";
+import { PCActor } from "../../../module/actors/pc";
+import { EquipmentItem } from "../../../module/items/equipment";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
@@ -13,9 +12,9 @@ import { EquipmentItemRow } from "./EquipmentItemRow";
 
 interface EquipmentCategoryProps {
   categoryId: string;
-  items: InvestigatorItem[];
+  items: EquipmentItem[];
   name: string;
-  actor: InvestigatorActor;
+  actor: PCActor;
   fields: Record<string, EquipmentFieldMetadata>;
 }
 
@@ -26,7 +25,6 @@ export const EquipmentCategory = ({
   actor,
   fields,
 }: EquipmentCategoryProps) => {
-  assertPCActor(actor);
   const app = useContext(FoundryAppContext);
 
   const onDragStart = useCallback(

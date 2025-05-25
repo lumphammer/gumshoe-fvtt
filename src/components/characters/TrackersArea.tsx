@@ -2,7 +2,7 @@ import { Fragment } from "react";
 
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertActiveCharacterActor } from "../../module/actors/exports";
-import { isGeneralAbilityItem } from "../../v10Types";
+import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { PoolTracker } from "../abilities/PoolTracker";
 
 export const TrackersArea = () => {

@@ -5,8 +5,8 @@ import { assertGame } from "../../functions/utilities";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertActiveCharacterActor } from "../../module/actors/exports";
+import { assertWeaponItem } from "../../module/items/weapon";
 import { settings } from "../../settings/settings";
-import { assertWeaponItem } from "../../v10Types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -60,14 +60,14 @@ export const WeaponConfig = () => {
         <AsyncNumberInput
           min={0}
           value={item.system.cost}
-          onChange={item.setCost}
+          onChange={item.system.setCost}
         />
       </GridField>
 
       <GridField label="Initiative">
         <OtherableDropDown
           value={item.system.ability}
-          onChange={item.setAbility}
+          onChange={item.system.setAbility}
           pickerValues={validCombatAbilities}
           validValues={generalAbilityNames}
           css={{ marginBottom: "0.3em" }}
@@ -76,39 +76,42 @@ export const WeaponConfig = () => {
       <GridField label="Base Damage">
         <AsyncNumberInput
           value={item.system.damage}
-          onChange={item.setDamage}
+          onChange={item.system.setDamage}
         />
       </GridField>
       <WeaponRange
         label="Point Blank"
         damage={item.system.pointBlankDamage ?? 0}
         enabled={item.system.isPointBlank}
-        setDamage={item.setPointBlankDamage}
-        setEnabled={item.setIsPointBlank}
+        setDamage={item.system.setPointBlankDamage}
+        setEnabled={item.system.setIsPointBlank}
       />
       <WeaponRange
         label="Close range"
         damage={item.system.closeRangeDamage ?? 0}
         enabled={item.system.isCloseRange}
-        setDamage={item.setCloseRangeDamage}
-        setEnabled={item.setIsCloseRange}
+        setDamage={item.system.setCloseRangeDamage}
+        setEnabled={item.system.setIsCloseRange}
       />
       <WeaponRange
         label="Near range"
         damage={item.system.nearRangeDamage ?? 0}
         enabled={item.system.isNearRange}
-        setDamage={item.setNearRangeDamage}
-        setEnabled={item.setIsNearRange}
+        setDamage={item.system.setNearRangeDamage}
+        setEnabled={item.system.setIsNearRange}
       />
       <WeaponRange
         label="Long range"
         damage={item.system.longRangeDamage ?? 0}
         enabled={item.system.isLongRange}
-        setDamage={item.setLongRangeDamage}
-        setEnabled={item.setIsLongRange}
+        setDamage={item.system.setLongRangeDamage}
+        setEnabled={item.system.setIsLongRange}
       />
       <GridField label="Uses ammo?">
-        <Toggle checked={item.system.usesAmmo} onChange={item.setUsesAmmo} />
+        <Toggle
+          checked={item.system.usesAmmo}
+          onChange={item.system.setUsesAmmo}
+        />
       </GridField>
       {item.system.usesAmmo && (
         <Fragment>
@@ -116,14 +119,14 @@ export const WeaponConfig = () => {
             <AsyncNumberInput
               min={0}
               value={item.system.ammo.max}
-              onChange={item.setAmmoMax}
+              onChange={item.system.setAmmoMax}
             />
           </GridField>
           <GridField label="Ammo per attack">
             <AsyncNumberInput
               min={0}
               value={item.system.ammoPerShot}
-              onChange={item.setAmmoPerShot}
+              onChange={item.system.setAmmoPerShot}
             />
           </GridField>
         </Fragment>

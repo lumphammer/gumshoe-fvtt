@@ -206,7 +206,7 @@ export class CardModel extends TypeDataModel<typeof cardSchema, CardItem> {
   };
 }
 
-export type CardItem = Item<"card">;
+export type CardItem = InvestigatorItem<"card">;
 
 export function isCardItem(x: unknown): x is CardItem {
   return x instanceof InvestigatorItem && x.type === "card";

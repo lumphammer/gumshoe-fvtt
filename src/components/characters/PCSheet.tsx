@@ -5,8 +5,9 @@ import { assertGame } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
 import { assertPCActor } from "../../module/actors/pc";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import { PersonalDetailItem } from "../../module/items/personalDetail";
 import { settings } from "../../settings/settings";
-import { AnyItem, PersonalDetailItem } from "../../v10Types";
 import { CardsArea } from "../cards/CardsArea";
 import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
@@ -65,7 +66,7 @@ export const PCSheet = () => {
   // some acrobatics here to make sure we update the occupation when it changes
   // there's no built in hook for "an actor's items changed"
   useEffect(() => {
-    const callback = (affectedItem: AnyItem) => {
+    const callback = (affectedItem: InvestigatorItem) => {
       if (affectedItem.isOwned && affectedItem.actor?.id === actor.id) {
         setOccupation(actor.system.getOccupations()[0]);
       }

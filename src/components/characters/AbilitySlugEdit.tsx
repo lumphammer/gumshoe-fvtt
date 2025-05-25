@@ -1,8 +1,8 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import React, { Fragment, useCallback, useContext } from "react";
 
+import { assertAbilityItem } from "../../module/items/exports";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import { assertAbilityItem } from "../../v10Types";
 import { AbilityBadges } from "../abilities/AbilityBadges";
 import { SpecialityList } from "../abilities/SpecialityList";
 import { AsyncCheckbox } from "../inputs/AsyncCheckbox";
@@ -29,7 +29,7 @@ export const AbilitySlugEdit = ({
   );
   const updateRating = useCallback(
     (rating: number) => {
-      void ability.setRatingAndRefreshPool(rating);
+      void ability.system.setRatingAndRefreshPool(rating);
     },
     [ability],
   );
@@ -64,18 +64,19 @@ export const AbilitySlugEdit = ({
         <div css={{ gridColumn: "isocc", justifySelf: "center" }}>
           <AsyncCheckbox
             checked={ability.system.occupational}
-            onChange={ability.setOccupational}
+            onChange={ability.system.setOccupational}
             title="Occupational Ability?"
           />
         </div>
       )}
 
       <AbilityBadges ability={ability} css={{ gridColumn: "1/-1" }} />
-      {ability.system.hasSpecialities && ability.getSpecialitesCount() > 0 && (
-        <div css={{ paddingLeft: "2em", gridColumn: "1/-1" }}>
-          <SpecialityList ability={ability} />
-        </div>
-      )}
+      {ability.system.hasSpecialities &&
+        ability.system.getSpecialitesCount() > 0 && (
+          <div css={{ paddingLeft: "2em", gridColumn: "1/-1" }}>
+            <SpecialityList ability={ability} />
+          </div>
+        )}
     </Fragment>
   );
 };

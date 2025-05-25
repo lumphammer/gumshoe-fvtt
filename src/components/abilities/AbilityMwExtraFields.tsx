@@ -1,5 +1,5 @@
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertGeneralAbilityItem } from "../../v10Types";
+import { assertGeneralAbilityItem } from "../../module/items/generalAbility";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
@@ -17,13 +17,13 @@ export const AbilityMwExtraFields = () => {
       <GridField label="Trumps">
         <AsyncTextInput
           value={item.system.mwTrumps}
-          onChange={item.setMwTrumps}
+          onChange={item.system.setMwTrumps}
         />
       </GridField>
       <GridField label="Trumped by">
         <AsyncTextInput
           value={item.system.mwTrumpedBy}
-          onChange={item.setMwTrumpedBy}
+          onChange={item.system.setMwTrumpedBy}
         />
       </GridField>
     </InputGrid>

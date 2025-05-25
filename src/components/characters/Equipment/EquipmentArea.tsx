@@ -1,8 +1,8 @@
 import { getTranslated } from "../../../functions/getTranslated";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { assertPCActor } from "../../../module/actors/pc";
+import { isEquipmentItem } from "../../../module/items/equipment";
 import { settings } from "../../../settings/settings";
-import { isEquipmentItem } from "../../../v10Types";
 import { EquipmentCategory } from "./EquipmentCategory";
 
 export const EquipmentArea = () => {

@@ -26,7 +26,6 @@ export class InvestigatorTokenDocument extends TokenDocument {
         if (!isActiveCharacterActor(actor)) {
           continue;
         }
-        // @ts-expect-error excessively deep
         const stats = Object.keys(actor.system.stats).map(
           (stat) => `stats.${stat}`,
         );

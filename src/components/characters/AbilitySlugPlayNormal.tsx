@@ -1,12 +1,10 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import React, { Fragment, useCallback, useContext, useState } from "react";
 
+import { assertAbilityItem } from "../../module/items/exports";
+import { isGeneralAbilityItem } from "../../module/items/generalAbility";
+import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import {
-  assertAbilityItem,
-  isGeneralAbilityItem,
-  isInvestigativeAbilityItem,
-} from "../../v10Types";
 import { AbilityBadges } from "../abilities/AbilityBadges";
 import { Button } from "../inputs/Button";
 
@@ -31,12 +29,12 @@ export const AbilitySlugPlayNormal = ({
   const [spend, setSpend] = useState(0);
 
   const onTest = useCallback(() => {
-    void ability.testAbility(spend);
+    void ability.system.testAbility(spend);
     setSpend(0);
   }, [ability, spend]);
 
   const onSpend = useCallback(() => {
-    void ability.spendAbility(spend);
+    void ability.system.spendAbility(spend);
     setSpend(0);
   }, [ability, spend]);
 
@@ -120,9 +118,14 @@ export const AbilitySlugPlayNormal = ({
       </div>
       <AbilityBadges ability={ability} css={{ gridColumn: "1/-1" }} />
       {ability.system.hasSpecialities && (
-        <div css={{ paddingLeft: "1em", gridColumn: "1/-1" }}>
+        <div
+          css={{ paddingLeft: "1em", gridColumn: "1/-1", textAlign: "right" }}
+        >
           {(ability.system.specialities || []).map((x: string, i: number) => (
-            <div key={i}>{x.trim()}</div>
+            <span key={i}>
+              {x.trim()}
+              {i < ability.system.specialities.length - 1 && ", "}
+            </span>
           ))}
         </div>
       )}

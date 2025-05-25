@@ -1,8 +1,8 @@
 import { assertGame } from "../functions/utilities";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
+import { isWeaponItem } from "../module/items/weapon";
 import { settings } from "../settings/settings";
 import { WeaponSystemData } from "../types";
-import { isWeaponItem } from "../v10Types";
 
 export const installItemCombatAbilityHandler = () => {
   Hooks.on(

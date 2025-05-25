@@ -31,8 +31,6 @@ export const NotesArea = () => {
       }}
     >
       {longNotesNames.map((name: string, i: number) => {
-        assertPCActor(actor);
-
         return (
           <NotesTypeContext.Provider key={`${name}--${i}`} value="pcNote">
             <InputGrid css={{ flex: 1, minHeight: "12em" }}>

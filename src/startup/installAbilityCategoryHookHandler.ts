@@ -3,11 +3,12 @@ import {
   isNullOrEmptyString,
   systemLogger,
 } from "../functions/utilities";
+import { isAbilityItem } from "../module/items/exports";
+import { isGeneralAbilityItem } from "../module/items/generalAbility";
 import {
   getDefaultGeneralAbilityCategory,
   getDefaultInvestigativeAbilityCategory,
 } from "../settings/settings";
-import { isAbilityItem, isGeneralAbilityItem } from "../v10Types";
 
 export const installAbilityCategoryHookHandler = () => {
   Hooks.on(

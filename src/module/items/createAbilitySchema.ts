@@ -8,13 +8,13 @@ import SchemaField = foundry.data.fields.SchemaField;
 
 export const createAbilitySchema = () => ({
   // rating: number;
-  rating: new NumberField({ nullable: false, required: true }),
+  rating: new NumberField({ nullable: false, required: true, initial: 0 }),
   // pool: number;
-  pool: new NumberField({ nullable: false, required: true }),
+  pool: new NumberField({ nullable: false, required: true, initial: 0 }),
   // min: number;
-  min: new NumberField({ nullable: false, required: true }),
+  min: new NumberField({ nullable: false, required: true, initial: 0 }),
   // max: number;
-  max: new NumberField({ nullable: false, required: true }),
+  max: new NumberField({ nullable: false, required: true, initial: 0 }),
   // occupational: boolean;
   occupational: new BooleanField({ nullable: false, required: true }),
   // hasSpecialities: boolean;
@@ -24,6 +24,7 @@ export const createAbilitySchema = () => ({
     nullable: false,
     required: true,
     choices: ["one", "twoThreeFour"],
+    initial: "one",
   }),
   // specialities: string[];
   specialities: new ArrayField(

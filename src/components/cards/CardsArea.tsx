@@ -6,7 +6,7 @@ import { getTranslated } from "../../functions/getTranslated";
 import { sortEntitiesByName } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPCActor } from "../../module/actors/pc";
-import { isCardItem } from "../../v10Types";
+import { isCardItem } from "../../module/items/card";
 import { absoluteCover } from "../absoluteCover";
 import { ToolbarButton } from "../inputs/Button";
 import { ArrowLink } from "../nestedPanels/ArrowLink";

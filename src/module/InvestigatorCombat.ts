@@ -7,8 +7,11 @@ import { InvestigatorCombatant } from "./InvestigatorCombatant";
  * Override base Combat so we can do custom GUMSHOE-style initiative
  */
 export class InvestigatorCombat extends Combat {
-  override _onCreate(data: Item.CreateData, options: any, userId: string) {
-    // @ts-expect-error .create
+  override _onCreate(
+    data: Combat.CreateData,
+    options: Combat.Database.OnCreateOperation,
+    userId: string,
+  ) {
     super._onCreate(data, options, userId);
   }
 

@@ -15,7 +15,6 @@ export const StatField = ({ stat, id }: StatFieldProps) => {
   assertActiveCharacterActor(actor);
   const onChange = useCallback(
     (newVal: number) => {
-      assertActiveCharacterActor(actor);
       void actor.update({
         system: { stats: { ...actor.system.stats, [id]: newVal } },
       });

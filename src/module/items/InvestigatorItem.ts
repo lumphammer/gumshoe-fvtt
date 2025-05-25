@@ -13,6 +13,13 @@ import { isActiveCharacterActor } from "../actors/exports";
 export class InvestigatorItem<
   SubType extends Item.SubType = Item.SubType,
 > extends Item<SubType> {
+  constructor(...args: Item.ConstructorArgs) {
+    super(...args);
+    this.type = args[0]?.type as SubType;
+  }
+
+  override type!: SubType;
+
   setName = (name: string): Promise<this | undefined> => {
     return this.update({
       name,

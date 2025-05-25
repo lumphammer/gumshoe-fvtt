@@ -1,12 +1,14 @@
 import { useCallback } from "react";
 
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import {
+  AbilityItem,
   assertAbilityItem,
-  assertGeneralAbilityItem,
   isAbilityItem,
+} from "../../module/items/exports";
+import {
+  assertGeneralAbilityItem,
   isGeneralAbilityItem,
-} from "../../v10Types";
+} from "../../module/items/generalAbility";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
 import { PoolCheckbox } from "./PoolCheckbox";
@@ -20,7 +22,7 @@ const range = (from: number, to: number): number[] => {
 };
 
 type PoolTrackerProps = {
-  ability: InvestigatorItem;
+  ability: AbilityItem;
 };
 
 export const PoolTracker = ({ ability }: PoolTrackerProps) => {
@@ -33,7 +35,7 @@ export const PoolTracker = ({ ability }: PoolTrackerProps) => {
 
   const handleClickPush = useCallback(() => {
     assertGeneralAbilityItem(ability);
-    void ability.push();
+    void ability.system.push();
   }, [ability]);
 
   return (
@@ -44,7 +46,6 @@ export const PoolTracker = ({ ability }: PoolTrackerProps) => {
         display: "grid",
         position: "relative",
         gridTemplateColumns: "[start] 1fr 1fr 1fr 1fr [end]",
-        // gridAutoRows: "2em",
       }}
     >
       <h2 css={{ gridColumn: "start / end" }}>
@@ -55,7 +56,7 @@ export const PoolTracker = ({ ability }: PoolTrackerProps) => {
         <PoolCheckbox
           key={value}
           value={value}
-          onClick={ability.setPool}
+          onClick={ability.system.setPool}
           selected={
             ability && isAbilityItem(ability) && value === ability.system.pool
           }

@@ -3,32 +3,48 @@ import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/utilities";
 import { settings } from "../../settings/settings";
 import { MwInjuryStatus } from "../../types";
-import { isEquipmentItem } from "../items/equipment";
-import { AbilityItem, isAbilityItem } from "../items/exports";
-import {
-  GeneralAbilityItem,
-  isGeneralAbilityItem,
-} from "../items/generalAbility";
-import { InvestigatorItem } from "../items/InvestigatorItem";
-import { isWeaponItem } from "../items/weapon";
-import { NPCActor, npcSchema } from "./npc";
-import { PCActor, pcSchema } from "./pc";
+import type { EquipmentItem } from "../items/equipment";
+import type { AbilityItem } from "../items/exports";
+import type { GeneralAbilityItem } from "../items/generalAbility";
+import type { InvestigativeAbilityItem } from "../items/investigativeAbility";
+import type { InvestigatorItem } from "../items/InvestigatorItem";
+import type { WeaponItem } from "../items/weapon";
 
 import TypeDataModel = foundry.abstract.TypeDataModel;
-import {
-  InvestigativeAbilityItem,
-  isInvestigativeAbilityItem,
-} from "../items/investigativeAbility";
+import DataSchema = foundry.data.fields.DataSchema;
+
+function isAbilityItem(x: unknown): x is AbilityItem {
+  return (
+    x instanceof Item &&
+    (x.type === "investigativeAbility" || x.type === "generalAbility")
+  );
+}
+
+function isGeneralAbilityItem(x: unknown): x is GeneralAbilityItem {
+  return x instanceof Item && x.type === "generalAbility";
+}
+
+function isInvestigativeAbilityItem(x: unknown): x is InvestigativeAbilityItem {
+  return x instanceof Item && x.type === "investigativeAbility";
+}
+
+function isEquipmentItem(x: unknown): x is EquipmentItem {
+  return x instanceof Item && x.type === "equipment";
+}
+
+function isWeaponItem(x: unknown): x is WeaponItem {
+  return x instanceof Item && x.type === "weapon";
+}
 
 export class ActiveCharacterModel<
-  TSchema extends typeof pcSchema | typeof npcSchema,
-  TActor extends PCActor | NPCActor,
+  TSchema extends DataSchema,
+  TActor extends Actor,
 > extends TypeDataModel<TSchema, TActor> {
-  getAbilities(): InvestigatorItem[] {
+  getAbilities(): AbilityItem[] {
     return this.parent.items.filter(isAbilityItem);
   }
 
-  getGeneralAbilities(): InvestigatorItem[] {
+  getGeneralAbilities(): GeneralAbilityItem[] {
     return this.getAbilities().filter(isGeneralAbilityItem);
   }
 
@@ -38,11 +54,11 @@ export class ActiveCharacterModel<
       .filter((n): n is string => n !== null);
   }
 
-  getEquipment(): InvestigatorItem[] {
+  getEquipment(): EquipmentItem[] {
     return this.parent.items.filter(isEquipmentItem);
   }
 
-  getWeapons(): InvestigatorItem[] {
+  getWeapons(): WeaponItem[] {
     return this.parent.items.filter(isWeaponItem);
   }
 

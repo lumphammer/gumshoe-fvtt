@@ -33,7 +33,6 @@ export const WeaponsAreaEdit = () => {
           onClick={async () => {
             await actor.createEmbeddedDocuments("Item", [
               {
-                // @ts-expect-error .type
                 type: weapon,
                 name: "A new weapon",
                 system: {

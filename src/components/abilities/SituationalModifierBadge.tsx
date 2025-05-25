@@ -1,12 +1,12 @@
 import { useContext } from "react";
 
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import { AbilityItem } from "../../module/items/exports";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { SituationalModifier } from "../../types";
 
 interface SituationalModifierBadgeProps {
   situationalModifier: SituationalModifier;
-  ability: InvestigatorItem;
+  ability: AbilityItem;
 }
 
 export const SituationalModifierBadge = ({
@@ -14,11 +14,11 @@ export const SituationalModifierBadge = ({
   ability,
 }: SituationalModifierBadgeProps) => {
   const theme = useContext(ThemeContext);
-  const isActive = ability.isSituationalModifierActive(id);
+  const isActive = ability.system.isSituationalModifierActive(id);
   return (
     <a
       onClick={() => {
-        ability.toggleSituationalModifier(id);
+        ability.system.toggleSituationalModifier(id);
       }}
       css={{
         display: "inline-block",

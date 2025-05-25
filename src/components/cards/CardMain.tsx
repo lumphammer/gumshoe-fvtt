@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertCardItem } from "../../v10Types";
+import { assertCardItem } from "../../module/items/card";
 import { absoluteCover } from "../absoluteCover";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
@@ -25,7 +25,7 @@ export const CardMain = () => {
 
   const handleDescriptionChange = useCallback(
     (newSource: string) => {
-      void item.setDescription({
+      void item.system.setDescription({
         format: "richText",
         source: newSource,
         html: newSource,
@@ -36,7 +36,7 @@ export const CardMain = () => {
 
   const handleEffectsChange = useCallback(
     (newSource: string) => {
-      void item.setEffects({
+      void item.system.setEffects({
         format: "richText",
         source: newSource,
         html: newSource,
@@ -60,20 +60,20 @@ export const CardMain = () => {
         <GridField label="Supertitle">
           <AsyncTextInput
             value={item.system.supertitle}
-            onChange={item.setSupertitle}
+            onChange={item.system.setSupertitle}
           />
         </GridField>
         <GridField label="Subtitle">
           <AsyncTextInput
             value={item.system.subtitle}
-            onChange={item.setSubtitle}
+            onChange={item.system.setSubtitle}
           />
         </GridField>
 
         <GridField label="Continuity">
           <Toggle
             checked={item.system.continuity}
-            onChange={item.setContinuity}
+            onChange={item.system.setContinuity}
           />
         </GridField>
       </InputGrid>

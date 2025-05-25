@@ -16,15 +16,31 @@ export const weaponSchema = {
   // ability: string;
   ability: new StringField({ nullable: false, required: true }),
   // damage: number;
-  damage: new NumberField({ nullable: false, required: true }),
+  damage: new NumberField({ nullable: false, required: true, initial: 0 }),
   // pointBlankDamage: number;
-  pointBlankDamage: new NumberField({ nullable: false, required: true }),
+  pointBlankDamage: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 0,
+  }),
   // closeRangeDamage: number;
-  closeRangeDamage: new NumberField({ nullable: false, required: true }),
+  closeRangeDamage: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 0,
+  }),
   // nearRangeDamage: number;
-  nearRangeDamage: new NumberField({ nullable: false, required: true }),
+  nearRangeDamage: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 0,
+  }),
   // longRangeDamage: number;
-  longRangeDamage: new NumberField({ nullable: false, required: true }),
+  longRangeDamage: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 0,
+  }),
   // isPointBlank: boolean;
   isPointBlank: new BooleanField({ nullable: false, required: true }),
   // isCloseRange: boolean;
@@ -36,9 +52,9 @@ export const weaponSchema = {
   // usesAmmo: boolean;
   usesAmmo: new BooleanField({ nullable: false, required: true }),
   // ammoPerShot: number;
-  ammoPerShot: new NumberField({ nullable: false, required: true }),
+  ammoPerShot: new NumberField({ nullable: false, required: true, initial: 0 }),
   // cost: number;
-  cost: new NumberField({ nullable: false, required: true }),
+  cost: new NumberField({ nullable: false, required: true, initial: 0 }),
   // ammo: {
   //   min: number;
   //   max: number;
@@ -46,9 +62,9 @@ export const weaponSchema = {
   // };
   ammo: new SchemaField(
     {
-      min: new NumberField({ nullable: false, required: true }),
-      max: new NumberField({ nullable: false, required: true }),
-      value: new NumberField({ nullable: false, required: true }),
+      min: new NumberField({ nullable: false, required: true, initial: 0 }),
+      max: new NumberField({ nullable: false, required: true, initial: 0 }),
+      value: new NumberField({ nullable: false, required: true, initial: 0 }),
     },
     {
       nullable: false,
@@ -160,7 +176,7 @@ export class WeaponModel extends TypeDataModel<
   };
 }
 
-export type WeaponItem = Item<"weapon">;
+export type WeaponItem = InvestigatorItem<"weapon">;
 
 export function isWeaponItem(x: unknown): x is WeaponItem {
   return x instanceof InvestigatorItem && x.type === "weapon";
