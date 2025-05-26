@@ -14,7 +14,7 @@ export type TurnInfo = {
   initiative: number | undefined | null;
   hasRolled: boolean;
   hasResource: boolean;
-  resource: number | boolean | `${number}` | null;
+  resource: number | boolean | string | null;
   effects: Effect[];
   passingTurnsRemaining: number;
   totalPassingTurns: number;
