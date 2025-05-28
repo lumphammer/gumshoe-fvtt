@@ -116,6 +116,8 @@ export const Tracker = () => {
           </p>
         </div>
       )}
+      {/* we need to wrap the actual tracker ol in another element so that
+      foundry's autosizing works */}
       <div
         className="combat-tracker"
         css={{
