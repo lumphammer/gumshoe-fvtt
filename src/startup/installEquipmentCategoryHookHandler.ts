@@ -1,7 +1,9 @@
 import { assertGame } from "../functions/utilities";
+import {
+  EquipmentSystemData,
+  isEquipmentItem,
+} from "../module/items/equipment";
 import { settings } from "../settings/settings";
-import { EquipmentSystemData } from "../types";
-import { isEquipmentItem } from "../v10Types";
 
 export const installEquipmentCategoryHookHandler = () => {
   Hooks.on(

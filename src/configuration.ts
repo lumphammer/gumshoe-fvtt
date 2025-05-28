@@ -1,96 +1,56 @@
-// at one point I had to have this to make the
-// `declare module "fvtt-types/configuration"` below work, but thaty may have
-// been when we were on fvtt-types#main with the new stuff for config
-// import "fvtt-types/configuration";
+// this helps with getting declarations to work
+import "fvtt-types/configuration";
 
 import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 
-import * as constants from "./constants";
-import { InvestigatorActor } from "./module/InvestigatorActor";
+import { InvestigatorActor } from "./module/actors/InvestigatorActor";
+import { NPCModel } from "./module/actors/npc";
+import { PartyModel } from "./module/actors/party";
+import { PCModel } from "./module/actors/pc";
 import { InvestigatorCombat } from "./module/InvestigatorCombat";
 import { InvestigatorCombatant } from "./module/InvestigatorCombatant";
-import { InvestigatorItem } from "./module/InvestigatorItem";
-import {
-  CardSystemData,
-  EquipmentSystemData,
-  GeneralAbilitySystemData,
-  InvestigativeAbilitySystemData,
-  NPCSystemData,
-  PartySystemData,
-  PCSystemData,
-  PersonalDetailSystemData,
-  WeaponSystemData,
-} from "./types";
-
-interface PCDataSource {
-  type: typeof constants.pc;
-  system: PCSystemData;
-}
-
-interface NPCDataSource {
-  type: typeof constants.npc;
-  system: NPCSystemData;
-}
-
-interface PartyDataSource {
-  type: typeof constants.party;
-  system: PartySystemData;
-}
-
-type InvestigatorActorDataSource =
-  | PCDataSource
-  | NPCDataSource
-  | PartyDataSource;
-
-interface EquipmentDataSource {
-  type: typeof constants.equipment;
-  system: EquipmentSystemData;
-}
-
-interface WeaponDataSource {
-  type: typeof constants.weapon;
-  system: WeaponSystemData;
-}
-
-interface CardDataSource {
-  type: typeof constants.card;
-  system: CardSystemData;
-}
-
-interface GeneralAbilityDataSource {
-  type: typeof constants.generalAbility;
-  system: GeneralAbilitySystemData;
-}
-
-interface InvestigativeAbilityDataSource {
-  type: typeof constants.investigativeAbility;
-  system: InvestigativeAbilitySystemData;
-}
-
-interface PersonalDetailDataSource {
-  type: typeof constants.personalDetail;
-  system: PersonalDetailSystemData;
-}
-
-type InvestigatorItemDataSource =
-  | EquipmentDataSource
-  | WeaponDataSource
-  | CardDataSource
-  | GeneralAbilityDataSource
-  | InvestigativeAbilityDataSource
-  | PersonalDetailDataSource;
+import { CardModel } from "./module/items/card";
+import { EquipmentModel } from "./module/items/equipment";
+import { GeneralAbilityModel } from "./module/items/generalAbility";
+import { InvestigativeAbilityModel } from "./module/items/investigativeAbility";
+import { InvestigatorItem } from "./module/items/InvestigatorItem";
+import { MwItemModel } from "./module/items/mwItem";
+import { PersonalDetailModel } from "./module/items/personalDetail";
+import { WeaponModel } from "./module/items/weapon";
 
 declare module "fvtt-types/configuration" {
+  interface DataModelConfig {
+    Actor: {
+      pc: typeof PCModel;
+      npc: typeof NPCModel;
+      party: typeof PartyModel;
+    };
+    Item: {
+      equipment: typeof EquipmentModel;
+      generalAbility: typeof GeneralAbilityModel;
+      investigativeAbility: typeof InvestigativeAbilityModel;
+      weapon: typeof WeaponModel;
+      mwItem: typeof MwItemModel;
+      personalDetail: typeof PersonalDetailModel;
+      card: typeof CardModel;
+    };
+  }
+
+  interface ConfiguredActor<SubType extends Actor.SubType> {
+    document: InvestigatorActor<SubType>;
+  }
+
+  interface ConfiguredItem<SubType extends Item.SubType> {
+    document: InvestigatorItem<SubType>;
+  }
+
   interface DocumentClassConfig {
     Actor: typeof InvestigatorActor;
     Item: typeof InvestigatorItem;
     Combat: typeof InvestigatorCombat;
     Combatant: typeof InvestigatorCombatant;
   }
-  interface SourceConfig {
-    Actor: InvestigatorActorDataSource;
-    Item: InvestigatorItemDataSource;
-  }
+
   interface FlagConfig {
     Combat: {
       investigator: {

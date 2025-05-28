@@ -22,29 +22,29 @@ This is a list:
 `;
 
 describe("toHtml", async () => {
-  const html = await toHtml(NoteFormat.markdown, markdownSample);
+  const html = await toHtml("markdown", markdownSample);
   test("converts plain text to html", async () => {
-    const result = await toHtml(NoteFormat.plain, markdownSample);
+    const result = await toHtml("plain", markdownSample);
     expect(result).toMatchSnapshot();
   });
   test("converts markdown to html", () => {
     expect(html).toMatchSnapshot();
   });
   test("converts rich text to html", async () => {
-    const result = await toHtml(NoteFormat.richText, html);
+    const result = await toHtml("richText", html);
     expect(result).toMatchSnapshot();
   });
 });
 
 describe("convertNotes", async () => {
-  const html = await toHtml(NoteFormat.markdown, markdownSample);
+  const html = await toHtml("markdown", markdownSample);
 
-  test.each([
-    [NoteFormat.plain, NoteFormat.plain, markdownSample, markdownSample],
-    [NoteFormat.plain, NoteFormat.markdown, markdownSample, markdownSample],
-    [NoteFormat.markdown, NoteFormat.plain, markdownSample, markdownSample],
-    [NoteFormat.markdown, NoteFormat.markdown, markdownSample, markdownSample],
-    [NoteFormat.richText, NoteFormat.richText, html, html],
+  test.each<[NoteFormat, NoteFormat, string, string]>([
+    ["plain", "plain", markdownSample, markdownSample],
+    ["plain", "markdown", markdownSample, markdownSample],
+    ["markdown", "plain", markdownSample, markdownSample],
+    ["markdown", "markdown", markdownSample, markdownSample],
+    ["richText", "richText", html, html],
   ])("converts %s to %s", async (oldFormat, newFormat, input, expected) => {
     const { newSource: result } = await convertNotes(
       oldFormat,
@@ -53,11 +53,11 @@ describe("convertNotes", async () => {
     );
     expect(result).toBe(expected);
   });
-  test.each([
-    [NoteFormat.plain, NoteFormat.richText, markdownSample],
-    [NoteFormat.markdown, NoteFormat.richText, markdownSample],
-    [NoteFormat.richText, NoteFormat.plain, html],
-    [NoteFormat.richText, NoteFormat.markdown, html],
+  test.each<[NoteFormat, NoteFormat, string]>([
+    ["plain", "richText", markdownSample],
+    ["markdown", "richText", markdownSample],
+    ["richText", "plain", html],
+    ["richText", "markdown", html],
   ])("converts %s to %s", async (oldFormat, newFormat, input) => {
     const result = await convertNotes(oldFormat, newFormat, input);
     expect(result).toMatchSnapshot();

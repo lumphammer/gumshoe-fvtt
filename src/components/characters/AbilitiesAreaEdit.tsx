@@ -2,12 +2,10 @@ import { Fragment, useContext } from "react";
 
 import { sortEntitiesByName } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { assertActiveCharacterActor } from "../../module/actors/exports";
+import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
-import {
-  assertActiveCharacterActor,
-  isInvestigativeAbilityItem,
-} from "../../v10Types";
 import { AbilitySlugEdit } from "./AbilitySlugEdit";
 import { AbilitySlugEditQuickShockInvestigative } from "./AbilitySlugEditQuickShockInvestigative";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
@@ -25,7 +23,7 @@ export const AbilitiesAreaEdit = ({
   assertActiveCharacterActor(actor);
   const theme = useContext(ThemeContext);
   const { investigativeAbilities, generalAbilities } =
-    actor.getCategorizedAbilities(false, false);
+    actor.system.getCategorizedAbilities(false, false);
 
   // this is all a bit iffy-elsey, but...
 
@@ -43,7 +41,7 @@ export const AbilitiesAreaEdit = ({
     !simplifiedMode && hasRegularInvestigativeAbilities;
 
   // warnings from having weirdly set up push pools
-  const pushPoolWarnings = actor.getPushPoolWarnings();
+  const pushPoolWarnings = actor.system.getPushPoolWarnings();
 
   return (
     <Fragment>

@@ -1,4 +1,4 @@
-import { InvestigatorActor } from "../../module/InvestigatorActor";
+import { PCActor } from "../../module/actors/pc";
 import { GridField } from "../inputs/GridField";
 import { PersonalDetailSlug } from "./PersonalDetailSlug";
 import { Slug } from "./Slug";
@@ -8,11 +8,12 @@ export const PersonalDetailField = ({
   name,
   slotIndex,
 }: {
-  actor: InvestigatorActor;
+  actor: PCActor;
   name: string;
   slotIndex: number;
 }) => {
-  const personalDetailItems = actor.getPersonalDetailsInSlotIndex(slotIndex);
+  const personalDetailItems =
+    actor.system.getPersonalDetailsInSlotIndex(slotIndex);
 
   return (
     <GridField
@@ -33,7 +34,7 @@ export const PersonalDetailField = ({
       {personalDetailItems.length === 0 && (
         <Slug
           onClick={() => {
-            void actor.createPersonalDetail(slotIndex); //
+            void actor.system.createPersonalDetail(slotIndex); //
           }}
         >
           Create

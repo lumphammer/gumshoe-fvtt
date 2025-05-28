@@ -1,9 +1,10 @@
 import * as constants from "../../constants";
 import { assertGame } from "../../functions/utilities";
-import { InvestigatorActor } from "../../module/InvestigatorActor";
+import { PCActor } from "../../module/actors/pc";
+import { AbilityItem, isAbilityItem } from "../../module/items/exports";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { settings } from "../../settings/settings";
 import { AbilityType } from "../../types";
-import { AbilityItem, AnyItem, isAbilityItem } from "../../v10Types";
 import {
   abilityRowKey,
   ActorAbilityInfo,
@@ -24,7 +25,7 @@ export const getSystemAbilities = async (): Promise<AbilityItem[]> => {
     const pack = game.packs.find(
       (p) => p.metadata.type === "Item" && p.collection === packId,
     );
-    const content = ((await pack?.getDocuments()) ?? []) as AnyItem[];
+    const content = ((await pack?.getDocuments()) ?? []) as InvestigatorItem[];
     const tuples: AbilityItem[] = content.filter((item) => isAbilityItem(item));
     return tuples;
   });
@@ -58,7 +59,6 @@ const compareAbilityDataSources = (
   a: AbilityItem,
   b: AbilityItem,
 ): -1 | 0 | 1 => {
-  // @ts-expect-error .type
   const typeComparison = compareTypes(a.type, b.type);
   if (typeComparison !== 0) {
     return typeComparison;
@@ -80,7 +80,7 @@ const compareAbilityDataSources = (
  */
 export const buildRowData = (
   abilities: AbilityItem[],
-  actors: InvestigatorActor[],
+  actors: PCActor[],
 ): RowData[] => {
   const result: RowData[] = [];
 
@@ -96,11 +96,8 @@ export const buildRowData = (
       system: { categoryId: category },
     } = abilityItem;
     // const abilityType = ability.type, category, name]
-    // @ts-expect-error .type
     if (abilityType !== lastType) {
-      // @ts-expect-error .type
       result.push({ rowType: typeHeaderKey, abilityType });
-      // @ts-expect-error .type
       lastType = abilityType;
       lastCategory = null;
     }
@@ -115,8 +112,7 @@ export const buildRowData = (
       if (actor === undefined) {
         continue;
       }
-      // @ts-expect-error .type
-      const ability = actor.getAbilityByName(name ?? "", abilityType);
+      const ability = actor.system.getAbilityByName(name ?? "", abilityType);
       if (actor.id !== null) {
         const rating = ability?.system.rating ?? 0;
         actorInfo[actor.id] = {

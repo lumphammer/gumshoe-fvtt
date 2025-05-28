@@ -1,4 +1,4 @@
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { AbilitySlugPlayMw } from "./AbilitySlugPlayMw";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
 

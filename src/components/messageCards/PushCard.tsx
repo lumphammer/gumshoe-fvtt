@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 
 import { useTheme } from "../../hooks/useTheme";
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
 import { AbilityCardMode } from "./types";
 

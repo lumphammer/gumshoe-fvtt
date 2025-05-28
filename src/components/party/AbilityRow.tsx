@@ -1,10 +1,10 @@
 import { Fragment, ReactNode } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { InvestigatorActor } from "../../module/InvestigatorActor";
+import { InvestigatorActor } from "../../module/actors/InvestigatorActor";
+import { AbilityItem, isAbilityItem } from "../../module/items/exports";
 import { runtimeConfig } from "../../runtime";
 import { settings } from "../../settings/settings";
-import { AbilityItem, isAbilityItem } from "../../v10Types";
 import { AbilityRowData } from "./types";
 
 type AbilityRowProps = {
@@ -89,7 +89,7 @@ export const AbilityRow = ({
                 }
                 const newAbility = (
                   await actor.createEmbeddedDocuments("Item", [
-                    // @ts-expect-error schema
+                    // @ts-expect-error typings for createEmbeddedDocuments
                     abilityRowData.abilityItem.toJSON(),
                   ])
                 )?.[0] as AbilityItem;

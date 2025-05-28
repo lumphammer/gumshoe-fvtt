@@ -3,11 +3,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import * as constants from "../../constants";
 import { assertGame, sortEntitiesByName } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import { InvestigatorActor } from "../../module/InvestigatorActor";
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { assertPartyActor } from "../../module/actors/party";
+import { PCActor } from "../../module/actors/pc";
+import { AbilityItem, isAbilityItem } from "../../module/items/exports";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { runtimeConfig } from "../../runtime";
 import { settings } from "../../settings/settings";
-import { AbilityItem, assertPartyActor, isAbilityItem } from "../../v10Types";
 import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
@@ -20,14 +21,15 @@ import { isCategoryHeader, isTypeHeader, RowData } from "./types";
 
 export const PartySheet = () => {
   const { actor: party } = useActorSheetContext();
+  assertPartyActor(party);
 
   const theme =
     runtimeConfig.themes[settings.defaultThemeName.get()] ||
     runtimeConfig.themes["tealTheme"];
   const [abilities, setAbilities] = useState<AbilityItem[]>([]);
-  const [actors, setActors] = useState<InvestigatorActor[]>([]);
+  const [actors, setActors] = useState<PCActor[]>([]);
   const [rowData, setRowData] = useState<RowData[]>([]);
-  const actorIds = party.getActorIds();
+  const actorIds = party.system.getActorIds();
 
   // effect 1: keep our "abilityTuples" in sync with system setting for
   // "newPCPacks"
@@ -39,11 +41,10 @@ export const PartySheet = () => {
     };
 
     const onActorDeleted = (
-      deletedActor: InvestigatorActor,
+      deletedActor: PCActor,
       something: unknown, // i cannot tell what this is supposed to be
       userId: string, // probably?
     ) => {
-      assertPartyActor(party);
       const actorIds = party.system.actorIds.filter(
         (id) => id !== deletedActor.id,
       );
@@ -56,7 +57,6 @@ export const PartySheet = () => {
       options: any,
       useId: string,
     ) => {
-      assertPartyActor(party);
       if (
         isAbilityItem(item) &&
         item.isOwned &&
@@ -114,13 +114,12 @@ export const PartySheet = () => {
       e.preventDefault();
       const actorId = e.currentTarget.dataset["actorId"];
       if (actorId !== undefined) {
-        void party.removeActorId(actorId);
+        void party.system.removeActorId(actorId);
       }
     },
     [party],
   );
 
-  assertPartyActor(party);
   return (
     <CSSReset
       mode="small"

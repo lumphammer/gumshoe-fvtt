@@ -1,7 +1,7 @@
 import { getTranslated } from "../functions/getTranslated";
 import { assertGame } from "../functions/utilities";
+import { isPCActor } from "../module/actors/pc";
 import { settings } from "../settings/settings";
-import { isPCActor } from "../v10Types";
 
 // /src/foundry/common/data/data.mjs/chatMessageData.d.ts
 export function installEquipmentAddedNotifier() {

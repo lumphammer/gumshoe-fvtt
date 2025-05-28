@@ -2,7 +2,7 @@ import { Stat } from "@lumphammer/investigator-fvtt-types";
 import { Fragment, useCallback } from "react";
 
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import { assertActiveCharacterActor } from "../../v10Types";
+import { assertActiveCharacterActor } from "../../module/actors/exports";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 
 interface StatFieldProps {
@@ -15,7 +15,6 @@ export const StatField = ({ stat, id }: StatFieldProps) => {
   assertActiveCharacterActor(actor);
   const onChange = useCallback(
     (newVal: number) => {
-      assertActiveCharacterActor(actor);
       void actor.update({
         system: { stats: { ...actor.system.stats, [id]: newVal } },
       });

@@ -12,17 +12,13 @@ function mwItemOnOrOff() {
   assertGame(game);
   if (settings.mwUseAlternativeItemTypes.get()) {
     if (oldMwItemTypelabel !== null && oldMwItemIndex !== null) {
-      // @ts-expect-error .type
       CONFIG.Item.typeLabels.mwItem = oldMwItemTypelabel;
-      // @ts-expect-error .type
       game.documentTypes.Item.splice(oldMwItemIndex, 0, "mwItem");
       oldMwItemTypelabel = null;
       oldMwItemIndex = null;
     }
   } else {
-    // @ts-expect-error .type
     const label = CONFIG.Item.typeLabels.mwItem;
-    // @ts-expect-error .type
     const index = game.documentTypes.Item.indexOf("mwItem");
     if (index !== -1) {
       oldMwItemTypelabel = label;

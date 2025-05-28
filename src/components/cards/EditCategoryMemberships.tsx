@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
+import { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
-import { CardItem } from "../../v10Types";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { CategoryMembershipRow } from "./CategoryMembershipRow";
@@ -19,7 +19,7 @@ export const EditCategoryMemberships = ({
   const handleChangeStyleKeyCategoryId = useCallback(
     async (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = e.currentTarget.value === "" ? null : e.currentTarget.value;
-      await card.setCardStyleKeyCategoryId(value);
+      await card.system.setCardStyleKeyCategoryId(value);
     },
     [card],
   );

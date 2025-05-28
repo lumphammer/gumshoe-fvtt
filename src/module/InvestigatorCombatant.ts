@@ -4,9 +4,9 @@ import { settings } from "../settings/settings";
 import {
   assertActiveCharacterActor,
   isActiveCharacterActor,
-  isGeneralAbilityItem,
-} from "../v10Types";
-import { InvestigatorItem } from "./InvestigatorItem";
+} from "./actors/exports";
+import { isGeneralAbilityItem } from "./items/generalAbility";
+import { InvestigatorItem } from "./items/InvestigatorItem";
 
 /**
  * Override base Combatant class to override the initiative formula.
@@ -51,7 +51,6 @@ export class InvestigatorCombatant extends Combatant {
     }
     const ability = actor.items.find(
       (item: InvestigatorItem) =>
-        // @ts-expect-error .type
         item.type === constants.generalAbility && item.name === abilityName,
     );
     if (ability && isGeneralAbilityItem(ability)) {

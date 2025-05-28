@@ -1,7 +1,7 @@
 import { assertGame } from "../functions/utilities";
+import { isCardItem } from "../module/items/card";
 import { settings } from "../settings/settings";
 import { CardSystemData } from "../types";
-import { isCardItem } from "../v10Types";
 
 export const installCardCategoryHookHandler = () => {
   Hooks.on(

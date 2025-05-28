@@ -1,8 +1,8 @@
 import { occupationSlotIndex } from "../../constants";
 import { assertGame, padLength } from "../../functions/utilities";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { assertPersonalDetailItem } from "../../module/items/personalDetail";
 import { settings } from "../../settings/settings";
-import { assertPersonalDetailItem } from "../../v10Types";
 import { absoluteCover } from "../absoluteCover";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
@@ -44,7 +44,7 @@ export const PersonalDetailMain = () => {
             width: "100%",
           }}
           onChange={(e) => {
-            void item.setSlotIndex(+e.currentTarget.value);
+            void item.system.setSlotIndex(+e.currentTarget.value);
           }}
         >
           <option value={occupationSlotIndex}>
@@ -68,7 +68,7 @@ export const PersonalDetailMain = () => {
               e.currentTarget.value === "~~~NULL~~~"
                 ? null
                 : e.currentTarget.value;
-            void item.setCompendiumPack(value);
+            void item.system.setCompendiumPack(value);
           }}
         >
           <option value={"~~~NULL~~~"}>None</option>
@@ -84,7 +84,7 @@ export const PersonalDetailMain = () => {
         format={item.system.notes.format}
         html={item.system.notes.html}
         source={item.system.notes.source}
-        onSave={item.setNotes}
+        onSave={item.system.setNotes}
       />
     </InputGrid>
   );

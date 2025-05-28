@@ -1,7 +1,7 @@
 import { useContext } from "react";
 
+import { CardItem } from "../../module/items/card";
 import { ThemeContext } from "../../themes/ThemeContext";
-import { CardItem } from "../../v10Types";
 import { Masonry } from "../Masonry";
 import { Translate } from "../Translate";
 import { CardArrayCard } from "./CardArrayCard";

@@ -1,9 +1,9 @@
 import { useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
+import { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
-import { CardItem } from "../../v10Types";
 import { CardArray } from "./CardArray";
 import { categorizeCards, summarizeCategoryCards } from "./functions";
 

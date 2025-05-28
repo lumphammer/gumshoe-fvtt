@@ -1,7 +1,7 @@
 import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 import { useCallback } from "react";
 
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { EquipmentItem } from "../../module/items/equipment";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
@@ -11,7 +11,7 @@ interface EquipmentFieldProps {
   fieldId: string;
   fieldMetadata: EquipmentFieldMetadata;
   value: string | number | boolean;
-  equipment: InvestigatorItem;
+  equipment: EquipmentItem;
 }
 
 export const EquipmentField = ({
@@ -22,7 +22,7 @@ export const EquipmentField = ({
 }: EquipmentFieldProps) => {
   const onChange = useCallback(
     (newValue: string | number | boolean) => {
-      void equipment.setField(fieldId, newValue);
+      void equipment.system.setField(fieldId, newValue);
     },
     [equipment, fieldId],
   );

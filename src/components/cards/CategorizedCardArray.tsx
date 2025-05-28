@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 
+import { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
-import { CardItem } from "../../v10Types";
 import { CategorizedCardArrayCategory } from "./CategorizedCardArrayCategory";
 import { categorizeCards } from "./functions";
 

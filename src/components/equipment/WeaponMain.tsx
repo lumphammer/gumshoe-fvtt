@@ -3,14 +3,11 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { generalAbility } from "../../constants";
 import { getTranslated } from "../../functions/getTranslated";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { isPCActor } from "../../module/actors/pc";
+import { isAbilityItem } from "../../module/items/exports";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import { assertWeaponItem } from "../../module/items/weapon";
 import { ThemeContext } from "../../themes/ThemeContext";
-import {
-  ActorPayload,
-  assertWeaponItem,
-  isAbilityItem,
-  isPCActor,
-} from "../../v10Types";
 import { absoluteCover } from "../absoluteCover";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button, ToolbarButton } from "../inputs/Button";
@@ -39,7 +36,6 @@ export const WeaponMain = () => {
 
   const ability: InvestigatorItem | undefined = item.actor?.items.find(
     (item: InvestigatorItem) => {
-      // @ts-expect-error .type
       return item.type === generalAbility && item.name === abilityName;
     },
   );
@@ -63,7 +59,6 @@ export const WeaponMain = () => {
   }, [ability, bonusPool, spend, item]);
 
   const onPointBlank = useCallback(() => {
-    assertWeaponItem(item);
     void basePerformAttack({
       rangeName: "point blank",
       rangeDamage: item.system.pointBlankDamage,
@@ -71,7 +66,6 @@ export const WeaponMain = () => {
   }, [basePerformAttack, item]);
 
   const onCloseRange = useCallback(() => {
-    assertWeaponItem(item);
     void basePerformAttack({
       rangeName: "close range",
       rangeDamage: item.system.closeRangeDamage,
@@ -79,7 +73,6 @@ export const WeaponMain = () => {
   }, [basePerformAttack, item]);
 
   const onNearRange = useCallback(() => {
-    assertWeaponItem(item);
     void basePerformAttack({
       rangeName: "near range",
       rangeDamage: item.system.nearRangeDamage,
@@ -87,7 +80,6 @@ export const WeaponMain = () => {
   }, [basePerformAttack, item]);
 
   const onLongRange = useCallback(() => {
-    assertWeaponItem(item);
     void basePerformAttack({
       rangeName: "long range",
       rangeDamage: item.system.longRangeDamage,
@@ -105,7 +97,7 @@ export const WeaponMain = () => {
   useEffect(() => {
     const callback = (
       actor: Actor,
-      diff: ActorPayload,
+      diff: unknown,
       options: unknown,
       id: string,
     ) => {
@@ -234,7 +226,7 @@ export const WeaponMain = () => {
                 min={0}
                 max={item.system.ammo.max}
                 value={item.system.ammo.value}
-                onChange={item.setAmmo}
+                onChange={item.system.setAmmo}
               />
               <Button
                 css={{
@@ -242,7 +234,7 @@ export const WeaponMain = () => {
                   flex: 0,
                   lineHeight: "inherit",
                 }}
-                onClick={item.reload}
+                onClick={item.system.reload}
               >
                 <Translate>Reload</Translate>
               </Button>
@@ -301,7 +293,7 @@ export const WeaponMain = () => {
           format={item.system.notes.format}
           html={item.system.notes.html}
           source={item.system.notes.source}
-          onSave={item.setNotes}
+          onSave={item.system.setNotes}
         />
       </InputGrid>
     </div>

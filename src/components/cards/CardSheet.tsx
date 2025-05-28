@@ -3,7 +3,7 @@ import { useCallback } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertCardItem } from "../../v10Types";
+import { assertCardItem } from "../../module/items/card";
 import { absoluteCover } from "../absoluteCover";
 import { ToolbarButton } from "../inputs/Button";
 import { ArrowLink } from "../nestedPanels/ArrowLink";

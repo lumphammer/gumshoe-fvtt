@@ -3,9 +3,9 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { getTranslated } from "../../functions/getTranslated";
 import { cleanAndEnrichHtml } from "../../functions/textFunctions";
 import { isNullOrEmptyString } from "../../functions/utilities";
+import { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
-import { assertCardItem, CardItem } from "../../v10Types";
 import { summarizeCategoryMemberships } from "./functions";
 import { CardsViewMode } from "./types";
 
@@ -24,7 +24,6 @@ export const CardDisplay = ({
   draggable,
   onDragStart,
 }: CardDisplayProps) => {
-  assertCardItem(card);
   const theme = useContext(ThemeContext);
   const [descriptionHTML, setDescriptionHTML] = useState("");
   const [effectsHTML, setEffectsHTML] = useState("");

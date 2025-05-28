@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 import { wait } from "../../functions/utilities";
+import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
 type RichTextEditorProps = {
   value: string;
@@ -34,10 +35,12 @@ export const RichTextEditor = ({
     // using foundry's cool new editor in due course anyway.
     await wait(500);
     onSave?.();
+    console.log("saved");
   }, [onSave]);
 
   const ref = useRef<HTMLTextAreaElement>(null);
   const [initialValue] = useState(value);
+  const theme = useContext(ThemeContext);
 
   useEffect(() => {
     let tinyMceEditor: tinyMCE.Editor | null = null;
@@ -49,18 +52,29 @@ export const RichTextEditor = ({
           height: "100%",
         } as any,
         initialValue,
-      ).then((mce) => {
-        // we know it always will be an mce (until mce gets deprecated anyway)
-        // but the types don't know that
-        if (!(mce instanceof tinyMCE.Editor)) {
-          return;
-        }
-        mce.on("change", () => {
-          const content = mce.getContent();
-          onChange(content);
+      )
+        .then((mce) => {
+          // we know it always will be an mce (until mce gets deprecated anyway)
+          // but the types don't know that
+          if (!(mce instanceof tinyMCE.Editor)) {
+            return;
+          }
+          mce.on("change", () => {
+            const content = mce.getContent();
+            onChange(content);
+          });
+          tinyMceEditor = mce;
+        })
+        .then(() => {
+          // cheap hack to prevent it being times new roman
+          const style = document.createElement("style");
+          style.innerHTML = `
+            body {
+              --font-primary: sans-serif;
+            }
+          `;
+          tinyMceEditor?.contentDocument.head.appendChild(style);
         });
-        tinyMceEditor = mce;
-      });
 
       // effect tearddown function
       return () => {
@@ -76,6 +90,7 @@ export const RichTextEditor = ({
       css={{
         ...absoluteCover,
         backgroundColor: "white",
+        "--font-primary": theme.bodyFont,
       }}
       className={className}
     >

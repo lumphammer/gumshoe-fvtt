@@ -4,13 +4,11 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/utilities";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { assertAbilityItem } from "../../module/items/exports";
+import { isGeneralAbilityItem } from "../../module/items/generalAbility";
+import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
 import { settings } from "../../settings/settings";
 import { MwRefreshGroup, SpecialitiesMode } from "../../types";
-import {
-  assertAbilityItem,
-  isGeneralAbilityItem,
-  isInvestigativeAbilityItem,
-} from "../../v10Types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { Button } from "../inputs/Button";
@@ -68,7 +66,7 @@ export const AbilityConfig = () => {
         setSelectCustomOption(true);
       } else {
         setSelectCustomOption(false);
-        void item.setCategoryId(e.currentTarget.value);
+        void item.system.setCategoryId(e.currentTarget.value);
       }
     },
     [item],
@@ -111,7 +109,7 @@ export const AbilityConfig = () => {
             {showCustomField && (
               <AsyncTextInput
                 value={item.system.categoryId}
-                onChange={item.setCategoryId}
+                onChange={item.system.setCategoryId}
               />
             )}
           </div>
@@ -121,14 +119,14 @@ export const AbilityConfig = () => {
         <AsyncNumberInput
           max={item.system.max}
           value={item.system.min}
-          onChange={item.setMin}
+          onChange={item.system.setMin}
         />
       </GridField>
       <GridField label="Max">
         <AsyncNumberInput
           min={item.system.min}
           value={item.system.max}
-          onChange={item.setMax}
+          onChange={item.system.setMax}
         />
       </GridField>
       {settingsUseNpcCombatBonuses() && isGeneralAbilityItem(item) && (
@@ -136,13 +134,13 @@ export const AbilityConfig = () => {
           <GridField label="Combat bonus">
             <AsyncNumberInput
               value={item.system.combatBonus}
-              onChange={item.setCombatBonus}
+              onChange={item.system.setCombatBonus}
             />
           </GridField>
           <GridField label="Damage bonus">
             <AsyncNumberInput
               value={item.system.damageBonus}
-              onChange={item.setDamageBonus}
+              onChange={item.system.setDamageBonus}
             />
           </GridField>
         </Fragment>
@@ -151,7 +149,7 @@ export const AbilityConfig = () => {
         <Toggle
           checked={item.system.hasSpecialities}
           onChange={(t) => {
-            void item.setHasSpecialities(t);
+            void item.system.setHasSpecialities(t);
           }}
         />
       </GridField>
@@ -160,7 +158,7 @@ export const AbilityConfig = () => {
           <select
             value={item.system.specialitiesMode}
             onChange={(t) => {
-              void item.setSpecialitiesMode(
+              void item.system.setSpecialitiesMode(
                 t.currentTarget.value as SpecialitiesMode,
               );
             }}
@@ -175,46 +173,46 @@ export const AbilityConfig = () => {
       <GridField label="Occupational?">
         <Toggle
           checked={item.system.occupational}
-          onChange={item.setOccupational}
+          onChange={item.system.setOccupational}
         />
       </GridField>
       {isGeneralAbilityItem(item) && (
         <GridField label="Can be investigative?">
           <Toggle
             checked={item.system.canBeInvestigative}
-            onChange={item.setCanBeInvestigative}
+            onChange={item.system.setCanBeInvestigative}
           />
         </GridField>
       )}
       <GridField label="Show tracker?">
         <Toggle
           checked={item.system.showTracker}
-          onChange={item.setShowTracker}
+          onChange={item.system.setShowTracker}
         />
       </GridField>
       <GridField label="Exclude from general refresh?">
         <Toggle
           checked={item.system.excludeFromGeneralRefresh}
-          onChange={item.setExcludeFromGeneralRefresh}
+          onChange={item.system.setExcludeFromGeneralRefresh}
         />
       </GridField>
       <GridField label="Include in 24h refresh?">
         <Toggle
           checked={item.system.refreshesDaily}
-          onChange={item.setRefreshesDaily}
+          onChange={item.system.setRefreshesDaily}
         />
       </GridField>
       <GridField label="Hide if zero-rated?">
         <Toggle
           checked={item.system.hideIfZeroRated}
-          onChange={item.setHideIfZeroRated}
+          onChange={item.system.setHideIfZeroRated}
         />
       </GridField>
       {isGeneralAbilityItem(item) && (
         <GridField label="Goes first in combat?">
           <Toggle
             checked={item.system.goesFirstInCombat}
-            onChange={item.setGoesFirstInCombat}
+            onChange={item.system.setGoesFirstInCombat}
           />
         </GridField>
       )}
@@ -222,14 +220,14 @@ export const AbilityConfig = () => {
         <GridField label="IsAPushPool">
           <Toggle
             checked={item.system.isPushPool}
-            onChange={item.setIsPushPool}
+            onChange={item.system.setIsPushPool}
           />
         </GridField>
       )}
       <GridField label="AllowPoolToExceedRating">
         <Toggle
           checked={item.system.allowPoolToExceedRating}
-          onChange={item.setAllowPoolToExceedRating}
+          onChange={item.system.setAllowPoolToExceedRating}
         />
       </GridField>
       {isGeneralAbilityItem(item) && (
@@ -239,12 +237,12 @@ export const AbilityConfig = () => {
         >
           <Toggle
             checked={item.system.linkToResource}
-            onChange={item.setLinkToResource}
+            onChange={item.system.setLinkToResource}
           />
           {item.system.linkToResource && (
             <AsyncTextInput
               value={item.system.resourceId ?? ""}
-              onChange={item.setResourceId}
+              onChange={item.system.setResourceId}
             />
           )}
         </GridField>
@@ -253,7 +251,7 @@ export const AbilityConfig = () => {
         <GridField label="IsQuickShock">
           <Toggle
             checked={item.system.isQuickShock}
-            onChange={item.setIsQuickShock}
+            onChange={item.system.setIsQuickShock}
           />
         </GridField>
       )}
@@ -263,7 +261,7 @@ export const AbilityConfig = () => {
           <select
             value={item.system.mwRefreshGroup}
             onChange={(e) => {
-              void item.setMwRefreshGroup(
+              void item.system.setMwRefreshGroup(
                 Number(e.currentTarget.value) as MwRefreshGroup,
               );
             }}

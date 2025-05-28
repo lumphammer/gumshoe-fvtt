@@ -1,12 +1,14 @@
 import { Fragment } from "react";
 
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import { isGeneralAbilityItem } from "../../v10Types";
+import { assertActiveCharacterActor } from "../../module/actors/exports";
+import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { PoolTracker } from "../abilities/PoolTracker";
 
 export const TrackersArea = () => {
   const { actor } = useActorSheetContext();
-  const abilities = actor.getTrackerAbilities().toSorted((a, b) => {
+  assertActiveCharacterActor(actor);
+  const abilities = actor.system.getTrackerAbilities().toSorted((a, b) => {
     const aIsPushPool = isGeneralAbilityItem(a) && a.system.isPushPool;
     const bIsPushPool = isGeneralAbilityItem(b) && b.system.isPushPool;
     if (aIsPushPool && !bIsPushPool) {

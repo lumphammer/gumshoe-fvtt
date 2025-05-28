@@ -253,5 +253,21 @@
       "type": "setup",
       "url": "https://raw.githubusercontent.com/lumphammer/gumshoe-fvtt/main/assets/cover.webp"
     }
-  ]
+  ],
+  "documentTypes": {
+    "Actor": {
+      "pc": {},
+      "npc": {},
+      "party": {}
+    },
+    "Item": {
+      "investigativeAbility": {},
+      "generalAbility": {},
+      "equipment": {},
+      "weapon": {},
+      "mwItem": {},
+      "personalDetail": {},
+      "card": {}
+    }
+  }
 }

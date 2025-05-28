@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertAbilityItem } from "../../v10Types";
+import { assertAbilityItem } from "../../module/items/exports";
 import { Button } from "../inputs/Button";
 import { useListShowHideTransition } from "../transitions/useListShowHideTransition";
 import { Translate } from "../Translate";
@@ -40,9 +40,9 @@ export const SituationalModifiersEditor = () => {
               <SituationalModifiersEditorRow
                 index={i}
                 situationalModifier={situationalModifier}
-                onChangeSituation={item.setSituationalModifierSituation}
-                onChangeModifier={item.setSituationalModifierModifier}
-                onDelete={item.deleteSituationalModifier}
+                onChangeSituation={item.system.setSituationalModifierSituation}
+                onChangeModifier={item.system.setSituationalModifierModifier}
+                onDelete={item.system.deleteSituationalModifier}
               />
             </div>
           );
@@ -50,7 +50,7 @@ export const SituationalModifiersEditor = () => {
       )}
 
       <Button
-        onClick={item.addSituationalModifier}
+        onClick={item.system.addSituationalModifier}
         css={{
           margin: 0,
         }}

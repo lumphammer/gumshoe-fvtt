@@ -3,8 +3,8 @@ import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppCo
 import React, { useCallback, useContext } from "react";
 
 import { sortEntitiesByName } from "../../../functions/utilities";
-import { InvestigatorActor } from "../../../module/InvestigatorActor";
-import { InvestigatorItem } from "../../../module/InvestigatorItem";
+import { PCActor } from "../../../module/actors/pc";
+import { EquipmentItem } from "../../../module/items/equipment";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
@@ -12,9 +12,9 @@ import { EquipmentItemRow } from "./EquipmentItemRow";
 
 interface EquipmentCategoryProps {
   categoryId: string;
-  items: InvestigatorItem[];
+  items: EquipmentItem[];
   name: string;
-  actor: InvestigatorActor;
+  actor: PCActor;
   fields: Record<string, EquipmentFieldMetadata>;
 }
 
@@ -70,7 +70,7 @@ export const EquipmentCategory = ({
               flexBasis: "max-content",
             }}
             onClick={async () => {
-              await actor.createEquipment(categoryId);
+              await actor.system.createEquipment(categoryId);
             }}
           >
             <i className="fa fa-plus" />

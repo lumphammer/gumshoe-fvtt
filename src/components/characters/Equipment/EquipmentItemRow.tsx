@@ -1,13 +1,12 @@
 import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 import React, { useCallback, useContext, useState } from "react";
 
-import { InvestigatorItem } from "../../../module/InvestigatorItem";
+import { EquipmentItem } from "../../../module/items/equipment";
 import { ThemeContext } from "../../../themes/ThemeContext";
-import { assertEquipmentItem } from "../../../v10Types";
 import { CheckOrCross } from "./CheckOrCross";
 
 interface EquipmentItemRowProps {
-  item: InvestigatorItem;
+  item: EquipmentItem;
   onDragStart: (e: React.DragEvent<HTMLElement>) => void;
   gridRow: number;
   fields: Record<string, EquipmentFieldMetadata>;
@@ -60,7 +59,6 @@ export const EquipmentItemRow = ({
         {item.name}
       </a>
       {Object.entries(fields).map(([fieldId, field], j) => {
-        assertEquipmentItem(item);
         return (
           <a
             key={fieldId}

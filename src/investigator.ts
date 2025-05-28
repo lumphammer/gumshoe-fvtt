@@ -100,27 +100,6 @@ installCardCategoryHookHandler();
 installItemCombatAbilityHandler();
 installActorCombatAbilityHandler();
 
-Hooks.on("ready", async () => {
-  // const dummyAppV2 = new DummyAppV2({
-  //   window: {
-  //     frame: true,
-  //     positioned: true,
-  //     title: "Dummy App V2",
-  //     // @ts-expect-error resizable is not a valid property
-  //     resizable: true,
-  //     width: 800,
-  //     height: 600,
-  //   },
-  //   position: {
-  //     width: 800,
-  //     height: 600,
-  //   },
-  // });
-  // await dummyAppV2.render(true);
-  // const dummyAppV2WithMixin = new DummyAppV2WithMixin({});
-  // await dummyAppV2WithMixin.render(true);
-});
-
 /**
  * Recursively get all layer names from a CSSRule and its children.
  */

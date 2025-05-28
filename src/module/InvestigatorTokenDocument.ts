@@ -1,4 +1,4 @@
-import { isActiveCharacterActor } from "../v10Types";
+import { isActiveCharacterActor } from "./actors/exports";
 
 /**
  * There's some foundrytude about resource attributes that aren't defined in

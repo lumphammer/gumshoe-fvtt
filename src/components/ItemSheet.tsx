@@ -2,14 +2,12 @@ import { CSSObject } from "@emotion/react";
 
 import { useItemSheetContext } from "../hooks/useSheetContexts";
 import { useTheme } from "../hooks/useTheme";
-import {
-  isAbilityItem,
-  isCardItem,
-  isEquipmentItem,
-  isMwItem,
-  isPersonalDetailItem,
-  isWeaponItem,
-} from "../v10Types";
+import { isCardItem } from "../module/items/card";
+import { isEquipmentItem } from "../module/items/equipment";
+import { isAbilityItem } from "../module/items/exports";
+import { isMwItem } from "../module/items/mwItem";
+import { isPersonalDetailItem } from "../module/items/personalDetail";
+import { isWeaponItem } from "../module/items/weapon";
 import { AbilitySheet } from "./abilities/AbilitySheet";
 import { CardSheet } from "./cards/CardSheet";
 import { CSSReset } from "./CSSReset";

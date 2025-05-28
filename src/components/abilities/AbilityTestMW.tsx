@@ -2,9 +2,9 @@ import React, { useCallback, useContext, useState } from "react";
 
 import { mwNegateCost, mwWallopCost } from "../../constants";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { assertGeneralAbilityItem } from "../../module/items/generalAbility";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { MWDifficulty } from "../../types";
-import { assertGeneralAbilityItem } from "../../v10Types";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
@@ -18,15 +18,15 @@ export const AbilityTestMW = () => {
   const [boonLevy, setBoonLevy] = useState(0);
 
   const onTest = useCallback(() => {
-    void item.mwTestAbility(difficulty, boonLevy);
+    void item.system.mwTestAbility(difficulty, boonLevy);
   }, [item, boonLevy, difficulty]);
 
   const onWallop = useCallback(() => {
-    void item.mWWallop();
+    void item.system.mWWallop();
   }, [item]);
 
   const onNegateIllustrious = useCallback(() => {
-    void item.mWNegateIllustrious();
+    void item.system.mWNegateIllustrious();
   }, [item]);
 
   const onChangeDifficulty = (e: React.ChangeEvent<HTMLSelectElement>) => {

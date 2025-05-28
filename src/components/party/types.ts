@@ -1,5 +1,5 @@
+import { AbilityItem } from "../../module/items/exports";
 import { AbilityType } from "../../types";
-import { AbilityItem } from "../../v10Types";
 
 export const typeHeaderKey = "typeHeader";
 export const categoryHeaderKey = "categoryHeader";

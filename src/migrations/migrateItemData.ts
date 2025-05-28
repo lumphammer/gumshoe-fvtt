@@ -1,4 +1,4 @@
-import { AnyItem } from "../v10Types";
+import { InvestigatorItem } from "../module/items/InvestigatorItem";
 import {
   addCategoryToGeneralAbilities,
   setIconForAbilities,
@@ -12,7 +12,7 @@ import { FlaggedMigrations } from "./types";
  * @param item
  */
 export const migrateItemData = function (
-  item: AnyItem,
+  item: InvestigatorItem,
   flaggedMigrations: FlaggedMigrations,
 ): any {
   const updateData = {};

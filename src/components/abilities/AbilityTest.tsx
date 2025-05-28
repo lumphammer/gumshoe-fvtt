@@ -1,8 +1,9 @@
 import { useCallback, useContext, useState } from "react";
 
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { assertAbilityItem } from "../../module/items/exports";
+import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { ThemeContext } from "../../themes/ThemeContext";
-import { assertAbilityItem, isGeneralAbilityItem } from "../../v10Types";
 import { Button } from "../inputs/Button";
 import { CheckButtons } from "../inputs/CheckButtons";
 import { GridField } from "../inputs/GridField";
@@ -17,16 +18,17 @@ const defaultSpendOptions = new Array(8).fill(null).map((_, i) => {
 
 export const AbilityTest = () => {
   const { item } = useItemSheetContext();
+  assertAbilityItem(item);
   const theme = useContext(ThemeContext);
   const [spend, setSpend] = useState(0);
 
   const handleClickTest = useCallback(() => {
-    void item.testAbility(spend);
+    void item.system.testAbility(spend);
     setSpend(0);
   }, [item, spend]);
 
   const handleClickSpend = useCallback(() => {
-    void item.spendAbility(spend);
+    void item.system.spendAbility(spend);
     setSpend(0);
   }, [item, spend]);
 

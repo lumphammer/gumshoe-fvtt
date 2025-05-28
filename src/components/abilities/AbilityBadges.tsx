@@ -1,8 +1,9 @@
 import { ReactNode, useContext } from "react";
 
-import { InvestigatorItem } from "../../module/InvestigatorItem";
+import { assertAbilityItem } from "../../module/items/exports";
+import { isGeneralAbilityItem } from "../../module/items/generalAbility";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { ThemeContext } from "../../themes/ThemeContext";
-import { assertAbilityItem, isGeneralAbilityItem } from "../../v10Types";
 import { Translate } from "../Translate";
 import { SituationalModifierBadge } from "./SituationalModifierBadge";
 
@@ -13,8 +14,8 @@ interface UnlockBadgesProps {
 
 export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
   assertAbilityItem(ability);
-  const situationalModifiers = ability.getVisibleSituationalModifiers();
-  const unlocks = ability.getActiveUnlocks();
+  const situationalModifiers = ability.system.getVisibleSituationalModifiers();
+  const unlocks = ability.system.getActiveUnlocks();
   const theme = useContext(ThemeContext);
   return (
     <div

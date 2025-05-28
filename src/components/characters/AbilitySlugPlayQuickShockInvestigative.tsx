@@ -1,8 +1,8 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import React, { Fragment, useCallback, useContext } from "react";
 
-import { InvestigatorItem } from "../../module/InvestigatorItem";
-import { assertAbilityItem } from "../../v10Types";
+import { assertAbilityItem } from "../../module/items/exports";
+import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { AbilityBadges } from "../abilities/AbilityBadges";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
@@ -28,7 +28,7 @@ export const AbilitySlugPlayQuickShockInvestigative = ({
   );
 
   const handleClickPush = useCallback(() => {
-    void ability.push();
+    void ability.system.push();
   }, [ability]);
 
   return (

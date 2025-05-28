@@ -4,8 +4,8 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/utilities";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { assertMwItem } from "../../module/items/mwItem";
 import { MwType } from "../../types";
-import { assertMwItem } from "../../v10Types";
 import { absoluteCover } from "../absoluteCover";
 import { ImagePickle } from "../ImagePickle";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
@@ -48,7 +48,7 @@ export const MwItemSheet = () => {
 
   const onChangeType = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      void item.setMwType(e.currentTarget.value as MwType);
+      void item.system.setMwType(e.currentTarget.value as MwType);
     },
     [item],
   );
@@ -145,7 +145,7 @@ export const MwItemSheet = () => {
           format={item.system.notes.format}
           html={item.system.notes.html}
           source={item.system.notes.source}
-          onSave={item.setNotes}
+          onSave={item.system.setNotes}
           css={{
             height: "100%",
             "&&": {
@@ -169,7 +169,7 @@ export const MwItemSheet = () => {
         {item.system.mwType === "enchantedItem" && (
           <GridField label="Charges">
             <AsyncNumberInput
-              onChange={item.setCharges}
+              onChange={item.system.setCharges}
               value={item.system.charges}
               min={0}
             />
@@ -185,15 +185,15 @@ export const MwItemSheet = () => {
             >
               <GridFieldStacked label="Short" css={{ flex: 1 }}>
                 <AsyncNumberInput
-                  onChange={item.setRange(0)}
-                  value={item.getRange(0)}
+                  onChange={item.system.setRange(0)}
+                  value={item.system.getRange(0)}
                   min={0}
                 />
               </GridFieldStacked>
               <GridFieldStacked label="Medium" css={{ flex: 1 }}>
                 <AsyncNumberInput
-                  onChange={item.setRange(1)}
-                  value={item.getRange(1)}
+                  onChange={item.system.setRange(1)}
+                  value={item.system.getRange(1)}
                   min={0}
                 />
               </GridFieldStacked>
@@ -206,15 +206,15 @@ export const MwItemSheet = () => {
             >
               <GridFieldStacked label="Long" css={{ flex: 1 }}>
                 <AsyncNumberInput
-                  onChange={item.setRange(2)}
-                  value={item.getRange(2)}
+                  onChange={item.system.setRange(2)}
+                  value={item.system.getRange(2)}
                   min={0}
                 />
               </GridFieldStacked>
               <GridFieldStacked label="Extreme" css={{ flex: 1 }}>
                 <AsyncNumberInput
-                  onChange={item.setRange(3)}
-                  value={item.getRange(3)}
+                  onChange={item.system.setRange(3)}
+                  value={item.system.getRange(3)}
                   min={0}
                 />
               </GridFieldStacked>

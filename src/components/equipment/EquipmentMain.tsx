@@ -2,8 +2,8 @@ import { ChangeEvent, useCallback } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { assertEquipmentItem } from "../../module/items/equipment";
 import { settings } from "../../settings/settings";
-import { assertEquipmentItem } from "../../v10Types";
 import { absoluteCover } from "../absoluteCover";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
@@ -27,7 +27,7 @@ export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
 
   const onChangeCategory = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
-      void item.setCategoryId(e.currentTarget.value);
+      void item.system.setCategoryId(e.currentTarget.value);
     },
     [item],
   );
@@ -93,7 +93,7 @@ export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
         format={item.system.notes.format}
         html={item.system.notes.html}
         source={item.system.notes.source}
-        onSave={item.setNotes}
+        onSave={item.system.setNotes}
       />
     </InputGrid>
   );

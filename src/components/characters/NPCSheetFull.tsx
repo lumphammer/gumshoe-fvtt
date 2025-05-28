@@ -2,8 +2,8 @@ import { Fragment, ReactNode } from "react";
 
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
+import { assertNPCActor } from "../../module/actors/npc";
 import { settings } from "../../settings/settings";
-import { assertNPCActor, isNPCActor } from "../../v10Types";
 import { absoluteCover } from "../absoluteCover";
 import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
@@ -31,9 +31,8 @@ const settingsNpcStats = settings.npcStats.get;
 
 export const NPCSheetFull = () => {
   const { actor } = useActorSheetContext();
-
   assertNPCActor(actor);
-  const themeName = actor.getSheetThemeName();
+  const themeName = actor.system.getSheetThemeName();
   const theme = useTheme(themeName);
   const stats = settingsNpcStats();
 
@@ -89,7 +88,10 @@ export const NPCSheetFull = () => {
           ...theme.panelStylePrimary,
         }}
       >
-        <Button onClick={actor.confirmRefresh} css={{ marginBottom: "0.5em" }}>
+        <Button
+          onClick={actor.system.confirmRefresh}
+          css={{ marginBottom: "0.5em" }}
+        >
           <Translate>Full Refresh</Translate>
         </Button>
 
@@ -97,7 +99,7 @@ export const NPCSheetFull = () => {
           <div css={{ marginBottom: "0.5em" }}>
             <MwInjuryStatusWidget
               status={actor.system.mwInjuryStatus}
-              setStatus={actor.setMwInjuryStatus}
+              setStatus={actor.system.setMwInjuryStatus}
             />
           </div>
         )}
@@ -105,21 +107,21 @@ export const NPCSheetFull = () => {
         {/* Stats */}
         <hr />
         {/* SotS NPC Combat bonus */}
-        {settingsUseNpcCombatBonuses() && isNPCActor(actor) && (
+        {settingsUseNpcCombatBonuses() && (
           <Fragment>
             <h3 css={{ gridColumn: "start / end" }}>
               <Translate>Combat bonus</Translate>
             </h3>
             <AsyncNumberInput
               value={actor.system.combatBonus}
-              onChange={actor.setCombatBonus}
+              onChange={actor.system.setCombatBonus}
             />
             <h3 css={{ gridColumn: "start / end" }}>
               <Translate>Damage bonus</Translate>
             </h3>
             <AsyncNumberInput
               value={actor.system.damageBonus}
-              onChange={actor.setDamageBonus}
+              onChange={actor.system.setDamageBonus}
             />
           </Fragment>
         )}
@@ -138,7 +140,7 @@ export const NPCSheetFull = () => {
             </h4>
             <AsyncNumberInput
               value={actor.system.initiativePassingTurns}
-              onChange={actor.setPassingTurns}
+              onChange={actor.system.setPassingTurns}
             />
           </Fragment>
         )}
@@ -195,7 +197,7 @@ export const NPCSheetFull = () => {
                       format={actor.system.notes.format}
                       html={actor.system.notes.html}
                       source={actor.system.notes.source}
-                      onSave={actor.setNotes}
+                      onSave={actor.system.setNotes}
                     />
                   </NotesTypeContext.Provider>
                 </InputGrid>
@@ -218,7 +220,7 @@ export const NPCSheetFull = () => {
                       format={actor.system.gmNotes.format}
                       html={actor.system.gmNotes.html}
                       source={actor.system.gmNotes.source}
-                      onSave={actor.setGMNotes}
+                      onSave={actor.system.setGMNotes}
                     />
                   </NotesTypeContext.Provider>
                 </InputGrid>
