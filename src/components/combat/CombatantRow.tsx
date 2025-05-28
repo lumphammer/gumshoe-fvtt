@@ -1,5 +1,5 @@
 import { cx } from "@emotion/css";
-import { Fragment, ReactNode, useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 
 import { assertGame } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
@@ -79,11 +79,25 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
         alt={turn.name}
         loading="lazy"
       />
-      <div className="token-name">
-        <strong className="name">{turn.name}</strong>
+      <div
+        className="token-name"
+        css={{
+          overflow: "hidden",
+        }}
+      >
+        <strong
+          className="name"
+          css={{
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {turn.name}
+        </strong>
         <div className="combatant-controls">
           {game.user.isGM && (
-            <Fragment>
+            <>
               <button
                 type="button"
                 className={cx(
@@ -109,7 +123,7 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
                 data-tooltip=""
                 aria-label={localize("COMBAT.ToggleDead")}
               ></button>
-            </Fragment>
+            </>
           )}
           <button
             type="button"
