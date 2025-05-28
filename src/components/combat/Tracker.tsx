@@ -1,4 +1,4 @@
-import { Fragment, ReactNode } from "react";
+import { ReactNode } from "react";
 import { PiEmptyLight, PiPeaceLight } from "react-icons/pi";
 
 import {
@@ -42,7 +42,7 @@ export const Tracker = () => {
   const turns = combat ? getTurns(combat) : [];
 
   return (
-    <Fragment>
+    <>
       {/* HEADER ROWS */}
       <header id="combat-round" className="combat-tracker-header">
         {hasCombat && (
@@ -116,29 +116,38 @@ export const Tracker = () => {
           </p>
         </div>
       )}
-      <ol
-        // see investigator-combatant-list in the LESS for why we add this class
-        className="combat-tracker plain investigator-combatant-list"
+      <div
+        className="combat-tracker"
         css={{
-          position: "relative",
-          minHeight: `${turns.length * 4}em`,
-          flex: 0,
+          flex: 1,
+          overflowX: "hidden",
         }}
       >
-        {
-          // combatant sorting is done in "Combat" but for rendering stability
-          // we need to un-sort the combatants and then tell each row where it
-          // used to exist in the order
-          sortByKey(turns, "id").map<ReactNode>((turn) => (
-            <CombatantRow
-              key={turn.id}
-              index={turns.findIndex((x) => x.id === turn.id)}
-              turn={turn}
-              combat={combat!}
-            />
-          ))
-        }
-      </ol>
-    </Fragment>
+        <ol
+          // see investigator-combatant-list in the LESS for why we add this class
+          className="plain investigator-combatant-list"
+          css={{
+            position: "relative",
+            flex: 1,
+            height: `${turns.length * 4}em`,
+            overflow: "hidden",
+          }}
+        >
+          {
+            // combatant sorting is done in "Combat" but for rendering stability
+            // we need to un-sort the combatants and then tell each row where it
+            // used to exist in the order
+            sortByKey(turns, "id").map<ReactNode>((turn) => (
+              <CombatantRow
+                key={turn.id}
+                index={turns.findIndex((x) => x.id === turn.id)}
+                turn={turn}
+                combat={combat!}
+              />
+            ))
+          }
+        </ol>
+      </div>
+    </>
   );
 };
