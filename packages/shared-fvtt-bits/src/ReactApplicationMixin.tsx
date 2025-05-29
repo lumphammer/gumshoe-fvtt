@@ -1,7 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
 
-import { FoundryAppContext } from "./FoundryAppContext";
 import { Constructor } from "./types";
 
 // type shenanigans to allow us to work backwards from a Class type to the type
@@ -111,15 +110,15 @@ export function ReactApplicationMixin<TBase extends ApplicationConstructor>(
       if (el) {
         const content = (
           <StrictMode>
-            <FoundryAppContext.Provider
+            {/* <FoundryAppContext.Provider
               value={this}
               key={"FoundryAppContextProvider"}
-            >
-              {render(
-                this as TBase extends Constructor<infer T2> ? T2 : TBase,
-                this.serial,
-              )}
-            </FoundryAppContext.Provider>
+            > */}
+            {render(
+              this as TBase extends Constructor<infer T2> ? T2 : TBase,
+              this.serial,
+            )}
+            {/* </FoundryAppContext.Provider> */}
           </StrictMode>
         );
         if (!this.reactRoot) {

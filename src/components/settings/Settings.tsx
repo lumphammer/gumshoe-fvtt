@@ -46,7 +46,7 @@ export const Settings = () => {
         resolveFalseOnCancel: true,
       }));
     if (aye) {
-      await foundryApplication.close({ approved: true });
+      await foundryApplication.close({ submitted: true });
     }
   }, [foundryApplication, isDirty]);
 
@@ -62,7 +62,7 @@ export const Settings = () => {
     });
     await Promise.all(proms);
     Hooks.call(settingsSaved);
-    await foundryApplication.close({ approved: true });
+    await foundryApplication.close({ submitted: true });
   }, [foundryApplication, tempStateRef]);
 
   // if anything attempts to close the window without our approval, we block it

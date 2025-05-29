@@ -23,6 +23,9 @@ type ImagePickleProps = {
 
 export const ImagePickle = ({ className }: ImagePickleProps) => {
   const { doc, app } = useDocumentSheetContext();
+  if (!(doc instanceof Actor || doc instanceof Item)) {
+    throw new Error("ImagePickle must be used within an Actor or Item");
+  }
   const [showOverlay, setShowOverlay] = useState(false);
   const theme = useContext(ThemeContext);
   assertGame(game);

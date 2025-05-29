@@ -16,7 +16,7 @@ interface ImageAreaProps {
 export const ImageArea = ({ page }: ImageAreaProps) => {
   const theme = useContext(ThemeContext);
 
-  const { app } = useDocumentSheetContext(page);
+  const { app } = useDocumentSheetContext();
 
   const handleClickImage = useCallback(() => {
     // page.sheet.render(true);

@@ -4,6 +4,10 @@ import { useContext } from "react";
 import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 
 import JournalEntrySheet = foundry.applications.sheets.journal.JournalEntrySheet;
+import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
+import ItemSheetV2 = foundry.applications.sheets.ItemSheetV2;
+import DocumentSheetV2 = foundry.applications.api.DocumentSheetV2;
+import Document = foundry.abstract.Document;
 
 export const useItemSheetContext = () => {
   const app = useContext(FoundryAppContext);
@@ -12,13 +16,8 @@ export const useItemSheetContext = () => {
       "useItemSheetContext must be used within a FoundryAppContext",
     );
   }
-  if (
-    !(
-      app instanceof ItemSheet ||
-      app instanceof foundry.applications.sheets.ItemSheetV2
-    )
-  ) {
-    throw new Error("useItemSheetContext must be used within an ItemSheet");
+  if (!(app instanceof ItemSheetV2)) {
+    throw new Error("useItemSheetContext must be used within an ItemSheetV2");
   }
   const item = app.item;
 
@@ -32,13 +31,8 @@ export const useActorSheetContext = () => {
       "useActorSheetContext must be used within a FoundryAppContext",
     );
   }
-  if (
-    !(
-      app instanceof ActorSheet ||
-      app instanceof foundry.applications.sheets.ActorSheetV2
-    )
-  ) {
-    throw new Error("useActorSheetContext must be used within an ActorSheet");
+  if (!(app instanceof ActorSheetV2)) {
+    throw new Error("useActorSheetContext must be used within an ActorSheetV2");
   }
   const actor: InvestigatorActor = app.document;
 
@@ -62,21 +56,21 @@ export const useJournalEntrySheetContext = () => {
   return { app, journalEntry };
 };
 
-export const useDocumentSheetContext = (docClass?: any) => {
+export const useDocumentSheetContext = () => {
   const app = useContext(FoundryAppContext);
   if (app === null) {
     throw new Error(
       "useDocumentSheetContext must be used within a FoundryAppContext",
     );
   }
-  if (
-    !(
-      app instanceof DocumentSheet ||
-      app instanceof foundry.applications.api.DocumentSheetV2
-    )
-  ) {
+  if (!(app instanceof DocumentSheetV2)) {
     throw new Error(
-      "useDocumentSheetContext must be used within an ActorSheet or ItemSheet",
+      "useDocumentSheetContext must be used within a DocumentSheetV2",
+    );
+  }
+  if (!(app.document instanceof Document)) {
+    throw new Error(
+      "useDocumentSheetContext must be used within a DocumentSheetV2",
     );
   }
   const doc = app.document;
