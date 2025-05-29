@@ -1,12 +1,10 @@
 import * as constants from "../constants";
 import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 import { NPCModel } from "../module/actors/npc";
-import { NPCSheetClass } from "../module/actors/NPCSheetClass";
 import { NPCSheetClassV2 } from "../module/actors/NPCSheetClassV2";
 import { PartyModel } from "../module/actors/party";
-import { PartySheetClass } from "../module/actors/PartySheetClass";
+import { PartySheetClassV2 } from "../module/actors/PartySheetClassV2";
 import { PCModel } from "../module/actors/pc";
-import { PCSheetClass } from "../module/actors/PCSheetClass";
 import { PCSheetClassV2 } from "../module/actors/PCSheetClassV2";
 import { InvestigatorCombat } from "../module/InvestigatorCombat";
 import { InvestigatorCombatant } from "../module/InvestigatorCombatant";
@@ -18,7 +16,6 @@ import { EquipmentModel } from "../module/items/equipment";
 import { GeneralAbilityModel } from "../module/items/generalAbility";
 import { InvestigativeAbilityModel } from "../module/items/investigativeAbility";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
-import { ItemSheetClass } from "../module/items/InvestigatorItemSheetClass";
 import { ItemSheetV2Class } from "../module/items/InvestigatorItemSheetV2Class";
 import { MwItemModel } from "../module/items/mwItem";
 import { PersonalDetailModel } from "../module/items/personalDetail";
@@ -46,46 +43,25 @@ export const registerSheetsAndClasses = () => {
   CONFIG.Item.dataModels["personalDetail"] = PersonalDetailModel;
   CONFIG.Item.dataModels["card"] = CardModel;
 
-  // Register custom sheets (if any)
+  // Register custom sheets
+
+  // actors
   Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet(constants.systemId, PCSheetClass, {
-    makeDefault: true,
-    types: [constants.pc],
-  });
-  Actors.registerSheet(constants.systemId, NPCSheetClass, {
+  Actors.registerSheet(constants.systemId, NPCSheetClassV2, {
     makeDefault: true,
     types: [constants.npc],
   });
-  Actors.registerSheet(constants.systemId, PartySheetClass, {
+  Actors.registerSheet(constants.systemId, PCSheetClassV2, {
+    makeDefault: true,
+    types: [constants.pc],
+  });
+  Actors.registerSheet(constants.systemId, PartySheetClassV2, {
     makeDefault: true,
     types: [constants.party],
   });
+
+  // items
   Items.unregisterSheet("core", ItemSheet);
-  Items.registerSheet(constants.systemId, ItemSheetClass, {
-    makeDefault: true,
-    types: [
-      constants.weapon,
-      constants.equipment,
-      constants.investigativeAbility,
-      constants.generalAbility,
-      constants.mwItem,
-      constants.personalDetail,
-      constants.card,
-    ],
-  });
-  Journal.registerSheet("investigator", JournalEditorSheetClass, {
-    types: ["base"],
-    makeDefault: false,
-    label: "Investigator Journal Editor",
-  });
-  Journal.registerSheet("investigator", InvestigatorJournalSheet, {
-    types: ["base"],
-    makeDefault: false,
-    label: "Investigator Journal Sheet",
-  });
-
-  // V2 sheets
-
   Items.registerSheet(constants.systemId, ItemSheetV2Class, {
     makeDefault: false,
     types: [
@@ -98,12 +74,18 @@ export const registerSheetsAndClasses = () => {
       constants.card,
     ],
   });
-  Actors.registerSheet(constants.systemId, NPCSheetClassV2, {
+
+  // journals
+  Journal.registerSheet("investigator", JournalEditorSheetClass, {
+    types: ["base"],
     makeDefault: false,
-    types: [constants.npc],
+    label: "Investigator Journal Editor",
   });
-  Actors.registerSheet(constants.systemId, PCSheetClassV2, {
+  Journal.registerSheet("investigator", InvestigatorJournalSheet, {
+    types: ["base"],
     makeDefault: false,
-    types: [constants.pc],
+    label: "Investigator Journal Sheet",
   });
+
+  // V2 sheets
 };
