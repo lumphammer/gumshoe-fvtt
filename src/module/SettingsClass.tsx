@@ -1,12 +1,11 @@
-import { ReactApplicationMixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationMixin";
 import React from "react";
 
 import { Suspense } from "../components/Suspense";
-import {
-  reactTemplatePath,
-  settingsCloseAttempted,
-  systemId,
-} from "../constants";
+import { settingsCloseAttempted, systemId } from "../constants";
+
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
+import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
+import { DeepPartial } from "fvtt-types/utils";
 
 const Settings = React.lazy(() =>
   import("../components/settings/Settings").then(({ Settings }) => ({
@@ -16,41 +15,36 @@ const Settings = React.lazy(() =>
 
 // this has to be a FormApplication so that we can "register" it as a "menu"
 // in settings
-export class SettingsClassBase extends FormApplication {
-  // /** @override */
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: [systemId, "sheet", "item", "dialog"],
-      template: reactTemplatePath,
+export class SettingsClassBase extends ApplicationV2 {
+  static DEFAULT_OPTIONS = {
+    classes: [systemId, "sheet", "item", "dialog"],
+    position: {
       width: 700,
       height: 800,
+    },
+    window: {
       resizable: true,
       title: "GUMSHOE Settings",
-    });
-  }
+    },
+  };
 
   /**
    * We override close to allow us to distinguish between attempts to close the
    * window that came from the user directly, vs. attempts that came from
    * hitting the Escape key or any other method of closing the app.
    */
-  async close(options?: Application.CloseOptions) {
-    if (options?.approved) {
+  async close(options?: DeepPartial<ApplicationV2.ClosingOptions>) {
+    if (options?.submitted) {
       return super.close(options);
     } else {
       Hooks.call(settingsCloseAttempted);
       throw new Error("Settings won't close yet - not approved by user");
     }
   }
-
-  // this is here to satisfy foundry-vtt-types
-  _updateObject(event: Event, formData?: any) {
-    return Promise.resolve();
-  }
 }
 
-const render = (sheet: SettingsClassBase) => {
-  $(sheet.element).find(".header-button.close").hide();
+const render = () => {
+  // $(sheet.element).find(".header-button.close").hide();
   return (
     <Suspense>
       <Settings />
@@ -58,23 +52,10 @@ const render = (sheet: SettingsClassBase) => {
   );
 };
 
-export class SettingsClass extends ReactApplicationMixin(
+export class SettingsClass extends ReactApplicationV2Mixin(
   "SettingsClass",
   SettingsClassBase,
   render,
 ) {}
 
-// @ts-expect-error no args is fine
 export const investigatorSettingsClassInstance = new SettingsClass();
-
-declare global {
-  namespace Application {
-    interface CloseOptions {
-      /**
-       * extra flag added to slose options so we can distinguish close() calls
-       * that we have generated from one coming from e.g. hitting the Escape key
-       */
-      approved: boolean;
-    }
-  }
-}

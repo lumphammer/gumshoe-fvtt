@@ -61,6 +61,28 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
       return element;
     }
 
+    override async close(options?: DeepPartial<ApplicationV2.ClosingOptions>) {
+      // we're inverting the normal order of inherited calls here. the class
+      // produced by this mixin is effectively a subclass of the class passed
+      // in, but we want a way for the base class to determine whether we
+      // actually unmount the app etc. so we call the base class's close method
+      // first, and if it doesn't throw, we assume it's okay to unmount our
+      // react tree.
+      try {
+        await super.close(options);
+        if (this.reactRoot) {
+          this.reactRoot.unmount();
+          this.reactRoot = undefined;
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+      } catch (e: any) {
+        // if it does throw, we don;t want that to reach the console, so we do
+        // nothing. This is an async function to that's equivalent to returning
+        // a promise that resolves to undefined.
+      }
+      return this;
+    }
+
     // _renderHTML is the semantically appropriate place to render updates to
     // the HTML of the app... or in our case, to ask to react to refresh.
     override _renderHTML() {

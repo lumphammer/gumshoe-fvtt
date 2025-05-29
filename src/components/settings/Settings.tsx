@@ -36,15 +36,16 @@ export const Settings = () => {
   const theme = useTheme(tempState.settings.defaultThemeName);
 
   const handleClose = useCallback(async () => {
-    const aye =
-      !isDirty() ||
-      (await confirmADoodleDo({
+    let aye = !isDirty();
+    if (!aye) {
+      aye = await confirmADoodleDo({
         message: "You have unsaved changes. Are you sure you want to close?",
         confirmText: "Yes, discard my changes",
         cancelText: "Whoops, No!",
         confirmIconClass: "fas fa-times",
         resolveFalseOnCancel: true,
-      }));
+      });
+    }
     if (aye) {
       await foundryApplication.close({ submitted: true });
     }
@@ -68,9 +69,9 @@ export const Settings = () => {
   // if anything attempts to close the window without our approval, we block it
   // in the SettingsClass and fire this event for us to handle here
   useEffect(() => {
-    Hooks.on(settingsCloseAttempted, handleClose);
+    const id = Hooks.on(settingsCloseAttempted, handleClose);
     return () => {
-      Hooks.off(settingsCloseAttempted, handleClose);
+      Hooks.off(settingsCloseAttempted, id);
     };
   }, [handleClose]);
 

@@ -19,7 +19,7 @@ export const installRenderSettingsHandler = () => {
 
     button.addEventListener("click", (ev) => {
       ev.preventDefault();
-      investigatorSettingsClassInstance.render(true);
+      void investigatorSettingsClassInstance.render({ force: true });
     });
   });
 };
