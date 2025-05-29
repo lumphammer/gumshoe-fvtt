@@ -45,24 +45,34 @@ export const registerSheetsAndClasses = () => {
 
   // Register custom sheets
 
+  // @ts-expect-error not typed yet
+  const _Journal = foundry.documents.collections.Journal;
+  const JournalCollection = _Journal as typeof Journal;
+
+  // @ts-expect-error not typed yet
+  const _Actors = foundry.documents.collections.Actors;
+  const ActorsCollection = _Actors as typeof Actors;
+
+  // @ts-expect-error not typed yet
+  const _Items = foundry.documents.collections.Items;
+  const ItemsCollection = _Items as typeof Items;
+
   // actors
-  Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet(constants.systemId, NPCSheetClassV2, {
+  ActorsCollection.registerSheet(constants.systemId, NPCSheetClassV2, {
     makeDefault: true,
     types: [constants.npc],
   });
-  Actors.registerSheet(constants.systemId, PCSheetClassV2, {
+  ActorsCollection.registerSheet(constants.systemId, PCSheetClassV2, {
     makeDefault: true,
     types: [constants.pc],
   });
-  Actors.registerSheet(constants.systemId, PartySheetClassV2, {
+  ActorsCollection.registerSheet(constants.systemId, PartySheetClassV2, {
     makeDefault: true,
     types: [constants.party],
   });
 
   // items
-  Items.unregisterSheet("core", ItemSheet);
-  Items.registerSheet(constants.systemId, ItemSheetV2Class, {
+  ItemsCollection.registerSheet(constants.systemId, ItemSheetV2Class, {
     makeDefault: false,
     types: [
       constants.weapon,
@@ -76,12 +86,16 @@ export const registerSheetsAndClasses = () => {
   });
 
   // journals
-  Journal.registerSheet("investigator", JournalEntryHTMLEditorSheetClass, {
-    types: ["base"],
-    makeDefault: false,
-    label: "Investigator Journal HTML Editor",
-  });
-  Journal.registerSheet("investigator", InvestigatorJournalSheet, {
+  JournalCollection.registerSheet(
+    "investigator",
+    JournalEntryHTMLEditorSheetClass,
+    {
+      types: ["base"],
+      makeDefault: false,
+      label: "Investigator Journal HTML Editor",
+    },
+  );
+  JournalCollection.registerSheet("investigator", InvestigatorJournalSheet, {
     types: ["base"],
     makeDefault: false,
     label: "Investigator Journal Sheet",
