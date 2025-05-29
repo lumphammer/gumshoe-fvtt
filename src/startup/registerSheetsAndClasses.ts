@@ -20,7 +20,7 @@ import { ItemSheetV2Class } from "../module/items/InvestigatorItemSheetV2Class";
 import { MwItemModel } from "../module/items/mwItem";
 import { PersonalDetailModel } from "../module/items/personalDetail";
 import { WeaponModel } from "../module/items/weapon";
-import { JournalEditorSheetClass } from "../module/JournalEditorSheetClass";
+import { JournalEntryHTMLEditorSheetClass } from "../module/JournalEditorSheetClass";
 
 export const registerSheetsAndClasses = () => {
   CONFIG.Actor.documentClass = InvestigatorActor;
@@ -76,10 +76,10 @@ export const registerSheetsAndClasses = () => {
   });
 
   // journals
-  Journal.registerSheet("investigator", JournalEditorSheetClass, {
+  Journal.registerSheet("investigator", JournalEntryHTMLEditorSheetClass, {
     types: ["base"],
     makeDefault: false,
-    label: "Investigator Journal Editor",
+    label: "Investigator Journal HTML Editor",
   });
   Journal.registerSheet("investigator", InvestigatorJournalSheet, {
     types: ["base"],

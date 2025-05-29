@@ -3,6 +3,8 @@ import { useContext } from "react";
 
 import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 
+import JournalEntrySheet = foundry.applications.sheets.journal.JournalEntrySheet;
+
 export const useItemSheetContext = () => {
   const app = useContext(FoundryAppContext);
   if (app === null) {
@@ -43,14 +45,14 @@ export const useActorSheetContext = () => {
   return { app, actor };
 };
 
-export const useJournalSheetContext = () => {
+export const useJournalEntrySheetContext = () => {
   const app = useContext(FoundryAppContext);
   if (app === null) {
     throw new Error(
-      "useJournalSheetContext must be used within a FoundryAppContext",
+      "useJournalEntrySheetContext must be used within a FoundryAppContext",
     );
   }
-  if (!(app instanceof JournalSheet)) {
+  if (!(app instanceof JournalEntrySheet)) {
     throw new Error(
       "useJournalSheetContext must be used within a JournalSheet",
     );

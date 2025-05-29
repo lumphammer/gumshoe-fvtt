@@ -1,66 +1,107 @@
-import { nanoid } from "nanoid";
-
 import { extraCssClasses, systemId } from "../constants";
 import { assertGame } from "../functions/utilities";
+import { JournalEntryHTMLEditorSheetClass } from "./JournalEditorSheetClass";
 
-const editButtonCssClass = "investigator-edit-button";
+import JournalEntrySheet = foundry.applications.sheets.journal.JournalEntrySheet;
 
-export class InvestigatorJournalSheet extends JournalSheet {
-  /** @override */
-  static get defaultOptions() {
-    const options = super.defaultOptions;
-    options.classes.push("investigator");
-    return options;
+type OnRenderArgs = Parameters<JournalEntrySheet["_onRender"]>;
+type ContextArg = OnRenderArgs[0];
+type OptionsArg = OnRenderArgs[1];
+
+export class InvestigatorJournalSheet extends JournalEntrySheet {
+  static DEFAULT_OPTIONS = {
+    classes: [
+      ...(JournalEntrySheet.DEFAULT_OPTIONS.classes ?? []),
+      "investigator",
+    ],
+    actions: {
+      edit(this: InvestigatorJournalSheet, event: MouseEvent) {
+        event.stopPropagation(); // Don't trigger other events
+        if (event.detail > 1) return; // Ignore repeated clicks
+        ui.notifications?.info("Edit");
+        const canEdit =
+          game.user && this.document?.canUserModify?.(game.user, "update");
+
+        if (canEdit) {
+          void new JournalEntryHTMLEditorSheetClass({
+            document: this.document,
+          }).render({
+            force: true,
+          });
+        }
+      },
+    },
+    window: {
+      resizable: true,
+    },
+  };
+
+  constructor(options: JournalEntrySheet.Configuration) {
+    const canEdit =
+      game.user && options.document?.canUserModify?.(game.user, "update");
+
+    if (canEdit) {
+      options = {
+        ...options,
+        window: {
+          ...options?.window,
+          controls: [
+            ...(options?.window?.controls ?? []),
+            {
+              icon: "fa-solid fa-pencil",
+              label: "investigator.Edit",
+              action: "edit",
+              visible: true,
+            },
+          ],
+        },
+      };
+    }
+
+    super(options);
   }
 
   /** @override */
-  activateListeners(html: JQuery) {
+  override async _onRender(
+    context: ContextArg,
+    options: OptionsArg,
+  ): Promise<void> {
     assertGame(game);
-    super.activateListeners(html);
+    await super._onRender(context, options);
 
     // find the entry content element and add the journal entry's classes onto
     // it
-    const journalEntryContentElement = this.element.find(
+    const journalEntryContentElement = this.element.querySelector(
       ".journal-entry-content",
     );
+    if (!journalEntryContentElement) {
+      throw new Error("Journal entry content element not found");
+    }
     const journalEntryClasses =
       this.document.flags[systemId]?.[extraCssClasses] ?? "";
-    journalEntryContentElement.addClass(journalEntryClasses);
+    if (journalEntryClasses !== undefined && journalEntryClasses !== "") {
+      journalEntryContentElement.classList.add(journalEntryClasses);
+    }
 
     // find the page element, work out which page is active, and add the page's
     // classes onto it
-    const contentElement = this.element.find(".journal-entry-page");
+    const contentElement = this.element.querySelector(".journal-entry-page");
     const pages = this.document.pages.contents.toSorted(
       (a, b) => a.sort - b.sort,
     );
-    const page = pages[this._getCurrentPage()];
+    // @ts-expect-error pageIndex is not typed
+    const page = pages[this.pageIndex];
     const pageClasses = page?.flags[systemId]?.[extraCssClasses] ?? "";
-    if (pageClasses !== undefined) {
-      contentElement.addClass(pageClasses);
+    if (pageClasses !== undefined && pageClasses !== "") {
+      contentElement?.classList.add(pageClasses);
     }
 
     // destroy the .edit-container
-    this.element.find(".edit-container").remove();
-
-    const canEdit =
-      game.user && this.document.canUserModify(game.user, "update");
-
-    // add edit button in titlebar
-    if (canEdit && this.element.find(`.${editButtonCssClass}`).length === 0) {
-      const id = `investigator_export_${nanoid()}`;
-      this.element
-        .find("header.window-header a.close")
-        .before(
-          `<a class="${editButtonCssClass}"id="${id}"><i class="fas fa-code"></i>Edit</a>`,
-        );
-      document.querySelector(`#${id}`)?.addEventListener("click", () => {
-        const EditSheet: JournalSheet = Journal.registeredSheets.find(
-          // @ts-expect-error Journal types are effed
-          (sheet) => sheet.name === "JournalEditorSheetClass",
-        ) as unknown as JournalSheet;
-        // @ts-expect-error Journal types are effed
-        new EditSheet(this.document).render(true);
-      });
+    const editContainer = this.element.querySelector(".edit-container");
+    if (editContainer) {
+      editContainer.remove();
+    } else {
+      throw new Error("Edit container not found");
     }
   }
 }

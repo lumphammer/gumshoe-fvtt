@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { MdOutlinePreview } from "react-icons/md";
 
 import { extraCssClasses, systemId } from "../../constants";
-import { useJournalSheetContext } from "../../hooks/useSheetContexts";
+import { useJournalEntrySheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
 import { absoluteCover } from "../absoluteCover";
 import { CSSReset } from "../CSSReset";
@@ -20,7 +20,7 @@ const KEEPALIVE_INTERVAL_MS = 30_000;
  * Top-level react component for the journal editor sheet.
  */
 export const JournalEditorSheet = () => {
-  const { journalEntry } = useJournalSheetContext();
+  const { journalEntry } = useJournalEntrySheetContext();
 
   // keepalive - without this, if this journal entry is inside a compendium,
   // foundry will kill the in-memory references to it so normal UI updates stop

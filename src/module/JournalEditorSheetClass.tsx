@@ -1,10 +1,12 @@
-import { ReactApplicationMixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationMixin";
-import React from "react";
+import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
+import { lazy } from "react";
 
 import { Suspense } from "../components/Suspense";
-import { reactTemplatePath } from "../constants";
+import { systemId } from "../constants";
 
-const JournalEditorSheet = React.lazy(() =>
+import JournalEntrySheet = foundry.applications.sheets.journal.JournalEntrySheet;
+
+const JournalEditorSheet = lazy(() =>
   import("../components/journalEditorSheet/JournalEditorSheet").then(
     ({ JournalEditorSheet }) => ({
       default: JournalEditorSheet,
@@ -12,20 +14,27 @@ const JournalEditorSheet = React.lazy(() =>
   ),
 );
 
-export class JournalEditorSheetClassBase extends JournalSheet {
-  /** @override */
-  static get defaultOptions() {
-    const options = {
-      ...super.defaultOptions,
-      template: reactTemplatePath,
+export class JournalEntryHTMLEditorSheetClassBase extends JournalEntrySheet {
+  static DEFAULT_OPTIONS = {
+    classes: [systemId, "sheet", "actor"],
+    window: {
       resizable: true,
+    },
+    position: {
       width: 1230,
-    };
-    return options;
+      // height: 900,
+    },
+  };
+
+  // block the parent class's attempts to render a page - we're dealing with
+  // all that in React
+  // @ts-expect-error not typed yet
+  override async _renderPageViews() {
+    // return super._renderPageViews();
   }
 }
 
-const render = (sheet: JournalEditorSheetClassBase) => {
+const render = () => {
   return (
     <Suspense>
       <JournalEditorSheet />
@@ -33,8 +42,8 @@ const render = (sheet: JournalEditorSheetClassBase) => {
   );
 };
 
-export const JournalEditorSheetClass = ReactApplicationMixin(
-  "JournalEditorSheetClass",
-  JournalEditorSheetClassBase,
+export const JournalEntryHTMLEditorSheetClass = ReactApplicationV2Mixin(
+  "JournalEntryHTMLEditorSheetClass",
+  JournalEntryHTMLEditorSheetClassBase,
   render,
 );
