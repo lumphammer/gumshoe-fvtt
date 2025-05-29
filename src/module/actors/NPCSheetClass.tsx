@@ -12,7 +12,7 @@ const NPCSheet = React.lazy(() =>
   })),
 );
 
-class NPCSheetV2ClassBase extends ActorSheetV2 {
+class NPCSheetClassBase extends ActorSheetV2 {
   static DEFAULT_OPTIONS = {
     classes: [systemId, "sheet", "actor"],
     window: {
@@ -33,8 +33,8 @@ const render = () => {
   );
 };
 
-export const NPCSheetClassV2 = ReactApplicationV2Mixin(
-  "NPCSheetClassV2",
-  NPCSheetV2ClassBase,
+export const NPCSheetClass = ReactApplicationV2Mixin(
+  "NPCSheetClass",
+  NPCSheetClassBase,
   render,
 );

@@ -5,7 +5,7 @@ import { systemId } from "../../constants";
 
 import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
 
-class PCSheetClassV2Base extends ActorSheetV2 {
+class PCSheetClassBase extends ActorSheetV2 {
   static DEFAULT_OPTIONS = {
     classes: [systemId, "sheet", "actor"],
     position: {
@@ -22,8 +22,8 @@ const render = () => {
   return <PCSheet />;
 };
 
-export const PCSheetClassV2 = ReactApplicationV2Mixin(
-  "PCSheetClassV2",
-  PCSheetClassV2Base,
+export const PCSheetClass = ReactApplicationV2Mixin(
+  "PCSheetClass",
+  PCSheetClassBase,
   render,
 );

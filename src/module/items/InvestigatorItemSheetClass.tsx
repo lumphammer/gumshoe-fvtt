@@ -19,7 +19,7 @@ const render = () => {
   );
 };
 
-class ItemSheetV2ClassBase extends ItemSheetV2 {
+class ItemSheetClassBase extends ItemSheetV2 {
   /** @override */
   static DEFAULT_OPTIONS = {
     classes: ["investigator"],
@@ -33,8 +33,8 @@ class ItemSheetV2ClassBase extends ItemSheetV2 {
   };
 }
 
-export const ItemSheetV2Class = ReactApplicationV2Mixin(
-  "ItemSheetClassV2",
-  ItemSheetV2ClassBase,
+export const ItemSheetClass = ReactApplicationV2Mixin(
+  "ItemSheetClass",
+  ItemSheetClassBase,
   render,
 );

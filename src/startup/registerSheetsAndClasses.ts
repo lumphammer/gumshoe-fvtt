@@ -1,11 +1,11 @@
 import * as constants from "../constants";
 import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 import { NPCModel } from "../module/actors/npc";
-import { NPCSheetClassV2 } from "../module/actors/NPCSheetClassV2";
+import { NPCSheetClass } from "../module/actors/NPCSheetClass";
 import { PartyModel } from "../module/actors/party";
-import { PartySheetClassV2 } from "../module/actors/PartySheetClassV2";
+import { PartySheetClass } from "../module/actors/PartySheetClass";
 import { PCModel } from "../module/actors/pc";
-import { PCSheetClassV2 } from "../module/actors/PCSheetClassV2";
+import { PCSheetClass } from "../module/actors/PCSheetClass";
 import { InvestigatorCombat } from "../module/InvestigatorCombat";
 import { InvestigatorCombatant } from "../module/InvestigatorCombatant";
 import { InvestigatorCombatTracker } from "../module/InvestigatorCombatTracker";
@@ -16,7 +16,7 @@ import { EquipmentModel } from "../module/items/equipment";
 import { GeneralAbilityModel } from "../module/items/generalAbility";
 import { InvestigativeAbilityModel } from "../module/items/investigativeAbility";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
-import { ItemSheetV2Class } from "../module/items/InvestigatorItemSheetV2Class";
+import { ItemSheetClass } from "../module/items/InvestigatorItemSheetClass";
 import { MwItemModel } from "../module/items/mwItem";
 import { PersonalDetailModel } from "../module/items/personalDetail";
 import { WeaponModel } from "../module/items/weapon";
@@ -58,21 +58,21 @@ export const registerSheetsAndClasses = () => {
   const ItemsCollection = _Items as typeof Items;
 
   // actors
-  ActorsCollection.registerSheet(constants.systemId, NPCSheetClassV2, {
+  ActorsCollection.registerSheet(constants.systemId, NPCSheetClass, {
     makeDefault: true,
     types: [constants.npc],
   });
-  ActorsCollection.registerSheet(constants.systemId, PCSheetClassV2, {
+  ActorsCollection.registerSheet(constants.systemId, PCSheetClass, {
     makeDefault: true,
     types: [constants.pc],
   });
-  ActorsCollection.registerSheet(constants.systemId, PartySheetClassV2, {
+  ActorsCollection.registerSheet(constants.systemId, PartySheetClass, {
     makeDefault: true,
     types: [constants.party],
   });
 
   // items
-  ItemsCollection.registerSheet(constants.systemId, ItemSheetV2Class, {
+  ItemsCollection.registerSheet(constants.systemId, ItemSheetClass, {
     makeDefault: false,
     types: [
       constants.weapon,

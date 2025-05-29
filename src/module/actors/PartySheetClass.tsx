@@ -34,7 +34,7 @@ const render = () => {
   );
 };
 
-export const PartySheetClassV2 = ReactApplicationV2Mixin(
+export const PartySheetClass = ReactApplicationV2Mixin(
   "PartySheetClass",
   PartySheetClassBase,
   render,
