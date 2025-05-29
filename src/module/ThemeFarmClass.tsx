@@ -1,37 +1,33 @@
-import { ReactApplicationMixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationMixin";
-
-import { reactTemplatePath, systemId } from "../constants";
+import { systemId } from "../constants";
 import { ThemeFarm } from "../themes/components/ThemeFarm";
 
-class ThemeFarmClassBase extends FormApplication {
-  /** @override */
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: [systemId, "sheet", "item", "dialog"],
-      template: reactTemplatePath,
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
+import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
+
+class ThemeFarmClassBase extends ApplicationV2 {
+  static DEFAULT_OPTIONS = {
+    classes: [systemId, "sheet", "item", "dialog"],
+    position: {
       width: window.innerWidth,
       height: window.innerHeight,
-      resizable: true,
       top: 0,
       left: 0,
+    },
+    window: {
+      resizable: true,
       title: "Theme Farm",
-    });
-  }
-
-  // this is here to satisfy foundry-vtt-types
-  _updateObject(event: Event, formData?: any) {
-    return Promise.resolve();
-  }
+    },
+  };
 }
 
-const render = (sheet: ThemeFarmClassBase) => {
+const render = () => {
   return <ThemeFarm />;
 };
 
-export const ThemeFarmClass = ReactApplicationMixin(
+export const ThemeFarmClass = ReactApplicationV2Mixin(
   "ThemeFarmClass",
   ThemeFarmClassBase,
   render,
 );
 
-export const themeFarmClassInstance = new ThemeFarmClass({}, {});
+export const themeFarmClassInstance = new ThemeFarmClass();
