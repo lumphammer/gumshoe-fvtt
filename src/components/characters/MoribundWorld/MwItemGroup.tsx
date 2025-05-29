@@ -1,7 +1,10 @@
 import React, { useContext } from "react";
 
 import { mwItem } from "../../../constants";
-import { sortEntitiesByName } from "../../../functions/utilities";
+import {
+  assertApplicationV2,
+  sortEntitiesByName,
+} from "../../../functions/utilities";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { MwType } from "../../../types";
@@ -23,6 +26,9 @@ export const MwItemGroup = ({
 }: MwItemGroupProps) => {
   const { actor } = useActorSheetContext();
   const theme = useContext(ThemeContext);
+  const sheet = actor.sheet;
+  assertApplicationV2(sheet);
+
   return (
     <div
       css={{
@@ -89,7 +95,7 @@ export const MwItemGroup = ({
               display: "block",
               position: "relative",
             }}
-            onClick={() => item.sheet?.render(true)}
+            onClick={() => sheet.render({ force: true })}
             data-item-id={item.id}
             onDragStart={onDragStart}
             draggable="true"

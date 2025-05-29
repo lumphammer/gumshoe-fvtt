@@ -81,24 +81,28 @@ export function installPersonalDetailHookHandler() {
             resolve(true);
           };
 
-          const d = new Dialog({
-            title: "Replace or add?",
+          const dialog = new foundry.applications.api.DialogV2({
             content: `<p>${tlMessage}</p>`,
-            buttons: {
-              replace: {
+            window: {
+              title: "Replace or add?",
+            },
+            buttons: [
+              {
                 icon: '<i class="fas fa-eraser"></i>',
                 label: replaceText,
                 callback: onReplace,
+                action: "replace",
               },
-              add: {
+              {
                 icon: '<i class="fas fa-plus"></i>',
                 label: addText,
                 callback: onAdd,
+                default: true,
+                action: "add",
               },
-            },
-            default: "cancel",
+            ],
           });
-          d.render(true);
+          void dialog.render({ force: true });
           return false;
         });
         await promise;

@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
 import {
+  assertApplicationV2,
   assertGame,
   requestTurnPass,
   systemLogger,
@@ -17,11 +18,14 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
     (event: React.MouseEvent<HTMLElement>) => {
       if (combatantStash.current === undefined) return;
       const rect = event.currentTarget.getBoundingClientRect();
-      new CombatantConfig(combatantStash.current, {
-        top: Math.min(rect.top, window.innerHeight - 350),
-        left: window.innerWidth - 720,
-        width: 400,
-      }).render(true);
+      void new foundry.applications.sheets.CombatantConfig({
+        position: {
+          top: Math.min(rect.top, window.innerHeight - 350),
+          left: window.innerWidth - 720,
+          width: 400,
+        },
+        document: combatantStash.current,
+      }).render({ force: true });
     },
     [combatantStash],
   );
@@ -59,9 +63,12 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
     combatantStash.current?.removePassingTurn();
   }, [combatantStash]);
 
+  const sheet = combatantStash.current?.token?.actor?.sheet;
+  assertApplicationV2(sheet);
+
   const openSheet = useCallback(() => {
-    void combatantStash.current?.token?.actor?.sheet?.render(true);
-  }, [combatantStash]);
+    void sheet.render({ force: true });
+  }, [sheet]);
 
   return {
     onDoInitiative,

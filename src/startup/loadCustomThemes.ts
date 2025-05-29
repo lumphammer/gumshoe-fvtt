@@ -5,6 +5,8 @@ import { assertGame, systemLogger } from "../functions/utilities";
 import { settings } from "../settings/settings";
 import { highContrastTheme } from "../themes/highContrastTheme";
 
+import FilePicker = foundry.applications.apps.FilePicker.implementation;
+
 export function loadCustomThemes() {
   const jsonRe = /\.(?:json|json5)$/;
   const yamlRe = /\.(?:yaml|yml)$/;

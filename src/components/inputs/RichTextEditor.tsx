@@ -3,6 +3,9 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { systemLogger, wait } from "../../functions/utilities";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
+
+import TextEditor = foundry.applications.ux.TextEditor.implementation;
+
 type RichTextEditorProps = {
   value: string;
   className?: string;

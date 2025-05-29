@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import * as constants from "../../constants";
-import { assertGame, sortEntitiesByName } from "../../functions/utilities";
+import {
+  assertApplicationV2,
+  assertGame,
+  sortEntitiesByName,
+} from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPartyActor } from "../../module/actors/party";
 import { PCActor } from "../../module/actors/pc";
@@ -235,7 +239,9 @@ export const PartySheet = () => {
                 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  void actor.sheet?.render(true);
+                  const sheet = actor.sheet;
+                  assertApplicationV2(sheet);
+                  void sheet.render({ force: true });
                 }}
               >
                 <div

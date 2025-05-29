@@ -1,6 +1,7 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import React, { Fragment, useCallback, useContext, useState } from "react";
 
+import { assertApplicationV2 } from "../../functions/utilities";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
@@ -46,11 +47,14 @@ export const AbilitySlugPlayNormal = ({
     setSpend((s) => s - 1);
   }, []);
 
+  const sheet = ability.sheet;
+  assertApplicationV2(sheet);
+
   return (
     <Fragment key={ability.id}>
       <a
         onClick={() => {
-          void ability.sheet?.render(true);
+          void sheet.render({ force: true });
         }}
         data-item-id={ability.id}
         onDragStart={onDragStart}

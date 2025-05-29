@@ -5,6 +5,8 @@ import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
 import Cross from "./no_image_cross.svg?react";
 
+import FilePicker = foundry.applications.apps.FilePicker.implementation;
+
 interface ImageAreaProps {
   page: any;
 }
@@ -18,21 +20,27 @@ export const ImageArea = ({ page }: ImageAreaProps) => {
 
   const { app } = useDocumentSheetContext();
 
-  const handleClickImage = useCallback(() => {
-    // page.sheet.render(true);
-    const fp = new FilePicker({
-      type: "image",
-      current: page.src ?? undefined,
-      callback: (path: string) => {
-        void page.update({
-          src: path,
-        });
-      },
-      top: (app.position.top ?? 0) + 40,
-      left: (app.position.left ?? 0) + 10,
-    });
-    return fp.browse(page.src ?? "");
-  }, [app.position.left, app.position.top, page]);
+  const handleClickImage = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const fp = new FilePicker({
+        type: "image",
+        current: page.src ?? undefined,
+        callback: (path: string) => {
+          void page.update({
+            src: path,
+          });
+        },
+        position: {
+          top: (app.position.top ?? 0) + 40,
+          left: (app.position.left ?? 0) + 10,
+        },
+      });
+      return fp.browse(page.src ?? "");
+    },
+    [app.position.left, app.position.top, page],
+  );
 
   return (
     <div

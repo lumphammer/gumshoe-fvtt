@@ -45,12 +45,14 @@ export const JournalEditorSheet = () => {
   );
 
   const handlePreview = useCallback(() => {
-    const JournalSheet: JournalSheet = Journal.registeredSheets.find(
+    const JournalSheet: JournalSheet =
       // @ts-expect-error Journal types are effed
-      (sheet) => sheet.name === "InvestigatorJournalSheet",
-    ) as unknown as JournalSheet;
+      foundry.documents.collections.Journal.registeredSheets.find(
+        // @ts-expect-error Journal types are effed
+        (sheet) => sheet.name === "InvestigatorJournalSheet",
+      ) as unknown as JournalSheet;
     // @ts-expect-error Journal types are effed
-    new JournalSheet(journalEntry).render(true);
+    new JournalSheet({ document: journalEntry }).render({ force: true });
   }, [journalEntry]);
 
   const toolBarContent = useMemo(
