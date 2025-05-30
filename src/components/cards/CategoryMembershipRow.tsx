@@ -29,7 +29,6 @@ export const CategoryMembershipRow = ({
       } else {
         await card.system.removeCardCategoryMembership(category.id);
       }
-      console.log("toggle active");
     },
     [card, category.id],
   );

@@ -40,7 +40,7 @@ export const migrateWorld = async function (
       }
     } catch (err: any) {
       err.message = `Failed ${title} system migration for Actor ${a.name}: ${err.message}`;
-      console.error(err);
+      systemLogger.error(err);
     }
   }
 
@@ -49,12 +49,12 @@ export const migrateWorld = async function (
     try {
       const updateData = migrateItemData(item, flaggedMigrations);
       if (!foundry.utils.isEmpty(updateData)) {
-        console.log(`Migrating Item entity ${item.name}`);
+        systemLogger.log(`Migrating Item entity ${item.name}`);
         await item.update(updateData);
       }
     } catch (err: any) {
       err.message = `Failed ${title} system migration for Item ${item.name}: ${err.message}`;
-      console.error(err);
+      systemLogger.error(err);
     }
   }
 
@@ -63,12 +63,12 @@ export const migrateWorld = async function (
     try {
       const updateData = migrateSceneData(s, flaggedMigrations);
       if (!foundry.utils.isEmpty(updateData)) {
-        console.log(`Migrating Scene entity ${s.name}`);
+        systemLogger.log(`Migrating Scene entity ${s.name}`);
         await s.update(updateData);
       }
     } catch (err: any) {
       err.message = `Failed {title} system migration for Scene ${s.name}: ${err.message}`;
-      console.error(err);
+      systemLogger.error(err);
     }
   }
 

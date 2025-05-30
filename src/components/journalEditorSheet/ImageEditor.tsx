@@ -17,7 +17,6 @@ interface ImageEditorProps {
 export const ImageEditor = ({ page }: ImageEditorProps) => {
   const handleChange = useCallback(
     async (value: string) => {
-      console.log("handleChange", value, page);
       await page.update({ image: { caption: value } });
     },
     [page],

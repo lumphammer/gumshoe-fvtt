@@ -85,7 +85,7 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
 
         // set the text to the dataTransfer.getData("text/plain") value
         // dataTransfer.setData("text/plain", "foo");
-        console.log("onDropIntoEditor", event);
+        systemLogger.log("onDropIntoEditor", event);
         const dragData = getDragEventData(event);
         systemLogger.log("dragData", dragData);
 

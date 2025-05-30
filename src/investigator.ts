@@ -29,7 +29,6 @@ import { installSocketActionHandler } from "./startup/installSocketActionHandler
 import { installTurnPassingHandler } from "./startup/installTurnPassingHandler";
 import { loadCustomThemes } from "./startup/loadCustomThemes";
 import { migrateWorldIfNeeded } from "./startup/migrateWorldIfNeeded";
-import { preloadTemplates } from "./startup/preloadTemplates";
 import { registerBabele } from "./startup/registerBabele";
 import { registerDevModeDebugFlag } from "./startup/registerDevModeDebugFlag";
 import { registerSettingsMenu } from "./startup/registerSettingsMenu";
@@ -53,10 +52,9 @@ styleElement.innerHTML = processedStyles;
 document.head.appendChild(styleElement);
 
 // Initialize system
-Hooks.once("init", async function () {
+Hooks.once("init", function () {
   systemLogger.log(`Initializing ${systemId} system`);
   registerSettingsMenu();
-  await preloadTemplates();
   registerSheetsAndClasses();
   registerBabele();
 });
@@ -161,7 +159,7 @@ Hooks.once("ready", () => {
     getAllLayerNamesInDocument(),
   );
 
-  console.log(
+  systemLogger.log(
     "All CSS Cascade Layers currently in document (highest priority first):\n" +
       "======================================================================\n" +
       "%s",

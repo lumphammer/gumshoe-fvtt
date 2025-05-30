@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 
+import { systemLogger } from "../functions/utilities";
+
 export function useWhyDidYouUpdate(name: string, props: any) {
   // Get a mutable ref object where we can store props ...
   // ... for comparison next time this hook runs.
@@ -25,7 +27,7 @@ export function useWhyDidYouUpdate(name: string, props: any) {
 
       // If changesObj not empty then output to console
       if (Object.keys(changesObj).length) {
-        console.log("[why-did-you-update]", name, changesObj);
+        systemLogger.log("[why-did-you-update]", name, changesObj);
       }
     }
 

@@ -6,7 +6,11 @@ import {
 } from "../constants";
 import { confirmADoodleDo } from "../functions/confirmADoodleDo";
 import { getTranslated } from "../functions/getTranslated";
-import { assertGame, isNullOrEmptyString } from "../functions/utilities";
+import {
+  assertGame,
+  isNullOrEmptyString,
+  systemLogger,
+} from "../functions/utilities";
 import { isActiveCharacterActor } from "../module/actors/exports";
 import { isPersonalDetailItem } from "../module/items/personalDetail";
 import { settings } from "../settings/settings";
@@ -154,7 +158,7 @@ export function installPersonalDetailHookHandler() {
                 system: packItem.system,
               };
             });
-            console.log("items", items);
+            systemLogger.log("items", items);
             await (item.actor as any).update({ items });
             ui.notifications?.info(
               `Added or updated ${
