@@ -117,15 +117,9 @@ export const Field = ({ field, categoryId, fieldId, idx }: FieldProps) => {
           }}
           onChange={handleTypeChange}
         >
-          <option value="string">
-            <Translate>Text</Translate>
-          </option>
-          <option value="number">
-            <Translate>Number</Translate>
-          </option>
-          <option value="checkbox">
-            <Translate>Toggle</Translate>
-          </option>
+          <option value="string">{getTranslated("Text")}</option>
+          <option value="number">{getTranslated("Number")}</option>
+          <option value="checkbox">{getTranslated("Toggle")}</option>
         </select>
         <Dropdown
           showArrow={false}
