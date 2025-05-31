@@ -1,8 +1,10 @@
-import { ReactApplicationMixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationMixin";
+import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 import React from "react";
 
 import { Suspense } from "../../components/Suspense";
-import { reactTemplatePath, systemId } from "../../constants";
+import { systemId } from "../../constants";
+
+import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
 
 const NPCSheet = React.lazy(() =>
   import("../../components/characters/NPCSheet").then(({ NPCSheet }) => ({
@@ -10,23 +12,20 @@ const NPCSheet = React.lazy(() =>
   })),
 );
 
-/**
- * Extend the basic ActorSheet with some very simple modifications
- * @extends {ActorSheet}
- */
-class NPCSheetClassBase extends ActorSheet {
-  /** @override */
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: [systemId, "sheet", "actor"],
-      template: reactTemplatePath,
+class NPCSheetClassBase extends ActorSheetV2 {
+  static DEFAULT_OPTIONS = {
+    classes: [systemId, "sheet", "actor"],
+    window: {
+      resizable: true,
+    },
+    position: {
       width: 700,
       height: 660,
-    });
-  }
+    },
+  };
 }
 
-const render = (sheet: NPCSheetClassBase) => {
+const render = () => {
   return (
     <Suspense>
       <NPCSheet />
@@ -34,7 +33,7 @@ const render = (sheet: NPCSheetClassBase) => {
   );
 };
 
-export const NPCSheetClass = ReactApplicationMixin(
+export const NPCSheetClass = ReactApplicationV2Mixin(
   "NPCSheetClass",
   NPCSheetClassBase,
   render,

@@ -1,4 +1,5 @@
 import MonacoEditor, { Monaco, OnMount } from "@monaco-editor/react";
+import { JSONValue } from "fvtt-types/utils";
 import htmlParser from "prettier/plugins/html";
 import prettier from "prettier/standalone";
 import { useCallback, useMemo, useRef } from "react";
@@ -13,6 +14,8 @@ import type { DocumentMemory } from "./documentMemory/types";
 import { useToolbarContent } from "./magicToolbar";
 import { ToolbarButton } from "./magicToolbar/ToolbarButton";
 import { savePage } from "./savePage";
+
+import TextEditor = foundry.applications.ux.TextEditor.implementation;
 
 interface HTMLEditorProps {
   page: any;
@@ -85,7 +88,7 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
 
         // set the text to the dataTransfer.getData("text/plain") value
         // dataTransfer.setData("text/plain", "foo");
-        console.log("onDropIntoEditor", event);
+        systemLogger.log("onDropIntoEditor", event);
         const dragData = getDragEventData(event);
         systemLogger.log("dragData", dragData);
 
@@ -96,7 +99,7 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
         const text =
           dragData === null
             ? ""
-            : await TextEditor.getContentLink(dragData, options);
+            : await TextEditor.getContentLink(dragData as JSONValue, options);
 
         if (text) {
           editor.executeEdits("", [

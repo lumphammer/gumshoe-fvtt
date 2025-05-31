@@ -2,7 +2,10 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { cleanAndEnrichHtml } from "../../functions/textFunctions";
-import { isNullOrEmptyString } from "../../functions/utilities";
+import {
+  assertApplicationV2,
+  isNullOrEmptyString,
+} from "../../functions/utilities";
 import { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
@@ -31,9 +34,11 @@ export const CardDisplay = ({
     card.system.cardCategoryMemberships,
   );
 
+  const sheet = card.sheet;
+  assertApplicationV2(sheet);
   const handleClick = useCallback(() => {
-    void card.sheet?.render(true);
-  }, [card.sheet]);
+    void sheet.render({ force: true });
+  }, [sheet]);
 
   const showText = viewMode === "full";
 

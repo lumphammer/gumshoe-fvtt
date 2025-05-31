@@ -46,7 +46,6 @@ export const WeaponsArea = () => {
                 renderSheet: true,
               },
             );
-            // newItem.sheet.render(true);
           }}
         >
           <i className="fa fa-plus" />

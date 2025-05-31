@@ -23,6 +23,9 @@ type ImagePickleProps = {
 
 export const ImagePickle = ({ className }: ImagePickleProps) => {
   const { doc, app } = useDocumentSheetContext();
+  if (!(doc instanceof Actor || doc instanceof Item)) {
+    throw new Error("ImagePickle must be used within an Actor or Item");
+  }
   const [showOverlay, setShowOverlay] = useState(false);
   const theme = useContext(ThemeContext);
   assertGame(game);
@@ -43,7 +46,7 @@ export const ImagePickle = ({ className }: ImagePickleProps) => {
       // objects for the most part, and 2. that way is tightly coupled to the
       // Foundry AppV1 model of imperative updates and does stuff like trying to
       // update the image in the DOM on completion.
-      const fp = new FilePicker({
+      const fp = new foundry.applications.apps.FilePicker({
         type: "image",
         current: doc.img ?? undefined,
         callback: (path: string) => {
@@ -51,19 +54,24 @@ export const ImagePickle = ({ className }: ImagePickleProps) => {
             img: path,
           });
         },
-        top: (app.position.top ?? 0) + 40,
-        left: (app.position.left ?? 0) + 10,
+        position: {
+          top: (app.position.top ?? 0) + 40,
+          left: (app.position.left ?? 0) + 10,
+        },
+        window: {},
       });
       return fp.browse(doc.img ?? "");
     }
   }, [app.position.left, app.position.top, doc]);
 
   const showImage = useCallback(() => {
-    const ip = new ImagePopout(doc.img ?? "", {
-      title: doc.img,
-      shareable: true,
-    } as any);
-    ip.render(true);
+    const ip = new foundry.applications.apps.ImagePopout({
+      window: {
+        title: doc.img ?? "",
+      },
+      src: doc.img ?? "",
+    });
+    void ip.render({ force: true });
   }, [doc.img]);
 
   const onClickShow = useCallback(() => {

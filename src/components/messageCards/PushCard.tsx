@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 
+import { assertApplicationV2 } from "../../functions/utilities";
 import { useTheme } from "../../hooks/useTheme";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
@@ -19,10 +20,12 @@ const shadowBlur = "1px";
 export const PushCard = React.memo(
   ({ msg, ability, mode, name, imageUrl }: PushCardProps) => {
     const theme = useTheme();
+    const sheet = ability?.sheet;
+    assertApplicationV2(sheet);
 
     const onClickAbilityName = useCallback(() => {
-      void ability?.sheet?.render(true);
-    }, [ability?.sheet]);
+      void sheet.render({ force: true });
+    }, [sheet]);
 
     return (
       <div

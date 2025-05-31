@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { Fragment, useCallback, useMemo } from "react";
 import { BsImage, BsSortNumericDown } from "react-icons/bs";
 import { FaBarsStaggered, FaImage } from "react-icons/fa6";
 import { VscOutput } from "react-icons/vsc";
@@ -161,49 +161,50 @@ export const PageNavigation = ({
         flex: 1,
         backgroundColor: theme.colors.backgroundPrimary,
         border: `1px solid ${theme.colors.accent}`,
-        // borderBottom: `1px solid ${theme.colors.accent}`,
       }}
     >
       {pages.map((page) => {
         return (
-          <a
-            {...{ [pageIdDataAttribute]: page.id }}
-            key={page.id}
-            onClick={handlePageClick}
-            onDragStart={handleDragStart}
-            draggable
-            css={{
-              textAlign: "left",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "block",
-              padding: "0.5em",
-              cursor: "pointer",
-              textDecoration: "none",
-              color: "inherit",
-              backgroundColor:
-                page.id === activePageId
-                  ? theme.colors.backgroundButton
-                  : "transparent",
-              border: "1px solid transparent",
-              marginLeft: `${(page.title.level - 1) * 1.5}em`,
-              "&:hover": {
-                border: `1px solid ${theme.colors.accent}`,
-              },
-            }}
-          >
-            <span
+          // for some reason putting the key on <a> directly causes a key warning
+          <Fragment key={page.id}>
+            <a
+              {...{ [pageIdDataAttribute]: page.id }}
+              onClick={handlePageClick}
+              onDragStart={handleDragStart}
+              draggable
               css={{
-                display: "inline-block",
-                width: "2em",
-                verticalAlign: "baseline",
+                textAlign: "left",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "block",
+                padding: "0.5em",
+                cursor: "pointer",
+                textDecoration: "none",
+                color: "inherit",
+                backgroundColor:
+                  page.id === activePageId
+                    ? theme.colors.backgroundButton
+                    : "transparent",
+                border: "1px solid transparent",
+                marginLeft: `${(page.title.level - 1) * 1.5}em`,
+                "&:hover": {
+                  border: `1px solid ${theme.colors.accent}`,
+                },
               }}
             >
-              {page.type === "text" ? <FaBarsStaggered /> : <FaImage />}
-            </span>
-            {page.name}
-          </a>
+              <span
+                css={{
+                  display: "inline-block",
+                  width: "2em",
+                  verticalAlign: "baseline",
+                }}
+              >
+                {page.type === "text" ? <FaBarsStaggered /> : <FaImage />}
+              </span>
+              {page.name}
+            </a>
+          </Fragment>
         );
       })}
     </div>

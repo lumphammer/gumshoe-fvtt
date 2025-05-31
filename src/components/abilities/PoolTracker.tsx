@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 
+import { assertApplicationV2 } from "../../functions/utilities";
 import {
   AbilityItem,
   assertAbilityItem,
@@ -38,6 +39,9 @@ export const PoolTracker = ({ ability }: PoolTrackerProps) => {
     void ability.system.push();
   }, [ability]);
 
+  const sheet = ability.sheet;
+  assertApplicationV2(sheet);
+
   return (
     <div
       style={{
@@ -49,7 +53,7 @@ export const PoolTracker = ({ ability }: PoolTrackerProps) => {
       }}
     >
       <h2 css={{ gridColumn: "start / end" }}>
-        <a onClick={() => ability.sheet?.render(true)}>{ability.name}</a>
+        <a onClick={() => sheet.render({ force: true })}>{ability.name}</a>
       </h2>
 
       {vals.map((value) => (

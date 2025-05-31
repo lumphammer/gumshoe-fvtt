@@ -1,29 +1,28 @@
-import { ReactApplicationMixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationMixin";
+import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 
 import { PCSheet } from "../../components/characters/PCSheet";
-import { reactTemplatePath, systemId } from "../../constants";
+import { systemId } from "../../constants";
 
-/**
- * Extend the basic ActorSheet with some very simple modifications
- * @extends {ActorSheet}
- */
-class PCSheetClassBase extends ActorSheet {
-  /** @override */
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: [systemId, "sheet", "actor"],
-      template: reactTemplatePath,
+import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
+
+class PCSheetClassBase extends ActorSheetV2 {
+  static DEFAULT_OPTIONS = {
+    classes: [systemId, "sheet", "actor"],
+    position: {
       width: 777,
       height: 900,
-    });
-  }
+    },
+    window: {
+      resizable: true,
+    },
+  };
 }
 
-const render = (sheet: PCSheetClassBase) => {
+const render = () => {
   return <PCSheet />;
 };
 
-export const PCSheetClass = ReactApplicationMixin(
+export const PCSheetClass = ReactApplicationV2Mixin(
   "PCSheetClass",
   PCSheetClassBase,
   render,

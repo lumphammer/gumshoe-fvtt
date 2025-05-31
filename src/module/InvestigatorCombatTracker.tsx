@@ -3,6 +3,8 @@ import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactA
 import { Tracker as ReactCombatTracker } from "../components/combat/Tracker";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 
+import CombatTracker = foundry.applications.sidebar.tabs.CombatTracker;
+
 export class InvestigatorCombatTrackerBase extends CombatTracker {}
 
 const render = () => {

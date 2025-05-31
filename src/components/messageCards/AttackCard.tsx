@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 
+import { assertApplicationV2 } from "../../functions/utilities";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
 import { DiceTerms } from "./DiceTerms";
@@ -14,9 +15,12 @@ interface AttackCardProps {
 
 export const AttackCard = React.memo(
   ({ msg, rangeName, weapon, name, imageUrl }: AttackCardProps) => {
+    const sheet = weapon?.sheet;
+    assertApplicationV2(sheet);
+
     const onClickWeaponName = useCallback(() => {
-      void weapon?.sheet?.render(true);
-    }, [weapon?.sheet]);
+      void sheet.render({ force: true });
+    }, [sheet]);
 
     const img = weapon?.img ?? imageUrl;
 

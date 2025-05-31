@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 
+import { assertApplicationV2 } from "../../functions/utilities";
 import { AbilityItem } from "../../module/items/exports";
 import { MWDifficulty } from "../../types";
 import { Translate } from "../Translate";
@@ -55,9 +56,12 @@ export const AbilityTestMwCard = React.memo(
     pool,
     name,
   }: AbilityTestMwCardProps) => {
+    const sheet = ability?.sheet;
+    assertApplicationV2(sheet);
+
     const onClickAbilityName = useCallback(() => {
-      void ability?.sheet?.render(true);
-    }, [ability?.sheet]);
+      void sheet.render({ force: true });
+    }, [sheet]);
 
     const cappedResult = Math.max(Math.min(msg.rolls?.[0]?.total ?? 1, 6), 1);
     const effectiveResult =

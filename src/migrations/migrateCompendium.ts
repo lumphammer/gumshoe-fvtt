@@ -1,4 +1,5 @@
 import system from "../../public/system.json";
+import { systemLogger } from "../functions/utilities";
 import { migrateActorData } from "./migrateActorData";
 import { migrateItemData } from "./migrateItemData";
 import { migrateSceneData } from "./migrateSceneData";
@@ -49,19 +50,19 @@ export const migrateCompendium = async function (
       // Save the entry, if data was changed
       updateData._id = ent.id;
       await ent.update(updateData);
-      console.log(
+      systemLogger.log(
         `Migrated ${docType} entity ${ent.name} in Compendium ${pack.collection}`,
       );
     } catch (err: any) {
       // Handle migration failures
       err.message = `Failed ${system.title} system migration for entity ${ent.name} in pack ${pack.collection}: ${err.message}`;
-      console.error(err);
+      systemLogger.error(err);
     }
   }
 
   // Apply the original locked status for the pack
   pack.configure({ locked: wasLocked });
-  console.log(
+  systemLogger.log(
     `Migrated all ${docType} entities from Compendium ${pack.collection}`,
   );
 };

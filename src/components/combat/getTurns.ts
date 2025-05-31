@@ -1,4 +1,3 @@
-import { assertGame } from "../../functions/utilities";
 import { isActiveCharacterActor } from "../../module/actors/exports";
 import { TurnInfo } from "./types";
 
@@ -40,23 +39,10 @@ export function getTurns(combat: Combat): TurnInfo[] {
     const hasResource = resource !== null;
     hasDecimals ||= initiative !== null && !Number.isInteger(initiative);
 
-    let img = combatant.img as string;
-    // Cached thumbnail image for video tokens
-    if (VideoHelper.hasVideoExtension(img)) {
-      assertGame(game);
-      // @ts-expect-error combatant._thumb is a thing
-      if (combatant._thumb) {
-        // @ts-expect-error combatant._thumb is a thing
-        img = combatant._thumb;
-      } else {
-        void game.video
-          .createThumbnail(img, { width: 100, height: 100 })
-          .then((img: string) => {
-            // @ts-expect-error combatant._thumb is a thing
-            img = combatant._thumb = img;
-          });
-      }
-    }
+    // foundry's normal tracker does some stuff with game.video to get
+    // thumbnails of video tokens but it makes this code go async which is
+    // going to be a pain, and tbh I'm not convinced it's a huge use-case
+    const img = combatant.img;
 
     const totalPassingTurns = isActiveCharacterActor(combatant.actor)
       ? (combatant.actor?.system.initiativePassingTurns ?? 1)
@@ -76,7 +62,7 @@ export function getTurns(combat: Combat): TurnInfo[] {
     const turn: TurnInfo = {
       id: combatant.id,
       name: combatant.name ?? "",
-      img,
+      img: img ?? CONST.DEFAULT_TOKEN,
       active,
       owner,
       defeated,

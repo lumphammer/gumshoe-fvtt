@@ -1,3 +1,4 @@
+import { assertApplicationV2 } from "../../functions/utilities";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
 
@@ -10,6 +11,9 @@ interface UnknownPageTypeEditorProps {
  * writing.) Just displays a link to open Foundry's native editor.
  */
 export const UnknownPageTypeEditor = ({ page }: UnknownPageTypeEditorProps) => {
+  const sheet = page.sheet;
+  assertApplicationV2(sheet);
+
   return (
     <div
       css={{
@@ -21,7 +25,10 @@ export const UnknownPageTypeEditor = ({ page }: UnknownPageTypeEditorProps) => {
         // color: "gray",
       }}
     >
-      <Button css={{ width: "auto" }} onClick={() => page.sheet.render(true)}>
+      <Button
+        css={{ width: "auto" }}
+        onClick={() => sheet.render({ force: true })}
+      >
         Open {page.type} page
       </Button>
     </div>

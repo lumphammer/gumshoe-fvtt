@@ -122,7 +122,6 @@ export class GeneralAbilityModel extends AbilityModel<
   };
 
   setGoesFirstInCombat = async (goesFirstInCombat: boolean): Promise<void> => {
-    console.log(this.rating);
     await this.parent.update({ system: { goesFirstInCombat } });
   };
 }

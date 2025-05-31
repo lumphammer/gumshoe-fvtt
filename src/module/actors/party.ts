@@ -84,7 +84,3 @@ export function assertPartyActor(x: unknown): asserts x is PartyActor {
     throw new Error("Expected a Party actor");
   }
 }
-
-function _f(x: PartyModel) {
-  console.log(x.abilityNames[0]);
-}

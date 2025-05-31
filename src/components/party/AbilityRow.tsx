@@ -1,6 +1,7 @@
 import { Fragment, ReactNode } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
+import { assertApplicationV2 } from "../../functions/utilities";
 import { InvestigatorActor } from "../../module/actors/InvestigatorActor";
 import { AbilityItem, isAbilityItem } from "../../module/items/exports";
 import { runtimeConfig } from "../../runtime";
@@ -70,7 +71,9 @@ export const AbilityRow = ({
                 ? actor.items.get(actorInfo.abilityId)
                 : undefined;
               if (ability) {
-                void ability.sheet?.render(true);
+                const sheet = ability.sheet;
+                assertApplicationV2(sheet);
+                void sheet.render({ force: true });
               } else {
                 const confirmed = await confirmADoodleDo({
                   message:
@@ -94,7 +97,9 @@ export const AbilityRow = ({
                   ])
                 )?.[0] as AbilityItem;
                 if (isAbilityItem(newAbility)) {
-                  void newAbility.sheet?.render(true);
+                  const sheet = newAbility.sheet;
+                  assertApplicationV2(sheet);
+                  void sheet.render({ force: true });
                 }
               }
             }}

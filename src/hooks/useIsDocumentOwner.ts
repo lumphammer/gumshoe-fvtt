@@ -1,7 +1,7 @@
-import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 
 import { assertGame } from "../functions/utilities";
+import { useDocumentSheetContext } from "./useSheetContexts";
 
 /**
  * Check if the current user is the owner of the document.
@@ -11,24 +11,14 @@ import { assertGame } from "../functions/utilities";
  */
 export function useIsDocumentOwner() {
   assertGame(game);
-
-  const application = useContext(FoundryAppContext);
-  const user = game.user;
+  const { doc } = useDocumentSheetContext();
 
   const isOwner = useMemo(() => {
-    if (
-      (application instanceof DocumentSheet ||
-        application instanceof foundry.applications.api.DocumentSheetV2) &&
-      user
-    ) {
-      return application.document.testUserPermission(
-        game.user,
-        CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER,
-      );
-    } else {
-      return false;
-    }
-  }, [application, user]);
+    return doc.testUserPermission(
+      game.user,
+      CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER,
+    );
+  }, [doc]);
 
   return isOwner;
 }

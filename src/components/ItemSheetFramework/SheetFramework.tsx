@@ -1,5 +1,6 @@
 import { PropsWithChildren, ReactNode, useEffect, useState } from "react";
 
+import { assertApplicationV2 } from "../../functions/utilities";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { ImagePickle } from "../ImagePickle";
@@ -26,9 +27,11 @@ export const ItemSheetFramework = ({
 
   const [configMode, setConfigMode] = useState(false);
 
+  assertApplicationV2(app);
+
   useEffect(() => {
     // XXX I'm sure we can do better but the types are weird right now
-    void app.render(true);
+    void app.render({ force: true });
   }, [app, configMode]);
 
   return (

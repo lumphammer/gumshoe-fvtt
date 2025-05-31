@@ -1,6 +1,7 @@
 import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 import React, { useCallback, useContext, useState } from "react";
 
+import { assertApplicationV2 } from "../../../functions/utilities";
 import { EquipmentItem } from "../../../module/items/equipment";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { CheckOrCross } from "./CheckOrCross";
@@ -27,6 +28,9 @@ export const EquipmentItemRow = ({
     setHover(false);
   }, []);
 
+  const sheet = item.sheet;
+  assertApplicationV2(sheet);
+
   return (
     <>
       {/* hover bar */}
@@ -49,7 +53,7 @@ export const EquipmentItemRow = ({
           // pointerEvents: "",
           cursor: "pointer",
         }}
-        onClick={() => item.sheet?.render(true)}
+        onClick={() => sheet.render({ force: true })}
         data-item-id={item.id}
         onDragStart={onDragStart}
         draggable="true"
@@ -69,7 +73,7 @@ export const EquipmentItemRow = ({
             }}
             onMouseOver={handleMouseOver}
             onMouseOut={handleMouseOut}
-            onClick={() => item.sheet?.render(true)}
+            onClick={() => sheet.render({ force: true })}
           >
             {field.type === "checkbox" ? (
               <CheckOrCross checked={!!item.system.fields?.[fieldId]} />

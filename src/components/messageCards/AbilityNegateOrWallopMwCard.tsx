@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 
 import * as constants from "../../constants";
+import { assertApplicationV2 } from "../../functions/utilities";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
 import { MwButton } from "./MwButton";
@@ -32,9 +33,12 @@ const deets: { [mode in WallopNegateMode]: MWResult } = {
 
 export const AbilityNegateOrWallopMwCard = React.memo(
   ({ msg, ability, pool, mode, name }: AbilityNegateOrWallopMwCardProps) => {
+    const sheet = ability?.sheet;
+    assertApplicationV2(sheet);
+
     const onClickAbilityName = useCallback(() => {
-      void ability?.sheet?.render(true);
-    }, [ability?.sheet]);
+      void sheet.render({ force: true });
+    }, [sheet]);
 
     const costFactor =
       mode === constants.htmlDataModeMwNegate ? (

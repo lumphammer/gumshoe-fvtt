@@ -1,33 +1,32 @@
-import { ReactApplicationMixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationMixin";
-import React from "react";
+import { lazy } from "react";
 
 import { Suspense } from "../../components/Suspense";
-import { reactTemplatePath, systemId } from "../../constants";
+import { systemId } from "../../constants";
 
-const PartySheet = React.lazy(async () => {
+import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
+import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
+
+const PartySheet = lazy(async () => {
   const { PartySheet } = await import("../../components/party/PartySheet");
   return {
     default: PartySheet,
   };
 });
 
-/**
- * Extend the basic ActorSheet with some very simple modifications
- * @extends {ActorSheet}
- */
-class PartySheetClassBase extends ActorSheet {
-  /** @override */
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: [systemId, "sheet", "actor"],
-      template: reactTemplatePath,
+class PartySheetClassBase extends ActorSheetV2 {
+  static DEFAULT_OPTIONS = {
+    classes: [systemId, "sheet", "actor"],
+    window: {
+      resizable: true,
+    },
+    position: {
       width: 660,
       height: 900,
-    });
-  }
+    },
+  };
 }
 
-const render = (sheet: PartySheetClassBase) => {
+const render = () => {
   return (
     <Suspense>
       <PartySheet />
@@ -35,7 +34,7 @@ const render = (sheet: PartySheetClassBase) => {
   );
 };
 
-export const PartySheetClass = ReactApplicationMixin(
+export const PartySheetClass = ReactApplicationV2Mixin(
   "PartySheetClass",
   PartySheetClassBase,
   render,

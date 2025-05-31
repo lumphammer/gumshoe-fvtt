@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { generalAbility } from "../../constants";
 import { getTranslated } from "../../functions/getTranslated";
+import { assertApplicationV2 } from "../../functions/utilities";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isPCActor } from "../../module/actors/pc";
 import { isAbilityItem } from "../../module/items/exports";
@@ -127,6 +128,9 @@ export const WeaponMain = () => {
 
   const ammoFail = item.system.usesAmmo && item.system.ammo.value <= 0;
 
+  const sheet = item.sheet;
+  assertApplicationV2(sheet);
+
   return (
     <div css={{ ...absoluteCover, display: "flex", flexDirection: "column" }}>
       <InputGrid
@@ -247,7 +251,7 @@ export const WeaponMain = () => {
             <span css={{ display: "inline-block", paddingTop: "0.3em" }}>
               {/* Link to ability, if it exists */}
               {ability && (
-                <a onClick={() => ability?.sheet?.render(true)}>
+                <a onClick={() => sheet.render({ force: true })}>
                   {ability?.name}{" "}
                 </a>
               )}

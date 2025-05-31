@@ -6,7 +6,11 @@ import {
 } from "../constants";
 import { confirmADoodleDo } from "../functions/confirmADoodleDo";
 import { getTranslated } from "../functions/getTranslated";
-import { assertGame, isNullOrEmptyString } from "../functions/utilities";
+import {
+  assertGame,
+  isNullOrEmptyString,
+  systemLogger,
+} from "../functions/utilities";
 import { isActiveCharacterActor } from "../module/actors/exports";
 import { isPersonalDetailItem } from "../module/items/personalDetail";
 import { settings } from "../settings/settings";
@@ -77,24 +81,28 @@ export function installPersonalDetailHookHandler() {
             resolve(true);
           };
 
-          const d = new Dialog({
-            title: "Replace or add?",
+          const dialog = new foundry.applications.api.DialogV2({
             content: `<p>${tlMessage}</p>`,
-            buttons: {
-              replace: {
+            window: {
+              title: "Replace or add?",
+            },
+            buttons: [
+              {
                 icon: '<i class="fas fa-eraser"></i>',
                 label: replaceText,
                 callback: onReplace,
+                action: "replace",
               },
-              add: {
+              {
                 icon: '<i class="fas fa-plus"></i>',
                 label: addText,
                 callback: onAdd,
+                default: true,
+                action: "add",
               },
-            },
-            default: "cancel",
+            ],
           });
-          d.render(true);
+          void dialog.render({ force: true });
           return false;
         });
         await promise;
@@ -154,7 +162,7 @@ export function installPersonalDetailHookHandler() {
                 system: packItem.system,
               };
             });
-            console.log("items", items);
+            systemLogger.log("items", items);
             await (item.actor as any).update({ items });
             ui.notifications?.info(
               `Added or updated ${

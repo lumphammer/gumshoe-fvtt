@@ -89,4 +89,10 @@ declare module "fvtt-types/configuration" {
       rollOrder?: number;
     }
   }
+
+  // Filepicker should be addressed as foundry.applications.apps.FilePicker.implementation
+  // but unless you do something to it it's just foundry.applications.apps.FilePicker
+  namespace foundry.applications.apps.FilePicker {
+    const implementation: typeof foundry.applications.apps.FilePicker;
+  }
 }

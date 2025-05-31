@@ -1,6 +1,7 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import React, { Fragment, useCallback, useContext } from "react";
 
+import { assertApplicationV2 } from "../../functions/utilities";
 import { assertAbilityItem } from "../../module/items/exports";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { AbilityBadges } from "../abilities/AbilityBadges";
@@ -34,11 +35,14 @@ export const AbilitySlugEdit = ({
     [ability],
   );
 
+  const sheet = ability.sheet;
+  assertApplicationV2(sheet);
+
   return (
     <Fragment key={ability.id}>
       <a
         onClick={() => {
-          void ability.sheet?.render(true);
+          void sheet.render({ force: true });
         }}
         data-item-id={ability.id}
         onDragStart={onDragStart}

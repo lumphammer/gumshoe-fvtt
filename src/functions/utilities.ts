@@ -402,3 +402,11 @@ export function getByIdOrThrow<T extends { id: string }>(
   }
   return item;
 }
+
+export function assertApplicationV2(
+  app: any,
+): asserts app is foundry.applications.api.ApplicationV2 {
+  if (!(app instanceof foundry.applications.api.ApplicationV2)) {
+    throw new Error("App is not an ApplicationV2");
+  }
+}

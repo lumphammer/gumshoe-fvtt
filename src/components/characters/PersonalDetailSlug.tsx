@@ -1,3 +1,4 @@
+import { assertApplicationV2 } from "../../functions/utilities";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { assertPersonalDetailItem } from "../../module/items/personalDetail";
 import { Slug } from "./Slug";
@@ -8,13 +9,15 @@ interface PersonalDetailSlugProps {
 
 export const PersonalDetailSlug = ({ item }: PersonalDetailSlugProps) => {
   assertPersonalDetailItem(item);
+  const sheet = item.sheet;
+  assertApplicationV2(sheet);
 
   return (
     <Slug
       item={item}
       key={item.id}
       onClick={() => {
-        void item.sheet?.render(true);
+        void sheet.render({ force: true });
       }}
     >
       {item.name}

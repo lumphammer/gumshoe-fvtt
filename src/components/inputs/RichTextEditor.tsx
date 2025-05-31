@@ -1,8 +1,11 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 
-import { wait } from "../../functions/utilities";
+import { systemLogger, wait } from "../../functions/utilities";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
+
+import TextEditor = foundry.applications.ux.TextEditor.implementation;
+
 type RichTextEditorProps = {
   value: string;
   className?: string;
@@ -35,7 +38,7 @@ export const RichTextEditor = ({
     // using foundry's cool new editor in due course anyway.
     await wait(500);
     onSave?.();
-    console.log("saved");
+    systemLogger.log("saved");
   }, [onSave]);
 
   const ref = useRef<HTMLTextAreaElement>(null);

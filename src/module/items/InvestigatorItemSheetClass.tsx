@@ -1,11 +1,9 @@
-// import ReactDOM from "react-dom";
-import { ReactApplicationMixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationMixin";
+import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 import React from "react";
 
 import { Suspense } from "../../components/Suspense";
-import { reactTemplatePath, systemId } from "../../constants";
 
-// React stuff -----------------------------------------------------------------
+import ItemSheetV2 = foundry.applications.sheets.ItemSheetV2;
 
 const InvestigatorItemSheet = React.lazy(() =>
   import("../../components/ItemSheet").then(({ ItemSheet }) => ({
@@ -13,7 +11,7 @@ const InvestigatorItemSheet = React.lazy(() =>
   })),
 );
 
-const render = (sheet: ItemSheetClassBase) => {
+const render = () => {
   return (
     <Suspense>
       <InvestigatorItemSheet />
@@ -21,25 +19,21 @@ const render = (sheet: ItemSheetClassBase) => {
   );
 };
 
-/**
- * Extend the basic ActorSheet with some very simple modifications
- * @extends {ActorSheet}
- */
-class ItemSheetClassBase extends ItemSheet {
+class ItemSheetClassBase extends ItemSheetV2 {
   /** @override */
-  static get defaultOptions() {
-    return {
-      ...super.defaultOptions,
-      classes: [systemId, "sheet", "item"],
-      template: reactTemplatePath,
+  static DEFAULT_OPTIONS = {
+    classes: ["investigator"],
+    position: {
       width: 450,
       height: 600,
+    },
+    window: {
       resizable: true,
-    };
-  }
+    },
+  };
 }
 
-export const ItemSheetClass = ReactApplicationMixin(
+export const ItemSheetClass = ReactApplicationV2Mixin(
   "ItemSheetClass",
   ItemSheetClassBase,
   render,

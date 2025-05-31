@@ -3,6 +3,8 @@ import { escape as escapeText } from "html-escaper";
 import { NoteFormat } from "../types";
 import { memoizeNullaryOnce } from "./utilities";
 
+const TextEditor = window.foundry?.applications?.ux?.TextEditor?.implementation;
+
 // /////////////////////////////////////////////////////////////////////////////
 // Toolbox
 // /////////////////////////////////////////////////////////////////////////////

@@ -10,6 +10,7 @@ import React, {
 
 import { generalAbility } from "../../../constants";
 import { cleanAndEnrichHtml } from "../../../functions/textFunctions";
+import { assertApplicationV2 } from "../../../functions/utilities";
 import { isAbilityItem } from "../../../module/items/exports";
 import { InvestigatorItem } from "../../../module/items/InvestigatorItem";
 import { WeaponItem } from "../../../module/items/weapon";
@@ -128,12 +129,15 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
     });
   };
 
+  const sheet = weapon.sheet;
+  assertApplicationV2(sheet);
+
   return (
     <Fragment>
       <a
         css={{ gridColumn: 1, overflow: "hidden", textOverflow: "ellipsis" }}
         className={hover ? "hover" : ""}
-        onClick={() => weapon.sheet?.render(true)}
+        onClick={() => sheet.render({ force: true })}
         onMouseOver={onMouseOver}
         onMouseOut={onMouseOut}
         data-item-id={weapon.id}

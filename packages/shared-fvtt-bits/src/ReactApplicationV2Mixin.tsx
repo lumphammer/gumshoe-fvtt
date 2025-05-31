@@ -3,10 +3,9 @@ import { ReactNode, StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
 
 import { FoundryAppContext } from "./FoundryAppContext";
-import { Constructor, RecursivePartial } from "./types";
+import { Constructor } from "./types";
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
 
-import ApplicationConfiguration = foundry.applications.types.ApplicationConfiguration;
 import RenderOptions = foundry.applications.api.ApplicationV2.RenderOptions;
 
 // so Constructor<Application> is any class which is an Application
@@ -60,6 +59,28 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
         this.reactRoot = createRoot(target);
       }
       return element;
+    }
+
+    override async close(options?: DeepPartial<ApplicationV2.ClosingOptions>) {
+      // we're inverting the normal order of inherited calls here. the class
+      // produced by this mixin is effectively a subclass of the class passed
+      // in, but we want a way for the base class to determine whether we
+      // actually unmount the app etc. so we call the base class's close method
+      // first, and if it doesn't throw, we assume it's okay to unmount our
+      // react tree.
+      try {
+        await super.close(options);
+        if (this.reactRoot) {
+          this.reactRoot.unmount();
+          this.reactRoot = undefined;
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+      } catch (e: any) {
+        // if it does throw, we don;t want that to reach the console, so we do
+        // nothing. This is an async function to that's equivalent to returning
+        // a promise that resolves to undefined.
+      }
+      return this;
     }
 
     // _renderHTML is the semantically appropriate place to render updates to

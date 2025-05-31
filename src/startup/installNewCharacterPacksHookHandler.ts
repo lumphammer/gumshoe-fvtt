@@ -1,4 +1,4 @@
-import { assertGame } from "../functions/utilities";
+import { assertGame, systemLogger } from "../functions/utilities";
 import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 import { isNPCActor } from "../module/actors/npc";
 import { isPCActor } from "../module/actors/pc";
@@ -25,7 +25,7 @@ export function installNewCharacterPacksHookHandler() {
         // errors) so I have switched it to serial to see if that helps
         for (const packId of settings.newPCPacks.get()) {
           assertGame(game);
-          console.log("PACK", packId);
+          systemLogger.log("PACK", packId);
           const content = await game.packs
             ?.find((p: any) => p.collection === packId)
             ?.getDocuments();
@@ -41,7 +41,7 @@ export function installNewCharacterPacksHookHandler() {
               type,
             };
           });
-          console.log("datas", datas);
+          systemLogger.log("datas", datas);
           await (actor as any).createEmbeddedDocuments("Item", datas);
         }
       }
@@ -49,7 +49,7 @@ export function installNewCharacterPacksHookHandler() {
       if (isNPCActor(actor)) {
         for (const packId of settings.newNPCPacks.get()) {
           assertGame(game);
-          console.log("PACK", packId);
+          systemLogger.log("PACK", packId);
           const content = await game.packs
             ?.find((p) => p.documentName === "Item" && p.collection === packId)
             ?.getDocuments();
@@ -63,7 +63,7 @@ export function installNewCharacterPacksHookHandler() {
               type,
             }),
           );
-          console.log("datas", datas);
+          systemLogger.log("datas", datas);
           await (actor as any).createEmbeddedDocuments("Item", datas);
         }
       }
