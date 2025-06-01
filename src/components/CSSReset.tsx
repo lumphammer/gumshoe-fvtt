@@ -259,6 +259,14 @@ export const CSSReset = ({
         },
         hr: {
           borderColor: theme.colors.controlBorder,
+          width: "calc(100% - 2em)",
+          borderWidth: 0,
+          height: "2px",
+          backgroundImage: `linear-gradient(
+              90deg,
+              oklch(from ${theme.colors.controlBorder} l c h / 0%) 0%,
+              oklch(from ${theme.colors.controlBorder} l c h / 50%) 50%,
+              oklch(from ${theme.colors.controlBorder} l c h / 0%) 100%)`,
         },
         "i.fa:last-child": {
           margin: 0,
