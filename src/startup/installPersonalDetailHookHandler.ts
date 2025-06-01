@@ -11,6 +11,7 @@ import {
   isNullOrEmptyString,
   systemLogger,
 } from "../functions/utilities";
+import { DialogV2 } from "../fvtt-exports";
 import { isActiveCharacterActor } from "../module/actors/exports";
 import { isPersonalDetailItem } from "../module/items/personalDetail";
 import { settings } from "../settings/settings";
@@ -81,7 +82,7 @@ export function installPersonalDetailHookHandler() {
             resolve(true);
           };
 
-          const dialog = new foundry.applications.api.DialogV2({
+          const dialog = new DialogV2({
             content: `<p>${tlMessage}</p>`,
             window: {
               title: "Replace or add?",

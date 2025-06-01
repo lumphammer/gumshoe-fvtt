@@ -2,10 +2,9 @@ import { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
 
 import { defaultCustomThemePath } from "../constants";
 import { assertGame, systemLogger } from "../functions/utilities";
+import { FilePicker } from "../fvtt-exports";
 import { settings } from "../settings/settings";
 import { highContrastTheme } from "../themes/highContrastTheme";
-
-import FilePicker = foundry.applications.apps.FilePicker.implementation;
 
 export function loadCustomThemes() {
   const jsonRe = /\.(?:json|json5)$/;

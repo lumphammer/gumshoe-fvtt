@@ -1,13 +1,10 @@
 import * as constants from "../../constants";
+import { BooleanField, NumberField, StringField } from "../../fvtt-exports";
+import { MwRefreshGroup } from "../../types";
 import { AbilityModel } from "./AbilityModel";
+import { createAbilitySchema } from "./createAbilitySchema";
 import { InvestigativeAbilityItem } from "./investigativeAbility";
 import { InvestigatorItem } from "./InvestigatorItem";
-
-import BooleanField = foundry.data.fields.BooleanField;
-import StringField = foundry.data.fields.StringField;
-import NumberField = foundry.data.fields.NumberField;
-import { MwRefreshGroup } from "../../types";
-import { createAbilitySchema } from "./createAbilitySchema";
 
 export const generalAbilitySchema = {
   ...createAbilitySchema(),

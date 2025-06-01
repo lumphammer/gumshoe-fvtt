@@ -1,5 +1,6 @@
 import * as constants from "../../constants";
 import { assertGame } from "../../functions/utilities";
+import { PoolTerm } from "../../fvtt-exports";
 import { isNPCActor } from "../../module/actors/npc";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
@@ -91,7 +92,7 @@ export const performAttack =
     damageRoll.dice[0].options.rollOrder = 2;
 
     // @ts-expect-error types are too restrictive
-    const pool = foundry.dice.terms.PoolTerm.fromRolls([hitRoll, damageRoll]);
+    const pool = PoolTerm.fromRolls([hitRoll, damageRoll]);
     const actualRoll = Roll.fromTerms([pool]);
 
     const abilityId = ability?._id ?? "";

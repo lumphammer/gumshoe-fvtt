@@ -1,8 +1,7 @@
 import { extraCssClasses, systemId } from "../constants";
 import { assertGame } from "../functions/utilities";
+import { JournalEntrySheet } from "../fvtt-exports";
 import { JournalEntryHTMLEditorSheetClass } from "./JournalEditorSheetClass";
-
-import JournalEntrySheet = foundry.applications.sheets.journal.JournalEntrySheet;
 
 type OnRenderArgs = Parameters<JournalEntrySheet["_onRender"]>;
 type ContextArg = OnRenderArgs[0];

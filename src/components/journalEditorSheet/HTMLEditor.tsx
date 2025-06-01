@@ -7,6 +7,7 @@ import { AiOutlineFormatPainter } from "react-icons/ai";
 
 import { extraCssClasses, systemId } from "../../constants";
 import { debounce, systemLogger } from "../../functions/utilities";
+import { TextEditor } from "../../fvtt-exports";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 // these imports are going around the barrel export because I was getting some
 // weird "SyntaxError: Ambiguous import "DocumentMemory"" errors
@@ -14,8 +15,6 @@ import type { DocumentMemory } from "./documentMemory/types";
 import { useToolbarContent } from "./magicToolbar";
 import { ToolbarButton } from "./magicToolbar/ToolbarButton";
 import { savePage } from "./savePage";
-
-import TextEditor = foundry.applications.ux.TextEditor.implementation;
 
 interface HTMLEditorProps {
   page: any;

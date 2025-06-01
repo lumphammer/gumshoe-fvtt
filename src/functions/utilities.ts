@@ -1,4 +1,5 @@
 import * as constants from "../constants";
+import { ApplicationV2, Game } from "../fvtt-exports";
 import { PickByType, RequestTurnPassArgs, SocketHookAction } from "../types";
 
 interface NameHaver {
@@ -90,7 +91,7 @@ export const hasOwnProperty = (x: any, y: string) =>
  * Check that `game` has been initialised
  */
 export function isGame(game: any): game is Game {
-  return game instanceof foundry.Game;
+  return game instanceof Game;
 }
 
 /**
@@ -402,10 +403,8 @@ export function getByIdOrThrow<T extends { id: string }>(
   return item;
 }
 
-export function assertApplicationV2(
-  app: any,
-): asserts app is foundry.applications.api.ApplicationV2 {
-  if (!(app instanceof foundry.applications.api.ApplicationV2)) {
+export function assertApplicationV2(app: any): asserts app is ApplicationV2 {
+  if (!(app instanceof ApplicationV2)) {
     throw new Error("App is not an ApplicationV2");
   }
 }

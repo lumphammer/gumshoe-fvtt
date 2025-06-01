@@ -1,14 +1,14 @@
+import {
+  BooleanField,
+  NumberField,
+  SchemaField,
+  SourceData,
+  StringField,
+  TypeDataModel,
+} from "../../fvtt-exports";
 import { NoteWithFormat } from "../../types";
 import { createNotesWithFormatField } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
-
-import StringField = foundry.data.fields.StringField;
-import NumberField = foundry.data.fields.NumberField;
-import BooleanField = foundry.data.fields.BooleanField;
-import SchemaField = foundry.data.fields.SchemaField;
-
-import TypeDataModel = foundry.abstract.TypeDataModel;
-import SourceData = foundry.data.fields.SchemaField.SourceData;
 
 export const weaponSchema = {
   ability: new StringField({

@@ -1,13 +1,8 @@
+import { SourceData, StringField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { NoteWithFormat } from "../../types";
 import { createNotesWithFormatField, createRecordField } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
-
-import StringField = foundry.data.fields.StringField;
-import TypeDataModel = foundry.abstract.TypeDataModel;
-import SourceData = foundry.data.fields.SchemaField.SourceData;
-// import TypedObjectField = foundry.data.fields.TypedObjectField;
-// import AnyField = foundry.data.fields.AnyField;
 
 const equipmentSchema = {
   notes: createNotesWithFormatField(),

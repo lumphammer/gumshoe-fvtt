@@ -2,6 +2,13 @@ import { CardsAreaSettings } from "../../components/cards/types";
 import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { convertNotes } from "../../functions/textFunctions";
+import {
+  ArrayField,
+  NumberField,
+  SchemaField,
+  SourceData,
+  StringField,
+} from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { AbilityType, MwRefreshGroup, MwType } from "../../types";
 import { CardItem, isCardItem } from "../items/card";
@@ -15,12 +22,6 @@ import {
 import { createActiveCharacterSchema } from "../schemaFields";
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
 import { InvestigatorActor } from "./InvestigatorActor";
-
-import NumberField = foundry.data.fields.NumberField;
-import StringField = foundry.data.fields.StringField;
-import ArrayField = foundry.data.fields.ArrayField;
-import SchemaField = foundry.data.fields.SchemaField;
-import SourceData = foundry.data.fields.SchemaField.SourceData;
 
 export const pcSchema = {
   ...createActiveCharacterSchema(),

@@ -1,4 +1,5 @@
 import { assertGame } from "../../functions/utilities";
+import { DialogV2 } from "../../fvtt-exports";
 import { format, localize } from "./functions";
 
 interface EncounterNavProps {
@@ -76,7 +77,7 @@ export const EncounterNav = ({
           // DOM tree
           // data-action="endCombat"
           onClick={(event) => {
-            void foundry.applications.api.DialogV2.confirm({
+            void DialogV2.confirm({
               window: { title: "COMBAT.EndTitle" },
               content: `<p>${game.i18n.localize("COMBAT.EndConfirmation")}</p>`,
               yes: {

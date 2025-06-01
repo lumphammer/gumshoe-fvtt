@@ -1,11 +1,13 @@
 import { AnyObject } from "fvtt-types/utils";
 
-import SchemaField = foundry.data.fields.SchemaField;
-import StringField = foundry.data.fields.StringField;
-import TypedObjectField = foundry.data.fields.TypedObjectField;
-import NumberField = foundry.data.fields.NumberField;
-import ObjectField = foundry.data.fields.ObjectField;
-import DataField = foundry.data.fields.DataField;
+import {
+  DataField,
+  NumberField,
+  ObjectField,
+  SchemaField,
+  StringField,
+  TypedObjectField,
+} from "../fvtt-exports";
 
 export const createNotesWithFormatField = () =>
   new SchemaField({
