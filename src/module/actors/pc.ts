@@ -19,7 +19,6 @@ import { InvestigatorActor } from "./InvestigatorActor";
 import NumberField = foundry.data.fields.NumberField;
 import StringField = foundry.data.fields.StringField;
 import ArrayField = foundry.data.fields.ArrayField;
-import BooleanField = foundry.data.fields.BooleanField;
 import SchemaField = foundry.data.fields.SchemaField;
 import SourceData = foundry.data.fields.SchemaField.SourceData;
 
@@ -60,11 +59,6 @@ export const pcSchema = {
     nullable: false,
     initial: [],
     required: true,
-  }),
-  hideZeroRated: new BooleanField({
-    nullable: false,
-    required: true,
-    initial: false,
   }),
   initiativeAbility: new StringField({
     nullable: false,

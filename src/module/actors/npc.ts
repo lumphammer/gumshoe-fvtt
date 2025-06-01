@@ -10,7 +10,6 @@ import { InvestigatorActor } from "./InvestigatorActor";
 
 import NumberField = foundry.data.fields.NumberField;
 import StringField = foundry.data.fields.StringField;
-import BooleanField = foundry.data.fields.BooleanField;
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
 
 export const npcSchema = {
@@ -25,10 +24,6 @@ export const npcSchema = {
     initial: 0,
   }),
   gmNotes: createNotesWithFormatField(),
-  hideZeroRated: new BooleanField({
-    nullable: false,
-    required: true,
-  }),
   initiativeAbility: new StringField({
     nullable: false,
     required: true,
