@@ -11,46 +11,29 @@ import { CardSystemData, NoteWithFormat } from "../../types";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const cardSchema = {
-  // cardCategoryMemberships: CardCategoryMembership[];
+  active: new BooleanField({ nullable: false, required: true, initial: true }),
   cardCategoryMemberships: new ArrayField(
     new SchemaField(
       {
-        // categoryId: string;
         categoryId: new StringField({ nullable: false, required: true }),
-        // nonlethal: boolean;
         nonlethal: new BooleanField({ nullable: false, required: true }),
-        // worth: number;
         worth: new NumberField({ nullable: false, required: true }),
       },
-      {
-        nullable: false,
-        required: true,
-      },
+      { nullable: false, required: true },
     ),
   ),
-  // styleKeyCategoryId: string | null;
-  styleKeyCategoryId: new StringField({ nullable: true, required: true }),
-  // supertitle: string;
-  supertitle: new StringField({ nullable: false, required: true }),
-  // title: string;
-  title: new StringField({ nullable: false, required: true }),
-  // subtitle: string;
-  subtitle: new StringField({ nullable: false, required: true }),
-  // effects: NoteWithFormat;
-  effects: createNotesWithFormatField(),
-  // description: NoteWithFormat;
+  continuity: new BooleanField({ nullable: false, required: true }),
   description: createNotesWithFormatField(),
-  // type: string;
-  type: new StringField({ nullable: false, required: true }),
-  // flags: string[];
+  effects: createNotesWithFormatField(),
   flags: new ArrayField(new StringField({ nullable: false, required: true }), {
     nullable: false,
     required: true,
   }),
-  // active: boolean;
-  active: new BooleanField({ nullable: false, required: true }),
-  // continuity: boolean;
-  continuity: new BooleanField({ nullable: false, required: true }),
+  styleKeyCategoryId: new StringField({ nullable: true, required: true }),
+  subtitle: new StringField({ nullable: false, required: true }),
+  supertitle: new StringField({ nullable: false, required: true }),
+  title: new StringField({ nullable: false, required: true }),
+  type: new StringField({ nullable: false, required: true }),
 };
 
 export class CardModel extends TypeDataModel<typeof cardSchema, CardItem> {

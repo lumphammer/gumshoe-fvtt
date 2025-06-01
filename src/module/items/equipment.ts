@@ -10,11 +10,9 @@ import SourceData = foundry.data.fields.SchemaField.SourceData;
 // import AnyField = foundry.data.fields.AnyField;
 
 const equipmentSchema = {
-  // notes: NoteWithFormat;
   notes: createNotesWithFormatField(),
-  // categoryId: string;
   categoryId: new StringField({ nullable: false, required: true }),
-  // fields: Record<string, string | number | boolean>;
+  // Currently there's no good way of expressing a union in a DatatModel
   // fields: new TypedObjectField(
   //   new AnyField({
   //     nullable: false,

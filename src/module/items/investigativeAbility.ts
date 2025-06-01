@@ -7,8 +7,12 @@ import { createAbilitySchema } from "./createAbilitySchema";
 
 export const investigativeAbilitySchema = {
   ...createAbilitySchema(),
-  // isQuickShock: boolean;
   isQuickShock: new BooleanField({ nullable: false, required: true }),
+  hideIfZeroRated: new BooleanField({
+    nullable: false,
+    required: true,
+    initial: true,
+  }),
 };
 
 export class InvestigativeAbilityModel extends AbilityModel<

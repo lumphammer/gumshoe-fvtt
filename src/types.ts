@@ -78,29 +78,6 @@ export type AbilityType =
   | typeof constants.investigativeAbility
   | typeof constants.generalAbility;
 
-/** system data forweapons */
-export type WeaponSystemData = {
-  notes: NoteWithFormat;
-  ability: string;
-  damage: number;
-  pointBlankDamage: number;
-  closeRangeDamage: number;
-  nearRangeDamage: number;
-  longRangeDamage: number;
-  isPointBlank: boolean;
-  isCloseRange: boolean;
-  isNearRange: boolean;
-  isLongRange: boolean;
-  usesAmmo: boolean;
-  ammoPerShot: number;
-  cost: number;
-  ammo: {
-    min: number;
-    max: number;
-    value: number;
-  };
-};
-
 export type Unlock = {
   id: string;
   rating: number;
@@ -115,51 +92,7 @@ export type SituationalModifier = {
 
 export type SpecialitiesMode = "one" | "twoThreeFour";
 
-/** system data for either type of ability */
-export type BaseAbilitySystemData = {
-  rating: number;
-  pool: number;
-  min: number;
-  max: number;
-  occupational: boolean;
-  hasSpecialities: boolean;
-  specialitiesMode: SpecialitiesMode;
-  specialities: string[];
-  showTracker: boolean;
-  boost: boolean;
-  categoryId: string;
-  excludeFromGeneralRefresh: boolean;
-  refreshesDaily: boolean;
-  notes: NoteWithFormat;
-  // this is defined separately for gen/inv in template.json so they have
-  // different defaults but it's the same property
-  hideIfZeroRated: boolean;
-  unlocks: Unlock[];
-  situationalModifiers: SituationalModifier[];
-  allowPoolToExceedRating: boolean;
-};
-
-/** system data forinvestigative abilities */
-export type InvestigativeAbilitySystemData = BaseAbilitySystemData & {
-  isQuickShock: boolean;
-};
-
 export type MwRefreshGroup = 2 | 4 | 8;
-
-/** system data forgeneral abilities */
-export type GeneralAbilitySystemData = BaseAbilitySystemData & {
-  canBeInvestigative: boolean;
-  goesFirstInCombat: boolean;
-  // MW-specific fields
-  mwTrumps: string;
-  mwTrumpedBy: string;
-  mwRefreshGroup: MwRefreshGroup;
-  combatBonus: number;
-  damageBonus: number;
-  isPushPool: boolean;
-  linkToResource: boolean;
-  resourceId: string;
-};
 
 export type MwType =
   | "tweak"

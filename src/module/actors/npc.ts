@@ -2,49 +2,23 @@ import * as c from "../../constants";
 import { settings } from "../../settings/settings";
 import { NoteWithFormat } from "../../types";
 import {
+  createActiveCharacterSchema,
   createNotesWithFormatField,
-  createResourcesField,
-  createStatsField,
 } from "../schemaFields";
 import { InvestigatorActor } from "./InvestigatorActor";
 
 import NumberField = foundry.data.fields.NumberField;
 import StringField = foundry.data.fields.StringField;
-import BooleanField = foundry.data.fields.BooleanField;
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
 
 export const npcSchema = {
-  // notes: NoteWithFormat;
-  notes: createNotesWithFormatField(),
-  // gmNotes: NoteWithFormat;
-  gmNotes: createNotesWithFormatField(),
-  // initiativeAbility: string;
-  initiativeAbility: new StringField({ nullable: false, required: true }),
-  // hideZeroRated: boolean;
-  hideZeroRated: new BooleanField({ nullable: false, required: true }),
-  // sheetTheme: string | null;
-  sheetTheme: new StringField({ nullable: true }),
-  // mwInjuryStatus: MwInjuryStatus;
-  mwInjuryStatus: new StringField({
-    nullable: false,
-    required: true,
-    choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
-    initial: "uninjured",
-  }),
-  // resources: Record<string, Resource>;
-  resources: createResourcesField(),
-  // stats: Record<string, number>;
-  stats: createStatsField(),
-  // combatBonus: number;
+  ...createActiveCharacterSchema(),
   combatBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
-  // damageBonus: number;
   damageBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
-  // initiativePassingTurns: number;
-  initiativePassingTurns: new NumberField({
-    nullable: false,
-    required: true,
-    initial: 1,
-    min: 0,
+  gmNotes: createNotesWithFormatField(),
+  notes: createNotesWithFormatField(),
+  sheetTheme: new StringField({
+    nullable: true,
   }),
 };
 

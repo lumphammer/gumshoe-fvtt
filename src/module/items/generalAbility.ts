@@ -11,32 +11,26 @@ import { createAbilitySchema } from "./createAbilitySchema";
 
 export const generalAbilitySchema = {
   ...createAbilitySchema(),
-  // canBeInvestigative: boolean;
   canBeInvestigative: new BooleanField({ nullable: false, required: true }),
-  // goesFirstInCombat: boolean;
   goesFirstInCombat: new BooleanField({ nullable: false, required: true }),
-  // // MW-specific fields
-  // mwTrumps: string;
   mwTrumps: new StringField({ nullable: false, required: true }),
-  // mwTrumpedBy: string;
   mwTrumpedBy: new StringField({ nullable: false, required: true }),
-  // mwRefreshGroup: MwRefreshGroup;
   mwRefreshGroup: new NumberField({
     nullable: false,
     required: true,
     choices: [2, 4, 8],
     initial: 2,
   }),
-  // combatBonus: number;
   combatBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
-  // damageBonus: number;
   damageBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
-  // isPushPool: boolean;
   isPushPool: new BooleanField({ nullable: false, required: true }),
-  // linkToResource: boolean;
   linkToResource: new BooleanField({ nullable: false, required: true }),
-  // resourceId: string;
   resourceId: new StringField({ nullable: false, required: true }),
+  hideIfZeroRated: new BooleanField({
+    nullable: false,
+    required: true,
+    initial: false,
+  }),
 };
 
 export class GeneralAbilityModel extends AbilityModel<

@@ -150,9 +150,6 @@ export class ActiveCharacterModel<
     investigativeAbilities: { [category: string]: InvestigativeAbilityItem[] };
     generalAbilities: { [category: string]: GeneralAbilityItem[] };
   } {
-    // why is this a hook? what was I thinking 3 years ago? it's lieterally just
-    // a function.
-
     const investigativeAbilities: {
       [category: string]: InvestigativeAbilityItem[];
     } = {};

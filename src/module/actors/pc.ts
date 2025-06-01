@@ -12,72 +12,22 @@ import {
   isPersonalDetailItem,
   PersonalDetailItem,
 } from "../items/personalDetail";
-import { createResourcesField, createStatsField } from "../schemaFields";
+import { createActiveCharacterSchema } from "../schemaFields";
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
 import { InvestigatorActor } from "./InvestigatorActor";
 
 import NumberField = foundry.data.fields.NumberField;
 import StringField = foundry.data.fields.StringField;
 import ArrayField = foundry.data.fields.ArrayField;
-import BooleanField = foundry.data.fields.BooleanField;
 import SchemaField = foundry.data.fields.SchemaField;
 import SourceData = foundry.data.fields.SchemaField.SourceData;
 
 export const pcSchema = {
+  ...createActiveCharacterSchema(),
   buildPoints: new NumberField({
     nullable: false,
     required: true,
-    initial: 0,
-    min: 0,
-  }),
-  longNotes: new ArrayField(
-    new SchemaField({
-      source: new StringField({ nullable: false, required: true }),
-      html: new StringField({ nullable: false, required: true }),
-    }),
-  ),
-  longNotesFormat: new StringField({
-    nullable: false,
-    required: true,
-    initial: "richText",
-    choices: ["plain", "richText", "markdown"],
-  }),
-  shortNotes: new ArrayField(new StringField(), {
-    nullable: false,
-    required: true,
-  }),
-  hiddenShortNotes: new ArrayField(new StringField(), {
-    nullable: false,
-    initial: [],
-    required: true,
-  }),
-  initiativeAbility: new StringField({
-    nullable: false,
-    required: true,
-    initial: "",
-  }),
-  hideZeroRated: new BooleanField({
-    nullable: false,
-    required: true,
-    initial: false,
-  }),
-  sheetTheme: new StringField({
-    nullable: true,
-    required: true,
-    initial: null,
-  }),
-  mwInjuryStatus: new StringField({
-    nullable: false,
-    required: true,
-    initial: "uninjured",
-    choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
-  }),
-  resources: createResourcesField(),
-  stats: createStatsField(),
-  initiativePassingTurns: new NumberField({
-    nullable: false,
-    required: true,
-    initial: 0,
+    initial: 28,
     min: 0,
   }),
   cardsAreaSettings: new SchemaField({
@@ -86,6 +36,12 @@ export const pcSchema = {
       required: true,
       initial: "all",
       choices: ["all", "categorized"],
+    }),
+    columnWidth: new StringField({
+      nullable: false,
+      required: true,
+      initial: "narrow",
+      choices: ["narrow", "wide", "full"],
     }),
     sortOrder: new StringField({
       nullable: false,
@@ -99,12 +55,34 @@ export const pcSchema = {
       initial: "short",
       choices: ["short", "full"],
     }),
-    columnWidth: new StringField({
-      nullable: false,
-      required: true,
-      initial: "narrow",
-      choices: ["narrow", "wide", "full"],
+  }),
+  hiddenShortNotes: new ArrayField(new StringField(), {
+    nullable: false,
+    initial: [],
+    required: true,
+  }),
+
+  longNotes: new ArrayField(
+    new SchemaField({
+      source: new StringField({ nullable: false, required: true }),
+      html: new StringField({ nullable: false, required: true }),
     }),
+  ),
+  longNotesFormat: new StringField({
+    nullable: false,
+    required: true,
+    initial: "richText",
+    choices: ["plain", "richText", "markdown"],
+  }),
+
+  sheetTheme: new StringField({
+    nullable: true,
+    required: true,
+    initial: null,
+  }),
+  shortNotes: new ArrayField(new StringField(), {
+    nullable: false,
+    required: true,
   }),
 };
 
