@@ -7,25 +7,12 @@
 // getting Foundry to load it, but see https://github.com/lumphammer/gumshoe-fvtt/issues/928
 // for why we don't do that.
 
-// disabling layers for now to remain v12 compatible
-//@layer system {
-.window-content.non-resizable {
-  padding: 0;
-  position: relative;
-}
-
-.window-content.resizable {
-  position: relative;
-  overflow: hidden;
-  padding: 0;
-  .react-target {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+.sheet.investigator {
+  .window-content {
+    position: relative;
   }
 }
+
 
 a.entity-link,
 a.content-link,
@@ -38,18 +25,6 @@ a.inline-roll {
 .react-target {
   flex: 1;
 }
-
-// .window-app,
-// #sidebar,
-// .main-controls li,
-// .sub-controls li,
-// #players,
-// #hotbar > *,
-// #navigation a,
-// #navigation li {
-//   backdrop-filter: blur(10px);
-//   background-image: linear-gradient(to bottom, #000b 0%, #0006 100%);
-// }
 
 hr {
   width: calc(100% - 2em);
