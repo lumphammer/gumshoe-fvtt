@@ -8,24 +8,12 @@ import ArrayField = foundry.data.fields.ArrayField;
 
 export const partySchema = {
   abilityNames: new ArrayField(
-    new StringField({
-      nullable: false,
-      required: true,
-    }),
-    {
-      nullable: false,
-      required: true,
-    },
+    new StringField({ nullable: false, required: true }),
+    { nullable: false, required: true },
   ),
   actorIds: new ArrayField(
-    new StringField({
-      nullable: false,
-      required: true,
-    }),
-    {
-      nullable: false,
-      required: true,
-    },
+    new StringField({ nullable: false, required: true }),
+    { nullable: false, required: true },
   ),
 };
 

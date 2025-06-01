@@ -13,16 +13,8 @@ import { ActiveCharacterModel } from "./ActiveCharacterModel";
 
 export const npcSchema = {
   ...createActiveCharacterSchema(),
-  combatBonus: new NumberField({
-    nullable: false,
-    required: true,
-    initial: 0,
-  }),
-  damageBonus: new NumberField({
-    nullable: false,
-    required: true,
-    initial: 0,
-  }),
+  combatBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
+  damageBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
   gmNotes: createNotesWithFormatField(),
   notes: createNotesWithFormatField(),
   sheetTheme: new StringField({
