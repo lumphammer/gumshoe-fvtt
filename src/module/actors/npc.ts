@@ -2,9 +2,8 @@ import * as c from "../../constants";
 import { settings } from "../../settings/settings";
 import { NoteWithFormat } from "../../types";
 import {
+  createActiveCharacterSchema,
   createNotesWithFormatField,
-  createResourcesField,
-  createStatsField,
 } from "../schemaFields";
 import { InvestigatorActor } from "./InvestigatorActor";
 
@@ -13,6 +12,7 @@ import StringField = foundry.data.fields.StringField;
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
 
 export const npcSchema = {
+  ...createActiveCharacterSchema(),
   combatBonus: new NumberField({
     nullable: false,
     required: true,
@@ -24,28 +24,10 @@ export const npcSchema = {
     initial: 0,
   }),
   gmNotes: createNotesWithFormatField(),
-  initiativeAbility: new StringField({
-    nullable: false,
-    required: true,
-  }),
-  initiativePassingTurns: new NumberField({
-    nullable: false,
-    required: true,
-    initial: 1,
-    min: 0,
-  }),
-  mwInjuryStatus: new StringField({
-    nullable: false,
-    required: true,
-    choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
-    initial: "uninjured",
-  }),
   notes: createNotesWithFormatField(),
-  resources: createResourcesField(),
   sheetTheme: new StringField({
     nullable: true,
   }),
-  stats: createStatsField(),
 };
 
 export class NPCModel extends ActiveCharacterModel<typeof npcSchema, NPCActor> {
