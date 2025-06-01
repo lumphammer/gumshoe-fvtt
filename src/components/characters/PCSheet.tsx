@@ -201,6 +201,9 @@ export const PCSheet = () => {
           overflowX: "visible",
           overflowY: "auto",
           padding: "0.5em",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.5em",
           ...theme.panelStylePrimary,
         }}
       >
@@ -209,27 +212,22 @@ export const PCSheet = () => {
             <Button onClick={actor.system.confirmMw2Refresh}>
               <Translate>2h Refresh</Translate>
             </Button>
-            <hr />
             <Button onClick={actor.system.confirmMw4Refresh}>
               <Translate>4h Refresh</Translate>
             </Button>
-            <hr />
             <Button onClick={actor.system.confirmMw8Refresh}>
               <Translate>8h Refresh</Translate>
             </Button>
-            <hr />
           </Fragment>
         )}
         <Button onClick={actor.system.confirmRefresh}>
           <Translate>Full Refresh</Translate>
         </Button>
-        <hr />
         {settingsUseMwStyleAbilities() || (
           <Fragment>
             <Button onClick={actor.system.confirm24hRefresh}>
               <Translate>24h Refresh</Translate>
             </Button>
-            <hr />
           </Fragment>
         )}
         {settingsUseMwInjuryStatus() && (
@@ -238,15 +236,12 @@ export const PCSheet = () => {
               status={actor.system.mwInjuryStatus}
               setStatus={actor.system.setMwInjuryStatus}
             />
-            <hr />
           </Fragment>
         )}
         <TrackersArea />
-        <hr />
         {Object.keys(stats).map<ReactNode>((key) => {
           return <StatField key={key} id={key} stat={stats[key]} />;
         })}
-        <hr />
         <CharacterCombatAbilityPicker />
       </div>
 
