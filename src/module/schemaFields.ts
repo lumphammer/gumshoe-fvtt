@@ -83,7 +83,7 @@ export const createActiveCharacterSchema = () => {
     initiativePassingTurns: new NumberField({
       nullable: false,
       required: true,
-      initial: 0,
+      initial: 1,
       min: 0,
     }),
     mwInjuryStatus: new StringField({
