@@ -1,5 +1,5 @@
 import { Stat } from "@lumphammer/investigator-fvtt-types";
-import { Fragment, useCallback } from "react";
+import { useCallback } from "react";
 
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertActiveCharacterActor } from "../../module/actors/exports";
@@ -23,7 +23,7 @@ export const StatField = ({ stat, id }: StatFieldProps) => {
   );
 
   return (
-    <Fragment>
+    <div>
       <h3 css={{ gridColumn: "start / end" }}>{stat.name}</h3>
       <AsyncNumberInput
         min={stat.min ?? 0}
@@ -31,6 +31,6 @@ export const StatField = ({ stat, id }: StatFieldProps) => {
         value={actor.system.stats[id] ?? stat.default}
         onChange={onChange}
       />
-    </Fragment>
+    </div>
   );
 };

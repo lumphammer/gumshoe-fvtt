@@ -8,7 +8,7 @@ export const CharacterCombatAbilityPicker = () => {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   return (
-    <>
+    <div>
       <h3 css={{ gridColumn: "start / end" }}>
         <Translate>Initiative</Translate>
       </h3>
@@ -18,7 +18,7 @@ export const CharacterCombatAbilityPicker = () => {
         pickerValues={settings.combatAbilities.get().toSorted()}
         validValues={actor.system.getGeneralAbilityNames()}
       />
-    </>
+    </div>
   );
 };
 
