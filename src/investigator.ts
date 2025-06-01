@@ -1,8 +1,9 @@
 // import { DummyAppV2 } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2";
 // import { DummyAppV2WithMixin } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2WithMixin";
+import "./investigator.less";
+
 import { systemId } from "./constants";
 import { assertGame, systemLogger } from "./functions/utilities";
-import processedStyles from "./investigator.less?inline";
 import { handleMwItemType } from "./startup/disableMwItemType";
 import { injectGlobalHelper } from "./startup/injectGlobalHelper";
 import { installAbilityCardChatWrangler } from "./startup/installAbilityCardChatWrangler";
@@ -42,14 +43,6 @@ import { registerSheetsAndClasses } from "./startup/registerSheetsAndClasses";
 globalThis.EMOTION_RUNTIME_AUTO_LABEL = true;
 
 injectGlobalHelper();
-
-// Inject CSS
-// normal css imports don't work in foundry because the html is loaded from
-// foundry itself and vite's css injection never kicks in. So we have to
-// import the css as a string and inject it ourselves.
-const styleElement = document.createElement("style");
-styleElement.innerHTML = processedStyles;
-document.head.appendChild(styleElement);
 
 // Initialize system
 Hooks.once("init", function () {
