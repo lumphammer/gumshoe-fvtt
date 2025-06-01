@@ -11,59 +11,15 @@ import TypeDataModel = foundry.abstract.TypeDataModel;
 import SourceData = foundry.data.fields.SchemaField.SourceData;
 
 export const weaponSchema = {
-  // notes: NoteWithFormat;
-  notes: createNotesWithFormatField(),
-  // ability: string;
-  ability: new StringField({ nullable: false, required: true }),
-  // damage: number;
-  damage: new NumberField({ nullable: false, required: true, initial: 0 }),
-  // pointBlankDamage: number;
-  pointBlankDamage: new NumberField({
+  ability: new StringField({
     nullable: false,
     required: true,
-    initial: 0,
+    initial: "Scuffling",
   }),
-  // closeRangeDamage: number;
-  closeRangeDamage: new NumberField({
-    nullable: false,
-    required: true,
-    initial: 0,
-  }),
-  // nearRangeDamage: number;
-  nearRangeDamage: new NumberField({
-    nullable: false,
-    required: true,
-    initial: 0,
-  }),
-  // longRangeDamage: number;
-  longRangeDamage: new NumberField({
-    nullable: false,
-    required: true,
-    initial: 0,
-  }),
-  // isPointBlank: boolean;
-  isPointBlank: new BooleanField({ nullable: false, required: true }),
-  // isCloseRange: boolean;
-  isCloseRange: new BooleanField({ nullable: false, required: true }),
-  // isNearRange: boolean;
-  isNearRange: new BooleanField({ nullable: false, required: true }),
-  // isLongRange: boolean;
-  isLongRange: new BooleanField({ nullable: false, required: true }),
-  // usesAmmo: boolean;
-  usesAmmo: new BooleanField({ nullable: false, required: true }),
-  // ammoPerShot: number;
-  ammoPerShot: new NumberField({ nullable: false, required: true, initial: 0 }),
-  // cost: number;
-  cost: new NumberField({ nullable: false, required: true, initial: 0 }),
-  // ammo: {
-  //   min: number;
-  //   max: number;
-  //   value: number;
-  // };
   ammo: new SchemaField(
     {
       min: new NumberField({ nullable: false, required: true, initial: 0 }),
-      max: new NumberField({ nullable: false, required: true, initial: 0 }),
+      max: new NumberField({ nullable: false, required: true, initial: 10 }),
       value: new NumberField({ nullable: false, required: true, initial: 0 }),
     },
     {
@@ -71,6 +27,39 @@ export const weaponSchema = {
       required: true,
     },
   ),
+  ammoPerShot: new NumberField({ nullable: false, required: true, initial: 1 }),
+  closeRangeDamage: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 0,
+  }),
+  cost: new NumberField({ nullable: false, required: true, initial: 0 }),
+  damage: new NumberField({ nullable: false, required: true, initial: 0 }),
+  isCloseRange: new BooleanField({ nullable: false, required: true }),
+  isLongRange: new BooleanField({ nullable: false, required: false }),
+  isNearRange: new BooleanField({ nullable: false, required: true }),
+  isPointBlank: new BooleanField({ nullable: false, required: true }),
+  longRangeDamage: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 0,
+  }),
+  nearRangeDamage: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 0,
+  }),
+  notes: createNotesWithFormatField(),
+  pointBlankDamage: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 0,
+  }),
+  usesAmmo: new BooleanField({
+    nullable: false,
+    required: true,
+    initial: true,
+  }),
 };
 
 export type WeaponSystemData = SourceData<typeof weaponSchema>;

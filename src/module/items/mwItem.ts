@@ -7,7 +7,7 @@ import { MwType, NoteWithFormat, RangeTuple } from "../../types";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const mwItemSchema = {
-  // mwType: MwType;
+  charges: new NumberField({ nullable: false, required: true, initial: 0 }),
   mwType: new StringField({
     nullable: false,
     required: true,
@@ -24,11 +24,7 @@ export const mwItemSchema = {
     ],
     initial: "tweak",
   }),
-  // notes: NoteWithFormat;
   notes: createNotesWithFormatField(),
-  // charges: number;
-  charges: new NumberField({ nullable: false, required: true, initial: 0 }),
-  // ranges: RangeTuple;
   ranges: new ArrayField(new NumberField({ nullable: false, required: true }), {
     nullable: false,
     required: true,
