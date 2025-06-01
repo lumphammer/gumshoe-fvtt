@@ -14,38 +14,43 @@ import BooleanField = foundry.data.fields.BooleanField;
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
 
 export const npcSchema = {
-  // notes: NoteWithFormat;
-  notes: createNotesWithFormatField(),
-  // gmNotes: NoteWithFormat;
-  gmNotes: createNotesWithFormatField(),
-  // initiativeAbility: string;
-  initiativeAbility: new StringField({ nullable: false, required: true }),
-  // hideZeroRated: boolean;
-  hideZeroRated: new BooleanField({ nullable: false, required: true }),
-  // sheetTheme: string | null;
-  sheetTheme: new StringField({ nullable: true }),
-  // mwInjuryStatus: MwInjuryStatus;
-  mwInjuryStatus: new StringField({
+  combatBonus: new NumberField({
     nullable: false,
     required: true,
-    choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
-    initial: "uninjured",
+    initial: 0,
   }),
-  // resources: Record<string, Resource>;
-  resources: createResourcesField(),
-  // stats: Record<string, number>;
-  stats: createStatsField(),
-  // combatBonus: number;
-  combatBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
-  // damageBonus: number;
-  damageBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
-  // initiativePassingTurns: number;
+  damageBonus: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 0,
+  }),
+  gmNotes: createNotesWithFormatField(),
+  hideZeroRated: new BooleanField({
+    nullable: false,
+    required: true,
+  }),
+  initiativeAbility: new StringField({
+    nullable: false,
+    required: true,
+  }),
   initiativePassingTurns: new NumberField({
     nullable: false,
     required: true,
     initial: 1,
     min: 0,
   }),
+  mwInjuryStatus: new StringField({
+    nullable: false,
+    required: true,
+    choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
+    initial: "uninjured",
+  }),
+  notes: createNotesWithFormatField(),
+  resources: createResourcesField(),
+  sheetTheme: new StringField({
+    nullable: true,
+  }),
+  stats: createStatsField(),
 };
 
 export class NPCModel extends ActiveCharacterModel<typeof npcSchema, NPCActor> {

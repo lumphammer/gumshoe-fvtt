@@ -30,56 +30,6 @@ export const pcSchema = {
     initial: 0,
     min: 0,
   }),
-  longNotes: new ArrayField(
-    new SchemaField({
-      source: new StringField({ nullable: false, required: true }),
-      html: new StringField({ nullable: false, required: true }),
-    }),
-  ),
-  longNotesFormat: new StringField({
-    nullable: false,
-    required: true,
-    initial: "richText",
-    choices: ["plain", "richText", "markdown"],
-  }),
-  shortNotes: new ArrayField(new StringField(), {
-    nullable: false,
-    required: true,
-  }),
-  hiddenShortNotes: new ArrayField(new StringField(), {
-    nullable: false,
-    initial: [],
-    required: true,
-  }),
-  initiativeAbility: new StringField({
-    nullable: false,
-    required: true,
-    initial: "",
-  }),
-  hideZeroRated: new BooleanField({
-    nullable: false,
-    required: true,
-    initial: false,
-  }),
-  sheetTheme: new StringField({
-    nullable: true,
-    required: true,
-    initial: null,
-  }),
-  mwInjuryStatus: new StringField({
-    nullable: false,
-    required: true,
-    initial: "uninjured",
-    choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
-  }),
-  resources: createResourcesField(),
-  stats: createStatsField(),
-  initiativePassingTurns: new NumberField({
-    nullable: false,
-    required: true,
-    initial: 0,
-    min: 0,
-  }),
   cardsAreaSettings: new SchemaField({
     category: new StringField({
       nullable: false,
@@ -106,6 +56,62 @@ export const pcSchema = {
       choices: ["narrow", "wide", "full"],
     }),
   }),
+  hiddenShortNotes: new ArrayField(new StringField(), {
+    nullable: false,
+    initial: [],
+    required: true,
+  }),
+  hideZeroRated: new BooleanField({
+    nullable: false,
+    required: true,
+    initial: false,
+  }),
+  initiativeAbility: new StringField({
+    nullable: false,
+    required: true,
+    initial: "",
+  }),
+  initiativePassingTurns: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 0,
+    min: 0,
+  }),
+  longNotes: new ArrayField(
+    new SchemaField({
+      source: new StringField({
+        nullable: false,
+        required: true,
+      }),
+      html: new StringField({
+        nullable: false,
+        required: true,
+      }),
+    }),
+  ),
+  longNotesFormat: new StringField({
+    nullable: false,
+    required: true,
+    initial: "richText",
+    choices: ["plain", "richText", "markdown"],
+  }),
+  mwInjuryStatus: new StringField({
+    nullable: false,
+    required: true,
+    initial: "uninjured",
+    choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
+  }),
+  resources: createResourcesField(),
+  sheetTheme: new StringField({
+    nullable: true,
+    required: true,
+    initial: null,
+  }),
+  shortNotes: new ArrayField(new StringField(), {
+    nullable: false,
+    required: true,
+  }),
+  stats: createStatsField(),
 };
 
 type InferredBaseNote =
