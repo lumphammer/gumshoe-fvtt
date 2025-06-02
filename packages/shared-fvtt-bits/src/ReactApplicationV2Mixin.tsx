@@ -4,8 +4,8 @@ import { createRoot, Root } from "react-dom/client";
 
 import { FoundryAppContext } from "./FoundryAppContext";
 import { Constructor } from "./types";
-import ApplicationV2 = foundry.applications.api.ApplicationV2;
 
+import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import RenderOptions = foundry.applications.api.ApplicationV2.RenderOptions;
 
 // so Constructor<Application> is any class which is an Application
