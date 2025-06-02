@@ -1,8 +1,5 @@
-import {
-  assertGame,
-  isNullOrEmptyString,
-  systemLogger,
-} from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
+import { isNullOrEmptyString, systemLogger } from "../functions/utilities";
 import { isAbilityItem } from "../module/items/exports";
 import { isGeneralAbilityItem } from "../module/items/generalAbility";
 import {

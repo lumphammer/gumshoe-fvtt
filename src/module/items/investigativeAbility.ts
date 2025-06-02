@@ -1,9 +1,8 @@
+import { BooleanField } from "../../fvtt-exports";
 import { assertPCActor } from "../actors/pc";
 import { AbilityModel } from "./AbilityModel";
-import { InvestigatorItem } from "./InvestigatorItem";
-
-import BooleanField = foundry.data.fields.BooleanField;
 import { createAbilitySchema } from "./createAbilitySchema";
+import { InvestigatorItem } from "./InvestigatorItem";
 
 export const investigativeAbilitySchema = {
   ...createAbilitySchema(),

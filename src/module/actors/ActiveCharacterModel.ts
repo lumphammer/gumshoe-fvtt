@@ -1,6 +1,7 @@
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
+import { DataSchema, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { MwInjuryStatus } from "../../types";
 import type { EquipmentItem } from "../items/equipment";
@@ -9,9 +10,6 @@ import type { GeneralAbilityItem } from "../items/generalAbility";
 import type { InvestigativeAbilityItem } from "../items/investigativeAbility";
 import type { InvestigatorItem } from "../items/InvestigatorItem";
 import type { WeaponItem } from "../items/weapon";
-
-import TypeDataModel = foundry.abstract.TypeDataModel;
-import DataSchema = foundry.data.fields.DataSchema;
 
 function isAbilityItem(x: unknown): x is AbilityItem {
   return (

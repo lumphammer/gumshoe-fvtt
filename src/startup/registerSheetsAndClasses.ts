@@ -1,4 +1,9 @@
 import * as constants from "../constants";
+import {
+  ActorsCollection,
+  ItemsCollection,
+  JournalCollection,
+} from "../fvtt-exports";
 import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 import { NPCModel } from "../module/actors/npc";
 import { NPCSheetClass } from "../module/actors/NPCSheetClass";
@@ -44,18 +49,6 @@ export const registerSheetsAndClasses = () => {
   CONFIG.Item.dataModels["card"] = CardModel;
 
   // Register custom sheets
-
-  // @ts-expect-error not typed yet
-  const _Journal = foundry.documents.collections.Journal;
-  const JournalCollection = _Journal as typeof Journal;
-
-  // @ts-expect-error not typed yet
-  const _Actors = foundry.documents.collections.Actors;
-  const ActorsCollection = _Actors as typeof Actors;
-
-  // @ts-expect-error not typed yet
-  const _Items = foundry.documents.collections.Items;
-  const ItemsCollection = _Items as typeof Items;
 
   // actors
   ActorsCollection.registerSheet(constants.systemId, NPCSheetClass, {

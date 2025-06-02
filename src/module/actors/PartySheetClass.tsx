@@ -1,10 +1,9 @@
+import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 import { lazy } from "react";
 
 import { Suspense } from "../../components/Suspense";
 import { systemId } from "../../constants";
-
-import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
-import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
+import { ActorSheetV2 } from "../../fvtt-exports";
 
 const PartySheet = lazy(async () => {
   const { PartySheet } = await import("../../components/party/PartySheet");

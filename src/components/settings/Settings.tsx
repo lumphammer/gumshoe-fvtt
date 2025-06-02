@@ -3,7 +3,7 @@ import { useCallback, useContext, useEffect } from "react";
 
 import { settingsCloseAttempted, settingsSaved } from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { useTheme } from "../../hooks/useTheme";
 import { settings } from "../../settings/settings";
 import { absoluteCover } from "../absoluteCover";

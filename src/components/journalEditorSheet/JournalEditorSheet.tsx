@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { MdOutlinePreview } from "react-icons/md";
 
 import { extraCssClasses, systemId } from "../../constants";
+import { JournalCollection } from "../../fvtt-exports";
 import { useJournalEntrySheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
 import { absoluteCover } from "../absoluteCover";
@@ -45,12 +46,9 @@ export const JournalEditorSheet = () => {
   );
 
   const handlePreview = useCallback(() => {
-    const JournalSheet: JournalSheet =
-      // @ts-expect-error Journal types are effed
-      foundry.documents.collections.Journal.registeredSheets.find(
-        // @ts-expect-error Journal types are effed
-        (sheet) => sheet.name === "InvestigatorJournalSheet",
-      ) as unknown as JournalSheet;
+    const JournalSheet: JournalSheet = JournalCollection.registeredSheets.find(
+      (sheet) => sheet.name === "InvestigatorJournalSheet",
+    ) as unknown as JournalSheet;
     // @ts-expect-error Journal types are effed
     new JournalSheet({ document: journalEntry }).render({ force: true });
   }, [journalEntry]);

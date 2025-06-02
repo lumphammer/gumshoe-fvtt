@@ -1,6 +1,6 @@
 import { useCallback, useContext } from "react";
 
-import { assertGame } from "../../../functions/utilities";
+import { assertGame } from "../../../functions/isGame";
 import { Button } from "../../inputs/Button";
 import { GridFieldStacked } from "../../inputs/GridFieldStacked";
 import { InputGrid } from "../../inputs/InputGrid";

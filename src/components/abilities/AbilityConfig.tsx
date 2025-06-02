@@ -2,7 +2,7 @@ import { ChangeEvent, Fragment, useCallback, useState } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";

@@ -1,5 +1,5 @@
 import * as constants from "../constants";
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 import { InvestigatorCombat } from "../module/InvestigatorCombat";
 import { RequestTurnPassArgs } from "../types";
 

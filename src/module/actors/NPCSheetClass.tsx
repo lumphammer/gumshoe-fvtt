@@ -3,8 +3,7 @@ import React from "react";
 
 import { Suspense } from "../../components/Suspense";
 import { systemId } from "../../constants";
-
-import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
+import { ActorSheetV2 } from "../../fvtt-exports";
 
 const NPCSheet = React.lazy(() =>
   import("../../components/characters/NPCSheet").then(({ NPCSheet }) => ({

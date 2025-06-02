@@ -1,11 +1,10 @@
 import { useCallback, useContext } from "react";
 
+import { FilePicker } from "../../fvtt-exports";
 import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
 import Cross from "./no_image_cross.svg?react";
-
-import FilePicker = foundry.applications.apps.FilePicker.implementation;
 
 interface ImageAreaProps {
   page: any;

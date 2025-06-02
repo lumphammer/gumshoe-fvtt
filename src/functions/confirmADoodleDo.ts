@@ -1,5 +1,6 @@
+import { DialogV2 } from "../fvtt-exports";
 import { getTranslated } from "./getTranslated";
-import { assertGame } from "./utilities";
+import { assertGame } from "./isGame";
 
 interface confirmADoodleDoArgs {
   message: string;
@@ -44,7 +45,7 @@ export const confirmADoodleDo = ({
         resolve(false);
       }
     };
-    const d = new foundry.applications.api.DialogV2({
+    const d = new DialogV2({
       window: {
         title: "Confirm",
       },

@@ -1,8 +1,8 @@
-import { systemId } from "../constants";
-import { ThemeFarm } from "../themes/components/ThemeFarm";
-
-import ApplicationV2 = foundry.applications.api.ApplicationV2;
 import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
+
+import { systemId } from "../constants";
+import { ApplicationV2 } from "../fvtt-exports";
+import { ThemeFarm } from "../themes/components/ThemeFarm";
 
 class ThemeFarmClassBase extends ApplicationV2 {
   static DEFAULT_OPTIONS = {

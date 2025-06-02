@@ -1,9 +1,11 @@
 import { ReactNode } from "react";
 
-import RollTerm = foundry.dice.terms.RollTerm;
-import DiceTerm = foundry.dice.terms.DiceTerm;
-import OperatorTerm = foundry.dice.terms.OperatorTerm;
-import NumericTerm = foundry.dice.terms.NumericTerm;
+import {
+  DiceTerm,
+  NumericTerm,
+  OperatorTerm,
+  RollTerm,
+} from "../../fvtt-exports";
 
 type DiceTermsProps = {
   terms: RollTerm[] | undefined;

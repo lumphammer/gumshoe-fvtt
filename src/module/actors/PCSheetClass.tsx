@@ -2,8 +2,7 @@ import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactA
 
 import { PCSheet } from "../../components/characters/PCSheet";
 import { systemId } from "../../constants";
-
-import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
+import { ActorSheetV2 } from "../../fvtt-exports";
 
 class PCSheetClassBase extends ActorSheetV2 {
   static DEFAULT_OPTIONS = {

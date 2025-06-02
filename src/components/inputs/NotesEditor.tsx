@@ -1,6 +1,7 @@
 import { ReactNode, useCallback, useContext } from "react";
 
-import { assertGame, systemLogger } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
+import { systemLogger } from "../../functions/utilities";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { NoteFormat } from "../../types";
 import { absoluteCover } from "../absoluteCover";

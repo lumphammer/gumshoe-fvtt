@@ -1,10 +1,8 @@
 import * as c from "../../constants";
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
+import { ArrayField, StringField, TypeDataModel } from "../../fvtt-exports";
 import { InvestigatorActor } from "./InvestigatorActor";
 import { isPCActor } from "./pc";
-
-import StringField = foundry.data.fields.StringField;
-import ArrayField = foundry.data.fields.ArrayField;
 
 export const partySchema = {
   abilityNames: new ArrayField(
@@ -17,7 +15,7 @@ export const partySchema = {
   ),
 };
 
-export class PartyModel extends foundry.abstract.TypeDataModel<
+export class PartyModel extends TypeDataModel<
   typeof partySchema,
   InvestigatorActor<"party">
 > {

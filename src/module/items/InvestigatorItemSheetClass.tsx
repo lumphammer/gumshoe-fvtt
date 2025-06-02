@@ -2,8 +2,7 @@ import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactA
 import React from "react";
 
 import { Suspense } from "../../components/Suspense";
-
-import ItemSheetV2 = foundry.applications.sheets.ItemSheetV2;
+import { ItemSheetV2 } from "../../fvtt-exports";
 
 const InvestigatorItemSheet = React.lazy(() =>
   import("../../components/ItemSheet").then(({ ItemSheet }) => ({

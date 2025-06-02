@@ -1,10 +1,7 @@
+import { NumberField, StringField, TypeDataModel } from "../../fvtt-exports";
+import { NoteWithFormat } from "../../types";
 import { createNotesWithFormatField } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
-
-import StringField = foundry.data.fields.StringField;
-import NumberField = foundry.data.fields.NumberField;
-import TypeDataModel = foundry.abstract.TypeDataModel;
-import { NoteWithFormat } from "../../types";
 
 export const personalDetailSchema = {
   // notes: NoteWithFormat;

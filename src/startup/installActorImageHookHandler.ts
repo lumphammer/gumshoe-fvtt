@@ -1,5 +1,6 @@
 import { npcIcon, partyIcon, pcIcon } from "../constants";
-import { assertGame, isNullOrEmptyString } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
+import { isNullOrEmptyString } from "../functions/utilities";
 import { isNPCActor } from "../module/actors/npc";
 import { isPartyActor } from "../module/actors/party";
 import { isPCActor } from "../module/actors/pc";

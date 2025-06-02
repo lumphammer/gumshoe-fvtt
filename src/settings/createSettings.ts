@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import * as c from "../constants";
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 
 const getSetting =
   <T = string>(key: string) =>

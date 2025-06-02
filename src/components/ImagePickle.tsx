@@ -1,7 +1,8 @@
 import React, { Fragment, useCallback, useContext, useState } from "react";
 
 import { getTokenizer } from "../functions/getTokenizer";
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
+import { FilePicker, ImagePopout } from "../fvtt-exports";
 import { useIsDocumentOwner } from "../hooks/useIsDocumentOwner";
 import { useDocumentSheetContext } from "../hooks/useSheetContexts";
 import { ThemeContext } from "../themes/ThemeContext";
@@ -46,7 +47,7 @@ export const ImagePickle = ({ className }: ImagePickleProps) => {
       // objects for the most part, and 2. that way is tightly coupled to the
       // Foundry AppV1 model of imperative updates and does stuff like trying to
       // update the image in the DOM on completion.
-      const fp = new foundry.applications.apps.FilePicker({
+      const fp = new FilePicker({
         type: "image",
         current: doc.img ?? undefined,
         callback: (path: string) => {
@@ -65,7 +66,7 @@ export const ImagePickle = ({ className }: ImagePickleProps) => {
   }, [app.position.left, app.position.top, doc]);
 
   const showImage = useCallback(() => {
-    const ip = new foundry.applications.apps.ImagePopout({
+    const ip = new ImagePopout({
       window: {
         title: doc.img ?? "",
       },

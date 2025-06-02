@@ -1,7 +1,8 @@
 import React, { Fragment, useCallback, useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
-import { assertGame, getDevMode } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
+import { getDevMode } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPCActor } from "../../module/actors/pc";
 import { runtimeConfig } from "../../runtime";

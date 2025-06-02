@@ -3,8 +3,7 @@ import { lazy } from "react";
 
 import { Suspense } from "../components/Suspense";
 import { systemId } from "../constants";
-
-import JournalEntrySheet = foundry.applications.sheets.journal.JournalEntrySheet;
+import { JournalEntrySheet } from "../fvtt-exports";
 
 const JournalEditorSheet = lazy(() =>
   import("../components/journalEditorSheet/JournalEditorSheet").then(

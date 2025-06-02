@@ -1,13 +1,14 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import { useContext } from "react";
 
+import {
+  ActorSheetV2,
+  Document,
+  DocumentSheetV2,
+  ItemSheetV2,
+  JournalEntrySheet,
+} from "../fvtt-exports";
 import { InvestigatorActor } from "../module/actors/InvestigatorActor";
-
-import JournalEntrySheet = foundry.applications.sheets.journal.JournalEntrySheet;
-import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
-import ItemSheetV2 = foundry.applications.sheets.ItemSheetV2;
-import DocumentSheetV2 = foundry.applications.api.DocumentSheetV2;
-import Document = foundry.abstract.Document;
 
 export const useItemSheetContext = () => {
   const app = useContext(FoundryAppContext);

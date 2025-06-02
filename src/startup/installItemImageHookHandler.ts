@@ -6,7 +6,8 @@ import {
   personalDetailIcon,
   weaponIcon,
 } from "../constants";
-import { assertGame, isNullOrEmptyString } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
+import { isNullOrEmptyString } from "../functions/utilities";
 import { isCardItem } from "../module/items/card";
 import { isEquipmentItem } from "../module/items/equipment";
 import { isGeneralAbilityItem } from "../module/items/generalAbility";

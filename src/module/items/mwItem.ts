@@ -1,9 +1,11 @@
-import { createNotesWithFormatField } from "../schemaFields";
-import StringField = foundry.data.fields.StringField;
-import NumberField = foundry.data.fields.NumberField;
-import ArrayField = foundry.data.fields.ArrayField;
-import TypeDataModel = foundry.abstract.TypeDataModel;
+import {
+  ArrayField,
+  NumberField,
+  StringField,
+  TypeDataModel,
+} from "../../fvtt-exports";
 import { MwType, NoteWithFormat, RangeTuple } from "../../types";
+import { createNotesWithFormatField } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const mwItemSchema = {

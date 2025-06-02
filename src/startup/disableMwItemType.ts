@@ -1,5 +1,5 @@
 import { settingsSaved } from "../constants";
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 import { settings } from "../settings/settings";
 
 let oldMwItemTypelabel: string | null = null;

@@ -1,4 +1,4 @@
-import { assertApplicationV2 } from "../../functions/utilities";
+import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { assertPersonalDetailItem } from "../../module/items/personalDetail";
 import { Slug } from "./Slug";

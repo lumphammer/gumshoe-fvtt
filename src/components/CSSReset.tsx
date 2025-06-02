@@ -15,7 +15,8 @@ import {
   useState,
 } from "react";
 
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
+import { ApplicationV2 } from "../fvtt-exports";
 import { irid } from "../irid/irid";
 import { ThemeContext } from "../themes/ThemeContext";
 import { ThemeV1 } from "../themes/types";
@@ -28,12 +29,10 @@ type CSSResetProps = PropsWithChildren<{
   noStyleAppWindow?: boolean;
 }>;
 
-function safeGetAppId(
-  app: Application | foundry.applications.api.ApplicationV2 | undefined | null,
-) {
+function safeGetAppId(app: Application | ApplicationV2 | undefined | null) {
   if (app instanceof Application) {
     return app.appId.toString();
-  } else if (app instanceof foundry.applications.api.ApplicationV2) {
+  } else if (app instanceof ApplicationV2) {
     return app.id;
   } else {
     return undefined;
@@ -41,11 +40,11 @@ function safeGetAppId(
 }
 
 function safeGetAppElement(
-  app: Application | foundry.applications.api.ApplicationV2 | undefined | null,
+  app: Application | ApplicationV2 | undefined | null,
 ) {
   if (app instanceof Application) {
     return app?.element.get(0);
-  } else if (app instanceof foundry.applications.api.ApplicationV2) {
+  } else if (app instanceof ApplicationV2) {
     return app.element;
   } else {
     return undefined;

@@ -1,13 +1,15 @@
-import { createNotesWithFormatField } from "../schemaFields";
-import StringField = foundry.data.fields.StringField;
-import SchemaField = foundry.data.fields.SchemaField;
-import ArrayField = foundry.data.fields.ArrayField;
-import BooleanField = foundry.data.fields.BooleanField;
-import NumberField = foundry.data.fields.NumberField;
-import TypeDataModel = foundry.abstract.TypeDataModel;
 import { getById } from "../../functions/utilities";
+import {
+  ArrayField,
+  BooleanField,
+  NumberField,
+  SchemaField,
+  StringField,
+  TypeDataModel,
+} from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { CardSystemData, NoteWithFormat } from "../../types";
+import { createNotesWithFormatField } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const cardSchema = {

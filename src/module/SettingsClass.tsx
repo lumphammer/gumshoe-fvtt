@@ -1,11 +1,10 @@
+import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
+import { DeepPartial } from "fvtt-types/utils";
 import React from "react";
 
 import { Suspense } from "../components/Suspense";
 import { settingsCloseAttempted, systemId } from "../constants";
-
-import ApplicationV2 = foundry.applications.api.ApplicationV2;
-import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
-import { DeepPartial } from "fvtt-types/utils";
+import { ApplicationV2 } from "../fvtt-exports";
 
 const Settings = React.lazy(() =>
   import("../components/settings/Settings").then(({ Settings }) => ({

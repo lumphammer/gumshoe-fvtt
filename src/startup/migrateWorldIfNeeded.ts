@@ -1,5 +1,6 @@
 import system from "../../public/system.json";
-import { assertGame, mapObject, systemLogger } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
+import { mapObject, systemLogger } from "../functions/utilities";
 import { flaggedMigrations } from "../migrations/flaggedMigrations";
 import { getFlaggedMigrations } from "../migrations/getFlaggedMigrations";
 import { getNeedsMigrationBasedOnLegacyVersionSystem } from "../migrations/legacy/getNeedsMigrationBasedOnLegacyVersionSystem";

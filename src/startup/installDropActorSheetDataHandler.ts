@@ -1,4 +1,5 @@
-import { assertGame, getFolderDescendants } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
+import { getFolderDescendants } from "../functions/utilities";
 import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 import { isPartyActor } from "../module/actors/party";
 import { isPCActor } from "../module/actors/pc";

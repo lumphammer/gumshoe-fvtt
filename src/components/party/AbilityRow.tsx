@@ -1,7 +1,7 @@
 import { Fragment, ReactNode } from "react";
 
+import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { assertApplicationV2 } from "../../functions/utilities";
 import { InvestigatorActor } from "../../module/actors/InvestigatorActor";
 import { AbilityItem, isAbilityItem } from "../../module/items/exports";
 import { runtimeConfig } from "../../runtime";

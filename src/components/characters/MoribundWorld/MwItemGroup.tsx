@@ -1,10 +1,8 @@
 import React, { useContext } from "react";
 
 import { mwItem } from "../../../constants";
-import {
-  assertApplicationV2,
-  sortEntitiesByName,
-} from "../../../functions/utilities";
+import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
+import { sortEntitiesByName } from "../../../functions/utilities";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { MwType } from "../../../types";

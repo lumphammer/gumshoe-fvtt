@@ -1,5 +1,5 @@
 import * as constants from "../constants";
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 import { SettingsClass } from "../module/SettingsClass";
 
 export const registerSettingsMenu = function () {

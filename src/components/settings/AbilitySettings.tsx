@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { useContext } from "react";
 
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { IdContext } from "../IdContext";
 import { InputGrid } from "../inputs/InputGrid";

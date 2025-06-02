@@ -1,15 +1,13 @@
 import * as c from "../../constants";
+import { NumberField, StringField } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { NoteWithFormat } from "../../types";
 import {
   createActiveCharacterSchema,
   createNotesWithFormatField,
 } from "../schemaFields";
-import { InvestigatorActor } from "./InvestigatorActor";
-
-import NumberField = foundry.data.fields.NumberField;
-import StringField = foundry.data.fields.StringField;
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
+import { InvestigatorActor } from "./InvestigatorActor";
 
 export const npcSchema = {
   ...createActiveCharacterSchema(),

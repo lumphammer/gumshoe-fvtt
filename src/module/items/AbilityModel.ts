@@ -1,7 +1,9 @@
 import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
-import { assertGame, fixLength } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
+import { fixLength } from "../../functions/utilities";
+import { TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import {
   MWDifficulty,
@@ -12,8 +14,6 @@ import {
 } from "../../types";
 import { AbilitySchema } from "./createAbilitySchema";
 import { InvestigatorItem } from "./InvestigatorItem";
-
-import TypeDataModel = foundry.abstract.TypeDataModel;
 
 // /////////////////////////////////////////////////////////////////////////////
 // IMPORTANT NOTE ABOUT TYPE ERRORS

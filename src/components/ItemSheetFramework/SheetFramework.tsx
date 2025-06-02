@@ -1,6 +1,6 @@
 import { PropsWithChildren, ReactNode, useEffect, useState } from "react";
 
-import { assertApplicationV2 } from "../../functions/utilities";
+import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { ImagePickle } from "../ImagePickle";

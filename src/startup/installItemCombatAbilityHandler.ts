@@ -1,4 +1,4 @@
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
 import { isWeaponItem, WeaponSystemData } from "../module/items/weapon";
 import { settings } from "../settings/settings";

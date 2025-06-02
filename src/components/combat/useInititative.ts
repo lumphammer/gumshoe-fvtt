@@ -1,11 +1,9 @@
 import { useCallback } from "react";
 
-import {
-  assertApplicationV2,
-  assertGame,
-  requestTurnPass,
-  systemLogger,
-} from "../../functions/utilities";
+import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { assertGame } from "../../functions/isGame";
+import { requestTurnPass, systemLogger } from "../../functions/utilities";
+import { CombatantConfig } from "../../fvtt-exports";
 import { useRefStash } from "../../hooks/useRefStash";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
 
@@ -18,7 +16,7 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
     (event: React.MouseEvent<HTMLElement>) => {
       if (combatantStash.current === undefined) return;
       const rect = event.currentTarget.getBoundingClientRect();
-      void new foundry.applications.sheets.CombatantConfig({
+      void new CombatantConfig({
         position: {
           top: Math.min(rect.top, window.innerHeight - 350),
           left: window.innerWidth - 720,

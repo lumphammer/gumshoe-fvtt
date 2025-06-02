@@ -1,10 +1,11 @@
+import {
+  ArrayField,
+  BooleanField,
+  NumberField,
+  SchemaField,
+  StringField,
+} from "../../fvtt-exports";
 import { createNotesWithFormatField } from "../schemaFields";
-
-import NumberField = foundry.data.fields.NumberField;
-import BooleanField = foundry.data.fields.BooleanField;
-import StringField = foundry.data.fields.StringField;
-import ArrayField = foundry.data.fields.ArrayField;
-import SchemaField = foundry.data.fields.SchemaField;
 
 export const createAbilitySchema = () => ({
   allowPoolToExceedRating: new BooleanField({
