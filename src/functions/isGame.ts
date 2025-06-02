@@ -1,10 +1,10 @@
-import { Game } from "../fvtt-exports";
-
 /**
  * Check that `game` has been initialised
  */
-export function isGame(game: any): game is Game {
-  return game instanceof Game;
+export function isGame(game: any): game is foundry.Game {
+  // we can't use the re-exported version of this because it causes havoc with
+  // tests
+  return game instanceof foundry.Game;
 }
 
 /**
