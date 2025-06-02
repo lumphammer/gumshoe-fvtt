@@ -8,7 +8,8 @@ import { AttackCard } from "../components/messageCards/AttackCard";
 import { PushCard } from "../components/messageCards/PushCard";
 import { isAbilityCardMode } from "../components/messageCards/types";
 import * as constants from "../constants";
-import { assertGame, systemLogger } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
+import { systemLogger } from "../functions/utilities";
 import { assertAbilityItem } from "../module/items/exports";
 import { MWDifficulty } from "../types";
 

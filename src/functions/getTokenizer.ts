@@ -1,4 +1,4 @@
-import { assertGame } from "./utilities";
+import { assertGame } from "./isGame";
 
 /**
  * The Tokenizer API.

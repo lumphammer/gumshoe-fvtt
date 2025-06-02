@@ -1,4 +1,4 @@
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 import { isCardItem } from "../module/items/card";
 import { settings } from "../settings/settings";
 import { CardSystemData } from "../types";

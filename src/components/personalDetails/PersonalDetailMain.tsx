@@ -1,5 +1,6 @@
 import { occupationSlotIndex } from "../../constants";
-import { assertGame, padLength } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
+import { padLength } from "../../functions/utilities";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertPersonalDetailItem } from "../../module/items/personalDetail";
 import { settings } from "../../settings/settings";

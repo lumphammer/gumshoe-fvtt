@@ -2,12 +2,9 @@ import React, { Fragment, useCallback, useEffect, useState } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
+import { assertGame } from "../../functions/isGame";
 import { convertNotes, toHtml } from "../../functions/textFunctions";
-import {
-  assertGame,
-  getDevMode,
-  systemLogger,
-} from "../../functions/utilities";
+import { getDevMode, systemLogger } from "../../functions/utilities";
 import { useIsDocumentOwner } from "../../hooks/useIsDocumentOwner";
 import { useStateWithGetter } from "../../hooks/useStateWithGetter";
 import { NoteFormat, NoteWithFormat } from "../../types";

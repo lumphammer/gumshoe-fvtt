@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 import { useDocumentSheetContext } from "./useSheetContexts";
 
 /**

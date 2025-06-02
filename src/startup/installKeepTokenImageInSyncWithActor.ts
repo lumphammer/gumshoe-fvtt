@@ -1,5 +1,5 @@
 import { getTokenizer } from "../functions/getTokenizer";
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 
 export function installKeepTokenImageInSyncWithActor() {
   /*

@@ -4,8 +4,9 @@ import {
   ExportedCompendium,
   importCompendium,
 } from "../functions/importCompendium";
+import { assertGame } from "../functions/isGame";
 import { saveAsJsonFile } from "../functions/saveFile";
-import { assertGame, getUserFile } from "../functions/utilities";
+import { getUserFile } from "../functions/utilities";
 
 import AbstractSidebarTab = foundry.applications.sidebar.AbstractSidebarTab;
 

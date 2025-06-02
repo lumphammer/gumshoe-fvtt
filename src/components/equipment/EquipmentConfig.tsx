@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertEquipmentItem } from "../../module/items/equipment";
 import { settings } from "../../settings/settings";

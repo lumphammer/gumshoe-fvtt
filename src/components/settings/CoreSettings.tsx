@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from "react";
 
 import * as constants from "../../constants";
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { runtimeConfig } from "../../runtime";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { InputGrid } from "../inputs/InputGrid";

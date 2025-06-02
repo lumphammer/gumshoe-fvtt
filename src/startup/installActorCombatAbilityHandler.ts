@@ -1,4 +1,5 @@
-import { assertGame, isNullOrEmptyString } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
+import { isNullOrEmptyString } from "../functions/utilities";
 import { isActiveCharacterActor } from "../module/actors/exports";
 import { settings } from "../settings/settings";
 

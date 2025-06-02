@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useCallback, useContext, useRef } from "react";
 
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { IdContext } from "../IdContext";
 
 type TextAreaProps = {

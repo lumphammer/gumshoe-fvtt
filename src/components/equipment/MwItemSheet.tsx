@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertMwItem } from "../../module/items/mwItem";

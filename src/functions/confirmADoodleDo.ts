@@ -1,6 +1,6 @@
 import { DialogV2 } from "../fvtt-exports";
 import { getTranslated } from "./getTranslated";
-import { assertGame } from "./utilities";
+import { assertGame } from "./isGame";
 
 interface confirmADoodleDoArgs {
   message: string;

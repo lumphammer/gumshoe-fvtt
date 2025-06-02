@@ -1,11 +1,8 @@
 import { ReactNode } from "react";
 import { PiEmptyLight, PiPeaceLight } from "react-icons/pi";
 
-import {
-  assertGame,
-  assertNotNull,
-  sortByKey,
-} from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
+import { assertNotNull, sortByKey } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
 import { settings } from "../../settings/settings";
 import { CombatantRow } from "./CombatantRow";

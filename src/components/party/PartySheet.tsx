@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useState } from "react";
 
 import * as constants from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { assertGame, sortEntitiesByName } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
+import { sortEntitiesByName } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPartyActor } from "../../module/actors/party";
 import { PCActor } from "../../module/actors/pc";

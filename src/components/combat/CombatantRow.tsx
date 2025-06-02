@@ -1,7 +1,7 @@
 import { cx } from "@emotion/css";
 import { ReactNode, useMemo } from "react";
 
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
 import { settings } from "../../settings/settings";
 import { StandardInitiative } from "./StandardInitiative";

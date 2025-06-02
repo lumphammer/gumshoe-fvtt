@@ -1,11 +1,8 @@
 import { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import {
-  assertGame,
-  requestTurnPass,
-  systemLogger,
-} from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
+import { requestTurnPass, systemLogger } from "../../functions/utilities";
 import { CombatantConfig } from "../../fvtt-exports";
 import { useRefStash } from "../../hooks/useRefStash";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";

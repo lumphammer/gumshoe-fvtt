@@ -1,5 +1,5 @@
 import * as c from "../../constants";
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { ArrayField, StringField, TypeDataModel } from "../../fvtt-exports";
 import { InvestigatorActor } from "./InvestigatorActor";
 import { isPCActor } from "./pc";

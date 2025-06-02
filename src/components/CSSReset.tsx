@@ -15,7 +15,7 @@ import {
   useState,
 } from "react";
 
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 import { ApplicationV2 } from "../fvtt-exports";
 import { irid } from "../irid/irid";
 import { ThemeContext } from "../themes/ThemeContext";

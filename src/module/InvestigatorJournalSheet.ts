@@ -1,5 +1,5 @@
 import { extraCssClasses, systemId } from "../constants";
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 import { JournalEntrySheet } from "../fvtt-exports";
 import { JournalEntryHTMLEditorSheetClass } from "./JournalEditorSheetClass";
 

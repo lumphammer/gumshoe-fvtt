@@ -6,11 +6,8 @@ import {
 } from "../constants";
 import { confirmADoodleDo } from "../functions/confirmADoodleDo";
 import { getTranslated } from "../functions/getTranslated";
-import {
-  assertGame,
-  isNullOrEmptyString,
-  systemLogger,
-} from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
+import { isNullOrEmptyString, systemLogger } from "../functions/utilities";
 import { DialogV2 } from "../fvtt-exports";
 import { isActiveCharacterActor } from "../module/actors/exports";
 import { isPersonalDetailItem } from "../module/items/personalDetail";

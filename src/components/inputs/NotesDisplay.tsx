@@ -1,8 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
+import { assertGame } from "../../functions/isGame";
 import { cleanAndEnrichHtml } from "../../functions/textFunctions";
-import { assertGame, systemLogger } from "../../functions/utilities";
+import { systemLogger } from "../../functions/utilities";
 import { useIsDocumentOwner } from "../../hooks/useIsDocumentOwner";
 
 const secretToggleButtonClass = "investigator-secret-hide-reveal-button";

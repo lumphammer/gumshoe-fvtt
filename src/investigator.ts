@@ -3,7 +3,8 @@
 import "./investigator.less";
 
 import { systemId } from "./constants";
-import { assertGame, systemLogger } from "./functions/utilities";
+import { assertGame } from "./functions/isGame";
+import { systemLogger } from "./functions/utilities";
 import { handleMwItemType } from "./startup/disableMwItemType";
 import { injectGlobalHelper } from "./startup/injectGlobalHelper";
 import { installAbilityCardChatWrangler } from "./startup/installAbilityCardChatWrangler";

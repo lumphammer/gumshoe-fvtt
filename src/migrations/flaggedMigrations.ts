@@ -2,11 +2,8 @@ import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 import { nanoid } from "nanoid";
 
 import * as c from "../constants";
-import {
-  assertGame,
-  isNullOrEmptyString,
-  systemLogger,
-} from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
+import { isNullOrEmptyString, systemLogger } from "../functions/utilities";
 import { isActiveCharacterActor } from "../module/actors/exports";
 import { pathOfCthulhuPreset } from "../presets";
 import { settings } from "../settings/settings";

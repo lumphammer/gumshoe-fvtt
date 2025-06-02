@@ -1,4 +1,4 @@
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { useIsDocumentLimited } from "../../hooks/useIsDocumentLimited";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertNPCActor } from "../../module/actors/npc";

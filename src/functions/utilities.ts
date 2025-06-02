@@ -1,5 +1,4 @@
 import * as constants from "../constants";
-import { Game } from "../fvtt-exports";
 import { PickByType, RequestTurnPassArgs, SocketHookAction } from "../types";
 
 interface NameHaver {
@@ -87,35 +86,23 @@ export const getFolderDescendants = <T extends Document>(folder: any): T[] => {
 export const hasOwnProperty = (x: any, y: string) =>
   Object.prototype.hasOwnProperty.call(x, y);
 
-/**
- * Check that `game` has been initialised
- */
-export function isGame(game: any): game is Game {
-  return game instanceof Game;
-}
+// /**
+//  * Check that `game` has been initialised
+//  */
+// export function isGame(game: any): game is Game {
+//   return game instanceof Game;
+// }
 
-/**
- * Throw if `game` has not been initialized. This is hyper unlikely at runtime
- * but technically possible during a calamitous upfuckage to TS keeps us honest
- * and requires a check.
- */
-export function assertGame(game: any): asserts game is ReadyGame {
-  if (!isGame(game)) {
-    throw new Error("game used before init hook");
-  }
-}
-
-/**
- * Throw if `candidate` is not a ready game.
- */
-export function assertReadyGame(
-  candidate: typeof game,
-): asserts candidate is ReadyGame {
-  assertGame(candidate);
-  if (!candidate.ready) {
-    throw new Error("game is not ready");
-  }
-}
+// /**
+//  * Throw if `game` has not been initialized. This is hyper unlikely at runtime
+//  * but technically possible during a calamitous upfuckage to TS keeps us honest
+//  * and requires a check.
+//  */
+// export function assertGame(game: any): asserts game is ReadyGame {
+//   if (!isGame(game)) {
+//     throw new Error("game used before init hook");
+//   }
+// }
 
 /**
  * The developer mode package allows any module to be put into "debug mode".
@@ -123,8 +110,7 @@ export function assertReadyGame(
  * for INVESTIGATOR.
  */
 export function getDevMode() {
-  assertGame(game);
-  return !!(game.modules.get("_dev-mode") as any)?.api?.getPackageDebugValue(
+  return !!(game?.modules?.get("_dev-mode") as any)?.api?.getPackageDebugValue(
     constants.systemId,
   );
 }
@@ -161,7 +147,6 @@ export function renameProperty<T>(
  * with the given payload.
  */
 function broadcastHook<T>(hook: string, payload: T) {
-  assertGame(game);
   const socketHookAction: SocketHookAction<T> = {
     hook,
     payload,
@@ -174,7 +159,6 @@ function broadcastHook<T>(hook: string, payload: T) {
  * request the GM's client to pass the turn to the given combatant
  */
 export function requestTurnPass(combatantId: string | null | undefined) {
-  assertGame(game);
   if (!combatantId) return;
   const payload: RequestTurnPassArgs = { combatantId };
   broadcastHook(constants.requestTurnPass, payload);

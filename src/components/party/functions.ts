@@ -1,5 +1,5 @@
 import * as constants from "../../constants";
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { PCActor } from "../../module/actors/pc";
 import { AbilityItem, isAbilityItem } from "../../module/items/exports";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";

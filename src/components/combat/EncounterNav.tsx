@@ -1,4 +1,4 @@
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { DialogV2 } from "../../fvtt-exports";
 import { format, localize } from "./functions";
 

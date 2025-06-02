@@ -1,5 +1,5 @@
 import { getTranslated } from "../functions/getTranslated";
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 import { isPCActor } from "../module/actors/pc";
 import { settings } from "../settings/settings";
 

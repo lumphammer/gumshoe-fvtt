@@ -1,5 +1,5 @@
 import * as constants from "../../constants";
-import { assertGame } from "../../functions/utilities";
+import { assertGame } from "../../functions/isGame";
 import { PoolTerm } from "../../fvtt-exports";
 import { isNPCActor } from "../../module/actors/npc";
 import { assertAbilityItem } from "../../module/items/exports";

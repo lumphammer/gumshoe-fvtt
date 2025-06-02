@@ -1,5 +1,5 @@
 import { occupationSlotIndex } from "../constants";
-import { assertGame } from "../functions/utilities";
+import { assertGame } from "../functions/isGame";
 import { InvestigatorActor } from "../module/actors/InvestigatorActor";
 import { isPCActor } from "../module/actors/pc";
 
