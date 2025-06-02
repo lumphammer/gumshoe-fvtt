@@ -9,8 +9,8 @@ import React, {
 } from "react";
 
 import { generalAbility } from "../../../constants";
+import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import { cleanAndEnrichHtml } from "../../../functions/textFunctions";
-import { assertApplicationV2 } from "../../../functions/utilities";
 import { isAbilityItem } from "../../../module/items/exports";
 import { InvestigatorItem } from "../../../module/items/InvestigatorItem";
 import { WeaponItem } from "../../../module/items/weapon";

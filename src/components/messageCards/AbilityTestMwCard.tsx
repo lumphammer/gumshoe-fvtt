@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import { assertApplicationV2 } from "../../functions/utilities";
+import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { AbilityItem } from "../../module/items/exports";
 import { MWDifficulty } from "../../types";
 import { Translate } from "../Translate";

@@ -1,5 +1,5 @@
 import * as constants from "../constants";
-import { ApplicationV2, Game } from "../fvtt-exports";
+import { Game } from "../fvtt-exports";
 import { PickByType, RequestTurnPassArgs, SocketHookAction } from "../types";
 
 interface NameHaver {
@@ -401,10 +401,4 @@ export function getByIdOrThrow<T extends { id: string }>(
     throw new Error(`Could not find item with id ${id}`);
   }
   return item;
-}
-
-export function assertApplicationV2(app: any): asserts app is ApplicationV2 {
-  if (!(app instanceof ApplicationV2)) {
-    throw new Error("App is not an ApplicationV2");
-  }
 }

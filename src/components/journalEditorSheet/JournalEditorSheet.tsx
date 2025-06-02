@@ -47,7 +47,6 @@ export const JournalEditorSheet = () => {
 
   const handlePreview = useCallback(() => {
     const JournalSheet: JournalSheet = JournalCollection.registeredSheets.find(
-      // @ts-expect-error Journal types are effed
       (sheet) => sheet.name === "InvestigatorJournalSheet",
     ) as unknown as JournalSheet;
     // @ts-expect-error Journal types are effed

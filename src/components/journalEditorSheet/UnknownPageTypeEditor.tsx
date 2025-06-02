@@ -1,4 +1,4 @@
-import { assertApplicationV2 } from "../../functions/utilities";
+import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
 

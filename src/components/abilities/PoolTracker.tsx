@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { assertApplicationV2 } from "../../functions/utilities";
+import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import {
   AbilityItem,
   assertAbilityItem,

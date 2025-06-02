@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import { assertApplicationV2 } from "../../functions/utilities";
+import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { useTheme } from "../../hooks/useTheme";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";

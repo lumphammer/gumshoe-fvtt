@@ -1,11 +1,9 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 
+import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated } from "../../functions/getTranslated";
 import { cleanAndEnrichHtml } from "../../functions/textFunctions";
-import {
-  assertApplicationV2,
-  isNullOrEmptyString,
-} from "../../functions/utilities";
+import { isNullOrEmptyString } from "../../functions/utilities";
 import { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
