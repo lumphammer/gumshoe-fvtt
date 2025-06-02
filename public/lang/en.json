@@ -263,5 +263,7 @@
   "investigator.NoParticipants": "There are no participants yet",
   "investigator.PartySheetClass": "Party Sheet",
   "investigator.PCSheetClass": "PC Sheet",
-  "investigator.NPCSheetClass": "NPC Sheet"
+  "investigator.NPCSheetClass": "NPC Sheet",
+  "investigator.ExportToFile": "Export to JSON",
+  "investigator.ImportFromFile": "Import from JSON"
 }

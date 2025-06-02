@@ -12,7 +12,6 @@ import { installAbilityCategoryHookHandler } from "./startup/installAbilityCateg
 import { installActorCombatAbilityHandler } from "./startup/installActorCombatAbilityHandler";
 import { installActorImageHookHandler } from "./startup/installActorImageHookHandler";
 import { installCardCategoryHookHandler } from "./startup/installCardCategoryHookHandler";
-import { installCompendiumExportButton } from "./startup/installCompendiumExportButton";
 import { installDropActorSheetDataHandler } from "./startup/installDropActorSheetDataHandler";
 import { installDSNFix } from "./startup/installDSNFix";
 import { installEquipmentAddedNotifier } from "./startup/installEquipmentAddedNotifier";
@@ -74,7 +73,6 @@ installRenderSettingsHandler();
 installDropActorSheetDataHandler();
 registerDevModeDebugFlag();
 installActorImageHookHandler();
-installCompendiumExportButton();
 installAbilityCardChatWrangler();
 loadCustomThemes();
 handleMwItemType();
