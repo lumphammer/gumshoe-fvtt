@@ -1,5 +1,8 @@
 # GUMSHOE for Foundry VTT (aka INVESTIGATOR)
 
+![Latest Release Download Count](https://img.shields.io/github/downloads/lumphammer/gumshoe-fvtt/latest/module.zip)
+
+
 Official GUMSHOE SRD-compatible system for Foundry VTT. Ships with compatibility for several settings, and can be customized to work with any other setting. Rules relating to anything outside of the character sheet are not included, so you'll need to own a compatible game in order to play.
 
 Includes 7 character sheet themes plus an extra high-contrast accessible theme.
