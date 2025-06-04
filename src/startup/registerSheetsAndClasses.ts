@@ -14,6 +14,7 @@ import { PCSheetClass } from "../module/actors/PCSheetClass";
 import { InvestigatorCombat } from "../module/InvestigatorCombat";
 import { InvestigatorCombatant } from "../module/InvestigatorCombatant";
 import { InvestigatorCombatTracker } from "../module/InvestigatorCombatTracker";
+import { InvestigatorCompendiumDirectory } from "../module/InvestigatorCompendiumDirectory";
 import { InvestigatorJournalSheet } from "../module/InvestigatorJournalSheet";
 import { InvestigatorTokenDocument } from "../module/InvestigatorTokenDocument";
 import { CardModel } from "../module/items/card";
@@ -35,6 +36,7 @@ export const registerSheetsAndClasses = () => {
   // CONFIG.ChatMessage.documentClass = InvestigatorChatMessage;
   CONFIG.Token.documentClass = InvestigatorTokenDocument;
   CONFIG.ui.combat = InvestigatorCombatTracker;
+  CONFIG.ui.compendium = InvestigatorCompendiumDirectory;
 
   CONFIG.Actor.dataModels["pc"] = PCModel;
   CONFIG.Actor.dataModels["npc"] = NPCModel;

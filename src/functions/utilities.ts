@@ -187,6 +187,9 @@ export async function getUserFile(accept: string): Promise<string> {
         reject(new Error("Aborted"));
       }
     };
+    filePicker.oncancel = () => {
+      reject(new Error("Aborted"));
+    };
     filePicker.click();
   });
   const reader = new FileReader();

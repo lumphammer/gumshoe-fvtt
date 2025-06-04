@@ -95,4 +95,14 @@ declare module "fvtt-types/configuration" {
   namespace foundry.applications.apps.FilePicker {
     const implementation: typeof foundry.applications.apps.FilePicker;
   }
+
+  // fill in a type we need for InvestigatorCompendiumDirectory
+  namespace foundry.applications.sidebar.tabs {
+    // @ts-expect-error - when this errors, CompendiumDirectory has been typed
+    type _T = CompendiumDirectory["_getFilterContextOptions"];
+
+    interface CompendiumDirectory {
+      _getEntryContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[];
+    }
+  }
 }
