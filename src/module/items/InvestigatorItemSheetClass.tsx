@@ -1,3 +1,4 @@
+import { OverrideAutoDisableMixin } from "@lumphammer/shared-fvtt-bits/src/OverrideAutoDisableMixin";
 import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 import React from "react";
 
@@ -34,6 +35,6 @@ class ItemSheetClassBase extends ItemSheetV2 {
 
 export const ItemSheetClass = ReactApplicationV2Mixin(
   "ItemSheetClass",
-  ItemSheetClassBase,
+  OverrideAutoDisableMixin(ItemSheetClassBase),
   render,
 );
