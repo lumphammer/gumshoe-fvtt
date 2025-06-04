@@ -1,3 +1,4 @@
+import { OverrideAutoDisableMixin } from "@lumphammer/shared-fvtt-bits/src/OverrideAutoDisableMixin";
 import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 import { lazy } from "react";
 
@@ -35,6 +36,6 @@ const render = () => {
 
 export const PartySheetClass = ReactApplicationV2Mixin(
   "PartySheetClass",
-  PartySheetClassBase,
+  OverrideAutoDisableMixin(PartySheetClassBase),
   render,
 );

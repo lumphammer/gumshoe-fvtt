@@ -1,3 +1,4 @@
+import { OverrideAutoDisableMixin } from "@lumphammer/shared-fvtt-bits/src/OverrideAutoDisableMixin";
 import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 
 import { PCSheet } from "../../components/characters/PCSheet";
@@ -23,6 +24,6 @@ const render = () => {
 
 export const PCSheetClass = ReactApplicationV2Mixin(
   "PCSheetClass",
-  PCSheetClassBase,
+  OverrideAutoDisableMixin(PCSheetClassBase),
   render,
 );
