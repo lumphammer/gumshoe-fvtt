@@ -18,7 +18,7 @@ type ApplicationV2Constructor = Constructor<ApplicationV2>;
 export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
   /**
    * Name to be attached to the created class. This is needed because minified
-   * classes have weird names which can break foundry when thney get used as
+   * classes have weird names which can break foundry when they get used as
    * HTML ids.
    */
   name: string,
