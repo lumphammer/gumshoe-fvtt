@@ -68,7 +68,7 @@ const createXss = memoizeNullaryOnce(async () => {
 
 async function enrichHtml(originalHtml: string): Promise<string> {
   if (typeof TextEditor !== "undefined") {
-    const newHtml = await TextEditor.enrichHTML(originalHtml, {
+    const enrichedHtml = await TextEditor.enrichHTML(originalHtml, {
       // @ts-expect-error foundry types don't know about `async` yet
       async: true,
       // we will always include secrets in the output; the other way is to run
@@ -76,16 +76,30 @@ async function enrichHtml(originalHtml: string): Promise<string> {
       // permission levels, but we handle that with styles
       secrets: true,
     });
-    return newHtml;
+    // v13 wraps secrets in a secret-block element. We need to unwrap them
+    // because for whatever reason (maybe because we're not using prosemirror
+    // yet?) they don't work to hide/reveal stuff for us and we already have
+    // our own machinery for doing that
+    const tmpDiv = document.createElement("div");
+    tmpDiv.innerHTML = enrichedHtml;
+    tmpDiv.querySelectorAll("secret-block").forEach((secret) => {
+      secret.replaceWith(...Array.from(secret.childNodes));
+    });
+    return tmpDiv.innerHTML;
   } else {
     return originalHtml;
   }
 }
 
-export const cleanAndEnrichHtml = async (originalHtml: string) => {
+export const cleanHtml = async (originalHtml: string) => {
   const xss = await createXss();
+  const cleanedHtml = xss.process(originalHtml);
+  return cleanedHtml;
+};
+
+export const cleanAndEnrichHtml = async (originalHtml: string) => {
   const enrichedHtml = await enrichHtml(originalHtml);
-  const xssedHtml = xss.process(enrichedHtml);
+  const xssedHtml = await cleanHtml(enrichedHtml);
   return xssedHtml;
 };
 
@@ -130,7 +144,7 @@ export async function toHtml(format: NoteFormat, source: string) {
   } else if (format === "richText") {
     rawHtml = source;
   }
-  const html = await cleanAndEnrichHtml(rawHtml);
+  const html = await cleanHtml(rawHtml);
   return html;
 }
 
@@ -168,6 +182,6 @@ export async function convertNotes(
     }
     rawHtml = newSource;
   }
-  const newHtml = await cleanAndEnrichHtml(rawHtml);
+  const newHtml = await cleanHtml(rawHtml);
   return { newSource, newHtml };
 }
