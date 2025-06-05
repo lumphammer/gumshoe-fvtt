@@ -1,1 +1,4 @@
-packages/shared-fvtt-bits/dotfiles/link/foundryconfig_template.json
+{
+  "dataPath": "/home/user/foundrydata",
+  "url": "http://localhost:30000/"
+}

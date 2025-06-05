@@ -2,6 +2,19 @@
 
 (Skipped version numbers are testing releases.)
 
+## Unreleased
+
+* BUGFIX: The new combat tracker now looks right when popped out from the sidebar (#1194)
+* BUGFIX: Compendium import/export working again like it did under previous Foundry versions (#1197)
+* The PC sheet was not navigable for users with "Observer" permisssions. This is now fixed. (#1198)
+* Secrets were going bananas in the rich text editor. This is fixed. (#1200)
+* The rich text editor was looking really basic because the Foundry built-in styles for TinyMCE are broken in v13. Fixed. (#1202)
+
+Cool behind the scenes change:
+
+* GUMSHOE now uses the new `DataModel` system and `ApplicationV2`, so apart from TinyMCE it should be fairly future-proof.
+
+
 ## 9.4 (2025-05-24)
 
 Headline:  **Foundry VTT v13 compatibility-we-really-mean-it-this-time AND a reworked combat tracker**.
