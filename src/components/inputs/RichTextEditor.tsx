@@ -12,6 +12,7 @@ import { TextEditor } from "../../fvtt-exports";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { ThemeV1 } from "../../themes/types";
 import { absoluteCover } from "../absoluteCover";
+import styles from "./RichtextEditor.css?url";
 
 type RichTextEditorProps = {
   value: string;
@@ -42,6 +43,7 @@ async function makeTinyMce({
       target: textAreaRef.current,
       save_onsavecallback: handleSave,
       height: "100%",
+      content_css: [styles],
     } as any,
     initialValue,
   );

@@ -1,0 +1,26 @@
+/*
+ * Just enough styles to rescue the TinyMCE editor, which is languishing on
+ * death row in v13
+ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  border-bottom: 1px solid #000;
+}
+
+blockquote {
+  border-left: 4px solid #000;
+  padding-left: 1em;
+}
+
+section.secret {
+  background-color: oklch(0.95 0.01 270);
+  color: oklch(0.1 0.01 270);
+  border-color: oklch(0.1 0.01 270);
+  border-width: 1px;
+  border-style: solid none;
+}
