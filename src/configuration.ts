@@ -90,12 +90,6 @@ declare module "fvtt-types/configuration" {
     }
   }
 
-  // Filepicker should be addressed as foundry.applications.apps.FilePicker.implementation
-  // but unless you do something to it it's just foundry.applications.apps.FilePicker
-  namespace foundry.applications.apps.FilePicker {
-    const implementation: typeof foundry.applications.apps.FilePicker;
-  }
-
   // fill in a type we need for InvestigatorCompendiumDirectory
   namespace foundry.applications.sidebar.tabs {
     // @ts-expect-error - when this errors, CompendiumDirectory has been typed
