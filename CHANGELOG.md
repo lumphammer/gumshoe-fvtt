@@ -2,7 +2,7 @@
 
 (Skipped version numbers are testing releases.)
 
-## Unreleased
+## 9.8 (2025-06-06)
 
 * BUGFIX: The new combat tracker now looks right when popped out from the sidebar (#1194)
 * BUGFIX: Compendium import/export working again like it did under previous Foundry versions (#1197)
