@@ -21,7 +21,10 @@ export const WeaponConfig = () => {
   assertGame(game);
   const { item } = useItemSheetContext();
   const actor = item.actor;
-  assertActiveCharacterActor(actor);
+  // neat, ts is smort enough to narrow to `ActiveCharacterActor | null` here
+  if (actor) {
+    assertActiveCharacterActor(actor);
+  }
   const generalAbilityNames = actor?.system.getGeneralAbilityNames();
 
   assertWeaponItem(item);
