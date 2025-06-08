@@ -2,7 +2,7 @@
 
 (Skipped version numbers are testing releases.)
 
-## Unreleased
+## 9.10 (2025-06-08)
 
 * BUGFIX: Weapons created in the sidebar would throw an error when opening their edit sheet (#1204, thanks @dorf-lundgren)
 
