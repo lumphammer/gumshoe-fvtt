@@ -15,33 +15,6 @@ import {
 import { AbilitySchema } from "./createAbilitySchema";
 import { InvestigatorItem } from "./InvestigatorItem";
 
-// /////////////////////////////////////////////////////////////////////////////
-// IMPORTANT NOTE ABOUT TYPE ERRORS
-//
-// The type signature of this class "should" work, and allow the methods to see
-// the members of TSchema as its own members, as with any other use of
-// TypeDataModel. Unfortunately the types get too deep and TS refuses to
-// reduce the types of the schema parts correctly.
-//
-// One fix, as per [LukeAbby's suggestion][1], is to add a `this` parameter to
-// each method:
-
-// ```
-//   async testAbility(this: AbilityModel<AbilitySchema, InvestigatorItem>, spend: number): Promise<void> {
-//     ...
-//   }
-// ```
-//
-// This effectively un-generices the method. The downside is that it doesn't
-// work with function properties, which we us extensively because they can be
-// used as event handlers directly. It also creates some `excessively deep`
-// errors across the codebase.
-//
-// For those reasons, I have simply strewn @ts-expect-error across this file.
-//
-// [1]: https://discord.com/channels/732325252788387980/803646399014109205/1376943254368420043
-// /////////////////////////////////////////////////////////////////////////////
-
 /**
  * AbilityModel
  */
@@ -66,9 +39,7 @@ export abstract class AbilityModel<
     const isBoosted = settings.useBoost.get() && this.boost;
     const boost = isBoosted ? 1 : 0;
     const situationalModifiers = this.activeSituationalModifiers.map((id) => {
-      // @ts-expect-error - see comment at top of file
       const situationalModifier = this.situationalModifiers.find(
-        // @ts-expect-error - see comment at top of file
         (situationalModifier) => situationalModifier?.id === id,
       );
       return situationalModifier;
@@ -106,7 +77,6 @@ export abstract class AbilityModel<
           />
         `,
     });
-    // @ts-expect-error - see comment at top of file
     const pool = this.pool - (Number(spend) || 0);
     await this.parent.update({ system: { pool } });
   }
@@ -138,7 +108,6 @@ export abstract class AbilityModel<
         `,
     });
     const boost = settings.useBoost.get() && this.boost ? 1 : 0;
-    // @ts-expect-error - see comment at top of file
     const pool = this.pool - (Number(spend) || 0) + boost;
     await this.parent.update({ system: { pool } });
   }
@@ -165,7 +134,6 @@ export abstract class AbilityModel<
         : new Roll(`1d6 ${operator} @diffMod`, { diffMod: Math.abs(diffMod) });
     await roll.evaluate();
     const cost = (reRoll === 1 ? 4 : reRoll === null ? 0 : 1) - boonLevy;
-    // @ts-expect-error - see comment at top of file
     if (cost > this.pool) {
       ui.notifications?.error(
         `Attempted to ${reRoll ? `re-roll a ${reRoll} with` : "roll"} ${
@@ -175,7 +143,6 @@ export abstract class AbilityModel<
       );
       return;
     }
-    // @ts-expect-error - see comment at top of file
     const newPool = Math.max(0, this.pool - cost);
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
@@ -199,7 +166,6 @@ export abstract class AbilityModel<
   }
 
   async mWNegateIllustrious(): Promise<void> {
-    // @ts-expect-error - see comment at top of file
     const newPool = Math.max(0, this.pool - constants.mwNegateCost);
     await ChatMessage.create({
       content: `
@@ -216,7 +182,6 @@ export abstract class AbilityModel<
   }
 
   async mWWallop(): Promise<void> {
-    // @ts-expect-error - see comment at top of file
     const newPool = Math.max(0, this.pool - constants.mwWallopCost);
     await ChatMessage.create({
       content: `
@@ -238,7 +203,6 @@ export abstract class AbilityModel<
   async refreshPool(): Promise<void> {
     await this.parent.update({
       system: {
-        // @ts-expect-error - see comment at top of file
         pool: this.rating ?? 0,
       },
     });
@@ -279,7 +243,6 @@ export abstract class AbilityModel<
   };
 
   getSpecialities = (): string[] => {
-    // @ts-expect-error - see comment at top of file
     return fixLength(this.specialities, this.getSpecialitesCount(), "");
   };
 
@@ -296,11 +259,9 @@ export abstract class AbilityModel<
         case 2:
           return 5;
         default:
-          // @ts-expect-error - see comment at top of file
           return Math.max(0, (this.rating - 2) * 4 + 5);
       }
     } else {
-      // @ts-expect-error - see comment at top of file
       return this.rating;
     }
   };
@@ -317,7 +278,6 @@ export abstract class AbilityModel<
     await this.parent.update({
       system: {
         rating: newRating,
-        // @ts-expect-error - see comment at top of file
         specialities: fixLength(this.specialities, newRating, ""),
       },
     });
@@ -328,7 +288,6 @@ export abstract class AbilityModel<
       system: {
         rating: newRating,
         pool: newRating,
-        // @ts-expect-error - see comment at top of file
         specialities: fixLength(this.specialities, newRating, ""),
       },
     });
@@ -359,14 +318,12 @@ export abstract class AbilityModel<
   };
 
   getActiveUnlocks = (): Unlock[] => {
-    // @ts-expect-error - see comment at top of file
     return this.unlocks.filter(({ rating: targetRating, description }) => {
       return this.rating >= targetRating && description !== "";
     });
   };
 
   getVisibleSituationalModifiers = (): SituationalModifier[] => {
-    // @ts-expect-error - see comment at top of file
     return this.situationalModifiers.filter(({ situation }) => {
       return situation !== "";
     });
@@ -395,7 +352,6 @@ export abstract class AbilityModel<
     index: number,
     description: string,
   ): Promise<void> => {
-    // @ts-expect-error - see comment at top of file
     const unlocks = [...this.unlocks];
     unlocks[index] = {
       ...unlocks[index],
@@ -405,7 +361,6 @@ export abstract class AbilityModel<
   };
 
   setUnlockRating = async (index: number, rating: number): Promise<void> => {
-    // @ts-expect-error - see comment at top of file
     const unlocks = [...this.unlocks];
     unlocks[index] = {
       ...unlocks[index],
@@ -415,7 +370,6 @@ export abstract class AbilityModel<
   };
 
   deleteUnlock = async (index: number): Promise<void> => {
-    // @ts-expect-error - see comment at top of file
     const unlocks = [...this.unlocks];
     unlocks.splice(index, 1);
     await this.parent.update({ system: { unlocks } });
@@ -423,7 +377,6 @@ export abstract class AbilityModel<
 
   addUnlock = async () => {
     const unlocks: Unlock[] = [
-      // @ts-expect-error - see comment at top of file
       ...this.unlocks,
       {
         description: "",
@@ -438,7 +391,6 @@ export abstract class AbilityModel<
     index: number,
     situation: string,
   ) => {
-    // @ts-expect-error - see comment at top of file
     const situationalModifiers = [...this.situationalModifiers];
     situationalModifiers[index] = {
       ...situationalModifiers[index],
@@ -451,7 +403,6 @@ export abstract class AbilityModel<
     index: number,
     modifier: number,
   ): Promise<void> => {
-    // @ts-expect-error - see comment at top of file
     const situationalModifiers = [...this.situationalModifiers];
     situationalModifiers[index] = {
       ...situationalModifiers[index],
@@ -461,7 +412,6 @@ export abstract class AbilityModel<
   };
 
   deleteSituationalModifier = async (index: number): Promise<void> => {
-    // @ts-expect-error - see comment at top of file
     const situationalModifiers = [...this.situationalModifiers];
     situationalModifiers.splice(index, 1);
     await this.parent.update({ system: { situationalModifiers } });
@@ -469,7 +419,6 @@ export abstract class AbilityModel<
 
   addSituationalModifier = async (): Promise<void> => {
     const situationalModifiers: SituationalModifier[] = [
-      // @ts-expect-error - see comment at top of file
       ...this.situationalModifiers,
       {
         situation: "",
