@@ -9,9 +9,9 @@ import { CombatTracker } from "../fvtt-exports";
 export class InvestigatorCombatTrackerBase extends CombatTracker {
   // we're going to handle our own menu, thanks. CombatTracker will not do the
   // menu at all if the list is empty
-  override _getEntryContextOptions() {
-    return [];
-  }
+  // override _getEntryContextOptions() {
+  //   return [];
+  // }
 }
 
 const render = () => {

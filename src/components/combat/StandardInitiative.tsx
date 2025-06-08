@@ -12,6 +12,7 @@ import { assertGame } from "../../functions/isGame";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
 import { Dropdown } from "../inputs/Dropdown";
 import { Menu, MenuItem } from "../inputs/Menu";
+import { NativeMenu } from "./NativeMenu";
 import { useInititative } from "./useInititative";
 
 interface StandardInitiativeProps {
@@ -68,6 +69,8 @@ export const StandardInitiative = ({
           </button>
         )}
       </div>
+
+      <NativeMenu />
 
       {game.user.isGM && (
         <Dropdown
