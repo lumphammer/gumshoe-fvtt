@@ -29,16 +29,13 @@ export import TypeDataModel = foundry.abstract.TypeDataModel;
 export import TypedObjectField = foundry.data.fields.TypedObjectField;
 export import BooleanField = foundry.data.fields.BooleanField;
 
-// @ts-expect-error not typed yet
 const _Journal = foundry.documents.collections.Journal;
-export const JournalCollection = _Journal as typeof Journal;
+export const JournalCollection = _Journal;
 
-// @ts-expect-error not typed yet
 const _Actors = foundry.documents.collections.Actors;
-export const ActorsCollection = _Actors as typeof Actors;
+export const ActorsCollection = _Actors;
 
-// @ts-expect-error not typed yet
 const _Items = foundry.documents.collections.Items;
-export const ItemsCollection = _Items as typeof Items;
+export const ItemsCollection = _Items;
 
 export type { DataSchema, SourceData };

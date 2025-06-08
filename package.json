@@ -85,6 +85,7 @@
     "@lumphammer/minirouter": "workspace:^",
     "@lumphammer/shared-fvtt-bits": "workspace:^",
     "@monaco-editor/react": "^4.7.0",
+    "@radix-ui/react-context-menu": "^2.2.15",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-switch": "^1.2.5",
     "@typescript-eslint/eslint-plugin": "^8.33.0",

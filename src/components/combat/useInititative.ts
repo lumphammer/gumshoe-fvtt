@@ -13,8 +13,9 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
   const combatantStash = useRefStash(combat.combatants.get(id));
 
   const onConfigureCombatant = useCallback(
-    (event: React.MouseEvent<HTMLElement>) => {
+    (event: Event) => {
       if (combatantStash.current === undefined) return;
+      if (!(event.currentTarget instanceof HTMLElement)) return;
       const rect = event.currentTarget.getBoundingClientRect();
       void new CombatantConfig({
         position: {

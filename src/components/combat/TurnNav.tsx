@@ -4,8 +4,7 @@ import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
 import { assertGame } from "../../functions/isGame";
 import { CombatTrackerConfig } from "../../fvtt-exports";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
-import { Dropdown } from "../inputs/Dropdown";
-import { Menu, MenuItem } from "../inputs/Menu";
+import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { format, localize } from "./functions";
 
 interface TurnNavProps {
@@ -67,8 +66,8 @@ export const TurnNav = ({
                     justifyContent: "center",
                   }}
                 >
-                  <Dropdown
-                    showArrow={false}
+                  <NativeDropdownMenu
+                    css={{ flex: 1, minHeight: "var(--button-size)" }}
                     label={
                       <>
                         {format("COMBAT.Round", {
@@ -77,53 +76,38 @@ export const TurnNav = ({
                         <FaChevronDown />
                       </>
                     }
-                    className="inline-control"
-                    css={{
-                      flex: 1,
-                      minHeight: "var(--button-size)",
-                      color: "var(--color-text-primary)",
-                      ":hover": {
-                        color: "var(--button-hover-text-color)",
-                      },
-                    }}
                   >
-                    {
-                      <Menu>
-                        {/* SETTINGS */}
-                        <MenuItem
-                          icon={<FaCog />}
-                          onClick={() => {
-                            return new CombatTrackerConfig().render({
-                              force: true,
-                            });
-                          }}
-                        >
-                          {localize("COMBAT.Settings")}
-                        </MenuItem>
+                    <NativeMenuItem
+                      icon={<FaCog />}
+                      onSelect={() => {
+                        return new CombatTrackerConfig().render({
+                          force: true,
+                        });
+                      }}
+                    >
+                      {localize("COMBAT.Settings")}
+                    </NativeMenuItem>
 
-                        {/* CLEAR MOVEMENT HISTORIES */}
-                        <MenuItem
-                          icon={<FaShoePrints />}
-                          onClick={() => {
-                            // @ts-expect-error this is fine
-                            combat.clearMovementHistories();
-                          }}
-                        >
-                          {localize("COMBAT.ClearMovementHistories")}
-                        </MenuItem>
+                    <NativeMenuItem
+                      icon={<FaShoePrints />}
+                      onSelect={() => {
+                        // @ts-expect-error this is fine
+                        combat.clearMovementHistories();
+                      }}
+                    >
+                      {localize("COMBAT.ClearMovementHistories")}
+                    </NativeMenuItem>
 
-                        {/* INITIATIVE RESET */}
-                        <MenuItem
-                          icon={<FaRecycle />}
-                          onClick={() => {
-                            void combat.resetAll();
-                          }}
-                        >
-                          {localize("COMBAT.InitiativeReset")}
-                        </MenuItem>
-                      </Menu>
-                    }
-                  </Dropdown>
+                    {/* INITIATIVE RESET */}
+                    <NativeMenuItem
+                      icon={<FaRecycle />}
+                      onSelect={() => {
+                        void combat.resetAll();
+                      }}
+                    >
+                      {localize("COMBAT.InitiativeReset")}
+                    </NativeMenuItem>
+                  </NativeDropdownMenu>
                 </strong>
                 {!isTurnPassing && (
                   <>

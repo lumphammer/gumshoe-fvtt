@@ -1,17 +1,11 @@
 import { Fragment, useEffect, useRef } from "react";
-import {
-  FaEdit,
-  FaEllipsisV,
-  FaEraser,
-  FaRecycle,
-  FaTrash,
-} from "react-icons/fa";
+import { FaEdit, FaEraser, FaRecycle, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
 import { assertGame } from "../../functions/isGame";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
-import { Dropdown } from "../inputs/Dropdown";
-import { Menu, MenuItem } from "../inputs/Menu";
+import { NativeDualFunctionMenu, NativeMenuItem } from "../inputs/NativeMenu";
+import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
 import { useInititative } from "./useInititative";
 
 interface StandardInitiativeProps {
@@ -68,37 +62,27 @@ export const StandardInitiative = ({
           </button>
         )}
       </div>
-
       {game.user.isGM && (
-        <Dropdown
-          showArrow={false}
-          label={<FaEllipsisV />}
-          className="inline-control"
-          css={{
-            flex: 0,
-            minHeight: "var(--button-size)",
-          }}
-        >
-          {
-            <Menu>
-              <MenuItem icon={<FaEdit />} onClick={onConfigureCombatant}>
-                {localize("COMBAT.CombatantUpdate")}
-              </MenuItem>
-              <MenuItem icon={<FaEraser />} onClick={onClearInitiative}>
-                {localize("COMBAT.CombatantClear")}
-              </MenuItem>
-              <MenuItem icon={<FaRecycle />} onClick={onDoInitiative}>
-                {localize("investigator.RefreshInitiative")}
-              </MenuItem>
-              <MenuItem icon={<HiDocumentText />} onClick={openSheet}>
-                {localize("investigator.OpenCharacterSheet")}
-              </MenuItem>
-              <MenuItem icon={<FaTrash />} onClick={onRemoveCombatant}>
-                {localize("COMBAT.CombatantRemove")}
-              </MenuItem>
-            </Menu>
-          }
-        </Dropdown>
+        <>
+          <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
+            <NativeMenuLabel>{turn.name}</NativeMenuLabel>
+            <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
+              {localize("COMBAT.CombatantUpdate")}
+            </NativeMenuItem>
+            <NativeMenuItem icon={<FaEraser />} onSelect={onClearInitiative}>
+              {localize("COMBAT.CombatantClear")}
+            </NativeMenuItem>
+            <NativeMenuItem icon={<FaRecycle />} onSelect={onDoInitiative}>
+              {localize("investigator.RefreshInitiative")}
+            </NativeMenuItem>
+            <NativeMenuItem icon={<HiDocumentText />} onSelect={openSheet}>
+              {localize("investigator.OpenCharacterSheet")}
+            </NativeMenuItem>
+            <NativeMenuItem icon={<FaTrash />} onSelect={onRemoveCombatant}>
+              {localize("COMBAT.CombatantRemove")}
+            </NativeMenuItem>
+          </NativeDualFunctionMenu>
+        </>
       )}
     </Fragment>
   );
