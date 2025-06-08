@@ -2,6 +2,10 @@
 
 (Skipped version numbers are testing releases.)
 
+## Unreleased
+
+* BUGFIX: Weapons created in the sidebar would throw an error when opening their edit sheet (#1204, thanks @dorf-lundgren)
+
 ## 9.8 (2025-06-06)
 
 * BUGFIX: The new combat tracker now looks right when popped out from the sidebar (#1194)
