@@ -24,8 +24,7 @@ export const PersonalDetailMain = () => {
     (index) => `Slot ${index + 1}`,
   );
   const compendiumPacks = game.packs.filter(
-    (pack: CompendiumCollection<CompendiumCollection.Metadata>) =>
-      pack.metadata.type === "Item",
+    (pack) => pack.metadata.type === "Item",
   );
 
   return (
