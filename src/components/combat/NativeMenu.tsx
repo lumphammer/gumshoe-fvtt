@@ -80,16 +80,17 @@ const NativeMenuItem = ({ children, onSelect, icon }: NativeMenuItemProps) => {
 type NativeMenuProps = {
   className?: string;
   children: React.ReactNode;
+  label?: React.ReactNode;
 };
 
-export const NativeMenu = ({ className, children }: NativeMenuProps) => {
+export const NativeMenu = ({ className, children, label }: NativeMenuProps) => {
   const triggerRef = useRef<HTMLDivElement>(null);
   const theme = useLocalFoundryTheme(triggerRef);
 
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger className={cx("inline-control", className)}>
-        <FaEllipsisV />
+        {label ?? <FaEllipsisV />}
         <span css={{ display: "none" }} ref={triggerRef}></span>
       </DropdownMenu.Trigger>
 

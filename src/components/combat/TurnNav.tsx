@@ -1,12 +1,11 @@
 import { keyframes } from "@emotion/react";
-import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
+import { FaChevronDown } from "react-icons/fa";
 
 import { assertGame } from "../../functions/isGame";
 import { CombatTrackerConfig } from "../../fvtt-exports";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
-import { Dropdown } from "../inputs/Dropdown";
-import { Menu, MenuItem } from "../inputs/Menu";
 import { format, localize } from "./functions";
+import { NativeMenu } from "./NativeMenu";
 
 interface TurnNavProps {
   isTurnPassing: boolean;
@@ -67,8 +66,8 @@ export const TurnNav = ({
                     justifyContent: "center",
                   }}
                 >
-                  <Dropdown
-                    showArrow={false}
+                  <NativeMenu
+                    css={{ flex: 1, minHeight: "var(--button-size)" }}
                     label={
                       <>
                         {format("COMBAT.Round", {
@@ -77,53 +76,35 @@ export const TurnNav = ({
                         <FaChevronDown />
                       </>
                     }
-                    className="inline-control"
-                    css={{
-                      flex: 1,
-                      minHeight: "var(--button-size)",
-                      color: "var(--color-text-primary)",
-                      ":hover": {
-                        color: "var(--button-hover-text-color)",
-                      },
-                    }}
                   >
-                    {
-                      <Menu>
-                        {/* SETTINGS */}
-                        <MenuItem
-                          icon={<FaCog />}
-                          onClick={() => {
-                            return new CombatTrackerConfig().render({
-                              force: true,
-                            });
-                          }}
-                        >
-                          {localize("COMBAT.Settings")}
-                        </MenuItem>
+                    <NativeMenu.Item
+                      onSelect={() => {
+                        return new CombatTrackerConfig().render({
+                          force: true,
+                        });
+                      }}
+                    >
+                      {localize("COMBAT.Settings")}
+                    </NativeMenu.Item>
 
-                        {/* CLEAR MOVEMENT HISTORIES */}
-                        <MenuItem
-                          icon={<FaShoePrints />}
-                          onClick={() => {
-                            // @ts-expect-error this is fine
-                            combat.clearMovementHistories();
-                          }}
-                        >
-                          {localize("COMBAT.ClearMovementHistories")}
-                        </MenuItem>
+                    <NativeMenu.Item
+                      onSelect={() => {
+                        // @ts-expect-error this is fine
+                        combat.clearMovementHistories();
+                      }}
+                    >
+                      {localize("COMBAT.ClearMovementHistories")}
+                    </NativeMenu.Item>
 
-                        {/* INITIATIVE RESET */}
-                        <MenuItem
-                          icon={<FaRecycle />}
-                          onClick={() => {
-                            void combat.resetAll();
-                          }}
-                        >
-                          {localize("COMBAT.InitiativeReset")}
-                        </MenuItem>
-                      </Menu>
-                    }
-                  </Dropdown>
+                    {/* INITIATIVE RESET */}
+                    <NativeMenu.Item
+                      onSelect={() => {
+                        void combat.resetAll();
+                      }}
+                    >
+                      {localize("COMBAT.InitiativeReset")}
+                    </NativeMenu.Item>
+                  </NativeMenu>
                 </strong>
                 {!isTurnPassing && (
                   <>
