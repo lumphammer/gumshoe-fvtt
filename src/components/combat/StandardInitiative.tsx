@@ -70,7 +70,11 @@ export const StandardInitiative = ({
         )}
       </div>
 
-      <NativeMenu css={{ flex: 0, padding: "0 0.3em" }} />
+      <NativeMenu css={{ flex: 0, padding: "0 0.3em" }}>
+        <NativeMenu.Item>An Item!</NativeMenu.Item>
+        <NativeMenu.Item>Another Item!</NativeMenu.Item>
+        <NativeMenu.Item>A third Item!</NativeMenu.Item>
+      </NativeMenu>
 
       {game.user.isGM && (
         <Dropdown

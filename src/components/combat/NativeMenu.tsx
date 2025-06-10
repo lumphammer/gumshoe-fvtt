@@ -62,6 +62,12 @@ const NativeMenuItem = ({ children }: PropsWithChildren) => {
         fontSize: "var(--font-size-12)",
         cursor: "var(--cursor-pointer)",
         transition: "0.1s",
+        // foundry
+        ":hover": {
+          border: "1px solid var(--hover-entry-border)",
+          background: "var(--hover-entry-background)",
+          color: "var(--hover-text-color)",
+        },
       }}
     >
       {children}
@@ -69,7 +75,12 @@ const NativeMenuItem = ({ children }: PropsWithChildren) => {
   );
 };
 
-export const NativeMenu = ({ className }: { className?: string }) => {
+type NativeMenuProps = {
+  className?: string;
+  children: React.ReactNode;
+};
+
+export const NativeMenu = ({ className, children }: NativeMenuProps) => {
   const triggerRef = useRef<HTMLDivElement>(null);
   const theme = useLocalFoundryTheme(triggerRef);
 
@@ -128,10 +139,12 @@ export const NativeMenu = ({ className }: { className?: string }) => {
           // positioning
           // id="context-menu"
         >
-          <NativeMenuItem>An Item!</NativeMenuItem>
-          <NativeMenuItem>Another Item!</NativeMenuItem>
-          <NativeMenuItem>A third Item!</NativeMenuItem>
-          <DropdownMenu.Arrow width={10} height={10} />
+          {children}
+          <DropdownMenu.Arrow
+            width={10}
+            height={10}
+            css={{ fill: "var(--border-color)" }}
+          />
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
