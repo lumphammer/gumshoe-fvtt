@@ -70,7 +70,7 @@ export const StandardInitiative = ({
         )}
       </div>
 
-      <NativeMenu />
+      <NativeMenu css={{ flex: 0, padding: "0 0.3em" }} />
 
       {game.user.isGM && (
         <Dropdown

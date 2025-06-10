@@ -1,5 +1,56 @@
+import { cx } from "@emotion/css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { PropsWithChildren } from "react";
+import {
+  PropsWithChildren,
+  RefObject,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { FaEllipsisV } from "react-icons/fa";
+
+type FoundryThemeClass = "theme-dark" | "theme-light";
+
+const log = console.log.bind(console, "[menu]");
+
+function getLocalFoundryTheme(
+  el: HTMLElement | null,
+): [HTMLElement | null, FoundryThemeClass] {
+  log("el", el);
+  const ancestor = el?.closest(".themed:is(.theme-dark, .theme-light)");
+  log("ancestor", ancestor);
+  let theme: FoundryThemeClass = "theme-light";
+  if (ancestor && ancestor.classList.contains("theme-dark")) {
+    theme = "theme-dark";
+  }
+  log("theme", theme);
+  return [ancestor instanceof HTMLElement ? ancestor : null, theme];
+}
+
+function useLocalFoundryTheme(
+  ref: RefObject<HTMLElement | null>,
+): FoundryThemeClass {
+  const [theme, setTheme] = useState<FoundryThemeClass>("theme-light");
+  useLayoutEffect(() => {
+    log("running effect");
+    const [ancestor, theme] = getLocalFoundryTheme(ref.current);
+    setTheme(theme);
+    if (ref.current === null || ancestor === null) {
+      return;
+    }
+    const observer = new MutationObserver((mutations) => {
+      log("mutations", mutations);
+      const [_, theme] = getLocalFoundryTheme(ref.current);
+      setTheme(theme);
+    });
+    observer.observe(ancestor, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, [ref]);
+  return theme;
+}
 
 const NativeMenuItem = ({ children }: PropsWithChildren) => {
   return (
@@ -18,10 +69,16 @@ const NativeMenuItem = ({ children }: PropsWithChildren) => {
   );
 };
 
-export const NativeMenu = () => {
+export const NativeMenu = ({ className }: { className?: string }) => {
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const theme = useLocalFoundryTheme(triggerRef);
+
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger>M</DropdownMenu.Trigger>
+      <DropdownMenu.Trigger className={cx("inline-control", className)}>
+        <FaEllipsisV />
+        <span css={{ display: "none" }} ref={triggerRef}></span>
+      </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
@@ -30,16 +87,29 @@ export const NativeMenu = () => {
           collisionPadding={10}
           align="start"
           side="bottom"
-          className=""
+          className={cx("themed", theme)}
           css={{
             // from .themed.theme-dark#context-menu</DropdownMenu.Portal>
-            "--background-color": "var(--color-cool-5)",
-            "--border-color": "var(--color-cool-3)",
-            "--text-color": "var(--color-text-secondary)",
-            "--hover-text-color": "var(--color-text-emphatic)",
-            "--group-separator": "var(--color-cool-4)",
-            "--hover-entry-border": "var(--color-cool-4)",
-            "--hover-entry-background": "var(--color-dark-1)",
+            ...(theme === "theme-dark"
+              ? {
+                  "--background-color": "var(--color-cool-5)",
+                  "--border-color": "var(--color-cool-3)",
+                  "--text-color": "var(--color-text-secondary)",
+                  "--hover-text-color": "var(--color-text-emphatic)",
+                  "--group-separator": "var(--color-cool-4)",
+                  "--hover-entry-border": "var(--color-cool-4)",
+                  "--hover-entry-background": "var(--color-dark-1)",
+                }
+              : {
+                  // light
+                  "--background-color": "#d9d8c8",
+                  "--border-color": "#999",
+                  "--text-color": "var(--color-text-secondary)",
+                  "--hover-text-color": "var(--color-text-emphatic)",
+                  "--group-separator": "#999",
+                  "--hover-entry-border": "#999",
+                  "--hover-entry-background": "#f0f0e0",
+                }),
             // from #context-menu
             height: "max-content",
             minWidth: "150px",
