@@ -1,12 +1,6 @@
 import { cx } from "@emotion/css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import {
-  PropsWithChildren,
-  RefObject,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { RefObject, useLayoutEffect, useRef, useState } from "react";
 import { FaEllipsisV } from "react-icons/fa";
 
 type FoundryThemeClass = "theme-dark" | "theme-light";
@@ -52,7 +46,13 @@ function useLocalFoundryTheme(
   return theme;
 }
 
-const NativeMenuItem = ({ children }: PropsWithChildren) => {
+type NativeMenuItemProps = {
+  children: React.ReactNode;
+  onSelect: (event: Event) => void;
+  icon?: React.ReactNode;
+};
+
+const NativeMenuItem = ({ children, onSelect, icon }: NativeMenuItemProps) => {
   return (
     <DropdownMenu.Item
       css={{
@@ -69,7 +69,9 @@ const NativeMenuItem = ({ children }: PropsWithChildren) => {
           color: "var(--hover-text-color)",
         },
       }}
+      onSelect={onSelect}
     >
+      <span css={{ marginRight: "0.5em" }}>{icon}</span>
       {children}
     </DropdownMenu.Item>
   );
