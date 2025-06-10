@@ -138,7 +138,6 @@ export abstract class AbilityModel<
       ui.notifications?.error(
         `Attempted to ${reRoll ? `re-roll a ${reRoll} with` : "roll"} ${
           this.parent.name
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         } with a levy of ${boonLevy} but pool is currently at ${this.pool}`,
       );
       return;
