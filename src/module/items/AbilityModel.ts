@@ -1,7 +1,6 @@
 import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
-import { assertGame } from "../../functions/isGame";
 import { fixLength } from "../../functions/utilities";
 import { TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
@@ -32,7 +31,6 @@ export abstract class AbilityModel<
    * to a d6
    */
   async testAbility(spend: number): Promise<void> {
-    assertGame(game);
     if (this.parent.parent === null) {
       return;
     }
@@ -121,8 +119,6 @@ export abstract class AbilityModel<
     boonLevy: number,
     reRoll: number | null = null,
   ): Promise<void> {
-    assertGame(game);
-
     if (this.parent.parent === null) {
       return;
     }
