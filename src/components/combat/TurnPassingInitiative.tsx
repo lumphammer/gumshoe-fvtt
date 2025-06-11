@@ -91,20 +91,20 @@ export const TurnPassingInitiative = ({
 
       {game.user.isGM && (
         <NativeMenu css={{ flex: 0, padding: "0 0.3em" }}>
-          <NativeMenu.Item onSelect={onConfigureCombatant}>
-            <FaEdit /> {localize("COMBAT.CombatantUpdate")}
+          <NativeMenu.Item icon={<FaEdit />} onSelect={onConfigureCombatant}>
+            {localize("COMBAT.CombatantUpdate")}
           </NativeMenu.Item>
-          <NativeMenu.Item onSelect={onAddTurn}>
-            <FaPlus /> {localize("investigator.AddTurn")}
+          <NativeMenu.Item icon={<FaPlus />} onSelect={onAddTurn}>
+            {localize("investigator.AddTurn")}
           </NativeMenu.Item>
-          <NativeMenu.Item onSelect={onRemoveTurn}>
-            <FaMinus /> {localize("investigator.RemoveTurn")}
+          <NativeMenu.Item icon={<FaMinus />} onSelect={onRemoveTurn}>
+            {localize("investigator.RemoveTurn")}
           </NativeMenu.Item>
-          <NativeMenu.Item onSelect={openSheet}>
-            <HiDocumentText /> {localize("investigator.OpenCharacterSheet")}
+          <NativeMenu.Item icon={<HiDocumentText />} onSelect={openSheet}>
+            {localize("investigator.OpenCharacterSheet")}
           </NativeMenu.Item>
-          <NativeMenu.Item onSelect={onRemoveCombatant}>
-            <FaTrash /> {localize("COMBAT.CombatantRemove")}
+          <NativeMenu.Item icon={<FaTrash />} onSelect={onRemoveCombatant}>
+            {localize("COMBAT.CombatantRemove")}
           </NativeMenu.Item>
         </NativeMenu>
       )}

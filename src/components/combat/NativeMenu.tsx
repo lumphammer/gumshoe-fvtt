@@ -62,6 +62,10 @@ const NativeMenuItem = ({ children, onSelect, icon }: NativeMenuItemProps) => {
         fontSize: "var(--font-size-12)",
         cursor: "var(--cursor-pointer)",
         transition: "0.1s",
+        display: "grid",
+        gridTemplateColumns: "subgrid",
+        gridColumn: "1/-1",
+        columnGap: "0.5em",
         // foundry
         ":hover": {
           border: "1px solid var(--hover-entry-border)",
@@ -135,6 +139,8 @@ export const NativeMenu = ({ className, children, label }: NativeMenuProps) => {
             width: "100%",
             zIndex: "calc(var(--z-index-app) + 1)",
             boxShadow: "0 3px 6px rgba(0, 0, 0, 0.45)",
+            display: "grid",
+            gridTemplateColumns: "max-content 1fr",
           }}
           // we should be able to recycle foundry's styles for #context-menu,
           // but 1. it's an id and we can in theory display >1 menu at once,

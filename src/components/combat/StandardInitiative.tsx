@@ -63,20 +63,20 @@ export const StandardInitiative = ({
       </div>
       {game.user.isGM && (
         <NativeMenu css={{ flex: 0, padding: "0 0.3em" }}>
-          <NativeMenu.Item onSelect={onConfigureCombatant}>
-            <FaEdit /> {localize("COMBAT.CombatantUpdate")}
+          <NativeMenu.Item icon={<FaEdit />} onSelect={onConfigureCombatant}>
+            {localize("COMBAT.CombatantUpdate")}
           </NativeMenu.Item>
-          <NativeMenu.Item onSelect={onClearInitiative}>
-            <FaEraser /> {localize("COMBAT.CombatantClear")}
+          <NativeMenu.Item icon={<FaEraser />} onSelect={onClearInitiative}>
+            {localize("COMBAT.CombatantClear")}
           </NativeMenu.Item>
-          <NativeMenu.Item onSelect={onDoInitiative}>
-            <FaRecycle /> {localize("investigator.RefreshInitiative")}
+          <NativeMenu.Item icon={<FaRecycle />} onSelect={onDoInitiative}>
+            {localize("investigator.RefreshInitiative")}
           </NativeMenu.Item>
-          <NativeMenu.Item onSelect={openSheet}>
-            <HiDocumentText /> {localize("investigator.OpenCharacterSheet")}
+          <NativeMenu.Item icon={<HiDocumentText />} onSelect={openSheet}>
+            {localize("investigator.OpenCharacterSheet")}
           </NativeMenu.Item>
-          <NativeMenu.Item onSelect={onRemoveCombatant}>
-            <FaTrash /> {localize("COMBAT.CombatantRemove")}
+          <NativeMenu.Item icon={<FaTrash />} onSelect={onRemoveCombatant}>
+            {localize("COMBAT.CombatantRemove")}
           </NativeMenu.Item>
         </NativeMenu>
       )}
