@@ -1,7 +1,10 @@
 import { cx } from "@emotion/css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+// import { useClickOutside } from "@mantine/hooks";
 import { RefObject, useLayoutEffect, useRef, useState } from "react";
 import { FaEllipsisV } from "react-icons/fa";
+
+import { useClickAway } from "./useClickAway";
 
 type FoundryThemeClass = "theme-dark" | "theme-light";
 
@@ -90,9 +93,20 @@ type NativeMenuProps = {
 export const NativeMenu = ({ className, children, label }: NativeMenuProps) => {
   const triggerRef = useRef<HTMLDivElement>(null);
   const theme = useLocalFoundryTheme(triggerRef);
+  const [open, setOpen] = useState(false);
+  const menuRef = useClickAway<HTMLDivElement>((event) => {
+    log("click away");
+    // setOpen(false);
+  });
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root
+      // the default is modal={true} which in theory is better UX but causes
+      // weirdness where you can have multiple menus open at the same time
+      modal={true}
+      open={open}
+      onOpenChange={setOpen}
+    >
       <DropdownMenu.Trigger className={cx("inline-control", className)}>
         {label ?? <FaEllipsisV />}
         <span css={{ display: "none" }} ref={triggerRef}></span>
@@ -100,6 +114,10 @@ export const NativeMenu = ({ className, children, label }: NativeMenuProps) => {
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
+          ref={menuRef}
+          onPointerDownOutside={(event) => {
+            log("pointer down outside");
+          }}
           avoidCollisions={true}
           collisionBoundary={document.body}
           collisionPadding={10}
