@@ -1,5 +1,5 @@
 import { keyframes } from "@emotion/react";
-import { FaChevronDown } from "react-icons/fa";
+import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
 
 import { assertGame } from "../../functions/isGame";
 import { CombatTrackerConfig } from "../../fvtt-exports";
@@ -78,6 +78,7 @@ export const TurnNav = ({
                     }
                   >
                     <NativeMenu.Item
+                      icon={<FaCog />}
                       onSelect={() => {
                         return new CombatTrackerConfig().render({
                           force: true,
@@ -88,6 +89,7 @@ export const TurnNav = ({
                     </NativeMenu.Item>
 
                     <NativeMenu.Item
+                      icon={<FaShoePrints />}
                       onSelect={() => {
                         // @ts-expect-error this is fine
                         combat.clearMovementHistories();
@@ -98,6 +100,7 @@ export const TurnNav = ({
 
                     {/* INITIATIVE RESET */}
                     <NativeMenu.Item
+                      icon={<FaRecycle />}
                       onSelect={() => {
                         void combat.resetAll();
                       }}
