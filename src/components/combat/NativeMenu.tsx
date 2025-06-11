@@ -103,7 +103,7 @@ export const NativeMenu = ({ className, children, label }: NativeMenuProps) => {
           avoidCollisions={true}
           collisionBoundary={document.body}
           collisionPadding={10}
-          align="start"
+          align="center"
           side="bottom"
           className={cx("themed", theme)}
           css={{
