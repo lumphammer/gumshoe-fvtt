@@ -92,7 +92,7 @@ export const NativeMenu = ({ className, children, label }: NativeMenuProps) => {
   const theme = useLocalFoundryTheme(triggerRef);
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root modal={false}>
       <DropdownMenu.Trigger className={cx("inline-control", className)}>
         {label ?? <FaEllipsisV />}
         <span css={{ display: "none" }} ref={triggerRef}></span>
