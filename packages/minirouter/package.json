@@ -24,8 +24,8 @@
   "devDependencies": {
     "@emotion/react": "^11.14.0",
     "@testing-library/jest-dom": "^6.6.3",
-    "@types/react": "^19.1.6",
-    "framer-motion": "^12.15.0",
+    "@types/react": "^19.1.8",
+    "framer-motion": "^12.18.1",
     "react": "^19.1.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "vite": "^6.3.5",
