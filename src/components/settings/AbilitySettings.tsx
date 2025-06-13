@@ -59,96 +59,86 @@ export const AbilitySettings = ({ setters }: { setters: Setters }) => {
             </label>
           </div>
           {game.packs
-            .filter(
-              (pack: CompendiumCollection<CompendiumCollection.Metadata>) =>
-                pack.metadata.type === "Item",
-            )
-            .map(
-              (
-                pack: CompendiumCollection<CompendiumCollection.Metadata>,
-                i,
-              ) => {
-                const pcSelected = settings.newPCPacks.includes(
-                  pack.collection,
-                );
-                const npcSelected = settings.newNPCPacks.includes(
-                  pack.collection,
-                );
-                const id = nanoid();
-                const gridRow = i + 2;
-                return (
-                  <IdContext.Provider value={id} key={pack.metadata.name}>
-                    {gridRow % 2 === 0 && (
-                      <div
-                        css={{
-                          gridRow,
-                          gridColumn: "1/4",
-                          background: theme.colors.backgroundButton,
-                        }}
-                      />
-                    )}
-                    <Toggle
-                      checked={pcSelected}
+            .filter((pack) => pack.metadata.type === "Item")
+            .map((pack, i) => {
+              const pcSelected = settings.newPCPacks.includes(pack.collection);
+              const npcSelected = settings.newNPCPacks.includes(
+                pack.collection,
+              );
+              const id = nanoid();
+              const gridRow = i + 2;
+              return (
+                <IdContext.Provider value={id} key={pack.metadata.name}>
+                  {gridRow % 2 === 0 && (
+                    <div
                       css={{
-                        gridColumn: 1,
                         gridRow,
-                      }}
-                      onChange={(checked) => {
-                        if (checked) {
-                          setters.newPCPacks([
-                            ...settings.newPCPacks,
-                            pack.collection,
-                          ]);
-                        } else {
-                          setters.newPCPacks(
-                            settings.newPCPacks.filter(
-                              (x) => x !== pack.collection,
-                            ),
-                          );
-                        }
+                        gridColumn: "1/4",
+                        background: theme.colors.backgroundButton,
                       }}
                     />
-                    <Toggle
-                      css={{
-                        gridColumn: 3,
-                        gridRow,
-                        top: 0,
-                      }}
-                      checked={npcSelected}
-                      onChange={(checked) => {
-                        if (checked) {
-                          setters.newNPCPacks([
-                            ...settings.newNPCPacks,
-                            pack.collection,
-                          ]);
-                        } else {
-                          setters.newNPCPacks(
-                            settings.newNPCPacks.filter(
-                              (x) => x !== pack.collection,
-                            ),
-                          );
-                        }
-                      }}
-                    />
-                    <label
-                      className="parp"
-                      key={pack.collection}
-                      title={pack.collection}
-                      htmlFor={id}
-                      css={{
-                        display: "block",
-                        paddingTop: "0.3em",
-                        gridColumn: 2,
-                        gridRow,
-                        textAlign: "center",
-                      }}
-                    >
-                      {pack.metadata.label}
-                    </label>
-                  </IdContext.Provider>
-                );
-              },
-            )}
+                  )}
+                  <Toggle
+                    checked={pcSelected}
+                    css={{
+                      gridColumn: 1,
+                      gridRow,
+                    }}
+                    onChange={(checked) => {
+                      if (checked) {
+                        setters.newPCPacks([
+                          ...settings.newPCPacks,
+                          pack.collection,
+                        ]);
+                      } else {
+                        setters.newPCPacks(
+                          settings.newPCPacks.filter(
+                            (x) => x !== pack.collection,
+                          ),
+                        );
+                      }
+                    }}
+                  />
+                  <Toggle
+                    css={{
+                      gridColumn: 3,
+                      gridRow,
+                      top: 0,
+                    }}
+                    checked={npcSelected}
+                    onChange={(checked) => {
+                      if (checked) {
+                        setters.newNPCPacks([
+                          ...settings.newNPCPacks,
+                          pack.collection,
+                        ]);
+                      } else {
+                        setters.newNPCPacks(
+                          settings.newNPCPacks.filter(
+                            (x) => x !== pack.collection,
+                          ),
+                        );
+                      }
+                    }}
+                  />
+                  <label
+                    className="parp"
+                    key={pack.collection}
+                    title={pack.collection}
+                    htmlFor={id}
+                    css={{
+                      display: "block",
+                      paddingTop: "0.3em",
+                      gridColumn: 2,
+                      gridRow,
+                      textAlign: "center",
+                    }}
+                  >
+                    {pack.metadata.label}
+                  </label>
+                </IdContext.Provider>
+              );
+            })}
         </div>
       </SettingsGridFieldStacked>
       <SettingsGridField label="Investigative Ability Categories" index={idx++}>

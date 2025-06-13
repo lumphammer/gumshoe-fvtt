@@ -1,13 +1,14 @@
 import { keyframes } from "@emotion/react";
 import { Fragment } from "react";
-import { FaEdit, FaEllipsisV, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
+import { FaEdit, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
 import { InvestigatorCombat } from "../../module/InvestigatorCombat";
-import { Dropdown } from "../inputs/Dropdown";
-import { Menu, MenuItem } from "../inputs/Menu";
+import { NativeMenuItem } from "../inputs/NativeMenu";
+import { NativeDualFunctionMenu } from "../inputs/NativeMenu/NativeDualFunctionMenu";
+import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
 import { useInititative } from "./useInititative";
 
 interface StandardInitiativeProps {
@@ -91,33 +92,24 @@ export const TurnPassingInitiative = ({
       </div>
 
       {game.user.isGM && (
-        <Dropdown
-          showArrow={false}
-          label={<FaEllipsisV />}
-          css={{
-            flex: 0,
-          }}
-        >
-          {
-            <Menu>
-              <MenuItem icon={<FaEdit />} onClick={onConfigureCombatant}>
-                {localize("COMBAT.CombatantUpdate")}
-              </MenuItem>
-              <MenuItem icon={<FaPlus />} onClick={onAddTurn}>
-                {localize("investigator.AddTurn")}
-              </MenuItem>
-              <MenuItem icon={<FaMinus />} onClick={onRemoveTurn}>
-                {localize("investigator.RemoveTurn")}
-              </MenuItem>
-              <MenuItem icon={<HiDocumentText />} onClick={openSheet}>
-                {localize("investigator.OpenCharacterSheet")}
-              </MenuItem>
-              <MenuItem icon={<FaTrash />} onClick={onRemoveCombatant}>
-                {localize("COMBAT.CombatantRemove")}
-              </MenuItem>
-            </Menu>
-          }
-        </Dropdown>
+        <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
+          <NativeMenuLabel>{turn.name}</NativeMenuLabel>
+          <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
+            {localize("COMBAT.CombatantUpdate")}
+          </NativeMenuItem>
+          <NativeMenuItem icon={<FaPlus />} onSelect={onAddTurn}>
+            {localize("investigator.AddTurn")}
+          </NativeMenuItem>
+          <NativeMenuItem icon={<FaMinus />} onSelect={onRemoveTurn}>
+            {localize("investigator.RemoveTurn")}
+          </NativeMenuItem>
+          <NativeMenuItem icon={<HiDocumentText />} onSelect={openSheet}>
+            {localize("investigator.OpenCharacterSheet")}
+          </NativeMenuItem>
+          <NativeMenuItem icon={<FaTrash />} onSelect={onRemoveCombatant}>
+            {localize("COMBAT.CombatantRemove")}
+          </NativeMenuItem>
+        </NativeDualFunctionMenu>
       )}
     </Fragment>
   );
