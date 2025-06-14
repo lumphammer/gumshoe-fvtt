@@ -3,10 +3,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import * as constants from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { assertGame } from "../../functions/isGame";
-import { sortEntitiesByName } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPartyActor } from "../../module/actors/party";
-import { PCActor } from "../../module/actors/pc";
+import { isPCActor, PCActor } from "../../module/actors/pc";
 import { AbilityItem, isAbilityItem } from "../../module/items/exports";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { runtimeConfig } from "../../runtime";
@@ -20,6 +19,15 @@ import { Translate } from "../Translate";
 import { AbilityRow } from "./AbilityRow";
 import { buildRowData, getSystemAbilities } from "./functions";
 import { isCategoryHeader, isTypeHeader, RowData } from "./types";
+
+function _g(id: string): PCActor {
+  assertGame(game);
+  const actor = game.actors?.get(id);
+  if (isPCActor(actor)) {
+    return actor;
+  }
+  throw new Error(`Actor ${id} is not a PC actor`);
+}
 
 export const PartySheet = () => {
   const { actor: party } = useActorSheetContext();
@@ -98,16 +106,15 @@ export const PartySheet = () => {
   // effect 3: listen for ability changes
   useEffect(() => {
     assertGame(game);
-    // getting actors is fast
-    const actors = actorIds.flatMap((id) => {
-      assertGame(game);
-      const actor = game.actors?.get(id);
-      return actor ? [actor] : [];
-    });
-    setActors(
-      // @ts-expect-error DocumentClassConfig
-      sortEntitiesByName(actors).filter((actor) => actor !== undefined),
-    );
+    const actors = actorIds
+      .map((id) => {
+        assertGame(game);
+        const actor = game.actors?.get(id);
+        return actor || null;
+      })
+      .filter(isPCActor);
+    // @ts-expect-error fvtt-types - the collection type can't be cast to PCActor
+    setActors(actors);
   }, [actorIds]);
 
   // callback for removing an actor
