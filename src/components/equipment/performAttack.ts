@@ -91,7 +91,7 @@ export const performAttack =
     await damageRoll.evaluate();
     damageRoll.dice[0].options.rollOrder = 2;
 
-    // @ts-expect-error types are too restrictive
+    // @ts-expect-error fvtt-types
     const pool = PoolTerm.fromRolls([hitRoll, damageRoll]);
     const actualRoll = Roll.fromTerms([pool]);
 

@@ -39,8 +39,7 @@ import { registerSheetsAndClasses } from "./startup/registerSheetsAndClasses";
 // opt-in. There are good perf reasons for this, but personally I like it
 // see https://emotion.sh/docs/labels#automatic-labeling-at-runtime
 // see https://github.com/emotion-js/emotion/blob/main/packages/react/CHANGELOG.md#11120
-// @ts-expect-error nonstandard global
-globalThis.EMOTION_RUNTIME_AUTO_LABEL = true;
+EMOTION_RUNTIME_AUTO_LABEL = true;
 
 injectGlobalHelper();
 

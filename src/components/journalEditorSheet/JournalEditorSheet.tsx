@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { MdOutlinePreview } from "react-icons/md";
 
 import { extraCssClasses, systemId } from "../../constants";
-import { JournalCollection } from "../../fvtt-exports";
 import { useJournalEntrySheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
+import { InvestigatorJournalSheet } from "../../module/InvestigatorJournalSheet";
 import { absoluteCover } from "../absoluteCover";
 import { CSSReset } from "../CSSReset";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
@@ -46,11 +46,9 @@ export const JournalEditorSheet = () => {
   );
 
   const handlePreview = useCallback(() => {
-    const JournalSheet: JournalSheet = JournalCollection.registeredSheets.find(
-      (sheet) => sheet.name === "InvestigatorJournalSheet",
-    ) as unknown as JournalSheet;
-    // @ts-expect-error Journal types are effed
-    new JournalSheet({ document: journalEntry }).render({ force: true });
+    void new InvestigatorJournalSheet({ document: journalEntry }).render({
+      force: true,
+    });
   }, [journalEntry]);
 
   const toolBarContent = useMemo(

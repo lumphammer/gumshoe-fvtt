@@ -1,4 +1,5 @@
 import { assertGame } from "../functions/isGame";
+import { CompendiumCollection } from "../fvtt-exports";
 import CompendiumDirectory = foundry.applications.sidebar.tabs.CompendiumDirectory;
 
 import { nanoid } from "nanoid";
@@ -206,16 +207,14 @@ export class InvestigatorCompendiumDirectory extends CompendiumDirectory {
     ui.notifications?.info(
       `Beginning import of compendium pack ${verified.label}`,
     );
-    const pack =
-      // @ts-expect-error .create
-      await CompendiumCollection.createCompendium<CompendiumCollection.Metadata>(
-        {
-          type: verified.entity,
-          label: verified.label,
-          name,
-        },
-        { broadcast: false, data: [] },
-      );
+    const pack = await CompendiumCollection.createCompendium(
+      {
+        type: verified.entity,
+        label: verified.label,
+        name,
+      },
+      { broadcast: false, data: [] },
+    );
     const maker = {
       Actor,
       Item,
