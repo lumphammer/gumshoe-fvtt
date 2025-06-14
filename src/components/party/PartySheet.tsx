@@ -20,15 +20,6 @@ import { AbilityRow } from "./AbilityRow";
 import { buildRowData, getSystemAbilities } from "./functions";
 import { isCategoryHeader, isTypeHeader, RowData } from "./types";
 
-function _g(id: string): PCActor {
-  assertGame(game);
-  const actor = game.actors?.get(id);
-  if (isPCActor(actor)) {
-    return actor;
-  }
-  throw new Error(`Actor ${id} is not a PC actor`);
-}
-
 export const PartySheet = () => {
   const { actor: party } = useActorSheetContext();
   assertPartyActor(party);
