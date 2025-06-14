@@ -32,9 +32,7 @@ declare global {
     }
   }
 
-  interface Window {
-    EMOTION_RUNTIME_AUTO_LABEL: boolean;
-  }
+  let EMOTION_RUNTIME_AUTO_LABEL: boolean;
 }
 
 export {};
