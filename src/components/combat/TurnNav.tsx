@@ -91,7 +91,7 @@ export const TurnNav = ({
                     <NativeMenuItem
                       icon={<FaShoePrints />}
                       onSelect={() => {
-                        // @ts-expect-error this is fine
+                        // @ts-expect-error fvtt-types
                         combat.clearMovementHistories();
                       }}
                     >

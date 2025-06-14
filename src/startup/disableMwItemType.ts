@@ -22,7 +22,7 @@ function mwItemOnOrOff() {
     const index = game.documentTypes.Item.indexOf("mwItem");
     if (index !== -1) {
       oldMwItemTypelabel = label;
-      // @ts-expect-error .type
+      // @ts-expect-error deleting non-optional property
       delete CONFIG.Item.typeLabels.mwItem;
       oldMwItemIndex = index;
       game.documentTypes.Item.splice(index, 1);

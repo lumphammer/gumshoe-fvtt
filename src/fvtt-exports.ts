@@ -28,6 +28,7 @@ export import TextEditor = foundry.applications.ux.TextEditor.implementation;
 export import TypeDataModel = foundry.abstract.TypeDataModel;
 export import TypedObjectField = foundry.data.fields.TypedObjectField;
 export import BooleanField = foundry.data.fields.BooleanField;
+export import CompendiumCollection = foundry.documents.collections.CompendiumCollection;
 
 const _Journal = foundry.documents.collections.Journal;
 export const JournalCollection = _Journal;
