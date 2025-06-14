@@ -1,3 +1,5 @@
+import { DeepPartial } from "fvtt-types/utils";
+
 import { extraCssClasses, systemId } from "../constants";
 import { assertGame } from "../functions/isGame";
 import { JournalEntrySheet } from "../fvtt-exports";
@@ -35,7 +37,7 @@ export class InvestigatorJournalSheet extends JournalEntrySheet {
     },
   };
 
-  constructor(options: JournalEntrySheet.Configuration) {
+  constructor(options: DeepPartial<JournalEntrySheet.Configuration>) {
     const canEdit =
       game.user && options.document?.canUserModify?.(game.user, "update");
 
