@@ -5,7 +5,7 @@ import { assertGame } from "../../functions/isGame";
 import { requestTurnPass, systemLogger } from "../../functions/utilities";
 import { CombatantConfig } from "../../fvtt-exports";
 import { useRefStash } from "../../hooks/useRefStash";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 
 export const useInititative = (combat: InvestigatorCombat, id: string) => {
   assertGame(game);

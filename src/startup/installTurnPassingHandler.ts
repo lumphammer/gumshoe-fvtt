@@ -1,6 +1,6 @@
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
-import { InvestigatorCombat } from "../module/InvestigatorCombat";
+import { InvestigatorCombat } from "../module/combat/InvestigatorCombat";
 import { RequestTurnPassArgs } from "../types";
 
 /**

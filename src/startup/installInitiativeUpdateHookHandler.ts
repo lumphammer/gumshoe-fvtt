@@ -1,5 +1,5 @@
 import { assertGame } from "../functions/isGame";
-import { InvestigatorCombatant } from "../module/InvestigatorCombatant";
+import { InvestigatorCombatant } from "../module/combat/InvestigatorCombatant";
 import { settings } from "../settings/settings";
 
 export function installInitiativeUpdateHookHandler() {

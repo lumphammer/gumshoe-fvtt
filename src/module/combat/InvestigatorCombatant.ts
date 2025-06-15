@@ -1,13 +1,13 @@
-import * as constants from "../constants";
-import { assertGame } from "../functions/isGame";
-import { isNullOrEmptyString } from "../functions/utilities";
-import { settings } from "../settings/settings";
+import * as constants from "../../constants";
+import { assertGame } from "../../functions/isGame";
+import { isNullOrEmptyString } from "../../functions/utilities";
+import { settings } from "../../settings/settings";
 import {
   assertActiveCharacterActor,
   isActiveCharacterActor,
-} from "./actors/exports";
-import { isGeneralAbilityItem } from "./items/generalAbility";
-import { InvestigatorItem } from "./items/InvestigatorItem";
+} from "../actors/exports";
+import { isGeneralAbilityItem } from "../items/generalAbility";
+import { InvestigatorItem } from "../items/InvestigatorItem";
 
 /**
  * Override base Combatant class to override the initiative formula.
