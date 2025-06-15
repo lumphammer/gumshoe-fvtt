@@ -2,7 +2,7 @@ import { cx } from "@emotion/css";
 import { ReactNode, useMemo } from "react";
 
 import { assertGame } from "../../functions/isGame";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { settings } from "../../settings/settings";
 import { NativeContextMenuWrapper } from "../inputs/NativeMenu/NativeContextMenuWrapper";
 import { StandardInitiative } from "./StandardInitiative";
