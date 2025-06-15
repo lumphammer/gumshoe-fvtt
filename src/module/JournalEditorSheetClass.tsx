@@ -27,7 +27,7 @@ export class JournalEntryHTMLEditorSheetClassBase extends JournalEntrySheet {
 
   // block the parent class's attempts to render a page - we're dealing with
   // all that in React
-  // @ts-expect-error not typed yet
+  // @ts-expect-error fvtt-types
   override async _renderPageViews() {
     // return super._renderPageViews();
   }
