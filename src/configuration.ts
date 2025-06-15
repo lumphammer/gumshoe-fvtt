@@ -17,9 +17,9 @@ import { PartyModel } from "./module/actors/party";
 import { PartySheetClass } from "./module/actors/PartySheetClass";
 import { PCModel } from "./module/actors/pc";
 import { PCSheetClass } from "./module/actors/PCSheetClass";
-import { InvestigatorCombat } from "./module/InvestigatorCombat";
-import { InvestigatorCombatant } from "./module/InvestigatorCombatant";
-import { InvestigatorCombatTracker } from "./module/InvestigatorCombatTracker";
+import { InvestigatorCombat } from "./module/combat/InvestigatorCombat";
+import { InvestigatorCombatant } from "./module/combat/InvestigatorCombatant";
+import { InvestigatorCombatTracker } from "./module/combat/InvestigatorCombatTracker";
 import { InvestigatorCompendiumDirectory } from "./module/InvestigatorCompendiumDirectory";
 import { InvestigatorJournalSheet } from "./module/InvestigatorJournalSheet";
 import { InvestigatorTokenDocument } from "./module/InvestigatorTokenDocument";
@@ -167,6 +167,8 @@ Hooks.once("init", function () {
   CONFIG.Item.dataModels["mwItem"] = MwItemModel;
   CONFIG.Item.dataModels["personalDetail"] = PersonalDetailModel;
   CONFIG.Item.dataModels["card"] = CardModel;
+
+  // CONFIG.Combat.dataModels["investigator"] = InvestigatorCombat;
 
   // Register custom sheets
 
