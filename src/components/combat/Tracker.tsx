@@ -3,7 +3,7 @@ import { PiEmptyLight, PiPeaceLight } from "react-icons/pi";
 
 import { assertGame } from "../../functions/isGame";
 import { assertNotNull, sortByKey } from "../../functions/utilities";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { settings } from "../../settings/settings";
 import { CombatantRow } from "./CombatantRow";
 import { EncounterNav } from "./EncounterNav";

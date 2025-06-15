@@ -5,7 +5,7 @@ import { HiDocumentText } from "react-icons/hi";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../inputs/NativeMenu/NativeDualFunctionMenu";
 import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
