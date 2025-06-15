@@ -1,6 +1,7 @@
 // import { DummyAppV2 } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2";
 // import { DummyAppV2WithMixin } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2WithMixin";
 import "./investigator.less";
+import "./configuration";
 
 import { systemId } from "./constants";
 import { assertGame } from "./functions/isGame";
@@ -33,7 +34,6 @@ import { migrateWorldIfNeeded } from "./startup/migrateWorldIfNeeded";
 import { registerBabele } from "./startup/registerBabele";
 import { registerDevModeDebugFlag } from "./startup/registerDevModeDebugFlag";
 import { registerSettingsMenu } from "./startup/registerSettingsMenu";
-import { registerSheetsAndClasses } from "./startup/registerSheetsAndClasses";
 
 // @emotion/react 11.13 introduced a ~breaking change that labelling is now
 // opt-in. There are good perf reasons for this, but personally I like it
@@ -47,7 +47,6 @@ injectGlobalHelper();
 Hooks.once("init", function () {
   systemLogger.log(`Initializing ${systemId} system`);
   registerSettingsMenu();
-  registerSheetsAndClasses();
   registerBabele();
 });
 
