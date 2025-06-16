@@ -151,7 +151,7 @@ declare module "fvtt-types/configuration" {
 }
 
 // runtime configuration
-Hooks.once("init", function() {
+Hooks.once("init", function () {
   CONFIG.Actor.documentClass = InvestigatorActor;
   CONFIG.Item.documentClass = InvestigatorItem;
   CONFIG.Combatant.documentClass = InvestigatorCombatant;
