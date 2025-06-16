@@ -6,10 +6,10 @@ import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 import * as constants from "./constants";
 import {
   ActorsCollection,
+  Application,
   ItemsCollection,
   JournalCollection,
 } from "./fvtt-exports";
-import { Application } from "./fvtt-exports";
 import { InvestigatorActor } from "./module/actors/InvestigatorActor";
 import { NPCModel } from "./module/actors/npc";
 import { NPCSheetClass } from "./module/actors/NPCSheetClass";
@@ -17,6 +17,7 @@ import { PartyModel } from "./module/actors/party";
 import { PartySheetClass } from "./module/actors/PartySheetClass";
 import { PCModel } from "./module/actors/pc";
 import { PCSheetClass } from "./module/actors/PCSheetClass";
+import { ClassicCombatModel } from "./module/combat/combatSchema";
 import { InvestigatorCombat } from "./module/combat/InvestigatorCombat";
 import { InvestigatorCombatant } from "./module/combat/InvestigatorCombatant";
 import { InvestigatorCombatTracker } from "./module/combat/InvestigatorCombatTracker";
@@ -77,6 +78,9 @@ declare module "fvtt-types/configuration" {
       mwItem: typeof MwItemModel;
       personalDetail: typeof PersonalDetailModel;
       card: typeof CardModel;
+    };
+    Combat: {
+      investigator: typeof ClassicCombatModel;
     };
   }
 
