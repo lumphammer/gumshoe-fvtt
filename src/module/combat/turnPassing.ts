@@ -2,8 +2,6 @@ import { TypeDataModel } from "../../fvtt-exports";
 import { createRecordField } from "../schemaFields";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 
-
-
 export const TurnPassingCombatSchema = {
   // turnStates: new TypedObjectField(
   //   new NumberField(
@@ -11,11 +9,12 @@ export const TurnPassingCombatSchema = {
   //   ),
   //   { nullable: false, required: true, initial: {} },
   // ),
-  turnStates: createRecordField<Record<string, number>>(
-    { nullable: false, required: true, initial: {} },
-  ),
+  turnStates: createRecordField<Record<string, number>>({
+    nullable: false,
+    required: true,
+    initial: {},
+  }),
 };
-
 
 export class TurnPassingCombatModel extends TypeDataModel<
   typeof TurnPassingCombatSchema,
@@ -36,12 +35,9 @@ export class TurnPassingCombatModel extends TypeDataModel<
 
 export type TurnPassingCombat = InvestigatorCombat<"turnPassing">;
 
-export function isTurnPassingCombat(
-  x: unknown,
-): x is TurnPassingCombat {
+export function isTurnPassingCombat(x: unknown): x is TurnPassingCombat {
   return x instanceof InvestigatorCombat && x.type === "turnPassing";
 }
-
 
 export function assertTurnPassingCombat(
   x: unknown,
@@ -49,4 +45,4 @@ export function assertTurnPassingCombat(
   if (!isTurnPassingCombat(x)) {
     throw new Error("Expected combat to be a TurnPassingCombat");
   }
-} 
+}
