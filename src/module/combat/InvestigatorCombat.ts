@@ -7,7 +7,9 @@ import { InvestigatorCombatant } from "./InvestigatorCombatant";
 /**
  * Override base Combat so we can do custom GUMSHOE-style initiative
  */
-export class InvestigatorCombat extends Combat {
+export class InvestigatorCombat<
+  SubType extends Combat.SubType = Combat.SubType,
+> extends Combat<SubType> {
   turnOrders: string[][] = [];
 
   constructor(...args: Combat.ConstructorArgs) {
