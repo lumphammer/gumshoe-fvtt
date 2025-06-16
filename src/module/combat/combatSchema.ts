@@ -10,11 +10,34 @@ export const classicCombatSchema = {
   ),
 };
 
+
 export class ClassicCombatModel extends TypeDataModel<
   typeof classicCombatSchema,
-  InvestigatorCombat<"investigator">
+  InvestigatorCombat<"classic">
 > {
   static defineSchema(): typeof classicCombatSchema {
     return classicCombatSchema;
   }
+
+  getTurnOrders(): string[][] {
+    return this.turnOrders;
+  }
 }
+
+
+export type ClassicCombat = InvestigatorCombat<"classic">;
+
+export function isClassicCombat(
+  x: unknown,
+): x is ClassicCombat {
+  return x instanceof InvestigatorCombat && x.type === "classic";
+}
+
+export function assertClassicCombat(
+  x: unknown,
+): asserts x is ClassicCombat {
+  if (!isClassicCombat(x)) {
+    throw new Error("Expected combat to be a ClassicCombat");
+  }
+}
+
