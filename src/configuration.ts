@@ -20,6 +20,7 @@ import { ClassicCombatModel } from "./module/combat/combatSchema";
 import { InvestigatorCombat } from "./module/combat/InvestigatorCombat";
 import { InvestigatorCombatant } from "./module/combat/InvestigatorCombatant";
 import { InvestigatorCombatTracker } from "./module/combat/InvestigatorCombatTracker";
+import { TurnPassingCombatModel } from "./module/combat/turnPassing";
 import { InvestigatorCompendiumDirectory } from "./module/InvestigatorCompendiumDirectory";
 import { InvestigatorJournalSheet } from "./module/InvestigatorJournalSheet";
 import { InvestigatorTokenDocument } from "./module/InvestigatorTokenDocument";
@@ -79,7 +80,8 @@ declare module "fvtt-types/configuration" {
       card: typeof CardModel;
     };
     Combat: {
-      investigator: typeof ClassicCombatModel;
+      classic: typeof ClassicCombatModel;
+      turnPassing: typeof TurnPassingCombatModel;
     };
   }
 
@@ -149,7 +151,7 @@ declare module "fvtt-types/configuration" {
 }
 
 // runtime configuration
-Hooks.once("init", function () {
+Hooks.once("init", function() {
   CONFIG.Actor.documentClass = InvestigatorActor;
   CONFIG.Item.documentClass = InvestigatorItem;
   CONFIG.Combatant.documentClass = InvestigatorCombatant;
