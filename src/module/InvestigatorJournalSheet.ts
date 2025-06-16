@@ -24,7 +24,11 @@ export class InvestigatorJournalSheet extends JournalEntrySheet {
           game.user && this.document?.canUserModify?.(game.user, "update");
 
         if (canEdit) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           void new JournalEntryHTMLEditorSheetClass({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore tsgo
             document: this.document,
           }).render({
             force: true,

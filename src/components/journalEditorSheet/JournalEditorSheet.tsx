@@ -46,6 +46,8 @@ export const JournalEditorSheet = () => {
   );
 
   const handlePreview = useCallback(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore tsgo
     void new InvestigatorJournalSheet({ document: journalEntry }).render({
       force: true,
     });
