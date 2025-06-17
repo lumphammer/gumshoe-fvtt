@@ -89,7 +89,7 @@
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-switch": "^1.2.5",
     "@typescript-eslint/eslint-plugin": "^8.34.0",
-    "@typescript/native-preview": "7.0.0-dev.20250616.1",
+    "@typescript/native-preview": "7.0.0-dev.20250617.1",
     "case": "^1.6.3",
     "d3-ease": "^3.0.1",
     "eslint-plugin-import": "^2.31.0",
@@ -126,7 +126,8 @@
       "vitest": "$vitest",
       "react": "$react",
       "@types/react": "$@types/react",
-      "fvtt-types": "$fvtt-types"
+      "fvtt-types": "$fvtt-types",
+      "tsx": "$tsx"
     }
   },
   "engines": {

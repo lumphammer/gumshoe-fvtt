@@ -24,13 +24,13 @@ export class InvestigatorJournalSheet extends JournalEntrySheet {
           game.user && this.document?.canUserModify?.(game.user, "update");
 
         if (canEdit) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          void new JournalEntryHTMLEditorSheetClass({
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore tsgo
+          // @ts-expect-error tsgo "excesive stack depth"
+          const sheet = new JournalEntryHTMLEditorSheetClass({
+            // @ts-expect-error tsgo "not assignable"
             document: this.document,
-          }).render({
+          });
+
+          void sheet.render({
             force: true,
           });
         }

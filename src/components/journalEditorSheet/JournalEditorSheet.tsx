@@ -46,9 +46,10 @@ export const JournalEditorSheet = () => {
   );
 
   const handlePreview = useCallback(() => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore tsgo
-    void new InvestigatorJournalSheet({ document: journalEntry }).render({
+    // @ts-expect-error tsgo "excessive stack depth"
+    const sheet = new InvestigatorJournalSheet({ document: journalEntry });
+
+    void sheet.render({
       force: true,
     });
   }, [journalEntry]);
