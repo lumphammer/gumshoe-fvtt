@@ -174,6 +174,9 @@ Hooks.once("init", function () {
   CONFIG.Item.dataModels["personalDetail"] = PersonalDetailModel;
   CONFIG.Item.dataModels["card"] = CardModel;
 
+  CONFIG.Combat.dataModels["classic"] = ClassicCombatModel;
+  CONFIG.Combat.dataModels["turnPassing"] = TurnPassingCombatModel;
+
   // CONFIG.Combat.dataModels["investigator"] = InvestigatorCombat;
 
   // Register custom sheets
