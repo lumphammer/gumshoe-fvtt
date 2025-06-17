@@ -15,8 +15,6 @@ export class InvestigatorCombat<
   constructor(...args: Combat.ConstructorArgs) {
     super(...args);
     systemLogger.log("InvestigatorCombat.constructor", this.turnOrders);
-    // this.system;
-    // void this.update({ turnOrders: [...this.turnOrders, ["a", "b", "c"]] });
   }
 
   override _onCreate(
@@ -26,6 +24,28 @@ export class InvestigatorCombat<
   ) {
     systemLogger.log("InvestigatorCombat._onCreate");
     super._onCreate(data, options, userId);
+  }
+
+  static override create<Temporary extends boolean | undefined = false>(
+    data: Combat.CreateData | Combat.CreateData[],
+    operation?: Combat.Database.CreateOperation<Temporary>,
+    ...rest: any
+  ) {
+    const isTurnPassing = settings.useTurnPassingInitiative.get();
+    const subType = isTurnPassing ? "turnPassing" : "classic";
+    if (data === undefined) {
+      data = { type: subType };
+    } else if (Array.isArray(data)) {
+      for (const d of data) {
+        d.type = subType;
+      }
+    } else {
+      data.type = subType;
+    }
+    systemLogger.log("InvestigatorCombat.create", data, operation, rest);
+
+    const result = super.create(data, operation);
+    return result;
   }
 
   protected _compareCombatants = (
