@@ -19,6 +19,10 @@ import { PersonalDetailModel } from "./module/items/personalDetail";
 import { WeaponModel } from "./module/items/weapon";
 
 declare module "fvtt-types/configuration" {
+  interface SystemNameConfig {
+    name: "investigator";
+  }
+
   interface DataModelConfig {
     Actor: {
       pc: typeof PCModel;
@@ -100,3 +104,5 @@ declare module "fvtt-types/configuration" {
     }
   }
 }
+
+declare module "fvtt-types/configuration" {}
