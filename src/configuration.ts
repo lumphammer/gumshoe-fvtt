@@ -3,6 +3,7 @@ import "fvtt-types/configuration";
 
 import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 
+import * as constants from "./constants";
 import { InvestigatorActor } from "./module/actors/InvestigatorActor";
 import { NPCModel } from "./module/actors/npc";
 import { PartyModel } from "./module/actors/party";
@@ -21,6 +22,13 @@ import { WeaponModel } from "./module/items/weapon";
 declare module "fvtt-types/configuration" {
   interface SystemNameConfig {
     name: "investigator";
+  }
+
+  namespace Hooks {
+    interface HookConfig {
+      [constants.newPCPacksUpdated]: (newPacks: string[]) => Promise<void>;
+      "investigator:themeHMR": (themeName: string) => void;
+    }
   }
 
   interface DataModelConfig {
