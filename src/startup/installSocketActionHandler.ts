@@ -11,7 +11,7 @@ export function installSocketActionHandler() {
     assertGame(game);
     game.socket?.on(constants.socketScope, (data: any) => {
       if (isSocketHookAction<unknown>(data)) {
-        Hooks.call(data.hook, data.payload);
+        Hooks.call(data.hook as any, data.payload);
       }
     });
   });

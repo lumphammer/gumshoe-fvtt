@@ -46,7 +46,7 @@ export const JournalEditorSheet = () => {
   );
 
   const handlePreview = useCallback(() => {
-    // @ts-expect-error tsgo "excessive stack depth"
+    // @xts-expect-error tsgo "excessive stack depth"
     const sheet = new InvestigatorJournalSheet({ document: journalEntry });
 
     void sheet.render({

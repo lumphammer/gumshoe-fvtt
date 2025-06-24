@@ -42,7 +42,7 @@ export const PartySheet = () => {
     };
 
     const onActorDeleted = (
-      deletedActor: PCActor,
+      deletedActor: Actor.Implementation,
       something: unknown, // i cannot tell what this is supposed to be
       userId: string, // probably?
     ) => {
@@ -52,12 +52,7 @@ export const PartySheet = () => {
       void party.update({ system: { actorIds } });
     };
 
-    const onUpdateDeleteCreateItem = async (
-      item: InvestigatorItem,
-      dataDiff: any,
-      options: any,
-      useId: string,
-    ) => {
+    const onUpdateDeleteCreateItem = async (item: InvestigatorItem) => {
       if (
         isAbilityItem(item) &&
         item.isOwned &&

@@ -1,9 +1,10 @@
 import { getTranslated } from "../functions/getTranslated";
 import { assertGame } from "../functions/isGame";
+import { ApplicationV2 } from "../fvtt-exports";
 import { investigatorSettingsClassInstance } from "../module/SettingsClass";
 
 export const installRenderSettingsHandler = () => {
-  Hooks.on("renderSettings", (app: Application, html: HTMLElement) => {
+  Hooks.on("renderSettings", (app: ApplicationV2, html: HTMLElement) => {
     assertGame(game);
     const canModifySettings = game.user.can("SETTINGS_MODIFY") ?? false;
     if (!canModifySettings) {

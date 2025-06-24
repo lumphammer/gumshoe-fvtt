@@ -6,12 +6,7 @@ import { CardSystemData } from "../types";
 export const installCardCategoryHookHandler = () => {
   Hooks.on(
     "preCreateItem",
-    (
-      item: Item,
-      createData: { name: string; type: string; data?: any; img?: string },
-      options: any,
-      userId: string,
-    ) => {
+    (item: Item, createData: Item.CreateData, options: any, userId: string) => {
       assertGame(game);
       const category = settings.cardCategories.get()[0];
       if (

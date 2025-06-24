@@ -24,9 +24,7 @@ export class InvestigatorJournalSheet extends JournalEntrySheet {
           game.user && this.document?.canUserModify?.(game.user, "update");
 
         if (canEdit) {
-          // @ts-expect-error tsgo "excesive stack depth"
           const sheet = new JournalEntryHTMLEditorSheetClass({
-            // @ts-expect-error tsgo "not assignable"
             document: this.document,
           });
 

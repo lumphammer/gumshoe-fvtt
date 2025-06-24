@@ -10,12 +10,7 @@ import {
 export const installAbilityCategoryHookHandler = () => {
   Hooks.on(
     "preCreateItem",
-    (
-      item: Item,
-      createData: { name: string; type: string; img?: string },
-      options: any,
-      userId: string,
-    ) => {
+    (item: Item, createData: Item.CreateData, options: any, userId: string) => {
       assertGame(game);
       if (game.userId !== userId) return;
 

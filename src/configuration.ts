@@ -18,6 +18,7 @@ import { InvestigatorItem } from "./module/items/InvestigatorItem";
 import { MwItemModel } from "./module/items/mwItem";
 import { PersonalDetailModel } from "./module/items/personalDetail";
 import { WeaponModel } from "./module/items/weapon";
+import type { RequestTurnPassArgs } from "./types";
 
 declare module "fvtt-types/configuration" {
   interface SystemNameConfig {
@@ -27,7 +28,19 @@ declare module "fvtt-types/configuration" {
   namespace Hooks {
     interface HookConfig {
       [constants.newPCPacksUpdated]: (newPacks: string[]) => Promise<void>;
+      [constants.requestTurnPass]: ({
+        combatantId,
+      }: RequestTurnPassArgs) => void;
+      [constants.settingsSaved]: () => void;
+      [constants.settingsCloseAttempted]: () => void;
+      [constants.newNPCPacksUpdated]: (newPacks: string[]) => void;
       "investigator:themeHMR": (themeName: string) => void;
+      devModeReady: () => void;
+      "PopOut:dialog": (
+        dialoggedApp: Application,
+        info: PopOut.DialogHookInfo,
+      ) => void;
+      "PopOut:popout": (poppedApp: Application, newWindow: Window) => void;
     }
   }
 
