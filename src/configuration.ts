@@ -27,6 +27,7 @@ declare module "fvtt-types/configuration" {
 
   namespace Hooks {
     interface HookConfig {
+      // our hooks
       [constants.newPCPacksUpdated]: (newPacks: string[]) => Promise<void>;
       [constants.requestTurnPass]: ({
         combatantId,
@@ -35,6 +36,8 @@ declare module "fvtt-types/configuration" {
       [constants.settingsCloseAttempted]: () => void;
       [constants.newNPCPacksUpdated]: (newPacks: string[]) => void;
       [constants.themeHMR]: (themeName: string) => void;
+
+      // third-party hooks
       devModeReady: () => void;
       "PopOut:dialog": (
         dialoggedApp: Application,
