@@ -26,6 +26,8 @@ export class InvestigatorCombat<
     super._onCreate(data, options, userId);
   }
 
+  // override the base class to make sure we're creating the right kind of
+  // combat
   static override create<Temporary extends boolean | undefined = false>(
     data: Combat.CreateData | Combat.CreateData[],
     operation?: Combat.Database.CreateOperation<Temporary>,
@@ -44,6 +46,8 @@ export class InvestigatorCombat<
     }
     systemLogger.log("InvestigatorCombat.create", data, operation, rest);
 
+    // in theory .create methods on documents can always take an array, but
+    // Combat#_onCreate has some logic that assumes a single item
     const result = super.create(data, operation);
     return result;
   }
