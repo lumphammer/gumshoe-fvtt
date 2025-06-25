@@ -3,6 +3,7 @@ import "fvtt-types/configuration";
 
 import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 
+import * as constants from "./constants";
 import { InvestigatorActor } from "./module/actors/InvestigatorActor";
 import { NPCModel } from "./module/actors/npc";
 import { PartyModel } from "./module/actors/party";
@@ -17,8 +18,35 @@ import { InvestigatorItem } from "./module/items/InvestigatorItem";
 import { MwItemModel } from "./module/items/mwItem";
 import { PersonalDetailModel } from "./module/items/personalDetail";
 import { WeaponModel } from "./module/items/weapon";
+import type { RequestTurnPassArgs } from "./types";
 
 declare module "fvtt-types/configuration" {
+  interface SystemNameConfig {
+    name: "investigator";
+  }
+
+  namespace Hooks {
+    interface HookConfig {
+      // our hooks
+      [constants.newPCPacksUpdated]: (newPacks: string[]) => Promise<void>;
+      [constants.requestTurnPass]: ({
+        combatantId,
+      }: RequestTurnPassArgs) => void;
+      [constants.settingsSaved]: () => void;
+      [constants.settingsCloseAttempted]: () => void;
+      [constants.newNPCPacksUpdated]: (newPacks: string[]) => void;
+      [constants.themeHMR]: (themeName: string) => void;
+
+      // third-party hooks
+      devModeReady: () => void;
+      "PopOut:dialog": (
+        dialoggedApp: Application,
+        info: PopOut.DialogHookInfo,
+      ) => void;
+      "PopOut:popout": (poppedApp: Application, newWindow: Window) => void;
+    }
+  }
+
   interface DataModelConfig {
     Actor: {
       pc: typeof PCModel;
@@ -100,3 +128,5 @@ declare module "fvtt-types/configuration" {
     }
   }
 }
+
+declare module "fvtt-types/configuration" {}

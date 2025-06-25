@@ -1,4 +1,5 @@
 import { defineWorkspace } from "vitest/config";
+
 import { name } from "./package.json";
 
 export default defineWorkspace([
@@ -9,5 +10,5 @@ export default defineWorkspace([
     },
   },
   // globs are relative to `root` in the main `vite.config.ts`
-  "../packages/*",
+  // "../packages/*",
 ]);

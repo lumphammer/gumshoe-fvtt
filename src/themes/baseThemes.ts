@@ -1,3 +1,4 @@
+import * as constants from "../constants";
 import { antiquarianTheme } from "./antiquarianTheme";
 import { deltaGroovyTheme } from "./deltaGroovyTheme";
 import { fearTheme } from "./fearTheme";
@@ -66,7 +67,7 @@ if (import.meta.hot) {
           if (newModule) {
             const themeName = themeNames[i];
             CONFIG.Investigator?.installTheme(themeName, newModule[themeName]);
-            Hooks.call("investigator:themeHMR", themeName);
+            Hooks.call(constants.themeHMR, themeName);
           }
         });
       },

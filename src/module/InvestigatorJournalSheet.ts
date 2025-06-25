@@ -24,9 +24,11 @@ export class InvestigatorJournalSheet extends JournalEntrySheet {
           game.user && this.document?.canUserModify?.(game.user, "update");
 
         if (canEdit) {
-          void new JournalEntryHTMLEditorSheetClass({
+          const sheet = new JournalEntryHTMLEditorSheetClass({
             document: this.document,
-          }).render({
+          });
+
+          void sheet.render({
             force: true,
           });
         }

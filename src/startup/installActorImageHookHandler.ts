@@ -9,8 +9,8 @@ export const installActorImageHookHandler = () => {
   Hooks.on(
     "preCreateActor",
     (
-      actor: Actor,
-      createData: { name: string; type: string; img?: string },
+      actor: Actor.Implementation,
+      createData: Actor.CreateData,
       options: any,
       userId: string,
     ) => {

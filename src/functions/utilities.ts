@@ -152,7 +152,7 @@ function broadcastHook<T>(hook: string, payload: T) {
     payload,
   };
   game.socket?.emit(constants.socketScope, socketHookAction);
-  Hooks.call(hook, payload);
+  Hooks.call(hook as any, payload);
 }
 
 /**
