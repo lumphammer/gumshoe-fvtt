@@ -50,8 +50,8 @@ importers:
         specifier: ^8.34.0
         version: 8.34.0(@typescript-eslint/parser@8.34.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
       '@typescript/native-preview':
-        specifier: 7.0.0-dev.20250617.1
-        version: 7.0.0-dev.20250617.1
+        specifier: 7.0.0-dev.20250625.1
+        version: 7.0.0-dev.20250625.1
       case:
         specifier: ^1.6.3
         version: 1.6.3
@@ -208,7 +208,7 @@ importers:
         version: 4.1.4(@typescript-eslint/eslint-plugin@8.34.0(@typescript-eslint/parser@8.34.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)
       fvtt-types:
         specifier: github:league-of-foundry-developers/foundry-vtt-types#main
-        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/dfe41b70490ca7f60df20dcfe8b5f59b65737397(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(pixi.js@7.4.3)(typescript@5.8.3)'
+        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/7afbc321f8303878ed1229603fb36b42301f8e19(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(pixi.js@7.4.3)(typescript@5.8.3)'
       happy-dom:
         specifier: ^18.0.1
         version: 18.0.1
@@ -253,7 +253,7 @@ importers:
         version: 1.0.8
       fvtt-types:
         specifier: github:league-of-foundry-developers/foundry-vtt-types#main
-        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/dfe41b70490ca7f60df20dcfe8b5f59b65737397(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(pixi.js@7.4.3)(typescript@5.8.3)'
+        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/7afbc321f8303878ed1229603fb36b42301f8e19(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(pixi.js@7.4.3)(typescript@5.8.3)'
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -325,7 +325,7 @@ importers:
         version: 11.3.0
       fvtt-types:
         specifier: github:league-of-foundry-developers/foundry-vtt-types#main
-        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/dfe41b70490ca7f60df20dcfe8b5f59b65737397(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(pixi.js@7.4.3)(typescript@5.8.3)'
+        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/7afbc321f8303878ed1229603fb36b42301f8e19(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(pixi.js@7.4.3)(typescript@5.8.3)'
       happy-dom:
         specifier: ^17.5.6
         version: 17.5.6
@@ -901,8 +901,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/dfe41b70490ca7f60df20dcfe8b5f59b65737397':
-    resolution: {tarball: https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/dfe41b70490ca7f60df20dcfe8b5f59b65737397}
+  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/7afbc321f8303878ed1229603fb36b42301f8e19':
+    resolution: {tarball: https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/7afbc321f8303878ed1229603fb36b42301f8e19}
     version: 13.345.0
     peerDependencies:
       typescript: ^5.4
@@ -2043,50 +2043,50 @@ packages:
     resolution: {integrity: sha512-qHV7pW7E85A0x6qyrFn+O+q1k1p3tQCsqIZ1KZ5ESLXY57aTvUd3/a4rdPTeXisvhXn2VQG0VSKUqs8KHF2zcA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20250617.1':
-    resolution: {integrity: sha512-GfymQ0cnEWOoae9Yb/20VE9Mqd4gowOPRzfxJtCbmYc8Yr2XAEavKnB8eHgtE5LYxML2796GADmIRhSS2qkmeA==}
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20250625.1':
+    resolution: {integrity: sha512-JcLCql0O6+0iHIMllvax02kqpNtY1RUckGKomuO5kSbrOo9PsR+6r5MEcspfj47gwOl7AS0vrGhBCFFogF+KGw==}
     engines: {node: '>=20.6.0'}
     cpu: [arm64]
     os: [darwin]
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20250617.1':
-    resolution: {integrity: sha512-ZIDJvjYeB2+uHsaQCGwpFbbMdLiJQMWIdTV2ba4cFKDMEQrrj2idPL0NH618joChE8enQ1E6YBMFtJcunzaO5A==}
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20250625.1':
+    resolution: {integrity: sha512-0vCkk3FdS92W625JyzA8Slu/0vgkeu10fRQNfgIbf+E29DKMKnwXW56WhHSdGXAivU44Mewwc589+CbsABq3Sw==}
     engines: {node: '>=20.6.0'}
     cpu: [x64]
     os: [darwin]
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20250617.1':
-    resolution: {integrity: sha512-/OGztX0ZTvOq1xjE0m4bKC0+0ADFopE1+wG5P2x0eifgYJqWS8Z3hZGzCIZ9EntEw5ehaaepSs2x+rFYw/mozg==}
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20250625.1':
+    resolution: {integrity: sha512-IgnoWQSKeoeL7Y7tvlbcDQx0nidK3UWa/bbm1zJv+AfQlAGMrEMygp+ZzocmycUCYOVM0dcIbymjoiI/QRHTng==}
     engines: {node: '>=20.6.0'}
     cpu: [arm64]
     os: [linux]
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20250617.1':
-    resolution: {integrity: sha512-BImtvCIl8QrJaMhAvu4cW/aguShR29ypSPqFBMzGHGttdA0A9Opqwv4KB4JP9Pa3FPIrsvQ3EnKIzXYsxR1rXQ==}
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20250625.1':
+    resolution: {integrity: sha512-MumU7p+09ikH/x5IOJRV6DUj6N5/0kSlI4IsAUPtpT2WGkQdDtL2CC523/94YvOfWB1/+9r01636LVCGOJ135g==}
     engines: {node: '>=20.6.0'}
     cpu: [arm]
     os: [linux]
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20250617.1':
-    resolution: {integrity: sha512-YgJQ86WmTiTcm0bfV3cJr06lj4AXjnRSQ7wPn4Akie1ZnBwJ/MuBkSshcikeizEcwSNDq1wfcC1ajNTlwA6zlw==}
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20250625.1':
+    resolution: {integrity: sha512-6fE8piqPfzPPqmQ37ewTSbm4HW0cNqOEhfLG2F37zJd4525mefhIpWvj2iCkEHWp+BDlF2dYCbB4cY2nmfrNNw==}
     engines: {node: '>=20.6.0'}
     cpu: [x64]
     os: [linux]
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20250617.1':
-    resolution: {integrity: sha512-VGJL5ovkI2G4XCWeiAbQWIj2a20HIeZ5aXqxdqp6toiJ71K/w1iWa1UUFmS7Ahszr3IGUWMp54OKD8pH77+dow==}
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20250625.1':
+    resolution: {integrity: sha512-ppCkjBAFotPxL8j9Vk5cNSwMreOvAt02AMa5Hko3JQGSVA2TQCIlvTFn+SHSIWzYbzomc9j4j5WOcOR0rmAAHg==}
     engines: {node: '>=20.6.0'}
     cpu: [arm64]
     os: [win32]
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20250617.1':
-    resolution: {integrity: sha512-w11yreVQnIP+QLF84OJUkHq7xdk5x3N6BWKnawcqYkSXLLkWBCJtzxUKr4+rT2cnITOGqWX7IVKBkWY0pJzBWw==}
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20250625.1':
+    resolution: {integrity: sha512-BsnJqso5MKAW4Y7fPmcamJ+EIrWOTqwLjeZP74NNFvTqCsA4RkITCw4NpLwD0lzrv9VsQcQ+bNwB8DrT+oDqoQ==}
     engines: {node: '>=20.6.0'}
     cpu: [x64]
     os: [win32]
 
-  '@typescript/native-preview@7.0.0-dev.20250617.1':
-    resolution: {integrity: sha512-ns9t0bz3JMuUnzeRbFFjPkVPJozl0gkEzPk6RTAALC/oAyCD22ZWWNT2f/4BnfaPCSv/VmS+DE+ehsBUhlLyvw==}
+  '@typescript/native-preview@7.0.0-dev.20250625.1':
+    resolution: {integrity: sha512-7781zmsKURCHknc37H4U4la4kZduyxmmUshZLBzNhPHhV5DKo++K8MF69kxhRG3/vS4HBhozf0YI0mZMIbkSDA==}
     engines: {node: '>=20.6.0'}
     hasBin: true
 
@@ -5245,7 +5245,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/dfe41b70490ca7f60df20dcfe8b5f59b65737397(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(pixi.js@7.4.3)(typescript@5.8.3)':
+  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/7afbc321f8303878ed1229603fb36b42301f8e19(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(pixi.js@7.4.3)(typescript@5.8.3)':
     dependencies:
       '@codemirror/lang-html': 6.4.9
       '@codemirror/lang-javascript': 6.2.4
@@ -6413,36 +6413,36 @@ snapshots:
       '@typescript-eslint/types': 8.34.0
       eslint-visitor-keys: 4.2.0
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20250617.1':
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20250625.1':
     optional: true
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20250617.1':
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20250625.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20250617.1':
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20250625.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20250617.1':
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20250625.1':
     optional: true
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20250617.1':
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20250625.1':
     optional: true
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20250617.1':
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20250625.1':
     optional: true
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20250617.1':
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20250625.1':
     optional: true
 
-  '@typescript/native-preview@7.0.0-dev.20250617.1':
+  '@typescript/native-preview@7.0.0-dev.20250625.1':
     optionalDependencies:
-      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20250617.1
-      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20250617.1
-      '@typescript/native-preview-linux-arm': 7.0.0-dev.20250617.1
-      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20250617.1
-      '@typescript/native-preview-linux-x64': 7.0.0-dev.20250617.1
-      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20250617.1
-      '@typescript/native-preview-win32-x64': 7.0.0-dev.20250617.1
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20250625.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20250625.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20250625.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20250625.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20250625.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20250625.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20250625.1
 
   '@ungap/structured-clone@1.2.0': {}
 
