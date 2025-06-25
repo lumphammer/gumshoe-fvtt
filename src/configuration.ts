@@ -34,8 +34,8 @@ import { ItemSheetClass } from "./module/items/InvestigatorItemSheetClass";
 import { MwItemModel } from "./module/items/mwItem";
 import { PersonalDetailModel } from "./module/items/personalDetail";
 import { WeaponModel } from "./module/items/weapon";
-import type { RequestTurnPassArgs } from "./types";
 import { JournalEntryHTMLEditorSheetClass } from "./module/JournalEditorSheetClass";
+import type { RequestTurnPassArgs } from "./types";
 
 // types configuration
 declare module "fvtt-types/configuration" {
