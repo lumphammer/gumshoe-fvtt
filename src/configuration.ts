@@ -34,7 +34,7 @@ declare module "fvtt-types/configuration" {
       [constants.settingsSaved]: () => void;
       [constants.settingsCloseAttempted]: () => void;
       [constants.newNPCPacksUpdated]: (newPacks: string[]) => void;
-      "investigator:themeHMR": (themeName: string) => void;
+      [constants.themeHMR]: (themeName: string) => void;
       devModeReady: () => void;
       "PopOut:dialog": (
         dialoggedApp: Application,

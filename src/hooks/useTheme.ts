@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import * as constants from "../constants";
 import { runtimeConfig } from "../runtime";
 import { settings } from "../settings/settings";
 import { tealTheme } from "../themes/tealTheme";
@@ -25,9 +26,9 @@ export const useTheme = (name: string | null = null) => {
         setTheme(getThemeByName(name));
       }
     };
-    Hooks.on("investigator:themeHMR", fn);
+    Hooks.on(constants.themeHMR, fn);
     return () => {
-      Hooks.off("investigator:themeHMR", fn);
+      Hooks.off(constants.themeHMR, fn);
     };
   }, [name]);
   return theme;
