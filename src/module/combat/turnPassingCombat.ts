@@ -1,14 +1,16 @@
-import { TypeDataModel } from "../../fvtt-exports";
+import {
+  NumberField,
+  TypeDataModel,
+  TypedObjectField,
+} from "../../fvtt-exports";
 import { createRecordField } from "../schemaFields";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 
 export const TurnPassingCombatSchema = {
-  // turnStates: new TypedObjectField(
-  //   new NumberField(
-  //     { nullable: false, required: true, initial: 0 },
-  //   ),
-  //   { nullable: false, required: true, initial: {} },
-  // ),
+  foo: new TypedObjectField(
+    new NumberField({ nullable: false, required: true, initial: 0 }),
+    { nullable: false, required: true, initial: {} },
+  ),
   turnStates: createRecordField<Record<string, number>>({
     nullable: false,
     required: true,
@@ -29,6 +31,8 @@ export class TurnPassingCombatModel extends TypeDataModel<
     if (turns === undefined) {
       return 0;
     }
+    // @ts-expect-error fvtt-types
+    const _x = this.turnStates2.bar;
     return turns;
   }
 }
