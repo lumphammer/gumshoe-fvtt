@@ -103,7 +103,7 @@ async function addPack(pack: CompendiumCollection.Any, item: InvestigatorItem) {
         packItem.type === investigativeAbility
       ) {
         const existingAbility = item.actor?.items.find(
-          (actorItem) =>
+          (actorItem: Item) =>
             actorItem.type === packItem.type &&
             actorItem.name === packItem.name,
         ) as any;
