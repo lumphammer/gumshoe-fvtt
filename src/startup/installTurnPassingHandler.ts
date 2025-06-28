@@ -1,6 +1,7 @@
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
+import { isTurnPassingCombatant } from "../module/combat/turnPassingCombatant";
 import { RequestTurnPassArgs } from "../types";
 
 type CombatUpdateData = foundry.documents.Combat.UpdateData;
@@ -20,7 +21,12 @@ export function installTurnPassingHandler() {
           assertGame(game);
           const combat = game.combat;
           const combatant = game.combat?.combatants.get(combatantId);
-          if (!combatant || !combat) {
+          if (
+            !combat ||
+            !combatant ||
+            !isTurnPassingCombatant(combatant) ||
+            combatant.system.passingTurnsRemaining <= 0
+          ) {
             return;
           }
           const updateData: CombatUpdateData = {};
@@ -28,9 +34,7 @@ export function installTurnPassingHandler() {
             updateData.round = 1;
           }
           const turnIndex = combat.turns.findIndex((c) => c.id === combatantId);
-          if (combatant.passingTurnsRemaining > 0) {
-            combatant.passingTurnsRemaining -= 1;
-          }
+          void combatant.system.removePassingTurn();
           if (turnIndex !== undefined && turnIndex >= 0) {
             updateData.turn = turnIndex;
           }
