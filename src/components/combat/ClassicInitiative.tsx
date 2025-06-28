@@ -6,17 +6,15 @@ import { assertGame } from "../../functions/isGame";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { NativeDualFunctionMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
+import { TurnInfo } from "./types";
 import { useInititative } from "./useInititative";
 
-interface StandardInitiativeProps {
-  turn: any;
+interface ClassicInitiativeProps {
+  turn: TurnInfo;
   combat: InvestigatorCombat;
 }
 
-export const StandardInitiative = ({
-  turn,
-  combat,
-}: StandardInitiativeProps) => {
+export const ClassicInitiative = ({ turn, combat }: ClassicInitiativeProps) => {
   assertGame(game);
   const {
     onDoInitiative,
@@ -28,12 +26,13 @@ export const StandardInitiative = ({
   } = useInititative(combat, turn.id);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const initString = (turn.initiative ?? 0).toString();
 
   useEffect(() => {
     if (inputRef.current && document.activeElement !== inputRef.current) {
-      inputRef.current.value = turn.initiative;
+      inputRef.current.value = initString;
     }
-  }, [turn.initiative]);
+  }, [initString, turn.initiative]);
 
   return (
     <Fragment>
@@ -44,7 +43,7 @@ export const StandardInitiative = ({
             type="text"
             inputMode="numeric"
             pattern="^[+=\-]?\d*"
-            defaultValue={turn.initiative}
+            defaultValue={initString}
             aria-label="Initiative Score"
             disabled={!game.user.isGM}
           ></input>
