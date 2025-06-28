@@ -32,13 +32,21 @@ export class TurnPassingCombatantModel extends TypeDataModel<
     return turnPassingCombatantSchema;
   }
 
-  get combat(): InvestigatorCombat {
+  private get combat(): InvestigatorCombat {
     if (!this.parent.parent) {
       throw new Error(
         `Tried to use combatant ${this.parent.name} (${this.parent.id}) outside a combat`,
       );
     }
     return this.parent.parent;
+  }
+
+  get passingTurnsRemaining(): number {
+    const roundIndex = this.combat.round - 1;
+    if (roundIndex < 0) {
+      return 0;
+    }
+    return this.turnInfo[roundIndex]?.turnsRemaining ?? 0;
   }
 
   async resetPassingTurns() {

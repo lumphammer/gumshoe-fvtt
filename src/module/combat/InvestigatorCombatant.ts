@@ -11,6 +11,13 @@ import { InvestigatorItem } from "../items/InvestigatorItem";
 export class InvestigatorCombatant<
   SubType extends Combatant.SubType = Combatant.SubType,
 > extends Combatant<SubType> {
+  static override create<Temporary extends boolean | undefined = false>(
+    data: Combatant.CreateData | Combatant.CreateData[],
+    operation?: Combatant.Database.CreateOperation<Temporary>,
+  ) {
+    return super.create(data, operation);
+  }
+
   doGumshoeInitiative = async () => {
     if (this._id) {
       const initiative = this.actor
