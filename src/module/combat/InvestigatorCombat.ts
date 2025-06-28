@@ -38,10 +38,10 @@ export class InvestigatorCombat<
       data = { type: subType };
     } else if (Array.isArray(data)) {
       for (const d of data) {
-        d.type = subType;
+        d.type = d.type === undefined ? subType : d.type;
       }
     } else {
-      data.type = subType;
+      data.type = data.type === undefined ? subType : data.type;
     }
     systemLogger.log("InvestigatorCombat.create", data, operation, rest);
 
