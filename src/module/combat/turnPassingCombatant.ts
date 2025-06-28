@@ -41,10 +41,20 @@ export class TurnPassingCombatantModel extends TypeDataModel<
     return this.parent.parent;
   }
 
+  get defaultPassingTurns() {
+    return this.parent.actor && isActiveCharacterActor(this.parent.actor)
+      ? (this.parent.actor.system.initiativePassingTurns ?? 1)
+      : 1;
+  }
+
   get passingTurnsRemaining(): number {
     const roundIndex = this.combat.round - 1;
     if (roundIndex < 0) {
       return 0;
+    }
+    if (this.turnInfo[roundIndex] === undefined) {
+      void this.resetPassingTurns();
+      return this.defaultPassingTurns;
     }
     return this.turnInfo[roundIndex]?.turnsRemaining ?? 0;
   }
@@ -54,14 +64,10 @@ export class TurnPassingCombatantModel extends TypeDataModel<
     if (roundIndex < 0) {
       return;
     }
-    const turnsRemaining =
-      this.parent.actor && isActiveCharacterActor(this.parent.actor)
-        ? (this.parent.actor.system.initiativePassingTurns ?? 1)
-        : 1;
     const turnInfo = [...this.turnInfo];
     turnInfo[roundIndex] = {
       ...turnInfo[roundIndex],
-      turnsRemaining,
+      turnsRemaining: this.defaultPassingTurns,
     };
 
     await this.parent.update({
