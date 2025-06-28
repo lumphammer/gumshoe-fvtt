@@ -1,4 +1,3 @@
-import * as constants from "../../constants";
 import { systemLogger } from "../../functions/utilities";
 import { settings } from "../../settings/settings";
 import { isActiveCharacterActor } from "../actors/exports";
@@ -68,7 +67,10 @@ export class InvestigatorCombat<
     this.turns ||= [];
 
     // Determine the turn order and the current turn
+    const before = this.combatants.map((c) => c.name).join(", ");
     const turns = this.combatants.contents.sort(this._compareCombatants);
+    const after = this.combatants.map((c) => c.name).join(", ");
+    systemLogger.log("setupTurns", before, after);
     if (this.turn !== null) {
       if (this.turn < 0) {
         this.turn = 0;
@@ -98,7 +100,6 @@ export class InvestigatorCombat<
           : 1;
       combatant.passingTurnsRemaining = max;
     });
-    this.activeTurnPassingCombatant = null;
     await super.nextRound();
     // super.nextRound sets turn to 1, easier to do this than to recreate the
     // whole thing
@@ -106,16 +107,5 @@ export class InvestigatorCombat<
       await this.update({ turn: null });
     }
     return this;
-  }
-
-  get activeTurnPassingCombatant() {
-    return this.getFlag(constants.systemId, "activeTurnPassingCombatant");
-  }
-
-  set activeTurnPassingCombatant(id: string | null) {
-    void this.setFlag(constants.systemId, "activeTurnPassingCombatant", id);
-    const nextTurn = this.turns.findIndex((t) => t._id === id);
-    const updateData = { round: this.round, turn: nextTurn };
-    void this.update(updateData);
   }
 }

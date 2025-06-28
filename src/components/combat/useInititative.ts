@@ -44,15 +44,14 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
   const localize = game.i18n.localize.bind(game.i18n);
 
   const onTakeTurn = useCallback(() => {
+    systemLogger.log("useInitiative - onTakeTurn");
     assertGame(game);
-    if (combat.round === 0) {
-      return;
-    }
+
     systemLogger.log("turnPassingHandler - calling hook");
     // call `requestTurnPass` on everyone's client - the GM's client will pick
     // this up and perform the turn pass
     requestTurnPass(combatantStash.current?.id);
-  }, [combatantStash, combat.round]);
+  }, [combatantStash]);
 
   const onAddTurn = useCallback(() => {
     combatantStash.current?.addPassingTurn();

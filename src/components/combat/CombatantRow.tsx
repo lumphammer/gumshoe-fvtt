@@ -3,9 +3,9 @@ import { ReactNode, useMemo } from "react";
 
 import { assertGame } from "../../functions/isGame";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
-import { settings } from "../../settings/settings";
+import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { NativeContextMenuWrapper } from "../inputs/NativeMenu/NativeContextMenuWrapper";
-import { StandardInitiative } from "./StandardInitiative";
+import { ClassicInitiative } from "./ClassicInitiative";
 import { TurnPassingInitiative } from "./TurnPassingInitiative";
 import { TurnInfo } from "./types";
 
@@ -15,15 +15,16 @@ interface CombatantRowProps {
   index: number;
 }
 
-const settingsUseTurnPassingInitiative = settings.useTurnPassingInitiative.get;
-
 export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
 
-  const turnPassing = settingsUseTurnPassingInitiative();
-  const active = combat.activeTurnPassingCombatant === turn.id;
+  const activeCombatantId =
+    combat.turn !== null ? combat.turns[combat.turn].id : null;
+  const active = activeCombatantId === turn.id;
   const depleted = turn.passingTurnsRemaining <= 0;
+
+  const turnPassing = isTurnPassingCombat(combat);
 
   // based on foundry's CombatTracker#_formatEffectsTooltip
   const effectsTooltip = useMemo(() => {
@@ -151,7 +152,7 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
         {turnPassing ? (
           <TurnPassingInitiative turn={turn} combat={combat} />
         ) : (
-          <StandardInitiative turn={turn} combat={combat} />
+          <ClassicInitiative turn={turn} combat={combat} />
         )}
       </li>
     </NativeContextMenuWrapper>
