@@ -6,6 +6,7 @@ import { requestTurnPass, systemLogger } from "../../functions/utilities";
 import { CombatantConfig } from "../../fvtt-exports";
 import { useRefStash } from "../../hooks/useRefStash";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
+import { assertTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 
 export const useInititative = (combat: InvestigatorCombat, id: string) => {
   assertGame(game);
@@ -54,11 +55,13 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
   }, [combatantStash]);
 
   const onAddTurn = useCallback(() => {
-    combatantStash.current?.addPassingTurn();
+    assertTurnPassingCombatant(combatantStash.current);
+    void combatantStash.current.system.addPassingTurn();
   }, [combatantStash]);
 
   const onRemoveTurn = useCallback(() => {
-    combatantStash.current?.removePassingTurn();
+    assertTurnPassingCombatant(combatantStash.current);
+    void combatantStash.current.system.removePassingTurn();
   }, [combatantStash]);
 
   const sheet = combatantStash.current?.token?.actor?.sheet;

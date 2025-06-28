@@ -4,6 +4,7 @@ import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
 import { assertGame } from "../../functions/isGame";
 import { CombatTrackerConfig } from "../../fvtt-exports";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
+import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { format, localize } from "./functions";
 
@@ -34,7 +35,10 @@ export const TurnNav = ({
 
   const allTurnsDone =
     (combat?.turns.length ?? 0) > 0 &&
-    combat?.turns.every((turn) => turn.passingTurnsRemaining <= 0);
+    combat?.turns.every(
+      (turn) =>
+        isTurnPassingCombatant(turn) && turn.system.passingTurnsRemaining <= 0,
+    );
 
   return (
     <nav className="combat-controls">
