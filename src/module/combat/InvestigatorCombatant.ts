@@ -12,7 +12,9 @@ import { InvestigatorItem } from "../items/InvestigatorItem";
 /**
  * Override base Combatant class to override the initiative formula.
  */
-export class InvestigatorCombatant extends Combatant {
+export class InvestigatorCombatant<
+  SubType extends Combatant.SubType = Combatant.SubType,
+> extends Combatant<SubType> {
   doGumshoeInitiative = async () => {
     if (this._id) {
       const initiative = this.actor
@@ -37,7 +39,7 @@ export class InvestigatorCombatant extends Combatant {
     this.passingTurnsRemaining = Math.max(0, this.passingTurnsRemaining - 1);
   }
 
-  static getGumshoeInitiative(actor: Actor) {
+  static getGumshoeInitiative(actor: Actor): number {
     assertActiveCharacterActor(actor);
     // get the ability name, and if not set, use the first one on the system
     // config (we had a bug where some chars were getting created without an
