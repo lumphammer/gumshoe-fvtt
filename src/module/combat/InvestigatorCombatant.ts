@@ -1,11 +1,7 @@
 import * as constants from "../../constants";
-import { assertGame } from "../../functions/isGame";
 import { isNullOrEmptyString } from "../../functions/utilities";
 import { settings } from "../../settings/settings";
-import {
-  assertActiveCharacterActor,
-  isActiveCharacterActor,
-} from "../actors/exports";
+import { assertActiveCharacterActor } from "../actors/exports";
 import { isGeneralAbilityItem } from "../items/generalAbility";
 import { InvestigatorItem } from "../items/InvestigatorItem";
 
@@ -23,21 +19,6 @@ export class InvestigatorCombatant<
       await this.update({ initiative });
     }
   };
-
-  resetPassingTurns() {
-    this.passingTurnsRemaining =
-      this.actor && isActiveCharacterActor(this.actor)
-        ? (this.actor?.system.initiativePassingTurns ?? 1)
-        : 1;
-  }
-
-  addPassingTurn() {
-    this.passingTurnsRemaining += 1;
-  }
-
-  removePassingTurn() {
-    this.passingTurnsRemaining = Math.max(0, this.passingTurnsRemaining - 1);
-  }
 
   static getGumshoeInitiative(actor: Actor): number {
     assertActiveCharacterActor(actor);
@@ -68,25 +49,5 @@ export class InvestigatorCombatant<
     return this.actor
       ? InvestigatorCombatant.getGumshoeInitiative(this.actor).toString()
       : "0";
-  }
-
-  get passingTurnsRemaining(): number {
-    const maxPassingTurns =
-      this.actor && isActiveCharacterActor(this.actor)
-        ? this.actor?.system.initiativePassingTurns
-        : 1;
-    const tagValue = this.getFlag(constants.systemId, "passingTurnsRemaining");
-    if (tagValue === undefined) {
-      this.passingTurnsRemaining = maxPassingTurns;
-      return maxPassingTurns;
-    }
-    return Number(tagValue);
-  }
-
-  set passingTurnsRemaining(turns: number) {
-    assertGame(game);
-    if (game.user && this.canUserModify(game.user, "update")) {
-      void this.setFlag(constants.systemId, "passingTurnsRemaining", turns);
-    }
   }
 }
