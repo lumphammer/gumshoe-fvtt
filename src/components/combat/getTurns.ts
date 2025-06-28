@@ -1,4 +1,5 @@
 import { isActiveCharacterActor } from "../../module/actors/exports";
+import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { TurnInfo } from "./types";
 
 const getValue = <T>(resource: T): T | number => {
@@ -57,8 +58,6 @@ export function getTurns(combat: Combat): TurnInfo[] {
       }
     }
 
-    type _T = typeof combatant.name;
-
     const turn: TurnInfo = {
       id: combatant.id,
       name: combatant.name ?? "",
@@ -72,7 +71,9 @@ export function getTurns(combat: Combat): TurnInfo[] {
       hasResource,
       resource,
       effects,
-      passingTurnsRemaining: combatant.passingTurnsRemaining,
+      passingTurnsRemaining: isTurnPassingCombatant(combatant)
+        ? combatant.system.passingTurnsRemaining
+        : 0,
       totalPassingTurns,
     };
 
