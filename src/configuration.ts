@@ -17,10 +17,12 @@ import { PartySheetClass } from "./module/actors/PartySheetClass";
 import { PCModel } from "./module/actors/pc";
 import { PCSheetClass } from "./module/actors/PCSheetClass";
 import { ClassicCombatModel } from "./module/combat/classicCombat";
+import { ClassicCombatantModel } from "./module/combat/classicCombatant";
 import { InvestigatorCombat } from "./module/combat/InvestigatorCombat";
 import { InvestigatorCombatant } from "./module/combat/InvestigatorCombatant";
 import { InvestigatorCombatTracker } from "./module/combat/InvestigatorCombatTracker";
 import { TurnPassingCombatModel } from "./module/combat/turnPassingCombat";
+import { TurnPassingCombatantModel } from "./module/combat/turnPassingCombatant";
 import { InvestigatorCompendiumDirectory } from "./module/InvestigatorCompendiumDirectory";
 import { InvestigatorJournalSheet } from "./module/InvestigatorJournalSheet";
 import { InvestigatorTokenDocument } from "./module/InvestigatorTokenDocument";
@@ -83,6 +85,10 @@ declare module "fvtt-types/configuration" {
       classic: typeof ClassicCombatModel;
       turnPassing: typeof TurnPassingCombatModel;
     };
+    Combatant: {
+      classic: typeof ClassicCombatantModel;
+      turnPassing: typeof TurnPassingCombatantModel;
+    };
   }
 
   interface ConfiguredActor<SubType extends Actor.SubType> {
@@ -101,11 +107,6 @@ declare module "fvtt-types/configuration" {
   }
 
   interface FlagConfig {
-    Combat: {
-      investigator: {
-        activeTurnPassingCombatant: string | null;
-      };
-    };
     Combatant: {
       investigator: {
         passingTurnsRemaining: number;
@@ -175,6 +176,9 @@ Hooks.once("init", function () {
 
   CONFIG.Combat.dataModels["classic"] = ClassicCombatModel;
   CONFIG.Combat.dataModels["turnPassing"] = TurnPassingCombatModel;
+
+  CONFIG.Combatant.dataModels["classic"] = ClassicCombatantModel;
+  CONFIG.Combatant.dataModels["turnPassing"] = TurnPassingCombatantModel;
 
   // CONFIG.Combat.dataModels["investigator"] = InvestigatorCombat;
 
