@@ -1,5 +1,6 @@
 import { assertGame } from "../functions/isGame";
 import { InvestigatorCombatant } from "../module/combat/InvestigatorCombatant";
+import { isTurnPassingCombatant } from "../module/combat/turnPassingCombatant";
 import { settings } from "../settings/settings";
 
 export function installInitiativeUpdateHookHandler() {
@@ -12,7 +13,9 @@ export function installInitiativeUpdateHookHandler() {
         return;
       }
       if (settings.useTurnPassingInitiative.get()) {
-        combatant.resetPassingTurns();
+        if (isTurnPassingCombatant(combatant)) {
+          void combatant.system.resetPassingTurns();
+        }
       } else {
         void combatant.doGumshoeInitiative();
       }

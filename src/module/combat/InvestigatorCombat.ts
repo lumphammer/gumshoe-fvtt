@@ -1,7 +1,12 @@
 import { systemLogger } from "../../functions/utilities";
+import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
-import { isActiveCharacterActor } from "../actors/exports";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
+import { isTurnPassingCombat } from "./turnPassingCombat";
+
+function isCombatant(x: string): x is "Combatant" {
+  return x === "Combatant";
+}
 
 /**
  * Override base Combat so we can do custom GUMSHOE-style initiative
@@ -14,6 +19,24 @@ export class InvestigatorCombat<
   constructor(...args: Combat.ConstructorArgs) {
     super(...args);
     systemLogger.log("InvestigatorCombat.constructor", this.turnOrders);
+  }
+
+  override async createEmbeddedDocuments<
+    EmbeddedName extends Combat.Embedded.Name,
+  >(
+    embeddedName: EmbeddedName,
+    origData: Document.CreateDataForName<EmbeddedName>[] | undefined,
+    operation?: object,
+  ): Promise<Array<Document.StoredForName<EmbeddedName>> | undefined> {
+    if (!isCombatant(embeddedName)) {
+      return;
+    }
+    const newType = this.type;
+    const newData = origData?.map((d) => ({
+      ...d,
+      type: ("type" in d ? d.type : null) ?? newType,
+    }));
+    return super.createEmbeddedDocuments(embeddedName, newData, operation);
   }
 
   override _onCreate(
@@ -92,18 +115,10 @@ export class InvestigatorCombat<
   }
 
   override async nextRound() {
-    this.turns.forEach((combatant) => {
-      const actor = combatant.actor;
-      const max =
-        actor !== null && isActiveCharacterActor(actor)
-          ? actor.system.initiativePassingTurns
-          : 1;
-      combatant.passingTurnsRemaining = max;
-    });
     await super.nextRound();
     // super.nextRound sets turn to 1, easier to do this than to recreate the
     // whole thing
-    if (settings.useTurnPassingInitiative.get()) {
+    if (isTurnPassingCombat(this)) {
       await this.update({ turn: null });
     }
     return this;
