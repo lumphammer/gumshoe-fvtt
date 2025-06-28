@@ -1,7 +1,9 @@
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
-import { InvestigatorCombat } from "../module/combat/InvestigatorCombat";
+import { systemLogger } from "../functions/utilities";
 import { RequestTurnPassArgs } from "../types";
+
+type CombatUpdateData = foundry.documents.Combat.UpdateData;
 
 /**
  * Installs a foundry hook handler on the GM's client that listens for a request
@@ -14,18 +16,25 @@ export function installTurnPassingHandler() {
       Hooks.on(
         constants.requestTurnPass,
         ({ combatantId }: RequestTurnPassArgs) => {
+          systemLogger.log("requestTurnPass", combatantId);
           assertGame(game);
-          const combat = game.combat as InvestigatorCombat;
-          const combatant = combat?.combatants.get(combatantId);
-          if (
-            combat &&
-            combatant &&
-            combatant.passingTurnsRemaining > 0 &&
-            combat.activeTurnPassingCombatant !== combatant._id
-          ) {
-            combat.activeTurnPassingCombatant = combatant._id;
+          const combat = game.combat;
+          const combatant = game.combat?.combatants.get(combatantId);
+          if (!combatant || !combat) {
+            return;
+          }
+          const updateData: CombatUpdateData = {};
+          if (combat.round === 0) {
+            updateData.round = 1;
+          }
+          const turnIndex = combat.turns.findIndex((c) => c.id === combatantId);
+          if (combatant.passingTurnsRemaining > 0) {
             combatant.passingTurnsRemaining -= 1;
           }
+          if (turnIndex !== undefined && turnIndex >= 0) {
+            updateData.turn = turnIndex;
+          }
+          void combat.update(updateData);
         },
       );
     }
