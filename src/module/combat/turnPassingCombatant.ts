@@ -48,10 +48,7 @@ export class TurnPassingCombatantModel extends TypeDataModel<
   }
 
   get passingTurnsRemaining(): number {
-    const roundIndex = this.combat.round - 1;
-    if (roundIndex < 0) {
-      return 0;
-    }
+    const roundIndex = Math.max(0, this.combat.round - 1);
     if (this.turnInfo[roundIndex] === undefined) {
       void this.resetPassingTurns();
       return this.defaultPassingTurns;
@@ -60,10 +57,7 @@ export class TurnPassingCombatantModel extends TypeDataModel<
   }
 
   async resetPassingTurns() {
-    const roundIndex = this.combat.round - 1;
-    if (roundIndex < 0) {
-      return;
-    }
+    const roundIndex = Math.max(0, this.combat.round - 1);
     const turnInfo = [...this.turnInfo];
     turnInfo[roundIndex] = {
       ...turnInfo[roundIndex],
@@ -78,10 +72,7 @@ export class TurnPassingCombatantModel extends TypeDataModel<
   }
 
   async addPassingTurn() {
-    const roundIndex = this.combat.round - 1;
-    if (roundIndex < 0) {
-      return;
-    }
+    const roundIndex = Math.max(0, this.combat.round - 1);
     const turnsRemaining = (this.turnInfo[roundIndex]?.turnsRemaining ?? 0) + 1;
     const turnInfo = [...this.turnInfo];
     turnInfo[roundIndex] = {
@@ -97,10 +88,7 @@ export class TurnPassingCombatantModel extends TypeDataModel<
   }
 
   async removePassingTurn() {
-    const roundIndex = this.combat.round - 1;
-    if (roundIndex < 0) {
-      return;
-    }
+    const roundIndex = Math.max(0, this.combat.round - 1);
     const turnsRemaining = Math.max(
       0,
       (this.turnInfo[roundIndex]?.turnsRemaining ?? 0) - 1,
