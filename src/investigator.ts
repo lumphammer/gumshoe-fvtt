@@ -109,12 +109,24 @@ function getLayerNamesFromRule(rule: CSSRule): string[] {
 }
 
 /**
+ * The Forge does something with origins maybe? that makes their stylesheet
+ * unreadable from code
+ */
+function safelyGetCSSRules(cssStyleSheet: CSSStyleSheet) {
+  try {
+    return Array.from(cssStyleSheet.cssRules);
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Get all layer names from all stylesheets in the document, in reverse order of
  * declaration (last declared is first).
  */
 function getAllLayerNamesInDocument(): string[] {
   const layerNames = Array.from(document.styleSheets)
-    .flatMap((sheet) => Array.from(sheet.cssRules))
+    .flatMap((sheet) => safelyGetCSSRules(sheet))
     .flatMap(getLayerNamesFromRule);
   const setOfLayerNames = new Set(layerNames);
   const reversed = Array.from(setOfLayerNames.values()).toReversed();
