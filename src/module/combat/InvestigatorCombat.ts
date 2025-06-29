@@ -4,10 +4,6 @@ import { settings } from "../../settings/settings";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 import { isTurnPassingCombat } from "./turnPassingCombat";
 
-function isCombatant(x: string): x is "Combatant" {
-  return x === "Combatant";
-}
-
 /**
  * Override base Combat so we can do custom GUMSHOE-style initiative
  */
@@ -21,6 +17,9 @@ export class InvestigatorCombat<
     systemLogger.log("InvestigatorCombat.constructor", this.turnOrders);
   }
 
+  /**
+   * Override createEmbeddedDocuments to
+   */
   override async createEmbeddedDocuments<
     EmbeddedName extends Combat.Embedded.Name,
   >(
@@ -28,14 +27,14 @@ export class InvestigatorCombat<
     origData: Document.CreateDataForName<EmbeddedName>[] | undefined,
     operation?: object,
   ): Promise<Array<Document.StoredForName<EmbeddedName>> | undefined> {
-    if (!isCombatant(embeddedName)) {
-      return;
-    }
     const newType = this.type;
-    const newData = origData?.map((d) => ({
-      ...d,
-      type: ("type" in d ? d.type : null) ?? newType,
-    }));
+    const newData =
+      embeddedName === "Combatant"
+        ? origData?.map((d) => ({
+            ...d,
+            type: ("type" in d ? d.type : null) ?? newType,
+          }))
+        : origData;
     return super.createEmbeddedDocuments(embeddedName, newData, operation);
   }
 
@@ -119,6 +118,7 @@ export class InvestigatorCombat<
     // super.nextRound sets turn to 1, easier to do this than to recreate the
     // whole thing
     if (isTurnPassingCombat(this)) {
+      this.turn = null;
       await this.update({ turn: null });
     }
     return this;
