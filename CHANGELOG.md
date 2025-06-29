@@ -4,11 +4,15 @@
 
 ## Unreleased
 
-* Workarounds for some Forge-VTT issues
+* Fixes for some issues encountered on Forge VTT:
+  * Error message in console about `cssRules`.
+  * File picker not showing "Forge Assets" and "Bazaaar".
+
 
 ## 9.10 (2025-06-08)
 
 * BUGFIX: Weapons created in the sidebar would throw an error when opening their edit sheet (#1204, thanks @dorf-lundgren)
+
 
 ## 9.8 (2025-06-06)
 
