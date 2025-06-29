@@ -15,14 +15,6 @@ base_release() {
   tag_prefix=$1
 
   ##############################################################################
-  # check we're on main
-  branch=$(git rev-parse --abbrev-ref HEAD)
-  if [ "$branch" != "main" ]; then
-    echo "You must be on main or prerelease to release"
-    exit 1
-  fi
-
-  ##############################################################################
   # read the versions from the fvtt manifest and package.json and ensure they
   # are the same
   if [ -e public/system.json ]; then
