@@ -42,12 +42,8 @@ export const ImagePickle = ({ className }: ImagePickleProps) => {
     if (tokenizerIsActive && tokenizerApi !== undefined && subjectIsActor) {
       tokenizerApi.tokenizeActor(doc);
     } else {
-      // You can also launch the filepicker with
-      // `application._onEditImage(event)` but 1. we don't care about event
-      // objects for the most part, and 2. that way is tightly coupled to the
-      // Foundry AppV1 model of imperative updates and does stuff like trying to
-      // update the image in the DOM on completion.
-      const fp = new FilePicker({
+      // eslint-disable-next-line new-cap
+      const fp = new FilePicker.implementation({
         type: "image",
         current: doc.img ?? undefined,
         callback: (path: string) => {

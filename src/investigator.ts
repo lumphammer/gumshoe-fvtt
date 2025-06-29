@@ -159,12 +159,6 @@ function sortLayersIntoEffectivePriorityOrder(layerNames: string[]): string[] {
 }
 
 Hooks.once("ready", () => {
-  // Forge is curently not overriding the namespaced FilePicker
-  // see https://forums.forge-vtt.com/t/the-forge-module-not-working-with-v13s-namespaced-filepicker/163417
-  if (FilePicker !== foundry.applications.apps.FilePicker) {
-    foundry.applications.apps.FilePicker = FilePicker;
-  }
-
   const names = sortLayersIntoEffectivePriorityOrder(
     getAllLayerNamesInDocument(),
   );
