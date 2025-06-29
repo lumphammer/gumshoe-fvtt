@@ -89,10 +89,7 @@ export class InvestigatorCombat<
     this.turns ||= [];
 
     // Determine the turn order and the current turn
-    const before = this.combatants.map((c) => c.name).join(", ");
     const turns = this.combatants.contents.sort(this._compareCombatants);
-    const after = this.combatants.map((c) => c.name).join(", ");
-    systemLogger.log("setupTurns", before, after);
     if (this.turn !== null) {
       if (this.turn < 0) {
         this.turn = 0;
@@ -122,5 +119,14 @@ export class InvestigatorCombat<
       await this.update({ turn: null });
     }
     return this;
+  }
+
+  override async startCombat(): Promise<this | undefined> {
+    const superResult = await super.startCombat();
+    if (isTurnPassingCombat(this)) {
+      this.turn = null;
+      await this.update({ turn: null });
+    }
+    return superResult;
   }
 }
