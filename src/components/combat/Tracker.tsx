@@ -4,14 +4,12 @@ import { PiEmptyLight, PiPeaceLight } from "react-icons/pi";
 import { assertGame } from "../../functions/isGame";
 import { assertNotNull, sortByKey } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
-import { settings } from "../../settings/settings";
+import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { CombatantRow } from "./CombatantRow";
 import { EncounterNav } from "./EncounterNav";
 import { localize } from "./functions";
 import { getTurns } from "./getTurns";
 import { TurnNav } from "./TurnNav";
-
-const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
 
 export const Tracker = () => {
   assertGame(game);
@@ -27,7 +25,7 @@ export const Tracker = () => {
   const prevCombatId = game.combats?.combats[combatIndex - 1]?._id;
   const nextCombatId = game.combats?.combats[combatIndex + 1]?._id;
   const hasCombat = !!combat;
-  const isTurnPassing = settingsUseTurnPassing();
+  const isTurnPassing = isTurnPassingCombat(combat);
 
   if (combat === null) {
     return null;
