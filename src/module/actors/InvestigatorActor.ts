@@ -5,9 +5,9 @@
 export class InvestigatorActor<
   SubType extends Actor.SubType = Actor.SubType,
 > extends Actor<SubType> {
-  constructor(...args: Actor.ConstructorArgs) {
-    super(...args);
-    this.type = args[0]?.type as SubType;
+  constructor(data: Actor.CreateData, context?: Actor.ConstructionContext) {
+    super(data, context);
+    this.type = data.type as SubType;
   }
 
   override type!: SubType;
