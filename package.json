@@ -54,9 +54,9 @@
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
-    "@typescript-eslint/parser": "^8.34.0",
+    "@typescript-eslint/parser": "^8.35.0",
     "@vitejs/plugin-react-swc": "^3.9.0",
-    "@vitest/ui": "^3.2.3",
+    "@vitest/ui": "^3.2.4",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.5",
     "eslint-config-standard": "^17.1.0",
@@ -67,9 +67,9 @@
     "eslint-plugin-unused-imports": "^4.1.4",
     "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#main",
     "happy-dom": "^18.0.1",
-    "jest-diff": "^30.0.0",
+    "jest-diff": "^30.0.3",
     "less": "^4.3.0",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.2",
     "rollup-plugin-visualizer": "^6.0.3",
     "tsx": "^4.20.3",
     "typescript": "5.8.3",
@@ -88,11 +88,11 @@
     "@radix-ui/react-context-menu": "^2.2.15",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-switch": "^1.2.5",
-    "@typescript-eslint/eslint-plugin": "^8.34.0",
-    "@typescript/native-preview": "7.0.0-dev.20250625.1",
+    "@typescript-eslint/eslint-plugin": "^8.35.0",
+    "@typescript/native-preview": "7.0.0-dev.20250629.1",
     "case": "^1.6.3",
     "d3-ease": "^3.0.1",
-    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-n": "^17.20.0",
     "eslint-plugin-promise": "^7.2.1",
     "focusable-selectors": "^0.8.4",
@@ -109,8 +109,8 @@
     "turndown": "^7.2.0",
     "xss": "^1.0.15",
     "yamljs": "^0.3.0",
-    "zod": "^3.25.64",
-    "zod-validation-error": "^3.5.0"
+    "zod": "^3.25.67",
+    "zod-validation-error": "^3.5.2"
   },
   "pnpm": {
     "allowedDeprecatedVersions": {
@@ -131,12 +131,12 @@
     }
   },
   "engines": {
-    "node": "22.16.0",
-    "pnpm": "10.12.1"
+    "node": "22.17.0",
+    "pnpm": "10.12.4"
   },
   "volta": {
-    "node": "22.16.0",
-    "pnpm": "10.12.1"
+    "node": "22.17.0",
+    "pnpm": "10.12.4"
   },
-  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
+  "packageManager": "pnpm@10.12.4"
 }
