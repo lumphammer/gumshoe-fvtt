@@ -19,5 +19,6 @@ export const installDSNFix = async () => {
   // the one that actually exists:
   if (game.settings.settings.has("dice-so-nice.enabledSimultaneousRolls")) {
     await game.settings.set("dice-so-nice", "enabledSimultaneousRolls", false);
+    await game.settings.set("core", "animateRollTable", true);
   }
 };
