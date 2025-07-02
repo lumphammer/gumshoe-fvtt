@@ -33,7 +33,15 @@ interface SettingFactoryArgs<T> {
 interface SettingObject<T, TValidator extends z.ZodType | undefined> {
   key: string;
   get: () => T;
-  set: (value: T) => Promise<T>;
+  // set: (value: T) => Promise<T>;
+  set: (
+    value: T,
+  ) => Promise<
+    ClientSettings.SettingInitializedType<
+      "investigator",
+      ClientSettings.KeyFor<"investigator">
+    >
+  >;
   exportable: boolean;
   validator?: TValidator;
 }
@@ -89,7 +97,6 @@ export const createSetting =
     return {
       key,
       get: getSetting<TSetting>(key),
-      // @ts-expect-error settings are typed now, but we're doing our own thing
       set: setSetting<TSetting>(key),
       exportable,
       validator: validator as TValidator,
