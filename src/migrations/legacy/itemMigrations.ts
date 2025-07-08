@@ -75,14 +75,14 @@ export const upgradeNotesToRichText = (
   item: InvestigatorItem,
   updateData: any,
 ) => {
-  if ("notes" in item.system && typeof item.system["notes"] === "string") {
+  if ("notes" in item.system && typeof item.system.notes === "string") {
     if (!updateData.system) {
       updateData.system = {};
     }
     updateData.system.notes = {
       format: "plain",
-      source: item.system["notes"],
-      html: escape(item.system["notes"]),
+      source: item.system.notes,
+      html: escape(item.system.notes),
     };
   }
   return updateData;

@@ -1,5 +1,3 @@
-import { DeepPartial } from "fvtt-types/utils";
-
 import { extraCssClasses, systemId } from "../constants";
 import { assertGame } from "../functions/isGame";
 import { JournalEntrySheet } from "../fvtt-exports";
@@ -39,11 +37,11 @@ export class InvestigatorJournalSheet extends JournalEntrySheet {
     },
   };
 
-  constructor(options: DeepPartial<JournalEntrySheet.Configuration>) {
+  constructor(options: ConstructorParameters<typeof JournalEntrySheet>[0]) {
     const canEdit =
-      game.user && options.document?.canUserModify?.(game.user, "update");
+      game.user && options?.document?.canUserModify?.(game.user, "update");
 
-    if (canEdit) {
+    if (options && canEdit) {
       options = {
         ...options,
         window: {
@@ -60,7 +58,6 @@ export class InvestigatorJournalSheet extends JournalEntrySheet {
         },
       };
     }
-
     super(options);
   }
 

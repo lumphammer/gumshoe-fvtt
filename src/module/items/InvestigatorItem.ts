@@ -39,7 +39,7 @@ export class InvestigatorItem<
   getNotes = (): NoteWithFormat | undefined => {
     const system = this.system;
     const notes =
-      "notes" in system ? (system["notes"] as NoteWithFormat) : undefined;
+      "notes" in system ? (system.notes as NoteWithFormat) : undefined;
     return (
       notes ?? {
         format: "richText",
