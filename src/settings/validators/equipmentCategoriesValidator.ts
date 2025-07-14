@@ -2,9 +2,11 @@ import { z } from "zod";
 
 export const equipmentCategoriesValidator = z
   .record(
+    z.string(),
     z.object({
       name: z.string(),
       fields: z.record(
+        z.string(),
         z
           .object({
             name: z.string(),
