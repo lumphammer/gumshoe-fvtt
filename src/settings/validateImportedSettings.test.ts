@@ -21,7 +21,7 @@ it("should throw an error if the settings are the wrong type", () => {
       JSON.stringify({ ...ashenStarsExport, npcStats: "not an object" }),
     ),
   ).toThrowErrorMatchingInlineSnapshot(
-    `[ZodValidationError: Validation error: Expected object, received string at "npcStats"]`,
+    `[ZodValidationError: Validation error: Invalid input: expected record, received string]`,
   );
 });
 
@@ -31,7 +31,7 @@ it("should throw an error if there is an unknown key", () => {
       JSON.stringify({ ...ashenStarsExport, unknownKey: "unknown value" }),
     ),
   ).toThrowErrorMatchingInlineSnapshot(
-    `[ZodValidationError: Validation error: Unrecognized key(s) in object: 'unknownKey']`,
+    `[ZodValidationError: Validation error: Unrecognized key: "unknownKey"]`,
   );
 });
 
