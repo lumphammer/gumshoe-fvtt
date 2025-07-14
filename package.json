@@ -54,7 +54,7 @@
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
-    "@typescript-eslint/parser": "^8.35.1",
+    "@typescript-eslint/parser": "^8.36.0",
     "@vitejs/plugin-react-swc": "^3.9.0",
     "@vitest/ui": "^3.2.4",
     "eslint": "^8.57.1",
@@ -73,7 +73,7 @@
     "rollup-plugin-visualizer": "^6.0.3",
     "tsx": "^4.20.3",
     "typescript": "5.8.3",
-    "vite": "7.0.2",
+    "vite": "7.0.4",
     "vite-plugin-svgr": "^4.3.0",
     "vitest": "^3.2.4"
   },
@@ -88,8 +88,8 @@
     "@radix-ui/react-context-menu": "^2.2.15",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-switch": "^1.2.5",
-    "@typescript-eslint/eslint-plugin": "^8.35.1",
-    "@typescript/native-preview": "7.0.0-dev.20250705.1",
+    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "@typescript/native-preview": "7.0.0-dev.20250712.1",
     "case": "^1.6.3",
     "d3-ease": "^3.0.1",
     "eslint-plugin-import": "^2.32.0",
@@ -110,8 +110,8 @@
     "turndown": "^7.2.0",
     "xss": "^1.0.15",
     "yamljs": "^0.3.0",
-    "zod": "^3.25.75",
-    "zod-validation-error": "^3.5.2"
+    "zod": "^3.25.76",
+    "zod-validation-error": "^3.5.3"
   },
   "pnpm": {
     "allowedDeprecatedVersions": {
@@ -133,7 +133,7 @@
   },
   "engines": {
     "node": "22.17.0",
-    "pnpm": "10.12.4"
+    "pnpm": "10.13.1"
   },
-  "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184"
+  "packageManager": "pnpm@10.13.1+sha512.37ebf1a5c7a30d5fabe0c5df44ee8da4c965ca0c5af3dbab28c3a1681b70a256218d05c81c9c0dcf767ef6b8551eb5b960042b9ed4300c59242336377e01cfad"
 }
