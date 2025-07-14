@@ -113,11 +113,11 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       zod:
-        specifier: ^3.25.76
-        version: 3.25.76
+        specifier: ^4.0.5
+        version: 4.0.5
       zod-validation-error:
         specifier: ^3.5.3
-        version: 3.5.3(zod@3.25.76)
+        version: 3.5.3(zod@4.0.5)
     devDependencies:
       '@emotion/cache':
         specifier: ^11.14.0
@@ -4825,6 +4825,9 @@ packages:
 
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
+  zod@4.0.5:
+    resolution: {integrity: sha512-/5UuuRPStvHXu7RS+gmvRf4NXrNxpSllGwDnCBcJZtQsKrviYXm54yDGV2KYNLT5kq0lHGcl7lqWJLgSaG+tgA==}
 
 snapshots:
 
@@ -9800,4 +9803,10 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
+  zod-validation-error@3.5.3(zod@4.0.5):
+    dependencies:
+      zod: 4.0.5
+
   zod@3.25.76: {}
+
+  zod@4.0.5: {}

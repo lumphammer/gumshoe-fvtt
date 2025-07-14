@@ -110,7 +110,7 @@
     "turndown": "^7.2.0",
     "xss": "^1.0.15",
     "yamljs": "^0.3.0",
-    "zod": "^3.25.76",
+    "zod": "^4.0.5",
     "zod-validation-error": "^3.5.3"
   },
   "pnpm": {
