@@ -25,8 +25,8 @@ export class InvestigatorCombat<
   >(
     embeddedName: EmbeddedName,
     origData: Document.CreateDataForName<EmbeddedName>[] | undefined,
-    operation?: object,
-  ): Promise<Array<Document.StoredForName<EmbeddedName>> | undefined> {
+    operation?: Document.Database.CreateOperationForName<EmbeddedName>,
+  ): Promise<Array<Document.StoredForName<EmbeddedName>>> {
     const newType = this.type;
     const newData =
       embeddedName === "Combatant"
@@ -121,12 +121,12 @@ export class InvestigatorCombat<
     return this;
   }
 
-  override async startCombat(): Promise<this | undefined> {
-    const superResult = await super.startCombat();
-    if (isTurnPassingCombat(this)) {
-      this.turn = null;
-      await this.update({ turn: null });
-    }
-    return superResult;
-  }
+  // override async startCombat(): Promise<this | undefined> {
+  //   const superResult = await super.startCombat();
+  //   if (isTurnPassingCombat(this)) {
+  //     this.turn = null;
+  //     await this.update({ turn: null });
+  //   }
+  //   return superResult;
+  // }
 }
