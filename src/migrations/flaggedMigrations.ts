@@ -225,7 +225,8 @@ export const flaggedMigrations: FlaggedMigrations = {
       const newType = settings.useTurnPassingInitiative.get()
         ? "turnPassing"
         : "classic";
-      let newActiveCombat: InvestigatorCombat | null = null;
+      let newActiveCombat: ReturnType<typeof InvestigatorCombat.create> | null =
+        null;
       for (const oldBaseCombat of oldBaseCombats) {
         systemLogger.log(`migrating combat ${oldBaseCombat._id}`);
         const baseData = oldBaseCombat.toObject();
