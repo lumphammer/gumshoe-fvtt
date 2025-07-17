@@ -12,8 +12,8 @@ export class InvestigatorCombat<
 > extends Combat<SubType> {
   turnOrders: string[][] = [];
 
-  constructor(...args: Combat.ConstructorArgs) {
-    super(...args);
+  constructor(data?: Combat.CreateData, context?: Combat.ConstructionContext) {
+    super(data, context);
     systemLogger.log("InvestigatorCombat.constructor", this.turnOrders);
   }
 
