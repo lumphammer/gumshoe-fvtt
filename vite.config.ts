@@ -1,6 +1,7 @@
 /// <reference types="vitest" />
 import { defineConfig } from "vite";
 
+import { name } from "./package.json";
 import { createViteUserConfig } from "./packages/shared-fvtt-bits/dotfiles/import/createViteUserConfig";
 
 // causes tsgo to crash
@@ -21,10 +22,21 @@ const config = defineConfig(({ mode }) => {
   // issues and be alerted when they're fixed.
   userConfig.test = {
     ...userConfig.test,
+
+    // uncomment this to disable type checks
     // typecheck: {
     //   ...userConfig.test?.typecheck,
     //   enabled: false,
     // },
+
+    // paths are relative to `root` in the main `vite.config.ts`
+    projects: [
+      {
+        extends: "../vite.config.ts",
+        test: { name },
+      },
+      "../packages/*",
+    ],
   };
   return userConfig;
 });
