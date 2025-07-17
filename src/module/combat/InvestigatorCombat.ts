@@ -8,7 +8,7 @@ import { isTurnPassingCombat } from "./turnPassingCombat";
  * Override base Combat so we can do custom GUMSHOE-style initiative
  */
 export class InvestigatorCombat<
-  SubType extends Combat.SubType = Combat.SubType,
+  out SubType extends Combat.SubType = Combat.SubType,
 > extends Combat<SubType> {
   turnOrders: string[][] = [];
 
