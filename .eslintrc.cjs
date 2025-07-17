@@ -21,5 +21,6 @@ module.exports = {
         checksVoidReturn: false,
       },
     ],
+    "@typescript-eslint/no-deprecated": "error",
   },
 };

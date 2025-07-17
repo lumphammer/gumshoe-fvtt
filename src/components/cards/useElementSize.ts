@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 export const useElementSize = <T extends HTMLElement = HTMLElement>(
-  ref: React.MutableRefObject<T | null>,
+  ref: React.RefObject<T | null>,
 ): [number, number] => {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);

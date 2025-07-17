@@ -16,7 +16,7 @@ import {
 } from "react";
 
 import { assertGame } from "../functions/isGame";
-import { ApplicationV2 } from "../fvtt-exports";
+import { Application, ApplicationV2 } from "../fvtt-exports";
 import { irid } from "../irid/irid";
 import { ThemeContext } from "../themes/ThemeContext";
 import { ThemeV1 } from "../themes/types";

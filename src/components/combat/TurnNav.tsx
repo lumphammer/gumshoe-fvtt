@@ -11,7 +11,7 @@ interface TurnNavProps {
   isTurnPassing: boolean;
   hasCombat: boolean;
   combat: InvestigatorCombat | null;
-  game: Game;
+  game: foundry.Game;
 }
 
 const throbbingBg = keyframes({

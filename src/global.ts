@@ -1,4 +1,5 @@
 /// <reference types="vite-plugin-svgr/client" />
+import { Application } from "./fvtt-exports";
 
 declare global {
   const Babele: any;

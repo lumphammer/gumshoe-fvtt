@@ -8,7 +8,7 @@ import { confirmADoodleDo } from "../functions/confirmADoodleDo";
 import { getTranslated } from "../functions/getTranslated";
 import { assertGame } from "../functions/isGame";
 import { isNullOrEmptyString, systemLogger } from "../functions/utilities";
-import { CreateData, DialogV2 } from "../fvtt-exports";
+import { CompendiumCollection, CreateData, DialogV2 } from "../fvtt-exports";
 import { isActiveCharacterActor } from "../module/actors/exports";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
 import {
