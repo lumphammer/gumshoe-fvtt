@@ -53,7 +53,7 @@ export class InvestigatorCombat<
     data: Combat.CreateData | Combat.CreateData[],
     operation?: Combat.Database.CreateOperation<Temporary>,
     ...rest: any
-  ) {
+  ): Promise<Combat.TemporaryIf<Temporary> | undefined> {
     const isTurnPassing = settings.useTurnPassingInitiative.get();
     const subType = isTurnPassing ? "turnPassing" : "classic";
     if (data === undefined) {

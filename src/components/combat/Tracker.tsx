@@ -54,7 +54,7 @@ export const Tracker = () => {
         <TurnNav
           isTurnPassing={isTurnPassing}
           hasCombat={hasCombat}
-          combat={combat!}
+          combat={combat}
           game={game}
         />
       </header>
@@ -139,7 +139,7 @@ export const Tracker = () => {
                 key={turn.id}
                 index={turns.findIndex((x) => x.id === turn.id)}
                 turn={turn}
-                combat={combat!}
+                combat={combat}
               />
             ))
           }
