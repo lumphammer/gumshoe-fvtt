@@ -21,10 +21,10 @@ const config = defineConfig(({ mode }) => {
   // issues and be alerted when they're fixed.
   userConfig.test = {
     ...userConfig.test,
-    typecheck: {
-      ...userConfig.test?.typecheck,
-      enabled: false,
-    },
+    // typecheck: {
+    //   ...userConfig.test?.typecheck,
+    //   enabled: false,
+    // },
   };
   return userConfig;
 });
