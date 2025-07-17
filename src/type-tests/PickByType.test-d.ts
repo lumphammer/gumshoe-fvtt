@@ -11,10 +11,10 @@ type PickByTypeOfFooStrings = PickByType<Foo, string>;
 type PickByTypeOfFooNumbers = PickByType<Foo, number>;
 describe("PickByTypeOfFooStrings", () => {
   it("can be assigned various things", () => {
-    expectTypeOf<PickByTypeOfFooStrings>().toMatchTypeOf({});
-    expectTypeOf({}).not.toMatchTypeOf<PickByTypeOfFooStrings>();
-    expectTypeOf({ a: 1 }).not.toMatchTypeOf<PickByTypeOfFooStrings>();
-    expectTypeOf({ a: "1" }).not.toMatchTypeOf<PickByTypeOfFooStrings>();
+    expectTypeOf<PickByTypeOfFooStrings>().toExtend<object>();
+    expectTypeOf({}).not.toExtend<PickByTypeOfFooStrings>();
+    expectTypeOf({ a: 1 }).not.toExtend<PickByTypeOfFooStrings>();
+    expectTypeOf({ a: "1" }).not.toExtend<PickByTypeOfFooStrings>();
     expectTypeOf({
       a: "1",
       b: 2,
@@ -23,27 +23,27 @@ describe("PickByTypeOfFooStrings", () => {
       a: "1",
       b: "2",
     }).not.toMatchTypeOf<PickByTypeOfFooStrings>();
-    expectTypeOf({ b: "2", c: "3" }).toMatchTypeOf<PickByTypeOfFooStrings>();
+    expectTypeOf({ b: "2", c: "3" }).toExtend<PickByTypeOfFooStrings>();
   });
 });
 describe("PickByTypeOfFooNumbers", () => {
   it("can be assigned various things", () => {
     //
-    expectTypeOf<PickByTypeOfFooNumbers>().toMatchTypeOf({});
-    expectTypeOf({}).not.toMatchTypeOf<PickByTypeOfFooNumbers>();
-    expectTypeOf({ a: 1 }).toMatchTypeOf<PickByTypeOfFooNumbers>();
-    expectTypeOf({ a: "1" }).not.toMatchTypeOf<PickByTypeOfFooNumbers>();
+    expectTypeOf<PickByTypeOfFooNumbers>().toExtend<object>();
+    expectTypeOf({}).not.toExtend<PickByTypeOfFooNumbers>();
+    expectTypeOf({ a: 1 }).toExtend<PickByTypeOfFooNumbers>();
+    expectTypeOf({ a: "1" }).not.toExtend<PickByTypeOfFooNumbers>();
     expectTypeOf({
       a: "1",
       b: 2,
-    }).not.toMatchTypeOf<PickByTypeOfFooNumbers>();
+    }).not.toExtend<PickByTypeOfFooNumbers>();
     expectTypeOf({
       a: "1",
       b: "2",
-    }).not.toMatchTypeOf<PickByTypeOfFooNumbers>();
+    }).not.toExtend<PickByTypeOfFooNumbers>();
     expectTypeOf({
       b: "2",
       c: "3",
-    }).not.toMatchTypeOf<PickByTypeOfFooNumbers>();
+    }).not.toExtend<PickByTypeOfFooNumbers>();
   });
 });

@@ -4,6 +4,7 @@ import "fvtt-types/configuration";
 import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 
 import * as constants from "./constants";
+import { Application } from "./fvtt-exports";
 import { InvestigatorActor } from "./module/actors/InvestigatorActor";
 import { NPCModel } from "./module/actors/npc";
 import { PartyModel } from "./module/actors/party";

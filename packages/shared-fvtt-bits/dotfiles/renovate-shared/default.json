@@ -4,7 +4,6 @@
   "prHourlyLimit": 0,
   "rangeStrategy": "bump",
   "assignees": ["n3dst4"],
-  "reviewers": ["n3dst4"],
   "ignorePaths": ["packages/shared-fvtt-bits/**"],
   "ignoreDeps": ["@swc/plugin-emotion", "@vitejs/plugin-react-swc"]
 }

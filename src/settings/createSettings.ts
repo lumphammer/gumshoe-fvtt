@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import * as c from "../constants";
 import { assertGame } from "../functions/isGame";
+import { ClientSettings } from "../fvtt-exports";
 
 const getSetting =
   <T = string>(key: string) =>

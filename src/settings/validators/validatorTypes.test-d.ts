@@ -16,39 +16,39 @@ import { ValidatorStats } from "./statsValidator";
 
 describe("statsValidator", () => {
   it("should match the type from the types package", () => {
-    expectTypeOf<ValidatorStats>().toMatchTypeOf<PresetV1["pcStats"]>();
-    expectTypeOf<PresetV1["pcStats"]>().toMatchTypeOf<ValidatorStats>();
-    expectTypeOf<ValidatorStats>().toMatchTypeOf<PresetV1["npcStats"]>();
-    expectTypeOf<PresetV1["npcStats"]>().toMatchTypeOf<ValidatorStats>();
+    expectTypeOf<ValidatorStats>().toExtend<PresetV1["pcStats"]>();
+    expectTypeOf<PresetV1["pcStats"]>().toExtend<ValidatorStats>();
+    expectTypeOf<ValidatorStats>().toExtend<PresetV1["npcStats"]>();
+    expectTypeOf<PresetV1["npcStats"]>().toExtend<ValidatorStats>();
   });
 });
 describe("personalDetailsValidator", () => {
   it("should match the type from the types package", () => {
-    expectTypeOf<ValidatorPersonalDetails>().toMatchTypeOf<
+    expectTypeOf<ValidatorPersonalDetails>().toExtend<
       PresetV1["personalDetails"]
     >();
     expectTypeOf<
       PresetV1["personalDetails"]
-    >().toMatchTypeOf<ValidatorPersonalDetails>();
+    >().toExtend<ValidatorPersonalDetails>();
   });
 });
 describe("equipmentCategoriesValidator", () => {
   it("should match the type from the types package", () => {
-    expectTypeOf<ValidatorEquipmentCategories>().toMatchTypeOf<
+    expectTypeOf<ValidatorEquipmentCategories>().toExtend<
       PresetV1["equipmentCategories"]
     >();
     expectTypeOf<
       PresetV1["equipmentCategories"]
-    >().toMatchTypeOf<ValidatorEquipmentCategories>();
+    >().toExtend<ValidatorEquipmentCategories>();
   });
 });
 describe("cardCategoriesValidator", () => {
   it("should match the type from the types package", () => {
-    expectTypeOf<ValidatorCardCategories>().toMatchTypeOf<
+    expectTypeOf<ValidatorCardCategories>().toExtend<
       PresetV1["cardCategories"]
     >();
     expectTypeOf<
       PresetV1["cardCategories"]
-    >().toMatchTypeOf<ValidatorCardCategories>();
+    >().toExtend<ValidatorCardCategories>();
   });
 });

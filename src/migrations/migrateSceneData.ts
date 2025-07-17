@@ -1,3 +1,4 @@
+import { Token } from "../fvtt-exports";
 import { migrateActorData } from "./migrateActorData";
 import { FlaggedMigrations } from "./types";
 
@@ -13,7 +14,7 @@ export const migrateSceneData = function (
   scene: any,
   flaggedMigrations: FlaggedMigrations,
 ) {
-  const tokens = duplicate(scene.tokens);
+  const tokens = foundry.utils.deepClone(scene.tokens);
   return {
     tokens: tokens.map((t: any) => {
       if (!t.actorId || t.actorLink || !t.actorData) {

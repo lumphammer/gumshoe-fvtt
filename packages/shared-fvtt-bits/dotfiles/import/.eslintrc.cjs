@@ -147,6 +147,9 @@ module.exports = {
         checksVoidReturn: false,
       },
     ],
+    // this is especially useful with Foundry, where some deprecated accesses
+    // don't trigger a runtime warning
+    "@typescript-eslint/no-deprecated": "error",
   },
   overrides: [
     {
