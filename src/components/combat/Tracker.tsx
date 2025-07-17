@@ -27,7 +27,7 @@ export const Tracker = () => {
   const hasCombat = !!combat;
   const isTurnPassing = isTurnPassingCombat(combat);
 
-  if (combat === null) {
+  if (!combat) {
     return null;
   }
 
