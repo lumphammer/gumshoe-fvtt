@@ -10,5 +10,5 @@ export default defineWorkspace([
     },
   },
   // globs are relative to `root` in the main `vite.config.ts`
-  // "../packages/*",
+  "../packages/*",
 ]);
