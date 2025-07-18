@@ -72,7 +72,7 @@
     "prettier": "^3.6.2",
     "rollup-plugin-visualizer": "^6.0.3",
     "tsx": "^4.20.3",
-    "typescript": "5.8.3",
+    "typescript": "5.9.0-dev.20250718",
     "vite": "7.0.4",
     "vite-plugin-svgr": "^4.3.0",
     "vitest": "^3.2.4"
