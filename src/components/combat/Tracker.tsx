@@ -82,7 +82,7 @@ export const Tracker = () => {
           )}
         </div>
       )}
-      {hasCombat && turns.length === 0 && (
+      {combat && turns.length === 0 && (
         <div
           css={{
             display: "flex",
@@ -103,38 +103,40 @@ export const Tracker = () => {
       )}
       {/* we need to wrap the actual tracker ol in another element so that
       foundry's autosizing works */}
-      <div
-        className="combat-tracker"
-        css={{
-          flex: 1,
-          overflowX: "hidden",
-        }}
-      >
-        <ol
-          // see investigator-combatant-list in the LESS for why we add this class
-          className="plain investigator-combatant-list"
+      {combat && (
+        <div
+          className="combat-tracker"
           css={{
-            position: "relative",
             flex: 1,
-            height: `${turns.length * 4}em`,
-            overflow: "hidden",
+            overflowX: "hidden",
           }}
         >
-          {
-            // combatant sorting is done in "Combat" but for rendering stability
-            // we need to un-sort the combatants and then tell each row where it
-            // used to exist in the order
-            sortByKey(turns, "id").map<ReactNode>((turn) => (
-              <CombatantRow
-                key={turn.id}
-                index={turns.findIndex((x) => x.id === turn.id)}
-                turn={turn}
-                combat={combat}
-              />
-            ))
-          }
-        </ol>
-      </div>
+          <ol
+            // see investigator-combatant-list in the LESS for why we add this class
+            className="plain investigator-combatant-list"
+            css={{
+              position: "relative",
+              flex: 1,
+              height: `${turns.length * 4}em`,
+              overflow: "hidden",
+            }}
+          >
+            {
+              // combatant sorting is done in "Combat" but for rendering stability
+              // we need to un-sort the combatants and then tell each row where it
+              // used to exist in the order
+              sortByKey(turns, "id").map<ReactNode>((turn) => (
+                <CombatantRow
+                  key={turn.id}
+                  index={turns.findIndex((x) => x.id === turn.id)}
+                  turn={turn}
+                  combat={combat}
+                />
+              ))
+            }
+          </ol>
+        </div>
+      )}
     </>
   );
 };
