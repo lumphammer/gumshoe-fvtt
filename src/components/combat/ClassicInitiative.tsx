@@ -34,19 +34,41 @@ export const ClassicInitiative = ({ turn, combat }: ClassicInitiativeProps) => {
     }
   }, [initString, turn.initiative]);
 
+  const updateInitiative = () => {
+    const value = inputRef.current?.value ?? "";
+    const parsedValue = parseInt(value, 10);
+    if (isNaN(parsedValue)) {
+      return;
+    }
+    void combat.updateEmbeddedDocuments("Combatant", [
+      {
+        _id: turn.id,
+        initiative: parsedValue,
+      },
+    ]);
+  };
+
   return (
     <Fragment>
       <div className="token-initiative">
         {turn.hasRolled ? (
-          <input
-            ref={inputRef}
-            type="text"
-            inputMode="numeric"
-            pattern="^[+=\-]?\d*"
-            defaultValue={initString}
-            aria-label="Initiative Score"
-            disabled={!game.user.isGM}
-          ></input>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateInitiative();
+            }}
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              inputMode="numeric"
+              pattern="^[+=\-]?\d*"
+              defaultValue={initString}
+              aria-label="Initiative Score"
+              disabled={!game.user.isGM}
+              onBlur={updateInitiative}
+            ></input>
+          </form>
         ) : (
           <button
             css={{
