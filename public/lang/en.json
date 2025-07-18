@@ -265,5 +265,7 @@
   "investigator.PCSheetClass": "PC Sheet",
   "investigator.NPCSheetClass": "NPC Sheet",
   "investigator.ExportToFile": "Export to JSON",
-  "investigator.ImportFromFile": "Import from JSON"
+  "investigator.ImportFromFile": "Import from JSON",
+  "investigator.CreateClassicCombat": "Create classic combat",
+  "investigator.CreateTurnPassingCombat": "Create turn-passing combat"
 }
