@@ -27,10 +27,6 @@ export const Tracker = () => {
   const hasCombat = !!combat;
   const isTurnPassing = isTurnPassingCombat(combat);
 
-  if (!combat) {
-    return null;
-  }
-
   // foundry's native combat tracker uses these things called "turns" which are
   // kinda pre-baked data for the rows in the tracker - each one corresponds to
   // a combatant in the combat
