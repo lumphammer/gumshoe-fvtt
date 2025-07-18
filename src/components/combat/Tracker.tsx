@@ -24,7 +24,6 @@ export const Tracker = () => {
   );
   const prevCombatId = game.combats?.combats[combatIndex - 1]?._id;
   const nextCombatId = game.combats?.combats[combatIndex + 1]?._id;
-  const hasCombat = !!combat;
   const isTurnPassing = isTurnPassingCombat(combat);
 
   // foundry's native combat tracker uses these things called "turns" which are
@@ -36,7 +35,7 @@ export const Tracker = () => {
     <>
       {/* HEADER ROWS */}
       <header id="combat-round" className="combat-tracker-header">
-        {hasCombat && (
+        {combat && (
           /* TOP ROW: ➕ 1️⃣ 2️⃣ 3️⃣ ⚙️ */
           <EncounterNav
             combatId={combatId}
@@ -47,15 +46,10 @@ export const Tracker = () => {
           />
         )}
 
-        <TurnNav
-          isTurnPassing={isTurnPassing}
-          hasCombat={hasCombat}
-          combat={combat}
-          game={game}
-        />
+        <TurnNav isTurnPassing={isTurnPassing} combat={combat} game={game} />
       </header>
       {/* ACTUAL COMBATANTS, or "turns" in early-medieval foundry-speak */}
-      {!hasCombat && (
+      {!combat && (
         <div
           css={{
             display: "flex",

@@ -10,8 +10,7 @@ import { format, localize } from "./functions";
 
 interface TurnNavProps {
   isTurnPassing: boolean;
-  hasCombat: boolean;
-  combat: InvestigatorCombat | null;
+  combat: InvestigatorCombat | undefined;
   game: foundry.Game;
 }
 
@@ -25,12 +24,7 @@ const throbbingBg = keyframes({
   },
 });
 
-export const TurnNav = ({
-  isTurnPassing,
-  hasCombat,
-  combat,
-  game,
-}: TurnNavProps) => {
+export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
   assertGame(game);
 
   const allTurnsDone =
@@ -42,7 +36,7 @@ export const TurnNav = ({
 
   return (
     <nav className="combat-controls">
-      {hasCombat &&
+      {combat &&
         (game.user.isGM ? (
           <>
             {combat?.round ? (
