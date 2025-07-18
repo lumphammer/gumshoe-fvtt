@@ -1,5 +1,6 @@
 import { keyframes } from "@emotion/react";
 import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
+import { LuSwords } from "react-icons/lu";
 
 import { assertGame } from "../../functions/isGame";
 import { CombatTrackerConfig } from "../../fvtt-exports";
@@ -165,7 +166,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                       : "pointer",
                 }}
               >
-                <i className="fa-solid fa-swords" inert></i>
+                <LuSwords />
                 <span>{localize("COMBAT.Begin")}</span>
               </button>
             )}

@@ -258,7 +258,6 @@
   "investigator.Other": "Other",
   "investigator.ResourceID": "Resource ID",
   "investigator.LinkToResource": "Link to resource?",
-  "investigator.EncounterNofM": "Encounter {N} of {M}",
   "investigator.NoCombat": "There are no combats active",
   "investigator.NoParticipants": "There are no participants yet",
   "investigator.PartySheetClass": "Party Sheet",

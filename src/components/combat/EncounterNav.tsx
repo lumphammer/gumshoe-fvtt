@@ -1,10 +1,10 @@
-import { FaPlus } from "react-icons/fa6";
+import { FaChevronDown } from "react-icons/fa";
 import { LuSwords } from "react-icons/lu";
 
 import { assertGame } from "../../functions/isGame";
 import { DialogV2 } from "../../fvtt-exports";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
-import { format, localize } from "./functions";
+import { localize } from "./functions";
 
 interface EncounterNavProps {
   combatId: string | undefined | null;
@@ -26,40 +26,51 @@ export const EncounterNav = ({
   return (
     <nav className="encounters tabbed">
       {game.user?.isGM && (
-        // <button
-        //   className="inline-control icon fa-solid fa-plus"
-        //   data-action="createCombat"
-        //   data-tooltip
-        //   aria-label="Create Encounter"
-        //   title={localize("COMBAT.Create")}
-        // ></button>
-        <NativeDropdownMenu
-          css={{ minHeight: "var(--button-size)" }}
-          label={<FaPlus />}
-        >
-          <NativeMenuItem
-            icon={<LuSwords />}
-            onSelect={async () => {
-              const combat = await Combat.implementation.create({
-                type: "classic",
-              });
-              await combat?.activate({ render: false });
+        <>
+          <button
+            className="inline-control icon fa-solid fa-plus"
+            css={{
+              minHeight: "var(--button-size)",
+              paddingLeft: "1em",
+              paddingRight: "1em",
             }}
-          >
-            {localize("investigator.CreateClassicCombat")}
-          </NativeMenuItem>
-          <NativeMenuItem
-            icon={<LuSwords />}
-            onSelect={async () => {
-              const combat = await Combat.implementation.create({
-                type: "turnPassing",
-              });
-              await combat?.activate({ render: false });
+            data-action="createCombat"
+            data-tooltip
+            aria-label="Create Encounter"
+            title={localize("COMBAT.Create")}
+          ></button>
+          <NativeDropdownMenu
+            css={{
+              minHeight: "var(--button-size)",
+              paddingLeft: "0.1em",
+              paddingRight: "0.1em",
             }}
+            label={<FaChevronDown />}
           >
-            {localize("investigator.CreateTurnPassingCombat")}
-          </NativeMenuItem>
-        </NativeDropdownMenu>
+            <NativeMenuItem
+              icon={<LuSwords />}
+              onSelect={async () => {
+                const combat = await Combat.implementation.create({
+                  type: "classic",
+                });
+                await combat?.activate({ render: false });
+              }}
+            >
+              {localize("investigator.CreateClassicCombat")}
+            </NativeMenuItem>
+            <NativeMenuItem
+              icon={<LuSwords />}
+              onSelect={async () => {
+                const combat = await Combat.implementation.create({
+                  type: "turnPassing",
+                });
+                await combat?.activate({ render: false });
+              }}
+            >
+              {localize("investigator.CreateTurnPassingCombat")}
+            </NativeMenuItem>
+          </NativeDropdownMenu>
+        </>
       )}
       <div className="cycle-combats">
         {game.user?.isGM && (
@@ -81,10 +92,8 @@ export const EncounterNav = ({
           }}
         >
           <span className="value">
-            {format("investigator.EncounterNofM", {
-              N: (combatIndex + 1).toString(),
-              M: combatCount.toString(),
-            })}
+            <LuSwords css={{ verticalAlign: "middle" }} />{" "}
+            {(combatIndex + 1).toString()}
           </span>
         </div>
         {game.user?.isGM && (
