@@ -121,12 +121,12 @@ export class InvestigatorCombat<
     return this;
   }
 
-  // override async startCombat(): Promise<this | undefined> {
-  //   const superResult = await super.startCombat();
-  //   if (isTurnPassingCombat(this)) {
-  //     this.turn = null;
-  //     await this.update({ turn: null });
-  //   }
-  //   return superResult;
-  // }
+  override async startCombat() {
+    const superResult = await super.startCombat();
+    if (isTurnPassingCombat(this)) {
+      this.turn = null;
+      await this.update({ turn: null });
+    }
+    return superResult;
+  }
 }
