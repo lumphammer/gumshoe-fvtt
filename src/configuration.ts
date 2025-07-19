@@ -108,11 +108,6 @@ declare module "fvtt-types/configuration" {
   }
 
   interface FlagConfig {
-    Combatant: {
-      investigator: {
-        passingTurnsRemaining: number;
-      };
-    };
     JournalEntry: {
       investigator: {
         extraCssClasses: string;
