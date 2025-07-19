@@ -8,12 +8,9 @@ export type TurnInfo = {
   name: string;
   img: string;
   active: boolean;
-  owner: boolean;
   defeated: boolean;
   hidden: boolean;
   initiative: number | undefined | null;
-  hasRolled: boolean;
-  hasResource: boolean;
   resource: number | boolean | string | null;
   effects: Effect[];
   passingTurnsRemaining: number;
