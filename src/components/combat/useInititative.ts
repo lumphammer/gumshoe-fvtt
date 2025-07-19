@@ -5,7 +5,8 @@ import { assertGame } from "../../functions/isGame";
 import { requestTurnPass, systemLogger } from "../../functions/utilities";
 import { CombatantConfig } from "../../fvtt-exports";
 import { useRefStash } from "../../hooks/useRefStash";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
+import { assertTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 
 export const useInititative = (combat: InvestigatorCombat, id: string) => {
   assertGame(game);
@@ -44,22 +45,23 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
   const localize = game.i18n.localize.bind(game.i18n);
 
   const onTakeTurn = useCallback(() => {
+    systemLogger.log("useInitiative - onTakeTurn");
     assertGame(game);
-    if (combat.round === 0) {
-      return;
-    }
+
     systemLogger.log("turnPassingHandler - calling hook");
     // call `requestTurnPass` on everyone's client - the GM's client will pick
     // this up and perform the turn pass
     requestTurnPass(combatantStash.current?.id);
-  }, [combatantStash, combat.round]);
+  }, [combatantStash]);
 
   const onAddTurn = useCallback(() => {
-    combatantStash.current?.addPassingTurn();
+    assertTurnPassingCombatant(combatantStash.current);
+    void combatantStash.current.system.addPassingTurn();
   }, [combatantStash]);
 
   const onRemoveTurn = useCallback(() => {
-    combatantStash.current?.removePassingTurn();
+    assertTurnPassingCombatant(combatantStash.current);
+    void combatantStash.current.system.removePassingTurn();
   }, [combatantStash]);
 
   const sheet = combatantStash.current?.token?.actor?.sheet;

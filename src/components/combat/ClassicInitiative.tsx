@@ -3,20 +3,18 @@ import { FaEdit, FaEraser, FaRecycle, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
 import { assertGame } from "../../functions/isGame";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { NativeDualFunctionMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
+import { TurnInfo } from "./types";
 import { useInititative } from "./useInititative";
 
-interface StandardInitiativeProps {
-  turn: any;
+interface ClassicInitiativeProps {
+  turn: TurnInfo;
   combat: InvestigatorCombat;
 }
 
-export const StandardInitiative = ({
-  turn,
-  combat,
-}: StandardInitiativeProps) => {
+export const ClassicInitiative = ({ turn, combat }: ClassicInitiativeProps) => {
   assertGame(game);
   const {
     onDoInitiative,
@@ -28,26 +26,49 @@ export const StandardInitiative = ({
   } = useInititative(combat, turn.id);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const initString = (turn.initiative ?? 0).toString();
 
   useEffect(() => {
     if (inputRef.current && document.activeElement !== inputRef.current) {
-      inputRef.current.value = turn.initiative;
+      inputRef.current.value = initString;
     }
-  }, [turn.initiative]);
+  }, [initString, turn.initiative]);
+
+  const updateInitiative = () => {
+    const value = inputRef.current?.value ?? "";
+    const parsedValue = parseInt(value, 10);
+    if (isNaN(parsedValue)) {
+      return;
+    }
+    void combat.updateEmbeddedDocuments("Combatant", [
+      {
+        _id: turn.id,
+        initiative: parsedValue,
+      },
+    ]);
+  };
 
   return (
     <Fragment>
       <div className="token-initiative">
-        {turn.hasRolled ? (
-          <input
-            ref={inputRef}
-            type="text"
-            inputMode="numeric"
-            pattern="^[+=\-]?\d*"
-            defaultValue={turn.initiative}
-            aria-label="Initiative Score"
-            disabled={!game.user.isGM}
-          ></input>
+        {turn.initiative !== null ? (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              updateInitiative();
+            }}
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              inputMode="numeric"
+              pattern="^[+=\-]?\d*"
+              defaultValue={initString}
+              aria-label="Initiative Score"
+              disabled={!game.user.isGM}
+              onBlur={updateInitiative}
+            ></input>
+          </form>
         ) : (
           <button
             css={{

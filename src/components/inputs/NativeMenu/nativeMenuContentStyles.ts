@@ -45,7 +45,6 @@ export const nativeMenuContentStyles = css({
   boxShadow: "0 3px 6px rgba(0, 0, 0, 0.45)",
   display: "grid",
   gridTemplateColumns: "max-content 1fr",
-  rotate: "-2deg",
   transformOrigin: `var(--radix-context-menu-content-transform-origin,
       var(--radix-dropdown-menu-content-transform-origin))`,
   animation: `${expandFadeInAnim} 100ms ease-out`,

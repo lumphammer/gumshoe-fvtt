@@ -5,14 +5,15 @@ import { HiDocumentText } from "react-icons/hi";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../inputs/NativeMenu/NativeDualFunctionMenu";
 import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
+import { TurnInfo } from "./types";
 import { useInititative } from "./useInititative";
 
-interface StandardInitiativeProps {
-  turn: any;
+interface TurnPassingInitiativeProps {
+  turn: TurnInfo;
   combat: InvestigatorCombat;
 }
 
@@ -32,7 +33,7 @@ const scrollBg = keyframes({
 export const TurnPassingInitiative = ({
   turn,
   combat,
-}: StandardInitiativeProps) => {
+}: TurnPassingInitiativeProps) => {
   assertGame(game);
   const {
     onTakeTurn,
@@ -44,7 +45,9 @@ export const TurnPassingInitiative = ({
     openSheet,
   } = useInititative(combat, turn.id);
 
-  const isActive = combat.activeTurnPassingCombatant === turn.id;
+  const activeTurnPassingCombatant =
+    combat.turn !== null ? combat.turns[combat.turn].id : null;
+  const isActive = activeTurnPassingCombatant === turn.id;
   const depleted = turn.passingTurnsRemaining <= 0;
 
   return (
@@ -68,7 +71,7 @@ export const TurnPassingInitiative = ({
             },
           }}
           title={getTranslated("Turn")}
-          disabled={combat.round === 0}
+          // disabled={combat.round === 0}
           onClick={onTakeTurn}
         >
           {isActive && (
