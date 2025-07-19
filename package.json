@@ -87,7 +87,7 @@
     "@radix-ui/react-context-menu": "^2.2.15",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-switch": "^1.2.5",
-    "@typescript/native-preview": "7.0.0-dev.20250712.1",
+    "@typescript/native-preview": "7.0.0-dev.20250719.1",
     "case": "^1.6.3",
     "d3-ease": "^3.0.1",
     "eslint-plugin-import": "^2.32.0",
