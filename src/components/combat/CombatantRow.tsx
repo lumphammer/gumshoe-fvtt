@@ -32,7 +32,7 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
     ul.classList.add("effects-tooltip", "plain");
     for (const effect of turn.effects) {
       const img = document.createElement("img");
-      img.src = effect.img;
+      img.src = effect.img ?? "";
       img.alt = effect.name;
       const span = document.createElement("span");
       span.textContent = effect.name;
@@ -135,14 +135,17 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
               aria-label={localize("COMBAT.PingCombatant")}
             ></button>
             <div className="token-effects" data-tooltip-html={effectsTooltip}>
-              {Array.from(turn.effects).map<ReactNode>((effect, i) => (
-                <img key={i} className="token-effect" src={effect.img} />
-              ))}
+              {Array.from(turn.effects).map<ReactNode>(
+                (effect, i) =>
+                  effect.img && (
+                    <img key={i} className="token-effect" src={effect.img} />
+                  ),
+              )}
             </div>
           </div>
         </div>
 
-        {turn.hasResource && (
+        {turn.resource !== null && (
           <div className="token-resource">
             <span className="resource">{turn.resource}</span>
           </div>

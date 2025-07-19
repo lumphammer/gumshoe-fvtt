@@ -51,7 +51,7 @@ export const ClassicInitiative = ({ turn, combat }: ClassicInitiativeProps) => {
   return (
     <Fragment>
       <div className="token-initiative">
-        {turn.hasRolled ? (
+        {turn.initiative !== null ? (
           <form
             onSubmit={(e) => {
               e.preventDefault();

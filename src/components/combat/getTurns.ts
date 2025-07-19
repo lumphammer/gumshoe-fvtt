@@ -25,56 +25,36 @@ export function getTurns(combat: Combat): TurnInfo[] {
       continue;
     }
 
-    // Prepare turn data
-    const resource =
-      combatant.permission >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER
-        ? getValue(combatant.resource)
-        : null;
-
-    const active = i === combat.turn;
-    const hidden = combatant.hidden;
-    let defeated = combatant.defeated;
-    const owner = combatant.isOwner;
-    const initiative = combatant.initiative;
-    const hasRolled = combatant.initiative !== null;
-    const hasResource = resource !== null;
-    hasDecimals ||= initiative !== null && !Number.isInteger(initiative);
-
-    // foundry's normal tracker does some stuff with game.video to get
-    // thumbnails of video tokens but it makes this code go async which is
-    // going to be a pain, and tbh I'm not convinced it's a huge use-case
-    const img = combatant.img;
-
-    const totalPassingTurns = isActiveCharacterActor(combatant.actor)
-      ? (combatant.actor?.system.initiativePassingTurns ?? 1)
-      : 1;
-
-    const effects = [];
-    for (const effect of combatant.actor?.temporaryEffects ?? []) {
-      if (effect.statuses.has(CONFIG.specialStatusEffects.DEFEATED)) {
-        defeated = true;
-      } else if (effect.img) {
-        effects.push({ img: effect.img, name: effect.name });
-      }
-    }
+    hasDecimals ||=
+      combatant.initiative !== null && !Number.isInteger(combatant.initiative);
 
     const turn: TurnInfo = {
       id: combatant.id,
       name: combatant.name ?? "",
-      img: img ?? CONST.DEFAULT_TOKEN,
-      active,
-      owner,
-      defeated,
-      hidden,
-      initiative,
-      hasRolled,
-      hasResource,
-      resource,
-      effects,
+      img: combatant.img ?? CONST.DEFAULT_TOKEN,
+      active: i === combat.turn,
+      defeated:
+        (combatant.defeated ||
+          combatant.actor?.temporaryEffects.some((e) =>
+            e.statuses.has(CONFIG.specialStatusEffects.DEFEATED),
+          )) ??
+        false,
+      hidden: combatant.hidden,
+      initiative: combatant.initiative,
+      resource:
+        combatant.permission >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER
+          ? getValue(combatant.resource)
+          : null,
+      effects:
+        combatant.actor?.temporaryEffects.filter(
+          (e) => !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED),
+        ) ?? [],
       passingTurnsRemaining: isTurnPassingCombatant(combatant)
         ? combatant.system.passingTurnsRemaining
         : 0,
-      totalPassingTurns,
+      totalPassingTurns: isActiveCharacterActor(combatant.actor)
+        ? (combatant.actor?.system.initiativePassingTurns ?? 1)
+        : 1,
     };
 
     turns.push(turn);
