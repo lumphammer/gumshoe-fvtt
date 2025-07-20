@@ -2,5 +2,6 @@
 	"extends": "./packages/shared-fvtt-bits/dotfiles/import/tsconfig.fvtt.json",
 	"compilerOptions": {
 		// "noErrorTruncation": true
+		"noImplicitAny": false,
 	}
 }
