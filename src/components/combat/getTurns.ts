@@ -20,7 +20,7 @@ export function getTurns(combat: Combat): TurnInfo[] {
   const turns: TurnInfo[] = [];
   let hasDecimals = false;
 
-  for (const [i, combatant] of combat.turns.entries()) {
+  for (const combatant of Array.from(combat.turns)) {
     if (!combatant.visible || combatant.id === null) {
       continue;
     }
@@ -32,7 +32,7 @@ export function getTurns(combat: Combat): TurnInfo[] {
       id: combatant.id,
       name: combatant.name ?? "",
       img: combatant.img ?? CONST.DEFAULT_TOKEN,
-      active: i === combat.turn,
+      active: combatant.active,
       defeated:
         (combatant.defeated ||
           combatant.actor?.temporaryEffects.some((e) =>

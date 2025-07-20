@@ -57,4 +57,8 @@ export class InvestigatorCombatant<
       ? InvestigatorCombatant.getGumshoeInitiative(this.actor).toString()
       : "0";
   }
+
+  get active() {
+    return this.combat?.turns.indexOf(this) === this.combat?.turn;
+  }
 }
