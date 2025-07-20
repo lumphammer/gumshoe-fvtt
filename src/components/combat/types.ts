@@ -7,7 +7,7 @@ export type TurnInfo = {
   hidden: boolean;
   initiative: number | undefined | null;
   resource: number | boolean | string | null;
-  effects: ActiveEffect[];
+  effects: foundry.documents.ActiveEffect[];
   passingTurnsRemaining: number;
   totalPassingTurns: number;
 };
