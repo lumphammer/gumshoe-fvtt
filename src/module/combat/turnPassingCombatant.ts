@@ -56,6 +56,13 @@ export class TurnPassingCombatantModel extends TypeDataModel<
     return this.turnInfo[roundIndex]?.turnsRemaining ?? 0;
   }
 
+  // passingTurnsRemaining: isTurnPassingCombatant(combatant)
+  //   ? combatant.system.passingTurnsRemaining
+  //   : 0,
+  // totalPassingTurns: isActiveCharacterActor(combatant.actor)
+  //   ? (combatant.actor?.system.initiativePassingTurns ?? 1)
+  //   : 1,
+
   async resetPassingTurns() {
     const roundIndex = Math.max(0, this.combat.round - 1);
     const turnInfo = [...this.turnInfo];

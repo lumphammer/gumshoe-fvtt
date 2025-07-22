@@ -3,18 +3,21 @@ import { FaEdit, FaEraser, FaRecycle, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
 import { assertGame } from "../../functions/isGame";
+import { ClassicCombatant } from "../../module/combat/classicCombatant";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { NativeDualFunctionMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
-import { TurnInfo } from "./types";
 import { useInititative } from "./useInititative";
 
 interface ClassicInitiativeProps {
-  turn: TurnInfo;
+  combatant: ClassicCombatant;
   combat: InvestigatorCombat;
 }
 
-export const ClassicInitiative = ({ turn, combat }: ClassicInitiativeProps) => {
+export const ClassicInitiative = ({
+  combatant,
+  combat,
+}: ClassicInitiativeProps) => {
   assertGame(game);
   const {
     onDoInitiative,
@@ -23,16 +26,16 @@ export const ClassicInitiative = ({ turn, combat }: ClassicInitiativeProps) => {
     onRemoveCombatant,
     localize,
     openSheet,
-  } = useInititative(combat, turn.id);
+  } = useInititative(combatant);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const initString = (turn.initiative ?? 0).toString();
+  const initString = (combatant.initiative ?? 0).toString();
 
   useEffect(() => {
     if (inputRef.current && document.activeElement !== inputRef.current) {
       inputRef.current.value = initString;
     }
-  }, [initString, turn.initiative]);
+  }, [initString, combatant.initiative]);
 
   const updateInitiative = () => {
     const value = inputRef.current?.value ?? "";
@@ -42,7 +45,7 @@ export const ClassicInitiative = ({ turn, combat }: ClassicInitiativeProps) => {
     }
     void combat.updateEmbeddedDocuments("Combatant", [
       {
-        _id: turn.id,
+        _id: combatant.id,
         initiative: parsedValue,
       },
     ]);
@@ -51,7 +54,7 @@ export const ClassicInitiative = ({ turn, combat }: ClassicInitiativeProps) => {
   return (
     <Fragment>
       <div className="token-initiative">
-        {turn.initiative !== null ? (
+        {combatant.initiative !== null ? (
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -86,7 +89,7 @@ export const ClassicInitiative = ({ turn, combat }: ClassicInitiativeProps) => {
       {game.user.isGM && (
         <>
           <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
-            <NativeMenuLabel>{turn.name}</NativeMenuLabel>
+            <NativeMenuLabel>{combatant.name}</NativeMenuLabel>
             <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
               {localize("COMBAT.CombatantUpdate")}
             </NativeMenuItem>

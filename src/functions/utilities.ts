@@ -1,5 +1,5 @@
 import * as constants from "../constants";
-import { PickByType, RequestTurnPassArgs, SocketHookAction } from "../types";
+import { RequestTurnPassArgs, SocketHookAction } from "../types";
 
 interface NameHaver {
   name: string | null;
@@ -291,19 +291,20 @@ export function memoizeNullaryOnce<T>(fn: () => T): () => T {
 }
 
 /**
- * Sort an array of objects by a key
+ * Sort an array of objects by a string key
  */
-export function sortByKey<T, K extends string | number>(
+export function sortByKey<T, K extends keyof T>(
   xs: T[],
-  k: keyof PickByType<T, K>,
-) {
+  k: K & (T[K] extends string | null | number ? K : never),
+): T[] {
   return xs.toSorted((a, b) => {
-    const aK = a[k] as any;
-    const bK = b[k] as any;
+    const aK = a[k] ?? "";
+    const bK = b[k] ?? "";
     if (typeof aK === "number" && typeof bK === "number") {
       return aK - bK;
+    } else {
+      return aK.toString().localeCompare(bK.toString());
     }
-    return aK.localeCompare(bK);
   });
 }
 

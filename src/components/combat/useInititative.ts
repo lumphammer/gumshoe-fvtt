@@ -4,18 +4,14 @@ import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { assertGame } from "../../functions/isGame";
 import { requestTurnPass, systemLogger } from "../../functions/utilities";
 import { CombatantConfig } from "../../fvtt-exports";
-import { useRefStash } from "../../hooks/useRefStash";
-import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
+import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
 import { assertTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 
-export const useInititative = (combat: InvestigatorCombat, id: string) => {
+export const useInititative = (combatant: InvestigatorCombatant) => {
   assertGame(game);
-
-  const combatantStash = useRefStash(combat.combatants.get(id));
 
   const onConfigureCombatant = useCallback(
     (event: Event) => {
-      if (combatantStash.current === undefined) return;
       if (!(event.currentTarget instanceof HTMLElement)) return;
       const rect = event.currentTarget.getBoundingClientRect();
       void new CombatantConfig({
@@ -24,23 +20,23 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
           left: window.innerWidth - 720,
           width: 400,
         },
-        document: combatantStash.current,
+        document: combatant,
       }).render({ force: true });
     },
-    [combatantStash],
+    [combatant],
   );
 
   const onClearInitiative = useCallback(() => {
-    void combatantStash.current?.update({ initiative: null });
-  }, [combatantStash]);
+    void combatant.update({ initiative: null });
+  }, [combatant]);
 
   const onDoInitiative = useCallback(() => {
-    void combatantStash.current?.doGumshoeInitiative();
-  }, [combatantStash]);
+    void combatant.doGumshoeInitiative();
+  }, [combatant]);
 
   const onRemoveCombatant = useCallback(() => {
-    void combatantStash.current?.delete();
-  }, [combatantStash]);
+    void combatant.delete();
+  }, [combatant]);
 
   const localize = game.i18n.localize.bind(game.i18n);
 
@@ -51,20 +47,20 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
     systemLogger.log("turnPassingHandler - calling hook");
     // call `requestTurnPass` on everyone's client - the GM's client will pick
     // this up and perform the turn pass
-    requestTurnPass(combatantStash.current?.id);
-  }, [combatantStash]);
+    requestTurnPass(combatant.id);
+  }, [combatant.id]);
 
   const onAddTurn = useCallback(() => {
-    assertTurnPassingCombatant(combatantStash.current);
-    void combatantStash.current.system.addPassingTurn();
-  }, [combatantStash]);
+    assertTurnPassingCombatant(combatant);
+    void combatant.system.addPassingTurn();
+  }, [combatant]);
 
   const onRemoveTurn = useCallback(() => {
-    assertTurnPassingCombatant(combatantStash.current);
-    void combatantStash.current.system.removePassingTurn();
-  }, [combatantStash]);
+    assertTurnPassingCombatant(combatant);
+    void combatant.system.removePassingTurn();
+  }, [combatant]);
 
-  const sheet = combatantStash.current?.token?.actor?.sheet;
+  const sheet = combatant.token?.actor?.sheet;
   assertApplicationV2(sheet);
 
   const openSheet = useCallback(() => {

@@ -8,7 +8,6 @@ import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { CombatantRow } from "./CombatantRow";
 import { EncounterNav } from "./EncounterNav";
 import { localize } from "./functions";
-import { getTurns } from "./getTurns";
 import { TurnNav } from "./TurnNav";
 
 export const Tracker = () => {
@@ -29,7 +28,7 @@ export const Tracker = () => {
   // foundry's native combat tracker uses these things called "turns" which are
   // kinda pre-baked data for the rows in the tracker - each one corresponds to
   // a combatant in the combat
-  const turns = combat ? getTurns(combat) : [];
+  // const turns = combat ? getTurns(combat) : [];
 
   return (
     <>
@@ -82,7 +81,7 @@ export const Tracker = () => {
           )}
         </div>
       )}
-      {combat && turns.length === 0 && (
+      {combat && combat.turns.length === 0 && (
         <div
           css={{
             display: "flex",
@@ -117,7 +116,7 @@ export const Tracker = () => {
             css={{
               position: "relative",
               flex: 1,
-              height: `${turns.length * 4}em`,
+              height: `${combat.turns.length * 4}em`,
               overflow: "hidden",
             }}
           >
@@ -125,11 +124,11 @@ export const Tracker = () => {
               // combatant sorting is done in "Combat" but for rendering stability
               // we need to un-sort the combatants and then tell each row where it
               // used to exist in the order
-              sortByKey(turns, "id").map<ReactNode>((turn) => (
+              sortByKey(combat.turns, "id").map<ReactNode>((combatant) => (
                 <CombatantRow
-                  key={turn.id}
-                  index={turns.findIndex((x) => x.id === turn.id)}
-                  turn={turn}
+                  key={combatant.id}
+                  index={combat.turns.findIndex((x) => x.id === combatant.id)}
+                  combatant={combatant}
                   combat={combat}
                 />
               ))
