@@ -5,7 +5,6 @@ import { assertGame } from "../../functions/isGame";
 import { isClassicCombatant } from "../../module/combat/classicCombatant";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
-import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeContextMenuWrapper } from "../inputs/NativeMenu/NativeContextMenuWrapper";
 import { ClassicInitiative } from "./ClassicInitiative";
@@ -60,7 +59,7 @@ export const CombatantRow = ({
     <NativeContextMenuWrapper>
       <li
         className={cx("combatant", {
-          active: combat.turn === index + 1 && !isTurnPassingCombat(combat),
+          active: combat.turn === index,
           hide: combatant.hidden,
           defeated: combatant.defeated,
         })}
@@ -73,18 +72,6 @@ export const CombatantRow = ({
           width: "100%",
           transform: `translateY(${index * 4}em)`,
           transition: "transform 1000ms",
-          ".theme-light &": {
-            boxShadow: active
-              ? "0 0 0.5em 0 oklch(0.2 0.3 130 / 0.7) inset"
-              : undefined,
-            backgroundColor: active ? "oklch(0.9 0.1 130 / 0.5)" : undefined,
-          },
-          ".theme-dark &": {
-            boxShadow: active
-              ? "0 0 0.5em 0 oklch(0.9 0.3 130 / 0.7) inset"
-              : undefined,
-            backgroundColor: active ? "oklch(0.3 0.1 130 / 0.5)" : undefined,
-          },
           opacity: depleted && !active ? 0.7 : 1,
         }}
       >
