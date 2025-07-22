@@ -2,18 +2,6 @@ import { isActiveCharacterActor } from "../../module/actors/exports";
 import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { TurnInfo } from "./types";
 
-const getValue = <T>(resource: T): T | number => {
-  if (
-    typeof resource === "object" &&
-    resource !== null &&
-    "value" in resource &&
-    typeof resource.value === "number"
-  ) {
-    return resource.value;
-  }
-  return resource;
-};
-
 // adapted from foundry's CombatTracker, so there's some mutable data and
 // weird imperative stuff
 export function getTurns(combat: Combat): TurnInfo[] {
@@ -31,7 +19,7 @@ export function getTurns(combat: Combat): TurnInfo[] {
     const turn: TurnInfo = {
       id: combatant.id,
       name: combatant.name ?? "",
-      img: combatant.img ?? CONST.DEFAULT_TOKEN,
+      img: combatant.effectiveImg,
       active: combatant.active,
       defeated:
         (combatant.defeated ||
@@ -41,10 +29,7 @@ export function getTurns(combat: Combat): TurnInfo[] {
         false,
       hidden: combatant.hidden,
       initiative: combatant.initiative,
-      resource:
-        combatant.permission >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER
-          ? getValue(combatant.resource)
-          : null,
+      resource: combatant.effectiveResource,
       effects:
         combatant.actor?.temporaryEffects.filter(
           (e) => !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED),
