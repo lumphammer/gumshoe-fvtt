@@ -25,9 +25,9 @@ describe("RecursivePartialOfBasic", () => {
       bar: { corge: "" },
     }).toExtend<RecursivePartialOfBasic>();
     expectTypeOf({ bar: undefined }).toExtend<RecursivePartialOfBasic>();
-    expectTypeOf(null).not.toMatchTypeOf<RecursivePartialOfBasic>();
-    expectTypeOf(undefined).not.toMatchTypeOf<RecursivePartialOfBasic>();
-    expectTypeOf({ bar: null }).not.toMatchTypeOf<RecursivePartialOfBasic>();
+    expectTypeOf(null).not.toExtend<RecursivePartialOfBasic>();
+    expectTypeOf(undefined).not.toExtend<RecursivePartialOfBasic>();
+    expectTypeOf({ bar: null }).not.toExtend<RecursivePartialOfBasic>();
   });
 });
 
@@ -36,9 +36,9 @@ type RecursivePartialOfMyFunction = RecursivePartial<MyFunction>;
 describe("RecursivePartial on a function", () => {
   it("can be assigned {}", () => {
     expectTypeOf((x: number) => x).toExtend<RecursivePartialOfMyFunction>();
-    expectTypeOf(null).not.toMatchTypeOf<RecursivePartialOfMyFunction>();
-    expectTypeOf(undefined).not.toMatchTypeOf<RecursivePartialOfMyFunction>();
-    expectTypeOf(() => null).not.toMatchTypeOf<RecursivePartialOfMyFunction>();
+    expectTypeOf(null).not.toExtend<RecursivePartialOfMyFunction>();
+    expectTypeOf(undefined).not.toExtend<RecursivePartialOfMyFunction>();
+    expectTypeOf(() => null).not.toExtend<RecursivePartialOfMyFunction>();
   });
 });
 

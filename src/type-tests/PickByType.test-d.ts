@@ -18,11 +18,11 @@ describe("PickByTypeOfFooStrings", () => {
     expectTypeOf({
       a: "1",
       b: 2,
-    }).not.toMatchTypeOf<PickByTypeOfFooStrings>();
+    }).not.toExtend<PickByTypeOfFooStrings>();
     expectTypeOf({
       a: "1",
       b: "2",
-    }).not.toMatchTypeOf<PickByTypeOfFooStrings>();
+    }).not.toExtend<PickByTypeOfFooStrings>();
     expectTypeOf({ b: "2", c: "3" }).toExtend<PickByTypeOfFooStrings>();
   });
 });

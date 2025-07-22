@@ -41,7 +41,7 @@
     "@lumphammer/investigator-fvtt-types": "workspace:^",
     "@svgr/plugin-jsx": "^8.1.0",
     "@svgr/plugin-svgo": "^8.1.0",
-    "@swc/plugin-emotion": "^9.0.4",
+    "@swc/plugin-emotion": "10.0.3",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -55,7 +55,7 @@
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
     "@typescript-eslint/parser": "^8.36.0",
-    "@vitejs/plugin-react-swc": "^3.9.0",
+    "@vitejs/plugin-react-swc": "3.11.0",
     "@vitest/ui": "^3.2.4",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.5",
@@ -68,7 +68,7 @@
     "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#dfe283948361686fd66853fad4a112b173ec0112",
     "happy-dom": "^18.0.1",
     "jest-diff": "^30.0.4",
-    "less": "^4.3.0",
+    "less": "4.3.0",
     "prettier": "^3.6.2",
     "rollup-plugin-visualizer": "^6.0.3",
     "tsx": "^4.20.3",
@@ -128,7 +128,10 @@
       "react": "$react",
       "@types/react": "$@types/react",
       "fvtt-types": "$fvtt-types",
-      "tsx": "$tsx"
+      "tsx": "$tsx",
+      "@swc/plugin-emotion": "$@swc/plugin-emotion",
+      "@vitejs/plugin-react-swc": "$@vitejs/plugin-react-swc",
+      "less": "$less"
     }
   },
   "engines": {
