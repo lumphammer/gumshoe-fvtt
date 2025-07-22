@@ -9,6 +9,20 @@ import { NativeContextMenuWrapper } from "../inputs/NativeMenu/NativeContextMenu
 import { ClassicInitiative } from "./ClassicInitiative";
 import { TurnPassingInitiative } from "./TurnPassingInitiative";
 
+const getValue = <T,>(resource: T): T | number => {
+  if (
+    typeof resource === "object" &&
+    resource !== null &&
+    "value" in resource &&
+    typeof resource.value === "number"
+  ) {
+    return resource.value;
+  } else if (typeof resource === "number") {
+    return resource;
+  }
+  return 0;
+};
+
 interface CombatantRowProps {
   combatant: InvestigatorCombatant;
   index: number;
@@ -77,7 +91,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
       >
         <img
           className="token-image"
-          src={combatant.effectiveImg}
+          src={combatant.img || CONST.DEFAULT_TOKEN}
           alt={combatant.name}
           loading="lazy"
         />
@@ -147,7 +161,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
 
         {combatant.resource !== null && (
           <div className="token-resource">
-            <span className="resource">{combatant.resource}</span>
+            <span className="resource">{getValue(combatant.resource)}</span>
           </div>
         )}
 

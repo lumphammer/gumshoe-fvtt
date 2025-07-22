@@ -5,18 +5,6 @@ import { assertActiveCharacterActor } from "../actors/exports";
 import { isGeneralAbilityItem } from "../items/generalAbility";
 import { InvestigatorItem } from "../items/InvestigatorItem";
 
-const getValue = <T>(resource: T): T | number => {
-  if (
-    typeof resource === "object" &&
-    resource !== null &&
-    "value" in resource &&
-    typeof resource.value === "number"
-  ) {
-    return resource.value;
-  }
-  return resource;
-};
-
 /**
  * Override base Combatant class to override the initiative formula.
  */
@@ -68,19 +56,5 @@ export class InvestigatorCombatant<
     return this.actor
       ? InvestigatorCombatant.getGumshoeInitiative(this.actor).toString()
       : "0";
-  }
-
-  get active() {
-    return this.combat?.turns.indexOf(this) === this.combat?.turn;
-  }
-
-  get effectiveImg() {
-    return this.img || CONST.DEFAULT_TOKEN;
-  }
-
-  get effectiveResource() {
-    return this.permission >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER
-      ? getValue(this.resource)
-      : null;
   }
 }
