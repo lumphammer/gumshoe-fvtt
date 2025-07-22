@@ -41,7 +41,7 @@
     "@lumphammer/investigator-fvtt-types": "workspace:^",
     "@svgr/plugin-jsx": "^8.1.0",
     "@svgr/plugin-svgo": "^8.1.0",
-    "@swc/plugin-emotion": "^9.0.4",
+    "@swc/plugin-emotion": "8.7.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -55,7 +55,7 @@
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
     "@typescript-eslint/parser": "^8.36.0",
-    "@vitejs/plugin-react-swc": "^3.9.0",
+    "@vitejs/plugin-react-swc": "3.9.0",
     "@vitest/ui": "^3.2.4",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.5",
@@ -128,7 +128,10 @@
       "react": "$react",
       "@types/react": "$@types/react",
       "fvtt-types": "$fvtt-types",
-      "tsx": "$tsx"
+      "tsx": "$tsx",
+      "@swc/plugin-emotion": "$@swc/plugin-emotion",
+      "@vitejs/plugin-react-swc": "$@vitejs/plugin-react-swc"
+
     }
   },
   "engines": {
