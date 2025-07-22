@@ -130,7 +130,8 @@
       "fvtt-types": "$fvtt-types",
       "tsx": "$tsx",
       "@swc/plugin-emotion": "$@swc/plugin-emotion",
-      "@vitejs/plugin-react-swc": "$@vitejs/plugin-react-swc"
+      "@vitejs/plugin-react-swc": "$@vitejs/plugin-react-swc",
+      "less": "$less"
     }
   },
   "engines": {
