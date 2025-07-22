@@ -5,7 +5,6 @@ import { HiDocumentText } from "react-icons/hi";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
-import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { TurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../inputs/NativeMenu/NativeDualFunctionMenu";
@@ -14,7 +13,6 @@ import { useInititative } from "./useInititative";
 
 interface TurnPassingInitiativeProps {
   combatant: TurnPassingCombatant;
-  combat: InvestigatorCombat;
 }
 
 const playButtonGradientWidth = "3em";
@@ -32,9 +30,15 @@ const scrollBg = keyframes({
 
 export const TurnPassingInitiative = ({
   combatant,
-  combat,
 }: TurnPassingInitiativeProps) => {
   assertGame(game);
+  const combat = combatant.combat;
+  if (combat === null) {
+    throw new Error(
+      "TurnPassingInitiative must be rendered with a combatant that is in combat.",
+    );
+  }
+
   const {
     onTakeTurn,
     onConfigureCombatant,

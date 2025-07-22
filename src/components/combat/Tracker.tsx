@@ -129,7 +129,6 @@ export const Tracker = () => {
                   key={combatant.id}
                   index={combat.turns.findIndex((x) => x.id === combatant.id)}
                   combatant={combatant}
-                  combat={combat}
                 />
               ))
             }

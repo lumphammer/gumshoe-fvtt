@@ -4,21 +4,22 @@ import { HiDocumentText } from "react-icons/hi";
 
 import { assertGame } from "../../functions/isGame";
 import { ClassicCombatant } from "../../module/combat/classicCombatant";
-import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { NativeDualFunctionMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
 import { useInititative } from "./useInititative";
 
 interface ClassicInitiativeProps {
   combatant: ClassicCombatant;
-  combat: InvestigatorCombat;
 }
 
-export const ClassicInitiative = ({
-  combatant,
-  combat,
-}: ClassicInitiativeProps) => {
+export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
   assertGame(game);
+  const combat = combatant.combat;
+  if (combat === null) {
+    throw new Error(
+      "ClassicInitiative must be rendered with a combatant that is in combat.",
+    );
+  }
   const {
     onDoInitiative,
     onConfigureCombatant,

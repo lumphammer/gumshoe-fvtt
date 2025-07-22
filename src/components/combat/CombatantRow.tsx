@@ -3,7 +3,6 @@ import { ReactNode } from "react";
 
 import { assertGame } from "../../functions/isGame";
 import { isClassicCombatant } from "../../module/combat/classicCombatant";
-import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
 import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeContextMenuWrapper } from "../inputs/NativeMenu/NativeContextMenuWrapper";
@@ -12,17 +11,18 @@ import { TurnPassingInitiative } from "./TurnPassingInitiative";
 
 interface CombatantRowProps {
   combatant: InvestigatorCombatant;
-  combat: InvestigatorCombat;
   index: number;
 }
 
-export const CombatantRow = ({
-  combatant,
-  combat,
-  index,
-}: CombatantRowProps) => {
+export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
+  const combat = combatant.combat;
+  if (combat === null) {
+    throw new Error(
+      "CombatantRow must be rendered with a combatant that is in combat.",
+    );
+  }
 
   const activeCombatantId =
     combat.turn !== null ? combat.turns[combat.turn].id : null;
@@ -152,9 +152,9 @@ export const CombatantRow = ({
         )}
 
         {isTurnPassingCombatant(combatant) ? (
-          <TurnPassingInitiative combatant={combatant} combat={combat} />
+          <TurnPassingInitiative combatant={combatant} />
         ) : isClassicCombatant(combatant) ? (
-          <ClassicInitiative combatant={combatant} combat={combat} />
+          <ClassicInitiative combatant={combatant} />
         ) : null}
       </li>
     </NativeContextMenuWrapper>
