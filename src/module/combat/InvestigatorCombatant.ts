@@ -15,39 +15,4 @@ export class InvestigatorCombatant<
    * @deprecated Use ClassicCombatant#system.initiative instead.
    */
   override initiative: number | null = null;
-
-  // doGumshoeInitiative = async () => {
-  //   if (this._id) {
-  //     const initiative = this.actor
-  //       ? InvestigatorCombatant.getGumshoeInitiative(this.actor)
-  //       : 0;
-  //     await this.update({ initiative });
-  //   }
-  // };
-
-  // static getGumshoeInitiative(actor: Actor): number {
-  //   assertActiveCharacterActor(actor);
-  //   // get the ability name, and if not set, use the first one on the system
-  //   // config (we had a bug where some chars were getting created without an
-  //   // init ability name)
-  //   const abilityName =
-  //     actor.system.initiativeAbility ||
-  //     [...settings.combatAbilities.get()].sort()[0] ||
-  //     "";
-  //   // and if it was null, set it on the actor now.
-  //   if (actor && isNullOrEmptyString(actor.system.initiativeAbility)) {
-  //     void actor.update({ system: { initiativeAbility: abilityName } });
-  //   }
-  //   const ability = actor.items.find(
-  //     (item: InvestigatorItem): item is GeneralAbilityItem =>
-  //       isGeneralAbilityItem(item) && item.name === abilityName,
-  //   );
-  //   return ability?.system.rating ?? 0;
-  // }
-
-  // _getInitiativeFormula() {
-  //   return this.actor
-  //     ? InvestigatorCombatant.getGumshoeInitiative(this.actor).toString()
-  //     : "0";
-  // }
 }

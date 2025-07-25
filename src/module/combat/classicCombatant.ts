@@ -1,5 +1,5 @@
 import { assertGame } from "../../functions/isGame";
-import { isNullOrEmptyString, systemLogger } from "../../functions/utilities";
+import { isNullOrEmptyString } from "../../functions/utilities";
 import { Document, NumberField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import {
@@ -33,19 +33,6 @@ function getGumshoeInitiative(actor: ActiveCharacterActor): number {
 }
 
 export const classicCombatantSchema = {
-  // turnInfo: new ArrayField(
-  //   new SchemaField(
-  //     {
-  //       initiative: new NumberField({
-  //         nullable: false,
-  //         required: true,
-  //         initial: 0,
-  //       }),
-  //     },
-  //     { initial: { initiative: 0 }, nullable: true, required: false },
-  //   ),
-  //   { initial: [], nullable: false, required: true },
-  // ),
   initiative: new NumberField({
     nullable: false,
     required: true,
@@ -62,9 +49,6 @@ export class ClassicCombatantModel extends TypeDataModel<
   }
 
   override _preCreate(
-    // data: TypeDataModel.ParentAssignmentType<Schema, Parent>,
-    // options: Document.Database.PreCreateOptions<DatabaseCreateOperation>,
-    // user: User.Implementation,
     data: TypeDataModel.ParentAssignmentType<
       typeof classicCombatantSchema,
       InvestigatorCombatant<"classic">
@@ -80,20 +64,7 @@ export class ClassicCombatantModel extends TypeDataModel<
     if (data.initiative === undefined) {
       this.updateSource({ initiative });
     }
-    systemLogger.log("ClassicCombatantModel._preCreate", data);
-
     return super._preCreate(data, options, user);
-  }
-
-  override _onCreate(
-    data: TypeDataModel.ParentAssignmentType<
-      typeof classicCombatantSchema,
-      InvestigatorCombatant<"classic">
-    >,
-    options: Document.Database.CreateOptions<foundry.abstract.types.DatabaseCreateOperation>,
-    userId: string,
-  ) {
-    super._onCreate(data, options, userId);
   }
 
   async resetInitiative(): Promise<void> {

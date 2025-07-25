@@ -2,7 +2,7 @@ import { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { assertGame } from "../../functions/isGame";
-import { requestTurnPass, systemLogger } from "../../functions/utilities";
+import { requestTurnPass } from "../../functions/utilities";
 import { CombatantConfig } from "../../fvtt-exports";
 import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
 import { assertTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
@@ -37,10 +37,8 @@ export const useInititative = (combatant: InvestigatorCombatant) => {
   const localize = game.i18n.localize.bind(game.i18n);
 
   const onTakeTurn = useCallback(() => {
-    systemLogger.log("useInitiative - onTakeTurn");
     assertGame(game);
 
-    systemLogger.log("turnPassingHandler - calling hook");
     // call `requestTurnPass` on everyone's client - the GM's client will pick
     // this up and perform the turn pass
     requestTurnPass(combatant.id);

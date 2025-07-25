@@ -1,4 +1,3 @@
-import { systemLogger } from "../../functions/utilities";
 import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
@@ -11,11 +10,6 @@ export class InvestigatorCombat<
   out SubType extends Combat.SubType = Combat.SubType,
 > extends Combat<SubType> {
   turnOrders: string[][] = [];
-
-  constructor(data?: Combat.CreateData, context?: Combat.ConstructionContext) {
-    super(data, context);
-    systemLogger.log("InvestigatorCombat.constructor", this.turnOrders);
-  }
 
   /**
    * Override createEmbeddedDocuments to
@@ -38,15 +32,6 @@ export class InvestigatorCombat<
     return super.createEmbeddedDocuments(embeddedName, newData, operation);
   }
 
-  override _onCreate(
-    data: Combat.CreateData,
-    options: Combat.Database.OnCreateOperation,
-    userId: string,
-  ) {
-    systemLogger.log("InvestigatorCombat._onCreate");
-    super._onCreate(data, options, userId);
-  }
-
   // override the base class to make sure we're creating the right kind of
   // combat
   static override create<Temporary extends boolean | undefined = false>(
@@ -65,7 +50,6 @@ export class InvestigatorCombat<
     } else {
       data.type = data.type === undefined ? subType : data.type;
     }
-    systemLogger.log("InvestigatorCombat.create", data, operation, rest);
 
     // in theory .create methods on documents can always take an array, but
     // Combat#_onCreate has some logic that assumes a single item
