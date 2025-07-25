@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useCallback, useEffect, useRef } from "react";
 import { FaEdit, FaEraser, FaRecycle, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
@@ -21,7 +21,6 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
     );
   }
   const {
-    onDoInitiative,
     onConfigureCombatant,
     onClearInitiative,
     onRemoveCombatant,
@@ -30,13 +29,17 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
   } = useInititative(combatant);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const initString = (combatant.initiative ?? 0).toString();
+  const initString = (combatant.system.initiative ?? 0).toString();
 
   useEffect(() => {
     if (inputRef.current && document.activeElement !== inputRef.current) {
       inputRef.current.value = initString;
     }
-  }, [initString, combatant.initiative]);
+  }, [initString, combatant.system.initiative]);
+
+  const onResetInitiative = useCallback(() => {
+    void combatant.system.resetInitiative();
+  }, [combatant]);
 
   const updateInitiative = () => {
     const value = inputRef.current?.value ?? "";
@@ -47,7 +50,9 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
     void combat.updateEmbeddedDocuments("Combatant", [
       {
         _id: combatant.id,
-        initiative: parsedValue,
+        system: {
+          initiative: parsedValue,
+        },
       },
     ]);
   };
@@ -55,37 +60,23 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
   return (
     <Fragment>
       <div className="token-initiative">
-        {combatant.initiative !== null ? (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              updateInitiative();
-            }}
-          >
-            <input
-              ref={inputRef}
-              type="text"
-              inputMode="numeric"
-              pattern="^[+=\-]?\d*"
-              defaultValue={initString}
-              aria-label="Initiative Score"
-              disabled={!game.user.isGM}
-              onBlur={updateInitiative}
-            ></input>
-          </form>
-        ) : (
-          <button
-            css={{
-              display: "block",
-              height: "var(--sidebar-item-height)",
-              fontSize: "calc(var(--sidebar-item-height) - 20px)",
-            }}
-            title={localize("COMBAT.InitiativeRoll")}
-            onClick={onDoInitiative}
-          >
-            <i className="fas fa-dice-d6" />
-          </button>
-        )}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            updateInitiative();
+          }}
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            inputMode="numeric"
+            pattern="^[+=\-]?\d*"
+            defaultValue={initString}
+            aria-label="Initiative Score"
+            disabled={!game.user.isGM}
+            onBlur={updateInitiative}
+          ></input>
+        </form>
       </div>
       {game.user.isGM && (
         <>
@@ -97,7 +88,7 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
             <NativeMenuItem icon={<FaEraser />} onSelect={onClearInitiative}>
               {localize("COMBAT.CombatantClear")}
             </NativeMenuItem>
-            <NativeMenuItem icon={<FaRecycle />} onSelect={onDoInitiative}>
+            <NativeMenuItem icon={<FaRecycle />} onSelect={onResetInitiative}>
               {localize("investigator.RefreshInitiative")}
             </NativeMenuItem>
             <NativeMenuItem icon={<HiDocumentText />} onSelect={openSheet}>

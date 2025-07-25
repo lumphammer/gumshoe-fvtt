@@ -17,7 +17,6 @@ import { installDropActorSheetDataHandler } from "./startup/installDropActorShee
 import { installDSNFix } from "./startup/installDSNFix";
 import { installEquipmentAddedNotifier } from "./startup/installEquipmentAddedNotifier";
 import { installEquipmentCategoryHookHandler } from "./startup/installEquipmentCategoryHookHandler";
-import { installInitiativeUpdateHookHandler } from "./startup/installInitiativeUpdateHookHandler";
 import { installItemCombatAbilityHandler } from "./startup/installItemCombatAbilityHandler";
 import { installItemImageHookHandler } from "./startup/installItemImageHookHandler";
 import { installKeepTokenImageInSyncWithActor } from "./startup/installKeepTokenImageInSyncWithActor";
@@ -74,7 +73,6 @@ installActorImageHookHandler();
 installAbilityCardChatWrangler();
 loadCustomThemes();
 handleMwItemType();
-installInitiativeUpdateHookHandler();
 installTurnPassingHandler();
 installSocketActionHandler();
 installEquipmentCategoryHookHandler();

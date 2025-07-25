@@ -80,7 +80,7 @@ export class InvestigatorCombat<
     if (settings.useTurnPassingInitiative.get()) {
       return a.name && b.name ? a.name.localeCompare(b.name) : 0;
     } else {
-      return (b.initiative ?? 0) - (a.initiative ?? 0);
+      return (b.system.initiative ?? 0) - (a.system.initiative ?? 0);
     }
   };
 

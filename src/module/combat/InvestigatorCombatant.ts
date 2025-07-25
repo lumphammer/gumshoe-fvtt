@@ -1,10 +1,3 @@
-import * as constants from "../../constants";
-import { isNullOrEmptyString } from "../../functions/utilities";
-import { settings } from "../../settings/settings";
-import { assertActiveCharacterActor } from "../actors/exports";
-import { isGeneralAbilityItem } from "../items/generalAbility";
-import { InvestigatorItem } from "../items/InvestigatorItem";
-
 /**
  * Override base Combatant class to override the initiative formula.
  */
@@ -18,43 +11,43 @@ export class InvestigatorCombatant<
     return super.create(data, operation);
   }
 
-  doGumshoeInitiative = async () => {
-    if (this._id) {
-      const initiative = this.actor
-        ? InvestigatorCombatant.getGumshoeInitiative(this.actor)
-        : 0;
-      await this.update({ initiative });
-    }
-  };
+  /**
+   * @deprecated Use ClassicCombatant#system.initiative instead.
+   */
+  override initiative: number | null = null;
 
-  static getGumshoeInitiative(actor: Actor): number {
-    assertActiveCharacterActor(actor);
-    // get the ability name, and if not set, use the first one on the system
-    // config (we had a bug where some chars were getting created without an
-    // init ability name)
-    const abilityName =
-      actor?.system.initiativeAbility ||
-      [...settings.combatAbilities.get()].sort()[0] ||
-      "";
-    // and if it was null, set it on the actor now.
-    if (actor && isNullOrEmptyString(actor.system.initiativeAbility)) {
-      void actor.update({ system: { initiativeAbility: abilityName } });
-    }
-    const ability = actor.items.find(
-      (item: InvestigatorItem) =>
-        item.type === constants.generalAbility && item.name === abilityName,
-    );
-    if (ability && isGeneralAbilityItem(ability)) {
-      const score = ability.system.rating;
-      return score;
-    } else {
-      return 0;
-    }
-  }
+  // doGumshoeInitiative = async () => {
+  //   if (this._id) {
+  //     const initiative = this.actor
+  //       ? InvestigatorCombatant.getGumshoeInitiative(this.actor)
+  //       : 0;
+  //     await this.update({ initiative });
+  //   }
+  // };
 
-  _getInitiativeFormula() {
-    return this.actor
-      ? InvestigatorCombatant.getGumshoeInitiative(this.actor).toString()
-      : "0";
-  }
+  // static getGumshoeInitiative(actor: Actor): number {
+  //   assertActiveCharacterActor(actor);
+  //   // get the ability name, and if not set, use the first one on the system
+  //   // config (we had a bug where some chars were getting created without an
+  //   // init ability name)
+  //   const abilityName =
+  //     actor.system.initiativeAbility ||
+  //     [...settings.combatAbilities.get()].sort()[0] ||
+  //     "";
+  //   // and if it was null, set it on the actor now.
+  //   if (actor && isNullOrEmptyString(actor.system.initiativeAbility)) {
+  //     void actor.update({ system: { initiativeAbility: abilityName } });
+  //   }
+  //   const ability = actor.items.find(
+  //     (item: InvestigatorItem): item is GeneralAbilityItem =>
+  //       isGeneralAbilityItem(item) && item.name === abilityName,
+  //   );
+  //   return ability?.system.rating ?? 0;
+  // }
+
+  // _getInitiativeFormula() {
+  //   return this.actor
+  //     ? InvestigatorCombatant.getGumshoeInitiative(this.actor).toString()
+  //     : "0";
+  // }
 }
