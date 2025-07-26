@@ -3,6 +3,7 @@ import { FaEdit, FaEraser, FaRecycle, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
 import { assertGame } from "../../functions/isGame";
+import { assertClassicCombat } from "../../module/combat/classicCombat";
 import { ClassicCombatant } from "../../module/combat/classicCombatant";
 import { NativeDualFunctionMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
@@ -15,6 +16,7 @@ interface ClassicInitiativeProps {
 export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
   assertGame(game);
   const combat = combatant.combat;
+  assertClassicCombat(combat);
   if (combat === null) {
     throw new Error(
       "ClassicInitiative must be rendered with a combatant that is in combat.",

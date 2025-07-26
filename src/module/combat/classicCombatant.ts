@@ -83,8 +83,11 @@ export function isClassicCombatant(x: unknown): x is ClassicCombatant {
   return x instanceof InvestigatorCombatant && x.type === "classic";
 }
 
-export function assertClassicCombat(x: unknown): asserts x is ClassicCombatant {
+export function assertClassicCombatant(
+  x: unknown,
+): asserts x is ClassicCombatant {
   if (!isClassicCombatant(x)) {
+    console.error(x);
     throw new Error("Expected combatant to be a ClassicCombatant");
   }
 }
