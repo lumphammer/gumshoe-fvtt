@@ -1,8 +1,8 @@
 import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 
-import { Tracker as ReactCombatTracker } from "../components/combat/Tracker";
-import { ErrorBoundary } from "../components/ErrorBoundary";
-import { CombatTracker } from "../fvtt-exports";
+import { Tracker as ReactCombatTracker } from "../../components/combat/Tracker";
+import { ErrorBoundary } from "../../components/ErrorBoundary";
+import { CombatTracker } from "../../fvtt-exports";
 
 // HandlebarsApplicationMixin(AbstractSidebarTab);
 

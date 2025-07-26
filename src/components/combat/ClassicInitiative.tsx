@@ -1,78 +1,96 @@
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useCallback, useEffect, useRef } from "react";
 import { FaEdit, FaEraser, FaRecycle, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
 import { assertGame } from "../../functions/isGame";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { assertClassicCombat } from "../../module/combat/classicCombat";
+import { ClassicCombatant } from "../../module/combat/classicCombatant";
 import { NativeDualFunctionMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
 import { useInititative } from "./useInititative";
 
-interface StandardInitiativeProps {
-  turn: any;
-  combat: InvestigatorCombat;
+interface ClassicInitiativeProps {
+  combatant: ClassicCombatant;
 }
 
-export const StandardInitiative = ({
-  turn,
-  combat,
-}: StandardInitiativeProps) => {
+export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
   assertGame(game);
+  const combat = combatant.combat;
+  assertClassicCombat(combat);
+  if (combat === null) {
+    throw new Error(
+      "ClassicInitiative must be rendered with a combatant that is in combat.",
+    );
+  }
   const {
-    onDoInitiative,
     onConfigureCombatant,
     onClearInitiative,
     onRemoveCombatant,
     localize,
     openSheet,
-  } = useInititative(combat, turn.id);
+  } = useInititative(combatant);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const initString = (combatant.system.initiative ?? 0).toString();
 
   useEffect(() => {
     if (inputRef.current && document.activeElement !== inputRef.current) {
-      inputRef.current.value = turn.initiative;
+      inputRef.current.value = initString;
     }
-  }, [turn.initiative]);
+  }, [initString, combatant.system.initiative]);
+
+  const onResetInitiative = useCallback(() => {
+    void combatant.system.resetInitiative();
+  }, [combatant]);
+
+  const updateInitiative = () => {
+    const value = inputRef.current?.value ?? "";
+    const parsedValue = parseInt(value, 10);
+    if (isNaN(parsedValue)) {
+      return;
+    }
+    void combat.updateEmbeddedDocuments("Combatant", [
+      {
+        _id: combatant.id,
+        system: {
+          initiative: parsedValue,
+        },
+      },
+    ]);
+  };
 
   return (
     <Fragment>
       <div className="token-initiative">
-        {turn.hasRolled ? (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            updateInitiative();
+          }}
+        >
           <input
             ref={inputRef}
             type="text"
             inputMode="numeric"
             pattern="^[+=\-]?\d*"
-            defaultValue={turn.initiative}
+            defaultValue={initString}
             aria-label="Initiative Score"
             disabled={!game.user.isGM}
+            onBlur={updateInitiative}
           ></input>
-        ) : (
-          <button
-            css={{
-              display: "block",
-              height: "var(--sidebar-item-height)",
-              fontSize: "calc(var(--sidebar-item-height) - 20px)",
-            }}
-            title={localize("COMBAT.InitiativeRoll")}
-            onClick={onDoInitiative}
-          >
-            <i className="fas fa-dice-d6" />
-          </button>
-        )}
+        </form>
       </div>
       {game.user.isGM && (
         <>
           <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
-            <NativeMenuLabel>{turn.name}</NativeMenuLabel>
+            <NativeMenuLabel>{combatant.name}</NativeMenuLabel>
             <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
               {localize("COMBAT.CombatantUpdate")}
             </NativeMenuItem>
             <NativeMenuItem icon={<FaEraser />} onSelect={onClearInitiative}>
               {localize("COMBAT.CombatantClear")}
             </NativeMenuItem>
-            <NativeMenuItem icon={<FaRecycle />} onSelect={onDoInitiative}>
+            <NativeMenuItem icon={<FaRecycle />} onSelect={onResetInitiative}>
               {localize("investigator.RefreshInitiative")}
             </NativeMenuItem>
             <NativeMenuItem icon={<HiDocumentText />} onSelect={openSheet}>

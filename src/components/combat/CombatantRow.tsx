@@ -1,38 +1,64 @@
 import { cx } from "@emotion/css";
-import { ReactNode, useMemo } from "react";
+import { ReactNode } from "react";
 
 import { assertGame } from "../../functions/isGame";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
-import { settings } from "../../settings/settings";
+import { isClassicCombatant } from "../../module/combat/classicCombatant";
+import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
+import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeContextMenuWrapper } from "../inputs/NativeMenu/NativeContextMenuWrapper";
-import { StandardInitiative } from "./StandardInitiative";
+import { ClassicInitiative } from "./ClassicInitiative";
 import { TurnPassingInitiative } from "./TurnPassingInitiative";
-import { TurnInfo } from "./types";
+
+const getValue = <T,>(resource: T): T | number => {
+  if (
+    typeof resource === "object" &&
+    resource !== null &&
+    "value" in resource &&
+    typeof resource.value === "number"
+  ) {
+    return resource.value;
+  } else if (typeof resource === "number") {
+    return resource;
+  }
+  return 0;
+};
 
 interface CombatantRowProps {
-  turn: TurnInfo;
-  combat: InvestigatorCombat;
+  combatant: InvestigatorCombatant;
   index: number;
 }
 
-const settingsUseTurnPassingInitiative = settings.useTurnPassingInitiative.get;
-
-export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
+export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
+  const combat = combatant.combat;
+  if (combat === null) {
+    throw new Error(
+      "CombatantRow must be rendered with a combatant that is in combat.",
+    );
+  }
 
-  const turnPassing = settingsUseTurnPassingInitiative();
-  const active = combat.activeTurnPassingCombatant === turn.id;
-  const depleted = turn.passingTurnsRemaining <= 0;
+  const activeCombatantId =
+    combat.turn !== null ? combat.turns[combat.turn].id : null;
+  const active = activeCombatantId === combatant.id;
+  const depleted =
+    isTurnPassingCombatant(combatant) &&
+    combatant.system.passingTurnsRemaining <= 0;
+
+  const effects =
+    combatant.actor?.temporaryEffects.filter(
+      (e: foundry.documents.ActiveEffect.Implementation) =>
+        !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED),
+    ) ?? [];
 
   // based on foundry's CombatTracker#_formatEffectsTooltip
-  const effectsTooltip = useMemo(() => {
-    if (!turn.effects.length) return "";
+  const effectsTooltip = (() => {
+    if (!effects.length) return "";
     const ul = document.createElement("ul");
     ul.classList.add("effects-tooltip", "plain");
-    for (const effect of turn.effects) {
+    for (const effect of effects) {
       const img = document.createElement("img");
-      img.src = effect.img;
+      img.src = effect.img ?? "";
       img.alt = effect.name;
       const span = document.createElement("span");
       span.textContent = effect.name;
@@ -41,17 +67,17 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
       ul.append(li);
     }
     return ul.outerHTML;
-  }, [turn.effects]);
+  })();
 
   return (
     <NativeContextMenuWrapper>
       <li
         className={cx("combatant", {
-          active: turn.active && !turnPassing,
-          hide: turn.hidden,
-          defeated: turn.defeated,
+          active: combat.turn === index,
+          hide: combatant.hidden,
+          defeated: combatant.defeated,
         })}
-        data-combatant-id={turn.id}
+        data-combatant-id={combatant.id}
         css={{
           height: "4em",
           position: "absolute",
@@ -60,25 +86,13 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
           width: "100%",
           transform: `translateY(${index * 4}em)`,
           transition: "transform 1000ms",
-          ".theme-light &": {
-            boxShadow: active
-              ? "0 0 0.5em 0 oklch(0.2 0.3 130 / 0.7) inset"
-              : undefined,
-            backgroundColor: active ? "oklch(0.9 0.1 130 / 0.5)" : undefined,
-          },
-          ".theme-dark &": {
-            boxShadow: active
-              ? "0 0 0.5em 0 oklch(0.9 0.3 130 / 0.7) inset"
-              : undefined,
-            backgroundColor: active ? "oklch(0.3 0.1 130 / 0.5)" : undefined,
-          },
           opacity: depleted && !active ? 0.7 : 1,
         }}
       >
         <img
           className="token-image"
-          src={turn.img}
-          alt={turn.name}
+          src={combatant.img || CONST.DEFAULT_TOKEN}
+          alt={combatant.name}
           loading="lazy"
         />
         <div
@@ -95,7 +109,7 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
               textOverflow: "ellipsis",
             }}
           >
-            {turn.name}
+            {combatant.name}
           </strong>
           <div className="combatant-controls">
             {game.user.isGM && (
@@ -105,8 +119,8 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
                   className={cx(
                     "inline-control combatant-control icon fa-solid",
                     {
-                      "fa-eye-slash active": turn.hidden,
-                      "fa-eye": !turn.hidden,
+                      "fa-eye-slash active": combatant.hidden,
+                      "fa-eye": !combatant.hidden,
                     },
                   )}
                   data-action="toggleHidden"
@@ -118,7 +132,7 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
                   className={cx(
                     "inline-control combatant-control icon fa-solid fa-skull",
                     {
-                      active: turn.defeated,
+                      active: combatant.defeated,
                     },
                   )}
                   data-action="toggleDefeated"
@@ -135,24 +149,27 @@ export const CombatantRow = ({ turn, combat, index }: CombatantRowProps) => {
               aria-label={localize("COMBAT.PingCombatant")}
             ></button>
             <div className="token-effects" data-tooltip-html={effectsTooltip}>
-              {Array.from(turn.effects).map<ReactNode>((effect, i) => (
-                <img key={i} className="token-effect" src={effect.img} />
-              ))}
+              {Array.from(effects).map<ReactNode>(
+                (effect, i) =>
+                  effect.img && (
+                    <img key={i} className="token-effect" src={effect.img} />
+                  ),
+              )}
             </div>
           </div>
         </div>
 
-        {turn.hasResource && (
+        {combatant.resource !== null && (
           <div className="token-resource">
-            <span className="resource">{turn.resource}</span>
+            <span className="resource">{getValue(combatant.resource)}</span>
           </div>
         )}
 
-        {turnPassing ? (
-          <TurnPassingInitiative turn={turn} combat={combat} />
-        ) : (
-          <StandardInitiative turn={turn} combat={combat} />
-        )}
+        {isTurnPassingCombatant(combatant) ? (
+          <TurnPassingInitiative combatant={combatant} />
+        ) : isClassicCombatant(combatant) ? (
+          <ClassicInitiative combatant={combatant} />
+        ) : null}
       </li>
     </NativeContextMenuWrapper>
   );

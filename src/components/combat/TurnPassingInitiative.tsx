@@ -5,15 +5,14 @@ import { HiDocumentText } from "react-icons/hi";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { TurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../inputs/NativeMenu/NativeDualFunctionMenu";
 import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
 import { useInititative } from "./useInititative";
 
-interface StandardInitiativeProps {
-  turn: any;
-  combat: InvestigatorCombat;
+interface TurnPassingInitiativeProps {
+  combatant: TurnPassingCombatant;
 }
 
 const playButtonGradientWidth = "3em";
@@ -30,10 +29,16 @@ const scrollBg = keyframes({
 });
 
 export const TurnPassingInitiative = ({
-  turn,
-  combat,
-}: StandardInitiativeProps) => {
+  combatant,
+}: TurnPassingInitiativeProps) => {
   assertGame(game);
+  const combat = combatant.combat;
+  if (combat === null) {
+    throw new Error(
+      "TurnPassingInitiative must be rendered with a combatant that is in combat.",
+    );
+  }
+
   const {
     onTakeTurn,
     onConfigureCombatant,
@@ -42,15 +47,18 @@ export const TurnPassingInitiative = ({
     onAddTurn,
     onRemoveTurn,
     openSheet,
-  } = useInititative(combat, turn.id);
+  } = useInititative(combatant);
 
-  const isActive = combat.activeTurnPassingCombatant === turn.id;
-  const depleted = turn.passingTurnsRemaining <= 0;
+  const activeTurnPassingCombatant =
+    combat.turn !== null ? combat.turns[combat.turn].id : null;
+  const isActive = activeTurnPassingCombatant === combatant.id;
+  const depleted = combatant.system.passingTurnsRemaining <= 0;
 
   return (
     <Fragment>
       <div css={{ flex: 0 }}>
-        {turn.passingTurnsRemaining}/{turn.totalPassingTurns}
+        {combatant.system.passingTurnsRemaining}/
+        {combatant.system.defaultPassingTurns}
       </div>
 
       <div css={{ flex: 0 }}>
@@ -68,7 +76,7 @@ export const TurnPassingInitiative = ({
             },
           }}
           title={getTranslated("Turn")}
-          disabled={combat.round === 0}
+          // disabled={combat.round === 0}
           onClick={onTakeTurn}
         >
           {isActive && (
@@ -93,7 +101,7 @@ export const TurnPassingInitiative = ({
 
       {game.user.isGM && (
         <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
-          <NativeMenuLabel>{turn.name}</NativeMenuLabel>
+          <NativeMenuLabel>{combatant.name}</NativeMenuLabel>
           <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
             {localize("COMBAT.CombatantUpdate")}
           </NativeMenuItem>

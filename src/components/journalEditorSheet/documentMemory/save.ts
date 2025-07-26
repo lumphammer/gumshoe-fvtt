@@ -51,7 +51,7 @@ function push(
     };
     bombBay = [];
 
-    let newNextSnapshots = [];
+    let newNextSnapshots: string[] = [];
     [nextStack, newNextSnapshots] = push(
       nextStack || createStack(),
       editToPush,

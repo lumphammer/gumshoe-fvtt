@@ -57,7 +57,9 @@ export const Settings = () => {
 
   const handleClickSave = useCallback(async () => {
     const proms = Object.keys(settings).map(async (k) => {
-      // @ts-expect-error Too much work to explain to TS that these guys
+      // temporarily disbaled becaue ts is being weird and `set` is coming out
+      // as `any` but it should actually be an error
+      // x@ts-expect-error Too much work to explain to TS that these guys
       // really do match up
       await settings[k].set(tempStateRef.current.settings[k]);
     });
