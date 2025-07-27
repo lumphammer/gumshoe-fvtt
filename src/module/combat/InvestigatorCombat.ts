@@ -11,9 +11,8 @@ export class InvestigatorCombat<
 > extends Combat<SubType> {
   turnOrders: string[][] = [];
 
-  /**
-   * Override createEmbeddedDocuments to
-   */
+  // ///////////////////////////////////////////////////////////////////////////
+  // override to make sure we're creating the right kind of combatant
   override async createEmbeddedDocuments<
     EmbeddedName extends Combat.Embedded.Name,
   >(
@@ -32,8 +31,8 @@ export class InvestigatorCombat<
     return super.createEmbeddedDocuments(embeddedName, newData, operation);
   }
 
-  // override the base class to make sure we're creating the right kind of
-  // combat
+  // ///////////////////////////////////////////////////////////////////////////
+  // override to make sure we're creating the right kind of combat
   static override create<Temporary extends boolean | undefined = false>(
     data: Combat.CreateData | Combat.CreateData[],
     operation?: Combat.Database.CreateOperation<Temporary>,
