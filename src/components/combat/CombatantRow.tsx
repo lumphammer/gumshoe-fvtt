@@ -2,6 +2,7 @@ import { cx } from "@emotion/css";
 import { ReactNode } from "react";
 
 import { assertGame } from "../../functions/isGame";
+import { isActiveCharacterActor } from "../../module/actors/exports";
 import { isClassicCombatant } from "../../module/combat/classicCombatant";
 import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
 import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
@@ -28,6 +29,17 @@ interface CombatantRowProps {
   index: number;
 }
 
+function getEffectiveEffects(
+  actor: Actor.Implementation | null,
+): foundry.documents.ActiveEffect.Implementation[] {
+  if (!isActiveCharacterActor(actor)) {
+    return [];
+  }
+  return actor.temporaryEffects.filter(
+    (e) => !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED),
+  );
+}
+
 export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
@@ -45,11 +57,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
     isTurnPassingCombatant(combatant) &&
     combatant.system.passingTurnsRemaining <= 0;
 
-  const effects =
-    combatant.actor?.temporaryEffects.filter(
-      (e: foundry.documents.ActiveEffect.Implementation) =>
-        !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED),
-    ) ?? [];
+  const effects = getEffectiveEffects(combatant.actor);
 
   // based on foundry's CombatTracker#_formatEffectsTooltip
   const effectsTooltip = (() => {
