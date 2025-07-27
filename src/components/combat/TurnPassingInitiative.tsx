@@ -1,11 +1,15 @@
 import { keyframes } from "@emotion/react";
-import { Fragment } from "react";
+import { Fragment, useCallback } from "react";
 import { FaEdit, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
-import { TurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
+import { requestTurnPass } from "../../functions/utilities";
+import {
+  assertTurnPassingCombatant,
+  TurnPassingCombatant,
+} from "../../module/combat/turnPassingCombatant";
 import { NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../inputs/NativeMenu/NativeDualFunctionMenu";
 import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
@@ -39,15 +43,26 @@ export const TurnPassingInitiative = ({
     );
   }
 
-  const {
-    onTakeTurn,
-    onConfigureCombatant,
-    onRemoveCombatant,
-    localize,
-    onAddTurn,
-    onRemoveTurn,
-    openSheet,
-  } = useInititative(combatant);
+  const { onConfigureCombatant, onRemoveCombatant, localize, openSheet } =
+    useInititative(combatant);
+
+  const onTakeTurn = useCallback(() => {
+    assertGame(game);
+
+    // call `requestTurnPass` on everyone's client - the GM's client will pick
+    // this up and perform the turn pass
+    requestTurnPass(combatant.id);
+  }, [combatant.id]);
+
+  const onAddTurn = useCallback(() => {
+    assertTurnPassingCombatant(combatant);
+    void combatant.system.addPassingTurn();
+  }, [combatant]);
+
+  const onRemoveTurn = useCallback(() => {
+    assertTurnPassingCombatant(combatant);
+    void combatant.system.removePassingTurn();
+  }, [combatant]);
 
   const activeTurnPassingCombatant =
     combat.turn !== null ? combat.turns[combat.turn].id : null;
