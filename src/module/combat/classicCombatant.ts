@@ -3,8 +3,8 @@ import { isNullOrEmptyString } from "../../functions/utilities";
 import { Document, NumberField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import {
-  ActiveCharacterActor,
   assertActiveCharacterActor,
+  isActiveCharacterActor,
 } from "../actors/exports";
 import {
   GeneralAbilityItem,
@@ -13,7 +13,12 @@ import {
 import { InvestigatorItem } from "../items/InvestigatorItem";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 
-function getGumshoeInitiative(actor: ActiveCharacterActor): number {
+function getGumshoeInitiative(
+  actor: Actor.Implementation | undefined | null | string,
+): number {
+  if (!isActiveCharacterActor(actor)) {
+    return 0;
+  }
   // get the ability name, and if not set, use the first one on the system
   // config (we had a bug where some chars were getting created without an
   // init ability name)
@@ -59,7 +64,6 @@ export class ClassicCombatantModel extends TypeDataModel<
     assertGame(game);
 
     const actor = data.actorId && game.actors.get(data.actorId);
-    assertActiveCharacterActor(actor);
     const initiative = getGumshoeInitiative(actor);
     if (data.initiative === undefined) {
       this.updateSource({ initiative });
