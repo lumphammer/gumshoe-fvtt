@@ -1,16 +1,7 @@
-import {
-  NumberField,
-  TypeDataModel,
-  TypedObjectField,
-} from "../../fvtt-exports";
+import { TypeDataModel } from "../../fvtt-exports";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 
-export const TurnPassingCombatSchema = {
-  foo: new TypedObjectField(
-    new NumberField({ nullable: false, required: true, initial: 0 }),
-    { nullable: false, required: true, initial: {} },
-  ),
-};
+export const TurnPassingCombatSchema = {};
 
 export class TurnPassingCombatModel extends TypeDataModel<
   typeof TurnPassingCombatSchema,
