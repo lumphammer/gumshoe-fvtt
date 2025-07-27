@@ -65,7 +65,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
-    "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#dfe283948361686fd66853fad4a112b173ec0112",
+    "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#f00256cf13f4632149f0a4dfbb73fa4895d14bcb",
     "happy-dom": "^18.0.1",
     "jest-diff": "^30.0.5",
     "less": "4.3.0",
