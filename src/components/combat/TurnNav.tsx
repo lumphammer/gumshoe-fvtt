@@ -1,16 +1,17 @@
 import { keyframes } from "@emotion/react";
 import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
+import { LuSwords } from "react-icons/lu";
 
 import { assertGame } from "../../functions/isGame";
 import { CombatTrackerConfig } from "../../fvtt-exports";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
+import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { format, localize } from "./functions";
 
 interface TurnNavProps {
   isTurnPassing: boolean;
-  hasCombat: boolean;
-  combat: InvestigatorCombat | null;
+  combat: InvestigatorCombat | undefined;
   game: foundry.Game;
 }
 
@@ -24,21 +25,19 @@ const throbbingBg = keyframes({
   },
 });
 
-export const TurnNav = ({
-  isTurnPassing,
-  hasCombat,
-  combat,
-  game,
-}: TurnNavProps) => {
+export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
   assertGame(game);
 
   const allTurnsDone =
     (combat?.turns.length ?? 0) > 0 &&
-    combat?.turns.every((turn) => turn.passingTurnsRemaining <= 0);
+    combat?.turns.every(
+      (turn) =>
+        isTurnPassingCombatant(turn) && turn.system.passingTurnsRemaining <= 0,
+    );
 
   return (
     <nav className="combat-controls">
-      {hasCombat &&
+      {combat &&
         (game.user.isGM ? (
           <>
             {combat?.round ? (
@@ -167,7 +166,7 @@ export const TurnNav = ({
                       : "pointer",
                 }}
               >
-                <i className="fa-solid fa-swords" inert></i>
+                <LuSwords />
                 <span>{localize("COMBAT.Begin")}</span>
               </button>
             )}

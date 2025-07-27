@@ -1,19 +1,22 @@
 import { keyframes } from "@emotion/react";
-import { Fragment } from "react";
+import { Fragment, useCallback } from "react";
 import { FaEdit, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { requestTurnPass } from "../../functions/utilities";
+import {
+  assertTurnPassingCombatant,
+  TurnPassingCombatant,
+} from "../../module/combat/turnPassingCombatant";
 import { NativeMenuItem } from "../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../inputs/NativeMenu/NativeDualFunctionMenu";
 import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
 import { useInititative } from "./useInititative";
 
-interface StandardInitiativeProps {
-  turn: any;
-  combat: InvestigatorCombat;
+interface TurnPassingInitiativeProps {
+  combatant: TurnPassingCombatant;
 }
 
 const playButtonGradientWidth = "3em";
@@ -30,27 +33,47 @@ const scrollBg = keyframes({
 });
 
 export const TurnPassingInitiative = ({
-  turn,
-  combat,
-}: StandardInitiativeProps) => {
+  combatant,
+}: TurnPassingInitiativeProps) => {
   assertGame(game);
-  const {
-    onTakeTurn,
-    onConfigureCombatant,
-    onRemoveCombatant,
-    localize,
-    onAddTurn,
-    onRemoveTurn,
-    openSheet,
-  } = useInititative(combat, turn.id);
+  const combat = combatant.combat;
+  if (combat === null) {
+    throw new Error(
+      "TurnPassingInitiative must be rendered with a combatant that is in combat.",
+    );
+  }
 
-  const isActive = combat.activeTurnPassingCombatant === turn.id;
-  const depleted = turn.passingTurnsRemaining <= 0;
+  const { onConfigureCombatant, onRemoveCombatant, localize, openSheet } =
+    useInititative(combatant);
+
+  const onTakeTurn = useCallback(() => {
+    assertGame(game);
+
+    // call `requestTurnPass` on everyone's client - the GM's client will pick
+    // this up and perform the turn pass
+    requestTurnPass(combatant.id);
+  }, [combatant.id]);
+
+  const onAddTurn = useCallback(() => {
+    assertTurnPassingCombatant(combatant);
+    void combatant.system.addPassingTurn();
+  }, [combatant]);
+
+  const onRemoveTurn = useCallback(() => {
+    assertTurnPassingCombatant(combatant);
+    void combatant.system.removePassingTurn();
+  }, [combatant]);
+
+  const activeTurnPassingCombatant =
+    combat.turn !== null ? combat.turns[combat.turn].id : null;
+  const isActive = activeTurnPassingCombatant === combatant.id;
+  const depleted = combatant.system.passingTurnsRemaining <= 0;
 
   return (
     <Fragment>
       <div css={{ flex: 0 }}>
-        {turn.passingTurnsRemaining}/{turn.totalPassingTurns}
+        {combatant.system.passingTurnsRemaining}/
+        {combatant.system.defaultPassingTurns}
       </div>
 
       <div css={{ flex: 0 }}>
@@ -68,7 +91,7 @@ export const TurnPassingInitiative = ({
             },
           }}
           title={getTranslated("Turn")}
-          disabled={combat.round === 0}
+          // disabled={combat.round === 0}
           onClick={onTakeTurn}
         >
           {isActive && (
@@ -93,7 +116,7 @@ export const TurnPassingInitiative = ({
 
       {game.user.isGM && (
         <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
-          <NativeMenuLabel>{turn.name}</NativeMenuLabel>
+          <NativeMenuLabel>{combatant.name}</NativeMenuLabel>
           <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
             {localize("COMBAT.CombatantUpdate")}
           </NativeMenuItem>

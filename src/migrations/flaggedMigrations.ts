@@ -5,6 +5,7 @@ import * as c from "../constants";
 import { assertGame } from "../functions/isGame";
 import { isNullOrEmptyString, systemLogger } from "../functions/utilities";
 import { isActiveCharacterActor } from "../module/actors/exports";
+import { InvestigatorCombat } from "../module/combat/InvestigatorCombat";
 import { pathOfCthulhuPreset } from "../presets";
 import { settings } from "../settings/settings";
 import { FlaggedMigrations } from "./types";
@@ -214,6 +215,37 @@ export const flaggedMigrations: FlaggedMigrations = {
         "personalDetails",
         personalDetails,
       );
+    },
+    convertCombats: async () => {
+      assertGame(game);
+      ui.notifications?.info("Migrating combats");
+      const oldBaseCombats = [
+        ...game.combats.contents.filter((c) => c.type === "base"),
+      ];
+      const newType = settings.useTurnPassingInitiative.get()
+        ? "turnPassing"
+        : "classic";
+      let newActiveCombat: Combat.Stored | null = null;
+      for (const oldBaseCombat of oldBaseCombats) {
+        systemLogger.log(`migrating combat ${oldBaseCombat._id}`);
+        const baseData = oldBaseCombat.toObject();
+        const newCombat = await InvestigatorCombat.create<false>({
+          ...baseData,
+          combatants: baseData.combatants.map((c) => ({ ...c, type: newType })),
+          type: newType,
+        });
+        if (newCombat === undefined) {
+          continue;
+        }
+        newCombat.setupTurns();
+        if (oldBaseCombat.active) {
+          newActiveCombat = newCombat;
+        }
+        await oldBaseCombat.delete();
+      }
+      if (newActiveCombat) {
+        await newActiveCombat.activate();
+      }
     },
   },
   compendium: {},

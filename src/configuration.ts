@@ -1,26 +1,45 @@
 // this helps with getting declarations to work
-import "fvtt-types/configuration";
+// import "fvtt-types/configuration";
 
 import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 
 import * as constants from "./constants";
-import { Application } from "./fvtt-exports";
+import {
+  ActorsCollection,
+  Application,
+  ItemsCollection,
+  JournalCollection,
+} from "./fvtt-exports";
 import { InvestigatorActor } from "./module/actors/InvestigatorActor";
 import { NPCModel } from "./module/actors/npc";
+import { NPCSheetClass } from "./module/actors/NPCSheetClass";
 import { PartyModel } from "./module/actors/party";
+import { PartySheetClass } from "./module/actors/PartySheetClass";
 import { PCModel } from "./module/actors/pc";
-import { InvestigatorCombat } from "./module/InvestigatorCombat";
-import { InvestigatorCombatant } from "./module/InvestigatorCombatant";
+import { PCSheetClass } from "./module/actors/PCSheetClass";
+import { ClassicCombatModel } from "./module/combat/classicCombat";
+import { ClassicCombatantModel } from "./module/combat/classicCombatant";
+import { InvestigatorCombat } from "./module/combat/InvestigatorCombat";
+import { InvestigatorCombatant } from "./module/combat/InvestigatorCombatant";
+import { InvestigatorCombatTracker } from "./module/combat/InvestigatorCombatTracker";
+import { TurnPassingCombatModel } from "./module/combat/turnPassingCombat";
+import { TurnPassingCombatantModel } from "./module/combat/turnPassingCombatant";
+import { InvestigatorCompendiumDirectory } from "./module/InvestigatorCompendiumDirectory";
+import { InvestigatorJournalSheet } from "./module/InvestigatorJournalSheet";
+import { InvestigatorTokenDocument } from "./module/InvestigatorTokenDocument";
 import { CardModel } from "./module/items/card";
 import { EquipmentModel } from "./module/items/equipment";
 import { GeneralAbilityModel } from "./module/items/generalAbility";
 import { InvestigativeAbilityModel } from "./module/items/investigativeAbility";
 import { InvestigatorItem } from "./module/items/InvestigatorItem";
+import { ItemSheetClass } from "./module/items/InvestigatorItemSheetClass";
 import { MwItemModel } from "./module/items/mwItem";
 import { PersonalDetailModel } from "./module/items/personalDetail";
 import { WeaponModel } from "./module/items/weapon";
+import { JournalEntryHTMLEditorSheetClass } from "./module/JournalEditorSheetClass";
 import type { RequestTurnPassArgs } from "./types";
 
+// types configuration
 declare module "fvtt-types/configuration" {
   interface SystemNameConfig {
     name: "investigator";
@@ -63,6 +82,14 @@ declare module "fvtt-types/configuration" {
       personalDetail: typeof PersonalDetailModel;
       card: typeof CardModel;
     };
+    Combat: {
+      classic: typeof ClassicCombatModel;
+      turnPassing: typeof TurnPassingCombatModel;
+    };
+    Combatant: {
+      classic: typeof ClassicCombatantModel;
+      turnPassing: typeof TurnPassingCombatantModel;
+    };
   }
 
   interface ConfiguredActor<SubType extends Actor.SubType> {
@@ -81,16 +108,6 @@ declare module "fvtt-types/configuration" {
   }
 
   interface FlagConfig {
-    Combat: {
-      investigator: {
-        activeTurnPassingCombatant: string | null;
-      };
-    };
-    Combatant: {
-      investigator: {
-        passingTurnsRemaining: number;
-      };
-    };
     JournalEntry: {
       investigator: {
         extraCssClasses: string;
@@ -130,4 +147,80 @@ declare module "fvtt-types/configuration" {
   }
 }
 
-declare module "fvtt-types/configuration" {}
+// runtime configuration
+Hooks.once("init", function () {
+  CONFIG.Actor.documentClass = InvestigatorActor;
+  CONFIG.Item.documentClass = InvestigatorItem;
+  CONFIG.Combatant.documentClass = InvestigatorCombatant;
+  CONFIG.Combat.documentClass = InvestigatorCombat;
+  // CONFIG.ChatMessage.documentClass = InvestigatorChatMessage;
+  CONFIG.Token.documentClass = InvestigatorTokenDocument;
+  CONFIG.ui.combat = InvestigatorCombatTracker;
+  CONFIG.ui.compendium = InvestigatorCompendiumDirectory;
+
+  CONFIG.Actor.dataModels["pc"] = PCModel;
+  CONFIG.Actor.dataModels["npc"] = NPCModel;
+  CONFIG.Actor.dataModels["party"] = PartyModel;
+
+  CONFIG.Item.dataModels["equipment"] = EquipmentModel;
+  CONFIG.Item.dataModels["generalAbility"] = GeneralAbilityModel;
+  CONFIG.Item.dataModels["investigativeAbility"] = InvestigativeAbilityModel;
+  CONFIG.Item.dataModels["weapon"] = WeaponModel;
+  CONFIG.Item.dataModels["mwItem"] = MwItemModel;
+  CONFIG.Item.dataModels["personalDetail"] = PersonalDetailModel;
+  CONFIG.Item.dataModels["card"] = CardModel;
+
+  CONFIG.Combat.dataModels["classic"] = ClassicCombatModel;
+  CONFIG.Combat.dataModels["turnPassing"] = TurnPassingCombatModel;
+
+  CONFIG.Combatant.dataModels["classic"] = ClassicCombatantModel;
+  CONFIG.Combatant.dataModels["turnPassing"] = TurnPassingCombatantModel;
+
+  // CONFIG.Combat.dataModels["investigator"] = InvestigatorCombat;
+
+  // Register custom sheets
+
+  // actors
+  ActorsCollection.registerSheet(constants.systemId, NPCSheetClass, {
+    makeDefault: true,
+    types: [constants.npc],
+  });
+  ActorsCollection.registerSheet(constants.systemId, PCSheetClass, {
+    makeDefault: true,
+    types: [constants.pc],
+  });
+  ActorsCollection.registerSheet(constants.systemId, PartySheetClass, {
+    makeDefault: true,
+    types: [constants.party],
+  });
+
+  // items
+  ItemsCollection.registerSheet(constants.systemId, ItemSheetClass, {
+    makeDefault: false,
+    types: [
+      constants.weapon,
+      constants.equipment,
+      constants.investigativeAbility,
+      constants.generalAbility,
+      constants.mwItem,
+      constants.personalDetail,
+      constants.card,
+    ],
+  });
+
+  // journals
+  JournalCollection.registerSheet(
+    "investigator",
+    JournalEntryHTMLEditorSheetClass,
+    {
+      types: ["base"],
+      makeDefault: false,
+      label: "Investigator Journal HTML Editor",
+    },
+  );
+  JournalCollection.registerSheet("investigator", InvestigatorJournalSheet, {
+    types: ["base"],
+    makeDefault: false,
+    label: "Investigator Journal Sheet",
+  });
+});

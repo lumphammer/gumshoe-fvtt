@@ -2,19 +2,14 @@ import { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { assertGame } from "../../functions/isGame";
-import { requestTurnPass, systemLogger } from "../../functions/utilities";
 import { CombatantConfig } from "../../fvtt-exports";
-import { useRefStash } from "../../hooks/useRefStash";
-import { InvestigatorCombat } from "../../module/InvestigatorCombat";
+import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
 
-export const useInititative = (combat: InvestigatorCombat, id: string) => {
+export const useInititative = (combatant: InvestigatorCombatant) => {
   assertGame(game);
-
-  const combatantStash = useRefStash(combat.combatants.get(id));
 
   const onConfigureCombatant = useCallback(
     (event: Event) => {
-      if (combatantStash.current === undefined) return;
       if (!(event.currentTarget instanceof HTMLElement)) return;
       const rect = event.currentTarget.getBoundingClientRect();
       void new CombatantConfig({
@@ -23,61 +18,28 @@ export const useInititative = (combat: InvestigatorCombat, id: string) => {
           left: window.innerWidth - 720,
           width: 400,
         },
-        document: combatantStash.current,
+        document: combatant,
       }).render({ force: true });
     },
-    [combatantStash],
+    [combatant],
   );
 
-  const onClearInitiative = useCallback(() => {
-    void combatantStash.current?.update({ initiative: null });
-  }, [combatantStash]);
-
-  const onDoInitiative = useCallback(() => {
-    void combatantStash.current?.doGumshoeInitiative();
-  }, [combatantStash]);
-
   const onRemoveCombatant = useCallback(() => {
-    void combatantStash.current?.delete();
-  }, [combatantStash]);
+    void combatant.delete();
+  }, [combatant]);
 
   const localize = game.i18n.localize.bind(game.i18n);
 
-  const onTakeTurn = useCallback(() => {
-    assertGame(game);
-    if (combat.round === 0) {
-      return;
-    }
-    systemLogger.log("turnPassingHandler - calling hook");
-    // call `requestTurnPass` on everyone's client - the GM's client will pick
-    // this up and perform the turn pass
-    requestTurnPass(combatantStash.current?.id);
-  }, [combatantStash, combat.round]);
-
-  const onAddTurn = useCallback(() => {
-    combatantStash.current?.addPassingTurn();
-  }, [combatantStash]);
-
-  const onRemoveTurn = useCallback(() => {
-    combatantStash.current?.removePassingTurn();
-  }, [combatantStash]);
-
-  const sheet = combatantStash.current?.token?.actor?.sheet;
-  assertApplicationV2(sheet);
-
   const openSheet = useCallback(() => {
+    const sheet = combatant.token?.actor?.sheet;
+    assertApplicationV2(sheet);
     void sheet.render({ force: true });
-  }, [sheet]);
+  }, [combatant.token?.actor?.sheet]);
 
   return {
-    onDoInitiative,
     onConfigureCombatant,
-    onClearInitiative,
     onRemoveCombatant,
-    onTakeTurn,
-    localize,
-    onAddTurn,
-    onRemoveTurn,
     openSheet,
+    localize,
   };
 };

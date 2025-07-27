@@ -5,7 +5,7 @@ import { isMagicSerial } from "./isMagicSerial";
 function describePeriod(period: number, testData: Array<[number, number[]]>) {
   describe(`Period: ${period}`, () => {
     test.each(testData)("Depth: %i", (depth, magicNumbers) => {
-      const actual = [];
+      const actual: number[] = [];
       for (let i = 0; i <= Math.max(...magicNumbers); i++) {
         if (isMagicSerial(period, depth, i)) {
           actual.push(i);
