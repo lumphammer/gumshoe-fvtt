@@ -26,10 +26,6 @@ export const useInititative = (combatant: InvestigatorCombatant) => {
     [combatant],
   );
 
-  const onClearInitiative = useCallback(() => {
-    void combatant.update({ initiative: null });
-  }, [combatant]);
-
   const onRemoveCombatant = useCallback(() => {
     void combatant.delete();
   }, [combatant]);
@@ -63,12 +59,12 @@ export const useInititative = (combatant: InvestigatorCombatant) => {
 
   return {
     onConfigureCombatant,
-    onClearInitiative,
     onRemoveCombatant,
-    onTakeTurn,
+    openSheet,
     localize,
+
+    onTakeTurn,
     onAddTurn,
     onRemoveTurn,
-    openSheet,
   };
 };

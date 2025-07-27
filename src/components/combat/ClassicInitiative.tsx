@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useEffect, useRef } from "react";
-import { FaEdit, FaEraser, FaRecycle, FaTrash } from "react-icons/fa";
+import { FaEdit, FaRecycle, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
 import { assertGame } from "../../functions/isGame";
@@ -22,13 +22,8 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
       "ClassicInitiative must be rendered with a combatant that is in combat.",
     );
   }
-  const {
-    onConfigureCombatant,
-    onClearInitiative,
-    onRemoveCombatant,
-    localize,
-    openSheet,
-  } = useInititative(combatant);
+  const { onConfigureCombatant, onRemoveCombatant, localize, openSheet } =
+    useInititative(combatant);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const initString = (combatant.system.initiative ?? 0).toString();
@@ -86,9 +81,6 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
             <NativeMenuLabel>{combatant.name}</NativeMenuLabel>
             <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
               {localize("COMBAT.CombatantUpdate")}
-            </NativeMenuItem>
-            <NativeMenuItem icon={<FaEraser />} onSelect={onClearInitiative}>
-              {localize("COMBAT.CombatantClear")}
             </NativeMenuItem>
             <NativeMenuItem icon={<FaRecycle />} onSelect={onResetInitiative}>
               {localize("investigator.RefreshInitiative")}
