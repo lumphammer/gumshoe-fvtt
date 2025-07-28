@@ -1,5 +1,3 @@
-// import { DummyAppV2 } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2";
-// import { DummyAppV2WithMixin } from "@lumphammer/shared-fvtt-bits/src/DummyAppV2WithMixin";
 import "./investigator.less";
 import "./configuration";
 
