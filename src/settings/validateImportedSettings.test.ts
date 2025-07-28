@@ -21,7 +21,7 @@ it("should throw an error if the settings are the wrong type", () => {
       JSON.stringify({ ...ashenStarsExport, npcStats: "not an object" }),
     ),
   ).toThrowErrorMatchingInlineSnapshot(
-    `[ZodValidationError: Validation error: Invalid input: expected record, received string]`,
+    `[ZodValidationError: Validation error: Invalid input: expected record, received string at "npcStats"]`,
   );
 });
 
