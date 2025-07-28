@@ -68,7 +68,7 @@
     "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#f00256cf13f4632149f0a4dfbb73fa4895d14bcb",
     "happy-dom": "^18.0.1",
     "jest-diff": "^30.0.5",
-    "less": "4.4.0",
+    "less": "4.3.0",
     "prettier": "^3.6.2",
     "rollup-plugin-visualizer": "^6.0.3",
     "tsx": "^4.20.3",
