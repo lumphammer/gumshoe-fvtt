@@ -111,7 +111,7 @@
     "xss": "^1.0.15",
     "yamljs": "^0.3.0",
     "zod": "^4.0.5",
-    "zod-validation-error": "^3.5.3"
+    "zod-validation-error": "^4.0.1"
   },
   "pnpm": {
     "allowedDeprecatedVersions": {
