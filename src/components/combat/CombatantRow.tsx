@@ -2,7 +2,7 @@ import { cx } from "@emotion/css";
 import { ReactNode } from "react";
 
 import { assertGame } from "../../functions/isGame";
-import { isActiveCharacterActor } from "../../module/actors/exports";
+import { isActiveCharacterActor } from "../../module/actors/types";
 import { isClassicCombatant } from "../../module/combat/classicCombatant";
 import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
 import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
