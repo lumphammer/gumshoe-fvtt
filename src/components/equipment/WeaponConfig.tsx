@@ -4,7 +4,7 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/isGame";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertActiveCharacterActor } from "../../module/actors/exports";
+import { assertActiveCharacterActor } from "../../module/actors/types";
 import { assertWeaponItem } from "../../module/items/weapon";
 import { settings } from "../../settings/settings";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";

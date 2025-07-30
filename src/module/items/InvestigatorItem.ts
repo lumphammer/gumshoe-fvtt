@@ -4,7 +4,7 @@
 
 import { settings } from "../../settings/settings";
 import { NoteWithFormat } from "../../types";
-import { isActiveCharacterActor } from "../actors/exports";
+import { isActiveCharacterActor } from "../actors/types";
 
 /**
  * Extend the basic Item with some very simple modifications.

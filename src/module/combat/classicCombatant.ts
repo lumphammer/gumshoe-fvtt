@@ -5,7 +5,7 @@ import { settings } from "../../settings/settings";
 import {
   assertActiveCharacterActor,
   isActiveCharacterActor,
-} from "../actors/exports";
+} from "../actors/types";
 import {
   GeneralAbilityItem,
   isGeneralAbilityItem,
