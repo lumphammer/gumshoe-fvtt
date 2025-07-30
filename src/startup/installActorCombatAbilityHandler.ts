@@ -1,6 +1,6 @@
 import { assertGame } from "../functions/isGame";
 import { isNullOrEmptyString } from "../functions/utilities";
-import { isActiveCharacterActor } from "../module/actors/exports";
+import { isActiveCharacterActor } from "../module/actors/types";
 import { settings } from "../settings/settings";
 
 export const installActorCombatAbilityHandler = () => {
