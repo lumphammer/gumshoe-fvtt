@@ -1,5 +1,5 @@
 import { assertGame } from "../functions/isGame";
-import { isActiveCharacterActor } from "../module/actors/exports";
+import { isActiveCharacterActor } from "../module/actors/types";
 import {
   assertGeneralAbilityItem,
   GeneralAbilityItem,
