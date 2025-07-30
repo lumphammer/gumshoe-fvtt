@@ -1,6 +1,6 @@
-import { isActiveCharacterActor } from "./actors/exports";
 import { NPCModel } from "./actors/npc";
 import { PCModel } from "./actors/pc";
+import { isActiveCharacterActor } from "./actors/types";
 
 function getResourceIds(model: PCModel | NPCModel): string[] {
   const stats = Object.keys(model.stats).map((stat) => `stats.${stat}`);
