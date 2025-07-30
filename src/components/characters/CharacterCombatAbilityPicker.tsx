@@ -1,5 +1,5 @@
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import { assertActiveCharacterActor } from "../../module/actors/exports";
+import { assertActiveCharacterActor } from "../../module/actors/types";
 import { settings } from "../../settings/settings";
 import { OtherableDropDown } from "../inputs/OtherableDropDown";
 import { Translate } from "../Translate";
