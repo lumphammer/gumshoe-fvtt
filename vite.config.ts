@@ -24,10 +24,11 @@ const config = defineConfig(({ mode }) => {
     ...userConfig.test,
 
     // uncomment this to disable type checks
-    // typecheck: {
-    //   ...userConfig.test?.typecheck,
-    //   enabled: false,
-    // },
+    typecheck: {
+      ...userConfig.test?.typecheck,
+      // checker: "tsgo",
+      enabled: false,
+    },
 
     // paths are relative to `root` in the main `vite.config.ts`
     projects: [
