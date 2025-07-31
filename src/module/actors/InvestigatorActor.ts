@@ -7,7 +7,6 @@ export class InvestigatorActor<
 > extends Actor<SubType> {
   constructor(data: Actor.CreateData, context?: Actor.ConstructionContext) {
     super(data, context);
-    // @ts-expect-error fvtt-types
     this.type = data.type as SubType;
   }
 
