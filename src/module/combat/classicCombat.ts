@@ -1,13 +1,56 @@
-import { ArrayField, StringField, TypeDataModel } from "../../fvtt-exports";
+import {
+  ArrayField,
+  SchemaField,
+  StringField,
+  TypeDataModel,
+} from "../../fvtt-exports";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 
-export const classicCombatSchema = {
-  turnOrders: new ArrayField(
-    new ArrayField(
-      new StringField({ nullable: false, required: true, initial: "" }),
+const turnField = new SchemaField(
+  {
+    combatantId: new StringField({
+      nullable: false,
+      required: true,
+      initial: "",
+    }),
+  },
+  {
+    nullable: false,
+    required: true,
+    initial: {},
+  },
+);
+
+const turnArrayField = new ArrayField(turnField, {
+  nullable: false,
+  required: true,
+  initial: [],
+});
+
+const roundField = new SchemaField(
+  {
+    turns: turnArrayField,
+    jumpIns: new ArrayField(
+      new StringField({
+        nullable: false,
+        required: true,
+      }),
+      {
+        nullable: false,
+        required: true,
+        initial: [],
+      },
     ),
-    { nullable: false, required: true, initial: [] },
-  ),
+  },
+  { nullable: false, required: true, initial: { turns: [], jumpIns: [] } },
+);
+
+export const classicCombatSchema = {
+  rounds: new ArrayField(roundField, {
+    nullable: false,
+    required: true,
+    initial: [],
+  }),
 };
 
 export class ClassicCombatModel extends TypeDataModel<
@@ -16,10 +59,6 @@ export class ClassicCombatModel extends TypeDataModel<
 > {
   static defineSchema(): typeof classicCombatSchema {
     return classicCombatSchema;
-  }
-
-  getTurnOrders(): string[][] {
-    return this.turnOrders;
   }
 }
 
