@@ -53,6 +53,10 @@ export const classicCombatSchema = {
   }),
 };
 
+/**
+ * Combat subtype for classic GUMSHOE combat.
+ * This is the default combat type used in most GUMSHOE games.
+ */
 export class ClassicCombatModel extends TypeDataModel<
   typeof classicCombatSchema,
   InvestigatorCombat<"classic">
