@@ -31,6 +31,18 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.1.0)
+      '@emotion/cache':
+        specifier: ^11.14.0
+        version: 11.14.0
+      '@emotion/css':
+        specifier: ^11.13.5
+        version: 11.13.5
+      '@emotion/react':
+        specifier: ^11.14.0
+        version: 11.14.0(@types/react@19.1.8)(react@19.1.0)
+      '@lumphammer/investigator-fvtt-types':
+        specifier: workspace:^
+        version: link:packages/investigator-fvtt-types
       '@lumphammer/minirouter':
         specifier: workspace:^
         version: link:packages/minirouter
@@ -49,91 +61,6 @@ importers:
       '@radix-ui/react-switch':
         specifier: ^1.2.5
         version: 1.2.5(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^8.38.0
-        version: 8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
-      '@typescript/native-preview':
-        specifier: 7.0.0-dev.20250728.1
-        version: 7.0.0-dev.20250728.1
-      case:
-        specifier: ^1.6.3
-        version: 1.6.3
-      d3-ease:
-        specifier: ^3.0.1
-        version: 3.0.1
-      eslint-plugin-import:
-        specifier: ^2.32.0
-        version: 2.32.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)
-      eslint-plugin-n:
-        specifier: ^17.21.2
-        version: 17.21.2(eslint@8.57.1)(typescript@5.8.3)
-      eslint-plugin-promise:
-        specifier: ^7.2.1
-        version: 7.2.1(eslint@8.57.1)
-      focusable-selectors:
-        specifier: ^0.8.4
-        version: 0.8.4
-      html-escaper:
-        specifier: ^3.0.3
-        version: 3.0.3
-      immer:
-        specifier: ^10.1.1
-        version: 10.1.1
-      json5:
-        specifier: ^2.2.3
-        version: 2.2.3
-      marked:
-        specifier: ^16.1.1
-        version: 16.1.1
-      nanoid:
-        specifier: ^5.1.5
-        version: 5.1.5
-      npm:
-        specifier: ^11.5.1
-        version: 11.5.1
-      react:
-        specifier: ^19.1.0
-        version: 19.1.0
-      react-dom:
-        specifier: ^19.1.0
-        version: 19.1.0(react@19.1.0)
-      react-icons:
-        specifier: ^5.5.0
-        version: 5.5.0(react@19.1.0)
-      textdiff-create:
-        specifier: ^1.1.11
-        version: 1.1.11
-      textdiff-patch:
-        specifier: ^1.1.10
-        version: 1.1.10
-      turndown:
-        specifier: ^7.2.0
-        version: 7.2.0
-      xss:
-        specifier: ^1.0.15
-        version: 1.0.15
-      yamljs:
-        specifier: ^0.3.0
-        version: 0.3.0
-      zod:
-        specifier: ^4.0.10
-        version: 4.0.10
-      zod-validation-error:
-        specifier: ^4.0.1
-        version: 4.0.1(zod@4.0.10)
-    devDependencies:
-      '@emotion/cache':
-        specifier: ^11.14.0
-        version: 11.14.0
-      '@emotion/css':
-        specifier: ^11.13.5
-        version: 11.13.5
-      '@emotion/react':
-        specifier: ^11.14.0
-        version: 11.14.0(@types/react@19.1.8)(react@19.1.0)
-      '@lumphammer/investigator-fvtt-types':
-        specifier: workspace:^
-        version: link:packages/investigator-fvtt-types
       '@svgr/plugin-jsx':
         specifier: ^8.1.0
         version: 8.1.0(@svgr/core@8.1.0(typescript@5.8.3))
@@ -179,15 +106,27 @@ importers:
       '@types/yamljs':
         specifier: ^0.2.34
         version: 0.2.34
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^8.38.0
+        version: 8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
       '@typescript-eslint/parser':
         specifier: ^8.38.0
         version: 8.38.0(eslint@8.57.1)(typescript@5.8.3)
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20250728.1
+        version: 7.0.0-dev.20250728.1
       '@vitejs/plugin-react-swc':
         specifier: 3.11.0
         version: 3.11.0(rolldown-vite@7.0.11(@types/node@24.0.15)(esbuild@0.25.8)(less@4.3.0)(tsx@4.20.3))
       '@vitest/ui':
         specifier: ^3.2.4
         version: 3.2.4(vitest@3.2.4)
+      case:
+        specifier: ^1.6.3
+        version: 1.6.3
+      d3-ease:
+        specifier: ^3.0.1
+        version: 3.0.1
       eslint:
         specifier: ^8.57.1
         version: 8.57.1
@@ -197,6 +136,15 @@ importers:
       eslint-config-standard:
         specifier: ^17.1.0
         version: 17.1.0(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1))(eslint-plugin-n@17.21.2(eslint@8.57.1)(typescript@5.8.3))(eslint-plugin-promise@7.2.1(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import:
+        specifier: ^2.32.0
+        version: 2.32.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: ^17.21.2
+        version: 17.21.2(eslint@8.57.1)(typescript@5.8.3)
+      eslint-plugin-promise:
+        specifier: ^7.2.1
+        version: 7.2.1(eslint@8.57.1)
       eslint-plugin-react:
         specifier: ^7.37.5
         version: 7.37.5(eslint@8.57.1)
@@ -212,27 +160,66 @@ importers:
       eslint-plugin-unused-imports:
         specifier: ^4.1.4
         version: 4.1.4(@typescript-eslint/eslint-plugin@8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)
+      focusable-selectors:
+        specifier: ^0.8.4
+        version: 0.8.4
       fvtt-types:
         specifier: github:league-of-foundry-developers/foundry-vtt-types#f00256cf13f4632149f0a4dfbb73fa4895d14bcb
         version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/f00256cf13f4632149f0a4dfbb73fa4895d14bcb(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(@typescript/native-preview@7.0.0-dev.20250728.1)(typescript@5.8.3)'
       happy-dom:
         specifier: ^18.0.1
         version: 18.0.1
+      html-escaper:
+        specifier: ^3.0.3
+        version: 3.0.3
+      immer:
+        specifier: ^10.1.1
+        version: 10.1.1
       jest-diff:
         specifier: ^30.0.5
         version: 30.0.5
+      json5:
+        specifier: ^2.2.3
+        version: 2.2.3
       less:
         specifier: 4.3.0
         version: 4.3.0
+      marked:
+        specifier: ^16.1.1
+        version: 16.1.1
+      nanoid:
+        specifier: ^5.1.5
+        version: 5.1.5
+      npm:
+        specifier: ^11.5.1
+        version: 11.5.1
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
+      react:
+        specifier: ^19.1.0
+        version: 19.1.0
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.1.0(react@19.1.0)
+      react-icons:
+        specifier: ^5.5.0
+        version: 5.5.0(react@19.1.0)
       rollup-plugin-visualizer:
         specifier: ^6.0.3
         version: 6.0.3(rolldown@1.0.0-beta.29)(rollup@4.45.1)
+      textdiff-create:
+        specifier: ^1.1.11
+        version: 1.1.11
+      textdiff-patch:
+        specifier: ^1.1.10
+        version: 1.1.10
       tsx:
         specifier: ^4.20.3
         version: 4.20.3
+      turndown:
+        specifier: ^7.2.0
+        version: 7.2.0
       typescript:
         specifier: 5.8.3
         version: 5.8.3
@@ -245,6 +232,18 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.0.15)(@vitest/ui@3.2.4)(esbuild@0.25.8)(happy-dom@18.0.1)(less@4.3.0)(tsx@4.20.3)
+      xss:
+        specifier: ^1.0.15
+        version: 1.0.15
+      yamljs:
+        specifier: ^0.3.0
+        version: 0.3.0
+      zod:
+        specifier: ^4.0.10
+        version: 4.0.10
+      zod-validation-error:
+        specifier: ^4.0.1
+        version: 4.0.1(zod@4.0.10)
 
   packages/investigator-fvtt-types:
     devDependencies:
@@ -1030,6 +1029,7 @@ packages:
 
   '@pixi/display@7.4.3':
     resolution: {integrity: sha512-b5m2dAaoNAVdxz1oDaxl3XZ059NEOcNtGkxTOZ4EYCw/jcp9sZXkgSROHRzsGn4k+NugH7+9MP4Id2Z0kkdUhw==}
+    version: 7.4.3
     peerDependencies:
       '@pixi/core': 7.4.3
 
@@ -1087,6 +1087,7 @@ packages:
 
   '@pixi/graphics-smooth@1.1.1':
     resolution: {integrity: sha512-9xIFWZhHGEb6KCnyWL6TVPYG/QkF0YDM/yDU5EvjTQbaj/1cITrXtI5P3tBkB5H0DQi+8J8/QS38MjfqNEJAYQ==}
+    version: 1.1.1
     peerDependencies:
       '@pixi/core': ^7.2.0
       '@pixi/display': ^7.2.0
@@ -1094,6 +1095,7 @@ packages:
 
   '@pixi/graphics@7.4.3':
     resolution: {integrity: sha512-wWLivD8/URb8A7X4TqCZGG39C91IE+aOuWY/z9NCz5Z6WvA/VWnsc5fLTlO+ggjGHgKF0cSucCXZfUe1wm0AOQ==}
+    version: 7.4.3
     peerDependencies:
       '@pixi/core': 7.4.3
       '@pixi/display': 7.4.3
@@ -1187,6 +1189,7 @@ packages:
 
   '@pixi/sprite@7.4.3':
     resolution: {integrity: sha512-iNBrpOFF9nXDT6m2jcyYy6l/sRzklLDDck1eFHprHZwvNquY2nzRfh+RGBCecxhBcijiLJ3fsZN33fP0LDXkvw==}
+    version: 7.4.3
     peerDependencies:
       '@pixi/core': 7.4.3
       '@pixi/display': 7.4.3
