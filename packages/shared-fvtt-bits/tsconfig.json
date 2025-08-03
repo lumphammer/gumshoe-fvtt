@@ -1,4 +1,7 @@
 {
 	"extends": "./dotfiles/import/tsconfig.fvtt.json",
-	"include": ["task-core", "src", "dotfiles"],
+	"include": ["**/*"],
+	"compilerOptions": {
+		"allowJs": true
+	}
 }

@@ -74,7 +74,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
           this.reactRoot.unmount();
           this.reactRoot = undefined;
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+        // eslint-disable-next-line unused-imports/no-unused-vars
       } catch (e: any) {
         // if it does throw, we don;t want that to reach the console, so we do
         // nothing. This is an async function to that's equivalent to returning

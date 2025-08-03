@@ -22,7 +22,7 @@ export async function boot({
   let foundryConfig, linkDir;
   try {
     foundryConfig = (await fs.readJSON("foundryconfig.json")) as FoundryConfig;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+    // eslint-disable-next-line unused-imports/no-unused-vars
   } catch (e) {
     log(chalk.magenta("foundryconfig.json not found - assuming CI"));
   }
