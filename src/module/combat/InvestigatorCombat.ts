@@ -1,3 +1,4 @@
+import { systemLogger } from "../../functions/utilities";
 import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
@@ -56,6 +57,17 @@ export class InvestigatorCombat<
     return result;
   }
 
+  protected override _preUpdate(
+    changed: Combat.UpdateData,
+    options: Combat.Database.PreUpdateOptions,
+    user: User.Implementation,
+  ): Promise<boolean | void> {
+    systemLogger.log(
+      `InvestigatorCombat._preUpdate called with changed: ${JSON.stringify(changed, null, 2)}`,
+    );
+    return super._preUpdate(changed, options, user);
+  }
+
   protected _compareCombatants = (
     a: InvestigatorCombatant,
     b: InvestigatorCombatant,
@@ -69,6 +81,9 @@ export class InvestigatorCombat<
 
   // borrowed from client/documents/combat.d.mts
   override setupTurns() {
+    const err = new Error();
+    systemLogger.log("InvestigatorCombat.setupTurns called", err.stack);
+
     this.turns ||= [];
 
     // Determine the turn order and the current turn
