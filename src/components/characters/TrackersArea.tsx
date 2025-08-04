@@ -1,4 +1,3 @@
-
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertActiveCharacterActor } from "../../module/actors/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";

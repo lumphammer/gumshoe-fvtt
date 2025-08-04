@@ -122,7 +122,7 @@ export const CardDisplay = ({
             ...categoryTheme?.descriptionStyle,
           }}
           dangerouslySetInnerHTML={{ __html: descriptionHTML }}
-         />
+        />
       )}
       {showText && !isNullOrEmptyString(effectsHTML) && (
         <p
@@ -132,7 +132,7 @@ export const CardDisplay = ({
             ...categoryTheme?.effectStyle,
           }}
           dangerouslySetInnerHTML={{ __html: effectsHTML }}
-         />
+        />
       )}
     </div>
   );

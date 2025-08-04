@@ -2,15 +2,16 @@
 import { defineConfig } from "vite";
 
 import { name } from "./package.json";
+// see https://vite.dev/config/#configuring-vite
+// loading from the package `@lumphammer/shared-fvtt-bits` is possible but
+// requires extra config and breaks vitest
 import { createViteUserConfig } from "./packages/shared-fvtt-bits/dotfiles/import/createViteUserConfig";
-
-// causes tsgo to crash
-// import { id as foundryPackageId } from "./public/system.json";
+import { id as foundryPackageId } from "./public/system.json";
 
 const config = defineConfig(({ mode }) => {
   const userConfig = createViteUserConfig({
     mode,
-    foundryPackageId: "investigator",
+    foundryPackageId,
     packageType: "system",
     importMetaUrl: import.meta.url,
   });

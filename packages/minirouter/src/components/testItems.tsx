@@ -1,5 +1,3 @@
-import React from "react";
-
 import { createDirection } from "../createDirection";
 import { Outlet } from "../outlets/Outlet";
 import { useParams } from "../useParams";

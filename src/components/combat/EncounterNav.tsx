@@ -38,7 +38,7 @@ export const EncounterNav = ({
             data-tooltip
             aria-label="Create Encounter"
             title={localize("COMBAT.Create")}
-           />
+          />
           <NativeDropdownMenu
             css={{
               minHeight: "var(--button-size)",
@@ -82,7 +82,7 @@ export const EncounterNav = ({
             data-tooltip=""
             aria-label="Activate Previous Encounter"
             disabled={!prevCombatId}
-           />
+          />
         )}
         <div
           className="encounter-count"
@@ -105,7 +105,7 @@ export const EncounterNav = ({
             disabled={!nextCombatId}
             data-tooltip=""
             aria-label="Activate Next Encounter"
-           />
+          />
         )}
       </div>{" "}
       {game.user?.isGM && (
@@ -128,7 +128,7 @@ export const EncounterNav = ({
               modal: true,
             });
           }}
-         />
+        />
       )}
     </nav>
   );

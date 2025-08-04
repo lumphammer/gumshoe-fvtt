@@ -1,4 +1,3 @@
-
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";

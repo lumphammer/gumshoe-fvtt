@@ -1,6 +1,7 @@
 {
 	"extends": "./dotfiles/import/tsconfig.fvtt.json",
 	"include": ["**/*"],
+	"exclude": ["dotfiles/copy/*"],
 	"compilerOptions": {
 		"allowJs": true
 	}

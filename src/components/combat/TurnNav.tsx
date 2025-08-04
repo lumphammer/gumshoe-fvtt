@@ -48,7 +48,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                   data-action="previousRound"
                   data-tooltip=""
                   aria-label={localize("COMBAT.RoundPrev")}
-                 />
+                />
                 {!isTurnPassing && (
                   <button
                     type="button"
@@ -56,7 +56,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                     data-action="previousTurn"
                     data-tooltip=""
                     aria-label={localize("COMBAT.TurnPrev")}
-                   />
+                  />
                 )}
                 <strong
                   css={{
@@ -115,14 +115,14 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                       data-action="nextTurn"
                       data-tooltip=""
                       aria-label={localize("COMBAT.TurnNext")}
-                     />
+                    />
                     <button
                       type="button"
                       className="inline-control combat-control icon fa-solid fa-chevrons-right"
                       data-action="nextRound"
                       data-tooltip=""
                       aria-label={localize("COMBAT.RoundNext")}
-                     />
+                    />
                   </>
                 )}
                 {isTurnPassing && (
@@ -183,7 +183,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                       data-action="previousTurn"
                       data-tooltip=""
                       aria-label={localize("COMBAT.TurnPrev")}
-                     />
+                    />
                   </>
                 )}
               <strong
@@ -207,7 +207,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                     data-action="nextTurn"
                     data-tooltip=""
                     aria-label={localize("COMBAT.TurnNext")}
-                   />
+                  />
                 )}
             </>
           )

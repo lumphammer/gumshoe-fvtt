@@ -1,9 +1,9 @@
 /// <reference types="vitest" />
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { defineConfig } from "vite";
-import { visualizer } from "rollup-plugin-visualizer";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import { visualizer } from "rollup-plugin-visualizer";
+import { defineConfig } from "vite";
 
 const name = "minirouter";
 

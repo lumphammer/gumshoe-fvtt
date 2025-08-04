@@ -8,7 +8,7 @@
     "test": "tsc",
     "typecheck": "tsc --noEmit",
     "lint:check": "eslint .",
-    "lint:fix": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format:check": "npx prettier --check src task-core dotfiles",
     "format:fix": "npx prettier --check src task-core dotfiles --write",
     "check": "pnpm run typecheck && pnpm run lint:check && pnpm run format:check"
@@ -22,8 +22,6 @@
     "@types/js-yaml": "^4.0.9",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "@typescript-eslint/eslint-plugin": "^8.36.0",
-    "@typescript-eslint/parser": "^8.36.0",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.5",
@@ -48,8 +46,6 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "@typescript-eslint/eslint-plugin": "^8.36.0",
-    "@typescript-eslint/parser": "^8.36.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-react": "^7.37.5",
@@ -65,6 +61,7 @@
     "vitest": "^3.0.4"
   },
   "dependencies": {
+    "@eslint/js": "^9.32.0",
     "@foundryvtt/foundryvtt-cli": "^1.1.0",
     "@seald-io/nedb": "^4.1.2",
     "@testing-library/jest-dom": "^6.6.3",
@@ -78,7 +75,6 @@
     "fvtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types#main",
     "globals": "^16.3.0",
     "happy-dom": "^18.0.1",
-    "neostandard": "^0.12.2",
     "rimraf": "^6.0.1",
     "tsx": "^4.20.3",
     "typescript-eslint": "^8.38.0",

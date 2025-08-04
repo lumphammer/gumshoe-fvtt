@@ -42,7 +42,6 @@ export const ImagePickle = ({ className }: ImagePickleProps) => {
     if (tokenizerIsActive && tokenizerApi !== undefined && subjectIsActor) {
       tokenizerApi.tokenizeActor(doc);
     } else {
-      // eslint-disable-next-line new-cap
       const fp = new FilePicker.implementation({
         type: "image",
         current: doc.img ?? undefined,

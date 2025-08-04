@@ -72,7 +72,7 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
             aria-label="Initiative Score"
             disabled={!game.user.isGM}
             onBlur={updateInitiative}
-           />
+          />
         </form>
       </div>
       {game.user.isGM && (

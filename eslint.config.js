@@ -1,10 +1,12 @@
-import sharedConfig from "@lumphammer/shared-fvtt-bits/dotfiles/import/eslint.config.js";
-import { defineConfig } from "eslint/config";
+import coreConfig from "@lumphammer/shared-fvtt-bits/dotfiles/import/eslint.core.config.js";
+import reactConfig from "@lumphammer/shared-fvtt-bits/dotfiles/import/eslint.react.config.js";
+import { defineConfig, globalIgnores } from "eslint/config";
 import reactCompiler from "eslint-plugin-react-compiler";
 
 export default defineConfig([
   // import shared config
-  sharedConfig,
+  coreConfig,
+  reactConfig,
 
   // react compiler warnings
   reactCompiler.configs.recommended,
@@ -29,4 +31,9 @@ export default defineConfig([
       ],
     },
   },
+  globalIgnores([
+    // anything using eslintrc format is legacy and not linted
+    "*/**/*.eslintrc*.?js",
+    "packages/shared-fvtt-bits/dotfiles/copy",
+  ]),
 ]);

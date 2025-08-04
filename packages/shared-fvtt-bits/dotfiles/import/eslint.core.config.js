@@ -1,70 +1,43 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-import { FlatCompat } from "@eslint/eslintrc";
-import js from "@eslint/js";
-import typescriptEslint from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
+import eslint from "@eslint/js";
 import { defineConfig, globalIgnores } from "eslint/config";
+import eslintConfigPrettier from "eslint-config-prettier";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
+import tseslint from "typescript-eslint";
 
 export default defineConfig([
-  // we ignore js files inside src because there shouldn't be any real ones. the
-  // only exception is the dummy packageName.js that's needed in dev mode, which
-  // is trivial enough to ignore.
-  globalIgnores(["src/*.js", "**/build"]),
+  // ...neostandard({
+  //   noStyle: true,
+  // }),
+  eslint.configs.recommended,
+  tseslint.configs.recommendedTypeChecked,
+  eslintConfigPrettier,
+
   {
-    extends: compat.extends(
-      "standard",
-      "plugin:@typescript-eslint/recommended-type-checked",
-      "prettier",
-    ),
+    linterOptions: {
+      reportUnusedDisableDirectives: "error",
+    },
+
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+      },
+
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+
+      ecmaVersion: 12,
+    },
 
     plugins: {
-      "@typescript-eslint": typescriptEslint,
       "simple-import-sort": simpleImportSort,
       "unused-imports": unusedImports,
     },
 
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        // Hooks: "readonly",
-        CONFIG: "readonly",
-        Actor: "readonly",
-        ActorSheet: "readonly",
-        Actors: "readonly",
-        jQuery: "readonly",
-        JQuery: "readonly",
-        mergeObject: "readonly",
-        Item: "readonly",
-      },
-
-      parser: tsParser,
-      ecmaVersion: 12,
-      sourceType: "module",
-
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
-
-        project: true,
-      },
-    },
-
     rules: {
-      // core rules
       "comma-dangle": ["error", "always-multiline"],
       curly: ["error", "multi-line", "consistent"],
       "dot-notation": "off",
@@ -85,17 +58,18 @@ export default defineConfig([
         {
           name: "logger",
           message:
-            "This is a Foundry global which breaks tests.\nImport `systemLogger` from `functions` instead.\n",
+            "This is a Foundry global which breaks tests.\n" +
+            "Import `systemLogger` from `functions` instead.",
         },
       ],
+
+      // replaced by ts version
+      "no-useless-constructor": "off",
 
       // need to replace this with @typescript-eslint/no-restricted-imports so we
       // can allow type imports from lodash but this will require some eslint etc
       // version bumps
       // "no-restricted-imports": ["error", "lodash"],
-
-      // replaced by ts version
-      "no-useless-constructor": "off",
 
       // typescript-eslint enforces using void to explicitely not await a promise
       "no-void": "off",
@@ -103,9 +77,9 @@ export default defineConfig([
       // optional, but a nice bit of rigor
       "@typescript-eslint/no-use-before-define": ["error"],
 
-      // unfortunately foundry create way too many situation where we need to
-      // talk about any
-      "@typescript-eslint/no-`explicit`-any": ["off"],
+      // unfortunately foundry create way too many situation where we need to talk
+      // about any
+      "@typescript-eslint/no-explicit-any": ["off"],
 
       // this would be a huge pain to enable because there's no auto-fix
       "@typescript-eslint/explicit-module-boundary-types": ["off"],
@@ -148,24 +122,13 @@ export default defineConfig([
         {
           vars: "all",
           varsIgnorePattern: "^_",
-          // we have many situations where we need to supply a function to a
-          // Foundry API and it feels more correct to able to declare the args
-          // we're getting even if we don't use them all.
+          // we have many situations where we need to supply a function to a  Foundry
+          // API and it feels more correct to able to declare the args we're getting
+          // even if we don't use them all.
           args: "none",
           ignoreRestSiblings: true,
         },
       ],
-
-      // I tried https://typescript-eslint.io/rules/no-unnecessary-condition/ but
-      // it causes more problems than it solves - for example indexed access in TS
-      // always returns the value type of the thing being access, but sometimes
-      // you want to check for undefined. With that rule on, you either need to
-      // * make the container's value type be whatever|undefined
-      //   * then either check for that everywhere, whereas in fact it's only
-      //    sometimes that you want the check)
-      //   * or you litter `!` everywhere.
-      // * or you put /*esling-ignore*/ everywhere.
-      // either way, not nice.
 
       // All these no-unsafe-* rules are turned off because we have so many
       // situations we're interacting with FVTT or something else third party and
@@ -185,28 +148,28 @@ export default defineConfig([
           checksVoidReturn: false,
         },
       ],
+
+      // this is especially useful with Foundry, where some deprecated accesses
+      // don't trigger a runtime warning
+      "@typescript-eslint/no-deprecated": "error",
     },
   },
+
+  // we ignore js files inside src because there shouldn't be any real ones. the
+  // only exception is the dummy packageName.js that's needed in dev mode, which
+  // is trivial enough to ignore.
+  globalIgnores(["src/*.js", "**/build"]),
+
   {
     files: ["**/*.js"],
-
-    rules: {
-      "@typescript-eslint/no-var-requires": ["off"],
-    },
+    rules: { "@typescript-eslint/no-var-requires": ["off"] },
   },
 
   // vitest 1.x generates inline snapshots in backticks
   {
     files: ["**/*.test.ts"],
-
     rules: {
-      quotes: [
-        "off",
-        "double",
-        {
-          avoidEscape: true,
-        },
-      ],
+      quotes: ["off", "double", { avoidEscape: true }],
     },
   },
 ]);
