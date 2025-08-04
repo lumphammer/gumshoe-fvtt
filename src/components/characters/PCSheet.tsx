@@ -1,4 +1,4 @@
-import { Fragment, ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 
 import { occupationSlotIndex } from "../../constants";
 import { assertGame } from "../../functions/isGame";
@@ -208,7 +208,7 @@ export const PCSheet = () => {
         }}
       >
         {settingsUseMwStyleAbilities() && (
-          <Fragment>
+          <>
             <Button onClick={actor.system.confirmMw2Refresh}>
               <Translate>2h Refresh</Translate>
             </Button>
@@ -218,25 +218,25 @@ export const PCSheet = () => {
             <Button onClick={actor.system.confirmMw8Refresh}>
               <Translate>8h Refresh</Translate>
             </Button>
-          </Fragment>
+          </>
         )}
         <Button onClick={actor.system.confirmRefresh}>
           <Translate>Full Refresh</Translate>
         </Button>
         {settingsUseMwStyleAbilities() || (
-          <Fragment>
+          <>
             <Button onClick={actor.system.confirm24hRefresh}>
               <Translate>24h Refresh</Translate>
             </Button>
-          </Fragment>
+          </>
         )}
         {settingsUseMwInjuryStatus() && (
-          <Fragment>
+          <>
             <MwInjuryStatusWidget
               status={actor.system.mwInjuryStatus}
               setStatus={actor.system.setMwInjuryStatus}
             />
-          </Fragment>
+          </>
         )}
         <TrackersArea />
         {Object.keys(stats).map<ReactNode>((key) => {
@@ -279,11 +279,11 @@ export const PCSheet = () => {
                   id: "equipment",
                   label: "Equipment",
                   content: (
-                    <Fragment>
+                    <>
                       <WeaponsArea />
                       <div css={{ height: "1em" }} />
                       <EquipmentArea />
-                    </Fragment>
+                    </>
                   ),
                 },
             {

@@ -44,7 +44,7 @@ export const AbilitiesAreaEdit = ({
   const pushPoolWarnings = actor.system.getPushPoolWarnings();
 
   return (
-    <Fragment>
+    <>
       <div
         css={{
           display: "grid",
@@ -215,6 +215,6 @@ export const AbilitiesAreaEdit = ({
           ))}
         </div>
       </div>
-    </Fragment>
+    </>
   );
 };

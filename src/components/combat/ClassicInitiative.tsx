@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { FaEdit, FaRecycle, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
@@ -55,7 +55,7 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
   };
 
   return (
-    <Fragment>
+    <>
       <div className="token-initiative">
         <form
           onSubmit={(e) => {
@@ -72,7 +72,7 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
             aria-label="Initiative Score"
             disabled={!game.user.isGM}
             onBlur={updateInitiative}
-          ></input>
+           />
         </form>
       </div>
       {game.user.isGM && (
@@ -94,6 +94,6 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
           </NativeDualFunctionMenu>
         </>
       )}
-    </Fragment>
+    </>
   );
 };

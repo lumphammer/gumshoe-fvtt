@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useContext } from "react";
+import { useCallback, useContext } from "react";
 
 import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { assertGame } from "../../../functions/isGame";
@@ -62,7 +62,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
   const gridRow = index * 3 + 3;
 
   return (
-    <Fragment>
+    <>
       <div
         css={{
           gridColumn: "1/-1",
@@ -194,7 +194,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
           </label>
         </div>
         {weapon.system.usesAmmo && (
-          <Fragment>
+          <>
             Current
             <AsyncNumberInput
               min={0}
@@ -207,7 +207,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
               value={weapon.system.ammo.max}
               onChange={weapon.system.setAmmoMax}
             />
-          </Fragment>
+          </>
         )}
       </div>
 
@@ -219,6 +219,6 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
         note={weapon.system.notes}
         onChange={weapon.system.setNotes}
       />
-    </Fragment>
+    </>
   );
 };

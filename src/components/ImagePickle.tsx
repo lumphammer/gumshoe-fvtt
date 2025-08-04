@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 
 import { getTokenizer } from "../functions/getTokenizer";
 import { assertGame } from "../functions/isGame";
@@ -137,10 +137,10 @@ export const ImagePickle = ({ className }: ImagePickleProps) => {
         }}
       >
         {showOverlay && (
-          <Fragment>
+          <>
             <ImagePickerLink onClick={onClickShow}>Show</ImagePickerLink>
             <ImagePickerLink onClick={onClickEdit}>Edit</ImagePickerLink>
-          </Fragment>
+          </>
         )}
       </div>
     </div>

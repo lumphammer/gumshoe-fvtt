@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useContext } from "react";
+import React, { useCallback, useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
@@ -36,7 +36,7 @@ export const SettingArea = () => {
   const defaultThemeDisplayName =
     runtimeConfig.themes[defaultThemeName]?.displayName;
   return (
-    <Fragment>
+    <>
       <InputGrid>
         <GridField label="Theme">
           <select
@@ -106,6 +106,6 @@ export const SettingArea = () => {
         </a>{" "}
         site.
       </p>
-    </Fragment>
+    </>
   );
 };

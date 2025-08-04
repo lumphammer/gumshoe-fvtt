@@ -1,6 +1,5 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import React, {
-  Fragment,
   useCallback,
   useContext,
   useEffect,
@@ -133,7 +132,7 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
   assertApplicationV2(sheet);
 
   return (
-    <Fragment>
+    <>
       <a
         css={{ gridColumn: 1, overflow: "hidden", textOverflow: "ellipsis" }}
         className={hover ? "hover" : ""}
@@ -209,6 +208,6 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
       >
         <div dangerouslySetInnerHTML={{ __html: html }} />
       </div>
-    </Fragment>
+    </>
   );
 };

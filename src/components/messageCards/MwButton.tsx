@@ -1,5 +1,4 @@
 import { CSSObject } from "@emotion/react";
-import { Fragment } from "react";
 
 import { useHover } from "../../hooks/useHover";
 import { Button } from "../inputs/Button";
@@ -39,7 +38,7 @@ export const MwButton = ({ onClick: onClickProp, deets }: MwButtonProps) => {
     useShowHideTransition(hover, 800);
 
   const content = (
-    <Fragment>
+    <>
       <div
         css={{
           color: "#fff",
@@ -112,7 +111,7 @@ export const MwButton = ({ onClick: onClickProp, deets }: MwButtonProps) => {
           </span>
         )}
       </div>
-    </Fragment>
+    </>
   );
 
   return onClickProp ? (

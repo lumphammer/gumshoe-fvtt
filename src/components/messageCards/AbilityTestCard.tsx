@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback } from "react";
+import React, { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
@@ -72,12 +72,12 @@ export const AbilityTestCard = React.memo(
         >
           {mode === "spend" && <Translate>PointSpend</Translate>}
           {mode === "test" && (
-            <Fragment>
+            <>
               <Translate>AbilityTest</Translate>
               {": "}
               <DiceTerms terms={msg.rolls?.[0]?.terms} />
               {" ="}
-            </Fragment>
+            </>
           )}
         </div>
         {/* RESULT */}

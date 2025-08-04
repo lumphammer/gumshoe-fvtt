@@ -77,7 +77,7 @@ export const NotesEditor = ({
         }}
       >
         {source}
-        <hr></hr>
+        <hr />
         {html}
       </pre>
     );

@@ -1,4 +1,4 @@
-import { Fragment, ReactNode } from "react";
+import { ReactNode } from "react";
 
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
@@ -108,7 +108,7 @@ export const NPCSheetFull = () => {
         <hr />
         {/* SotS NPC Combat bonus */}
         {settingsUseNpcCombatBonuses() && (
-          <Fragment>
+          <>
             <h3 css={{ gridColumn: "start / end" }}>
               <Translate>Combat bonus</Translate>
             </h3>
@@ -123,7 +123,7 @@ export const NPCSheetFull = () => {
               value={actor.system.damageBonus}
               onChange={actor.system.setDamageBonus}
             />
-          </Fragment>
+          </>
         )}
         {Object.keys(stats).map<ReactNode>((key) => {
           return <StatField key={key} id={key} stat={stats[key]} />;
@@ -134,7 +134,7 @@ export const NPCSheetFull = () => {
         <hr />
         <CharacterCombatAbilityPicker />
         {settingsUseTurnPassing() && (
-          <Fragment>
+          <>
             <h4 css={{ width: "8em" }}>
               <Translate>Number of turns</Translate>
             </h4>
@@ -142,7 +142,7 @@ export const NPCSheetFull = () => {
               value={actor.system.initiativePassingTurns}
               onChange={actor.system.setPassingTurns}
             />
-          </Fragment>
+          </>
         )}
       </div>
 
@@ -162,22 +162,22 @@ export const NPCSheetFull = () => {
               id: "play",
               label: "Play",
               content: (
-                <Fragment>
+                <>
                   <WeaponsArea />
                   <div css={{ height: "1em" }} />
-                  <AbilitiesAreaPlay flipLeftRight={true} />
-                </Fragment>
+                  <AbilitiesAreaPlay flipLeftRight />
+                </>
               ),
             },
             {
               id: "edit",
               label: "Edit",
               content: (
-                <Fragment>
+                <>
                   <WeaponsAreaEdit />
                   <div css={{ height: "1em" }} />
                   <AbilitiesAreaEdit npcMode />
-                </Fragment>
+                </>
               ),
             },
             {

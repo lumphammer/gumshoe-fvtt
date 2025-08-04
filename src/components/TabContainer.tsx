@@ -116,7 +116,7 @@ export const TabContainer = ({
                 )}
               </label>
               {index < tabDefs.length - 1 && (
-                <div css={theme.tabSpacerStyle}></div>
+                <div css={theme.tabSpacerStyle} />
               )}
             </Fragment>
           );

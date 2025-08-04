@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
@@ -57,14 +56,14 @@ export const AbilitySheet = () => {
         <AbilityConfig />
       </ModeSelect>
       <ModeSelect mode={ItemSheetMode.Main}>
-        <Fragment>
+        <>
           {/* Spending/testing area */}
           {getTopAreaContent(ability)}
 
           {/* Other bits */}
           <AbilityMainBits />
           {settingsUseMwStyleAbilities() && <AbilityMwExtraFields />}
-        </Fragment>
+        </>
       </ModeSelect>
     </ItemSheetFramework>
   );
