@@ -155,7 +155,7 @@ export default defineConfig([
   // we ignore js files inside src because there shouldn't be any real ones. the
   // only exception is the dummy packageName.js that's needed in dev mode, which
   // is trivial enough to ignore.
-  globalIgnores(["src/*.js", "**/build"]),
+  globalIgnores(["src/*.js", "**/build", "**/dist", "**/node_modules"]),
 
   {
     files: ["**/*.js"],

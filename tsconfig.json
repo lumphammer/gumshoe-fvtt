@@ -7,5 +7,6 @@
 	},
 	"references": [
 		{ "path": "./packages/shared-fvtt-bits" },
+		{ "path": "./packages/investigator-fvtt-types" },
 	],
 }

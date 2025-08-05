@@ -1,5 +1,6 @@
 import { CSSObject, SerializedStyles } from "@emotion/react";
 export { CSSObject } from "@emotion/react";
+
 /**
  * Essential colors for a theme. Some are typed as optional. If these are left
  * out they will be inferred from the others.
