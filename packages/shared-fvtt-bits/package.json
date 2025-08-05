@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "tsc",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
     "format:check": "npx prettier --check src task-core dotfiles",

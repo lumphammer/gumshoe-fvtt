@@ -7,9 +7,6 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
-  // ...neostandard({
-  //   noStyle: true,
-  // }),
   eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
   eslintConfigPrettier,

@@ -6,7 +6,7 @@ import { FoundryAppContext } from "./FoundryAppContext";
 import { Constructor } from "./types";
 
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
-import RenderOptions = foundry.applications.api.ApplicationV2.RenderOptions;
+type RenderOptions = foundry.applications.api.ApplicationV2.RenderOptions;
 
 // so Constructor<Application> is any class which is an Application
 type ApplicationV2Constructor = Constructor<ApplicationV2>;
@@ -14,6 +14,8 @@ type ApplicationV2Constructor = Constructor<ApplicationV2>;
 /**
  * Wrap an existing Foundry Application class in this Mixin to override the
  * normal rendering behaviour and and use React instead.
+ *
+ * See MIXINS.md.
  */
 export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
   /**
@@ -30,7 +32,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
    * Render method - should return some JSX.
    */
   render: () => ReactNode,
-) {
+): TBase {
   class Reactified extends Base {
     // PROPERTIES
 

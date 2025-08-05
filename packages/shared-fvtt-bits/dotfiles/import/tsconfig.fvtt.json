@@ -49,13 +49,5 @@
     // https://github.com/microsoft/TypeScript/issues/47663
     "composite": false,
     "declaration": false
-  },
-  "include": [
-    // in typescript, anywhere
-    "${configDir}/**/*.ts",
-    "${configDir}/**/*.tsx",
-    // in root of project, allow js
-    "${configDir}/*.js",
-    "${configDir}/packages/*/*.js",
-  ]
+  }
 }

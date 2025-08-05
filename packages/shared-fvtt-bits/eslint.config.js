@@ -8,5 +8,6 @@ export default defineConfig([
     // anything using eslintrc format is legacy and not linted
     "*/**/*.eslintrc*.?js",
     "dotfiles/copy",
+    "dist",
   ]),
 ]);

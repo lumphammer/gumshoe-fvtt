@@ -35,5 +35,6 @@ export default defineConfig([
     // anything using eslintrc format is legacy and not linted
     "*/**/*.eslintrc*.?js",
     "packages/shared-fvtt-bits/dotfiles/copy",
+    "**/dist",
   ]),
 ]);
