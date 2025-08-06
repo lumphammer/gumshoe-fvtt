@@ -126,7 +126,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
                   data-action="toggleHidden"
                   data-tooltip=""
                   aria-label={localize("COMBAT.ToggleVis")}
-                ></button>
+                />
                 <button
                   type="button"
                   className={cx(
@@ -138,7 +138,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
                   data-action="toggleDefeated"
                   data-tooltip=""
                   aria-label={localize("COMBAT.ToggleDead")}
-                ></button>
+                />
               </>
             )}
             <button
@@ -147,7 +147,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
               data-action="pingCombatant"
               data-tooltip=""
               aria-label={localize("COMBAT.PingCombatant")}
-            ></button>
+            />
             <div className="token-effects" data-tooltip-html={effectsTooltip}>
               {Array.from(effects).map<ReactNode>(
                 (effect, i) =>

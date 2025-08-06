@@ -28,7 +28,7 @@ export const AbilitiesAreaPlay = ({
   const showEmpty = settings.showEmptyInvestigativeCategories.get();
 
   return (
-    <Fragment>
+    <>
       <div
         css={{
           display: "grid",
@@ -126,6 +126,6 @@ export const AbilitiesAreaPlay = ({
           ))}
         </div>
       </div>
-    </Fragment>
+    </>
   );
 };

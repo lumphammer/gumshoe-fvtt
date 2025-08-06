@@ -1,6 +1,5 @@
 import React, {
   CSSProperties,
-  Fragment,
   PropsWithChildren,
   RefObject,
   useCallback,
@@ -108,7 +107,7 @@ export const Dropdown = ({
   const { shouldMount, isShowing } = useShowHideTransition(isOpen, duration);
 
   return (
-    <Fragment>
+    <>
       <Button
         role={role}
         ref={buttonRef}
@@ -147,6 +146,6 @@ export const Dropdown = ({
           </CloseContext.Provider>,
           container,
         )}
-    </Fragment>
+    </>
   );
 };

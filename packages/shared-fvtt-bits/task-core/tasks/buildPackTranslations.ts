@@ -1,9 +1,3 @@
-// this entire task is going to stop working because of the switch to leveldb
-// so I cba to fix it
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import chalk from "chalk";
 import { writeFile } from "fs/promises";
 import path from "path";

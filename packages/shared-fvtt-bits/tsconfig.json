@@ -1,4 +1,21 @@
 {
 	"extends": "./dotfiles/import/tsconfig.fvtt.json",
-	"include": ["task-core", "src", "dotfiles"],
+	"include": ["**/*"],
+	"exclude": [
+		// these files may be have valid imports because they're intended to be
+		// copied into a new project
+		"dotfiles/copy",
+		// our output folder - if we don't exclude this it will try to overwrite
+		"dist"
+	],
+	"compilerOptions": {
+		// composite requires declaration and forbids noEmit
+		"composite": true,
+		"declaration": true,
+		"noEmit": false,
+
+		// keep the output clean
+		"emitDeclarationOnly": true,
+		"outDir": "dist",
+	}
 }

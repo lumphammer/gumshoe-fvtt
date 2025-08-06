@@ -2,7 +2,7 @@ import "@testing-library/jest-dom/vitest";
 
 import { afterEach, vi } from "vitest";
 
-const noop = () => {};
+const noop = () => undefined;
 
 export function setUpVitestGlobals() {
   global.Hooks = {

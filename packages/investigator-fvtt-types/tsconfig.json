@@ -1,4 +1,15 @@
 {
-  "extends": "../shared-fvtt-bits/dotfiles/import/tsconfig.fvtt.json",
-  "include": ["./index.d.ts", "./.eslintrc.cjs"],
+  "include": ["index.ts", "eslint.config.js"],
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "allowJs": true,
+    "outDir": "./dist",
+    "composite": true,
+    "declaration": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "lib": ["es2020", "dom"],
+  }
 }

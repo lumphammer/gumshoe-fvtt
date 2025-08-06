@@ -1,7 +1,13 @@
 {
 	"extends": "./packages/shared-fvtt-bits/dotfiles/import/tsconfig.fvtt.json",
+	"exclude": ["packages"],
 	"compilerOptions": {
 		// "noErrorTruncation": true
 		"noImplicitAny": false,
-	}
+	},
+	"references": [
+		{ "path": "./packages/shared-fvtt-bits" },
+		{ "path": "./packages/investigator-fvtt-types" },
+		{ "path": "./packages/minirouter" }
+	],
 }

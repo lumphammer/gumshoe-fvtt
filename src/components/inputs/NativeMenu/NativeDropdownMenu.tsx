@@ -29,7 +29,7 @@ export const NativeDropdownMenu = ({
         <span ref={ref} css={{ display: "none" }} />
         <DropdownMenu.Portal>
           <DropdownMenu.Content
-            avoidCollisions={true}
+            avoidCollisions
             collisionBoundary={document.body}
             collisionPadding={10}
             align="center"

@@ -1,7 +1,7 @@
 import { AnimatePresence, m } from "framer-motion";
 import { memo, PropsWithChildren } from "react";
 
-import { absoluteCover } from "../../../../src/components/absoluteCover";
+import { absoluteCover } from "../absoluteCover";
 import { useOutletProvider } from "../outlets/useOutletProvider";
 import { duration } from "./constants";
 import { CustomLazyMotion } from "./CustomLazyMotion";

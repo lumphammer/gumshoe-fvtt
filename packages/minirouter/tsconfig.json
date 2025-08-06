@@ -1,4 +1,11 @@
 {
 	"extends": "../shared-fvtt-bits/dotfiles/import/tsconfig.fvtt.json",
-	"include": ["src"],
+	"exclude": ["dist"],
+	"compilerOptions": {
+		"composite": true,
+		"declaration": true,
+		"noEmit": false,
+		"emitDeclarationOnly": true,
+		"outDir": "dist",
+	}
 }

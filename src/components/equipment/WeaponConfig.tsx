@@ -1,4 +1,4 @@
-import { Fragment, useCallback } from "react";
+import { useCallback } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/isGame";
@@ -117,7 +117,7 @@ export const WeaponConfig = () => {
         />
       </GridField>
       {item.system.usesAmmo && (
-        <Fragment>
+        <>
           <GridField label="Ammo capacity">
             <AsyncNumberInput
               min={0}
@@ -132,7 +132,7 @@ export const WeaponConfig = () => {
               onChange={item.system.setAmmoPerShot}
             />
           </GridField>
-        </Fragment>
+        </>
       )}
       <GridField label="Delete">
         <Button onClick={onClickDelete}>

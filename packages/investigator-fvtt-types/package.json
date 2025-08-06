@@ -2,15 +2,17 @@
   "name": "@lumphammer/investigator-fvtt-types",
   "version": "1.14.0-alpha.3",
   "description": "",
+  "type": "module",
   "exports": {
     ".": {
-      "types": "./index.d.ts"
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
     "test": "tsc",
-    "lint:check": "eslint ./*.ts",
-    "lint:fix": "eslint ./*.ts --fix",
+    "typecheck": "tsc",
+    "lint:check": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format:check": "prettier --check ./*.ts",
     "format:fix": "prettier --write ./*.ts"
   },

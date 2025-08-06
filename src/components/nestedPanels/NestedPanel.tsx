@@ -1,4 +1,4 @@
-import { DevTools, useNavigationContext } from "@lumphammer/minirouter";
+import { useNavigationContext } from "@lumphammer/minirouter";
 import React, {
   memo,
   PropsWithChildren,
@@ -90,7 +90,6 @@ export const NestedPanel = memo<NestedPanelProps>(
           >
             {children}
           </div>
-          {false && <DevTools />}
           {/* <DevTools /> */}
         </section>
       </>

@@ -87,7 +87,7 @@ export const Checkbox = React.memo<CheckboxProps>(
               opacity: "0.5",
             },
           }}
-        ></span>
+        />
       </label>
     );
   },

@@ -8,11 +8,13 @@ type DocumentSheetV2Constructor = Constructor<DocumentSheetV2.Any>;
  * Wrap an existing Foundry Application class in this Mixin to override the
  * normal rendering behaviour and and use React instead.
  *
+ * See MIXINS.md.
+ *
  * @param Base - The base class.
  */
 export function OverrideAutoDisableMixin<
   TBase extends DocumentSheetV2Constructor,
->(Base: TBase) {
+>(Base: TBase): TBase {
   class OverrideAutoDisable extends Base {
     /**
      * Override the normal behaviour of the DocumentSheetV2#_toggleDisabled

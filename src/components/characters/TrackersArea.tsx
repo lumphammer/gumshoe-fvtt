@@ -1,5 +1,3 @@
-import { Fragment } from "react";
-
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertActiveCharacterActor } from "../../module/actors/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
@@ -21,10 +19,10 @@ export const TrackersArea = () => {
   });
 
   return (
-    <Fragment>
+    <>
       {abilities.map((ability, i) => (
         <PoolTracker key={`${ability.name}-- ${i}`} ability={ability} />
       ))}
-    </Fragment>
+    </>
   );
 };

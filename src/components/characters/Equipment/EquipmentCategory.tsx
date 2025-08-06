@@ -86,7 +86,7 @@ export const EquipmentCategory = ({
           gridRow: "headers",
           borderBottom: `1px solid ${theme.colors.controlBorder}`,
         }}
-      ></div>
+      />
       <div css={{ gridColumn: "1", gridRow: "headers" }}>
         <Translate>Item Name</Translate>
       </div>

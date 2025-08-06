@@ -75,7 +75,7 @@ export const Tracker = () => {
               }}
               data-action="createCombat"
             >
-              <i className="fa-solid fa-plus" inert></i>
+              <i className="fa-solid fa-plus" inert />
               <span>{localize("COMBAT.Create")}</span>
             </button>
           )}

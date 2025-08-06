@@ -48,7 +48,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                   data-action="previousRound"
                   data-tooltip=""
                   aria-label={localize("COMBAT.RoundPrev")}
-                ></button>
+                />
                 {!isTurnPassing && (
                   <button
                     type="button"
@@ -56,7 +56,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                     data-action="previousTurn"
                     data-tooltip=""
                     aria-label={localize("COMBAT.TurnPrev")}
-                  ></button>
+                  />
                 )}
                 <strong
                   css={{
@@ -115,14 +115,14 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                       data-action="nextTurn"
                       data-tooltip=""
                       aria-label={localize("COMBAT.TurnNext")}
-                    ></button>
+                    />
                     <button
                       type="button"
                       className="inline-control combat-control icon fa-solid fa-chevrons-right"
                       data-action="nextRound"
                       data-tooltip=""
                       aria-label={localize("COMBAT.RoundNext")}
-                    ></button>
+                    />
                   </>
                 )}
                 {isTurnPassing && (
@@ -149,7 +149,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                     }}
                   >
                     {localize("COMBAT.RoundNext")}
-                    <i className="fa-solid fa-chevrons-right" inert></i>
+                    <i className="fa-solid fa-chevrons-right" inert />
                   </button>
                 )}
               </>
@@ -183,7 +183,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                       data-action="previousTurn"
                       data-tooltip=""
                       aria-label={localize("COMBAT.TurnPrev")}
-                    ></button>
+                    />
                   </>
                 )}
               <strong
@@ -207,7 +207,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                     data-action="nextTurn"
                     data-tooltip=""
                     aria-label={localize("COMBAT.TurnNext")}
-                  ></button>
+                  />
                 )}
             </>
           )

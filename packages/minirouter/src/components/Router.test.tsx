@@ -2,7 +2,6 @@ import "@testing-library/jest-dom/vitest";
 
 import { getByTestId, getByText, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import React from "react";
 import { describe, expect, test } from "vitest";
 
 import { Link } from "./Link";
@@ -46,7 +45,7 @@ describe("single route", () => {
   test("should show content when a link is clicked", async () => {
     const { container } = render(
       <Router>
-        <Link data-testid="link" from="root" to={direction1()}></Link>
+        <Link data-testid="link" from="root" to={direction1()} />
         <Route direction={direction1}>
           <p>route</p>
         </Route>

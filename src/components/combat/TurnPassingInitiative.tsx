@@ -1,5 +1,5 @@
 import { keyframes } from "@emotion/react";
-import { Fragment, useCallback } from "react";
+import { useCallback } from "react";
 import { FaEdit, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
@@ -70,7 +70,7 @@ export const TurnPassingInitiative = ({
   const depleted = combatant.system.passingTurnsRemaining <= 0;
 
   return (
-    <Fragment>
+    <>
       <div css={{ flex: 0 }}>
         {combatant.system.passingTurnsRemaining}/
         {combatant.system.defaultPassingTurns}
@@ -134,6 +134,6 @@ export const TurnPassingInitiative = ({
           </NativeMenuItem>
         </NativeDualFunctionMenu>
       )}
-    </Fragment>
+    </>
   );
 };

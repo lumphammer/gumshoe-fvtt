@@ -1,4 +1,4 @@
-import { ChangeEvent, Fragment, useCallback, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
@@ -130,7 +130,7 @@ export const AbilityConfig = () => {
         />
       </GridField>
       {settingsUseNpcCombatBonuses() && isGeneralAbilityItem(item) && (
-        <Fragment>
+        <>
           <GridField label="Combat bonus">
             <AsyncNumberInput
               value={item.system.combatBonus}
@@ -143,7 +143,7 @@ export const AbilityConfig = () => {
               onChange={item.system.setDamageBonus}
             />
           </GridField>
-        </Fragment>
+        </>
       )}
       <GridField label="Has Specialities?">
         <Toggle

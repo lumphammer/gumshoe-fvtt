@@ -49,14 +49,5 @@
     // https://github.com/microsoft/TypeScript/issues/47663
     "composite": false,
     "declaration": false
-  },
-  "include": [
-    // in src, we scan only for .ts files (allowJs is off)
-    "${configDir}/src",
-    // in root of project, allow ts, js, cjs
-    "${configDir}/*.ts",
-    "${configDir}/*.js",
-    // for .eslintrc.cjs
-    "${configDir}/.*.cjs"
-  ]
+  }
 }

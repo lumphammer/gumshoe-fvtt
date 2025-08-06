@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
@@ -165,7 +165,7 @@ export const NotesEditorWithControls = ({
         )}
 
         {editMode && !showSource && (
-          <Fragment>
+          <>
             <ToolbarButton onClick={handleSave}>
               <i className="fas fa-download" />
               <Translate>Save</Translate>
@@ -174,7 +174,7 @@ export const NotesEditorWithControls = ({
               <i className="fas fa-ban" />
               <Translate>Cancel</Translate>
             </ToolbarButton>
-          </Fragment>
+          </>
         )}
 
         {allowChangeFormat && editMode && !showSource && (

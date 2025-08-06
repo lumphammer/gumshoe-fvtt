@@ -1,4 +1,4 @@
-import { Fragment, ReactNode } from "react";
+import { ReactNode } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
@@ -41,7 +41,7 @@ export const AbilityRow = ({
       ? theme.colors.bgOpaquePrimary
       : theme.colors.bgOpaqueSecondary;
   return (
-    <Fragment>
+    <>
       {/* Ability name */}
       <div
         css={{
@@ -130,6 +130,6 @@ export const AbilityRow = ({
       >
         {abilityRowData.total}
       </div>
-    </Fragment>
+    </>
   ); //
 };
