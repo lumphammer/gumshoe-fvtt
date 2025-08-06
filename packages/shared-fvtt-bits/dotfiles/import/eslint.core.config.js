@@ -11,6 +11,13 @@ export default defineConfig([
   tseslint.configs.recommendedTypeChecked,
   eslintConfigPrettier,
 
+  // we ignore js files inside src because there shouldn't be any real ones. the
+  // only exception is the dummy packageName.js that's needed in dev mode, which
+  // is trivial enough to ignore.
+  globalIgnores(["src/*.js", "**/build", "**/dist", "**/node_modules"]),
+
+  // ///////////////////////////////////////////////////////////////////////////
+  // main config
   {
     linterOptions: {
       reportUnusedDisableDirectives: "error",
@@ -151,11 +158,6 @@ export default defineConfig([
       "@typescript-eslint/no-deprecated": "error",
     },
   },
-
-  // we ignore js files inside src because there shouldn't be any real ones. the
-  // only exception is the dummy packageName.js that's needed in dev mode, which
-  // is trivial enough to ignore.
-  globalIgnores(["src/*.js", "**/build", "**/dist", "**/node_modules"]),
 
   {
     files: ["**/*.js"],
