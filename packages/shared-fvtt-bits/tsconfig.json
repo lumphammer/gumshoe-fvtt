@@ -9,8 +9,6 @@
 		"dist"
 	],
 	"compilerOptions": {
-		"allowJs": true,
-
 		// composite requires declaration and forbids noEmit
 		"composite": true,
 		"declaration": true,
