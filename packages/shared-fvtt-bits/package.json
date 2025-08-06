@@ -34,7 +34,7 @@
     "react-dom": "^19.1.0",
     "rollup-plugin-visualizer": "^6.0.3",
     "typescript": "^5.8.3",
-    "vite": "^7.0.4",
+    "vite": "^7.0.6",
     "vite-plugin-svgr": "^4.3.0",
     "vitest": "^3.0.4"
   },
@@ -57,14 +57,14 @@
     "react-dom": "^19.1.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
-    "vite": "^7.0.4",
+    "vite": "^7.0.6",
     "vitest": "^3.0.4"
   },
   "dependencies": {
     "@eslint/js": "^9.32.0",
     "@foundryvtt/foundryvtt-cli": "^1.1.0",
     "@seald-io/nedb": "^4.1.2",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/user-event": "^14.6.1",
     "@types/archiver": "^6.0.3",
     "@types/fs-extra": "^11.0.4",
