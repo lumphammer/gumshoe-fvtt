@@ -30,10 +30,10 @@
     "@tsconfig/recommended": "^1.0.10",
     "fvtt-types": "github:n3dst4/foundry-vtt-types#documents-v2-temp",
     "prettier": "^3.6.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   },
   "volta": {
-    "pnpm": "10.13.1",
-    "node": "22.17.1"
+    "pnpm": "10.14.0",
+    "node": "22.18.0"
   }
 }
