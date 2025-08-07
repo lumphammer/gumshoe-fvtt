@@ -58,14 +58,68 @@ export class InvestigatorCombat<
   }
 
   protected override _preUpdate(
-    changed: Combat.UpdateData,
-    options: Combat.Database.PreUpdateOptions,
-    user: User.Implementation,
+    ...[changed, options, user]: Parameters<Combat<SubType>["_preUpdate"]>
   ): Promise<boolean | void> {
     systemLogger.log(
-      `InvestigatorCombat._preUpdate called with changed: ${JSON.stringify(changed, null, 2)}`,
+      `InvestigatorCombat#_preUpdate called with changed: ${JSON.stringify(changed, null, 2)}`,
     );
     return super._preUpdate(changed, options, user);
+  }
+
+  protected override _onUpdate(
+    ...[changed, options, userId]: Parameters<Combat<SubType>["_onUpdate"]>
+  ) {
+    systemLogger.log(
+      `InvestigatorCombat#_onUpdate called with changed: ${JSON.stringify(changed, null, 2)}`,
+    );
+    super._onUpdate(changed, options, userId);
+  }
+
+  protected static override async _preUpdateOperation(
+    ...[documents, operation, user]: Parameters<
+      (typeof Combat)["_preUpdateOperation"]
+    >
+  ) {
+    systemLogger.log(
+      `InvestigatorCombat._preUpdateOperation called with documents: ${documents.map((d) => d.id).join(", ")}`,
+    );
+    return super._preUpdateOperation(documents, operation, user);
+  }
+
+  protected static override async _onUpdateOperation(
+    ...[documents, operation, user]: Parameters<
+      (typeof Combat)["_onUpdateOperation"]
+    >
+  ) {
+    systemLogger.log(
+      `InvestigatorCombat._onUpdateOperation called with documents: ${documents.map((d) => d.id).join(", ")}`,
+    );
+    return super._onUpdateOperation(documents, operation, user);
+  }
+
+  protected override _preUpdateDescendantDocuments(
+    // destructuring a spread because the type for the args is a tuple 🙃
+    ...[
+      parent,
+      collection,
+      changes,
+      options,
+      userId,
+    ]: Combat.PreUpdateDescendantDocumentsArgs
+  ) {
+    systemLogger.log(
+      `InvestigatorCombat#_preUpdateDescendantDocuments called with changes: ${JSON.stringify(changes, null, 2)}`,
+    );
+    super._preUpdateDescendantDocuments(
+      ...[parent, collection, changes, options, userId],
+    );
+  }
+
+  protected override _onUpdateDescendantDocuments(
+    ...args: Combat.OnUpdateDescendantDocumentsArgs
+  ) {
+    systemLogger.log("InvestigatorCombat#_onUpdateDescendantDocuments called");
+    super._onUpdateDescendantDocuments(...args);
   }
 
   protected _compareCombatants = (
