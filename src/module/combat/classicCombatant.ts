@@ -1,6 +1,6 @@
 import { assertGame } from "../../functions/isGame";
 import { isNullOrEmptyString } from "../../functions/utilities";
-import { Document, NumberField, TypeDataModel } from "../../fvtt-exports";
+import { NumberField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import {
   assertActiveCharacterActor,
@@ -54,12 +54,12 @@ export class ClassicCombatantModel extends TypeDataModel<
   }
 
   override _preCreate(
-    data: TypeDataModel.ParentAssignmentType<
-      typeof classicCombatantSchema,
-      InvestigatorCombatant<"classic">
-    >,
-    options: Document.Database.PreCreateOptions<foundry.abstract.types.DatabaseCreateOperation>,
-    user: foundry.documents.User.Implementation,
+    ...[data, options, user]: Parameters<
+      TypeDataModel<
+        typeof classicCombatantSchema,
+        InvestigatorCombatant<"classic">
+      >["_preCreate"]
+    >
   ) {
     assertGame(game);
 
@@ -69,6 +69,40 @@ export class ClassicCombatantModel extends TypeDataModel<
       this.updateSource({ initiative });
     }
     return super._preCreate(data, options, user);
+  }
+
+  override async _preUpdate(
+    ...[changes, options, user]: Parameters<
+      TypeDataModel<
+        typeof classicCombatantSchema,
+        ClassicCombatant
+      >["_preUpdate"]
+    >
+  ) {
+    console.log(
+      "ClassicCombatandModel#_preUpdate called",
+      changes,
+      options,
+      user,
+    );
+    return super._preUpdate(changes, options, user);
+  }
+
+  override _onUpdate(
+    ...[changed, options, userId]: Parameters<
+      TypeDataModel<
+        typeof classicCombatantSchema,
+        ClassicCombatant
+      >["_onUpdate"]
+    >
+  ) {
+    console.log(
+      "ClassicCombatandModel#_onUpdate called",
+      changed,
+      options,
+      userId,
+    );
+    return super._onUpdate(changed, options, userId);
   }
 
   async resetInitiative(): Promise<void> {
