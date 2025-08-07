@@ -64,6 +64,30 @@ export class ClassicCombatModel extends TypeDataModel<
   static defineSchema(): typeof classicCombatSchema {
     return classicCombatSchema;
   }
+
+  override async _preUpdate(
+    ...[changes, options, user]: Parameters<
+      TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_preUpdate"]
+    >
+  ) {
+    console.log("ClassicCombatModel#_preUpdate called", changes, options, user);
+    return super._preUpdate(changes, options, user);
+  }
+
+  /** override */
+  override _onUpdate(
+    ...[changed, options, userId]: Parameters<
+      TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_onUpdate"]
+    >
+  ) {
+    console.log(
+      "ClassicCombatModel#_onUpdate called",
+      changed,
+      options,
+      userId,
+    );
+    return super._onUpdate(changed, options, userId);
+  }
 }
 
 export type ClassicCombat = InvestigatorCombat<"classic">;
