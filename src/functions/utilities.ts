@@ -273,6 +273,7 @@ export const systemLogger = {
   info: brand(console.info),
   warn: brand(console.warn),
   error: brand(console.error),
+  debug: brand(console.debug),
 };
 
 /**
