@@ -263,8 +263,19 @@ type LoggerFn = (...args: any[]) => void;
 function brand(fn: LoggerFn) {
   return fn.bind(
     null,
-    `%c[${constants.systemId}]`,
-    "color: white; background: #1d5d5d; padding: 2px 4px; border-radius: 2px",
+    `%c${constants.systemId}`,
+    `
+      color: white;
+      background: #1d5d5d;
+      padding: 0px 0.5em;
+      border-radius: 1em;
+      border: 1px solid oklch(0.7 0.0633 195.09);
+      background-image: linear-gradient(
+        90deg,
+        oklch(0.4387 0.0633 195.09) 0%,
+        oklch(0.6068 0.0633 195.09) 100%
+      );
+      `,
   );
 }
 
