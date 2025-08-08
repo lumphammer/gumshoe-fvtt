@@ -1,3 +1,4 @@
+import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
 import {
   ArrayField,
@@ -7,6 +8,7 @@ import {
   TypeDataModel,
 } from "../../fvtt-exports";
 import { InvestigatorCombat } from "./InvestigatorCombat";
+import { isValidCombat } from "./types";
 
 // /////////////////////////////////////////////////////////////////////////////
 // Schema Definition
@@ -72,13 +74,13 @@ export class ClassicCombatModel extends TypeDataModel<
       ClassicCombat
     >
   ) {
-    const error = new Error();
-    systemLogger.debug(
-      "ClassicCombatModel constructor called",
-      data,
-      options?.parent,
-      error.stack,
-    );
+    // const error = new Error();
+    // systemLogger.debug(
+    //   "ClassicCombatModel constructor called",
+    //   data,
+    //   options?.parent,
+    //   error.stack,
+    // );
 
     super(data, options);
   }
@@ -92,7 +94,7 @@ export class ClassicCombatModel extends TypeDataModel<
       TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_preUpdate"]
     >
   ) {
-    console.log("ClassicCombatModel#_preUpdate called", changes, options, user);
+    systemLogger.log("ClassicCombatModel#_preUpdate called");
     return super._preUpdate(changes, options, user);
   }
 
@@ -102,19 +104,42 @@ export class ClassicCombatModel extends TypeDataModel<
       TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_onUpdate"]
     >
   ) {
-    console.log(
-      "ClassicCombatModel#_onUpdate called",
-      changed,
-      options,
-      userId,
-    );
+    systemLogger.log("ClassicCombatModel#_onUpdate called");
     return super._onUpdate(changed, options, userId);
   }
 
-  _preParentUpdate() {
-    systemLogger.debug("ClassicCombatModel#_preParentUpdate called");
+  // _preParentUpdate() {
+  //   systemLogger.debug("ClassicCombatModel#_preParentUpdate called");
+  // }
 
-    // No specific pre-update logic for ClassicCombat
+  _preUpdateDescendantDocuments(
+    // destructuring a spread because the type for the args is a tuple 🙃
+    ...[
+      parent,
+      collection,
+      changes,
+      options,
+      userId,
+    ]: Combat.PreUpdateDescendantDocumentsArgs
+  ) {
+    systemLogger.log("ClassicCombatModel#_preUpdateDescendantDocuments called");
+  }
+
+  _onUpdateDescendantDocuments(
+    ...[
+      parent,
+      collection,
+      documents,
+      changes,
+      options,
+      userId,
+    ]: Combat.OnUpdateDescendantDocumentsArgs
+  ) {
+    systemLogger.log("ClassicCombatModel#_onUpdateDescendantDocuments called");
+    assertGame(game);
+    if (isValidCombat(parent) && userId === game.userId) {
+      systemLogger.log("Local change");
+    }
   }
 }
 
