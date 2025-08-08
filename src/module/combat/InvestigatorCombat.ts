@@ -3,6 +3,7 @@ import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 import { isTurnPassingCombat } from "./turnPassingCombat";
+import { isValidCombat } from "./types";
 
 /**
  * Override base Combat so we can do custom GUMSHOE-style initiative
@@ -68,6 +69,9 @@ export class InvestigatorCombat<
     systemLogger.log(
       `InvestigatorCombat#_preUpdate called with changed: ${JSON.stringify(changed, null, 2)}`,
     );
+    if (isValidCombat(this)) {
+      this.system._preParentUpdate();
+    }
     return super._preUpdate(changed, options, user);
   }
 
