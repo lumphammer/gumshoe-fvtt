@@ -1,3 +1,4 @@
+import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
 import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
@@ -13,10 +14,10 @@ export class InvestigatorCombat<
 > extends Combat<SubType> {
   // turnOrders: string[][] = [];
 
-  constructor(data?: Combat.CreateData, context?: Combat.ConstructionContext) {
-    systemLogger.debug("InvestigatorCombat constructor called", data, context);
-    super(data, context);
-  }
+  // constructor(data?: Combat.CreateData, context?: Combat.ConstructionContext) {
+  //   systemLogger.debug("InvestigatorCombat constructor called", data, context);
+  //   super(data, context);
+  // }
 
   // ///////////////////////////////////////////////////////////////////////////
   // override to make sure we're creating the right kind of combatant
@@ -66,21 +67,14 @@ export class InvestigatorCombat<
   protected override _preUpdate(
     ...[changed, options, user]: Parameters<Combat<SubType>["_preUpdate"]>
   ): Promise<boolean | void> {
-    systemLogger.log(
-      `InvestigatorCombat#_preUpdate called with changed: ${JSON.stringify(changed, null, 2)}`,
-    );
-    if (isValidCombat(this)) {
-      this.system._preParentUpdate();
-    }
+    systemLogger.log("InvestigatorCombat#_preUpdate called");
     return super._preUpdate(changed, options, user);
   }
 
   protected override _onUpdate(
     ...[changed, options, userId]: Parameters<Combat<SubType>["_onUpdate"]>
   ) {
-    systemLogger.log(
-      `InvestigatorCombat#_onUpdate called with changed: ${JSON.stringify(changed, null, 2)}`,
-    );
+    systemLogger.log("InvestigatorCombat#_onUpdate called");
     super._onUpdate(changed, options, userId);
   }
 
@@ -89,9 +83,7 @@ export class InvestigatorCombat<
       (typeof Combat)["_preUpdateOperation"]
     >
   ) {
-    systemLogger.log(
-      `InvestigatorCombat._preUpdateOperation called with documents: ${documents.map((d) => d.id).join(", ")}`,
-    );
+    systemLogger.log("InvestigatorCombat._preUpdateOperation called");
     return super._preUpdateOperation(documents, operation, user);
   }
 
@@ -100,9 +92,7 @@ export class InvestigatorCombat<
       (typeof Combat)["_onUpdateOperation"]
     >
   ) {
-    systemLogger.log(
-      `InvestigatorCombat._onUpdateOperation called with documents: ${documents.map((d) => d.id).join(", ")}`,
-    );
+    systemLogger.log("InvestigatorCombat._onUpdateOperation called");
     return super._onUpdateOperation(documents, operation, user);
   }
 
@@ -116,9 +106,25 @@ export class InvestigatorCombat<
       userId,
     ]: Combat.PreUpdateDescendantDocumentsArgs
   ) {
+    assertGame(game);
+    // madly, this gets called on every connected client (unlike every other
+    // `_pre` lifecycle method. We block that right here.)
+    if (userId !== game.userId) {
+      return;
+    }
     systemLogger.log(
-      `InvestigatorCombat#_preUpdateDescendantDocuments called with changes: ${JSON.stringify(changes, null, 2)}`,
+      "InvestigatorCombat#_preUpdateDescendantDocuments called",
+      new Error("Stack Trace").stack,
     );
+    if (isValidCombat(this)) {
+      this.system._preUpdateDescendantDocuments(
+        parent,
+        collection,
+        changes,
+        options,
+        userId,
+      );
+    }
     super._preUpdateDescendantDocuments(
       ...[parent, collection, changes, options, userId],
     );
@@ -128,6 +134,9 @@ export class InvestigatorCombat<
     ...args: Combat.OnUpdateDescendantDocumentsArgs
   ) {
     systemLogger.log("InvestigatorCombat#_onUpdateDescendantDocuments called");
+    if (isValidCombat(this)) {
+      this.system._onUpdateDescendantDocuments(...args);
+    }
     super._onUpdateDescendantDocuments(...args);
   }
 
@@ -144,8 +153,7 @@ export class InvestigatorCombat<
 
   // borrowed from client/documents/combat.d.mts
   override setupTurns() {
-    const err = new Error();
-    systemLogger.log("InvestigatorCombat.setupTurns called", err.stack);
+    systemLogger.log("InvestigatorCombat.setupTurns called");
 
     this.turns ||= [];
 

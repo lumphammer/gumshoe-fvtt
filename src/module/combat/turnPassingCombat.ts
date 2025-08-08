@@ -12,10 +12,40 @@ export class TurnPassingCombatModel extends TypeDataModel<
     return TurnPassingCombatSchema;
   }
 
-  _preParentUpdate() {
-    systemLogger.debug("TurnPassingCombatModel#_preParentUpdate called");
+  // _preParentUpdate() {
+  //   systemLogger.debug("TurnPassingCombatModel#_preParentUpdate called");
+  // }
 
-    // No specific pre-update logic for ClassicCombat
+  /**
+   * Called by parent
+   */
+  _preUpdateDescendantDocuments(
+    ...[
+      parent,
+      collection,
+      changes,
+      options,
+      userId,
+    ]: Combat.PreUpdateDescendantDocumentsArgs
+  ) {
+    systemLogger.log(
+      `TurnPassingCombatModel#_preUpdateDescendantDocuments called with changes: ${JSON.stringify(changes, null, 2)}`,
+    );
+  }
+
+  _onUpdateDescendantDocuments(
+    ...[
+      parent,
+      collection,
+      documents,
+      changes,
+      options,
+      userId,
+    ]: Combat.OnUpdateDescendantDocumentsArgs
+  ) {
+    systemLogger.log(
+      "TurnPassingCombatModel#_onUpdateDescendantDocuments called",
+    );
   }
 }
 
