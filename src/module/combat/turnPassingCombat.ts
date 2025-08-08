@@ -1,3 +1,4 @@
+import { systemLogger } from "../../functions/utilities";
 import { TypeDataModel } from "../../fvtt-exports";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 
@@ -9,6 +10,12 @@ export class TurnPassingCombatModel extends TypeDataModel<
 > {
   static defineSchema(): typeof TurnPassingCombatSchema {
     return TurnPassingCombatSchema;
+  }
+
+  _preParentUpdate() {
+    systemLogger.debug("TurnPassingCombatModel#_preParentUpdate called");
+
+    // No specific pre-update logic for ClassicCombat
   }
 }
 
