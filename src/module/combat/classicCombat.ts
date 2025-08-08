@@ -110,6 +110,12 @@ export class ClassicCombatModel extends TypeDataModel<
     );
     return super._onUpdate(changed, options, userId);
   }
+
+  _preParentUpdate() {
+    systemLogger.debug("ClassicCombatModel#_preParentUpdate called");
+
+    // No specific pre-update logic for ClassicCombat
+  }
 }
 
 export type ClassicCombat = InvestigatorCombat<"classic">;
