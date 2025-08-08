@@ -16,9 +16,7 @@ export class InvestigatorCombatant<
     options: Combatant.Database.PreUpdateOptions,
     user: User.Implementation,
   ) {
-    systemLogger.log(
-      `InvestigatorCombatant#_preUpdate called with changed: ${JSON.stringify(changed, null, 2)}`,
-    );
+    systemLogger.log("InvestigatorCombatant#_preUpdate called");
     return super._preUpdate(changed, options, user);
   }
 
@@ -27,9 +25,7 @@ export class InvestigatorCombatant<
     options: Combatant.Database.OnUpdateOperation,
     userId: string,
   ) {
-    systemLogger.log(
-      `InvestigatorCombatant#_onUpdate called with changed: ${JSON.stringify(changed, null, 2)}`,
-    );
+    systemLogger.log("InvestigatorCombatant#_onUpdate called");
     super._onUpdate(changed, options, userId);
   }
 
@@ -38,9 +34,7 @@ export class InvestigatorCombatant<
     operation: Combatant.Database.Update,
     user: User.Implementation,
   ) {
-    systemLogger.log(
-      `InvestigatorCombatant._preUpdateOperation called with documents: ${documents.map((d) => d.id).join(", ")}`,
-    );
+    systemLogger.log("InvestigatorCombatant._preUpdateOperation called");
     return super._preUpdateOperation(documents, operation, user);
   }
 
@@ -49,9 +43,7 @@ export class InvestigatorCombatant<
     operation: Combatant.Database.Update,
     user: User.Implementation,
   ) {
-    systemLogger.log(
-      `InvestigatorCombatant._onUpdateOperation called with documents: ${documents.map((d) => d.id).join(", ")}`,
-    );
+    systemLogger.log("InvestigatorCombatant._onUpdateOperation called");
     return super._onUpdateOperation(documents, operation, user);
   }
 }
