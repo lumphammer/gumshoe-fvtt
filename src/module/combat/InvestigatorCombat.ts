@@ -10,7 +10,12 @@ import { isTurnPassingCombat } from "./turnPassingCombat";
 export class InvestigatorCombat<
   out SubType extends Combat.SubType = Combat.SubType,
 > extends Combat<SubType> {
-  turnOrders: string[][] = [];
+  // turnOrders: string[][] = [];
+
+  constructor(data?: Combat.CreateData, context?: Combat.ConstructionContext) {
+    systemLogger.debug("InvestigatorCombat constructor called", data, context);
+    super(data, context);
+  }
 
   // ///////////////////////////////////////////////////////////////////////////
   // override to make sure we're creating the right kind of combatant

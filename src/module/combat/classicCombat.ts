@@ -1,10 +1,15 @@
+import { systemLogger } from "../../functions/utilities";
 import {
   ArrayField,
+  DataModel,
   SchemaField,
   StringField,
   TypeDataModel,
 } from "../../fvtt-exports";
 import { InvestigatorCombat } from "./InvestigatorCombat";
+
+// /////////////////////////////////////////////////////////////////////////////
+// Schema Definition
 
 const turnField = new SchemaField(
   {
@@ -61,6 +66,23 @@ export class ClassicCombatModel extends TypeDataModel<
   typeof classicCombatSchema,
   InvestigatorCombat<"classic">
 > {
+  constructor(
+    ...[data, options]: DataModel.ConstructorArgs<
+      typeof classicCombatSchema,
+      ClassicCombat
+    >
+  ) {
+    const error = new Error();
+    systemLogger.debug(
+      "ClassicCombatModel constructor called",
+      data,
+      options?.parent,
+      error.stack,
+    );
+
+    super(data, options);
+  }
+
   static defineSchema(): typeof classicCombatSchema {
     return classicCombatSchema;
   }
