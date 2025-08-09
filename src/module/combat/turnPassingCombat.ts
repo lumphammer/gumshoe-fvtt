@@ -47,6 +47,12 @@ export class TurnPassingCombatModel extends TypeDataModel<
       "TurnPassingCombatModel#_onUpdateDescendantDocuments called",
     );
   }
+
+  getTurns(): string[] {
+    return this.parent.combatants.contents
+      .sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""))
+      .map((c) => c.id ?? "");
+  }
 }
 
 export type TurnPassingCombat = InvestigatorCombat<"turnPassing">;

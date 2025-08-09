@@ -7,8 +7,22 @@ import {
   StringField,
   TypeDataModel,
 } from "../../fvtt-exports";
+import { settings } from "../../settings/settings";
+import { ClassicCombatant, isClassicCombatant } from "./classicCombatant";
 import { InvestigatorCombat } from "./InvestigatorCombat";
+import { InvestigatorCombatant } from "./InvestigatorCombatant";
 import { isValidCombat } from "./types";
+
+function compareCombatants(
+  a: InvestigatorCombatant,
+  b: InvestigatorCombatant,
+): number {
+  if (settings.useTurnPassingInitiative.get()) {
+    return a.name && b.name ? a.name.localeCompare(b.name) : 0;
+  } else {
+    return (b.system.initiative ?? 0) - (a.system.initiative ?? 0);
+  }
+}
 
 // /////////////////////////////////////////////////////////////////////////////
 // Schema Definition
@@ -74,19 +88,82 @@ export class ClassicCombatModel extends TypeDataModel<
       ClassicCombat
     >
   ) {
-    // const error = new Error();
-    // systemLogger.debug(
-    //   "ClassicCombatModel constructor called",
-    //   data,
-    //   options?.parent,
-    //   error.stack,
-    // );
-
     super(data, options);
   }
 
   static defineSchema(): typeof classicCombatSchema {
     return classicCombatSchema;
+  }
+
+  override _preCreate(
+    ...[data, options, user]: Parameters<
+      TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_preCreate"]
+    >
+  ) {
+    const turns = this.parent.combatants.contents
+      .sort(compareCombatants)
+      .map((c) => ({ combatantId: c.id }));
+    this.updateSource({
+      rounds: [
+        {
+          turns,
+        },
+      ],
+    });
+    return super._preCreate(data, options, user);
+  }
+
+  async onCreateDescendantDocuments(
+    ...[
+      parent,
+      collection,
+      documents,
+      data,
+      options,
+      userId,
+    ]: Combat.OnCreateDescendantDocumentsArgs
+  ) {
+    if (collection !== "combatants") {
+      return;
+    }
+    systemLogger.log(
+      "ClassicCombatModel#onCreateDescendantDocuments called",
+      documents,
+      data,
+    );
+
+    const round = this.rounds[this.parent.round];
+    const oldTurns = [...round.turns];
+    const settled = oldTurns.slice(0, parent.turn ?? 1 - 1);
+    const newCombatants: ClassicCombatant[] = (documents as unknown[]).filter(
+      isClassicCombatant,
+    );
+    const unsettled = oldTurns
+      .slice((parent.turn ?? 1) - 1)
+      .map((t) => parent.combatants.get(t.combatantId))
+      .filter((c) => c !== undefined)
+      .concat(newCombatants)
+      .sort(compareCombatants)
+      .map((c) => ({ combatantId: c.id }));
+
+    const turns = [...settled, ...unsettled];
+
+    // debugger;
+
+    await this.parent.update({
+      system: {
+        rounds: [
+          ...this.rounds.slice(0, parent.round - 1),
+          {
+            turns,
+            jumpIns: round.jumpIns,
+          },
+          ...this.rounds.slice(parent.round + 1),
+        ],
+      },
+    });
+
+    parent.setupTurns();
   }
 
   override async _preUpdate(
@@ -95,36 +172,34 @@ export class ClassicCombatModel extends TypeDataModel<
     >
   ) {
     systemLogger.log("ClassicCombatModel#_preUpdate called");
+    // This is where we want to react to changes in the combat.
     return super._preUpdate(changes, options, user);
   }
 
-  /** override */
-  override _onUpdate(
-    ...[changed, options, userId]: Parameters<
-      TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_onUpdate"]
-    >
-  ) {
-    systemLogger.log("ClassicCombatModel#_onUpdate called");
-    return super._onUpdate(changed, options, userId);
-  }
-
-  // _preParentUpdate() {
-  //   systemLogger.debug("ClassicCombatModel#_preParentUpdate called");
+  // override _onUpdate(
+  //   ...[changed, options, userId]: Parameters<
+  //     TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_onUpdate"]
+  //   >
+  // ) {
+  //   systemLogger.log("ClassicCombatModel#_onUpdate called");
+  //   return super._onUpdate(changed, options, userId);
   // }
 
-  _preUpdateDescendantDocuments(
-    // destructuring a spread because the type for the args is a tuple 🙃
-    ...[
-      parent,
-      collection,
-      changes,
-      options,
-      userId,
-    ]: Combat.PreUpdateDescendantDocumentsArgs
-  ) {
-    systemLogger.log("ClassicCombatModel#_preUpdateDescendantDocuments called");
-  }
+  // _preUpdateDescendantDocuments(
+  //   ...[
+  //     parent,
+  //     collection,
+  //     changes,
+  //     options,
+  //     userId,
+  //   ]: Combat.PreUpdateDescendantDocumentsArgs
+  // ) {
+  //   systemLogger.log("ClassicCombatModel#_preUpdateDescendantDocuments called");
+  // }
 
+  // not an override because foundry doesn't do this itself. we call this from
+  // InvestigatorCombat#_onUpdateDescendantDocuments so the model can react to
+  // changes in combatants.
   _onUpdateDescendantDocuments(
     ...[
       parent,
@@ -137,9 +212,18 @@ export class ClassicCombatModel extends TypeDataModel<
   ) {
     systemLogger.log("ClassicCombatModel#_onUpdateDescendantDocuments called");
     assertGame(game);
-    if (isValidCombat(parent) && userId === game.userId) {
-      systemLogger.log("Local change");
+    if (!isValidCombat(parent) || userId !== game.userId) {
+      return;
     }
+    // This is where we want to react to changes in combatants.
+    // if (collection === game.combatants) {}
+  }
+
+  getTurns(): string[] {
+    const turns =
+      this.rounds[this.parent.round].turns.map((t) => t.combatantId) ?? [];
+    systemLogger.log("Returning turns", turns);
+    return turns;
   }
 }
 

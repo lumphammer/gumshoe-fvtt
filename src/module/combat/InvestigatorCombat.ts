@@ -2,6 +2,7 @@ import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
 import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
+import { isClassicCombat } from "./classicCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 import { isTurnPassingCombat } from "./turnPassingCombat";
 import { isValidCombat } from "./types";
@@ -109,24 +110,38 @@ export class InvestigatorCombat<
     assertGame(game);
     // madly, this gets called on every connected client (unlike every other
     // `_pre` lifecycle method. We block that right here.)
-    if (userId !== game.userId) {
-      return;
-    }
-    systemLogger.log(
-      "InvestigatorCombat#_preUpdateDescendantDocuments called",
-      new Error("Stack Trace").stack,
-    );
-    if (isValidCombat(this)) {
-      this.system._preUpdateDescendantDocuments(
-        parent,
-        collection,
-        changes,
-        options,
-        userId,
-      );
-    }
+    // if (userId !== game.userId) {
+    //   return;
+    // }
+    systemLogger.log("InvestigatorCombat#_preUpdateDescendantDocuments called");
     super._preUpdateDescendantDocuments(
       ...[parent, collection, changes, options, userId],
+    );
+  }
+
+  protected override _preCreateDescendantDocuments(
+    ...args: Combat.PreCreateDescendantDocumentsArgs
+  ) {
+    super._preCreateDescendantDocuments(...args);
+  }
+
+  protected override _onCreateDescendantDocuments(
+    ...[
+      parent,
+      collection,
+      documents,
+      data,
+      options,
+      userId,
+    ]: Combat.OnCreateDescendantDocumentsArgs
+  ) {
+    if (isClassicCombat(this) && userId === game.userId) {
+      void this.system.onCreateDescendantDocuments(
+        ...[parent, collection, documents, data, options, userId],
+      );
+    }
+    return super._onCreateDescendantDocuments(
+      ...[parent, collection, documents, data, options, userId],
     );
   }
 
@@ -158,15 +173,12 @@ export class InvestigatorCombat<
     this.turns ||= [];
 
     // Determine the turn order and the current turn
-    const turns = this.combatants.contents.sort(this._compareCombatants);
-    if (this.turn !== null) {
-      if (this.turn < 0) {
-        this.turn = 0;
-      } else if (this.turn >= turns.length) {
-        this.turn = 0;
-        this.round++;
-      }
-    }
+    const turns: InvestigatorCombatant[] = isValidCombat(this)
+      ? this.system
+          .getTurns()
+          .map((cid) => this.combatants.get(cid))
+          .filter((c) => c !== undefined)
+      : [];
 
     // Update state tracking
     const c = this.turn !== null ? turns[this.turn] : undefined;
