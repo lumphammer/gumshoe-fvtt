@@ -7,6 +7,7 @@
 * Fixes for some issues encountered on Forge VTT:
   * Error message in console about `cssRules`.
   * File picker not showing "Forge Assets" and "Bazaaar".
+* Behind the scenes: completely reworked combat, in preparation for being able to do more advanmced combat stuff in future.
 
 
 ## 9.10 (2025-06-08)
