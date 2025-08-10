@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "investigator-fvtt",
-  "version": "9.13",
+  "version": "9.14",
   "type": "module",
   "description": "Official GUMSHOE support for FoundryVTT. Ships with compatiblity for several settings, and can be customized to work with any other setting.",
   "scripts": {
