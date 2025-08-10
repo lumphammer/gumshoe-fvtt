@@ -148,8 +148,6 @@ export class ClassicCombatModel extends TypeDataModel<
 
     const turns = [...settled, ...unsettled];
 
-    // debugger;
-
     await this.parent.update({
       system: {
         rounds: [
@@ -162,6 +160,12 @@ export class ClassicCombatModel extends TypeDataModel<
         ],
       },
     });
+  }
+
+  onDeleteDescendantDocuments(
+    ...args: Combat.OnDeleteDescendantDocumentsArgs
+  ): void {
+    systemLogger.log("ClassicCombat#onDeleteDescendantDocuments called");
   }
 
   override async _preUpdate(
@@ -198,7 +202,7 @@ export class ClassicCombatModel extends TypeDataModel<
   // not an override because foundry doesn't do this itself. we call this from
   // InvestigatorCombat#_onUpdateDescendantDocuments so the model can react to
   // changes in combatants.
-  _onUpdateDescendantDocuments(
+  onUpdateDescendantDocuments(
     ...[
       parent,
       collection,
