@@ -162,6 +162,28 @@ export class ClassicCombatModel extends TypeDataModel<
     });
   }
 
+  // not an override because foundry doesn't do this itself. we call this from
+  // InvestigatorCombat#_onUpdateDescendantDocuments so the model can react to
+  // changes in combatants.
+  onUpdateDescendantDocuments(
+    ...[
+      parent,
+      collection,
+      documents,
+      changes,
+      options,
+      userId,
+    ]: Combat.OnUpdateDescendantDocumentsArgs
+  ) {
+    systemLogger.log("ClassicCombatModel#_onUpdateDescendantDocuments called");
+    assertGame(game);
+    if (!isValidCombat(parent) || userId !== game.userId) {
+      return;
+    }
+    // This is where we want to react to changes in combatants.
+    // if (collection === game.combatants) {}
+  }
+
   onDeleteDescendantDocuments(
     ...args: Combat.OnDeleteDescendantDocumentsArgs
   ): void {
@@ -175,6 +197,14 @@ export class ClassicCombatModel extends TypeDataModel<
   ) {
     systemLogger.log("ClassicCombatModel#_preUpdate called");
     // This is where we want to react to changes in the combat.
+    if (changes.round === undefined) {
+      return;
+    }
+    const combatantsInRound =
+      this.rounds[changes.round].turns.map((t) => t.combatantId) ?? [];
+    this.parent.combatants.contents.filter(
+      (c) => c.id !== null && combatantsInRound.includes(c.id),
+    );
     return super._preUpdate(changes, options, user);
   }
 
@@ -198,28 +228,6 @@ export class ClassicCombatModel extends TypeDataModel<
   // ) {
   //   systemLogger.log("ClassicCombatModel#_preUpdateDescendantDocuments called");
   // }
-
-  // not an override because foundry doesn't do this itself. we call this from
-  // InvestigatorCombat#_onUpdateDescendantDocuments so the model can react to
-  // changes in combatants.
-  onUpdateDescendantDocuments(
-    ...[
-      parent,
-      collection,
-      documents,
-      changes,
-      options,
-      userId,
-    ]: Combat.OnUpdateDescendantDocumentsArgs
-  ) {
-    systemLogger.log("ClassicCombatModel#_onUpdateDescendantDocuments called");
-    assertGame(game);
-    if (!isValidCombat(parent) || userId !== game.userId) {
-      return;
-    }
-    // This is where we want to react to changes in combatants.
-    // if (collection === game.combatants) {}
-  }
 
   getTurns(): string[] {
     const turns =
