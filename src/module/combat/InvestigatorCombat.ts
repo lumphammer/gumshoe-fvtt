@@ -4,6 +4,7 @@ import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { isClassicCombat } from "./classicCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
+import { StackTrace } from "./StackTrace";
 import { isTurnPassingCombat } from "./turnPassingCombat";
 import { isValidCombat } from "./types";
 
@@ -135,6 +136,7 @@ export class InvestigatorCombat<
       userId,
     ]: Combat.OnCreateDescendantDocumentsArgs
   ) {
+    systemLogger.log("InvestigatorCombat#_onCreateDescendantDocuments called");
     if (isClassicCombat(this) && userId === game.userId) {
       void this.system.onCreateDescendantDocuments(
         ...[parent, collection, documents, data, options, userId],
@@ -168,7 +170,10 @@ export class InvestigatorCombat<
 
   // borrowed from client/documents/combat.d.mts
   override setupTurns() {
-    systemLogger.log("InvestigatorCombat.setupTurns called");
+    systemLogger.log(
+      "InvestigatorCombat.setupTurns called",
+      new StackTrace().stack,
+    );
 
     this.turns ||= [];
 
@@ -189,6 +194,17 @@ export class InvestigatorCombat<
 
     // Return the array of prepared turns
     return (this.turns = turns);
+  }
+
+  override prepareDerivedData() {
+    systemLogger.log("InvestigatorCombat#prepareDerivedData called");
+    // base combat has loads of assumptions about how combat works, so
+    // super.prepareDerivedData won't call setupTurns if `turns` already has
+    // elements. With this check we ensure it gets called once either way.
+    if (this.turns.length !== 0) {
+      this.setupTurns();
+    }
+    super.prepareDerivedData();
   }
 
   override async nextRound() {
