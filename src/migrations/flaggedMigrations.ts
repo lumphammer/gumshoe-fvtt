@@ -232,7 +232,7 @@ export const flaggedMigrations: FlaggedMigrations = {
         const newCombat = await InvestigatorCombat.create<false>({
           ...baseData,
           combatants: baseData.combatants.map((c) => {
-            let system = c.system;
+            const system = c.system;
             if (newType === "classic") {
               system.initiative = c.initiative;
             }
