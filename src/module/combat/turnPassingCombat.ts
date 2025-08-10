@@ -32,8 +32,28 @@ export class TurnPassingCombatModel extends TypeDataModel<
       `TurnPassingCombatModel#_preUpdateDescendantDocuments called with changes: ${JSON.stringify(changes, null, 2)}`,
     );
   }
+  async onCreateDescendantDocuments(
+    ...[
+      parent,
+      collection,
+      documents,
+      data,
+      options,
+      userId,
+    ]: Combat.OnCreateDescendantDocumentsArgs
+  ) {
+    if (collection !== "combatants") {
+      return;
+    }
+    systemLogger.log(
+      "TurnPassingCombatModel#onCreateDescendantDocuments called",
+      documents,
+      data,
+    );
+    return Promise.resolve();
+  }
 
-  _onUpdateDescendantDocuments(
+  onUpdateDescendantDocuments(
     ...[
       parent,
       collection,
@@ -46,6 +66,12 @@ export class TurnPassingCombatModel extends TypeDataModel<
     systemLogger.log(
       "TurnPassingCombatModel#_onUpdateDescendantDocuments called",
     );
+  }
+
+  onDeleteDescendantDocuments(
+    ...args: Combat.OnDeleteDescendantDocumentsArgs
+  ): void {
+    systemLogger.log("ClassicCombat#onDeleteDescendantDocuments called");
   }
 
   getTurns(): string[] {
