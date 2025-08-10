@@ -231,7 +231,13 @@ export const flaggedMigrations: FlaggedMigrations = {
         const baseData = oldBaseCombat.toObject();
         const newCombat = await InvestigatorCombat.create<false>({
           ...baseData,
-          combatants: baseData.combatants.map((c) => ({ ...c, type: newType })),
+          combatants: baseData.combatants.map((c) => {
+            let system = c.system;
+            if (newType === "classic") {
+              system.initiative = c.initiative;
+            }
+            return { ...c, type: newType, system };
+          }),
           type: newType,
         });
         if (newCombat === undefined) {
