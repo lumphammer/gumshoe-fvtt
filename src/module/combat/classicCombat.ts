@@ -162,8 +162,6 @@ export class ClassicCombatModel extends TypeDataModel<
         ],
       },
     });
-
-    parent.setupTurns();
   }
 
   override async _preUpdate(
