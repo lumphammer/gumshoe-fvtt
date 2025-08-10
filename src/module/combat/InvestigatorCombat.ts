@@ -2,7 +2,6 @@ import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
 import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
-import { isClassicCombat } from "./classicCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 import { StackTrace } from "./StackTrace";
 import { isTurnPassingCombat } from "./turnPassingCombat";
@@ -137,7 +136,7 @@ export class InvestigatorCombat<
     ]: Combat.OnCreateDescendantDocumentsArgs
   ) {
     systemLogger.log("InvestigatorCombat#_onCreateDescendantDocuments called");
-    if (isClassicCombat(this) && userId === game.userId) {
+    if (isValidCombat(this) && userId === game.userId) {
       void this.system.onCreateDescendantDocuments(
         ...[parent, collection, documents, data, options, userId],
       );
@@ -152,9 +151,19 @@ export class InvestigatorCombat<
   ) {
     systemLogger.log("InvestigatorCombat#_onUpdateDescendantDocuments called");
     if (isValidCombat(this)) {
-      this.system._onUpdateDescendantDocuments(...args);
+      this.system.onUpdateDescendantDocuments(...args);
     }
     super._onUpdateDescendantDocuments(...args);
+  }
+
+  protected override _onDeleteDescendantDocuments(
+    ...args: Combat.OnDeleteDescendantDocumentsArgs
+  ): void {
+    systemLogger.log("InvestigatorCombat#_onDeleteDescendantDocuments called");
+    if (isValidCombat(this)) {
+      this.system.onDeleteDescendantDocuments(...args);
+    }
+    super._onDeleteDescendantDocuments(...args);
   }
 
   protected _compareCombatants = (
