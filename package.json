@@ -61,12 +61,12 @@
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
-    "@typescript/native-preview": "7.0.0-dev.20250806.1",
+    "@typescript/native-preview": "7.0.0-dev.20250811.1",
     "@vitejs/plugin-react-swc": "3.11.0",
     "@vitest/ui": "^3.2.4",
     "case": "^1.6.3",
     "d3-ease": "^3.0.1",
-    "eslint": "^9.32.0",
+    "eslint": "^9.33.0",
     "eslint-plugin-react-compiler": "19.0.0-beta-ebf51a3-20250411",
     "focusable-selectors": "^0.8.4",
     "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#2a16f7fd50b68d86ce0444d3380b19b96c10a26a",
@@ -94,7 +94,7 @@
     "vitest": "^3.2.4",
     "xss": "^1.0.15",
     "yamljs": "^0.3.0",
-    "zod": "^4.0.15",
+    "zod": "^4.0.17",
     "zod-validation-error": "^4.0.1"
   },
   "pnpm": {
