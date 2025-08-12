@@ -16,6 +16,16 @@ export function isValidCombat(
 export interface ValidCombatModel {
   getTurns(): string[];
 
+  startCombat(): Promise<void>;
+
+  nextRound(): Promise<void>;
+
+  previousRound(): Promise<void>;
+
+  nextTurn(): Promise<void>;
+
+  previousTurn(): Promise<void>;
+
   onCreateDescendantDocuments(
     ...[
       parent,

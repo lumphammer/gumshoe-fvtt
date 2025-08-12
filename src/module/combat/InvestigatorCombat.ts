@@ -4,7 +4,6 @@ import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 import { StackTrace } from "./StackTrace";
-import { isTurnPassingCombat } from "./turnPassingCombat";
 import { isValidCombat } from "./types";
 
 /**
@@ -216,23 +215,54 @@ export class InvestigatorCombat<
     super.prepareDerivedData();
   }
 
-  override async nextRound() {
-    await super.nextRound();
-    // super.nextRound sets turn to 1, easier to do this than to recreate the
-    // whole thing
-    if (isTurnPassingCombat(this)) {
-      this.turn = null;
-      await this.update({ turn: null });
+  override async startCombat() {
+    // const superResult = await super.startCombat();
+
+    this._playCombatSound("startEncounter");
+
+    if (isValidCombat(this)) {
+      void this.system.startCombat();
     }
-    return this;
+    // if (isTurnPassingCombat(this)) {
+    //   this.turn = null;
+    //   await this.update({ turn: null });
+    // }
+    return Promise.resolve(this);
   }
 
-  override async startCombat() {
-    const superResult = await super.startCombat();
-    if (isTurnPassingCombat(this)) {
-      this.turn = null;
-      await this.update({ turn: null });
+  override async nextRound() {
+    if (isValidCombat(this)) {
+      await this.system.nextRound();
     }
-    return superResult;
+    return Promise.resolve(this);
+    // await super.nextRound();
+    // super.nextRound sets turn to 1, easier to do this than to recreate the
+    // whole thing
+    // if (isTurnPassingCombat(this)) {
+    //   this.turn = null;
+    //   await this.update({ turn: null });
+    // }
+    // return this;
+  }
+
+  override async previousRound() {
+    if (isValidCombat(this)) {
+      await this.system.previousRound();
+    }
+    return Promise.resolve(this);
+  }
+
+  override async nextTurn() {
+    if (isValidCombat(this)) {
+      await this.system.nextTurn();
+    }
+    return Promise.resolve(this);
+  }
+
+  override async previousTurn() {
+    if (isValidCombat(this)) {
+      await this.system.previousTurn();
+    }
+    return Promise.resolve(this);
   }
 }

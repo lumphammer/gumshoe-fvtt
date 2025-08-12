@@ -83,6 +83,31 @@ export class TurnPassingCombatModel
       .sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""))
       .map((c) => c.id ?? "");
   }
+
+  async startCombat() {
+    systemLogger.log("ClassicCombatModel#startCombat called");
+    await this.parent.update({ round: 1 });
+  }
+
+  async nextRound() {
+    systemLogger.log("ClassicCombatModel#nextRound called");
+    await this.parent.update({ round: this.parent.round + 1 });
+  }
+
+  async previousRound() {
+    systemLogger.log("ClassicCombatModel#previousRound called");
+    await this.parent.update({ round: this.parent.round - 1 });
+  }
+
+  async nextTurn() {
+    systemLogger.log("ClassicCombatModel#nextTurn called");
+    await this.parent.update({ turn: this.parent.turn ?? 0 + 1 });
+  }
+
+  async previousTurn() {
+    systemLogger.log("ClassicCombatModel#previousTurn called");
+    await this.parent.update({ turn: this.parent.turn ?? 0 - 1 });
+  }
 }
 
 export type TurnPassingCombat = InvestigatorCombat<"turnPassing">;
