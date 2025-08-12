@@ -210,7 +210,7 @@ export class InvestigatorCombat<
     // base combat has loads of assumptions about how combat works, so
     // super.prepareDerivedData won't call setupTurns if `turns` already has
     // elements. With this check we ensure it gets called once either way.
-    if (this.turns.length !== 0) {
+    if (this.turns?.length !== 0) {
       this.setupTurns();
     }
     super.prepareDerivedData();
