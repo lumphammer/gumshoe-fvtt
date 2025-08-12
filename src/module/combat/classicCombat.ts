@@ -209,10 +209,10 @@ export class ClassicCombatModel
     if (changes.round === undefined) {
       return;
     }
-    const combatantsInRound =
+    const combatantIdsInRound =
       this.rounds[changes.round].turns.map((t) => t.combatantId) ?? [];
     this.parent.combatants.contents.filter(
-      (c) => c.id !== null && combatantsInRound.includes(c.id),
+      (c) => c.id !== null && combatantIdsInRound.includes(c.id),
     );
     return super._preUpdate(changes, options, user);
   }
