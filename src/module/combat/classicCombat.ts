@@ -206,14 +206,14 @@ export class ClassicCombatModel
   ) {
     systemLogger.log("ClassicCombatModel#_preUpdate called");
     // This is where we want to react to changes in the combat.
-    if (changes.round === undefined) {
-      return;
-    }
-    const combatantIdsInRound =
-      this.rounds[changes.round].turns.map((t) => t.combatantId) ?? [];
-    this.parent.combatants.contents.filter(
-      (c) => c.id !== null && combatantIdsInRound.includes(c.id),
-    );
+    // if (changes.round === undefined) {
+    //   return;
+    // }
+    // const combatantIdsInRound =
+    //   this.rounds[changes.round].turns.map((t) => t.combatantId) ?? [];
+    // this.parent.combatants.contents.filter(
+    //   (c) => c.id !== null && combatantIdsInRound.includes(c.id),
+    // );
     return super._preUpdate(changes, options, user);
   }
 
@@ -243,6 +243,31 @@ export class ClassicCombatModel
       this.rounds[this.parent.round]?.turns.map((t) => t.combatantId) ?? [];
     systemLogger.log("Returning turns", turns);
     return turns;
+  }
+
+  async startCombat() {
+    systemLogger.log("ClassicCombatModel#startCombat called");
+    await this.parent.update({ round: 1 });
+  }
+
+  async nextRound() {
+    systemLogger.log("ClassicCombatModel#nextRound called");
+    await this.parent.update({ round: this.parent.round + 1 });
+  }
+
+  async previousRound() {
+    systemLogger.log("ClassicCombatModel#previousRound called");
+    await this.parent.update({ round: this.parent.round - 1 });
+  }
+
+  async nextTurn() {
+    systemLogger.log("ClassicCombatModel#nextTurn called");
+    await this.parent.update({ turn: this.parent.turn ?? 0 + 1 });
+  }
+
+  async previousTurn() {
+    systemLogger.log("ClassicCombatModel#previousTurn called");
+    await this.parent.update({ turn: this.parent.turn ?? 0 - 1 });
   }
 }
 
