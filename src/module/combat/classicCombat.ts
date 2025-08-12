@@ -63,7 +63,7 @@ const roundField = new SchemaField(
       },
     ),
   },
-  { nullable: false, required: true, initial: { turns: [], jumpIns: [] } },
+  { nullable: true, required: false },
 );
 
 export const classicCombatSchema = {
@@ -240,7 +240,7 @@ export class ClassicCombatModel
 
   getTurns(): string[] {
     const turns =
-      this.rounds[this.parent.round].turns.map((t) => t.combatantId) ?? [];
+      this.rounds[this.parent.round]?.turns.map((t) => t.combatantId) ?? [];
     systemLogger.log("Returning turns", turns);
     return turns;
   }
