@@ -11,7 +11,7 @@ import { settings } from "../../settings/settings";
 import { ClassicCombatant, isClassicCombatant } from "./classicCombatant";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
-import { isValidCombat } from "./types";
+import { isValidCombat, ValidCombatModel } from "./types";
 
 function compareCombatants(
   a: InvestigatorCombatant,
@@ -78,10 +78,13 @@ export const classicCombatSchema = {
  * Combat subtype for classic GUMSHOE combat.
  * This is the default combat type used in most GUMSHOE games.
  */
-export class ClassicCombatModel extends TypeDataModel<
-  typeof classicCombatSchema,
-  InvestigatorCombat<"classic">
-> {
+export class ClassicCombatModel
+  extends TypeDataModel<
+    typeof classicCombatSchema,
+    InvestigatorCombat<"classic">
+  >
+  implements ValidCombatModel
+{
   constructor(
     ...[data, options]: DataModel.ConstructorArgs<
       typeof classicCombatSchema,
@@ -95,6 +98,8 @@ export class ClassicCombatModel extends TypeDataModel<
     return classicCombatSchema;
   }
 
+  // ///////////////////////////////////////////////////////////////////////////
+  // _preCreate
   override _preCreate(
     ...[data, options, user]: Parameters<
       TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_preCreate"]
@@ -113,6 +118,8 @@ export class ClassicCombatModel extends TypeDataModel<
     return super._preCreate(data, options, user);
   }
 
+  // ///////////////////////////////////////////////////////////////////////////
+  // onCreateDescendantDocuments
   async onCreateDescendantDocuments(
     ...[
       parent,
@@ -165,7 +172,7 @@ export class ClassicCombatModel extends TypeDataModel<
   // not an override because foundry doesn't do this itself. we call this from
   // InvestigatorCombat#_onUpdateDescendantDocuments so the model can react to
   // changes in combatants.
-  onUpdateDescendantDocuments(
+  async onUpdateDescendantDocuments(
     ...[
       parent,
       collection,
@@ -182,12 +189,14 @@ export class ClassicCombatModel extends TypeDataModel<
     }
     // This is where we want to react to changes in combatants.
     // if (collection === game.combatants) {}
+    return Promise.resolve();
   }
 
-  onDeleteDescendantDocuments(
+  async onDeleteDescendantDocuments(
     ...args: Combat.OnDeleteDescendantDocumentsArgs
-  ): void {
+  ) {
     systemLogger.log("ClassicCombat#onDeleteDescendantDocuments called");
+    return Promise.resolve();
   }
 
   override async _preUpdate(

@@ -1,13 +1,17 @@
 import { systemLogger } from "../../functions/utilities";
 import { TypeDataModel } from "../../fvtt-exports";
 import { InvestigatorCombat } from "./InvestigatorCombat";
+import { ValidCombatModel } from "./types";
 
 export const TurnPassingCombatSchema = {};
 
-export class TurnPassingCombatModel extends TypeDataModel<
-  typeof TurnPassingCombatSchema,
-  InvestigatorCombat<"turnPassing">
-> {
+export class TurnPassingCombatModel
+  extends TypeDataModel<
+    typeof TurnPassingCombatSchema,
+    InvestigatorCombat<"turnPassing">
+  >
+  implements ValidCombatModel
+{
   static defineSchema(): typeof TurnPassingCombatSchema {
     return TurnPassingCombatSchema;
   }
@@ -53,7 +57,7 @@ export class TurnPassingCombatModel extends TypeDataModel<
     return Promise.resolve();
   }
 
-  onUpdateDescendantDocuments(
+  async onUpdateDescendantDocuments(
     ...[
       parent,
       collection,
@@ -66,12 +70,12 @@ export class TurnPassingCombatModel extends TypeDataModel<
     systemLogger.log(
       "TurnPassingCombatModel#_onUpdateDescendantDocuments called",
     );
+    return Promise.resolve();
   }
 
-  onDeleteDescendantDocuments(
-    ...args: Combat.OnDeleteDescendantDocumentsArgs
-  ): void {
+  onDeleteDescendantDocuments(...args: Combat.OnDeleteDescendantDocumentsArgs) {
     systemLogger.log("ClassicCombat#onDeleteDescendantDocuments called");
+    return Promise.resolve();
   }
 
   getTurns(): string[] {

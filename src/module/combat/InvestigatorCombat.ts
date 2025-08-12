@@ -151,7 +151,7 @@ export class InvestigatorCombat<
   ) {
     systemLogger.log("InvestigatorCombat#_onUpdateDescendantDocuments called");
     if (isValidCombat(this)) {
-      this.system.onUpdateDescendantDocuments(...args);
+      void this.system.onUpdateDescendantDocuments(...args);
     }
     super._onUpdateDescendantDocuments(...args);
   }
@@ -161,7 +161,7 @@ export class InvestigatorCombat<
   ): void {
     systemLogger.log("InvestigatorCombat#_onDeleteDescendantDocuments called");
     if (isValidCombat(this)) {
-      this.system.onDeleteDescendantDocuments(...args);
+      void this.system.onDeleteDescendantDocuments(...args);
     }
     super._onDeleteDescendantDocuments(...args);
   }
