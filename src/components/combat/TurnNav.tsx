@@ -1,4 +1,5 @@
 import { keyframes } from "@emotion/react";
+import { useCallback } from "react";
 import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
 import { LuSwords } from "react-icons/lu";
 
@@ -35,6 +36,26 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
         isTurnPassingCombatant(turn) && turn.system.passingTurnsRemaining <= 0,
     );
 
+  const handleNextRound = useCallback(() => {
+    void combat?.nextRound();
+  }, [combat]);
+
+  const handlePreviousRound = useCallback(() => {
+    void combat?.previousRound();
+  }, [combat]);
+
+  const handleNextTurn = useCallback(() => {
+    void combat?.nextTurn();
+  }, [combat]);
+
+  const handlePreviousTurn = useCallback(() => {
+    void combat?.previousTurn();
+  }, [combat]);
+
+  const handleStartCombat = useCallback(() => {
+    void combat?.startCombat();
+  }, [combat]);
+
   return (
     <nav className="combat-controls">
       {combat &&
@@ -45,7 +66,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                 <button
                   type="button"
                   className="inline-control combat-control icon fa-solid fa-chevrons-left"
-                  data-action="previousRound"
+                  onClick={handlePreviousRound}
                   data-tooltip=""
                   aria-label={localize("COMBAT.RoundPrev")}
                 />
@@ -53,7 +74,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                   <button
                     type="button"
                     className="inline-control combat-control icon fa-solid fa-arrow-left"
-                    data-action="previousTurn"
+                    onClick={handlePreviousTurn}
                     data-tooltip=""
                     aria-label={localize("COMBAT.TurnPrev")}
                   />
@@ -112,7 +133,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                     <button
                       type="button"
                       className="inline-control combat-control icon fa-solid fa-arrow-right"
-                      data-action="nextTurn"
+                      onClick={handleNextTurn}
                       data-tooltip=""
                       aria-label={localize("COMBAT.TurnNext")}
                     />
@@ -129,7 +150,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                   <button
                     type="button"
                     className="inline-control combat-control"
-                    data-action="nextRound"
+                    onClick={handleNextRound}
                     data-tooltip=""
                     aria-label={localize("COMBAT.RoundNext")}
                     css={{
@@ -157,7 +178,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
               <button
                 type="button"
                 className="combat-control combat-control-lg"
-                data-action="startCombat"
+                onClick={handleStartCombat}
                 disabled={(combat?.turns.length ?? 0) === 0}
                 css={{
                   cursor:
