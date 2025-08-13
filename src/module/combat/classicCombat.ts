@@ -301,7 +301,47 @@ export class ClassicCombatModel
 
   async previousRound() {
     systemLogger.log("ClassicCombatModel#previousRound called");
-    await this.parent.update({ round: this.parent.round - 1 });
+    // await this.parent.update({ round: this.parent.round - 1 });
+
+    const previousRound = this.parent.round - 1;
+
+    if (previousRound < 0) {
+      return;
+    }
+    const turn =
+      previousRound === 0 || this.parent.combatants.size === 0
+        ? null
+        : this.parent.combatants.size - 1;
+    const advanceTime = this.parent.getTimeDelta(
+      this.parent.round,
+      this.parent.turn,
+      previousRound,
+      turn,
+    );
+    const roundField: RoundField = {
+      jumpIns: [],
+      turns: this.parent.combatants.contents
+        .sort(compareCombatants)
+        .flatMap((c) => (c.id === null ? [] : [{ combatantId: c.id }])),
+    };
+    const rounds = [...(this.rounds ?? [])];
+    rounds[previousRound] = roundField;
+
+    // Update the document, passing data through a hook first
+    const updateData = { round: previousRound, turn, system: { rounds } };
+    const updateOptions = {
+      direction: -1 as const,
+      worldTime: { delta: advanceTime },
+    };
+    // @ts-expect-error fvtt-types
+    Hooks.callAll(
+      //
+      "combatRound",
+      this,
+      updateData,
+      updateOptions,
+    );
+    await this.parent.update(updateData, updateOptions);
   }
 
   async nextTurn() {
