@@ -400,7 +400,34 @@ export class ClassicCombatModel
 
   async previousTurn() {
     systemLogger.log("ClassicCombatModel#previousTurn called");
-    await this.parent.update({ turn: this.parent.turn ?? 0 - 1 });
+    if (this.parent.round === 0) return;
+    if (this.parent.turn === 0 || this.parent.combatants.size === 0) {
+      await this.previousRound();
+      return;
+    }
+    const previousTurn = (this.parent.turn ?? this.parent.combatants.size) - 1;
+    const advanceTime = this.parent.getTimeDelta(
+      this.parent.round,
+      this.parent.turn,
+      this.parent.round,
+      previousTurn,
+    );
+
+    // Update the document, passing data through a hook first
+    const updateData = { round: this.parent.round, turn: previousTurn };
+    const updateOptions = {
+      direction: -1 as const,
+      worldTime: { delta: advanceTime },
+    };
+    // @ts-expect-error fvtt-types
+    Hooks.callAll(
+      //
+      "combatTurn",
+      this,
+      updateData,
+      updateOptions,
+    );
+    await this.parent.update(updateData, updateOptions);
   }
 }
 
