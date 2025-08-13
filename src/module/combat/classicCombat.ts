@@ -199,9 +199,31 @@ export class ClassicCombatModel
   }
 
   async onDeleteDescendantDocuments(
-    ...args: Combat.OnDeleteDescendantDocumentsArgs
+    ...[
+      parent,
+      collection,
+      documents,
+      ids,
+      options,
+      userId,
+    ]: Combat.OnDeleteDescendantDocumentsArgs
   ) {
     systemLogger.log("ClassicCombat#onDeleteDescendantDocuments called");
+    if (collection !== "combatants") {
+      return;
+    }
+    const turns = this.rounds[parent.round].turns.filter(
+      (t) => !ids.includes(t.combatantId),
+    );
+
+    const rounds = [...this.rounds];
+    rounds[parent.round] = {
+      ...rounds[parent.round],
+      turns,
+    };
+
+    await this.parent.update({ system: { rounds } });
+
     return Promise.resolve();
   }
 
