@@ -141,26 +141,30 @@ export class ClassicCombatModel
       data,
     );
 
-    const round = this.rounds[this.parent.round];
+    const round = this.rounds[parent.round];
     const oldTurns = [...round.turns];
-    const settled = oldTurns.slice(0, parent.turn ?? 1 - 1);
+    const settledOldTurns = oldTurns.slice(0, (parent.turn ?? -1) + 1);
+    const unsettledOldTurns = oldTurns.slice((parent.turn ?? -1) + 1);
+    const unsettledOldCombatants = unsettledOldTurns
+      .map((t) => parent.combatants.get(t.combatantId))
+      .filter(isClassicCombatant);
     const newCombatants: ClassicCombatant[] = (documents as unknown[]).filter(
       isClassicCombatant,
     );
-    const unsettled = oldTurns
-      .slice((parent.turn ?? 1) - 1)
-      .map((t) => parent.combatants.get(t.combatantId))
-      .filter((c) => c !== undefined)
-      .concat(newCombatants)
-      .sort(compareCombatants)
-      .map((c) => ({ combatantId: c.id }));
+    const newRemainingCombatants = [
+      // old ones first so they win a tie against new arrivals
+      ...unsettledOldCombatants,
+      ...newCombatants,
+    ].sort(compareCombatants);
 
-    const turns = [...settled, ...unsettled];
+    const newTurns = newRemainingCombatants.map((c) => ({ combatantId: c.id }));
+
+    const turns = [...settledOldTurns, ...newTurns];
 
     await this.parent.update({
       system: {
         rounds: [
-          ...this.rounds.slice(0, parent.round - 1),
+          ...this.rounds.slice(0, parent.round),
           {
             turns,
             jumpIns: round.jumpIns,
@@ -200,45 +204,6 @@ export class ClassicCombatModel
     systemLogger.log("ClassicCombat#onDeleteDescendantDocuments called");
     return Promise.resolve();
   }
-
-  override async _preUpdate(
-    ...[changes, options, user]: Parameters<
-      TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_preUpdate"]
-    >
-  ) {
-    systemLogger.log("ClassicCombatModel#_preUpdate called");
-    // This is where we want to react to changes in the combat.
-    // if (changes.round === undefined) {
-    //   return;
-    // }
-    // const combatantIdsInRound =
-    //   this.rounds[changes.round].turns.map((t) => t.combatantId) ?? [];
-    // this.parent.combatants.contents.filter(
-    //   (c) => c.id !== null && combatantIdsInRound.includes(c.id),
-    // );
-    return super._preUpdate(changes, options, user);
-  }
-
-  // override _onUpdate(
-  //   ...[changed, options, userId]: Parameters<
-  //     TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_onUpdate"]
-  //   >
-  // ) {
-  //   systemLogger.log("ClassicCombatModel#_onUpdate called");
-  //   return super._onUpdate(changed, options, userId);
-  // }
-
-  // _preUpdateDescendantDocuments(
-  //   ...[
-  //     parent,
-  //     collection,
-  //     changes,
-  //     options,
-  //     userId,
-  //   ]: Combat.PreUpdateDescendantDocumentsArgs
-  // ) {
-  //   systemLogger.log("ClassicCombatModel#_preUpdateDescendantDocuments called");
-  // }
 
   getTurns(): string[] {
     const turns =
