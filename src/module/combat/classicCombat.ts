@@ -27,6 +27,8 @@ function compareCombatants(
 // /////////////////////////////////////////////////////////////////////////////
 // Schema Definition
 
+type RoundField = SchemaField.InitializedData<typeof roundField.fields>;
+
 const turnField = new SchemaField(
   {
     combatantId: new StringField({
@@ -247,7 +249,17 @@ export class ClassicCombatModel
 
   async startCombat() {
     systemLogger.log("ClassicCombatModel#startCombat called");
-    await this.parent.update({ round: 1 });
+    const round: RoundField = {
+      jumpIns: [],
+      turns: this.parent.combatants.contents
+        .sort(compareCombatants)
+        .flatMap((c) => (c.id === null ? [] : [{ combatantId: c.id }])),
+    };
+    const rounds = [...(this.rounds ?? [])];
+    rounds[1] = round;
+    const updateData = { round: 1, turn: 0, system: { rounds } };
+    Hooks.callAll("combatStart", this.parent, updateData);
+    await this.parent.update(updateData);
   }
 
   async nextRound() {
