@@ -221,20 +221,20 @@ export class InvestigatorCombat<
     this._playCombatSound("startEncounter");
 
     if (isValidCombat(this)) {
-      void this.system.startCombat();
+      await this.system.startCombat();
     }
     // if (isTurnPassingCombat(this)) {
     //   this.turn = null;
     //   await this.update({ turn: null });
     // }
-    return Promise.resolve(this);
+    return this;
   }
 
   override async nextRound() {
     if (isValidCombat(this)) {
       await this.system.nextRound();
     }
-    return Promise.resolve(this);
+    return this;
     // await super.nextRound();
     // super.nextRound sets turn to 1, easier to do this than to recreate the
     // whole thing
@@ -249,20 +249,20 @@ export class InvestigatorCombat<
     if (isValidCombat(this)) {
       await this.system.previousRound();
     }
-    return Promise.resolve(this);
+    return this;
   }
 
   override async nextTurn() {
     if (isValidCombat(this)) {
       await this.system.nextTurn();
     }
-    return Promise.resolve(this);
+    return this;
   }
 
   override async previousTurn() {
     if (isValidCombat(this)) {
       await this.system.previousTurn();
     }
-    return Promise.resolve(this);
+    return this;
   }
 }
