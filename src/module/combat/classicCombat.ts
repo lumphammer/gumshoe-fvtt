@@ -264,26 +264,26 @@ export class ClassicCombatModel
 
   async nextRound() {
     systemLogger.log("ClassicCombatModel#nextRound called");
-    // Preserve the fact that it's no-one's turn currently.
-    let turn =
-      this.parent.turn === null || this.parent.turns.length === 0 ? null : 0;
-    if (this.parent.settings.skipDefeated && turn !== null) {
-      turn = this.parent.turns.findIndex((t) => !t.isDefeated);
-      if (turn === -1) {
-        ui.notifications?.warn("COMBAT.NoneRemaining", { localize: true });
-        turn = 0;
-      }
-    }
-    const round = this.parent.round + 1;
+    const turn = 0;
+    const roundNumber = this.parent.round + 1;
+    const roundField: RoundField = {
+      jumpIns: [],
+      turns: this.parent.combatants.contents
+        .sort(compareCombatants)
+        .flatMap((c) => (c.id === null ? [] : [{ combatantId: c.id }])),
+    };
+    const rounds = [...(this.rounds ?? [])];
+    rounds[roundNumber] = roundField;
+
     const advanceTime = this.parent.getTimeDelta(
       this.parent.round,
       this.parent.turn,
-      round,
+      roundNumber,
       turn,
     );
 
     // Update the document, passing data through a hook first
-    const updateData = { round, turn };
+    const updateData = { round: roundNumber, turn, system: { rounds } };
     const updateOptions = {
       direction: 1 as const,
       worldTime: { delta: advanceTime },
