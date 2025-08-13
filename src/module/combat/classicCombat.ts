@@ -252,7 +252,39 @@ export class ClassicCombatModel
 
   async nextRound() {
     systemLogger.log("ClassicCombatModel#nextRound called");
-    await this.parent.update({ round: this.parent.round + 1 });
+    // Preserve the fact that it's no-one's turn currently.
+    let turn =
+      this.parent.turn === null || this.parent.turns.length === 0 ? null : 0;
+    if (this.parent.settings.skipDefeated && turn !== null) {
+      turn = this.parent.turns.findIndex((t) => !t.isDefeated);
+      if (turn === -1) {
+        ui.notifications?.warn("COMBAT.NoneRemaining", { localize: true });
+        turn = 0;
+      }
+    }
+    const round = this.parent.round + 1;
+    const advanceTime = this.parent.getTimeDelta(
+      this.parent.round,
+      this.parent.turn,
+      round,
+      turn,
+    );
+
+    // Update the document, passing data through a hook first
+    const updateData = { round, turn };
+    const updateOptions = {
+      direction: 1 as const,
+      worldTime: { delta: advanceTime },
+    };
+    // @ts-expect-error fvtt-types
+    Hooks.callAll(
+      // this comment is just to keep the @ts-expect-error above isolated
+      "combatRound",
+      this.parent,
+      updateData,
+      updateOptions,
+    );
+    await this.parent.update(updateData, updateOptions);
   }
 
   async previousRound() {
