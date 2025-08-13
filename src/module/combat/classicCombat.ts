@@ -346,7 +346,56 @@ export class ClassicCombatModel
 
   async nextTurn() {
     systemLogger.log("ClassicCombatModel#nextTurn called");
-    await this.parent.update({ turn: this.parent.turn ?? 0 + 1 });
+
+    if (this.parent.round === 0) {
+      await this.nextRound();
+      return;
+    }
+
+    const turn = this.parent.turn ?? -1;
+
+    const combatants = this.parent.combatants.contents;
+
+    // Determine the next turn number
+    let nextTurn: number | null = null;
+    if (this.parent.settings.skipDefeated) {
+      for (let i = turn + 1; i < combatants.length; i++) {
+        if (!combatants[i].isDefeated) {
+          nextTurn = i;
+          break;
+        }
+      }
+    } else {
+      nextTurn = turn + 1;
+    }
+
+    // Maybe advance to the next round
+    if (nextTurn === null || nextTurn >= combatants.length) {
+      return this.nextRound();
+    }
+
+    const advanceTime = this.parent.getTimeDelta(
+      this.parent.round,
+      this.parent.turn,
+      this.parent.round,
+      nextTurn,
+    );
+
+    // Update the document, passing data through a hook first
+    const updateData = { round: this.parent.round, turn: nextTurn };
+    const updateOptions = {
+      direction: 1 as const,
+      worldTime: { delta: advanceTime },
+    };
+    // @ts-expect-error fvtt-types
+    Hooks.callAll(
+      //
+      "combatTurn",
+      this,
+      updateData,
+      updateOptions,
+    );
+    await this.parent.update(updateData, updateOptions);
   }
 
   async previousTurn() {
