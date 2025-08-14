@@ -3,6 +3,7 @@ import { systemLogger } from "../../functions/utilities";
 import {
   ArrayField,
   DataModel,
+  NumberField,
   SchemaField,
   StringField,
   TypeDataModel,
@@ -27,9 +28,9 @@ function compareCombatants(
 // /////////////////////////////////////////////////////////////////////////////
 // Schema Definition
 
-type RoundField = SchemaField.InitializedData<typeof roundField.fields>;
+type RoundInfo = SchemaField.InitializedData<typeof roundInfoField.fields>;
 
-const turnField = new SchemaField(
+const turnInfoField = new SchemaField(
   {
     combatantId: new StringField({
       nullable: false,
@@ -44,15 +45,20 @@ const turnField = new SchemaField(
   },
 );
 
-const turnArrayField = new ArrayField(turnField, {
+const turnArrayField = new ArrayField(turnInfoField, {
   nullable: false,
   required: true,
   initial: [],
 });
 
-const roundField = new SchemaField(
+const roundInfoField = new SchemaField(
   {
     turns: turnArrayField,
+    turnIndex: new NumberField({
+      nullable: true,
+      required: true,
+      initial: null,
+    }),
     jumpIns: new ArrayField(
       new StringField({
         nullable: false,
@@ -65,11 +71,11 @@ const roundField = new SchemaField(
       },
     ),
   },
-  { nullable: true, required: false },
+  { nullable: false, required: false, initial: undefined },
 );
 
 export const classicCombatSchema = {
-  rounds: new ArrayField(roundField, {
+  rounds: new ArrayField(roundInfoField, {
     nullable: false,
     required: true,
     initial: [],
@@ -236,7 +242,8 @@ export class ClassicCombatModel
 
   async startCombat() {
     systemLogger.log("ClassicCombatModel#startCombat called");
-    const round: RoundField = {
+    const round: RoundInfo = {
+      turnIndex: this.parent.combatants.size === 0 ? null : 0,
       jumpIns: [],
       turns: this.parent.combatants.contents
         .sort(compareCombatants)
@@ -253,7 +260,8 @@ export class ClassicCombatModel
     systemLogger.log("ClassicCombatModel#nextRound called");
     const turn = 0;
     const roundNumber = this.parent.round + 1;
-    const roundField: RoundField = {
+    const roundField: RoundInfo = {
+      turnIndex: this.parent.combatants.size === 0 ? null : 0,
       jumpIns: [],
       turns: this.parent.combatants.contents
         .sort(compareCombatants)
@@ -290,32 +298,44 @@ export class ClassicCombatModel
     systemLogger.log("ClassicCombatModel#previousRound called");
     // await this.parent.update({ round: this.parent.round - 1 });
 
-    const previousRound = this.parent.round - 1;
+    const newRoundIndex = this.parent.round - 1;
 
-    if (previousRound < 0) {
+    if (newRoundIndex < 0) {
       return;
     }
-    const turn =
-      previousRound === 0 || this.parent.combatants.size === 0
+
+    const existingRoundInfo: RoundInfo = this.rounds[newRoundIndex] ?? {
+      turnIndex: null,
+      jumpIns: [],
+      turns: [],
+    };
+
+    const turnIndex =
+      (existingRoundInfo.turnIndex ??
+      (newRoundIndex === 0 || this.parent.combatants.size === 0))
         ? null
         : this.parent.combatants.size - 1;
     const advanceTime = this.parent.getTimeDelta(
       this.parent.round,
       this.parent.turn,
-      previousRound,
-      turn,
+      newRoundIndex,
+      turnIndex,
     );
-    const roundField: RoundField = {
+    const roundField: RoundInfo = {
       jumpIns: [],
       turns: this.parent.combatants.contents
         .sort(compareCombatants)
         .flatMap((c) => (c.id === null ? [] : [{ combatantId: c.id }])),
     };
     const rounds = [...(this.rounds ?? [])];
-    rounds[previousRound] = roundField;
+    rounds[newRoundIndex] = roundField;
 
     // Update the document, passing data through a hook first
-    const updateData = { round: previousRound, turn, system: { rounds } };
+    const updateData = {
+      round: newRoundIndex,
+      turn: turnIndex,
+      system: { rounds },
+    };
     const updateOptions = {
       direction: -1 as const,
       worldTime: { delta: advanceTime },
