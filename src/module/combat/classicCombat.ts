@@ -2,6 +2,7 @@ import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
 import {
   ArrayField,
+  BooleanField,
   DataModel,
   NumberField,
   SchemaField,
@@ -59,17 +60,11 @@ const roundInfoField = new SchemaField(
       required: true,
       initial: null,
     }),
-    jumpIns: new ArrayField(
-      new StringField({
-        nullable: false,
-        required: true,
-      }),
-      {
-        nullable: false,
-        required: true,
-        initial: [],
-      },
-    ),
+    combatantsAreSorted: new BooleanField({
+      nullable: false,
+      required: true,
+      initial: true,
+    }),
   },
   { nullable: false, required: false, initial: undefined },
 );
@@ -113,16 +108,7 @@ export class ClassicCombatModel
       TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_preCreate"]
     >
   ) {
-    const turns = this.parent.combatants.contents
-      .sort(compareCombatants)
-      .map((c) => ({ combatantId: c.id }));
-    this.updateSource({
-      rounds: [
-        {
-          turns,
-        },
-      ],
-    });
+    systemLogger.log("ClassicCombatModel#_preCreate called");
     return super._preCreate(data, options, user);
   }
 
@@ -147,33 +133,39 @@ export class ClassicCombatModel
       data,
     );
 
+    // get the round info
     const round = this.rounds[parent.round];
-    const oldTurns = [...round.turns];
+    // get the old turns
+    const oldTurns = round ? [...round.turns] : [];
+    // work out which turns have already passed
     const settledOldTurns = oldTurns.slice(0, (parent.turn ?? -1) + 1);
+    // get a list of combatants who haven't gone yet
     const unsettledOldTurns = oldTurns.slice((parent.turn ?? -1) + 1);
     const unsettledOldCombatants = unsettledOldTurns
       .map((t) => parent.combatants.get(t.combatantId))
       .filter(isClassicCombatant);
+    // get a list of who's been added
     const newCombatants: ClassicCombatant[] = (documents as unknown[]).filter(
       isClassicCombatant,
     );
+    // shuffle then together
     const newRemainingCombatants = [
       // old ones first so they win a tie against new arrivals
       ...unsettledOldCombatants,
       ...newCombatants,
     ].sort(compareCombatants);
 
+    // turn them back into turn info objects
     const newTurns = newRemainingCombatants.map((c) => ({ combatantId: c.id }));
-
     const turns = [...settledOldTurns, ...newTurns];
 
+    // update
     await this.parent.update({
       system: {
         rounds: [
           ...this.rounds.slice(0, parent.round),
           {
             turns,
-            jumpIns: round.jumpIns,
           },
           ...this.rounds.slice(parent.round + 1),
         ],
@@ -195,6 +187,7 @@ export class ClassicCombatModel
     ]: Combat.OnUpdateDescendantDocumentsArgs
   ) {
     systemLogger.log("ClassicCombatModel#_onUpdateDescendantDocuments called");
+    // const oldRoundInfo = this.rounds[parent.round];
     assertGame(game);
     if (!isValidCombat(parent) || userId !== game.userId) {
       return;
@@ -218,13 +211,17 @@ export class ClassicCombatModel
     if (collection !== "combatants") {
       return;
     }
-    const turns = this.rounds[parent.round].turns.filter(
-      (t) => !ids.includes(t.combatantId),
-    );
+    const oldRound = this.rounds[parent.round];
+    if (oldRound === undefined) {
+      return;
+    }
+    const turns =
+      oldRound.turns.filter((t) => !ids.includes(t.combatantId)) ?? [];
 
     const rounds = [...this.rounds];
     rounds[parent.round] = {
-      ...rounds[parent.round],
+      combatantsAreSorted: oldRound.combatantsAreSorted,
+      turnIndex: oldRound.turnIndex,
       turns,
     };
 
@@ -240,115 +237,140 @@ export class ClassicCombatModel
     return turns;
   }
 
+  // onCombatStart: copy the turns from round 0
   async startCombat() {
     systemLogger.log("ClassicCombatModel#startCombat called");
-    const round: RoundInfo = {
-      turnIndex: this.parent.combatants.size === 0 ? null : 0,
-      jumpIns: [],
-      turns: this.parent.combatants.contents
-        .sort(compareCombatants)
-        .flatMap((c) => (c.id === null ? [] : [{ combatantId: c.id }])),
+    if (this.parent.combatants.size === 0) {
+      return;
+    }
+    const oldRound = this.rounds[0];
+    if (oldRound === undefined) {
+      return;
+    }
+    const turnIndex = 0;
+    const roundIndex = 1;
+    const roundInfo: RoundInfo = {
+      turnIndex,
+      turns: oldRound.turns,
+      combatantsAreSorted: oldRound.combatantsAreSorted,
     };
     const rounds = [...(this.rounds ?? [])];
-    rounds[1] = round;
-    const updateData = { round: 1, turn: 0, system: { rounds } };
-    Hooks.callAll("combatStart", this.parent, updateData);
+    rounds[roundIndex] = roundInfo;
+    const updateData = {
+      round: roundIndex,
+      turn: turnIndex,
+      system: { rounds },
+    };
+    Hooks.callAll("combatStart", this.parent, {
+      round: roundIndex,
+      turn: turnIndex,
+    });
     await this.parent.update(updateData);
+  }
+
+  getNewRoundInfo(): RoundInfo {
+    systemLogger.log("ClassicCombatModel#getNewRound called");
+    const turnIndex = 0;
+    const turns = this.parent.combatants.contents
+      .sort(compareCombatants)
+      .flatMap((c) => (c.id === null ? [] : [{ combatantId: c.id }]));
+
+    const roundInfo: RoundInfo = {
+      turnIndex,
+      turns,
+      combatantsAreSorted: true,
+    };
+    return roundInfo;
+  }
+
+  getExistingRoundInfo(oldRoundInfo: RoundInfo) {
+    // remove combatants who no longer exist
+    const turns = [...oldRoundInfo.turns].filter((t) =>
+      this.parent.combatants.has(t.combatantId),
+    );
+
+    // find combatants who are not in round, sort them, and add them to the end.
+    const newCombatants = this.parent.combatants.contents
+      .filter((c) => !turns.some((t) => t.combatantId === c.id))
+      .sort(compareCombatants)
+      .flatMap((c) => (c.id === null ? [] : [{ combatantId: c.id }]));
+
+    turns.push(...newCombatants);
+
+    // turnIndex
+    let turnIndex = oldRoundInfo.turnIndex;
+    if (turnIndex !== null) {
+      const previousCombatantIndex = turns.findIndex(
+        (t) =>
+          oldRoundInfo.turnIndex !== null &&
+          t.combatantId ===
+            oldRoundInfo.turns[oldRoundInfo.turnIndex].combatantId,
+      );
+      if (previousCombatantIndex === -1) {
+        turnIndex = Math.min(turnIndex, turns.length - 1);
+      } else {
+        turnIndex = previousCombatantIndex;
+      }
+    }
+
+    // calculate `isSorted`
+    const initiatives = turns.map(
+      (t) => this.parent.combatants.get(t.combatantId)?.system.initiative ?? 0,
+    );
+    const combatantsAreSorted = initiatives.every(
+      (initiative, i) => i === 0 || initiative > initiatives[i - 1],
+    );
+
+    const newRoundInfo: RoundInfo = {
+      turnIndex,
+      turns,
+      combatantsAreSorted,
+    };
+    return newRoundInfo;
+  }
+
+  async gotoRound(roundIndex: number) {
+    const existingRound = this.rounds[roundIndex];
+    const roundInfo = existingRound
+      ? this.getExistingRoundInfo(existingRound)
+      : this.getNewRoundInfo();
+    const rounds = [...(this.rounds ?? [])];
+    rounds[roundIndex] = roundInfo;
+    const updateData = {
+      round: roundIndex,
+      turn: roundInfo.turnIndex,
+      system: { rounds },
+    };
+    const advanceTime = this.parent.getTimeDelta(
+      this.parent.round,
+      this.parent.turn,
+      roundIndex,
+      roundInfo.turnIndex,
+    );
+
+    // Update the document, passing data through a hook first
+    const updateOptions = {
+      direction: roundIndex > this.parent.round ? (1 as const) : (-1 as const),
+      worldTime: { delta: advanceTime },
+    };
+
+    // @ts-expect-error fvtt-types
+    Hooks.callAll("combatRound", this.parent, updateData, updateOptions);
+    type _T = Parameters<typeof this.parent.update>[0];
+    await this.parent.update(updateData, updateOptions);
   }
 
   async nextRound() {
     systemLogger.log("ClassicCombatModel#nextRound called");
-    const turn = 0;
-    const roundNumber = this.parent.round + 1;
-    const roundField: RoundInfo = {
-      turnIndex: this.parent.combatants.size === 0 ? null : 0,
-      jumpIns: [],
-      turns: this.parent.combatants.contents
-        .sort(compareCombatants)
-        .flatMap((c) => (c.id === null ? [] : [{ combatantId: c.id }])),
-    };
-    const rounds = [...(this.rounds ?? [])];
-    rounds[roundNumber] = roundField;
-
-    const advanceTime = this.parent.getTimeDelta(
-      this.parent.round,
-      this.parent.turn,
-      roundNumber,
-      turn,
-    );
-
-    // Update the document, passing data through a hook first
-    const updateData = { round: roundNumber, turn, system: { rounds } };
-    const updateOptions = {
-      direction: 1 as const,
-      worldTime: { delta: advanceTime },
-    };
-    // @ts-expect-error fvtt-types
-    Hooks.callAll(
-      // this comment is just to keep the @ts-expect-error above isolated
-      "combatRound",
-      this.parent,
-      updateData,
-      updateOptions,
-    );
-    await this.parent.update(updateData, updateOptions);
+    const roundIndex = this.parent.round + 1;
+    await this.gotoRound(roundIndex);
   }
 
   async previousRound() {
     systemLogger.log("ClassicCombatModel#previousRound called");
-    // await this.parent.update({ round: this.parent.round - 1 });
-
-    const newRoundIndex = this.parent.round - 1;
-
-    if (newRoundIndex < 0) {
-      return;
-    }
-
-    const existingRoundInfo: RoundInfo = this.rounds[newRoundIndex] ?? {
-      turnIndex: null,
-      jumpIns: [],
-      turns: [],
-    };
-
-    const turnIndex =
-      (existingRoundInfo.turnIndex ??
-      (newRoundIndex === 0 || this.parent.combatants.size === 0))
-        ? null
-        : this.parent.combatants.size - 1;
-    const advanceTime = this.parent.getTimeDelta(
-      this.parent.round,
-      this.parent.turn,
-      newRoundIndex,
-      turnIndex,
-    );
-    const roundField: RoundInfo = {
-      jumpIns: [],
-      turns: this.parent.combatants.contents
-        .sort(compareCombatants)
-        .flatMap((c) => (c.id === null ? [] : [{ combatantId: c.id }])),
-    };
-    const rounds = [...(this.rounds ?? [])];
-    rounds[newRoundIndex] = roundField;
-
-    // Update the document, passing data through a hook first
-    const updateData = {
-      round: newRoundIndex,
-      turn: turnIndex,
-      system: { rounds },
-    };
-    const updateOptions = {
-      direction: -1 as const,
-      worldTime: { delta: advanceTime },
-    };
-    // @ts-expect-error fvtt-types
-    Hooks.callAll(
-      //
-      "combatRound",
-      this,
-      updateData,
-      updateOptions,
-    );
-    await this.parent.update(updateData, updateOptions);
+    if (this.parent.round === 0) return;
+    const roundIndex = this.parent.round - 1;
+    await this.gotoRound(roundIndex);
   }
 
   async nextTurn() {
