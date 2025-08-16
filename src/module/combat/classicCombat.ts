@@ -1,8 +1,6 @@
-import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
 import {
   ArrayField,
-  BooleanField,
   DataModel,
   NumberField,
   SchemaField,
@@ -10,10 +8,10 @@ import {
   TypeDataModel,
 } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
-import { ClassicCombatant, isClassicCombatant } from "./classicCombatant";
+import { isClassicCombatant } from "./classicCombatant";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
-import { isValidCombat, ValidCombatModel } from "./types";
+import { ValidCombatModel } from "./types";
 
 function compareCombatants(
   a: InvestigatorCombatant,
@@ -30,6 +28,8 @@ function compareCombatants(
 // Schema Definition
 
 type RoundInfo = SchemaField.InitializedData<typeof roundInfoField.fields>;
+
+type TurnInfo = SchemaField.InitializedData<typeof turnInfoField.fields>;
 
 const turnInfoField = new SchemaField(
   {
@@ -60,11 +60,6 @@ const roundInfoField = new SchemaField(
       required: true,
       initial: null,
     }),
-    combatantsAreSorted: new BooleanField({
-      nullable: false,
-      required: true,
-      initial: true,
-    }),
   },
   { nullable: false, required: false, initial: undefined },
 );
@@ -73,7 +68,7 @@ export const classicCombatSchema = {
   rounds: new ArrayField(roundInfoField, {
     nullable: false,
     required: true,
-    initial: [],
+    initial: [{ turns: [], turnIndex: null }],
   }),
 };
 
@@ -99,6 +94,16 @@ export class ClassicCombatModel
 
   static defineSchema(): typeof classicCombatSchema {
     return classicCombatSchema;
+  }
+
+  protected _areTurnsSorted(turns: TurnInfo[]): boolean {
+    const initiatives = turns.map(
+      (t) => this.parent.combatants.get(t.combatantId)?.system.initiative ?? 0,
+    );
+    const turnsAreSorted = initiatives.every(
+      (initiative, i) => i === 0 || initiative > initiatives[i - 1],
+    );
+    return turnsAreSorted;
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -135,29 +140,34 @@ export class ClassicCombatModel
 
     // get the round info
     const round = this.rounds[parent.round];
-    // get the old turns
-    const oldTurns = round ? [...round.turns] : [];
-    // work out which turns have already passed
-    const settledOldTurns = oldTurns.slice(0, (parent.turn ?? -1) + 1);
-    // get a list of combatants who haven't gone yet
-    const unsettledOldTurns = oldTurns.slice((parent.turn ?? -1) + 1);
-    const unsettledOldCombatants = unsettledOldTurns
-      .map((t) => parent.combatants.get(t.combatantId))
-      .filter(isClassicCombatant);
-    // get a list of who's been added
-    const newCombatants: ClassicCombatant[] = (documents as unknown[]).filter(
-      isClassicCombatant,
-    );
-    // shuffle then together
-    const newRemainingCombatants = [
-      // old ones first so they win a tie against new arrivals
-      ...unsettledOldCombatants,
-      ...newCombatants,
-    ].sort(compareCombatants);
+    if (round === undefined) {
+      throw new Error("Round not found");
+    }
+    const newCombatants = (documents as unknown[]).filter(isClassicCombatant);
 
-    // turn them back into turn info objects
-    const newTurns = newRemainingCombatants.map((c) => ({ combatantId: c.id }));
-    const turns = [...settledOldTurns, ...newTurns];
+    let turns: TurnInfo[];
+    if (this.parent.round === 0) {
+      turns = this.parent.combatants.contents
+        .sort(compareCombatants)
+        .flatMap((c) =>
+          c.id === null
+            ? []
+            : {
+                combatantId: c.id,
+              },
+        );
+    } else {
+      const newTurns = newCombatants
+        .sort(compareCombatants)
+        .flatMap((c) => (c.id === null ? [] : { combatantId: c.id }));
+      turns = [...round.turns, ...newTurns];
+    }
+
+    const rounds = [...this.rounds];
+    rounds[parent.round] = {
+      turnIndex: round.turnIndex,
+      turns,
+    };
 
     // update
     await this.parent.update({
@@ -188,12 +198,18 @@ export class ClassicCombatModel
   ) {
     systemLogger.log("ClassicCombatModel#_onUpdateDescendantDocuments called");
     // const oldRoundInfo = this.rounds[parent.round];
-    assertGame(game);
-    if (!isValidCombat(parent) || userId !== game.userId) {
-      return;
-    }
-    // This is where we want to react to changes in combatants.
-    // if (collection === game.combatants) {}
+    // if (oldRoundInfo === undefined) {
+    //   return;
+    // }
+    // // const isSorted = this._areTurnsSorted(oldRoundInfo.turns);
+    // let turns = oldRoundInfo.turns;
+    // if (oldRoundInfo.combatantsAreSorted) {
+    //   turns = turns
+    //     .map((t) => this.parent.combatants.get(t.combatantId))
+    //     .filter(isClassicCombatant)
+    //     .sort(compareCombatants)
+    //     .flatMap((c) => (c.id === null ? [] : [{ combatantId: c.id }]));
+    // }
     return Promise.resolve();
   }
 
@@ -220,7 +236,6 @@ export class ClassicCombatModel
 
     const rounds = [...this.rounds];
     rounds[parent.round] = {
-      combatantsAreSorted: oldRound.combatantsAreSorted,
       turnIndex: oldRound.turnIndex,
       turns,
     };
@@ -252,7 +267,6 @@ export class ClassicCombatModel
     const roundInfo: RoundInfo = {
       turnIndex,
       turns: oldRound.turns,
-      combatantsAreSorted: oldRound.combatantsAreSorted,
     };
     const rounds = [...(this.rounds ?? [])];
     rounds[roundIndex] = roundInfo;
@@ -278,7 +292,6 @@ export class ClassicCombatModel
     const roundInfo: RoundInfo = {
       turnIndex,
       turns,
-      combatantsAreSorted: true,
     };
     return roundInfo;
   }
@@ -313,18 +326,9 @@ export class ClassicCombatModel
       }
     }
 
-    // calculate `isSorted`
-    const initiatives = turns.map(
-      (t) => this.parent.combatants.get(t.combatantId)?.system.initiative ?? 0,
-    );
-    const combatantsAreSorted = initiatives.every(
-      (initiative, i) => i === 0 || initiative > initiatives[i - 1],
-    );
-
     const newRoundInfo: RoundInfo = {
       turnIndex,
       turns,
-      combatantsAreSorted,
     };
     return newRoundInfo;
   }
@@ -355,7 +359,13 @@ export class ClassicCombatModel
     };
 
     // @ts-expect-error fvtt-types
-    Hooks.callAll("combatRound", this.parent, updateData, updateOptions);
+    Hooks.callAll(
+      // this comment is here to isolate the ts-expect-error above
+      "combatRound",
+      this.parent,
+      updateData,
+      updateOptions,
+    );
     type _T = Parameters<typeof this.parent.update>[0];
     await this.parent.update(updateData, updateOptions);
   }
@@ -409,6 +419,14 @@ export class ClassicCombatModel
       this.parent.round,
       nextTurn,
     );
+
+    const rounds = [...this.rounds];
+    const roundInfo = this.rounds[this.parent.round];
+    if (roundInfo === undefined) {
+      return;
+    }
+    roundInfo.turnIndex = nextTurn;
+    rounds[this.parent.round] = roundInfo;
 
     // Update the document, passing data through a hook first
     const updateData = { round: this.parent.round, turn: nextTurn };
