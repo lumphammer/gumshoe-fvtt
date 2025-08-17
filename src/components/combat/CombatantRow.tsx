@@ -1,7 +1,10 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
 import { ReactNode } from "react";
 
 import { assertGame } from "../../functions/isGame";
+import { systemLogger } from "../../functions/utilities";
 import { isActiveCharacterActor } from "../../module/actors/types";
 import { isClassicCombatant } from "../../module/combat/classicCombatant";
 import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
@@ -50,6 +53,13 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
     );
   }
 
+  const id = combatant.id;
+  if (id === null) {
+    throw new Error(
+      "CombatantRow must be rendered with a combatant that has an id.",
+    );
+  }
+
   const activeCombatantId =
     combat.turn !== null ? combat.turns[combat.turn].id : null;
   const active = activeCombatantId === combatant.id;
@@ -77,26 +87,75 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
     return ul.outerHTML;
   })();
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    setActivatorNodeRef,
+  } = useSortable({ id });
+
+  systemLogger.log("CombatantRow rendered", {
+    attributes,
+    transform,
+    transition,
+  });
+
   return (
     <NativeContextMenuWrapper>
       <li
+        ref={setNodeRef}
         className={cx("combatant", {
           active: combat.turn === index,
           hide: combatant.hidden,
           defeated: combatant.defeated,
         })}
+        {...attributes}
         data-combatant-id={combatant.id}
-        css={{
-          height: "4em",
-          position: "absolute",
-          top: "0",
-          left: "0",
-          width: "100%",
-          transform: `translateY(${index * 4}em)`,
-          transition: "transform 1000ms",
+        style={{
+          transform: CSS.Translate.toString(transform),
+          transition,
           opacity: depleted && !active ? 0.7 : 1,
         }}
+        css={
+          {
+            // height: "4em",
+            // position: "absolute",
+            // top: "0",
+            // left: "0",
+            // width: "100%",
+            // transition: "transform 1000ms",
+            // transform: `translateY(${index * 4}em)`,
+          }
+        }
       >
+        <div
+          className="drag-handle"
+          ref={setActivatorNodeRef}
+          {...listeners}
+          css={{
+            cursor: "row-resize",
+            // backgroundColor: "darkred",
+            alignSelf: "stretch",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            // position: "absolute",
+            // top: "0",
+            // left: "0",
+          }}
+        >
+          <div
+            css={{
+              width: "1em",
+              height: "0.5em",
+              // style to look l
+              borderStyle: "solid",
+              borderWidth: "1px 0",
+            }}
+          />
+        </div>
         <img
           className="token-image"
           src={combatant.img || CONST.DEFAULT_TOKEN}
@@ -104,22 +163,47 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
           loading="lazy"
         />
         <div
-          className="token-name"
           css={{
             overflow: "hidden",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-evenly",
+            alignSelf: "stretch",
           }}
         >
-          <strong
-            className="name"
+          <div
+            className="top-row"
             css={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
-            {combatant.name}
-          </strong>
+            <strong
+              className="name"
+              css={{
+                // whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {combatant.name}
+            </strong>
+            {isTurnPassingCombatant(combatant) ? (
+              <TurnPassingInitiative combatant={combatant} />
+            ) : isClassicCombatant(combatant) ? (
+              <ClassicInitiative combatant={combatant} />
+            ) : (
+              "null"
+            )}
+          </div>
           <div className="combatant-controls">
+            {combatant.resource !== null && (
+              <div className="token-resource">
+                <span className="resource">{getValue(combatant.resource)}</span>
+              </div>
+            )}
             {game.user.isGM && (
               <>
                 <button
@@ -167,17 +251,11 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
           </div>
         </div>
 
-        {combatant.resource !== null && (
-          <div className="token-resource">
-            <span className="resource">{getValue(combatant.resource)}</span>
-          </div>
-        )}
-
-        {isTurnPassingCombatant(combatant) ? (
+        {/* {isTurnPassingCombatant(combatant) ? (
           <TurnPassingInitiative combatant={combatant} />
         ) : isClassicCombatant(combatant) ? (
           <ClassicInitiative combatant={combatant} />
-        ) : null}
+        ) : null} */}
       </li>
     </NativeContextMenuWrapper>
   );
