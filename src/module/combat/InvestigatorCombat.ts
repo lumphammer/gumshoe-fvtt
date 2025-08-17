@@ -265,4 +265,10 @@ export class InvestigatorCombat<
     }
     return this;
   }
+
+  async swapCombatants(a: string, b: string) {
+    if (isValidCombat(this)) {
+      await this.system.swapCombatants(a, b);
+    }
+  }
 }

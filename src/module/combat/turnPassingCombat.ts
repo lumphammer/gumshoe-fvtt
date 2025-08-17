@@ -108,6 +108,10 @@ export class TurnPassingCombatModel
     systemLogger.log("ClassicCombatModel#previousTurn called");
     await this.parent.update({ turn: this.parent.turn ?? 0 - 1 });
   }
+
+  async swapCombatants(a: string, b: string) {
+    return Promise.resolve();
+  }
 }
 
 export type TurnPassingCombat = InvestigatorCombat<"turnPassing">;

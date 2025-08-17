@@ -476,6 +476,19 @@ export class ClassicCombatModel
     );
     await this.parent.update(updateData, updateOptions);
   }
+
+  async swapCombatants(a: string, b: string) {
+    const roundInfo = this.rounds[this.parent.round];
+    if (!roundInfo) return;
+    const turns = [...roundInfo.turns];
+    const indexA = turns.findIndex((t) => t.combatantId === a);
+    const indexB = turns.findIndex((t) => t.combatantId === b);
+    turns[indexA] = { ...turns[indexA], combatantId: b };
+    turns[indexB] = { ...turns[indexB], combatantId: a };
+    const rounds = [...this.rounds];
+    rounds[this.parent.round] = { ...roundInfo, turns };
+    await this.parent.update({ system: { rounds } });
+  }
 }
 
 export type ClassicCombat = InvestigatorCombat<"classic">;
