@@ -40,7 +40,7 @@ export const DraggableRowContainer = () => {
       const { active, over } = event;
       systemLogger.log("Drag ended", { active, over });
       if (active.id !== over.id) {
-        combat?.swapCombatants(active.id, over.id);
+        void combat?.swapCombatants(active.id, over.id);
       }
     },
     [combat],
