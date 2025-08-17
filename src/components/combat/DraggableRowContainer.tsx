@@ -15,7 +15,9 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useCallback } from "react";
 
+import { systemLogger } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { CombatantRow } from "./CombatantRow";
 
@@ -33,13 +35,16 @@ export const DraggableRowContainer = () => {
     }),
   );
 
-  function handleDragEnd(event) {
-    const { active, over } = event;
-
-    if (active.id !== over.id) {
-      //
-    }
-  }
+  const handleDragEnd = useCallback(
+    (event) => {
+      const { active, over } = event;
+      systemLogger.log("Drag ended", { active, over });
+      if (active.id !== over.id) {
+        combat?.swapCombatants(active.id, over.id);
+      }
+    },
+    [combat],
+  );
 
   const ids = combat.turns.map((turn) => turn.id).filter((id) => id !== null);
 
