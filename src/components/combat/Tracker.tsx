@@ -1,11 +1,10 @@
-import { ReactNode } from "react";
 import { PiEmptyLight, PiPeaceLight } from "react-icons/pi";
 
 import { assertGame } from "../../functions/isGame";
-import { assertNotNull, sortByKey } from "../../functions/utilities";
+import { assertNotNull } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
-import { CombatantRow } from "./CombatantRow";
+import { DraggableRowContainer } from "./DraggableRowContainer";
 import { EncounterNav } from "./EncounterNav";
 import { localize } from "./functions";
 import { TurnNav } from "./TurnNav";
@@ -29,7 +28,6 @@ export const Tracker = () => {
   // kinda pre-baked data for the rows in the tracker - each one corresponds to
   // a combatant in the combat
   // const turns = combat ? getTurns(combat) : [];
-
   return (
     <>
       {/* HEADER ROWS */}
@@ -110,29 +108,7 @@ export const Tracker = () => {
             overflowX: "hidden",
           }}
         >
-          <ol
-            // see investigator-combatant-list in the LESS for why we add this class
-            className="plain investigator-combatant-list"
-            css={{
-              position: "relative",
-              flex: 1,
-              height: `${combat.turns.length * 4}em`,
-              overflow: "hidden",
-            }}
-          >
-            {
-              // combatant sorting is done in "Combat" but for rendering stability
-              // we need to un-sort the combatants and then tell each row where it
-              // used to exist in the order
-              sortByKey(combat.turns, "id").map<ReactNode>((combatant) => (
-                <CombatantRow
-                  key={combatant.id}
-                  index={combat.turns.findIndex((x) => x.id === combatant.id)}
-                  combatant={combatant}
-                />
-              ))
-            }
-          </ol>
+          <DraggableRowContainer />
         </div>
       )}
     </>
