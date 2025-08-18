@@ -52,5 +52,5 @@ export interface ValidCombatModel {
     ...args: Combat.OnDeleteDescendantDocumentsArgs
   ): Promise<void>;
 
-  swapCombatants(a: string, b: string): Promise<void>;
+  moveCombatant(active: string, over: string): Promise<void>;
 }
