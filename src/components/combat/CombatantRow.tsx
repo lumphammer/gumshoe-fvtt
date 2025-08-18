@@ -94,7 +94,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
     transform,
     transition,
     setActivatorNodeRef,
-  } = useSortable({ id });
+  } = useSortable({ id, transition: { duration: 500, easing: "linear" } });
 
   systemLogger.log("CombatantRow rendered", {
     attributes,
@@ -188,6 +188,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
                 textOverflow: "ellipsis",
               }}
             >
+              {/* {CSS.Translate.toString(transform)} */}
               {combatant.name}
             </strong>
             {isTurnPassingCombatant(combatant) ? (

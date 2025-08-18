@@ -15,7 +15,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import { systemLogger } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
@@ -46,7 +46,10 @@ export const DraggableRowContainer = () => {
     [combat],
   );
 
-  const ids = combat.turns.map((turn) => turn.id).filter((id) => id !== null);
+  const ids = useMemo(
+    () => combat.turns.map((turn) => turn.id).filter((id) => id !== null),
+    [combat],
+  );
 
   return (
     <DndContext
