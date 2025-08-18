@@ -477,7 +477,7 @@ export class ClassicCombatModel
     await this.parent.update(updateData, updateOptions);
   }
 
-  async swapCombatants(active: string, over: string) {
+  async moveCombatant(active: string, over: string) {
     const roundInfo = this.rounds[this.parent.round];
     if (!roundInfo) return;
     const turnInfo = roundInfo.turns.find((t) => t.combatantId === active);
@@ -488,6 +488,11 @@ export class ClassicCombatModel
     turns.splice(insertIndex, 0, turnInfo);
     const rounds = [...this.rounds];
     rounds[this.parent.round] = { ...roundInfo, turns };
+    this.rounds = rounds;
+    this.parent.setupTurns();
+    // @ts-expect-error fvtt-types
+    // foundry.ui.combat.render();
+    // game.combat?.apps.forEach((app) => app.render());
     await this.parent.update({ system: { rounds } });
   }
 }

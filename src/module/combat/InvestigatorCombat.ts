@@ -268,7 +268,7 @@ export class InvestigatorCombat<
 
   async swapCombatants(active: string, over: string) {
     if (isValidCombat(this)) {
-      await this.system.swapCombatants(active, over);
+      await this.system.moveCombatant(active, over);
     }
   }
 }
