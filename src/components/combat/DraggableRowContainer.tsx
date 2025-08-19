@@ -51,7 +51,11 @@ export const DraggableRowContainer = () => {
       if (over === null) return;
       systemLogger.log("Drag ended", { active, over });
       if (active.id !== over.id) {
-        void combat?.swapCombatants(active.id.toString(), over.id.toString());
+        void combat?.swapCombatants(
+          active.id.toString(),
+          over.id.toString(),
+          y < 0 ? "up" : "down",
+        );
       }
       const newIds = ids.filter((id) => id !== active.id);
       const modifier = y < 0 ? 0 : 1;
