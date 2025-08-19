@@ -477,13 +477,15 @@ export class ClassicCombatModel
     await this.parent.update(updateData, updateOptions);
   }
 
-  async moveCombatant(active: string, over: string) {
+  async moveCombatant(active: string, over: string, direction: "up" | "down") {
     const roundInfo = this.rounds[this.parent.round];
     if (!roundInfo) return;
     const turnInfo = roundInfo.turns.find((t) => t.combatantId === active);
     if (!turnInfo) return;
     const turns = roundInfo.turns.filter((t) => t.combatantId !== active);
-    const insertIndex = turns.findIndex((t) => t.combatantId === over);
+    const insertIndex =
+      turns.findIndex((t) => t.combatantId === over) +
+      (direction === "up" ? 0 : 1);
     // insert turnInfo into turns at insertIndex
     turns.splice(insertIndex, 0, turnInfo);
     const rounds = [...this.rounds];

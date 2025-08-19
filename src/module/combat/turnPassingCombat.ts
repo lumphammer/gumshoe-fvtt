@@ -109,7 +109,7 @@ export class TurnPassingCombatModel
     await this.parent.update({ turn: this.parent.turn ?? 0 - 1 });
   }
 
-  async moveCombatant(active: string, over: string) {
+  async moveCombatant(active: string, over: string, direction: "up" | "down") {
     return Promise.resolve();
   }
 }
