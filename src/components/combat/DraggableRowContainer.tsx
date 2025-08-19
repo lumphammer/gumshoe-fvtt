@@ -1,6 +1,7 @@
 import {
   closestCenter,
   DndContext,
+  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -15,7 +16,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useCallback, useMemo } from "react";
+import { useCallback, useState } from "react";
 
 import { systemLogger } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
@@ -35,20 +36,32 @@ export const DraggableRowContainer = () => {
     }),
   );
 
-  const handleDragEnd = useCallback(
-    (event) => {
-      const { active, over } = event;
-      systemLogger.log("Drag ended", { active, over });
-      if (active.id !== over.id) {
-        void combat?.swapCombatants(active.id, over.id);
-      }
-    },
-    [combat],
+  const [ids, setIds] = useState(
+    combat.turns.map((turn) => turn.id).filter((id) => id !== null),
   );
 
-  const ids = useMemo(
-    () => combat.turns.map((turn) => turn.id).filter((id) => id !== null),
-    [combat],
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const {
+        active,
+        over,
+        delta: { y },
+      } = event;
+      // event.
+      if (over === null) return;
+      systemLogger.log("Drag ended", { active, over });
+      if (active.id !== over.id) {
+        void combat?.swapCombatants(active.id.toString(), over.id.toString());
+      }
+      const newIds = ids.filter((id) => id !== active.id);
+      const modifier = y < 0 ? 0 : 1;
+      const insertionIndex = newIds.indexOf(over.id.toString()) + modifier;
+      newIds.splice(insertionIndex, 0, active.id.toString());
+
+      systemLogger.log("New IDs", { newIds });
+      setIds(newIds);
+    },
+    [combat, ids],
   );
 
   return (
@@ -77,11 +90,11 @@ export const DraggableRowContainer = () => {
             // combatant sorting is done in "Combat" but for rendering stability
             // we need to un-sort the combatants and then tell each row where it
             // used to exist in the order
-            combat.turns.map((combatant) => (
+            ids.map((id) => (
               <CombatantRow
-                key={combatant.id}
-                index={combat.turns.findIndex((x) => x.id === combatant.id)}
-                combatant={combatant}
+                key={id}
+                index={combat.turns.findIndex((x) => x.id === id)}
+                combatant={combat.turns.find((x) => x.id === id)!}
               />
             ))
           }
