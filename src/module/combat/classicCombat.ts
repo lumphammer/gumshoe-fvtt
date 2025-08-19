@@ -490,7 +490,6 @@ export class ClassicCombatModel
     rounds[this.parent.round] = { ...roundInfo, turns };
     this.rounds = rounds;
     this.parent.setupTurns();
-    // @ts-expect-error fvtt-types
     // foundry.ui.combat.render();
     // game.combat?.apps.forEach((app) => app.render());
     await this.parent.update({ system: { rounds } });
