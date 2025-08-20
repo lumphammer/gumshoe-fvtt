@@ -56,25 +56,33 @@ export const ClassicInitiative = ({ combatant }: ClassicInitiativeProps) => {
 
   return (
     <>
-      <div className="token-initiative">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            updateInitiative();
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          updateInitiative();
+        }}
+      >
+        <input
+          ref={inputRef}
+          type="text"
+          inputMode="numeric"
+          pattern="^[+=\-]?\d*"
+          defaultValue={initString}
+          aria-label="Initiative Score"
+          disabled={!game.user.isGM}
+          onBlur={updateInitiative}
+          css={{
+            width: "2em",
+            padding: "0.1em 0.2em",
+            height: "1.8em",
+            textAlign: "center",
+            // fontSize: "0.8em",
+            marginLeft: "0.5em",
+            marginRight: "0.5em",
           }}
-        >
-          <input
-            ref={inputRef}
-            type="text"
-            inputMode="numeric"
-            pattern="^[+=\-]?\d*"
-            defaultValue={initString}
-            aria-label="Initiative Score"
-            disabled={!game.user.isGM}
-            onBlur={updateInitiative}
-          />
-        </form>
-      </div>
+        />
+      </form>
+
       {game.user.isGM && (
         <>
           <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
