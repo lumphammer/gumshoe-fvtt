@@ -44,9 +44,7 @@ export const DraggableRowContainer = memo(() => {
     }),
   );
 
-  const [ids, setIds] = useState(
-    combat.turns.map((turn) => turn.id).filter((id) => id !== null),
-  );
+  const [ids, setIds] = useState<string[]>([]);
 
   useEffect(() => {
     const handleUpdateCombat = (
