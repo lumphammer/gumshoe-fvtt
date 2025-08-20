@@ -6,7 +6,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
 import { ReactNode } from "react";
-import { TbGripHorizontal } from "react-icons/tb";
+import { TbGripVertical } from "react-icons/tb";
 
 import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
@@ -166,7 +166,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
             // left: "0",
           }}
         >
-          <TbGripHorizontal
+          <TbGripVertical
             css={{
               marginTop: "calc(calc(var(--sidebar-item-height) / 2) - 6px)",
             }}
