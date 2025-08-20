@@ -105,7 +105,6 @@ export const Tracker = () => {
           className="combat-tracker"
           css={{
             flex: 1,
-            overflowX: "hidden",
           }}
         >
           <DraggableRowContainer />

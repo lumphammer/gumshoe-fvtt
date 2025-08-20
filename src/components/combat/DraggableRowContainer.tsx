@@ -110,8 +110,6 @@ export const DraggableRowContainer = memo(() => {
           css={{
             position: "relative",
             flex: 1,
-            // height: `${combat.turns.length * 4}em`,
-            overflow: "hidden",
           }}
         >
           {
