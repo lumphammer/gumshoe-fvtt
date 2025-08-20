@@ -49,7 +49,7 @@ export const DraggableRowContainer = memo(() => {
   );
 
   useEffect(() => {
-    const f = (
+    const handleUpdateCombat = (
       updatedCombat: InvestigatorCombat,
       changes: Combat.UpdateData,
       options: Combat.Database.UpdateOptions,
@@ -59,9 +59,9 @@ export const DraggableRowContainer = memo(() => {
         updatedCombat.turns.map((turn) => turn.id).filter((id) => id !== null),
       );
     };
-    Hooks.on("updateCombat", f);
+    Hooks.on("updateCombat", handleUpdateCombat);
     return () => {
-      Hooks.off("updateCombat", f);
+      Hooks.off("updateCombat", handleUpdateCombat);
     };
   }, []);
 
