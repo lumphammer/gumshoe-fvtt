@@ -1,7 +1,12 @@
-import { defaultAnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
+import {
+  AnimateLayoutChanges,
+  defaultAnimateLayoutChanges,
+  useSortable,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
 import { ReactNode } from "react";
+import { TbGripHorizontal } from "react-icons/tb";
 
 import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
@@ -44,13 +49,16 @@ function getEffectiveEffects(
 }
 
 // https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
-function customAnimateLayoutChanges(args) {
-  if (args.isSorting || args.wasDragging) {
-    return defaultAnimateLayoutChanges(args);
-  }
+// function customAnimateLayoutChanges(args) {
+//   if (args.isSorting || args.wasDragging) {
+//     return defaultAnimateLayoutChanges(args);
+//   }
 
-  return true;
-}
+//   return true;
+// }
+
+const customAnimateLayoutChanges: AnimateLayoutChanges = (args) =>
+  defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
 export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
   assertGame(game);
@@ -131,17 +139,16 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
           transition,
           opacity: depleted && !active ? 0.7 : 1,
         }}
-        css={
-          {
-            // height: "4em",
-            // position: "absolute",
-            // top: "0",
-            // left: "0",
-            // width: "100%",
-            // transition: "transform 1000ms",
-            // transform: `translateY(${index * 4}em)`,
-          }
-        }
+        css={{
+          alignItems: "start",
+          // height: "4em",
+          // position: "absolute",
+          // top: "0",
+          // left: "0",
+          // width: "100%",
+          // transition: "transform 1000ms",
+          // transform: `translateY(${index * 4}em)`,
+        }}
       >
         <div
           className="drag-handle"
@@ -150,22 +157,18 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
           css={{
             cursor: "row-resize",
             // backgroundColor: "darkred",
-            alignSelf: "stretch",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
+            // alignSelf: "stretch",
+            // display: "flex",
+            // flexDirection: "column",
+            // justifyContent: "center",
             // position: "absolute",
             // top: "0",
             // left: "0",
           }}
         >
-          <div
+          <TbGripHorizontal
             css={{
-              width: "1em",
-              height: "0.5em",
-              // style to look l
-              borderStyle: "solid",
-              borderWidth: "1px 0",
+              marginTop: "calc(calc(var(--sidebar-item-height) / 2) - 6px)",
             }}
           />
         </div>
@@ -189,7 +192,8 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
             className="top-row"
             css={{
               display: "flex",
-              alignItems: "center",
+
+              alignItems: "start",
               justifyContent: "space-between",
             }}
           >
@@ -197,6 +201,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
               className="name"
               css={{
                 // whiteSpace: "nowrap",
+                flex: 1,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
               }}
