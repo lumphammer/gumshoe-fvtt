@@ -17,7 +17,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 
 import { systemLogger } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
@@ -30,7 +30,7 @@ const measuringConfig = {
   },
 };
 
-export const DraggableRowContainer = () => {
+export const DraggableRowContainer = memo(() => {
   const combat = game.combats?.active as InvestigatorCombat | undefined;
 
   if (combat === undefined) {
@@ -136,4 +136,6 @@ export const DraggableRowContainer = () => {
       </SortableContext>
     </DndContext>
   );
-};
+});
+
+DraggableRowContainer.displayName = "DraggableRowContainer";
