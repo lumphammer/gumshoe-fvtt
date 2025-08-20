@@ -3,6 +3,7 @@ import {
   DndContext,
   DragEndEvent,
   KeyboardSensor,
+  MeasuringStrategy,
   PointerSensor,
   useSensor,
   useSensors,
@@ -21,6 +22,13 @@ import { useCallback, useEffect, useState } from "react";
 import { systemLogger } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { CombatantRow } from "./CombatantRow";
+
+// https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
+const measuringConfig = {
+  droppable: {
+    strategy: MeasuringStrategy.Always,
+  },
+};
 
 export const DraggableRowContainer = () => {
   const combat = game.combats?.active as InvestigatorCombat | undefined;
@@ -91,6 +99,7 @@ export const DraggableRowContainer = () => {
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+      measuring={measuringConfig}
     >
       <SortableContext
         items={ids}
