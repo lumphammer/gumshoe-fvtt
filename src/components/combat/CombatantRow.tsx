@@ -113,7 +113,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
     setActivatorNodeRef,
   } = useSortable({
     id,
-    transition: { duration: 500, easing: "linear" },
+    transition: { duration: 300, easing: "linear" },
     animateLayoutChanges: customAnimateLayoutChanges,
   });
 
