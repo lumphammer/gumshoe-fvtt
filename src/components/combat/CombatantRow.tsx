@@ -1,4 +1,4 @@
-import { useSortable } from "@dnd-kit/sortable";
+import { defaultAnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
 import { ReactNode } from "react";
@@ -41,6 +41,15 @@ function getEffectiveEffects(
   return actor.temporaryEffects.filter(
     (e) => !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED),
   );
+}
+
+// https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
+function customAnimateLayoutChanges(args) {
+  if (args.isSorting || args.wasDragging) {
+    return defaultAnimateLayoutChanges(args);
+  }
+
+  return true;
 }
 
 export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
@@ -94,7 +103,11 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
     transform,
     transition,
     setActivatorNodeRef,
-  } = useSortable({ id, transition: { duration: 500, easing: "linear" } });
+  } = useSortable({
+    id,
+    transition: { duration: 500, easing: "linear" },
+    animateLayoutChanges: customAnimateLayoutChanges,
+  });
 
   systemLogger.log("CombatantRow rendered", {
     attributes,
