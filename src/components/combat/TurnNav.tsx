@@ -97,6 +97,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                       </>
                     }
                   >
+                    {/* SETTINGS */}
                     <NativeMenuItem
                       icon={<FaCog />}
                       onSelect={() => {
@@ -108,6 +109,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                       {localize("COMBAT.Settings")}
                     </NativeMenuItem>
 
+                    {/* CLEAR MOVEMENT HISTORIES */}
                     <NativeMenuItem
                       icon={<FaShoePrints />}
                       onSelect={() => {
@@ -125,6 +127,16 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                       }}
                     >
                       {localize("COMBAT.InitiativeReset")}
+                    </NativeMenuItem>
+
+                    {/* SORT */}
+                    <NativeMenuItem
+                      icon={<FaRecycle />}
+                      onSelect={() => {
+                        void combat.sortCombatants();
+                      }}
+                    >
+                      {localize("COMBAT.Sort")}
                     </NativeMenuItem>
                   </NativeDropdownMenu>
                 </strong>

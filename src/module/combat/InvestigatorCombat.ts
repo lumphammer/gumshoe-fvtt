@@ -271,4 +271,10 @@ export class InvestigatorCombat<
       await this.system.moveCombatant(active, over, direction);
     }
   }
+
+  async sortCombatants(): Promise<void> {
+    if (isValidCombat(this)) {
+      await this.system.sortCombatants();
+    }
+  }
 }

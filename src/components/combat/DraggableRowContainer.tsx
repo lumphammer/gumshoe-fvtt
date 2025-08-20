@@ -16,7 +16,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { systemLogger } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
@@ -39,6 +39,23 @@ export const DraggableRowContainer = () => {
   const [ids, setIds] = useState(
     combat.turns.map((turn) => turn.id).filter((id) => id !== null),
   );
+
+  useEffect(() => {
+    const f = (
+      updatedCombat: InvestigatorCombat,
+      changes: Combat.UpdateData,
+      options: Combat.Database.UpdateOptions,
+      userId: string,
+    ) => {
+      setIds(
+        updatedCombat.turns.map((turn) => turn.id).filter((id) => id !== null),
+      );
+    };
+    Hooks.on("updateCombat", f);
+    return () => {
+      Hooks.off("updateCombat", f);
+    };
+  }, []);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {

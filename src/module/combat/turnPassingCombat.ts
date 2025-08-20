@@ -112,6 +112,10 @@ export class TurnPassingCombatModel
   async moveCombatant(active: string, over: string, direction: "up" | "down") {
     return Promise.resolve();
   }
+
+  sortCombatants(): Promise<void> {
+    return Promise.resolve();
+  }
 }
 
 export type TurnPassingCombat = InvestigatorCombat<"turnPassing">;

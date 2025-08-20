@@ -496,6 +496,29 @@ export class ClassicCombatModel
     // game.combat?.apps.forEach((app) => app.render());
     await this.parent.update({ system: { rounds } });
   }
+
+  async sortCombatants() {
+    const roundInfo = this.rounds[this.parent.round];
+    if (!roundInfo) return;
+    const turns = roundInfo.turns
+      .map(({ combatantId }) => this.parent.combatants.get(combatantId))
+      .filter((c) => c !== undefined)
+      .sort(compareCombatants)
+      .flatMap((combatant) =>
+        combatant.id
+          ? [
+              {
+                combatantId: combatant.id,
+              },
+            ]
+          : [],
+      );
+    const rounds = [...this.rounds];
+    rounds[this.parent.round] = { ...roundInfo, turns };
+    this.rounds = rounds;
+    this.parent.setupTurns();
+    await this.parent.update({ system: { rounds: this.rounds } });
+  }
 }
 
 export type ClassicCombat = InvestigatorCombat<"classic">;
