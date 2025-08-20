@@ -1,6 +1,7 @@
 import { keyframes } from "@emotion/react";
 import { useCallback } from "react";
 import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
+import { FaArrowDownWideShort } from "react-icons/fa6";
 import { LuSwords } from "react-icons/lu";
 
 import { assertGame } from "../../functions/isGame";
@@ -131,12 +132,12 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
 
                     {/* SORT */}
                     <NativeMenuItem
-                      icon={<FaRecycle />}
+                      icon={<FaArrowDownWideShort />}
                       onSelect={() => {
                         void combat.sortCombatants();
                       }}
                     >
-                      {localize("COMBAT.Sort")}
+                      {localize("investigator.SortCombatants")}
                     </NativeMenuItem>
                   </NativeDropdownMenu>
                 </strong>
