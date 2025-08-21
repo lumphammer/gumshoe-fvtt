@@ -43,7 +43,7 @@ export const Tracker = () => {
           />
         )}
 
-        <TurnNav isTurnPassing={isTurnPassing} combat={combat} game={game} />
+        {combat && <TurnNav isTurnPassing={isTurnPassing} combat={combat} />}
       </header>
       {/* ACTUAL COMBATANTS, or "turns" in early-medieval foundry-speak */}
       {!combat && (
