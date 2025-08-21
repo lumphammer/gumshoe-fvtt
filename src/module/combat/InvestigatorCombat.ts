@@ -3,7 +3,6 @@ import { systemLogger } from "../../functions/utilities";
 import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
-import { StackTrace } from "./StackTrace";
 import { isValidCombat } from "./types";
 
 /**
@@ -179,8 +178,8 @@ export class InvestigatorCombat<
   // borrowed from client/documents/combat.d.mts
   override setupTurns() {
     systemLogger.log(
-      "InvestigatorCombat.setupTurns called",
-      new StackTrace().stack,
+      "InvestigatorCombat#setupTurns called",
+      // new StackTrace().stack,
     );
 
     this.turns ||= [];
