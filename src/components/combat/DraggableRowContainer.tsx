@@ -47,12 +47,14 @@ export const DraggableRowContainer = memo(() => {
   const [ids, setIds] = useState<string[]>([]);
 
   useEffect(() => {
+    setIds(combat.turns.map((turn) => turn.id).filter((id) => id !== null));
     const handleUpdateCombat = (
       updatedCombat: InvestigatorCombat,
       changes: Combat.UpdateData,
       options: Combat.Database.UpdateOptions,
       userId: string,
     ) => {
+      if (updatedCombat.id !== combat.id) return;
       setIds(
         updatedCombat.turns.map((turn) => turn.id).filter((id) => id !== null),
       );
@@ -61,7 +63,7 @@ export const DraggableRowContainer = memo(() => {
     return () => {
       Hooks.off("updateCombat", handleUpdateCombat);
     };
-  }, []);
+  }, [combat]);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
