@@ -1,5 +1,5 @@
 import { keyframes } from "@emotion/react";
-import { useCallback } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
 import { FaArrowDownWideShort } from "react-icons/fa6";
 import { LuSwords } from "react-icons/lu";
@@ -13,8 +13,7 @@ import { format, localize } from "./functions";
 
 interface TurnNavProps {
   isTurnPassing: boolean;
-  combat: InvestigatorCombat | undefined;
-  game: foundry.Game;
+  combat: InvestigatorCombat;
 }
 
 const throbbingBg = keyframes({
@@ -27,42 +26,64 @@ const throbbingBg = keyframes({
   },
 });
 
-export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
-  assertGame(game);
-
-  const allTurnsDone =
-    (combat?.turns.length ?? 0) > 0 &&
-    combat?.turns.every(
-      (turn) =>
-        isTurnPassingCombatant(turn) && turn.system.passingTurnsRemaining <= 0,
+export const TurnNav = memo(
+  ({ isTurnPassing, combat: actualCombat }: TurnNavProps) => {
+    assertGame(game);
+    const [combatState, setCombatState] = useState(actualCombat.toJSON());
+    const [turns, setTurns] = useState(actualCombat.turns);
+    const [isActiveUser, setIsActiveUser] = useState(
+      actualCombat.combatant?.players?.includes(game.user),
     );
 
-  const handleNextRound = useCallback(() => {
-    void combat?.nextRound();
-  }, [combat]);
+    useEffect(() => {
+      const handleUpdateCombat = (updatedCombat: InvestigatorCombat) => {
+        if (updatedCombat.id !== actualCombat.id) return;
+        setCombatState(updatedCombat.toJSON());
+        setTurns(updatedCombat.turns);
+        setIsActiveUser(updatedCombat.combatant?.players?.includes(game.user));
+      };
+      Hooks.on("updateCombat", handleUpdateCombat);
+      return () => {
+        Hooks.off("updateCombat", handleUpdateCombat);
+      };
+    }, [actualCombat.id]);
 
-  const handlePreviousRound = useCallback(() => {
-    void combat?.previousRound();
-  }, [combat]);
+    const allTurnsDone = useMemo(() => {
+      return (
+        (turns.length ?? 0) > 0 &&
+        turns.every(
+          (turn) =>
+            isTurnPassingCombatant(turn) &&
+            turn.system.passingTurnsRemaining <= 0,
+        )
+      );
+    }, [turns]);
 
-  const handleNextTurn = useCallback(() => {
-    void combat?.nextTurn();
-  }, [combat]);
+    const handleNextRound = useCallback(() => {
+      void actualCombat.nextRound();
+    }, [actualCombat]);
 
-  const handlePreviousTurn = useCallback(() => {
-    void combat?.previousTurn();
-  }, [combat]);
+    const handlePreviousRound = useCallback(() => {
+      void actualCombat.previousRound();
+    }, [actualCombat]);
 
-  const handleStartCombat = useCallback(() => {
-    void combat?.startCombat();
-  }, [combat]);
+    const handleNextTurn = useCallback(() => {
+      void actualCombat.nextTurn();
+    }, [actualCombat]);
 
-  return (
-    <nav className="combat-controls">
-      {combat &&
-        (game.user.isGM ? (
+    const handlePreviousTurn = useCallback(() => {
+      void actualCombat.previousTurn();
+    }, [actualCombat]);
+
+    const handleStartCombat = useCallback(() => {
+      void actualCombat.startCombat();
+    }, [actualCombat]);
+
+    return (
+      <nav className="combat-controls">
+        {game.user.isGM ? (
           <>
-            {combat?.round ? (
+            {combatState?.round ? (
               <>
                 <button
                   type="button"
@@ -92,7 +113,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                     label={
                       <>
                         {format("COMBAT.Round", {
-                          round: combat.round.toString(),
+                          round: combatState.round.toString(),
                         })}
                         <FaChevronDown />
                       </>
@@ -114,7 +135,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                     <NativeMenuItem
                       icon={<FaShoePrints />}
                       onSelect={() => {
-                        void combat.clearMovementHistories();
+                        void actualCombat.clearMovementHistories();
                       }}
                     >
                       {localize("COMBAT.ClearMovementHistories")}
@@ -124,7 +145,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                     <NativeMenuItem
                       icon={<FaRecycle />}
                       onSelect={() => {
-                        void combat.resetAll();
+                        void actualCombat.resetAll();
                       }}
                     >
                       {localize("COMBAT.InitiativeReset")}
@@ -134,7 +155,7 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                     <NativeMenuItem
                       icon={<FaArrowDownWideShort />}
                       onSelect={() => {
-                        void combat.sortCombatants();
+                        void actualCombat.sortCombatants();
                       }}
                     >
                       {localize("investigator.SortCombatants")}
@@ -192,12 +213,9 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                 type="button"
                 className="combat-control combat-control-lg"
                 onClick={handleStartCombat}
-                disabled={(combat?.turns.length ?? 0) === 0}
+                disabled={(turns.length ?? 0) === 0}
                 css={{
-                  cursor:
-                    (combat?.turns.length ?? 0) === 0
-                      ? "not-allowed"
-                      : "pointer",
+                  cursor: (turns.length ?? 0) === 0 ? "not-allowed" : "pointer",
                 }}
               >
                 <LuSwords />
@@ -208,18 +226,15 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
         ) : (
           game.user && (
             <>
-              {combat?.combatant?.players?.includes(game.user) &&
-                !isTurnPassing && (
-                  <>
-                    <button
-                      type="button"
-                      className="inline-control combat-control icon fa-solid fa-arrow-left"
-                      data-action="previousTurn"
-                      data-tooltip=""
-                      aria-label={localize("COMBAT.TurnPrev")}
-                    />
-                  </>
-                )}
+              {isActiveUser && !isTurnPassing && (
+                <button
+                  type="button"
+                  className="inline-control combat-control icon fa-solid fa-arrow-left"
+                  onClick={handlePreviousTurn}
+                  data-tooltip=""
+                  aria-label={localize("COMBAT.TurnPrev")}
+                />
+              )}
               <strong
                 css={{
                   flex: 1,
@@ -228,24 +243,28 @@ export const TurnNav = ({ isTurnPassing, combat, game }: TurnNavProps) => {
                   color: "var(--color-text-primary)",
                 }}
               >
-                {combat?.round
-                  ? format("COMBAT.Round", { round: combat?.round.toString() })
+                {combatState.round
+                  ? format("COMBAT.Round", {
+                      round: combatState.round.toString(),
+                    })
                   : localize("COMBAT.NotStarted")}
               </strong>
 
-              {combat?.combatant?.players?.includes(game.user) &&
-                !isTurnPassing && (
-                  <button
-                    type="button"
-                    className="inline-control combat-control icon fa-solid fa-arrow-right"
-                    data-action="nextTurn"
-                    data-tooltip=""
-                    aria-label={localize("COMBAT.TurnNext")}
-                  />
-                )}
+              {isActiveUser && !isTurnPassing && (
+                <button
+                  type="button"
+                  className="inline-control combat-control icon fa-solid fa-arrow-right"
+                  onClick={handleNextTurn}
+                  data-tooltip=""
+                  aria-label={localize("COMBAT.TurnNext")}
+                />
+              )}
             </>
           )
-        ))}
-    </nav>
-  );
-};
+        )}
+      </nav>
+    );
+  },
+);
+
+TurnNav.displayName = "TurnNav";

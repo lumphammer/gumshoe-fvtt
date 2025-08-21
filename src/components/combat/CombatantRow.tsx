@@ -5,7 +5,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
-import { ReactNode } from "react";
+import { memo, ReactNode, useMemo } from "react";
 import { TbGripVertical } from "react-icons/tb";
 
 import { assertGame } from "../../functions/isGame";
@@ -60,7 +60,7 @@ function getEffectiveEffects(
 const customAnimateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
-export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
+export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
   const combat = combatant.combat;
@@ -87,7 +87,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
   const effects = getEffectiveEffects(combatant.actor);
 
   // based on foundry's CombatTracker#_formatEffectsTooltip
-  const effectsTooltip = (() => {
+  const effectsTooltip = useMemo(() => {
     if (!effects.length) return "";
     const ul = document.createElement("ul");
     ul.classList.add("effects-tooltip", "plain");
@@ -102,7 +102,7 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
       ul.append(li);
     }
     return ul.outerHTML;
-  })();
+  }, [effects]);
 
   const {
     attributes,
@@ -122,6 +122,8 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
     transform,
     transition,
   });
+
+  // const [combatantData, setCombatantData] = useState(combatant._source);
 
   return (
     <NativeContextMenuWrapper>
@@ -278,4 +280,6 @@ export const CombatantRow = ({ combatant, index }: CombatantRowProps) => {
       </li>
     </NativeContextMenuWrapper>
   );
-};
+});
+
+CombatantRow.displayName = "CombatantRow";
