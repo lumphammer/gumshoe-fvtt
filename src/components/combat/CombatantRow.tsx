@@ -60,6 +60,8 @@ function getEffectiveEffects(
 const customAnimateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
+const customTransition = { duration: 300, easing: "linear" };
+
 export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
@@ -113,7 +115,7 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
     setActivatorNodeRef,
   } = useSortable({
     id,
-    transition: { duration: 300, easing: "linear" },
+    transition: customTransition,
     animateLayoutChanges: customAnimateLayoutChanges,
   });
 
