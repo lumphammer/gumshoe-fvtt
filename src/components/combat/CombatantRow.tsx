@@ -5,7 +5,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
-import { memo, ReactNode, useMemo } from "react";
+import { memo, ReactNode, useMemo, useRef } from "react";
 import { TbGripVertical } from "react-icons/tb";
 
 import { assertGame } from "../../functions/isGame";
@@ -62,6 +62,16 @@ const customAnimateLayoutChanges: AnimateLayoutChanges = (args) =>
 
 const customTransition = { duration: 300, easing: "linear" };
 
+function shallowEqual<T>(current: T, arg1: T): string[] {
+  const differences: string[] = [];
+  for (const key in current) {
+    if (current[key] !== arg1[key]) {
+      differences.push(key);
+    }
+  }
+  return differences;
+}
+
 export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
@@ -106,6 +116,12 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
     return ul.outerHTML;
   }, [effects]);
 
+  const sortables = useSortable({
+    id,
+    transition: customTransition,
+    animateLayoutChanges: customAnimateLayoutChanges,
+  });
+
   const {
     attributes,
     listeners,
@@ -113,17 +129,23 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
     transform,
     transition,
     setActivatorNodeRef,
-  } = useSortable({
-    id,
-    transition: customTransition,
-    animateLayoutChanges: customAnimateLayoutChanges,
-  });
+  } = sortables;
 
-  systemLogger.log("CombatantRow rendered", {
-    attributes,
-    transform,
-    transition,
-  });
+  const sortablesRef = useRef(sortables);
+
+  // if new draggable props are shallow different, log
+  const diffs = shallowEqual(sortablesRef.current, sortables);
+
+  if (diffs.length > 0) {
+    systemLogger.log(
+      `Draggable props changed for combatant ${combatant.name}:`,
+      diffs.map(
+        (key) => `${key}: ${sortablesRef.current[key]} -> ${sortables[key]}`,
+      ),
+    );
+  }
+
+  sortablesRef.current = sortables;
 
   // const [combatantData, setCombatantData] = useState(combatant._source);
 
