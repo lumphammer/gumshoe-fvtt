@@ -188,7 +188,7 @@ export const Content = memo(
                 aria-label={localize("COMBAT.PingCombatant")}
               />
               <div className="token-effects" data-tooltip-html={effectsTooltip}>
-                {Array.from(effects).map<ReactNode>(
+                {effects.map<ReactNode>(
                   (effect, i) =>
                     effect.img && (
                       <img key={i} className="token-effect" src={effect.img} />

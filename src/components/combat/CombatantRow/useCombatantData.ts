@@ -1,6 +1,7 @@
 import { produce } from "immer";
 import { useEffect, useState } from "react";
 
+import { systemLogger } from "../../../functions/utilities";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 
 const getValue = <T>(resource: T): T | number => {
@@ -18,6 +19,7 @@ const getValue = <T>(resource: T): T | number => {
 };
 
 export function useCombatantData(combatant: InvestigatorCombatant) {
+  // ///////////////////////////////////////////////////////////////////////////
   // combatant data
   const [combatantData, setCombatantData] = useState(() => {
     const data = combatant.toJSON();
@@ -48,15 +50,10 @@ export function useCombatantData(combatant: InvestigatorCombatant) {
     };
   }, [combatant]);
 
-  // actor data and effects
+  // ///////////////////////////////////////////////////////////////////////////
+  // actor data
   const [actorData, setActorData] = useState(
     () => combatant.actor?.toJSON() ?? null,
-  );
-  const [effects, setEffects] = useState(
-    () =>
-      combatant.actor?.temporaryEffects
-        .filter((e) => !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED))
-        .map((e) => e.toJSON()) ?? [],
   );
   useEffect(() => {
     if (combatant.actor === null) return;
@@ -74,24 +71,22 @@ export function useCombatantData(combatant: InvestigatorCombatant) {
         });
         return newData;
       });
-      setEffects((previousEffects) => {
-        const newEffects =
-          combatant.actor?.temporaryEffects
-            .filter(
-              (e) => !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED),
-            )
-            .map((e) => e.toJSON()) ?? [];
-        const diff = foundry.utils.diffObject(previousEffects, newEffects);
-        const nextEffects = produce(previousEffects, (draft) => {
-          foundry.utils.mergeObject(draft, diff);
-        });
-        return nextEffects;
-      });
     };
     Hooks.on("updateActor", handleUpdateActor);
     return () => {
       Hooks.off("updateActor", handleUpdateActor);
     };
+  }, [combatant]);
+
+  // effects data
+  const [effects, setEffects] = useState<
+    SchemaField.SourceData<ActiveEffect.Schema>[]
+  >([]);
+  useEffect(() => {
+    return combatant.actor?.registerCombatantEffectsHandler((effects) => {
+      systemLogger.log("Combatant effects updated", effects);
+      setEffects(effects);
+    });
   }, [combatant]);
 
   return { combatantData, actorData, effects, resource };
