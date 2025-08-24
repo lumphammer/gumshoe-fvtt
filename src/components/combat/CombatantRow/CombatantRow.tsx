@@ -6,9 +6,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { memo } from "react";
 
-import { systemLogger } from "../../functions/utilities";
-import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
-import { CombatantRowContent } from "./CombatantRowContent";
+import { systemLogger } from "../../../functions/utilities";
+import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
+import { Content } from "./Content";
 
 interface CombatantRowProps {
   combatant: InvestigatorCombatant;
@@ -46,7 +46,7 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
   return (
     // the row content is pushed down so it can memoise even if the draggable
     // hook is updating very frequently
-    <CombatantRowContent
+    <Content
       combatant={combatant}
       index={index}
       setNodeRef={setNodeRef}
