@@ -21,7 +21,7 @@ import { memo, useCallback, useEffect, useState } from "react";
 
 import { systemLogger } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
-import { CombatantRow } from "./CombatantRow";
+import { CombatantRow } from "./CombatantRow/CombatantRow";
 
 // https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
 const measuringConfig = {

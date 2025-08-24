@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { assertGame } from "../../functions/isGame";
-import { CombatantConfig } from "../../fvtt-exports";
-import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
+import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
+import { assertGame } from "../../../functions/isGame";
+import { CombatantConfig } from "../../../fvtt-exports";
+import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 
 export const useInititative = (combatant: InvestigatorCombatant) => {
   assertGame(game);

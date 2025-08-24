@@ -3,16 +3,16 @@ import { useCallback } from "react";
 import { FaEdit, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
-import { getTranslated } from "../../functions/getTranslated";
-import { assertGame } from "../../functions/isGame";
-import { requestTurnPass } from "../../functions/utilities";
+import { getTranslated } from "../../../functions/getTranslated";
+import { assertGame } from "../../../functions/isGame";
+import { requestTurnPass } from "../../../functions/utilities";
 import {
   assertTurnPassingCombatant,
   TurnPassingCombatant,
-} from "../../module/combat/turnPassingCombatant";
-import { NativeMenuItem } from "../inputs/NativeMenu";
-import { NativeDualFunctionMenu } from "../inputs/NativeMenu/NativeDualFunctionMenu";
-import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
+} from "../../../module/combat/turnPassingCombatant";
+import { NativeMenuItem } from "../../inputs/NativeMenu";
+import { NativeDualFunctionMenu } from "../../inputs/NativeMenu/NativeDualFunctionMenu";
+import { NativeMenuLabel } from "../../inputs/NativeMenu/NativeMenuLabel";
 import { useInititative } from "./useInititative";
 
 interface TurnPassingInitiativeProps {
