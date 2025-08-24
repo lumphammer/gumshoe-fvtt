@@ -2,16 +2,16 @@ import { DraggableAttributes } from "@dnd-kit/core";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { cx } from "@emotion/css";
 import { memo, ReactNode, useMemo } from "react";
-import { TbGripVertical } from "react-icons/tb";
 
-import { assertGame } from "../../functions/isGame";
-import { systemLogger } from "../../functions/utilities";
-import { isActiveCharacterActor } from "../../module/actors/types";
-import { isClassicCombatant } from "../../module/combat/classicCombatant";
-import { InvestigatorCombatant } from "../../module/combat/InvestigatorCombatant";
-import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
-import { NativeContextMenuWrapper } from "../inputs/NativeMenu/NativeContextMenuWrapper";
+import { assertGame } from "../../../functions/isGame";
+import { systemLogger } from "../../../functions/utilities";
+import { isActiveCharacterActor } from "../../../module/actors/types";
+import { isClassicCombatant } from "../../../module/combat/classicCombatant";
+import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
+import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
+import { NativeContextMenuWrapper } from "../../inputs/NativeMenu/NativeContextMenuWrapper";
 import { ClassicInitiative } from "./ClassicInitiative";
+import { Grip } from "./Grip";
 import { TurnPassingInitiative } from "./TurnPassingInitiative";
 
 const getValue = <T,>(resource: T): T | number => {
@@ -28,7 +28,7 @@ const getValue = <T,>(resource: T): T | number => {
   return 0;
 };
 
-interface CombatantRowContentProps {
+interface ContentProps {
   combatant: InvestigatorCombatant;
   index: number;
   setNodeRef: (node: HTMLElement | null) => void;
@@ -59,7 +59,7 @@ function getEffectiveEffects(
 //   return true;
 // }
 
-export const CombatantRowContent = memo(
+export const Content = memo(
   ({
     combatant,
     index,
@@ -69,7 +69,7 @@ export const CombatantRowContent = memo(
     transform,
     transition,
     listeners,
-  }: CombatantRowContentProps) => {
+  }: ContentProps) => {
     assertGame(game);
     const localize = game.i18n.localize.bind(game.i18n);
     const combat = combatant.combat;
@@ -142,28 +142,10 @@ export const CombatantRowContent = memo(
             // transform: `translateY(${index * 4}em)`,
           }}
         >
-          <div
-            className="drag-handle"
-            ref={setActivatorNodeRef}
-            {...listeners}
-            css={{
-              cursor: "row-resize",
-              // backgroundColor: "darkred",
-              // alignSelf: "stretch",
-              // display: "flex",
-              // flexDirection: "column",
-              // justifyContent: "center",
-              // position: "absolute",
-              // top: "0",
-              // left: "0",
-            }}
-          >
-            <TbGripVertical
-              css={{
-                marginTop: "calc(calc(var(--sidebar-item-height) / 2) - 6px)",
-              }}
-            />
-          </div>
+          <Grip
+            listeners={listeners}
+            setActivatorNodeRef={setActivatorNodeRef}
+          />
           <img
             className="token-image"
             src={combatant.img || CONST.DEFAULT_TOKEN}
@@ -184,7 +166,6 @@ export const CombatantRowContent = memo(
               className="top-row"
               css={{
                 display: "flex",
-
                 alignItems: "start",
                 justifyContent: "space-between",
               }}
@@ -192,13 +173,11 @@ export const CombatantRowContent = memo(
               <strong
                 className="name"
                 css={{
-                  // whiteSpace: "nowrap",
                   flex: 1,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                 }}
               >
-                {/* {CSS.Translate.toString(transform)} */}
                 {combatant.name}
               </strong>
               {isTurnPassingCombatant(combatant) ? (
@@ -263,16 +242,10 @@ export const CombatantRowContent = memo(
               </div>
             </div>
           </div>
-
-          {/* {isTurnPassingCombatant(combatant) ? (
-          <TurnPassingInitiative combatant={combatant} />
-        ) : isClassicCombatant(combatant) ? (
-          <ClassicInitiative combatant={combatant} />
-        ) : null} */}
         </li>
       </NativeContextMenuWrapper>
     );
   },
 );
 
-CombatantRowContent.displayName = "CombatantRowContent";
+Content.displayName = "Content";
