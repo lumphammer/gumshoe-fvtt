@@ -5,7 +5,6 @@ import { memo, ReactNode, useMemo } from "react";
 
 import { assertGame } from "../../../functions/isGame";
 import { systemLogger } from "../../../functions/utilities";
-import { isActiveCharacterActor } from "../../../module/actors/types";
 import { isClassicCombatant } from "../../../module/combat/classicCombatant";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
@@ -13,20 +12,7 @@ import { NativeContextMenuWrapper } from "../../inputs/NativeMenu/NativeContextM
 import { ClassicInitiative } from "./ClassicInitiative";
 import { Grip } from "./Grip";
 import { TurnPassingInitiative } from "./TurnPassingInitiative";
-
-const getValue = <T,>(resource: T): T | number => {
-  if (
-    typeof resource === "object" &&
-    resource !== null &&
-    "value" in resource &&
-    typeof resource.value === "number"
-  ) {
-    return resource.value;
-  } else if (typeof resource === "number") {
-    return resource;
-  }
-  return 0;
-};
+import { useCombatantData } from "./useCombatantData";
 
 interface ContentProps {
   combatant: InvestigatorCombatant;
@@ -38,26 +24,6 @@ interface ContentProps {
   transition: string | undefined;
   listeners: SyntheticListenerMap | undefined;
 }
-
-function getEffectiveEffects(
-  actor: Actor.Implementation | null,
-): foundry.documents.ActiveEffect.Implementation[] {
-  if (!isActiveCharacterActor(actor)) {
-    return [];
-  }
-  return actor.temporaryEffects.filter(
-    (e) => !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED),
-  );
-}
-
-// https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
-// function customAnimateLayoutChanges(args) {
-//   if (args.isSorting || args.wasDragging) {
-//     return defaultAnimateLayoutChanges(args);
-//   }
-
-//   return true;
-// }
 
 export const Content = memo(
   ({
@@ -86,14 +52,14 @@ export const Content = memo(
       );
     }
 
+    const { combatantData, effects, resource } = useCombatantData(combatant);
+
     const activeCombatantId =
       combat.turn !== null ? combat.turns[combat.turn].id : null;
     const active = activeCombatantId === combatant.id;
     const depleted =
       isTurnPassingCombatant(combatant) &&
       combatant.system.passingTurnsRemaining <= 0;
-
-    const effects = getEffectiveEffects(combatant.actor);
 
     // based on foundry's CombatTracker#_formatEffectsTooltip
     const effectsTooltip = useMemo(() => {
@@ -121,26 +87,17 @@ export const Content = memo(
           ref={setNodeRef}
           className={cx("combatant", {
             active: combat.turn === index,
-            hide: combatant.hidden,
-            defeated: combatant.defeated,
+            hide: combatantData.hidden,
+            defeated: combatantData.defeated,
           })}
           {...attributes}
           data-combatant-id={combatant.id}
           style={{
-            transform, //: CSS.Translate.toString(transform),
+            transform,
             transition,
             opacity: depleted && !active ? 0.7 : 1,
           }}
-          css={{
-            alignItems: "start",
-            // height: "4em",
-            // position: "absolute",
-            // top: "0",
-            // left: "0",
-            // width: "100%",
-            // transition: "transform 1000ms",
-            // transform: `translateY(${index * 4}em)`,
-          }}
+          css={{ alignItems: "start" }}
         >
           <Grip
             listeners={listeners}
@@ -148,8 +105,8 @@ export const Content = memo(
           />
           <img
             className="token-image"
-            src={combatant.img || CONST.DEFAULT_TOKEN}
-            alt={combatant.name}
+            src={combatantData.img || CONST.DEFAULT_TOKEN}
+            alt={combatantData.name}
             loading="lazy"
           />
           <div
@@ -189,11 +146,9 @@ export const Content = memo(
               )}
             </div>
             <div className="combatant-controls">
-              {combatant.resource !== null && (
+              {resource !== null && (
                 <div className="token-resource">
-                  <span className="resource">
-                    {getValue(combatant.resource)}
-                  </span>
+                  <span className="resource">{resource}</span>
                 </div>
               )}
               {game.user.isGM && (
@@ -203,8 +158,8 @@ export const Content = memo(
                     className={cx(
                       "inline-control combatant-control icon fa-solid",
                       {
-                        "fa-eye-slash active": combatant.hidden,
-                        "fa-eye": !combatant.hidden,
+                        "fa-eye-slash active": combatantData.hidden,
+                        "fa-eye": !combatantData.hidden,
                       },
                     )}
                     data-action="toggleHidden"
@@ -216,7 +171,7 @@ export const Content = memo(
                     className={cx(
                       "inline-control combatant-control icon fa-solid fa-skull",
                       {
-                        active: combatant.defeated,
+                        active: combatantData.defeated,
                       },
                     )}
                     data-action="toggleDefeated"
