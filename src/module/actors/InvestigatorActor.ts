@@ -2,38 +2,52 @@
 // that seem to come out here
 /* eslint "@typescript-eslint/explicit-function-return-type": "error" */
 
-import { nanoid } from "nanoid";
+import { produce } from "immer";
 
 export class InvestigatorActor<
   SubType extends Actor.SubType = Actor.SubType,
 > extends Actor<SubType> {
+
+  /**
+   * Handy setter for the actor's name
+   */
   setName = (name: string): Promise<this | undefined> => {
     return this.update({ name });
   };
 
-  protected _combatantEffectsHandlers: Map<
-    string,
-    (effects: SchemaField.SourceData<ActiveEffect.Schema>[]) => void
-  > = new Map();
+  // ***************************************************************************
+  // COMBATANT EFFECTS
+  //
+  // These are the effects that need to be shown in the combat tracker
 
+  // the most recent calculated data
+  protected _currentCombatantEffectsData: SchemaField.SourceData<ActiveEffect.Schema>[] =
+    this._getCombatantEffectsData();
+
+  // store of registered handlers
+  protected _combatantEffectsHandlers: Set<
+    (effects: SchemaField.SourceData<ActiveEffect.Schema>[]) => void
+  > = new Set();
+
+  // calculate new data
   protected _getCombatantEffectsData(): SchemaField.SourceData<ActiveEffect.Schema>[] {
     return this.temporaryEffects
       .filter((e) => !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED))
       .map((e) => e.toJSON());
   }
 
-  protected _currentCombatantEffectsData: SchemaField.SourceData<ActiveEffect.Schema>[] =
-    this._getCombatantEffectsData();
-
+  // add a new handler
   registerCombatantEffectsHandler(
     handler: (effects: SchemaField.SourceData<ActiveEffect.Schema>[]) => void,
   ): () => void {
-    const id = nanoid();
-    this._combatantEffectsHandlers.set(id, handler);
+    this._combatantEffectsHandlers.add(handler);
     handler(this._currentCombatantEffectsData);
-    return () => this._combatantEffectsHandlers.delete(id);
+    return () => this._combatantEffectsHandlers.delete(handler);
   }
 
+  /**
+   * This gets called from _onEmbeddedDocumentChange
+   */
   protected _updateCombatantEffectsData(): void {
     const latestData = this._getCombatantEffectsData();
     const same =
