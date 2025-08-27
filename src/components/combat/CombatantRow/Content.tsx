@@ -5,13 +5,12 @@ import { memo, ReactNode, useMemo } from "react";
 
 import { assertGame } from "../../../functions/isGame";
 import { systemLogger } from "../../../functions/utilities";
-import { isClassicCombatant } from "../../../module/combat/classicCombatant";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import { NativeContextMenuWrapper } from "../../inputs/NativeMenu/NativeContextMenuWrapper";
-import { ClassicInitiative } from "./ClassicInitiative";
+import { CombatantContextProvider } from "./CombatantContext";
 import { Grip } from "./Grip";
-import { TurnPassingInitiative } from "./TurnPassingInitiative";
+import { TopRow } from "./TopRow";
 import { useCombatantData } from "./useCombatantData";
 
 interface ContentProps {
@@ -81,124 +80,113 @@ export const Content = memo(
 
     systemLogger.log("CombatantRowCOntent rendered", {});
 
+    const combatantContextValue = useMemo(
+      () => ({ combatant, combatantData }),
+      [combatant, combatantData],
+    );
+
     return (
-      <NativeContextMenuWrapper>
-        <li
-          ref={setNodeRef}
-          className={cx("combatant", {
-            active: combat.turn === index,
-            hide: combatantData.hidden,
-            defeated: combatantData.defeated,
-          })}
-          {...attributes}
-          data-combatant-id={combatant.id}
-          style={{
-            transform,
-            transition,
-            opacity: depleted && !active ? 0.7 : 1,
-          }}
-          css={{ alignItems: "start" }}
-        >
-          <Grip
-            listeners={listeners}
-            setActivatorNodeRef={setActivatorNodeRef}
-          />
-          <img
-            className="token-image"
-            src={combatantData.img || CONST.DEFAULT_TOKEN}
-            alt={combatantData.name}
-            loading="lazy"
-          />
-          <div
-            css={{
-              overflow: "hidden",
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-evenly",
-              alignSelf: "stretch",
+      <CombatantContextProvider value={combatantContextValue}>
+        <NativeContextMenuWrapper>
+          <li
+            ref={setNodeRef}
+            className={cx("combatant", {
+              active: combat.turn === index,
+              hide: combatantData.hidden,
+              defeated: combatantData.defeated,
+            })}
+            {...attributes}
+            data-combatant-id={combatant.id}
+            style={{
+              transform,
+              transition,
+              opacity: depleted && !active ? 0.7 : 1,
             }}
+            css={{ alignItems: "start" }}
           >
+            <Grip
+              listeners={listeners}
+              setActivatorNodeRef={setActivatorNodeRef}
+            />
+            <img
+              className="token-image"
+              src={combatantData.img || CONST.DEFAULT_TOKEN}
+              alt={combatantData.name}
+              loading="lazy"
+            />
             <div
-              className="top-row"
               css={{
+                overflow: "hidden",
+                flex: 1,
                 display: "flex",
-                alignItems: "start",
-                justifyContent: "space-between",
+                flexDirection: "column",
+                justifyContent: "space-evenly",
+                alignSelf: "stretch",
               }}
             >
-              <strong
-                className="name"
-                css={{
-                  flex: 1,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {combatant.name}
-              </strong>
-              {isTurnPassingCombatant(combatant) ? (
-                <TurnPassingInitiative combatant={combatant} />
-              ) : isClassicCombatant(combatant) ? (
-                <ClassicInitiative combatant={combatant} />
-              ) : (
-                "null"
-              )}
-            </div>
-            <div className="combatant-controls">
-              {resource !== null && (
-                <div className="token-resource">
-                  <span className="resource">{resource}</span>
-                </div>
-              )}
-              {game.user.isGM && (
-                <>
-                  <button
-                    type="button"
-                    className={cx(
-                      "inline-control combatant-control icon fa-solid",
-                      {
-                        "fa-eye-slash active": combatantData.hidden,
-                        "fa-eye": !combatantData.hidden,
-                      },
-                    )}
-                    data-action="toggleHidden"
-                    data-tooltip=""
-                    aria-label={localize("COMBAT.ToggleVis")}
-                  />
-                  <button
-                    type="button"
-                    className={cx(
-                      "inline-control combatant-control icon fa-solid fa-skull",
-                      {
-                        active: combatantData.defeated,
-                      },
-                    )}
-                    data-action="toggleDefeated"
-                    data-tooltip=""
-                    aria-label={localize("COMBAT.ToggleDead")}
-                  />
-                </>
-              )}
-              <button
-                type="button"
-                className="inline-control combatant-control icon fa-solid fa-bullseye-arrow"
-                data-action="pingCombatant"
-                data-tooltip=""
-                aria-label={localize("COMBAT.PingCombatant")}
-              />
-              <div className="token-effects" data-tooltip-html={effectsTooltip}>
-                {effects.map<ReactNode>(
-                  (effect, i) =>
-                    effect.img && (
-                      <img key={i} className="token-effect" src={effect.img} />
-                    ),
+              <TopRow />
+              <div className="combatant-controls">
+                {resource !== null && (
+                  <div className="token-resource">
+                    <span className="resource">{resource}</span>
+                  </div>
                 )}
+                {game.user.isGM && (
+                  <>
+                    <button
+                      type="button"
+                      className={cx(
+                        "inline-control combatant-control icon fa-solid",
+                        {
+                          "fa-eye-slash active": combatantData.hidden,
+                          "fa-eye": !combatantData.hidden,
+                        },
+                      )}
+                      data-action="toggleHidden"
+                      data-tooltip=""
+                      aria-label={localize("COMBAT.ToggleVis")}
+                    />
+                    <button
+                      type="button"
+                      className={cx(
+                        "inline-control combatant-control icon fa-solid fa-skull",
+                        {
+                          active: combatantData.defeated,
+                        },
+                      )}
+                      data-action="toggleDefeated"
+                      data-tooltip=""
+                      aria-label={localize("COMBAT.ToggleDead")}
+                    />
+                  </>
+                )}
+                <button
+                  type="button"
+                  className="inline-control combatant-control icon fa-solid fa-bullseye-arrow"
+                  data-action="pingCombatant"
+                  data-tooltip=""
+                  aria-label={localize("COMBAT.PingCombatant")}
+                />
+                <div
+                  className="token-effects"
+                  data-tooltip-html={effectsTooltip}
+                >
+                  {effects.map<ReactNode>(
+                    (effect, i) =>
+                      effect.img && (
+                        <img
+                          key={i}
+                          className="token-effect"
+                          src={effect.img}
+                        />
+                      ),
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </li>
-      </NativeContextMenuWrapper>
+          </li>
+        </NativeContextMenuWrapper>
+      </CombatantContextProvider>
     );
   },
 );
