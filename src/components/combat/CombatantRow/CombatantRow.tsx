@@ -4,11 +4,16 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { memo } from "react";
+import { cx } from "@emotion/css";
+import { memo, useMemo } from "react";
 
+import { assertGame } from "../../../functions/isGame";
 import { systemLogger } from "../../../functions/utilities";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
+import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
+import { CombatantContextProvider } from "./CombatantContext";
 import { Content } from "./Content";
+import { useCombatantData } from "./useCombatantData";
 
 interface CombatantRowProps {
   combatant: InvestigatorCombatant;
@@ -41,21 +46,62 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
     transition,
   });
 
-  // const [combatantData, setCombatantData] = useState(combatant._source);
+  assertGame(game);
+  const combat = combatant.combat;
+  if (combat === null) {
+    throw new Error(
+      "CombatantRow must be rendered with a combatant that is in combat.",
+    );
+  }
+
+  const id = combatant.id;
+  if (id === null) {
+    throw new Error(
+      "CombatantRow must be rendered with a combatant that has an id.",
+    );
+  }
+
+  const { combatantData, effects, resource } = useCombatantData(combatant);
+
+  const activeCombatantId =
+    combat.turn !== null ? combat.turns[combat.turn].id : null;
+  const active = activeCombatantId === combatant.id;
+  const depleted =
+    isTurnPassingCombatant(combatant) &&
+    combatant.system.passingTurnsRemaining <= 0;
+
+  const combatantContextValue = useMemo(
+    () => ({ combatant, combatantData, effects, resource }),
+    [combatant, combatantData, effects, resource],
+  );
 
   return (
-    // the row content is pushed down so it can memoise even if the draggable
-    // hook is updating very frequently
-    <Content
-      combatant={combatant}
-      index={index}
-      setNodeRef={setNodeRef}
-      setActivatorNodeRef={setActivatorNodeRef}
-      attributes={attributes}
-      transform={CSS.Translate.toString(transform)}
-      transition={transition}
-      listeners={listeners}
-    />
+    <CombatantContextProvider value={combatantContextValue}>
+      <li
+        ref={setNodeRef}
+        className={cx("combatant", {
+          active: combat.turn === index,
+          hide: combatantData.hidden,
+          defeated: combatantData.defeated,
+        })}
+        {...attributes}
+        data-combatant-id={combatant.id}
+        style={{
+          transform: CSS.Translate.toString(transform),
+          transition,
+          opacity: depleted && !active ? 0.7 : 1,
+        }}
+        css={{ alignItems: "start" }}
+      >
+        {/* // the row content is pushed down so it can memoise even if the draggable
+        // hook is updating very frequently */}
+        <Content
+          setNodeRef={setNodeRef}
+          setActivatorNodeRef={setActivatorNodeRef}
+          listeners={listeners}
+        />
+      </li>
+    </CombatantContextProvider>
   );
 });
 
