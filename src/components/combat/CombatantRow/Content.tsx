@@ -1,13 +1,14 @@
 import { DraggableAttributes } from "@dnd-kit/core";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { cx } from "@emotion/css";
-import { memo, ReactNode, useMemo } from "react";
+import { memo, useMemo } from "react";
 
 import { assertGame } from "../../../functions/isGame";
 import { systemLogger } from "../../../functions/utilities";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import { NativeContextMenuWrapper } from "../../inputs/NativeMenu/NativeContextMenuWrapper";
+import { BottomRow } from "./BottomRow";
 import { CombatantContextProvider } from "./CombatantContext";
 import { Grip } from "./Grip";
 import { TopRow } from "./TopRow";
@@ -36,7 +37,6 @@ export const Content = memo(
     listeners,
   }: ContentProps) => {
     assertGame(game);
-    const localize = game.i18n.localize.bind(game.i18n);
     const combat = combatant.combat;
     if (combat === null) {
       throw new Error(
@@ -59,24 +59,6 @@ export const Content = memo(
     const depleted =
       isTurnPassingCombatant(combatant) &&
       combatant.system.passingTurnsRemaining <= 0;
-
-    // based on foundry's CombatTracker#_formatEffectsTooltip
-    const effectsTooltip = useMemo(() => {
-      if (!effects.length) return "";
-      const ul = document.createElement("ul");
-      ul.classList.add("effects-tooltip", "plain");
-      for (const effect of effects) {
-        const img = document.createElement("img");
-        img.src = effect.img ?? "";
-        img.alt = effect.name;
-        const span = document.createElement("span");
-        span.textContent = effect.name;
-        const li = document.createElement("li");
-        li.append(img, span);
-        ul.append(li);
-      }
-      return ul.outerHTML;
-    }, [effects]);
 
     systemLogger.log("CombatantRowCOntent rendered", {});
 
@@ -125,64 +107,7 @@ export const Content = memo(
               }}
             >
               <TopRow />
-              <div className="combatant-controls">
-                {resource !== null && (
-                  <div className="token-resource">
-                    <span className="resource">{resource}</span>
-                  </div>
-                )}
-                {game.user.isGM && (
-                  <>
-                    <button
-                      type="button"
-                      className={cx(
-                        "inline-control combatant-control icon fa-solid",
-                        {
-                          "fa-eye-slash active": combatantData.hidden,
-                          "fa-eye": !combatantData.hidden,
-                        },
-                      )}
-                      data-action="toggleHidden"
-                      data-tooltip=""
-                      aria-label={localize("COMBAT.ToggleVis")}
-                    />
-                    <button
-                      type="button"
-                      className={cx(
-                        "inline-control combatant-control icon fa-solid fa-skull",
-                        {
-                          active: combatantData.defeated,
-                        },
-                      )}
-                      data-action="toggleDefeated"
-                      data-tooltip=""
-                      aria-label={localize("COMBAT.ToggleDead")}
-                    />
-                  </>
-                )}
-                <button
-                  type="button"
-                  className="inline-control combatant-control icon fa-solid fa-bullseye-arrow"
-                  data-action="pingCombatant"
-                  data-tooltip=""
-                  aria-label={localize("COMBAT.PingCombatant")}
-                />
-                <div
-                  className="token-effects"
-                  data-tooltip-html={effectsTooltip}
-                >
-                  {effects.map<ReactNode>(
-                    (effect, i) =>
-                      effect.img && (
-                        <img
-                          key={i}
-                          className="token-effect"
-                          src={effect.img}
-                        />
-                      ),
-                  )}
-                </div>
-              </div>
+              <BottomRow effects={effects} resource={resource} />
             </div>
           </li>
         </NativeContextMenuWrapper>
