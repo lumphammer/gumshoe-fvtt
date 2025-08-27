@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { systemLogger } from "../../../functions/utilities";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
+import { registerHookHandler } from "./registerHookHandler";
 
 const getValue = <T>(resource: T): T | number => {
   if (
@@ -24,30 +25,31 @@ export function useCombatantData(combatant: InvestigatorCombatant) {
   const [combatantData, setCombatantData] = useState(() => {
     const data = combatant.toJSON();
     data.img = combatant.img;
+    data.name = combatant.name;
     return data;
   });
   const [resource, setResource] = useState(() => getValue(combatant.resource));
   useEffect(() => {
-    const handleUpdateCombatant = (
-      updatedCombatant: InvestigatorCombatant,
-      updates: Combatant.UpdateData,
-      options: Combatant.Database.UpdateOptions,
-      userId: string,
-    ) => {
-      if (updatedCombatant.id !== combatant.id) return;
-      setCombatantData((previousCombatantData) => {
-        const newData = produce(previousCombatantData, (draft) => {
-          foundry.utils.mergeObject(draft, updates);
-          draft.img = updatedCombatant.img;
+    return registerHookHandler(
+      "updateCombatant",
+      (
+        updatedCombatant: InvestigatorCombatant,
+        updates: Combatant.UpdateData,
+        options: Combatant.Database.UpdateOptions,
+        userId: string,
+      ) => {
+        if (updatedCombatant.id !== combatant.id) return;
+        setCombatantData((previousCombatantData) => {
+          const newData = produce(previousCombatantData, (draft) => {
+            foundry.utils.mergeObject(draft, updates);
+            draft.img = updatedCombatant.img;
+            draft.name = updatedCombatant.name;
+          });
+          return newData;
         });
-        return newData;
-      });
-      setResource(getValue(updatedCombatant.resource));
-    };
-    Hooks.on("updateCombatant", handleUpdateCombatant);
-    return () => {
-      Hooks.off("updateCombatant", handleUpdateCombatant);
-    };
+        setResource(getValue(updatedCombatant.resource));
+      },
+    );
   }, [combatant]);
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -57,25 +59,24 @@ export function useCombatantData(combatant: InvestigatorCombatant) {
   );
   useEffect(() => {
     if (combatant.actor === null) return;
-    const handleUpdateActor = (
-      updatedActor: Actor.Implementation,
-      updates: Actor.UpdateData,
-      options: Actor.Database.UpdateOptions,
-      userId: string,
-    ) => {
-      if (updatedActor.id !== combatant.actor?.id) return;
-      setActorData((previousActorData) => {
-        if (previousActorData === null) return null;
-        const newData = produce(previousActorData, (draft) => {
-          foundry.utils.mergeObject(draft, updates);
+    return registerHookHandler(
+      "updateActor",
+      (
+        updatedActor: Actor.Implementation,
+        updates: Actor.UpdateData,
+        options: Actor.Database.UpdateOptions,
+        userId: string,
+      ) => {
+        if (updatedActor.id !== combatant.actor?.id) return;
+        setActorData((previousActorData) => {
+          if (previousActorData === null) return null;
+          const newData = produce(previousActorData, (draft) => {
+            foundry.utils.mergeObject(draft, updates);
+          });
+          return newData;
         });
-        return newData;
-      });
-    };
-    Hooks.on("updateActor", handleUpdateActor);
-    return () => {
-      Hooks.off("updateActor", handleUpdateActor);
-    };
+      },
+    );
   }, [combatant]);
 
   // effects data

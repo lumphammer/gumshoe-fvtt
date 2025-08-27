@@ -1,23 +1,17 @@
 import { keyframes } from "@emotion/react";
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import { FaEdit, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
 import { getTranslated } from "../../../functions/getTranslated";
 import { assertGame } from "../../../functions/isGame";
 import { requestTurnPass } from "../../../functions/utilities";
-import {
-  assertTurnPassingCombatant,
-  TurnPassingCombatant,
-} from "../../../module/combat/turnPassingCombatant";
+import { assertTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import { NativeMenuItem } from "../../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../../inputs/NativeMenu/NativeDualFunctionMenu";
 import { NativeMenuLabel } from "../../inputs/NativeMenu/NativeMenuLabel";
+import { useCombatantContext } from "./CombatantContext";
 import { useInititative } from "./useInititative";
-
-interface TurnPassingInitiativeProps {
-  combatant: TurnPassingCombatant;
-}
 
 const playButtonGradientWidth = "3em";
 const playButtonColor1 = "oklch(0.2 0.3 130)";
@@ -32,10 +26,10 @@ const scrollBg = keyframes({
   },
 });
 
-export const TurnPassingInitiative = ({
-  combatant,
-}: TurnPassingInitiativeProps) => {
+export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
   assertGame(game);
+  const { combatant } = useCombatantContext();
+  assertTurnPassingCombatant(combatant);
   const combat = combatant.combat;
   if (combat === null) {
     throw new Error(
@@ -136,4 +130,4 @@ export const TurnPassingInitiative = ({
       )}
     </>
   );
-};
+});
