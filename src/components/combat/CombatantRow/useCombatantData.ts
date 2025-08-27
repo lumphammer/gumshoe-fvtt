@@ -52,33 +52,6 @@ export function useCombatantData(combatant: InvestigatorCombatant) {
     );
   }, [combatant]);
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // actor data
-  // const [actorData, setActorData] = useState(
-  //   () => combatant.actor?.toJSON() ?? null,
-  // );
-  // useEffect(() => {
-  //   if (combatant.actor === null) return;
-  //   return registerHookHandler(
-  //     "updateActor",
-  //     (
-  //       updatedActor: Actor.Implementation,
-  //       updates: Actor.UpdateData,
-  //       options: Actor.Database.UpdateOptions,
-  //       userId: string,
-  //     ) => {
-  //       if (updatedActor.id !== combatant.actor?.id) return;
-  //       setActorData((previousActorData) => {
-  //         if (previousActorData === null) return null;
-  //         const newData = produce(previousActorData, (draft) => {
-  //           foundry.utils.mergeObject(draft, updates);
-  //         });
-  //         return newData;
-  //       });
-  //     },
-  //   );
-  // }, [combatant]);
-
   // effects data
   const [effects, setEffects] = useState<
     SchemaField.SourceData<ActiveEffect.Schema>[]
