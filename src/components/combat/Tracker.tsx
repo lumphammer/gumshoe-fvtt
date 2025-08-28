@@ -1,12 +1,11 @@
-import { PiEmptyLight, PiPeaceLight } from "react-icons/pi";
-
 import { assertGame } from "../../functions/isGame";
 import { assertNotNull } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { DraggableRowContainer } from "./DraggableRowContainer";
 import { EncounterNav } from "./EncounterNav";
-import { localize } from "./functions";
+import { NoCombatants } from "./NoCombatants";
+import { NoCombats } from "./NoCombats";
 import { TurnNav } from "./TurnNav";
 
 export const Tracker = () => {
@@ -46,70 +45,11 @@ export const Tracker = () => {
         {combat && <TurnNav isTurnPassing={isTurnPassing} combat={combat} />}
       </header>
       {/* ACTUAL COMBATANTS, or "turns" in early-medieval foundry-speak */}
-      {!combat && (
-        <div
-          css={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-            width: "100%",
-            flexDirection: "column",
-            textAlign: "center",
-            color: "var(--color-text-secondary)",
-          }}
-        >
-          <PiPeaceLight size={100} />
-          <p css={{ fontSize: "1.4em", fontWeight: "300" }}>
-            {localize("investigator.NoCombat")}
-          </p>
-          {game.user.isGM && (
-            <button
-              type="button"
-              // className="combat-control-lg"
-              css={{
-                justifySelf: "stretch",
-                width: "auto",
-              }}
-              data-action="createCombat"
-            >
-              <i className="fa-solid fa-plus" inert />
-              <span>{localize("COMBAT.Create")}</span>
-            </button>
-          )}
-        </div>
-      )}
-      {combat && combat.turns.length === 0 && (
-        <div
-          css={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-            width: "100%",
-            flexDirection: "column",
-            textAlign: "center",
-            color: "var(--color-text-secondary)",
-          }}
-        >
-          <PiEmptyLight size={100} />
-          <p css={{ fontSize: "1.4em", fontWeight: "300" }}>
-            {localize("investigator.NoParticipants")}
-          </p>
-        </div>
-      )}
+      {!combat && <NoCombats />}
+      {combat && combat.turns.length === 0 && <NoCombatants />}
       {/* we need to wrap the actual tracker ol in another element so that
       foundry's autosizing works */}
-      {combat && (
-        <div
-          className="combat-tracker"
-          css={{
-            flex: 1,
-          }}
-        >
-          <DraggableRowContainer />
-        </div>
-      )}
+      {combat && <DraggableRowContainer />}
     </>
   );
 };

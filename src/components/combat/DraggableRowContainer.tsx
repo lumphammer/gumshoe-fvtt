@@ -106,31 +106,40 @@ export const DraggableRowContainer = memo(() => {
         strategy={verticalListSortingStrategy}
         // strategy={rectSwappingStrategy}
       >
-        <ol
-          // see investigator-combatant-list in the LESS for why we add this class
-          className="plain investigator-combatant-list"
+        {/* we need to wrap the actual tracker ol in another element so that
+      foundry's autosizing works */}
+        <div
+          className="combat-tracker"
           css={{
-            position: "relative",
             flex: 1,
           }}
         >
-          {
-            // combatant sorting is done in "Combat" but for rendering stability
-            // we need to un-sort the combatants and then tell each row where it
-            // used to exist in the order
-            ids.map((id) => {
-              const combatant = combat.turns.find((x) => x.id === id);
-              if (!combatant) return null;
-              return (
-                <CombatantRow
-                  key={id}
-                  index={combat.turns.findIndex((x) => x.id === id)}
-                  combatant={combatant}
-                />
-              );
-            })
-          }
-        </ol>
+          <ol
+            // see investigator-combatant-list in the LESS for why we add this class
+            className="plain investigator-combatant-list"
+            css={{
+              position: "relative",
+              flex: 1,
+            }}
+          >
+            {
+              // combatant sorting is done in "Combat" but for rendering stability
+              // we need to un-sort the combatants and then tell each row where it
+              // used to exist in the order
+              ids.map((id) => {
+                const combatant = combat.turns.find((x) => x.id === id);
+                if (!combatant) return null;
+                return (
+                  <CombatantRow
+                    key={id}
+                    index={combat.turns.findIndex((x) => x.id === id)}
+                    combatant={combatant}
+                  />
+                );
+              })
+            }
+          </ol>
+        </div>
       </SortableContext>
     </DndContext>
   );
