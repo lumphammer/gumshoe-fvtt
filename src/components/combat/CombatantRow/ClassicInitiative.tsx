@@ -10,8 +10,8 @@ import {
   NativeMenuItem,
 } from "../../inputs/NativeMenu";
 import { NativeMenuLabel } from "../../inputs/NativeMenu/NativeMenuLabel";
+import { registerHookHandler } from "../registerHookHandler";
 import { useCombatantContext } from "./CombatantContext";
-import { registerHookHandler } from "./registerHookHandler";
 import { useInititative } from "./useInititative";
 
 export const ClassicInitiative = memo(function ClassicInitiative() {

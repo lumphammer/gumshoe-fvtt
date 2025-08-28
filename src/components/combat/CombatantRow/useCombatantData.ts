@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { systemLogger } from "../../../functions/utilities";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
-import { registerHookHandler } from "./registerHookHandler";
+import { registerHookHandler } from "../registerHookHandler";
 
 const getValue = <T>(resource: T): T | number => {
   if (
