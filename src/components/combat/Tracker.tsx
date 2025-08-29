@@ -13,7 +13,8 @@ export const Tracker = () => {
   assertNotNull(game.user);
 
   // STATE & DERIVED DATA
-  const combat = game.combats?.active as InvestigatorCombat | undefined;
+
+  const combat = game.combat as InvestigatorCombat | undefined;
   const combatId = combat?._id;
   const combatCount = game.combats?.combats.length ?? 0;
   const combatIndex = game.combats?.combats.findIndex(

@@ -31,7 +31,7 @@ const measuringConfig = {
 };
 
 export const DraggableRowContainer = memo(() => {
-  const combat = game.combats?.active as InvestigatorCombat | undefined;
+  const combat = game.combat as InvestigatorCombat | undefined;
 
   if (combat === undefined) {
     throw new Error("No active combat found");
