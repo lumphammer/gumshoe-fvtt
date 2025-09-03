@@ -4,8 +4,8 @@ import { memo, useEffect, useMemo, useState } from "react";
 import { assertGame } from "../../../functions/isGame";
 import { systemLogger } from "../../../functions/utilities";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
-import { useCombatantContext } from "./CombatantContext";
 import { registerHookHandler } from "../registerHookHandler";
+import { useCombatantContext } from "./CombatantContext";
 
 const getValue = <T,>(resource: T): T | number => {
   if (
