@@ -1,3 +1,6 @@
+import { produce } from "immer";
+import { useEffect, useState } from "react";
+
 import { assertGame } from "../../functions/isGame";
 import { assertNotNull } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
@@ -6,6 +9,7 @@ import { DraggableRowContainer } from "./DraggableRowContainer";
 import { EncounterNav } from "./EncounterNav";
 import { NoCombatants } from "./NoCombatants";
 import { NoCombats } from "./NoCombats";
+import { registerHookHandler } from "./registerHookHandler";
 import { TurnNav } from "./TurnNav";
 
 export const Tracker = () => {
@@ -15,6 +19,34 @@ export const Tracker = () => {
   // STATE & DERIVED DATA
 
   const combat = game.combat as InvestigatorCombat | undefined;
+
+  const [_combatData, setCombatData] = useState(combat?.toJSON());
+
+  useEffect(() => {
+    return registerHookHandler("updateCombat", (updatedCombat, changes) => {
+      setCombatData((oldData) => {
+        if (oldData?._id !== updatedCombat._id && updatedCombat.active) {
+          // if a combat is becoming active, we just take its data
+          return updatedCombat.toJSON();
+        } else if (oldData !== undefined) {
+          return produce(oldData, (draft) => {
+            foundry.utils.mergeObject(draft, changes);
+          });
+        } else {
+          return undefined;
+        }
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    return registerHookHandler("createCombat", (newCombat) => {
+      if (newCombat.active) {
+        setCombatData(newCombat.toJSON());
+      }
+    });
+  }, []);
+
   const combatId = combat?._id;
   const combatCount = game.combats?.combats.length ?? 0;
   const combatIndex = game.combats?.combats.findIndex(
