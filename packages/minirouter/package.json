@@ -26,9 +26,9 @@
     "@emotion/react": "^11.14.0",
     "@testing-library/jest-dom": "^6.8.0",
     "@types/react": "^19.1.13",
-    "framer-motion": "^12.23.12",
+    "framer-motion": "^12.23.16",
     "react": "^19.1.1",
-    "vite": "^7.1.5",
+    "vite": "^7.1.7",
     "vitest": "^2.1.8"
   },
   "peerDependencies": {

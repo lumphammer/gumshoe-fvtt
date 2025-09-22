@@ -61,12 +61,12 @@
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.5",
     "@types/yamljs": "^0.2.34",
-    "@typescript/native-preview": "7.0.0-dev.20250915.1",
+    "@typescript/native-preview": "7.0.0-dev.20250922.1",
     "@vitejs/plugin-react-swc": "3.11.0",
     "@vitest/ui": "^3.2.4",
     "case": "^1.6.3",
     "d3-ease": "^3.0.1",
-    "eslint": "^9.35.0",
+    "eslint": "^9.36.0",
     "eslint-plugin-react-compiler": "19.0.0-beta-ebf51a3-20250411",
     "focusable-selectors": "^0.8.4",
     "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#127da2449c52a982f4aa81c354bc13fcd574de89",
@@ -89,13 +89,13 @@
     "tsx": "^4.20.5",
     "turndown": "^7.2.1",
     "typescript": "5.9.2",
-    "vite": "npm:rolldown-vite@7.1.9",
+    "vite": "npm:rolldown-vite@7.1.11",
     "vite-plugin-svgr": "^4.5.0",
     "vitest": "^3.2.4",
     "xss": "^1.0.15",
     "yamljs": "^0.3.0",
-    "zod": "^4.1.8",
-    "zod-validation-error": "^4.0.1"
+    "zod": "^4.1.11",
+    "zod-validation-error": "^4.0.2"
   },
   "pnpm": {
     "allowedDeprecatedVersions": {
