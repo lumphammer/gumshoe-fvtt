@@ -9,8 +9,8 @@ import { CombatTrackerConfig } from "../../fvtt-exports";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
-import { useCombatState } from "./combatStateContext";
 import { format, localize } from "./functions";
+import { useTrackerContext } from "./trackerContext";
 
 interface TurnNavProps {
   isTurnPassing: boolean;
@@ -30,7 +30,7 @@ const throbbingBg = keyframes({
 export const TurnNav = memo(
   ({ isTurnPassing, combat: actualCombat }: TurnNavProps) => {
     assertGame(game);
-    const { combat, turns, isActiveUser } = useCombatState();
+    const { combat, turns, isActiveUser } = useTrackerContext();
 
     const allTurnsDone = useMemo(() => {
       return (
