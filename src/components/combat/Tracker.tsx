@@ -5,12 +5,29 @@ import { assertGame } from "../../functions/isGame";
 import { assertNotNull } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
+import {
+  CombatStateContextType,
+  CombatStateProvider,
+} from "./combatStateContext";
 import { DraggableRowContainer } from "./DraggableRowContainer";
 import { EncounterNav } from "./EncounterNav";
 import { NoCombatants } from "./NoCombatants";
 import { NoCombats } from "./NoCombats";
 import { registerHookHandler } from "./registerHookHandler";
+import { ToolsRow } from "./ToolsRow";
 import { TurnNav } from "./TurnNav";
+
+function getCombatStateFromCombat(
+  combat: Combat | undefined,
+): CombatStateContextType {
+  assertGame(game);
+
+  return {
+    combat: combat?.toJSON() ?? null,
+    turns: combat?.turns.map((c) => c.toJSON()) ?? [],
+    isActiveUser: combat?.combatant?.players?.includes(game.user) ?? false,
+  };
+}
 
 export const Tracker = () => {
   assertGame(game);
@@ -20,20 +37,42 @@ export const Tracker = () => {
 
   const combat = game.combat as InvestigatorCombat | undefined;
 
-  const [_combatData, setCombatData] = useState(combat?.toJSON());
+  const [_combatData, setCombatData] = useState<CombatStateContextType>(() => {
+    return getCombatStateFromCombat(combat);
+  });
+
+  // const [turns, setTurns] = useState(combat?.turns);
+  // const [isActiveUser, setIsActiveUser] = useState(
+  //   combat?.combatant?.players?.includes(game.user),
+  // );
 
   useEffect(() => {
     return registerHookHandler("updateCombat", (updatedCombat, changes) => {
+      // setTurns(updatedCombat.turns);
+      // setIsActiveUser(updatedCombat.combatant?.players?.includes(game.user));
+
       setCombatData((oldData) => {
-        if (oldData?._id !== updatedCombat._id && updatedCombat.active) {
+        if (oldData.combat?._id !== updatedCombat._id && updatedCombat.active) {
           // if a combat is becoming active, we just take its data
-          return updatedCombat.toJSON();
-        } else if (oldData !== undefined) {
-          return produce(oldData, (draft) => {
-            foundry.utils.mergeObject(draft, changes);
-          });
+          return getCombatStateFromCombat(updatedCombat);
+        } else if (oldData.combat !== null) {
+          const result: CombatStateContextType = {
+            combat: produce(oldData.combat, (draft) => {
+              foundry.utils.mergeObject(draft, changes);
+            }),
+            // XXX this is going to be too hot because it's regenerated every time
+            // anything in the combat changes, even if it's not the turns
+            turns: updatedCombat.turns.map((c) => c.toJSON()),
+            isActiveUser:
+              updatedCombat.combatant?.players?.includes(game.user) ?? false,
+          };
+          return result;
         } else {
-          return undefined;
+          return {
+            combat: null,
+            turns: [],
+            isActiveUser: false,
+          };
         }
       });
     });
@@ -42,7 +81,7 @@ export const Tracker = () => {
   useEffect(() => {
     return registerHookHandler("createCombat", (newCombat) => {
       if (newCombat.active) {
-        setCombatData(newCombat.toJSON());
+        setCombatData(getCombatStateFromCombat(newCombat));
       }
     });
   }, []);
@@ -61,7 +100,7 @@ export const Tracker = () => {
   // a combatant in the combat
   // const turns = combat ? getTurns(combat) : [];
   return (
-    <>
+    <CombatStateProvider value={_combatData}>
       {/* HEADER ROWS */}
       <header id="combat-round" className="combat-tracker-header">
         {combat && (
@@ -77,12 +116,13 @@ export const Tracker = () => {
 
         {combat && <TurnNav isTurnPassing={isTurnPassing} combat={combat} />}
       </header>
+      <ToolsRow />
       {/* ACTUAL COMBATANTS, or "turns" in early-medieval foundry-speak */}
       {!combat && <NoCombats />}
       {combat && combat.turns.length === 0 && <NoCombatants />}
       {/* we need to wrap the actual tracker ol in another element so that
       foundry's autosizing works */}
       {combat && <DraggableRowContainer />}
-    </>
+    </CombatStateProvider>
   );
 };

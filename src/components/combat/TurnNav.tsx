@@ -1,5 +1,5 @@
 import { keyframes } from "@emotion/react";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
 import { FaArrowDownWideShort } from "react-icons/fa6";
 import { LuSwords } from "react-icons/lu";
@@ -9,6 +9,7 @@ import { CombatTrackerConfig } from "../../fvtt-exports";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
+import { useCombatState } from "./combatStateContext";
 import { format, localize } from "./functions";
 
 interface TurnNavProps {
@@ -29,24 +30,7 @@ const throbbingBg = keyframes({
 export const TurnNav = memo(
   ({ isTurnPassing, combat: actualCombat }: TurnNavProps) => {
     assertGame(game);
-    const [combatState, setCombatState] = useState(actualCombat.toJSON());
-    const [turns, setTurns] = useState(actualCombat.turns);
-    const [isActiveUser, setIsActiveUser] = useState(
-      actualCombat.combatant?.players?.includes(game.user),
-    );
-
-    useEffect(() => {
-      const handleUpdateCombat = (updatedCombat: InvestigatorCombat) => {
-        if (updatedCombat.id !== actualCombat.id) return;
-        setCombatState(updatedCombat.toJSON());
-        setTurns(updatedCombat.turns);
-        setIsActiveUser(updatedCombat.combatant?.players?.includes(game.user));
-      };
-      Hooks.on("updateCombat", handleUpdateCombat);
-      return () => {
-        Hooks.off("updateCombat", handleUpdateCombat);
-      };
-    }, [actualCombat.id]);
+    const { combat, turns, isActiveUser } = useCombatState();
 
     const allTurnsDone = useMemo(() => {
       return (
@@ -83,7 +67,7 @@ export const TurnNav = memo(
       <nav className="combat-controls">
         {game.user.isGM ? (
           <>
-            {combatState?.round ? (
+            {combat?.round ? (
               <>
                 <button
                   type="button"
@@ -113,7 +97,7 @@ export const TurnNav = memo(
                     label={
                       <>
                         {format("COMBAT.Round", {
-                          round: combatState.round.toString(),
+                          round: combat.round.toString(),
                         })}
                         <FaChevronDown />
                       </>
@@ -243,9 +227,9 @@ export const TurnNav = memo(
                   color: "var(--color-text-primary)",
                 }}
               >
-                {combatState.round
+                {combat?.round
                   ? format("COMBAT.Round", {
-                      round: combatState.round.toString(),
+                      round: combat?.round.toString(),
                     })
                   : localize("COMBAT.NotStarted")}
               </strong>
