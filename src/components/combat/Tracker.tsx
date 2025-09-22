@@ -5,21 +5,18 @@ import { assertGame } from "../../functions/isGame";
 import { assertNotNull } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
-import {
-  CombatStateContextType,
-  CombatStateProvider,
-} from "./combatStateContext";
 import { DraggableRowContainer } from "./DraggableRowContainer";
 import { EncounterNav } from "./EncounterNav";
 import { NoCombatants } from "./NoCombatants";
 import { NoCombats } from "./NoCombats";
 import { registerHookHandler } from "./registerHookHandler";
 import { ToolsRow } from "./ToolsRow";
+import { TrackerContextProvider, TrackerContextType } from "./trackerContext";
 import { TurnNav } from "./TurnNav";
 
 function getCombatStateFromCombat(
   combat: Combat | undefined,
-): CombatStateContextType {
+): TrackerContextType {
   assertGame(game);
 
   return {
@@ -37,7 +34,7 @@ export const Tracker = () => {
 
   const combat = game.combat as InvestigatorCombat | undefined;
 
-  const [_combatData, setCombatData] = useState<CombatStateContextType>(() => {
+  const [_combatData, setCombatData] = useState<TrackerContextType>(() => {
     return getCombatStateFromCombat(combat);
   });
 
@@ -56,7 +53,7 @@ export const Tracker = () => {
           // if a combat is becoming active, we just take its data
           return getCombatStateFromCombat(updatedCombat);
         } else if (oldData.combat !== null) {
-          const result: CombatStateContextType = {
+          const result: TrackerContextType = {
             combat: produce(oldData.combat, (draft) => {
               foundry.utils.mergeObject(draft, changes);
             }),
@@ -100,7 +97,7 @@ export const Tracker = () => {
   // a combatant in the combat
   // const turns = combat ? getTurns(combat) : [];
   return (
-    <CombatStateProvider value={_combatData}>
+    <TrackerContextProvider value={_combatData}>
       {/* HEADER ROWS */}
       <header id="combat-round" className="combat-tracker-header">
         {combat && (
@@ -123,6 +120,6 @@ export const Tracker = () => {
       {/* we need to wrap the actual tracker ol in another element so that
       foundry's autosizing works */}
       {combat && <DraggableRowContainer />}
-    </CombatStateProvider>
+    </TrackerContextProvider>
   );
 };
