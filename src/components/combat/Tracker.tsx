@@ -15,12 +15,13 @@ import { TrackerContextProvider, TrackerContextType } from "./trackerContext";
 import { TurnNav } from "./TurnNav";
 
 function getCombatStateFromCombat(
-  combat: Combat | undefined,
+  combat: Combat.Implementation | undefined,
 ): TrackerContextType {
   assertGame(game);
 
   return {
-    combat: combat?.toJSON() ?? null,
+    combatState: combat?.toJSON() ?? null,
+    combat: combat ?? null,
     turns: combat?.turns.map((c) => c.toJSON()) ?? [],
     isActiveUser: combat?.combatant?.players?.includes(game.user) ?? false,
   };
@@ -38,25 +39,21 @@ export const Tracker = () => {
     return getCombatStateFromCombat(combat);
   });
 
-  // const [turns, setTurns] = useState(combat?.turns);
-  // const [isActiveUser, setIsActiveUser] = useState(
-  //   combat?.combatant?.players?.includes(game.user),
-  // );
-
   useEffect(() => {
     return registerHookHandler("updateCombat", (updatedCombat, changes) => {
-      // setTurns(updatedCombat.turns);
-      // setIsActiveUser(updatedCombat.combatant?.players?.includes(game.user));
-
       setCombatData((oldData) => {
-        if (oldData.combat?._id !== updatedCombat._id && updatedCombat.active) {
+        if (
+          oldData.combatState?._id !== updatedCombat._id &&
+          updatedCombat.active
+        ) {
           // if a combat is becoming active, we just take its data
           return getCombatStateFromCombat(updatedCombat);
-        } else if (oldData.combat !== null) {
+        } else if (oldData.combatState !== null) {
           const result: TrackerContextType = {
-            combat: produce(oldData.combat, (draft) => {
+            combatState: produce(oldData.combatState, (draft) => {
               foundry.utils.mergeObject(draft, changes);
             }),
+            combat: updatedCombat,
             // XXX this is going to be too hot because it's regenerated every time
             // anything in the combat changes, even if it's not the turns
             turns: updatedCombat.turns.map((c) => c.toJSON()),
@@ -66,6 +63,7 @@ export const Tracker = () => {
           return result;
         } else {
           return {
+            combatState: null,
             combat: null,
             turns: [],
             isActiveUser: false,
@@ -111,7 +109,7 @@ export const Tracker = () => {
           />
         )}
 
-        {combat && <TurnNav isTurnPassing={isTurnPassing} combat={combat} />}
+        {combat && <TurnNav isTurnPassing={isTurnPassing} />}
       </header>
       <ToolsRow />
       {/* ACTUAL COMBATANTS, or "turns" in early-medieval foundry-speak */}
