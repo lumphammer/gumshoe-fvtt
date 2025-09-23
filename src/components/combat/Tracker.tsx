@@ -5,7 +5,7 @@ import { assertGame } from "../../functions/isGame";
 import { assertNotNull } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
-import { DraggableRowContainer } from "./DraggableRowContainer";
+import { CombatantList } from "./CombatantList";
 import { EncounterNav } from "./EncounterNav";
 import { NoCombatants } from "./NoCombatants";
 import { NoCombats } from "./NoCombats";
@@ -110,14 +110,11 @@ export const Tracker = () => {
         )}
 
         {combat && <TurnNav isTurnPassing={isTurnPassing} />}
+        <ToolsRow />
       </header>
-      <ToolsRow />
-      {/* ACTUAL COMBATANTS, or "turns" in early-medieval foundry-speak */}
       {!combat && <NoCombats />}
       {combat && combat.turns.length === 0 && <NoCombatants />}
-      {/* we need to wrap the actual tracker ol in another element so that
-      foundry's autosizing works */}
-      {combat && <DraggableRowContainer />}
+      {combat && <CombatantList />}
     </TrackerContextProvider>
   );
 };
