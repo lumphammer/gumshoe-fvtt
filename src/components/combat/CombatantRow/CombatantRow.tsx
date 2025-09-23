@@ -11,6 +11,7 @@ import { assertGame } from "../../../functions/isGame";
 import { systemLogger } from "../../../functions/utilities";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
+import { NativeContextMenuWrapper } from "../../inputs/NativeMenu/NativeContextMenuWrapper";
 import { CombatantContextProvider } from "./CombatantContext";
 import { Content } from "./Content";
 import { useCombatantData } from "./useCombatantData";
@@ -77,30 +78,31 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
 
   return (
     <CombatantContextProvider value={combatantContextValue}>
-      <li
-        ref={setNodeRef}
-        className={cx("combatant", {
-          active: combat.turn === index,
-          hide: combatantData.hidden,
-          defeated: combatantData.defeated,
-        })}
-        {...attributes}
-        data-combatant-id={combatant.id}
-        style={{
-          transform: CSS.Translate.toString(transform),
-          transition,
-          opacity: depleted && !active ? 0.7 : 1,
-        }}
-        css={{ alignItems: "start" }}
-      >
-        {/* // the row content is pushed down so it can memoise even if the draggable
+      <NativeContextMenuWrapper>
+        <li
+          ref={setNodeRef}
+          className={cx("combatant", {
+            active: combat.turn === index,
+            hide: combatantData.hidden,
+            defeated: combatantData.defeated,
+          })}
+          {...attributes}
+          data-combatant-id={combatant.id}
+          style={{
+            transform: CSS.Translate.toString(transform),
+            transition,
+            opacity: depleted && !active ? 0.7 : 1,
+          }}
+          css={{ alignItems: "start" }}
+        >
+          {/* // the row content is pushed down so it can memoise even if the draggable
         // hook is updating very frequently */}
-        <Content
-          setNodeRef={setNodeRef}
-          setActivatorNodeRef={setActivatorNodeRef}
-          listeners={listeners}
-        />
-      </li>
+          <Content
+            setActivatorNodeRef={setActivatorNodeRef}
+            listeners={listeners}
+          />
+        </li>
+      </NativeContextMenuWrapper>
     </CombatantContextProvider>
   );
 });
