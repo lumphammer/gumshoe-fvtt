@@ -23,6 +23,7 @@ import { memo, useCallback, useEffect, useState } from "react";
 import { systemLogger } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { CombatantRow } from "./CombatantRow/CombatantRow";
+import { TriggerMeasure } from "./TriggerMeasure";
 
 // https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
 const measuringConfig: MeasuringConfiguration = {
@@ -103,6 +104,7 @@ export const CombatantList = memo(function CombatantList() {
       measuring={measuringConfig}
     >
       <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+        <TriggerMeasure ids={ids} />
         {/* we need to wrap the actual tracker ol in another element so that
           foundry's autosizing works */}
         <div
