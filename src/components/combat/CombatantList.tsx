@@ -30,7 +30,7 @@ const measuringConfig = {
   },
 };
 
-export const DraggableRowContainer = memo(() => {
+export const CombatantList = memo(function CombatantList() {
   const combat = game.combat as InvestigatorCombat | undefined;
 
   if (combat === undefined) {
@@ -101,13 +101,9 @@ export const DraggableRowContainer = memo(() => {
       modifiers={[restrictToVerticalAxis, restrictToParentElement]}
       measuring={measuringConfig}
     >
-      <SortableContext
-        items={ids}
-        strategy={verticalListSortingStrategy}
-        // strategy={rectSwappingStrategy}
-      >
+      <SortableContext items={ids} strategy={verticalListSortingStrategy}>
         {/* we need to wrap the actual tracker ol in another element so that
-      foundry's autosizing works */}
+          foundry's autosizing works */}
         <div
           className="combat-tracker"
           css={{
@@ -122,27 +118,20 @@ export const DraggableRowContainer = memo(() => {
               flex: 1,
             }}
           >
-            {
-              // combatant sorting is done in "Combat" but for rendering stability
-              // we need to un-sort the combatants and then tell each row where it
-              // used to exist in the order
-              ids.map((id) => {
-                const combatant = combat.turns.find((x) => x.id === id);
-                if (!combatant) return null;
-                return (
-                  <CombatantRow
-                    key={id}
-                    index={combat.turns.findIndex((x) => x.id === id)}
-                    combatant={combatant}
-                  />
-                );
-              })
-            }
+            {ids.map((id) => {
+              const combatant = combat.turns.find((x) => x.id === id);
+              if (!combatant) return null;
+              return (
+                <CombatantRow
+                  key={id}
+                  index={combat.turns.findIndex((x) => x.id === id)}
+                  combatant={combatant}
+                />
+              );
+            })}
           </ol>
         </div>
       </SortableContext>
     </DndContext>
   );
 });
-
-DraggableRowContainer.displayName = "DraggableRowContainer";
