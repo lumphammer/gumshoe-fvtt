@@ -1,4 +1,3 @@
-import { useDndContext } from "@dnd-kit/core";
 import {
   AnimateLayoutChanges,
   defaultAnimateLayoutChanges,
@@ -6,7 +5,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
-import { memo, useLayoutEffect, useMemo } from "react";
+import { memo, useMemo } from "react";
 
 import { assertGame } from "../../../functions/isGame";
 import { systemLogger } from "../../../functions/utilities";
@@ -41,13 +40,6 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
     transition: customTransition,
     animateLayoutChanges: customAnimateLayoutChanges,
   });
-
-  const { measureDroppableContainers, droppableContainers, droppableRects } =
-    useDndContext();
-
-  useLayoutEffect(() => {
-    measureDroppableContainers([combatant.id ?? ""]);
-  }, [combatant.id, measureDroppableContainers]);
 
   systemLogger.log("CombatantRow rendered", {
     attributes,
