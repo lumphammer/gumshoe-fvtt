@@ -3,6 +3,7 @@ import {
   DndContext,
   DragEndEvent,
   KeyboardSensor,
+  MeasuringConfiguration,
   MeasuringStrategy,
   PointerSensor,
   useSensor,
@@ -24,7 +25,7 @@ import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { CombatantRow } from "./CombatantRow/CombatantRow";
 
 // https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
-const measuringConfig = {
+const measuringConfig: MeasuringConfiguration = {
   droppable: {
     strategy: MeasuringStrategy.Always,
   },
