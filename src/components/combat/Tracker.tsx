@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 import { assertGame } from "../../functions/isGame";
 import { assertNotNull, systemLogger } from "../../functions/utilities";
-import { SourceData } from "../../fvtt-exports";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { CombatantList } from "./CombatantList";
 import { EncounterNav } from "./EncounterNav";
@@ -13,30 +12,6 @@ import { registerHookHandler } from "./registerHookHandler";
 import { ToolsRow } from "./ToolsRow";
 import { TrackerContextProvider, TrackerContextType } from "./trackerContext";
 import { TurnNav } from "./TurnNav";
-
-/**
- * Given an array of Combatant documents, and the previous turns state, returns
- * a new turns state array that re-uses existing turn objects where possible.
- */
-function getUpdatedTurnsState(
-  newTurns: Combatant[],
-  oldTurnsState: SourceData<Combatant.Schema>[],
-): SourceData<Combatant.Schema>[] {
-  if (
-    newTurns.length === oldTurnsState.length &&
-    newTurns.every((t, i) => t._id === oldTurnsState[i]._id)
-  ) {
-    return oldTurnsState;
-  }
-  return newTurns.map((turn) => {
-    const oldTurn = oldTurnsState.find((ot) => ot._id === turn._id);
-    if (oldTurn) {
-      return oldTurn;
-    } else {
-      return turn.toJSON();
-    }
-  });
-}
 
 /**
  * Extracts the relevant combat state from a Combat document.
@@ -49,7 +24,7 @@ function getCombatStateFromCombat(
   return {
     combatState: combat?.toJSON() ?? null,
     combat: combat ?? null,
-    turns: combat?.turns.map((c) => c.toJSON()) ?? [],
+    turnIds: combat?.turns.map((c) => c._id).filter((id) => id !== null) ?? [],
     isActiveUser: combat?.combatant?.players?.includes(game.user) ?? false,
   };
 }
@@ -95,7 +70,9 @@ export const Tracker = () => {
                 foundry.utils.mergeObject(draft, changes);
               }),
               combat: updatedCombat,
-              turns: getUpdatedTurnsState(updatedCombat.turns, oldData.turns),
+              turnIds: updatedCombat.turns
+                .map((c) => c._id)
+                .filter((id) => id !== null),
               isActiveUser:
                 updatedCombat.combatant?.players?.includes(game.user) ?? false,
             };

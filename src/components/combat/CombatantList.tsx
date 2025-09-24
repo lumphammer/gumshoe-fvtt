@@ -31,7 +31,7 @@ const measuringConfig: MeasuringConfiguration = {
 };
 
 export const CombatantList = memo(function CombatantList() {
-  const { combat, turns } = useTrackerContext();
+  const { combat, turnIds } = useTrackerContext();
 
   if (combat === null) {
     throw new Error("No active combat found");
@@ -50,8 +50,8 @@ export const CombatantList = memo(function CombatantList() {
   const [ids, setIds] = useState<string[]>([]);
 
   useEffect(() => {
-    setIds(turns.map((turn) => turn._id).filter((id) => id !== null));
-  }, [turns]);
+    setIds(turnIds);
+  }, [turnIds]);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
