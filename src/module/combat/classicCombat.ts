@@ -113,7 +113,6 @@ export class ClassicCombatModel
       TypeDataModel<typeof classicCombatSchema, ClassicCombat>["_preCreate"]
     >
   ) {
-    systemLogger.log("ClassicCombatModel#_preCreate called");
     return super._preCreate(data, options, user);
   }
 
@@ -196,20 +195,6 @@ export class ClassicCombatModel
       userId,
     ]: Combat.OnUpdateDescendantDocumentsArgs
   ) {
-    systemLogger.log("ClassicCombatModel#_onUpdateDescendantDocuments called");
-    // const oldRoundInfo = this.rounds[parent.round];
-    // if (oldRoundInfo === undefined) {
-    //   return;
-    // }
-    // // const isSorted = this._areTurnsSorted(oldRoundInfo.turns);
-    // let turns = oldRoundInfo.turns;
-    // if (oldRoundInfo.combatantsAreSorted) {
-    //   turns = turns
-    //     .map((t) => this.parent.combatants.get(t.combatantId))
-    //     .filter(isClassicCombatant)
-    //     .sort(compareCombatants)
-    //     .flatMap((c) => (c.id === null ? [] : [{ combatantId: c.id }]));
-    // }
     return Promise.resolve();
   }
 
@@ -248,7 +233,6 @@ export class ClassicCombatModel
   getTurns(): string[] {
     const turns =
       this.rounds[this.parent.round]?.turns.map((t) => t.combatantId) ?? [];
-    systemLogger.log("Returning turns", turns);
     return turns;
   }
 
