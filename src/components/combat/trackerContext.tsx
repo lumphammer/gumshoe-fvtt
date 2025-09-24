@@ -5,14 +5,14 @@ import { SourceData } from "../../fvtt-exports";
 export type TrackerContextType = {
   combatState: SourceData<Combat.Schema> | null;
   combat: Combat.Implementation | null;
-  turns: SourceData<Combatant.Schema>[];
+  turnIds: string[];
   isActiveUser: boolean;
 };
 
 const trackerContext = createContext<TrackerContextType>({
   combatState: null,
   combat: null,
-  turns: [],
+  turnIds: [],
   isActiveUser: false,
 });
 

@@ -24,7 +24,12 @@ const throbbingBg = keyframes({
 
 export const TurnNav = memo(function TurnNav() {
   assertGame(game);
-  const { combatState, turns, isActiveUser, combat } = useTrackerContext();
+  const {
+    combatState,
+    turnIds: turns,
+    isActiveUser,
+    combat,
+  } = useTrackerContext();
 
   const isTurnPassing = isTurnPassingCombat(combat);
 
