@@ -8,7 +8,6 @@ import { cx } from "@emotion/css";
 import { memo, useMemo } from "react";
 
 import { assertGame } from "../../../functions/isGame";
-import { systemLogger } from "../../../functions/utilities";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import { NativeContextMenuWrapper } from "../../inputs/NativeMenu/NativeContextMenuWrapper";
@@ -39,12 +38,6 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
     id: combatant.id ?? "",
     transition: customTransition,
     animateLayoutChanges: customAnimateLayoutChanges,
-  });
-
-  systemLogger.log("CombatantRow rendered", {
-    attributes,
-    transform,
-    transition,
   });
 
   assertGame(game);
