@@ -24,7 +24,10 @@ interface CombatantRowProps {
 const customAnimateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
-const customTransition = { duration: 300, easing: "linear" };
+const customTransition = {
+  duration: 400,
+  easing: "linear",
+};
 
 export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
   const {
