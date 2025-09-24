@@ -1,5 +1,3 @@
-import { systemLogger } from "../../functions/utilities";
-
 /**
  * Override base Combatant class to override the initiative formula.
  */
@@ -16,7 +14,6 @@ export class InvestigatorCombatant<
     options: Combatant.Database.PreUpdateOptions,
     user: User.Implementation,
   ) {
-    systemLogger.log("InvestigatorCombatant#_preUpdate called");
     return super._preUpdate(changed, options, user);
   }
 
@@ -25,7 +22,6 @@ export class InvestigatorCombatant<
     options: Combatant.Database.OnUpdateOperation,
     userId: string,
   ) {
-    systemLogger.log("InvestigatorCombatant#_onUpdate called");
     super._onUpdate(changed, options, userId);
   }
 
@@ -34,7 +30,6 @@ export class InvestigatorCombatant<
     operation: Combatant.Database.Update,
     user: User.Implementation,
   ) {
-    systemLogger.log("InvestigatorCombatant._preUpdateOperation called");
     return super._preUpdateOperation(documents, operation, user);
   }
 
@@ -43,7 +38,6 @@ export class InvestigatorCombatant<
     operation: Combatant.Database.Update,
     user: User.Implementation,
   ) {
-    systemLogger.log("InvestigatorCombatant._onUpdateOperation called");
     return super._onUpdateOperation(documents, operation, user);
   }
 }

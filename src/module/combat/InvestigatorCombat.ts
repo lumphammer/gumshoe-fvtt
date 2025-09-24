@@ -1,5 +1,4 @@
 import { assertGame } from "../../functions/isGame";
-import { systemLogger } from "../../functions/utilities";
 import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
@@ -11,13 +10,6 @@ import { isValidCombat } from "./types";
 export class InvestigatorCombat<
   out SubType extends Combat.SubType = Combat.SubType,
 > extends Combat<SubType> {
-  // turnOrders: string[][] = [];
-
-  // constructor(data?: Combat.CreateData, context?: Combat.ConstructionContext) {
-  //   systemLogger.debug("InvestigatorCombat constructor called", data, context);
-  //   super(data, context);
-  // }
-
   // ///////////////////////////////////////////////////////////////////////////
   // override to make sure we're creating the right kind of combatant
   override async createEmbeddedDocuments<
@@ -66,14 +58,12 @@ export class InvestigatorCombat<
   protected override _preUpdate(
     ...[changed, options, user]: Parameters<Combat<SubType>["_preUpdate"]>
   ): Promise<boolean | void> {
-    systemLogger.log("InvestigatorCombat#_preUpdate called");
     return super._preUpdate(changed, options, user);
   }
 
   protected override _onUpdate(
     ...[changed, options, userId]: Parameters<Combat<SubType>["_onUpdate"]>
   ) {
-    systemLogger.log("InvestigatorCombat#_onUpdate called");
     super._onUpdate(changed, options, userId);
   }
 
@@ -82,7 +72,6 @@ export class InvestigatorCombat<
       (typeof Combat)["_preUpdateOperation"]
     >
   ) {
-    systemLogger.log("InvestigatorCombat._preUpdateOperation called");
     return super._preUpdateOperation(documents, operation, user);
   }
 
@@ -91,7 +80,6 @@ export class InvestigatorCombat<
       (typeof Combat)["_onUpdateOperation"]
     >
   ) {
-    systemLogger.log("InvestigatorCombat._onUpdateOperation called");
     return super._onUpdateOperation(documents, operation, user);
   }
 
@@ -106,12 +94,6 @@ export class InvestigatorCombat<
     ]: Combat.PreUpdateDescendantDocumentsArgs
   ) {
     assertGame(game);
-    // madly, this gets called on every connected client (unlike every other
-    // `_pre` lifecycle method. We block that right here.)
-    // if (userId !== game.userId) {
-    //   return;
-    // }
-    systemLogger.log("InvestigatorCombat#_preUpdateDescendantDocuments called");
     super._preUpdateDescendantDocuments(
       ...[parent, collection, changes, options, userId],
     );
@@ -133,7 +115,6 @@ export class InvestigatorCombat<
       userId,
     ]: Combat.OnCreateDescendantDocumentsArgs
   ) {
-    systemLogger.log("InvestigatorCombat#_onCreateDescendantDocuments called");
     if (isValidCombat(this) && userId === game.userId) {
       void this.system.onCreateDescendantDocuments(
         ...[parent, collection, documents, data, options, userId],
@@ -147,7 +128,6 @@ export class InvestigatorCombat<
   protected override _onUpdateDescendantDocuments(
     ...args: Combat.OnUpdateDescendantDocumentsArgs
   ) {
-    systemLogger.log("InvestigatorCombat#_onUpdateDescendantDocuments called");
     if (isValidCombat(this)) {
       void this.system.onUpdateDescendantDocuments(...args);
     }
@@ -157,7 +137,6 @@ export class InvestigatorCombat<
   protected override _onDeleteDescendantDocuments(
     ...args: Combat.OnDeleteDescendantDocumentsArgs
   ): void {
-    systemLogger.log("InvestigatorCombat#_onDeleteDescendantDocuments called");
     if (isValidCombat(this)) {
       void this.system.onDeleteDescendantDocuments(...args);
     }
@@ -177,11 +156,6 @@ export class InvestigatorCombat<
 
   // borrowed from client/documents/combat.d.mts
   override setupTurns() {
-    systemLogger.log(
-      "InvestigatorCombat#setupTurns called",
-      // new StackTrace().stack,
-    );
-
     this.turns ||= [];
 
     // Determine the turn order and the current turn
@@ -204,7 +178,6 @@ export class InvestigatorCombat<
   }
 
   override prepareDerivedData() {
-    systemLogger.log("InvestigatorCombat#prepareDerivedData called");
     // base combat has loads of assumptions about how combat works, so
     // super.prepareDerivedData won't call setupTurns if `turns` already has
     // elements. With this check we ensure it gets called once either way.

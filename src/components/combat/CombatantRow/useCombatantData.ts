@@ -1,7 +1,6 @@
 import { produce } from "immer";
 import { useEffect, useState } from "react";
 
-import { systemLogger } from "../../../functions/utilities";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import { registerHookHandler } from "../registerHookHandler";
 
@@ -58,7 +57,6 @@ export function useCombatantData(combatant: InvestigatorCombatant) {
   >([]);
   useEffect(() => {
     return combatant.actor?.registerCombatantEffectsHandler((effects) => {
-      systemLogger.log("Combatant effects updated", effects);
       setEffects(effects);
     });
   }, [combatant]);

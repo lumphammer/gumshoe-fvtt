@@ -2,7 +2,6 @@ import { cx } from "@emotion/css";
 import { memo, useEffect, useMemo, useState } from "react";
 
 import { assertGame } from "../../../functions/isGame";
-import { systemLogger } from "../../../functions/utilities";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import { registerHookHandler } from "../registerHookHandler";
 import { useCombatantContext } from "./CombatantContext";
@@ -48,7 +47,6 @@ export const BottomRow = memo(function BottomRow() {
   >([]);
   useEffect(() => {
     return combatant.actor?.registerCombatantEffectsHandler((effects) => {
-      systemLogger.log("Combatant effects updated", effects);
       setEffects(effects);
     });
   }, [combatant]);

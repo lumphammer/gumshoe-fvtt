@@ -1,5 +1,5 @@
 import { assertGame } from "../../functions/isGame";
-import { isNullOrEmptyString, systemLogger } from "../../functions/utilities";
+import { isNullOrEmptyString } from "../../functions/utilities";
 import { NumberField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import {
@@ -79,7 +79,6 @@ export class ClassicCombatantModel extends TypeDataModel<
       >["_preUpdate"]
     >
   ) {
-    systemLogger.log("ClassicCombatandModel#_preUpdate called");
     return super._preUpdate(changes, options, user);
   }
 
@@ -91,7 +90,6 @@ export class ClassicCombatantModel extends TypeDataModel<
       >["_onUpdate"]
     >
   ) {
-    systemLogger.log("ClassicCombatandModel#_onUpdate called");
     return super._onUpdate(changed, options, userId);
   }
 
@@ -115,7 +113,6 @@ export function assertClassicCombatant(
   x: unknown,
 ): asserts x is ClassicCombatant {
   if (!isClassicCombatant(x)) {
-    systemLogger.error(x);
     throw new Error("Expected combatant to be a ClassicCombatant");
   }
 }
