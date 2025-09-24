@@ -20,7 +20,6 @@ import {
 } from "@dnd-kit/sortable";
 import { memo, useCallback, useEffect, useState } from "react";
 
-import { systemLogger } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { CombatantRow } from "./CombatantRow/CombatantRow";
 
@@ -75,7 +74,6 @@ export const CombatantList = memo(function CombatantList() {
       } = event;
       // event.
       if (over === null) return;
-      systemLogger.log("Drag ended", { active, over });
       if (active.id !== over.id) {
         void combat?.swapCombatants(
           active.id.toString(),
@@ -87,8 +85,6 @@ export const CombatantList = memo(function CombatantList() {
       const modifier = y < 0 ? 0 : 1;
       const insertionIndex = newIds.indexOf(over.id.toString()) + modifier;
       newIds.splice(insertionIndex, 0, active.id.toString());
-
-      systemLogger.log("New IDs", { newIds });
       setIds(newIds);
     },
     [combat, ids],
