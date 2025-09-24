@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { assertGame } from "../../functions/isGame";
 import { assertNotNull, systemLogger } from "../../functions/utilities";
+import { SourceData } from "../../fvtt-exports";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { CombatantList } from "./CombatantList";
 import { EncounterNav } from "./EncounterNav";
@@ -13,6 +14,33 @@ import { ToolsRow } from "./ToolsRow";
 import { TrackerContextProvider, TrackerContextType } from "./trackerContext";
 import { TurnNav } from "./TurnNav";
 
+/**
+ * Given an array of Combatant documents, and the previous turns state, returns
+ * a new turns state array that re-uses existing turn objects where possible.
+ */
+function getUpdatedTurnsState(
+  newTurns: Combatant[],
+  oldTurnsState: SourceData<Combatant.Schema>[],
+): SourceData<Combatant.Schema>[] {
+  if (
+    newTurns.length === oldTurnsState.length &&
+    newTurns.every((t, i) => t._id === oldTurnsState[i]._id)
+  ) {
+    return oldTurnsState;
+  }
+  return newTurns.map((turn) => {
+    const oldTurn = oldTurnsState.find((ot) => ot._id === turn._id);
+    if (oldTurn) {
+      return oldTurn;
+    } else {
+      return turn.toJSON();
+    }
+  });
+}
+
+/**
+ * Extracts the relevant combat state from a Combat document.
+ */
 function getCombatStateFromCombat(
   combat: Combat.Implementation | undefined,
 ): TrackerContextType {
@@ -26,6 +54,9 @@ function getCombatStateFromCombat(
   };
 }
 
+/**
+ * The main combat tracker component.
+ */
 export const Tracker = () => {
   assertGame(game);
   assertNotNull(game.user);
@@ -64,9 +95,7 @@ export const Tracker = () => {
                 foundry.utils.mergeObject(draft, changes);
               }),
               combat: updatedCombat,
-              // XXX this is going to be too hot because it's regenerated every time
-              // anything in the combat changes, even if it's not the turns
-              turns: updatedCombat.turns.map((c) => c.toJSON()),
+              turns: getUpdatedTurnsState(updatedCombat.turns, oldData.turns),
               isActiveUser:
                 updatedCombat.combatant?.players?.includes(game.user) ?? false,
             };
