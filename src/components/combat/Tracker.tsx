@@ -2,9 +2,8 @@ import { produce } from "immer";
 import { useEffect, useState } from "react";
 
 import { assertGame } from "../../functions/isGame";
-import { assertNotNull } from "../../functions/utilities";
+import { assertNotNull, systemLogger } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
-import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { CombatantList } from "./CombatantList";
 import { EncounterNav } from "./EncounterNav";
 import { NoCombatants } from "./NoCombatants";
@@ -35,42 +34,50 @@ export const Tracker = () => {
 
   const combat = game.combat as InvestigatorCombat | undefined;
 
-  const [_combatData, setCombatData] = useState<TrackerContextType>(() => {
+  const [combatData, setCombatData] = useState<TrackerContextType>(() => {
     return getCombatStateFromCombat(combat);
   });
 
   useEffect(() => {
-    return registerHookHandler("updateCombat", (updatedCombat, changes) => {
-      setCombatData((oldData) => {
-        if (
-          oldData.combatState?._id !== updatedCombat._id &&
-          updatedCombat.active
-        ) {
-          // if a combat is becoming active, we just take its data
-          return getCombatStateFromCombat(updatedCombat);
-        } else if (oldData.combatState !== null) {
-          const result: TrackerContextType = {
-            combatState: produce(oldData.combatState, (draft) => {
-              foundry.utils.mergeObject(draft, changes);
-            }),
-            combat: updatedCombat,
-            // XXX this is going to be too hot because it's regenerated every time
-            // anything in the combat changes, even if it's not the turns
-            turns: updatedCombat.turns.map((c) => c.toJSON()),
-            isActiveUser:
-              updatedCombat.combatant?.players?.includes(game.user) ?? false,
-          };
-          return result;
-        } else {
-          return {
-            combatState: null,
-            combat: null,
-            turns: [],
-            isActiveUser: false,
-          };
-        }
-      });
-    });
+    return registerHookHandler(
+      "updateCombat",
+      (updatedCombat, changes) => {
+        systemLogger.log("Combat updated", {
+          id: updatedCombat._id,
+          active: updatedCombat.active,
+        });
+        setCombatData((oldData) => {
+          if (
+            oldData.combatState?._id !== updatedCombat._id &&
+            updatedCombat.active
+          ) {
+            // if a combat is becoming active, we just take its data
+            systemLogger.log("New combat activated");
+            return getCombatStateFromCombat(updatedCombat);
+          } else if (
+            oldData.combatState &&
+            oldData.combatState._id === updatedCombat._id
+          ) {
+            // this is an update to the current combat
+            const result: TrackerContextType = {
+              combatState: produce(oldData.combatState, (draft) => {
+                foundry.utils.mergeObject(draft, changes);
+              }),
+              combat: updatedCombat,
+              // XXX this is going to be too hot because it's regenerated every time
+              // anything in the combat changes, even if it's not the turns
+              turns: updatedCombat.turns.map((c) => c.toJSON()),
+              isActiveUser:
+                updatedCombat.combatant?.players?.includes(game.user) ?? false,
+            };
+            return result;
+          } else {
+            return oldData;
+          }
+        });
+      },
+      true,
+    );
   }, []);
 
   useEffect(() => {
@@ -88,14 +95,13 @@ export const Tracker = () => {
   );
   const prevCombatId = game.combats?.combats[combatIndex - 1]?._id;
   const nextCombatId = game.combats?.combats[combatIndex + 1]?._id;
-  const isTurnPassing = isTurnPassingCombat(combat);
 
   // foundry's native combat tracker uses these things called "turns" which are
   // kinda pre-baked data for the rows in the tracker - each one corresponds to
   // a combatant in the combat
   // const turns = combat ? getTurns(combat) : [];
   return (
-    <TrackerContextProvider value={_combatData}>
+    <TrackerContextProvider value={combatData}>
       {/* HEADER ROWS */}
       <header id="combat-round" className="combat-tracker-header">
         {combat && (
@@ -109,7 +115,7 @@ export const Tracker = () => {
           />
         )}
 
-        {combat && <TurnNav isTurnPassing={isTurnPassing} />}
+        {combat && <TurnNav />}
         <ToolsRow />
       </header>
       {!combat && <NoCombats />}
