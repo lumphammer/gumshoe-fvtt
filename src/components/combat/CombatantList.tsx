@@ -20,8 +20,8 @@ import {
 } from "@dnd-kit/sortable";
 import { memo, useCallback, useEffect, useState } from "react";
 
-import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { CombatantRow } from "./CombatantRow/CombatantRow";
+import { useTrackerContext } from "./trackerContext";
 
 // https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
 const measuringConfig: MeasuringConfiguration = {
@@ -31,9 +31,9 @@ const measuringConfig: MeasuringConfiguration = {
 };
 
 export const CombatantList = memo(function CombatantList() {
-  const combat = game.combat as InvestigatorCombat | undefined;
+  const { combat, turns } = useTrackerContext();
 
-  if (combat === undefined) {
+  if (combat === null) {
     throw new Error("No active combat found");
   }
 
@@ -44,26 +44,14 @@ export const CombatantList = memo(function CombatantList() {
     }),
   );
 
+  // ids is local state so the tracker can respond immediately to drag-n-drop
+  // changes, rather than waiting for the combat to update and the turn
+  // order to be re-calculated
   const [ids, setIds] = useState<string[]>([]);
 
   useEffect(() => {
-    setIds(combat.turns.map((turn) => turn.id).filter((id) => id !== null));
-    const handleUpdateCombat = (
-      updatedCombat: InvestigatorCombat,
-      changes: Combat.UpdateData,
-      options: Combat.Database.UpdateOptions,
-      userId: string,
-    ) => {
-      if (updatedCombat.id !== combat.id) return;
-      setIds(
-        updatedCombat.turns.map((turn) => turn.id).filter((id) => id !== null),
-      );
-    };
-    Hooks.on("updateCombat", handleUpdateCombat);
-    return () => {
-      Hooks.off("updateCombat", handleUpdateCombat);
-    };
-  }, [combat]);
+    setIds(turns.map((turn) => turn._id).filter((id) => id !== null));
+  }, [turns]);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
