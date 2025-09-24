@@ -6,14 +6,11 @@ import { LuSwords } from "react-icons/lu";
 
 import { assertGame } from "../../functions/isGame";
 import { CombatTrackerConfig } from "../../fvtt-exports";
+import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { format, localize } from "./functions";
 import { useTrackerContext } from "./trackerContext";
-
-interface TurnNavProps {
-  isTurnPassing: boolean;
-}
 
 const throbbingBg = keyframes({
   "0%": {
@@ -25,9 +22,11 @@ const throbbingBg = keyframes({
   },
 });
 
-export const TurnNav = memo(({ isTurnPassing }: TurnNavProps) => {
+export const TurnNav = memo(function TurnNav() {
   assertGame(game);
   const { combatState, turns, isActiveUser, combat } = useTrackerContext();
+
+  const isTurnPassing = isTurnPassingCombat(combat);
 
   if (combat === null) {
     throw new Error("No active combat found");
