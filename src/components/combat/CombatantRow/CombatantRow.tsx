@@ -11,9 +11,11 @@ import { assertGame } from "../../../functions/isGame";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import { NativeContextMenuWrapper } from "../../inputs/NativeMenu/NativeContextMenuWrapper";
-import { CombatantContextProvider } from "./CombatantContext";
+import {
+  CombatantContextProvider,
+  useCombatantContextValue,
+} from "./CombatantContext";
 import { Content } from "./Content";
-import { useCombatantData } from "./useCombatantData";
 
 interface CombatantRowProps {
   combatant: InvestigatorCombatant;
@@ -58,7 +60,8 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
     );
   }
 
-  const { combatantData, effects, resource } = useCombatantData(combatant);
+  const { combatantData, effects, resource } =
+    useCombatantContextValue(combatant);
 
   const activeCombatantId =
     combat.turn !== null ? combat.turns[combat.turn].id : null;
