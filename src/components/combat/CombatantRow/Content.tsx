@@ -19,7 +19,12 @@ export const Content = memo(
 
     return (
       <>
-        <Grip listeners={listeners} setActivatorNodeRef={setActivatorNodeRef} />
+        {combatantData.type === "classic" && (
+          <Grip
+            listeners={listeners}
+            setActivatorNodeRef={setActivatorNodeRef}
+          />
+        )}
         <img
           className="token-image"
           src={combatantData.img || CONST.DEFAULT_TOKEN}
