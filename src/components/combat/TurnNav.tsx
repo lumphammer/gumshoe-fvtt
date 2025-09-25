@@ -10,7 +10,7 @@ import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { format, localize } from "./functions";
-import { useTrackerContext } from "./trackerContext";
+import { useTrackerContext } from "./TrackerContext";
 
 const throbbingBg = keyframes({
   "0%": {

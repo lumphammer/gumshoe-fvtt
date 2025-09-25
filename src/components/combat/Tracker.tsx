@@ -9,7 +9,7 @@ import { ToolsRow } from "./ToolsRow";
 import {
   TrackerContextProvider,
   useTrackerContextValue,
-} from "./trackerContext";
+} from "./TrackerContext";
 import { TurnNav } from "./TurnNav";
 
 /**
