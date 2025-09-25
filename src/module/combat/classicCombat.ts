@@ -7,7 +7,6 @@ import {
   StringField,
   TypeDataModel,
 } from "../../fvtt-exports";
-import { settings } from "../../settings/settings";
 import { isClassicCombatant } from "./classicCombatant";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
@@ -17,11 +16,7 @@ function compareCombatants(
   a: InvestigatorCombatant,
   b: InvestigatorCombatant,
 ): number {
-  if (settings.useTurnPassingInitiative.get()) {
-    return a.name && b.name ? a.name.localeCompare(b.name) : 0;
-  } else {
-    return (b.system.initiative ?? 0) - (a.system.initiative ?? 0);
-  }
+  return (b.system.initiative ?? 0) - (a.system.initiative ?? 0);
 }
 
 // /////////////////////////////////////////////////////////////////////////////
