@@ -1,7 +1,7 @@
 import { memo, useCallback } from "react";
 
 import { localize } from "./functions";
-import { useTrackerContext } from "./trackerContext";
+import { useTrackerContext } from "./TrackerContext";
 
 export const ToolsRow = memo(function ToolsRow() {
   const { combat } = useTrackerContext();
