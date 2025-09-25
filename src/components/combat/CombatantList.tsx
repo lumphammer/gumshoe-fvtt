@@ -21,7 +21,7 @@ import {
 import { memo, useCallback, useEffect, useState } from "react";
 
 import { CombatantRow } from "./CombatantRow/CombatantRow";
-import { useTrackerContext } from "./trackerContext";
+import { useTrackerContext } from "./TrackerContext";
 
 // https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
 const measuringConfig: MeasuringConfiguration = {
