@@ -65,7 +65,7 @@ export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
 
   return (
     <>
-      <div css={{ flex: 0 }}>
+      <div css={{ flex: 0, padding: "0.3em 01em 0 0" }}>
         {combatant.system.passingTurnsRemaining}/
         {combatant.system.defaultPassingTurns}
       </div>
@@ -75,7 +75,6 @@ export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
           className="inline-control"
           css={{
             display: "block",
-            height: "var(--sidebar-item-height)",
             fontSize: "1.4em",
             margin: 0,
             padding: "0 0.2em",
