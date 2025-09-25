@@ -1,33 +1,16 @@
-import { produce } from "immer";
-import { useEffect, useState } from "react";
-
 import { assertGame } from "../../functions/isGame";
-import { assertNotNull, systemLogger } from "../../functions/utilities";
+import { assertNotNull } from "../../functions/utilities";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { CombatantList } from "./CombatantList";
 import { EncounterNav } from "./EncounterNav";
 import { NoCombatants } from "./NoCombatants";
 import { NoCombats } from "./NoCombats";
-import { registerHookHandler } from "./registerHookHandler";
 import { ToolsRow } from "./ToolsRow";
-import { TrackerContextProvider, TrackerContextType } from "./trackerContext";
+import {
+  TrackerContextProvider,
+  useTrackerContextValue,
+} from "./trackerContext";
 import { TurnNav } from "./TurnNav";
-
-/**
- * Extracts the relevant combat state from a Combat document.
- */
-function getCombatStateFromCombat(
-  combat: Combat.Implementation | undefined,
-): TrackerContextType {
-  assertGame(game);
-
-  return {
-    combatState: combat?.toJSON() ?? null,
-    combat: combat ?? null,
-    turnIds: combat?.turns.map((c) => c._id).filter((id) => id !== null) ?? [],
-    isActiveUser: combat?.combatant?.players?.includes(game.user) ?? false,
-  };
-}
 
 /**
  * The main combat tracker component.
@@ -38,61 +21,9 @@ export const Tracker = () => {
 
   // STATE & DERIVED DATA
 
-  const combat = game.combat as InvestigatorCombat | undefined;
+  const combat = game.combat as InvestigatorCombat | null;
 
-  const [combatData, setCombatData] = useState<TrackerContextType>(() => {
-    return getCombatStateFromCombat(combat);
-  });
-
-  useEffect(() => {
-    return registerHookHandler(
-      "updateCombat",
-      (updatedCombat, changes) => {
-        systemLogger.log("Combat updated", {
-          id: updatedCombat._id,
-          active: updatedCombat.active,
-        });
-        setCombatData((oldData) => {
-          if (
-            oldData.combatState?._id !== updatedCombat._id &&
-            updatedCombat.active
-          ) {
-            // if a combat is becoming active, we just take its data
-            systemLogger.log("New combat activated");
-            return getCombatStateFromCombat(updatedCombat);
-          } else if (
-            oldData.combatState &&
-            oldData.combatState._id === updatedCombat._id
-          ) {
-            // this is an update to the current combat
-            const result: TrackerContextType = {
-              combatState: produce(oldData.combatState, (draft) => {
-                foundry.utils.mergeObject(draft, changes);
-              }),
-              combat: updatedCombat,
-              turnIds: updatedCombat.turns
-                .map((c) => c._id)
-                .filter((id) => id !== null),
-              isActiveUser:
-                updatedCombat.combatant?.players?.includes(game.user) ?? false,
-            };
-            return result;
-          } else {
-            return oldData;
-          }
-        });
-      },
-      true,
-    );
-  }, []);
-
-  useEffect(() => {
-    return registerHookHandler("createCombat", (newCombat) => {
-      if (newCombat.active) {
-        setCombatData(getCombatStateFromCombat(newCombat));
-      }
-    });
-  }, []);
+  const combatData = useTrackerContextValue(combat);
 
   const combatId = combat?._id;
   const combatCount = game.combats?.combats.length ?? 0;
