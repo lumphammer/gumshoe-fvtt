@@ -1,5 +1,6 @@
 import { memo, useCallback } from "react";
 
+import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { localize } from "./functions";
 import { useTrackerContext } from "./TrackerContext";
 
@@ -12,6 +13,10 @@ export const ToolsRow = memo(function ToolsRow() {
   const handleSortCombatants = useCallback(() => {
     void combat.sortCombatants();
   }, [combat]);
+
+  if (isTurnPassingCombat(combat)) {
+    return null;
+  }
 
   return (
     <nav
