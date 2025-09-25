@@ -53,7 +53,7 @@ export const Tracker = () => {
         )}
 
         {combat && <TurnNav />}
-        <ToolsRow />
+        {combat && <ToolsRow />}
       </header>
       {!combat && <NoCombats />}
       {combat && combat.turns.length === 0 && <NoCombatants />}
