@@ -64,7 +64,7 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
     useCombatantContextValue(combatant);
 
   const activeCombatantId =
-    combat.turn !== null ? combat.turns[combat.turn].id : null;
+    combat.turn !== null ? (combat.turns[combat.turn]?.id ?? null) : null;
   const active = activeCombatantId === combatant.id;
   const depleted =
     isTurnPassingCombatant(combatant) &&
