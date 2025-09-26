@@ -214,9 +214,14 @@ export class ClassicCombatModel
     const turns =
       oldRound.turns.filter((t) => !ids.includes(t.combatantId)) ?? [];
 
+    const turnIndex =
+      oldRound.turnIndex === null
+        ? null
+        : Math.min(oldRound.turnIndex, turns.length - 1);
+
     const rounds = [...this.rounds];
     rounds[parent.round] = {
-      turnIndex: oldRound.turnIndex,
+      turnIndex,
       turns,
     };
 
