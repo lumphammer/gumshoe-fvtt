@@ -66,10 +66,6 @@ export const useTrackerContextValue = (
     return registerHookHandler(
       "updateCombat",
       (updatedCombat, changes) => {
-        systemLogger.log("Combat updated", {
-          id: updatedCombat._id,
-          active: updatedCombat.active,
-        });
         setCombatData((oldData) => {
           assertGame(game);
           if (

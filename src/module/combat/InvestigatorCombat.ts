@@ -1,4 +1,5 @@
 import { assertGame } from "../../functions/isGame";
+import { systemLogger } from "../../functions/utilities";
 import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
@@ -64,6 +65,7 @@ export class InvestigatorCombat<
   protected override _onUpdate(
     ...[changed, options, userId]: Parameters<Combat<SubType>["_onUpdate"]>
   ) {
+    systemLogger.log("Combat updated", changed);
     super._onUpdate(changed, options, userId);
   }
 
