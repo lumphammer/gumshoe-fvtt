@@ -375,25 +375,26 @@ export class ClassicCombatModel
       return;
     }
 
-    const turn = this.parent.turn ?? -1;
-
     const combatants = this.parent.combatants.contents;
 
+    const roundInfo = this.rounds[this.parent.round];
+    if (roundInfo === undefined) {
+      return;
+    }
+
     // Determine the next turn number
-    let nextTurn: number | null = null;
+    let nextTurnIndex =
+      roundInfo.turnIndex === null ? 0 : roundInfo.turnIndex + 1;
+
+    // Skip defeated combatants if the setting is enabled
     if (this.parent.settings.skipDefeated) {
-      for (let i = turn + 1; i < combatants.length; i++) {
-        if (!combatants[i].isDefeated) {
-          nextTurn = i;
-          break;
-        }
+      while (combatants[nextTurnIndex]?.isDefeated) {
+        nextTurnIndex++;
       }
-    } else {
-      nextTurn = turn + 1;
     }
 
     // Maybe advance to the next round
-    if (nextTurn === null || nextTurn >= combatants.length) {
+    if (nextTurnIndex === null || nextTurnIndex >= combatants.length) {
       return this.nextRound();
     }
 
@@ -401,31 +402,25 @@ export class ClassicCombatModel
       this.parent.round,
       this.parent.turn,
       this.parent.round,
-      nextTurn,
+      nextTurnIndex,
     );
 
+    roundInfo.turnIndex = nextTurnIndex;
     const rounds = [...this.rounds];
-    const roundInfo = this.rounds[this.parent.round];
-    if (roundInfo === undefined) {
-      return;
-    }
-    roundInfo.turnIndex = nextTurn;
     rounds[this.parent.round] = roundInfo;
 
     // Update the document, passing data through a hook first
-    const updateData = { round: this.parent.round, turn: nextTurn };
+    const updateData = {
+      round: this.parent.round,
+      turn: nextTurnIndex,
+      system: { rounds },
+    };
     const updateOptions = {
       direction: 1 as const,
       worldTime: { delta: advanceTime },
     };
     // @ts-expect-error fvtt-types
-    Hooks.callAll(
-      //
-      "combatTurn",
-      this,
-      updateData,
-      updateOptions,
-    );
+    Hooks.callAll("combatTurn", this, updateData, updateOptions);
     await this.parent.update(updateData, updateOptions);
   }
 
