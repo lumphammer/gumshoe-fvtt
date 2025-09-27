@@ -367,19 +367,19 @@ export class ClassicCombatModel
     await this.gotoRound(roundIndex);
   }
 
+  /**
+   * Advance to the next turn, or the next round if at the end of a round.
+   */
   async nextTurn() {
     systemLogger.log("ClassicCombatModel#nextTurn called");
 
     if (this.parent.round === 0) {
-      await this.nextRound();
-      return;
+      return await this.nextRound();
     }
-
-    const combatants = this.parent.combatants.contents;
 
     const roundInfo = this.rounds[this.parent.round];
     if (roundInfo === undefined) {
-      return;
+      return await this.gotoRound(this.parent.round);
     }
 
     // Determine the next turn number
@@ -388,23 +388,17 @@ export class ClassicCombatModel
 
     // Skip defeated combatants if the setting is enabled
     if (this.parent.settings.skipDefeated) {
-      while (combatants[nextTurnIndex]?.isDefeated) {
+      while (this.parent.combatants.contents[nextTurnIndex]?.isDefeated) {
         nextTurnIndex++;
       }
     }
 
     // Maybe advance to the next round
-    if (nextTurnIndex === null || nextTurnIndex >= combatants.length) {
-      return this.nextRound();
+    if (nextTurnIndex >= this.parent.combatants.contents.length) {
+      return await this.nextRound();
     }
 
-    const advanceTime = this.parent.getTimeDelta(
-      this.parent.round,
-      this.parent.turn,
-      this.parent.round,
-      nextTurnIndex,
-    );
-
+    // create new rounds data
     roundInfo.turnIndex = nextTurnIndex;
     const rounds = [...this.rounds];
     rounds[this.parent.round] = roundInfo;
@@ -415,44 +409,79 @@ export class ClassicCombatModel
       turn: nextTurnIndex,
       system: { rounds },
     };
-    const updateOptions = {
-      direction: 1 as const,
-      worldTime: { delta: advanceTime },
-    };
-    // @ts-expect-error fvtt-types
-    Hooks.callAll("combatTurn", this, updateData, updateOptions);
-    await this.parent.update(updateData, updateOptions);
-  }
 
-  async previousTurn() {
-    systemLogger.log("ClassicCombatModel#previousTurn called");
-    if (this.parent.round === 0) return;
-    if (this.parent.turn === 0 || this.parent.combatants.size === 0) {
-      await this.previousRound();
-      return;
-    }
-    const previousTurn = (this.parent.turn ?? this.parent.combatants.size) - 1;
     const advanceTime = this.parent.getTimeDelta(
       this.parent.round,
       this.parent.turn,
       this.parent.round,
-      previousTurn,
+      nextTurnIndex,
     );
 
+    const updateOptions = {
+      direction: 1 as const,
+      advanceTime, // docs and types say this...
+      worldTime: {
+        delta: advanceTime, // ...but the code in Combat suggests this
+      },
+    };
+    Hooks.callAll("combatTurn", this.parent, updateData, updateOptions);
+    await this.parent.update(updateData, updateOptions);
+  }
+
+  /**
+   * Go to the previous turn, or the previous round if at the start of a round.
+   */
+  async previousTurn() {
+    systemLogger.log("ClassicCombatModel#previousTurn called");
+    if (this.parent.round === 0) return;
+    const roundInfo = this.rounds[this.parent.round];
+    if (roundInfo === undefined) {
+      return await this.gotoRound(this.parent.round);
+    }
+
+    // Determine the next turn number
+    let previousTurnIndex =
+      roundInfo.turnIndex === null ? 0 : roundInfo.turnIndex - 1;
+
+    // Skip defeated combatants if the setting is enabled
+    if (this.parent.settings.skipDefeated) {
+      while (this.parent.combatants.contents[previousTurnIndex]?.isDefeated) {
+        previousTurnIndex--;
+      }
+    }
+
+    // Maybe advance to the next round
+    if (previousTurnIndex < 0) {
+      return await this.previousRound();
+    }
+
+    // create new rounds data
+    roundInfo.turnIndex = previousTurnIndex;
+    const rounds = [...this.rounds];
+    rounds[this.parent.round] = roundInfo;
+
     // Update the document, passing data through a hook first
-    const updateData = { round: this.parent.round, turn: previousTurn };
+    const updateData = {
+      round: this.parent.round,
+      turn: previousTurnIndex,
+      system: { rounds },
+    };
+
+    const advanceTime = this.parent.getTimeDelta(
+      this.parent.round,
+      this.parent.turn,
+      this.parent.round,
+      previousTurnIndex,
+    );
+
     const updateOptions = {
       direction: -1 as const,
-      worldTime: { delta: advanceTime },
+      advanceTime, // docs and types say this...
+      worldTime: {
+        delta: advanceTime, // ...but the code in Combat suggests this
+      },
     };
-    // @ts-expect-error fvtt-types
-    Hooks.callAll(
-      //
-      "combatTurn",
-      this,
-      updateData,
-      updateOptions,
-    );
+    Hooks.callAll("combatTurn", this.parent, updateData, updateOptions);
     await this.parent.update(updateData, updateOptions);
   }
 
