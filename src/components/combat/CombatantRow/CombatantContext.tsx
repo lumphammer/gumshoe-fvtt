@@ -4,18 +4,21 @@ import {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import { registerHookHandler } from "../registerHookHandler";
 
-type CombatantContextType = {
+type CombatantContextValue = {
   combatant: InvestigatorCombatant;
   combatantData: SchemaField.SourceData<Combatant.Schema>;
+  effects: SchemaField.SourceData<ActiveEffect.Schema>[];
+  resource: number;
 };
 
-const CombatantContext = createContext<CombatantContextType | undefined>(
+const CombatantContext = createContext<CombatantContextValue | undefined>(
   undefined,
 );
 
@@ -34,7 +37,7 @@ export function CombatantContextProvider({
   value,
 }: {
   children: ReactNode;
-  value: CombatantContextType;
+  value: CombatantContextValue;
 }) {
   return (
     <CombatantContext.Provider value={value}>
@@ -43,7 +46,7 @@ export function CombatantContextProvider({
   );
 }
 
-const getValue = <T,>(resource: T): T | number => {
+const getValue = <T,>(resource: T): number => {
   if (
     typeof resource === "object" &&
     resource !== null &&
@@ -57,7 +60,9 @@ const getValue = <T,>(resource: T): T | number => {
   return 0;
 };
 
-export function useCombatantContextValue(combatant: InvestigatorCombatant) {
+export function useCombatantContextValue(
+  combatant: InvestigatorCombatant,
+): CombatantContextValue {
   // ///////////////////////////////////////////////////////////////////////////
   // combatant data
   const [combatantData, setCombatantData] = useState(() => {
@@ -100,5 +105,8 @@ export function useCombatantContextValue(combatant: InvestigatorCombatant) {
     });
   }, [combatant]);
 
-  return { combatantData, effects, resource };
+  return useMemo(
+    () => ({ combatant, combatantData, effects, resource }),
+    [combatant, combatantData, effects, resource],
+  );
 }
