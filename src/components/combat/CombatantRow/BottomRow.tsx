@@ -1,55 +1,14 @@
 import { cx } from "@emotion/css";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 
 import { assertGame } from "../../../functions/isGame";
-import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
-import { registerHookHandler } from "../registerHookHandler";
 import { useCombatantContext } from "./CombatantContext";
 
-const getValue = <T,>(resource: T): T | number => {
-  if (
-    typeof resource === "object" &&
-    resource !== null &&
-    "value" in resource &&
-    typeof resource.value === "number"
-  ) {
-    return resource.value;
-  } else if (typeof resource === "number") {
-    return resource;
-  }
-  return 0;
-};
-
 export const BottomRow = memo(function BottomRow() {
-  const { combatantData } = useCombatantContext();
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
 
-  const { combatant } = useCombatantContext();
-
-  const [resource, setResource] = useState(() => getValue(combatant.resource));
-  useEffect(() => {
-    return registerHookHandler(
-      "updateCombatant",
-      (
-        updatedCombatant: InvestigatorCombatant,
-        updates: Combatant.UpdateData,
-      ) => {
-        if (updatedCombatant.id !== combatant.id) return;
-        setResource(getValue(updatedCombatant.resource));
-      },
-    );
-  }, [combatant]);
-
-  // effects data
-  const [effects, setEffects] = useState<
-    SchemaField.SourceData<ActiveEffect.Schema>[]
-  >([]);
-  useEffect(() => {
-    return combatant.actor?.registerCombatantEffectsHandler((effects) => {
-      setEffects(effects);
-    });
-  }, [combatant]);
+  const { combatantData, resource, effects } = useCombatantContext();
 
   // based on foundry's CombatTracker#_formatEffectsTooltip
   const effectsTooltip = useMemo(() => {
