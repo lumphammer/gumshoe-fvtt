@@ -225,7 +225,7 @@ export class ClassicCombatModel
       turns,
     };
 
-    await this.parent.update({ system: { rounds } });
+    await this.parent.update({ turn: turnIndex, system: { rounds } });
 
     return Promise.resolve();
   }
