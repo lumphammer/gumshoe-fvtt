@@ -1,4 +1,14 @@
 import { isActiveCharacterActor } from "./actors/exports";
+import { NPCModel } from "./actors/npc";
+import { PCModel } from "./actors/pc";
+
+function getResourceIds(model: PCModel | NPCModel): string[] {
+  const stats = Object.keys(model.stats).map((stat) => `stats.${stat}`);
+  const resources = Object.keys(model.resources).map(
+    (resource) => `resources.${resource}`,
+  );
+  return [...stats, ...resources];
+}
 
 /**
  * There's some foundrytude about resource attributes that aren't defined in
@@ -12,36 +22,32 @@ import { isActiveCharacterActor } from "./actors/exports";
  */
 export class InvestigatorTokenDocument extends TokenDocument {
   static override getTrackedAttributes(
-    data: any,
-    _path: string[] = [],
+    data?: TokenDocument.TrackedAttributesSubject | null,
+    _path?: string[],
   ): TokenDocument.TrackedAttributesDescription {
     // this function is very overloaded. when it's called from the Combat
     // Sidebar settings it's called with no arguments, and its job is to find
     // all the attributes that exist on the datamodels or template.json.
     // However, INVESTIGATOR uses dynamic attributes and so we need to override
     // it to walk all the world actors and find all their attributes.
-    if (data === undefined && _path.length === 0) {
-      const valueAttributesStrings = new Array<string>();
-      for (const actor of game.actors?.values() ?? []) {
-        if (!isActiveCharacterActor(actor)) {
-          continue;
-        }
-        const stats = Object.keys(actor.system.stats).map(
-          (stat) => `stats.${stat}`,
-        );
-        const resources = Object.keys(actor.system.resources).map(
-          (resource) => `resources.${resource}`,
-        );
-        valueAttributesStrings.push(...stats, ...resources);
-      }
+    if (data === undefined && (_path?.length ?? 0) === 0) {
+      const models: (PCModel | NPCModel)[] = (game.actors?.contents ?? [])
+        .filter((a) => isActiveCharacterActor(a))
+        .map((actor) => actor.system);
+
+      const valueAttributesStrings = models.flatMap(getResourceIds);
       const valueAttributes = Array.from(new Set(valueAttributesStrings)).map(
         (attr) => attr.split("."),
       );
       return { bar: [], value: valueAttributes };
+    } else if (data instanceof PCModel || data instanceof NPCModel) {
+      const valueAttributes = getResourceIds(data).map((attr) =>
+        attr.split("."),
+      );
+      return { bar: [], value: valueAttributes };
+    } else {
+      return super.getTrackedAttributes(data, _path);
     }
-
-    // if any args were passed, we defer to the superclass
-    return super.getTrackedAttributes(data, _path);
   }
 
   getBarAttribute(barName: string, options: any = {}) {
