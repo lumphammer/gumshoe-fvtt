@@ -317,11 +317,48 @@ export class ClassicCombatModel
     return newRoundInfo;
   }
 
-  async gotoRound(roundIndex: number) {
+  async gotoRound(roundIndex: number, goTo: "first" | "last" | null = null) {
     const existingRound = this.rounds[roundIndex];
     const roundInfo = existingRound
       ? this.getExistingRoundInfo(existingRound)
       : this.getNewRoundInfo();
+
+    // if we are going to the first turn, set turnIndex to 0 or the first
+    // non-defeated combatant
+    if (goTo === "first" && roundInfo.turns.length > 0) {
+      if (this.parent.settings.skipDefeated) {
+        roundInfo.turnIndex = roundInfo.turns.findIndex(
+          (t) =>
+            !(this.parent.combatants.get(t.combatantId)?.isDefeated ?? true),
+        );
+        if (roundInfo.turnIndex === -1) {
+          roundInfo.turnIndex = null;
+        }
+      } else {
+        roundInfo.turnIndex = 0;
+      }
+    }
+    // if we are going to the last turn, set turnIndex to last or the last
+    // non-defeated combatant
+    else if (goTo === "last" && roundInfo.turns.length > 0) {
+      if (this.parent.settings.skipDefeated) {
+        roundInfo.turnIndex = roundInfo.turns.findLastIndex(
+          (t) =>
+            !(this.parent.combatants.get(t.combatantId)?.isDefeated ?? true),
+        );
+      } else {
+        roundInfo.turnIndex = roundInfo.turns.length - 1;
+      }
+    }
+
+    if (
+      roundInfo.turnIndex === null || // just for TS
+      roundInfo.turnIndex < 0 ||
+      roundInfo.turnIndex >= roundInfo.turns.length
+    ) {
+      roundInfo.turnIndex = null;
+    }
+
     const rounds = [...(this.rounds ?? [])];
     rounds[roundIndex] = roundInfo;
     const updateData = {
@@ -339,32 +376,25 @@ export class ClassicCombatModel
     // Update the document, passing data through a hook first
     const updateOptions = {
       direction: roundIndex > this.parent.round ? (1 as const) : (-1 as const),
-      worldTime: { delta: advanceTime },
+      advanceTime, // docs and types say this...
+      worldTime: { delta: advanceTime }, // ...but the code in Combat suggests this
     };
 
-    // @ts-expect-error fvtt-types
-    Hooks.callAll(
-      // this comment is here to isolate the ts-expect-error above
-      "combatRound",
-      this.parent,
-      updateData,
-      updateOptions,
-    );
-    type _T = Parameters<typeof this.parent.update>[0];
+    Hooks.callAll("combatRound", this.parent, updateData, updateOptions);
     await this.parent.update(updateData, updateOptions);
   }
 
-  async nextRound() {
+  async nextRound(goTo: "first" | "last" | null = null) {
     systemLogger.log("ClassicCombatModel#nextRound called");
     const roundIndex = this.parent.round + 1;
-    await this.gotoRound(roundIndex);
+    await this.gotoRound(roundIndex, goTo);
   }
 
-  async previousRound() {
+  async previousRound(goTo: "first" | "last" | null = null) {
     systemLogger.log("ClassicCombatModel#previousRound called");
     if (this.parent.round === 0) return;
     const roundIndex = this.parent.round - 1;
-    await this.gotoRound(roundIndex);
+    await this.gotoRound(roundIndex, goTo);
   }
 
   /**
@@ -395,7 +425,7 @@ export class ClassicCombatModel
 
     // Maybe advance to the next round
     if (nextTurnIndex >= this.parent.combatants.contents.length) {
-      return await this.nextRound();
+      return await this.nextRound("first");
     }
 
     // create new rounds data
@@ -452,7 +482,7 @@ export class ClassicCombatModel
 
     // Maybe advance to the next round
     if (previousTurnIndex < 0) {
-      return await this.previousRound();
+      return await this.previousRound("last");
     }
 
     // create new rounds data
