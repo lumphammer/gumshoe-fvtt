@@ -5,7 +5,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
-import { memo, useMemo } from "react";
+import { memo } from "react";
 
 import { assertGame } from "../../../functions/isGame";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
@@ -60,8 +60,7 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
     );
   }
 
-  const { combatantData, effects, resource } =
-    useCombatantContextValue(combatant);
+  const combatantContextValue = useCombatantContextValue(combatant);
 
   const activeCombatantId =
     combat.turn !== null ? (combat.turns[combat.turn]?.id ?? null) : null;
@@ -70,11 +69,6 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
     isTurnPassingCombatant(combatant) &&
     combatant.system.passingTurnsRemaining <= 0;
 
-  const combatantContextValue = useMemo(
-    () => ({ combatant, combatantData, effects, resource }),
-    [combatant, combatantData, effects, resource],
-  );
-
   return (
     <CombatantContextProvider value={combatantContextValue}>
       <NativeContextMenuWrapper>
@@ -82,8 +76,8 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
           ref={setNodeRef}
           className={cx("combatant", {
             active: combat.turn === index,
-            hide: combatantData.hidden,
-            defeated: combatantData.defeated,
+            hide: combatantContextValue.combatantData.hidden,
+            defeated: combatantContextValue.combatantData.defeated,
           })}
           {...attributes}
           data-combatant-id={combatant.id}
