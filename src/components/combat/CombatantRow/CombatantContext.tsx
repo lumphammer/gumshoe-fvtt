@@ -105,6 +105,12 @@ export function useCombatantContextValue(
     });
   }, [combatant]);
 
+  useEffect(() => {
+    return combatant.registerResourceHandler((resource) => {
+      setResource(getValue(resource));
+    });
+  }, [combatant]);
+
   return useMemo(
     () => ({ combatant, combatantData, effects, resource }),
     [combatant, combatantData, effects, resource],
