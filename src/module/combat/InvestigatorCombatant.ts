@@ -40,4 +40,25 @@ export class InvestigatorCombatant<
   ) {
     return super._onUpdateOperation(documents, operation, user);
   }
+
+  // store of registered handlers
+  protected _resourceHandlers: Set<(resource: number | string | null) => void> =
+    new Set();
+
+  // add a new handler
+  registerResourceHandler(
+    handler: (resource: number | string | null) => void,
+  ): () => void {
+    this._resourceHandlers.add(handler);
+    handler(this.resource);
+    return () => this._resourceHandlers.delete(handler);
+  }
+
+  override updateResource() {
+    const resource = super.updateResource();
+    for (const handler of this._resourceHandlers.values()) {
+      handler(resource);
+    }
+    return resource;
+  }
 }
