@@ -240,15 +240,15 @@ export class InvestigatorCombat<
     return this;
   }
 
-  async swapCombatants(active: string, over: string, direction: "up" | "down") {
-    if (isValidCombat(this)) {
-      await this.system.moveCombatant(active, over, direction);
-    }
-  }
+  // async swapCombatants(active: string, over: string, direction: "up" | "down") {
+  //   if (isValidCombat(this)) {
+  //     await this.system.moveCombatant(active, over, direction);
+  //   }
+  // }
 
-  async sortCombatants(): Promise<void> {
-    if (isValidCombat(this)) {
-      await this.system.sortCombatants();
-    }
-  }
+  // async sortCombatants(): Promise<void> {
+  //   if (this.system instanceof ClassicCombatModel) {
+  //     await this.system.sortCombatants();
+  //   }
+  // }
 }

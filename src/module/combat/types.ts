@@ -51,12 +51,4 @@ export interface ValidCombatModel {
   onDeleteDescendantDocuments(
     ...args: Combat.OnDeleteDescendantDocumentsArgs
   ): Promise<void>;
-
-  moveCombatant(
-    active: string,
-    over: string,
-    direction: "up" | "down",
-  ): Promise<void>;
-
-  sortCombatants(): Promise<void>;
 }
