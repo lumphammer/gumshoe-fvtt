@@ -5,11 +5,21 @@ import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
 import { SourceData } from "../../fvtt-exports";
 import { useRefStash } from "../../hooks/useRefStash";
+import {
+  ClassicCombat,
+  isClassicCombat,
+} from "../../module/combat/classicCombat";
+import {
+  isTurnPassingCombat,
+  TurnPassingCombat,
+} from "../../module/combat/turnPassingCombat";
 import { registerHookHandler } from "./registerHookHandler";
 
-export type TrackerContextType = {
+export type TrackerContextType<
+  TCombat extends Combat.Implementation = Combat.Implementation,
+> = {
   combatState: SourceData<Combat.Schema> | null;
-  combat: Combat.Implementation | null;
+  combat: TCombat | null;
   turnIds: string[];
   isActiveUser: boolean;
 };
@@ -24,6 +34,28 @@ const trackerContext = createContext<TrackerContextType>({
 export const useTrackerContext = () => {
   return useContext(trackerContext);
 };
+
+export const useClassicTrackerContext =
+  (): TrackerContextType<ClassicCombat> => {
+    const context = useContext(trackerContext);
+    if (isClassicCombat(context.combat)) {
+      return context as TrackerContextType<ClassicCombat>;
+    } else {
+      throw new Error("useClassicTrackerContext used with non-classic combat");
+    }
+  };
+
+export const useTurnPassingTrackerContext =
+  (): TrackerContextType<TurnPassingCombat> => {
+    const context = useContext(trackerContext);
+    if (isTurnPassingCombat(context.combat)) {
+      return context as TrackerContextType<TurnPassingCombat>;
+    } else {
+      throw new Error(
+        "useTurnPassingTrackerContext used with non-turn-passing combat",
+      );
+    }
+  };
 
 /**
  * Extracts the relevant combat state from a Combat document.
