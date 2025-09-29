@@ -133,8 +133,8 @@ importers:
         specifier: github:league-of-foundry-developers/foundry-vtt-types#127da2449c52a982f4aa81c354bc13fcd574de89
         version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/127da2449c52a982f4aa81c354bc13fcd574de89(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(@typescript/native-preview@7.0.0-dev.20250922.1)(typescript@5.9.2)'
       happy-dom:
-        specifier: ^18.0.1
-        version: 18.0.1
+        specifier: ^19.0.1
+        version: 19.0.1
       html-escaper:
         specifier: ^3.0.3
         version: 3.0.3
@@ -197,7 +197,7 @@ importers:
         version: 4.5.0(rolldown-vite@7.1.11(@types/node@24.0.15)(esbuild@0.25.8)(less@4.4.1)(tsx@4.20.5))(rollup@4.45.1)(typescript@5.9.2)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.0.15)(@vitest/ui@3.2.4)(esbuild@0.25.8)(happy-dom@18.0.1)(less@4.4.1)(tsx@4.20.5)
+        version: 3.2.4(@types/node@24.0.15)(@vitest/ui@3.2.4)(esbuild@0.25.8)(happy-dom@19.0.1)(less@4.4.1)(tsx@4.20.5)
       xss:
         specifier: ^1.0.15
         version: 1.0.15
@@ -254,7 +254,7 @@ importers:
         version: rolldown-vite@7.1.11(@types/node@24.0.15)(esbuild@0.25.8)(less@4.4.1)(tsx@4.20.5)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/node@24.0.15)(@vitest/ui@3.2.4)(esbuild@0.25.8)(happy-dom@18.0.1)(less@4.4.1)(tsx@4.20.5)
+        version: 3.2.4(@types/node@24.0.15)(@vitest/ui@3.2.4)(esbuild@0.25.8)(happy-dom@19.0.1)(less@4.4.1)(tsx@4.20.5)
 
   packages/shared-fvtt-bits:
     dependencies:
@@ -3039,6 +3039,10 @@ packages:
 
   happy-dom@18.0.1:
     resolution: {integrity: sha512-qn+rKOW7KWpVTtgIUi6RVmTBZJSe2k0Db0vh1f7CWrWclkkc7/Q+FrOfkZIb2eiErLyqu5AXEzE7XthO9JVxRA==}
+    engines: {node: '>=20.0.0'}
+
+  happy-dom@19.0.1:
+    resolution: {integrity: sha512-Rr1H/mvgdCGoIq+jjaGxE/y+ZB+O2DhUBXk9vqoRVc5zsZ/Ne6Fssb8fXaAjPFh3Ajmbx+kfDDf946PHiUbC6Q==}
     engines: {node: '>=20.0.0'}
 
   has-bigints@1.1.0:
@@ -6629,7 +6633,7 @@ snapshots:
       sirv: 3.0.1
       tinyglobby: 0.2.14
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/node@24.0.15)(@vitest/ui@3.2.4)(esbuild@0.25.8)(happy-dom@18.0.1)(less@4.4.1)(tsx@4.20.5)
+      vitest: 3.2.4(@types/node@24.0.15)(@vitest/ui@3.2.4)(esbuild@0.25.8)(happy-dom@19.0.1)(less@4.4.1)(tsx@4.20.5)
 
   '@vitest/utils@3.2.4':
     dependencies:
@@ -7668,6 +7672,12 @@ snapshots:
       uglify-js: 3.19.3
 
   happy-dom@18.0.1:
+    dependencies:
+      '@types/node': 20.19.9
+      '@types/whatwg-mimetype': 3.0.2
+      whatwg-mimetype: 3.0.0
+
+  happy-dom@19.0.1:
     dependencies:
       '@types/node': 20.19.9
       '@types/whatwg-mimetype': 3.0.2
@@ -9250,6 +9260,49 @@ snapshots:
       '@types/node': 24.0.15
       '@vitest/ui': 3.2.4(vitest@3.2.4)
       happy-dom: 18.0.1
+    transitivePeerDependencies:
+      - esbuild
+      - jiti
+      - less
+      - msw
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+
+  vitest@3.2.4(@types/node@24.0.15)(@vitest/ui@3.2.4)(esbuild@0.25.8)(happy-dom@19.0.1)(less@4.4.1)(tsx@4.20.5):
+    dependencies:
+      '@types/chai': 5.2.2
+      '@vitest/expect': 3.2.4
+      '@vitest/mocker': 3.2.4(rolldown-vite@7.1.11(@types/node@24.0.15)(esbuild@0.25.8)(less@4.4.1)(tsx@4.20.5))
+      '@vitest/pretty-format': 3.2.4
+      '@vitest/runner': 3.2.4
+      '@vitest/snapshot': 3.2.4
+      '@vitest/spy': 3.2.4
+      '@vitest/utils': 3.2.4
+      chai: 5.2.1
+      debug: 4.4.1
+      expect-type: 1.2.2
+      magic-string: 0.30.17
+      pathe: 2.0.3
+      picomatch: 4.0.3
+      std-env: 3.9.0
+      tinybench: 2.9.0
+      tinyexec: 0.3.2
+      tinyglobby: 0.2.14
+      tinypool: 1.1.1
+      tinyrainbow: 2.0.0
+      vite: rolldown-vite@7.1.11(@types/node@24.0.15)(esbuild@0.25.8)(less@4.4.1)(tsx@4.20.5)
+      vite-node: 3.2.4(@types/node@24.0.15)(esbuild@0.25.8)(less@4.4.1)(tsx@4.20.5)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 24.0.15
+      '@vitest/ui': 3.2.4(vitest@3.2.4)
+      happy-dom: 19.0.1
     transitivePeerDependencies:
       - esbuild
       - jiti
