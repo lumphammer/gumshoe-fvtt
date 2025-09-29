@@ -3,16 +3,16 @@ import { memo, useCallback } from "react";
 import { isClassicCombat } from "../../module/combat/classicCombat";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { localize } from "./functions";
-import { useTrackerContext } from "./TrackerContext";
+import { useClassicTrackerContext } from "./TrackerContext";
 
 export const ToolsRow = memo(function ToolsRow() {
-  const { combat, turnIds } = useTrackerContext();
+  const { combat, turnIds } = useClassicTrackerContext();
   if (combat === null) {
     throw new Error("No active combat found");
   }
 
   const handleSortCombatants = useCallback(() => {
-    void combat.sortCombatants();
+    void combat.system.sortCombatants();
   }, [combat]);
 
   return (

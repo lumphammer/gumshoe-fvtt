@@ -6,6 +6,7 @@ import { LuSwords } from "react-icons/lu";
 
 import { assertGame } from "../../functions/isGame";
 import { CombatTrackerConfig } from "../../fvtt-exports";
+import { isClassicCombat } from "../../module/combat/classicCombat";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
@@ -141,14 +142,16 @@ export const TurnNav = memo(function TurnNav() {
                   </NativeMenuItem>
 
                   {/* SORT */}
-                  <NativeMenuItem
-                    icon={<FaArrowDownWideShort />}
-                    onSelect={() => {
-                      void combat.sortCombatants();
-                    }}
-                  >
-                    {localize("investigator.SortCombatants")}
-                  </NativeMenuItem>
+                  {isClassicCombat(combat) && (
+                    <NativeMenuItem
+                      icon={<FaArrowDownWideShort />}
+                      onSelect={() => {
+                        void combat.system.sortCombatants();
+                      }}
+                    >
+                      {localize("investigator.SortCombatants")}
+                    </NativeMenuItem>
+                  )}
                 </NativeDropdownMenu>
               </strong>
               {!isTurnPassing && (
