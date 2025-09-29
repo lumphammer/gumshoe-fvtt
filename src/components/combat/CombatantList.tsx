@@ -20,6 +20,7 @@ import {
 } from "@dnd-kit/sortable";
 import { memo, useCallback, useEffect, useState } from "react";
 
+import { isClassicCombat } from "../../module/combat/classicCombat";
 import { CombatantRow } from "./CombatantRow/CombatantRow";
 import { useTrackerContext } from "./TrackerContext";
 
@@ -55,6 +56,9 @@ export const CombatantList = memo(function CombatantList() {
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
+      if (!isClassicCombat(combat)) {
+        return;
+      }
       const {
         active,
         over,
@@ -63,7 +67,7 @@ export const CombatantList = memo(function CombatantList() {
       // event.
       if (over === null) return;
       if (active.id !== over.id) {
-        void combat?.swapCombatants(
+        void combat?.system.moveCombatant(
           active.id.toString(),
           over.id.toString(),
           y < 0 ? "up" : "down",
