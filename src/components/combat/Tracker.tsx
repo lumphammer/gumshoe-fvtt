@@ -1,11 +1,12 @@
 import { assertGame } from "../../functions/isGame";
 import { assertNotNull } from "../../functions/utilities";
+import { isClassicCombat } from "../../module/combat/classicCombat";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
+import { ClassicToolsRow } from "./ClassicToolsRow";
 import { CombatantList } from "./CombatantList";
 import { EncounterNav } from "./EncounterNav";
 import { NoCombatants } from "./NoCombatants";
 import { NoCombats } from "./NoCombats";
-import { ToolsRow } from "./ToolsRow";
 import {
   TrackerContextProvider,
   useTrackerContextValue,
@@ -53,7 +54,7 @@ export const Tracker = () => {
         )}
 
         {combat && <TurnNav />}
-        {combat && <ToolsRow />}
+        {isClassicCombat(combat) && <ClassicToolsRow />}
       </header>
       {!combat && <NoCombats />}
       {combat && combat.turns.length === 0 && <NoCombatants />}
