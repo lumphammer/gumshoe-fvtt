@@ -1,11 +1,13 @@
 import { memo } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import { LuSwords } from "react-icons/lu";
+import { LuPopcorn, LuSwords } from "react-icons/lu";
 
 import { assertGame } from "../../functions/isGame";
 import { DialogV2 } from "../../fvtt-exports";
+import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { localize } from "./functions";
+import { useTrackerContext } from "./TrackerContext";
 
 interface EncounterNavProps {
   combatId: string | undefined | null;
@@ -24,6 +26,9 @@ export const EncounterNav = memo(
     nextCombatId,
   }: EncounterNavProps) => {
     assertGame(game);
+    const { combat } = useTrackerContext();
+
+    const Icon = isTurnPassingCombat(combat) ? LuPopcorn : LuSwords;
 
     return (
       <nav className="encounters tabbed">
@@ -61,7 +66,7 @@ export const EncounterNav = memo(
                 {localize("investigator.CreateClassicCombat")}
               </NativeMenuItem>
               <NativeMenuItem
-                icon={<LuSwords />}
+                icon={<LuPopcorn />}
                 onSelect={async () => {
                   const combat = await Combat.implementation.create({
                     type: "turnPassing",
@@ -94,7 +99,7 @@ export const EncounterNav = memo(
             }}
           >
             <span className="value">
-              <LuSwords css={{ verticalAlign: "middle" }} />{" "}
+              <Icon css={{ verticalAlign: "middle" }} />{" "}
               {(combatIndex + 1).toString()}
             </span>
           </div>
