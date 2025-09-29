@@ -2,7 +2,9 @@ import { assertGame } from "../../functions/isGame";
 import { assertNotNull } from "../../functions/utilities";
 import { isClassicCombat } from "../../module/combat/classicCombat";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
+import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { ClassicToolsRow } from "./ClassicToolsRow";
+import { ClassicTurnNav } from "./ClassicTurnNav";
 import { CombatantList } from "./CombatantList";
 import { EncounterNav } from "./EncounterNav";
 import { NoCombatants } from "./NoCombatants";
@@ -11,7 +13,7 @@ import {
   TrackerContextProvider,
   useTrackerContextValue,
 } from "./TrackerContext";
-import { TurnNav } from "./TurnNav";
+import { TurnPassingTurnNav } from "./TurnPassingTurnNav";
 
 /**
  * The main combat tracker component.
@@ -34,10 +36,6 @@ export const Tracker = () => {
   const prevCombatId = game.combats?.combats[combatIndex - 1]?._id;
   const nextCombatId = game.combats?.combats[combatIndex + 1]?._id;
 
-  // foundry's native combat tracker uses these things called "turns" which are
-  // kinda pre-baked data for the rows in the tracker - each one corresponds to
-  // a combatant in the combat
-  // const turns = combat ? getTurns(combat) : [];
   return (
     <TrackerContextProvider value={combatData}>
       {/* HEADER ROWS */}
@@ -53,8 +51,13 @@ export const Tracker = () => {
           />
         )}
 
-        {combat && <TurnNav />}
-        {isClassicCombat(combat) && <ClassicToolsRow />}
+        {isTurnPassingCombat(combat) && <TurnPassingTurnNav />}
+        {isClassicCombat(combat) && (
+          <>
+            <ClassicTurnNav />
+            <ClassicToolsRow />
+          </>
+        )}
       </header>
       {!combat && <NoCombats />}
       {combat && combat.turns.length === 0 && <NoCombatants />}
