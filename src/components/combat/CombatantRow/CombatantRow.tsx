@@ -88,8 +88,8 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
           }}
           css={{ alignItems: "start" }}
         >
-          {/* // the row content is pushed down so it can memoise even if the draggable
-        // hook is updating very frequently */}
+          {/* the row content is pushed down so it can memoise even if the draggable
+          hook is updating very frequently */}
           <Content
             setActivatorNodeRef={setActivatorNodeRef}
             listeners={listeners}

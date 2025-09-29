@@ -16,10 +16,10 @@ import {
 import { registerHookHandler } from "./registerHookHandler";
 
 export type TrackerContextType<
-  TCombat extends Combat.Implementation = Combat.Implementation,
+  TCombat extends Combat.Implementation | null = Combat.Implementation | null,
 > = {
   combatState: SourceData<Combat.Schema> | null;
-  combat: TCombat | null;
+  combat: TCombat;
   turnIds: string[];
   isActiveUser: boolean;
 };
