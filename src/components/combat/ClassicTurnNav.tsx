@@ -1,5 +1,4 @@
-import { keyframes } from "@emotion/react";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback } from "react";
 import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
 import { FaArrowDownWideShort } from "react-icons/fa6";
 import { LuSwords } from "react-icons/lu";
@@ -7,47 +6,18 @@ import { LuSwords } from "react-icons/lu";
 import { assertGame } from "../../functions/isGame";
 import { CombatTrackerConfig } from "../../fvtt-exports";
 import { isClassicCombat } from "../../module/combat/classicCombat";
-import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
-import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { format, localize } from "./functions";
-import { useTrackerContext } from "./TrackerContext";
+import { useClassicTrackerContext } from "./TrackerContext";
 
-const throbbingBg = keyframes({
-  "0%": {
-    backgroundColor: "transparent",
-  },
-  "100%": {
-    backgroundColor:
-      "oklch(from var(--button-hover-background-color) l c h / 0.5)",
-  },
-});
-
-export const TurnNav = memo(function TurnNav() {
+export const ClassicTurnNav = memo(function ClassicTurnNav() {
   assertGame(game);
   const {
     combatState,
     turnIds: turns,
     isActiveUser,
     combat,
-  } = useTrackerContext();
-
-  const isTurnPassing = isTurnPassingCombat(combat);
-
-  if (combat === null) {
-    throw new Error("No active combat found");
-  }
-
-  const allTurnsDone = useMemo(() => {
-    return (
-      (turns.length ?? 0) > 0 &&
-      turns.every(
-        (turn) =>
-          isTurnPassingCombatant(turn) &&
-          turn.system.passingTurnsRemaining <= 0,
-      )
-    );
-  }, [turns]);
+  } = useClassicTrackerContext();
 
   const handleNextRound = useCallback(() => {
     void combat.nextRound();
@@ -74,6 +44,7 @@ export const TurnNav = memo(function TurnNav() {
       {game.user.isGM ? (
         <>
           {combatState?.round ? (
+            // combat started
             <>
               <button
                 type="button"
@@ -82,15 +53,13 @@ export const TurnNav = memo(function TurnNav() {
                 data-tooltip=""
                 aria-label={localize("COMBAT.RoundPrev")}
               />
-              {!isTurnPassing && (
-                <button
-                  type="button"
-                  className="inline-control combat-control icon fa-solid fa-arrow-left"
-                  onClick={handlePreviousTurn}
-                  data-tooltip=""
-                  aria-label={localize("COMBAT.TurnPrev")}
-                />
-              )}
+              <button
+                type="button"
+                className="inline-control combat-control icon fa-solid fa-arrow-left"
+                onClick={handlePreviousTurn}
+                data-tooltip=""
+                aria-label={localize("COMBAT.TurnPrev")}
+              />
               <strong
                 css={{
                   flex: 1,
@@ -154,53 +123,23 @@ export const TurnNav = memo(function TurnNav() {
                   )}
                 </NativeDropdownMenu>
               </strong>
-              {!isTurnPassing && (
-                <>
-                  <button
-                    type="button"
-                    className="inline-control combat-control icon fa-solid fa-arrow-right"
-                    onClick={handleNextTurn}
-                    data-tooltip=""
-                    aria-label={localize("COMBAT.TurnNext")}
-                  />
-                  <button
-                    type="button"
-                    className="inline-control combat-control icon fa-solid fa-chevrons-right"
-                    data-action="nextRound"
-                    data-tooltip=""
-                    aria-label={localize("COMBAT.RoundNext")}
-                  />
-                </>
-              )}
-              {isTurnPassing && (
-                <button
-                  type="button"
-                  className="inline-control combat-control"
-                  onClick={handleNextRound}
-                  data-tooltip=""
-                  aria-label={localize("COMBAT.RoundNext")}
-                  css={{
-                    ":not(:hover)": {
-                      animation: allTurnsDone
-                        ? `${throbbingBg} 1000ms infinite`
-                        : "none",
-                      animationDirection: "alternate",
-                    },
-                    animationTimingFunction: "ease-in-out",
-                    color: allTurnsDone
-                      ? "var(--color-text-primary)"
-                      : "var(--color-text-secondary)",
-                    ":hover": {
-                      color: "var(--button-hover-text-color)",
-                    },
-                  }}
-                >
-                  {localize("COMBAT.RoundNext")}
-                  <i className="fa-solid fa-chevrons-right" inert />
-                </button>
-              )}
+              <button
+                type="button"
+                className="inline-control combat-control icon fa-solid fa-arrow-right"
+                onClick={handleNextTurn}
+                data-tooltip=""
+                aria-label={localize("COMBAT.TurnNext")}
+              />
+              <button
+                type="button"
+                className="inline-control combat-control icon fa-solid fa-chevrons-right"
+                onClick={handleNextRound}
+                data-tooltip=""
+                aria-label={localize("COMBAT.RoundNext")}
+              />
             </>
           ) : (
+            // combat not started
             <button
               type="button"
               className="combat-control combat-control-lg"
@@ -216,9 +155,10 @@ export const TurnNav = memo(function TurnNav() {
           )}
         </>
       ) : (
+        // not the gm
         game.user && (
           <>
-            {isActiveUser && !isTurnPassing && (
+            {isActiveUser && (
               <button
                 type="button"
                 className="inline-control combat-control icon fa-solid fa-arrow-left"
@@ -242,7 +182,7 @@ export const TurnNav = memo(function TurnNav() {
                 : localize("COMBAT.NotStarted")}
             </strong>
 
-            {isActiveUser && !isTurnPassing && (
+            {isActiveUser && (
               <button
                 type="button"
                 className="inline-control combat-control icon fa-solid fa-arrow-right"
@@ -257,5 +197,3 @@ export const TurnNav = memo(function TurnNav() {
     </nav>
   );
 });
-
-TurnNav.displayName = "TurnNav";
