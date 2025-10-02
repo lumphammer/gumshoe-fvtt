@@ -64,10 +64,13 @@ export const pcSchema = {
   }),
 
   longNotes: new ArrayField(
-    new SchemaField({
-      source: new StringField({ nullable: false, required: true }),
-      html: new StringField({ nullable: false, required: true }),
-    }),
+    new SchemaField(
+      {
+        source: new StringField({ nullable: false, required: true }),
+        html: new StringField({ nullable: false, required: true }),
+      },
+      { required: false },
+    ),
   ),
   longNotesFormat: new StringField({
     nullable: false,
