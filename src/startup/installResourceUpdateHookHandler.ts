@@ -1,4 +1,5 @@
 import { assertGame } from "../functions/isGame";
+import { UpdateData } from "../fvtt-exports";
 import { isActiveCharacterActor } from "../module/actors/exports";
 import {
   assertGeneralAbilityItem,
@@ -6,6 +7,7 @@ import {
   isGeneralAbilityItem,
 } from "../module/items/generalAbility";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
+import { createActiveCharacterSchema } from "../module/schemaFields";
 
 // previously these were the only four resource attributes in the system.
 // for legacy compatibility (e.g. if people have content in compendium packs
@@ -84,53 +86,58 @@ export function installResourceUpdateHookHandler() {
    * This does not work for legacy resource names because it never used to
    * (this was an oversight but no need to add for legacy compatibility).
    */
-  Hooks.on(
-    "updateActor",
-    (actor: Actor, diff: any, options: any, userId: string) => {
-      assertGame(game);
-      if (
-        // ensure the update is triggered by the current user
-        game.userId !== userId ||
-        // the actor is an active character (PC or NPC)
-        !isActiveCharacterActor(actor) ||
-        // a resource update is present
-        !diff.system?.resources
-      ) {
-        return;
-      }
+  Hooks.on("updateActor", (actor, diff, options, userId) => {
+    assertGame(game);
+    if (
+      // ensure the update is triggered by the current user
+      game.userId !== userId ||
+      // the actor is an active character (PC or NPC)
+      !isActiveCharacterActor(actor) ||
+      // a resource update is present
+      !diff.system ||
+      !("resources" in diff.system)
+      // !diff.system?.resources
+    ) {
+      return;
+    }
 
-      // get the resource entries that have been updated
-      const entries: [string, { value: number }][] = Object.entries(
-        diff.system.resources,
-      );
+    // i need to convince TS that diff.system is of the right type
+    const systemDiff = diff.system as UpdateData<
+      ReturnType<typeof createActiveCharacterSchema>
+    >;
+    // get the resource entries that have been updated
+    const entries = Object.entries(systemDiff.resources || {});
 
-      // for each resource entry, update the corresponding general abilities
-      for (const [resourceId, resource] of entries) {
-        // get the general abilities that are linked to the resource
-        const abilities = actor.items.filter((item) => {
-          return (
-            isGeneralAbilityItem(item) &&
-            item.system.linkToResource &&
-            item.system.resourceId === resourceId
-          );
+    // for each resource entry, update the corresponding general abilities
+    for (const [resourceId, resource] of entries) {
+      // get the general abilities that are linked to the resource
+      const abilities = actor.items.filter((item) => {
+        return (
+          isGeneralAbilityItem(item) &&
+          item.system.linkToResource &&
+          item.system.resourceId === resourceId
+        );
+      });
+
+      // for each general ability, update the pool value
+      abilities?.forEach((ability) => {
+        assertGeneralAbilityItem(ability);
+        const newValue = resource?.value;
+        if (newValue === undefined || newValue === null) {
+          return;
+        }
+        const cappedValue = Math.max(
+          Math.min(newValue, ability.system.rating),
+          ability.system.min,
+        );
+        void ability.update({
+          system: {
+            pool: cappedValue,
+          },
         });
-
-        // for each general ability, update the pool value
-        abilities?.forEach((ability) => {
-          assertGeneralAbilityItem(ability);
-          const cappedValue = Math.max(
-            Math.min(resource.value, ability.system.rating),
-            ability.system.min,
-          );
-          void ability.update({
-            system: {
-              pool: cappedValue,
-            },
-          });
-        });
-      }
-    },
-  );
+      });
+    }
+  });
 
   /*
    * When a general ability is added to an actor, create the corresponding

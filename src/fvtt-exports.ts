@@ -1,6 +1,7 @@
 import DataSchema = foundry.data.fields.DataSchema;
 import SourceData = foundry.data.fields.SchemaField.SourceData;
 import CreateData = foundry.data.fields.SchemaField.CreateData;
+import UpdateData = foundry.data.fields.SchemaField.UpdateData;
 
 export import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
 export import Application = foundry.appv1.api.Application;
@@ -44,4 +45,4 @@ export const ActorsCollection = _Actors;
 const _Items = foundry.documents.collections.Items;
 export const ItemsCollection = _Items;
 
-export type { CreateData, DataSchema, SourceData };
+export type { CreateData, DataSchema, SourceData, UpdateData };
