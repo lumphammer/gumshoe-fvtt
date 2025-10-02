@@ -41,10 +41,14 @@ export class InvestigatorTokenDocument extends TokenDocument {
       );
       return { bar: [], value: valueAttributes };
     } else if (data instanceof PCModel || data instanceof NPCModel) {
-      const valueAttributes = getResourceIds(data).map((attr) =>
-        attr.split("."),
-      );
-      return { bar: [], value: valueAttributes };
+      const stats = Object.keys(data.stats).map((stat) => ["stats", stat]);
+
+      const resources = Object.keys(data.resources).map((resource) => [
+        "resources",
+        resource,
+      ]);
+
+      return { bar: resources, value: stats };
     } else {
       return super.getTrackedAttributes(data, _path);
     }
