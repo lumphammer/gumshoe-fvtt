@@ -5,7 +5,7 @@ import { HiDocumentText } from "react-icons/hi";
 
 import { getTranslated } from "../../../functions/getTranslated";
 import { assertGame } from "../../../functions/isGame";
-import { requestTurnPass } from "../../../functions/utilities";
+import { requestTurnPass, systemLogger } from "../../../functions/utilities";
 import { assertTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import { NativeMenuItem } from "../../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../../inputs/NativeMenu/NativeDualFunctionMenu";
@@ -60,6 +60,10 @@ export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
 
   const activeTurnPassingCombatant =
     combat.turn !== null ? combat.turns[combat.turn].id : null;
+  systemLogger.log(
+    "TurnPassingInitiative",
+    `Rendering turn passing initiative for ${combatant.name} (${combatant.id}). Active turn passing combatant is ${activeTurnPassingCombatant}.`,
+  );
   const isActive = activeTurnPassingCombatant === combatant.id;
   const depleted = combatant.system.passingTurnsRemaining <= 0;
 

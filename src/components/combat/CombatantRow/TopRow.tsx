@@ -7,7 +7,7 @@ import { useCombatantContext } from "./CombatantContext";
 import { TurnPassingInitiative } from "./TurnPassingInitiative";
 
 export const TopRow = memo(function TopRow() {
-  const { combatant, combatantData } = useCombatantContext();
+  const { combatant, combatantState } = useCombatantContext();
 
   return (
     <div
@@ -26,7 +26,7 @@ export const TopRow = memo(function TopRow() {
           textOverflow: "ellipsis",
         }}
       >
-        {combatantData.name}
+        {combatantState.name}
       </strong>
       {isTurnPassingCombatant(combatant) ? (
         <TurnPassingInitiative />

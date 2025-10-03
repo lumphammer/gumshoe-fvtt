@@ -8,7 +8,7 @@ export const BottomRow = memo(function BottomRow() {
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
 
-  const { combatantData, resource, effects } = useCombatantContext();
+  const { combatantState, resource, effects } = useCombatantContext();
 
   // based on foundry's CombatTracker#_formatEffectsTooltip
   const effectsTooltip = useMemo(() => {
@@ -40,8 +40,8 @@ export const BottomRow = memo(function BottomRow() {
           <button
             type="button"
             className={cx("inline-control combatant-control icon fa-solid", {
-              "fa-eye-slash active": combatantData.hidden,
-              "fa-eye": !combatantData.hidden,
+              "fa-eye-slash active": combatantState.hidden,
+              "fa-eye": !combatantState.hidden,
             })}
             data-action="toggleHidden"
             data-tooltip=""
@@ -52,7 +52,7 @@ export const BottomRow = memo(function BottomRow() {
             className={cx(
               "inline-control combatant-control icon fa-solid fa-skull",
               {
-                active: combatantData.defeated,
+                active: combatantState.defeated,
               },
             )}
             data-action="toggleDefeated"
