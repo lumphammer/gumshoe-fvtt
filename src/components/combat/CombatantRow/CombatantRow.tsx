@@ -76,8 +76,8 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
           ref={setNodeRef}
           className={cx("combatant", {
             active: combat.turn === index,
-            hide: combatantContextValue.combatantData.hidden,
-            defeated: combatantContextValue.combatantData.defeated,
+            hide: combatantContextValue.combatantState.hidden,
+            defeated: combatantContextValue.combatantState.defeated,
           })}
           {...attributes}
           data-combatant-id={combatant.id}
