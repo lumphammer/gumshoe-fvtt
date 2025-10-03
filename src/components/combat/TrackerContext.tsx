@@ -15,7 +15,7 @@ import {
 } from "../../module/combat/turnPassingCombat";
 import { registerHookHandler } from "./registerHookHandler";
 
-export type TrackerContextType<
+export type TrackerContextValue<
   TCombat extends Combat.Implementation | null = Combat.Implementation | null,
 > = {
   combatState: SourceData<Combat.Schema> | null;
@@ -24,7 +24,7 @@ export type TrackerContextType<
   isActiveUser: boolean;
 };
 
-const trackerContext = createContext<TrackerContextType>({
+const TrackerContext = createContext<TrackerContextValue>({
   combatState: null,
   combat: null,
   turnIds: [],
@@ -32,24 +32,24 @@ const trackerContext = createContext<TrackerContextType>({
 });
 
 export const useTrackerContext = () => {
-  return useContext(trackerContext);
+  return useContext(TrackerContext);
 };
 
 export const useClassicTrackerContext =
-  (): TrackerContextType<ClassicCombat> => {
-    const context = useContext(trackerContext);
+  (): TrackerContextValue<ClassicCombat> => {
+    const context = useContext(TrackerContext);
     if (isClassicCombat(context.combat)) {
-      return context as TrackerContextType<ClassicCombat>;
+      return context as TrackerContextValue<ClassicCombat>;
     } else {
       throw new Error("useClassicTrackerContext used with non-classic combat");
     }
   };
 
 export const useTurnPassingTrackerContext =
-  (): TrackerContextType<TurnPassingCombat> => {
-    const context = useContext(trackerContext);
+  (): TrackerContextValue<TurnPassingCombat> => {
+    const context = useContext(TrackerContext);
     if (isTurnPassingCombat(context.combat)) {
-      return context as TrackerContextType<TurnPassingCombat>;
+      return context as TrackerContextValue<TurnPassingCombat>;
     } else {
       throw new Error(
         "useTurnPassingTrackerContext used with non-turn-passing combat",
@@ -62,7 +62,7 @@ export const useTurnPassingTrackerContext =
  */
 function getCombatStateFromCombat(
   combat: Combat.Implementation | null,
-): TrackerContextType {
+): TrackerContextValue {
   assertGame(game);
 
   return {
@@ -88,7 +88,7 @@ function getUpdatedTurnIds(oldIds: string[], combat: Combat.Implementation) {
 export const useTrackerContextValue = (
   combat: Combat.Implementation | null,
 ) => {
-  const [combatData, setCombatData] = useState<TrackerContextType>(() => {
+  const [combatData, setCombatData] = useState<TrackerContextValue>(() => {
     return getCombatStateFromCombat(combat);
   });
 
@@ -123,7 +123,7 @@ export const useTrackerContextValue = (
               foundry.utils.mergeObject(draft, changes);
             });
             const turnIds = getUpdatedTurnIds(oldData.turnIds, updatedCombat);
-            const result: TrackerContextType = {
+            const result: TrackerContextValue = {
               combatState,
               combat: updatedCombat,
               turnIds,
@@ -173,4 +173,4 @@ export const useTrackerContextValue = (
   return combatData;
 };
 
-export const TrackerContextProvider = trackerContext.Provider;
+export const TrackerContextProvider = TrackerContext.Provider;

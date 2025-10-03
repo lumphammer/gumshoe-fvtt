@@ -8,19 +8,28 @@ import {
   useState,
 } from "react";
 
+import { SourceData } from "../../../fvtt-exports";
+import {
+  ClassicCombatant,
+  isClassicCombatant,
+} from "../../../module/combat/classicCombatant";
 import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
+import {
+  isTurnPassingCombatant,
+  TurnPassingCombatant,
+} from "../../../module/combat/turnPassingCombatant";
 import { registerHookHandler } from "../registerHookHandler";
 
-type CombatantContextValue = {
-  combatant: InvestigatorCombatant;
-  combatantData: SchemaField.SourceData<Combatant.Schema>;
+type CombatantContextValue<
+  TCombatant extends Combatant.Implementation = Combatant.Implementation,
+> = {
+  combatantState: SourceData<Combatant.Schema>;
+  combatant: TCombatant;
   effects: SchemaField.SourceData<ActiveEffect.Schema>[];
   resource: number;
 };
 
-const CombatantContext = createContext<CombatantContextValue | undefined>(
-  undefined,
-);
+const CombatantContext = createContext<CombatantContextValue | null>(null);
 
 export const useCombatantContext = () => {
   const context = useContext(CombatantContext);
@@ -31,6 +40,26 @@ export const useCombatantContext = () => {
   }
   return context;
 };
+
+export function useClassicCombatantContext(): CombatantContextValue<ClassicCombatant> {
+  const context = useContext(CombatantContext);
+  if (isClassicCombatant(context?.combatant)) {
+    return context as CombatantContextValue<ClassicCombatant>;
+  } else {
+    throw new Error("useClassicCombatantContext used with non-classic combat");
+  }
+}
+
+export function useTurnPassingCombatantContext(): CombatantContextValue<TurnPassingCombatant> {
+  const context = useContext(CombatantContext);
+  if (isTurnPassingCombatant(context?.combatant)) {
+    return context as CombatantContextValue<TurnPassingCombatant>;
+  } else {
+    throw new Error(
+      "useTurnPassingCombatantContext used with non-turn-passing combat",
+    );
+  }
+}
 
 export function CombatantContextProvider({
   children,
@@ -65,7 +94,7 @@ export function useCombatantContextValue(
 ): CombatantContextValue {
   // ///////////////////////////////////////////////////////////////////////////
   // combatant data
-  const [combatantData, setCombatantData] = useState(() => {
+  const [combatantState, setCombatantState] = useState(() => {
     const data = combatant.toJSON();
     data.img = combatant.img;
     data.name = combatant.name;
@@ -82,7 +111,7 @@ export function useCombatantContextValue(
         userId: string,
       ) => {
         if (updatedCombatant.id !== combatant.id) return;
-        setCombatantData((previousCombatantData) => {
+        setCombatantState((previousCombatantData) => {
           const newData = produce(previousCombatantData, (draft) => {
             foundry.utils.mergeObject(draft, updates);
             draft.img = updatedCombatant.img;
@@ -112,7 +141,7 @@ export function useCombatantContextValue(
   }, [combatant]);
 
   return useMemo(
-    () => ({ combatant, combatantData, effects, resource }),
-    [combatant, combatantData, effects, resource],
+    () => ({ combatant, combatantState, effects, resource }),
+    [combatant, combatantState, effects, resource],
   );
 }
