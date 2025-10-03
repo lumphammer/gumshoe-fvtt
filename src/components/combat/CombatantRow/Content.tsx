@@ -15,11 +15,11 @@ interface ContentProps {
 export const Content = memo(
   ({ setActivatorNodeRef, listeners }: ContentProps) => {
     assertGame(game);
-    const { combatantData } = useCombatantContext();
+    const { combatantState } = useCombatantContext();
 
     return (
       <>
-        {combatantData.type === "classic" && (
+        {combatantState.type === "classic" && (
           <Grip
             listeners={listeners}
             setActivatorNodeRef={setActivatorNodeRef}
@@ -27,8 +27,8 @@ export const Content = memo(
         )}
         <img
           className="token-image"
-          src={combatantData.img || CONST.DEFAULT_TOKEN}
-          alt={combatantData.name}
+          src={combatantState.img || CONST.DEFAULT_TOKEN}
+          alt={combatantState.name}
           loading="lazy"
         />
         <div
