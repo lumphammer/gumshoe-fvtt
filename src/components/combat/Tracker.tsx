@@ -3,6 +3,7 @@ import { assertNotNull } from "../../functions/utilities";
 import { isClassicCombat } from "../../module/combat/classicCombat";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
+import { assertKnownCombat } from "../../module/combat/types";
 import { ClassicToolsRow } from "./ClassicToolsRow";
 import { ClassicTurnNav } from "./ClassicTurnNav";
 import { CombatantList } from "./CombatantList";
@@ -26,6 +27,7 @@ export const Tracker = () => {
 
   const combat = game.combat as InvestigatorCombat | null;
 
+  assertKnownCombat(combat);
   const combatData = useTrackerContextValue(combat);
 
   const combatId = combat?._id;
