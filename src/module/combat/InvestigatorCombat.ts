@@ -3,7 +3,7 @@ import { systemLogger } from "../../functions/utilities";
 import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
-import { isValidCombat } from "./types";
+import { isKnownCombat } from "./types";
 
 /**
  * Override base Combat so we can do custom GUMSHOE-style initiative
@@ -117,7 +117,7 @@ export class InvestigatorCombat<
       userId,
     ]: Combat.OnCreateDescendantDocumentsArgs
   ) {
-    if (isValidCombat(this) && userId === game.userId) {
+    if (isKnownCombat(this) && userId === game.userId) {
       void this.system.onCreateDescendantDocuments(
         ...[parent, collection, documents, data, options, userId],
       );
@@ -130,7 +130,7 @@ export class InvestigatorCombat<
   protected override _onUpdateDescendantDocuments(
     ...args: Combat.OnUpdateDescendantDocumentsArgs
   ) {
-    if (isValidCombat(this)) {
+    if (isKnownCombat(this)) {
       void this.system.onUpdateDescendantDocuments(...args);
     }
     super._onUpdateDescendantDocuments(...args);
@@ -139,7 +139,7 @@ export class InvestigatorCombat<
   protected override _onDeleteDescendantDocuments(
     ...args: Combat.OnDeleteDescendantDocumentsArgs
   ): void {
-    if (isValidCombat(this)) {
+    if (isKnownCombat(this)) {
       void this.system.onDeleteDescendantDocuments(...args);
     }
     super._onDeleteDescendantDocuments(...args);
@@ -161,7 +161,7 @@ export class InvestigatorCombat<
     this.turns ||= [];
 
     // Determine the turn order and the current turn
-    const turns: InvestigatorCombatant[] = isValidCombat(this)
+    const turns: InvestigatorCombatant[] = isKnownCombat(this)
       ? this.system
           .getTurns()
           .map((cid) => this.combatants.get(cid))
@@ -194,7 +194,7 @@ export class InvestigatorCombat<
 
     this._playCombatSound("startEncounter");
 
-    if (isValidCombat(this)) {
+    if (isKnownCombat(this)) {
       await this.system.startCombat();
     }
     // if (isTurnPassingCombat(this)) {
@@ -205,7 +205,7 @@ export class InvestigatorCombat<
   }
 
   override async nextRound() {
-    if (isValidCombat(this)) {
+    if (isKnownCombat(this)) {
       await this.system.nextRound();
     }
     return this;
@@ -220,21 +220,21 @@ export class InvestigatorCombat<
   }
 
   override async previousRound() {
-    if (isValidCombat(this)) {
+    if (isKnownCombat(this)) {
       await this.system.previousRound();
     }
     return this;
   }
 
   override async nextTurn() {
-    if (isValidCombat(this)) {
+    if (isKnownCombat(this)) {
       await this.system.nextTurn();
     }
     return this;
   }
 
   override async previousTurn() {
-    if (isValidCombat(this)) {
+    if (isKnownCombat(this)) {
       await this.system.previousTurn();
     }
     return this;

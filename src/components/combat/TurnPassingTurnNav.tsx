@@ -28,6 +28,10 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav() {
     combat,
   } = useTurnPassingTrackerContext();
 
+  if (combat === null || combatState === null) {
+    throw new Error("TurnPassingTurnNav must be rendered with a combat.");
+  }
+
   const allTurnsDone = useMemo(() => {
     return (
       (turns.length ?? 0) > 0 &&
