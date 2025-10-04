@@ -1,12 +1,17 @@
 import { isClassicCombat } from "./classicCombat";
-import { InvestigatorCombat } from "./InvestigatorCombat";
 import { isTurnPassingCombat } from "./turnPassingCombat";
 
-export function isValidCombat(
-  combat: unknown,
-): combat is InvestigatorCombat & { system: ValidCombatModel } {
+export function isKnownCombat(combat: unknown): combat is Combat.Known {
   // Check if the combat instance is valid
   return isClassicCombat(combat) || isTurnPassingCombat(combat);
+}
+
+export function assertKnownCombat(
+  combat: unknown,
+): asserts combat is Combat.Known {
+  if (!isKnownCombat(combat)) {
+    throw new Error("Combat is not a known combat type");
+  }
 }
 
 /**
