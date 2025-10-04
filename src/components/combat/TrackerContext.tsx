@@ -3,23 +3,22 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
-import { SourceData } from "../../fvtt-exports";
 import { useRefStash } from "../../hooks/useRefStash";
-import {
-  ClassicCombat,
-  isClassicCombat,
-} from "../../module/combat/classicCombat";
-import {
-  isTurnPassingCombat,
-  TurnPassingCombat,
-} from "../../module/combat/turnPassingCombat";
+import { isClassicCombat } from "../../module/combat/classicCombat";
+import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
+import { isKnownCombat } from "../../module/combat/types";
 import { registerHookHandler } from "./registerHookHandler";
 
 export type TrackerContextValue<
-  TCombat extends Combat.Implementation | null = Combat.Implementation | null,
+  SubType extends
+    Combat.ConfiguredSubType | null = Combat.ConfiguredSubType | null,
 > = {
-  combatState: SourceData<Combat.Schema> | null;
-  combat: TCombat;
+  combat: SubType extends Combat.ConfiguredSubType
+    ? Combat.OfType<SubType>
+    : null;
+  combatState: SubType extends Combat.ConfiguredSubType
+    ? Combat.SourceOfType<SubType>
+    : null;
   turnIds: string[];
   isActiveUser: boolean;
 };
@@ -35,21 +34,20 @@ export const useTrackerContext = () => {
   return useContext(TrackerContext);
 };
 
-export const useClassicTrackerContext =
-  (): TrackerContextValue<ClassicCombat> => {
-    const context = useContext(TrackerContext);
-    if (isClassicCombat(context.combat)) {
-      return context as TrackerContextValue<ClassicCombat>;
-    } else {
-      throw new Error("useClassicTrackerContext used with non-classic combat");
-    }
-  };
+export const useClassicTrackerContext = (): TrackerContextValue<"classic"> => {
+  const context = useContext(TrackerContext);
+  if (isClassicCombat(context.combat)) {
+    return context as TrackerContextValue<"classic">;
+  } else {
+    throw new Error("useClassicTrackerContext used with non-classic combat");
+  }
+};
 
 export const useTurnPassingTrackerContext =
-  (): TrackerContextValue<TurnPassingCombat> => {
+  (): TrackerContextValue<"turnPassing"> => {
     const context = useContext(TrackerContext);
     if (isTurnPassingCombat(context.combat)) {
-      return context as TrackerContextValue<TurnPassingCombat>;
+      return context as TrackerContextValue<"turnPassing">;
     } else {
       throw new Error(
         "useTurnPassingTrackerContext used with non-turn-passing combat",
@@ -61,7 +59,7 @@ export const useTurnPassingTrackerContext =
  * Extracts the relevant combat state from a Combat document.
  */
 function getCombatStateFromCombat(
-  combat: Combat.Implementation | null,
+  combat: Combat.Known | null,
 ): TrackerContextValue {
   assertGame(game);
 
@@ -85,9 +83,7 @@ function getUpdatedTurnIds(oldIds: string[], combat: Combat.Implementation) {
   }
 }
 
-export const useTrackerContextValue = (
-  combat: Combat.Implementation | null,
-) => {
+export const useTrackerContextValue = (combat: Combat.Known | null) => {
   const [combatData, setCombatData] = useState<TrackerContextValue>(() => {
     return getCombatStateFromCombat(combat);
   });
@@ -100,6 +96,9 @@ export const useTrackerContextValue = (
       (updatedCombat, changes) => {
         setCombatData((oldData) => {
           assertGame(game);
+          if (!isKnownCombat(updatedCombat)) {
+            return oldData;
+          }
           if (
             oldData.combatState?._id !== updatedCombat._id &&
             updatedCombat.active
@@ -164,7 +163,7 @@ export const useTrackerContextValue = (
 
   useEffect(() => {
     return registerHookHandler("createCombat", (newCombat) => {
-      if (newCombat.active) {
+      if (newCombat.active && isKnownCombat(newCombat)) {
         setCombatData(getCombatStateFromCombat(newCombat));
       }
     });
