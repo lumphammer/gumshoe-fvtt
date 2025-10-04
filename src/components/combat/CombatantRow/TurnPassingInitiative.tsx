@@ -10,7 +10,8 @@ import { assertTurnPassingCombatant } from "../../../module/combat/turnPassingCo
 import { NativeMenuItem } from "../../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../../inputs/NativeMenu/NativeDualFunctionMenu";
 import { NativeMenuLabel } from "../../inputs/NativeMenu/NativeMenuLabel";
-import { useCombatantContext } from "./CombatantContext";
+import { useTurnPassingTrackerContext } from "../TrackerContext";
+import { useTurnPassingCombatantContext } from "./CombatantContext";
 import { useInititative } from "./useInititative";
 
 const playButtonGradientWidth = "3em";
@@ -28,10 +29,10 @@ const scrollBg = keyframes({
 
 export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
   assertGame(game);
-  const { combatant } = useCombatantContext();
-  assertTurnPassingCombatant(combatant);
+  const { combatant, combatantState } = useTurnPassingCombatantContext();
+  const { combatState, turnIds } = useTurnPassingTrackerContext();
   const combat = combatant.combat;
-  if (combat === null) {
+  if (combat === null || combatState === null || combatantState === null) {
     throw new Error(
       "TurnPassingInitiative must be rendered with a combatant that is in combat.",
     );
@@ -59,7 +60,8 @@ export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
   }, [combatant]);
 
   const activeTurnPassingCombatant =
-    combat.turn !== null ? combat.turns[combat.turn].id : null;
+    combatState.turn !== null ? turnIds[combatState.turn] : null;
+
   systemLogger.log(
     "TurnPassingInitiative",
     `Rendering turn passing initiative for ${combatant.name} (${combatant.id}). Active turn passing combatant is ${activeTurnPassingCombatant}.`,
