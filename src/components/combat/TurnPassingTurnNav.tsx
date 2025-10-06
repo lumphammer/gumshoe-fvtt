@@ -22,11 +22,7 @@ const throbbingBg = keyframes({
 
 export const TurnPassingTurnNav = memo(function TurnPassingTurnNav() {
   assertGame(game);
-  const {
-    combatState,
-    turnIds: turns,
-    combat,
-  } = useTurnPassingTrackerContext();
+  const { combatState, turnIds, combat } = useTurnPassingTrackerContext();
 
   if (combat === null || combatState === null) {
     throw new Error("TurnPassingTurnNav must be rendered with a combat.");
@@ -34,14 +30,16 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav() {
 
   const allTurnsDone = useMemo(() => {
     return (
-      (turns.length ?? 0) > 0 &&
-      turns.every(
-        (turn) =>
-          isTurnPassingCombatant(turn) &&
-          turn.system.passingTurnsRemaining <= 0,
-      )
+      (turnIds.length ?? 0) > 0 &&
+      turnIds.every((turnId) => {
+        const turn = combat.turns.find((c) => c.id === turnId);
+        if (isTurnPassingCombatant(turn)) {
+          return turn.system.passingTurnsRemaining <= 0;
+        }
+        return false;
+      })
     );
-  }, [turns]);
+  }, [combat.turns, turnIds]);
 
   const handleNextRound = useCallback(() => {
     void combat.nextRound();
@@ -151,9 +149,9 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav() {
               type="button"
               className="combat-control combat-control-lg"
               onClick={handleStartCombat}
-              disabled={(turns.length ?? 0) === 0}
+              disabled={(turnIds.length ?? 0) === 0}
               css={{
-                cursor: (turns.length ?? 0) === 0 ? "not-allowed" : "pointer",
+                cursor: (turnIds.length ?? 0) === 0 ? "not-allowed" : "pointer",
               }}
             >
               <LuSwords />
