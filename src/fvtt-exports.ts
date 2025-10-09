@@ -33,6 +33,7 @@ export import StringField = foundry.data.fields.StringField;
 export import TextEditor = foundry.applications.ux.TextEditor.implementation;
 export import Token = foundry.canvas.placeables.Token;
 export import TypeDataModel = foundry.abstract.TypeDataModel;
+export import DataModel = foundry.abstract.DataModel;
 export import TypedObjectField = foundry.data.fields.TypedObjectField;
 export import BooleanField = foundry.data.fields.BooleanField;
 
