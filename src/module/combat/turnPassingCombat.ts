@@ -82,11 +82,20 @@ export class TurnPassingCombatModel
   }
 
   async nextTurn() {
-    await this.parent.update({ turn: this.parent.turn ?? 0 + 1 });
+    await this.parent.update({
+      turn: this.parent.turn === null ? 0 : this.parent.turn + 1,
+    });
   }
 
   async previousTurn() {
-    await this.parent.update({ turn: this.parent.turn ?? 0 - 1 });
+    await this.parent.update({
+      turn:
+        this.parent.turn === null
+          ? 0
+          : this.parent.turn <= 0
+            ? 0
+            : this.parent.turn - 1,
+    });
   }
 }
 
