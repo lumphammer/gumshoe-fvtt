@@ -14,7 +14,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 const config = defineConfig([
   react.configs.flat.recommended,
   react.configs.flat["jsx-runtime"],
-  reactHooks.configs["recommended-latest"],
+  reactHooks.configs.flat.recommended,
 
   {
     languageOptions: {
