@@ -6,7 +6,8 @@ import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-export default defineConfig([
+/** @type {import('eslint').Linter.Config[]} */
+const config = defineConfig([
   eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
   eslintConfigPrettier,
@@ -172,3 +173,5 @@ export default defineConfig([
     },
   },
 ]);
+
+export default config;

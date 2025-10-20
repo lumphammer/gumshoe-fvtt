@@ -2,7 +2,8 @@ import { defineConfig } from "eslint/config";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 
-export default defineConfig([
+/** @type {import('eslint').Linter.Config[]} */
+const config = defineConfig([
   react.configs.flat.recommended,
   react.configs.flat["jsx-runtime"],
   reactHooks.configs["recommended-latest"],
@@ -42,3 +43,5 @@ export default defineConfig([
     },
   },
 ]);
+
+export default config;
