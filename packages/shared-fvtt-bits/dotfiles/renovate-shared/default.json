@@ -5,5 +5,10 @@
   "rangeStrategy": "bump",
   "assignees": ["n3dst4"],
   "ignorePaths": ["packages/shared-fvtt-bits/**"],
-  "ignoreDeps": ["@swc/plugin-emotion", "@vitejs/plugin-react-swc"]
+  "ignoreDeps": [
+    "@swc/plugin-emotion",
+    "@vitejs/plugin-react-swc",
+    "less",
+    "pnpm"
+  ]
 }

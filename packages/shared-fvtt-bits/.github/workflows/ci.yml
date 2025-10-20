@@ -40,20 +40,17 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    # needs: parse_tag
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          # install here so setup-node can see a lockfile
+          run_install: true
+
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
-
-      - name: Activate pnpm
-        run: |
-          npm install -g corepack@latest
-          corepack enable
-
-        # corepack prepare pnpm@${{ inputs.pnpm_version }} --activate
 
       - name: Instrumentation
         run: |
@@ -62,95 +59,13 @@ jobs:
           cat tsconfig.json
           export
           node --version
-          pnpm --version
-          corepack --version
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Instrument tsc version
-        run: npx tsc --version
-
-      # - name: Update manifest
-      #   if: needs.parse_tag.outputs.tag_version != ''
-      #   env:
-      #     CI_COMMIT_TAG: ${{ needs.parse_tag.outputs.tag_version }}
-      #     CI_PROJECT_PATH: ${{ github.repository }}
-      #   run: |
-      #     echo "CI_COMMIT_TAG: $CI_COMMIT_TAG"
-      #     echo "CI_PROJECT_PATH: $CI_PROJECT_PATH"
-      #     ./tasks.ts updateManifestFromCITagPush
-      #     cat $MANIFEST_PATH
+          npx tsc --version
 
       - name: Typecheck
         run: pnpm run typecheck
-
-      # - name: Test
-      #   run: pnpm test
 
       - name: Lint
         run: pnpm run lint:check
 
       - name: Check formatting
         run: pnpm run format:check
-
-      # - name: Build Package
-      #   run: pnpm package
-
-      # - name: Upload package file
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: package-zip
-      #     if-no-files-found: error
-      #     path: ${{env.PACKAGE_PATH}}/${{env.PACKAGE_FILE_NAME}}
-
-      # - name: Upload manifest
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: manifest
-      #     if-no-files-found: error
-      #     path: ${{env.PUBLIC_PATH}}/${{env.MANIFEST_FILE_NAME}}
-
-  # publish-release:
-  #   needs:
-  #     - build
-  #     - parse_tag
-  #   runs-on: ubuntu-latest
-  #   environment: release
-  #   permissions:
-  #     contents: write
-  #   if: needs.parse_tag.outputs.tag_version != '' && needs.parse_tag.outputs.tag_prerelease == ''
-  #   steps:
-  #     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-  #     - name: publish
-  #       uses: lumphammer/gh-actions/.github/actions/publish@2024-09-18
-  #       with:
-  #         version: ${{needs.parse_tag.outputs.tag_version}}
-  #         prerelease: ${{needs.parse_tag.outputs.tag_prerelease}}
-  #         manifest_file_name: ${{env.MANIFEST_FILE_NAME}}
-  #         package_file_name: ${{env.PACKAGE_FILE_NAME}}
-  #         download_base: ${{env.DOWNLOAD_BASE}}
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-
-  # publish-prerelease:
-  #   needs:
-  #     - build
-  #     - parse_tag
-  #   runs-on: ubuntu-latest
-  #   environment: prerelease
-  #   permissions:
-  #     contents: write
-  #   if: needs.parse_tag.outputs.tag_version != '' && needs.parse_tag.outputs.tag_prerelease != ''
-  #   steps:
-  #     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-  #     - name: publish
-  #       uses: lumphammer/gh-actions/.github/actions/publish@2024-09-18
-  #       with:
-  #         version: ${{needs.parse_tag.outputs.tag_version}}
-  #         prerelease: ${{needs.parse_tag.outputs.tag_prerelease}}
-  #         manifest_file_name: ${{env.MANIFEST_FILE_NAME}}
-  #         package_file_name: ${{env.PACKAGE_FILE_NAME}}
-  #         download_base: ${{env.DOWNLOAD_BASE}}
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
