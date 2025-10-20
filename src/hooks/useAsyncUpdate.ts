@@ -59,6 +59,8 @@ export const useAsyncUpdate = (
   // focused.
   useEffect(() => {
     if (!focusedRef.current) {
+      // not great but this works
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDisplay(value);
       if (contentEditableRef.current) {
         contentEditableRef.current.innerText = value;
