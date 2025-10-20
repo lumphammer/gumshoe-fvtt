@@ -218,11 +218,11 @@ export const PageEditor = ({ page }: PageEditorProps) => {
         }}
       >
         {page.type === "image" ? (
-          <ImageEditor page={page} />
+          <ImageEditor page={page} key={page.id} />
         ) : page.type === "text" ? (
-          <HTMLPage page={page} />
+          <HTMLPage page={page} key={page.id} />
         ) : (
-          <UnknownPageTypeEditor page={page} />
+          <UnknownPageTypeEditor page={page} key={page.id} />
         )}
       </div>
     </div>
