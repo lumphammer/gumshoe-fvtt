@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import * as constants from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { assertGame } from "../../functions/isGame";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPartyActor } from "../../module/actors/party";
-import { isPCActor, PCActor } from "../../module/actors/pc";
+import { isPCActor } from "../../module/actors/pc";
 import { AbilityItem, isAbilityItem } from "../../module/items/exports";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { runtimeConfig } from "../../runtime";
@@ -28,9 +27,14 @@ export const PartySheet = () => {
     runtimeConfig.themes[settings.defaultThemeName.get()] ||
     runtimeConfig.themes["tealTheme"];
   const [abilities, setAbilities] = useState<AbilityItem[]>([]);
-  const [actors, setActors] = useState<PCActor[]>([]);
   const [rowData, setRowData] = useState<RowData[]>([]);
   const actorIds = party.system.getActorIds();
+
+  const actors = useMemo(
+    () =>
+      actorIds.map((id) => game.actors?.get(id) as unknown).filter(isPCActor),
+    [actorIds],
+  );
 
   // effect 1: keep our "abilityTuples" in sync with system setting for
   // "newPCPacks"
@@ -88,20 +92,6 @@ export const PartySheet = () => {
     };
     getAbs();
   }, [abilities, actors]);
-
-  // effect 3: listen for ability changes
-  useEffect(() => {
-    assertGame(game);
-    const actors = actorIds
-      .map((id) => {
-        assertGame(game);
-        const actor = game.actors?.get(id);
-        return actor || null;
-      })
-      .filter(isPCActor);
-    // @ts-expect-error fvtt-types - the collection type can't be cast to PCActor
-    setActors(actors);
-  }, [actorIds]);
 
   // callback for removing an actor
   const onClickRemoveActor = useCallback(
