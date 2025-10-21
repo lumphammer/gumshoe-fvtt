@@ -57,6 +57,8 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
   // a debounced save function
   const handleSaveContent = useMemo(
     () =>
+      // false positive
+      // eslint-disable-next-line react-hooks/refs
       debounce(async (content: string) => {
         memoryRef.current = await savePage(page, content, memoryRef.current);
       }, SAVE_DEBOUNCE_MS),

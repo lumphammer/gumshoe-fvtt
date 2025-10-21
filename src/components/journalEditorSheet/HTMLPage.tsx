@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { MdOutlineHistory } from "react-icons/md";
 
@@ -23,11 +23,6 @@ export const HTMLPage = ({ page }: HTMLPageProps) => {
 
   const setEdit = useCallback(() => setMode(Mode.Edit), []);
   const setHistory = useCallback(() => setMode(Mode.History), []);
-
-  // When page id changes, reset to edit mode
-  useEffect(() => {
-    setEdit();
-  }, [page.id, setEdit]);
 
   const historyButton = useMemo(
     () => (

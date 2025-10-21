@@ -67,20 +67,29 @@ export const Dropdown = ({
     },
     [handleClose],
   );
-  const handleClick = useCallback(() => {
-    setIsOpen((isOpen) => !isOpen);
-  }, []);
-
-  const handleDoubleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
-
   // we will always assume that the container
   // 1. is a parent of the current element
   // 2. has its own positioning context
   const container =
     useContext(DropdownContainerContext)?.current ?? document.body;
+
+  const [[top, right], setPosition] = useState<[number, number]>([0, 0]);
+
+  const handleClick = useCallback(() => {
+    const buttonRect = buttonRef.current?.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    const top = (buttonRect?.bottom ?? 0) - containerRect.top;
+    const right = containerRect.right - (buttonRect?.right ?? 0);
+    setPosition([top, right]);
+
+    setIsOpen((isOpen) => !isOpen);
+  }, [container]);
+
+  const handleDoubleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
 
   useEffect(() => {
     if (import.meta.env.MODE === "development") {
@@ -97,12 +106,6 @@ export const Dropdown = ({
       container.removeEventListener("click", bodyClick);
     };
   }, [container, bodyClick]);
-
-  const buttonRect = buttonRef.current?.getBoundingClientRect();
-  const containerRect = container.getBoundingClientRect();
-
-  const top = (buttonRect?.bottom ?? 0) - containerRect.top;
-  const right = containerRect.right - (buttonRect?.right ?? 0);
 
   const { shouldMount, isShowing } = useShowHideTransition(isOpen, duration);
 

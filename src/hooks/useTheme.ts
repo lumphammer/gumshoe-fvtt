@@ -5,6 +5,7 @@ import { runtimeConfig } from "../runtime";
 import { settings } from "../settings/settings";
 import { tealTheme } from "../themes/tealTheme";
 import { ThemeV1 } from "../themes/types";
+import { useRefStash } from "./useRefStash";
 
 function getThemeByName(name: string | null) {
   const nameOrDefault = name ?? settings.defaultThemeName.get();
@@ -19,17 +20,25 @@ function getThemeByName(name: string | null) {
  */
 export const useTheme = (name: string | null = null) => {
   const [theme, setTheme] = useState<ThemeV1>(getThemeByName(name));
-  useEffect(() => {
+  const [prevThemeName, setPrevThemeName] = useState<string | null>(name);
+
+  const themeNameRef = useRefStash(name);
+
+  if (prevThemeName !== name) {
+    setPrevThemeName(name);
     setTheme(getThemeByName(name));
-    const fn = (themeName: string) => {
-      if (themeName === name) {
-        setTheme(getThemeByName(name));
+  }
+
+  useEffect(() => {
+    const handleThemeHMR = (updatedThemeName: string) => {
+      if (updatedThemeName === themeNameRef.current) {
+        setTheme(getThemeByName(updatedThemeName));
       }
     };
-    Hooks.on(constants.themeHMR, fn);
+    Hooks.on(constants.themeHMR, handleThemeHMR);
     return () => {
-      Hooks.off(constants.themeHMR, fn);
+      Hooks.off(constants.themeHMR, handleThemeHMR);
     };
-  }, [name]);
+  }, [themeNameRef]);
   return theme;
 };

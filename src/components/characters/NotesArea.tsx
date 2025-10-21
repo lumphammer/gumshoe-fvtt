@@ -17,7 +17,7 @@ export const NotesArea = () => {
     (value: NoteWithFormat, index: number) => {
       void actor.system.setLongNote(index, value);
     },
-    [actor],
+    [actor.system],
   );
 
   return (
