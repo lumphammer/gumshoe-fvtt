@@ -61,15 +61,21 @@ export const AbilityMainBits = () => {
     };
   }, [item?.actor]);
 
+  // breaking these out into vars allows the react-hooks eslint rule to
+  // understand what's happening. if the callback has dependencies on
+  // item?.actor it gets all upset.
+  const itemActor = item.actor;
+  const itemName = item.name ?? "";
+
   const isAbilityUsed = actorInitiativeAbility === item.name;
   const onClickUseForInitiative = useCallback(() => {
-    assertActiveCharacterActor(item?.actor);
-    void item?.actor?.update({
+    assertActiveCharacterActor(itemActor);
+    void itemActor?.update({
       system: {
-        initiativeAbility: item.name,
+        initiativeAbility: itemName,
       },
     });
-  }, [item?.actor, item.name]);
+  }, [itemActor, itemName]);
 
   const useMwStyleAbilities = settingsUseMwStyleAbilities();
 
