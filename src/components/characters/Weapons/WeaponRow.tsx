@@ -96,22 +96,15 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
   }, []);
 
   const basePerformAttack = useMemo(() => {
-    if (ability) {
-      return performAttack({
-        spend,
-        bonusPool,
-        setSpend,
-        setBonusPool,
-        ability,
-        weapon,
-      });
-    } else {
-      return () => {
-        // do nothing if there's no ability
-        // XXX should throw
-      };
-    }
-  }, [ability, spend, weapon, bonusPool]);
+    return performAttack({
+      spend,
+      bonusPool,
+      setSpend,
+      setBonusPool,
+      ability,
+      weapon,
+    });
+  }, [ability, bonusPool, spend, weapon]);
 
   const rawHtml = weapon.system.notes.html;
 
