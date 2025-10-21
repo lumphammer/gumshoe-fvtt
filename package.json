@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode dev",
     "build:watch": "vite build --watch --mode dev",
     "link": "./tasks.ts link",
-    "dev": "vite dev  & pn run typecheck:watch",
+    "dev": "vite dev  & pnpm run typecheck:watch",
     "start": "pnpm dev",
     "clean": "./tasks.ts clean",
     "build-pack-translations": "./tasks.ts buildPackTranslations",
