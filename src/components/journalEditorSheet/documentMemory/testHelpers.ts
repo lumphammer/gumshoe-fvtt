@@ -9,9 +9,9 @@ export function getAdditiveStates(count: number): string[] {
   const result: string[] = [];
   // loop over the indices of the final array
   for (let i = 0; i < count; i++) {
-    const state = new Array(i + 1)
-      .fill(null)
-      .map((_, i) => String.fromCharCode(i + 97));
+    const state = Array.from({ length: i + 1 }, (_, i) =>
+      String.fromCharCode(i + 97),
+    );
     result.push(state.join(""));
   }
   return result;

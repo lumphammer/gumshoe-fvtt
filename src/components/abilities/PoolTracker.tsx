@@ -19,7 +19,7 @@ const range = (from: number, to: number): number[] => {
     return range(to, from).reverse();
   }
 
-  return new Array(to - from + 1).fill(null).map((_, i) => from + i);
+  return Array.from({ length: to - from + 1 }, (_, i) => from + i);
 };
 
 type PoolTrackerProps = {

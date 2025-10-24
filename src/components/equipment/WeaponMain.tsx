@@ -20,9 +20,9 @@ import { NotesEditorWithControls } from "../inputs/NotesEditorWithControls";
 import { Translate } from "../Translate";
 import { performAttack } from "./performAttack";
 
-const defaultSpendOptions = new Array(8).fill(null).map((_, i) => {
-  const label = i.toString();
-  return { label, value: Number(label), enabled: true };
+const defaultSpendOptions = Array.from({ length: 8 }, (_, value) => {
+  const label = value.toString();
+  return { label, value, enabled: true };
 });
 
 export const WeaponMain = () => {
