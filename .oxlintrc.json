@@ -1,0 +1,71 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "unicorn",
+    "react",
+    "react-hooks",
+    "import",
+    "react-perf"
+  ],
+  "categories": {
+    // "correctness": "off"
+
+  },
+  "env": {
+    "builtin": true,
+    "browser": true,
+    "commonjs": true,
+    "node": true,
+    "shared-node-browser": true
+  },
+  "rules": {
+    "no-unused-vars": "off"
+  },
+  "ignorePatterns": [
+    "src/*.js",
+    "**/build",
+    "**/dist",
+    "**/node_modules",
+    "*/**/*.eslintrc*.?js",
+    "packages/shared-fvtt-bits/dotfiles/copy"
+  ],
+  "overrides": [
+    // {
+    //   "files": [
+    //     "**/*.ts",
+    //     "**/*.tsx",
+    //     "**/*.mts",
+    //     "**/*.cts"
+    //   ],
+    //   "rules": {
+    //     "no-class-assign": "off",
+    //     "no-const-assign": "off",
+    //     "no-dupe-class-members": "off",
+    //     "no-dupe-keys": "off",
+    //     "no-func-assign": "off",
+    //     "no-import-assign": "off",
+    //     "no-new-native-nonconstructor": "off",
+    //     "no-obj-calls": "off",
+    //     "no-redeclare": "off",
+    //     "no-setter-return": "off",
+    //     "no-this-before-super": "off",
+    //     "no-unsafe-negation": "off",
+    //     "no-var": "error",
+    //     "no-with": "off",
+    //     "prefer-rest-params": "error",
+    //     "prefer-spread": "error"
+    //   }
+    // },
+    // {
+    //   "files": [
+    //     "**/*.js"
+    //   ],
+    //   "rules": {
+    //     "@typescript-eslint/no-var-requires": [
+    //       "off"
+    //     ]
+    //   }
+    // }
+  ]
+}
