@@ -36,10 +36,10 @@ export const padLength = <T>(
   const originalLength = originalArray?.length ?? 0;
   const paddingSize = Math.max(0, desiredlength - originalLength);
   const padding = isMapIndexFunction(paddingElement)
-    ? new Array(paddingSize)
-        .fill(0)
-        .map((_, i) => paddingElement(i + originalLength))
-    : new Array(paddingSize).fill(paddingElement);
+    ? Array.from({ length: paddingSize }, (_, i) =>
+        paddingElement(i + originalLength),
+      )
+    : Array.from({ length: paddingSize }, () => paddingElement);
   const result = [...(originalArray || []), ...padding];
   return result;
 };

@@ -15,7 +15,7 @@ test("getAccessibleEdits: no edits", () => {
   expect(edits).toEqual([]);
 });
 
-test.each(new Array(20).fill(null).map((_, i) => i + 1))(
+test.each(Array.from({ length: 20 }, (_, i) => i + 1))(
   "getAccessibleEdits: %i edits",
   (i) => {
     let memory = createDocumentMemory(3);

@@ -23,10 +23,9 @@ const validVersions: number[] = [
 ];
 
 // I'm not typing this bad boy out, sorry
-const invalidVersions = new Array(1002)
-  .fill(0)
-  .map((_, i) => i)
-  .filter((i) => !validVersions.includes(i));
+const invalidVersions = Array.from({ length: 1002 }, (_, i) => i).filter(
+  (i) => !validVersions.includes(i),
+);
 
 // fill the memory
 vi.setSystemTime(new Date(0));

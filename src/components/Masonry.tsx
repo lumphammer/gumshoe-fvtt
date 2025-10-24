@@ -99,7 +99,7 @@ export const Masonry = function Masonry({
       return;
     }
 
-    const columnHeights = new Array(numColumns).fill(0);
+    const columnHeights = Array.from({ length: numColumns }, () => 0);
 
     // iterate through children
     containerRef.current.childNodes.forEach((child: Node) => {
@@ -178,7 +178,7 @@ export const Masonry = function Masonry({
   const widthExpression = `calc(${baseColumnWidth} - (${columnGap} * ${columnGapSizingFactor}))`;
 
   // linebreak divs force the flex-wrap to start a new column
-  const lineBreaks = new Array(numColumns - 1).fill("").map((_, index) => (
+  const lineBreaks = Array.from({ length: numColumns - 1 }, (_, index) => (
     <span
       key={index}
       {...helperDataProps}

@@ -219,9 +219,9 @@ export const flaggedMigrations: FlaggedMigrations = {
     convertCombats: async () => {
       assertGame(game);
       ui.notifications?.info("Migrating combats");
-      const oldBaseCombats = [
-        ...game.combats.contents.filter((c) => c.type === "base"),
-      ];
+      const oldBaseCombats = game.combats.contents.filter(
+        (c) => c.type === "base",
+      );
       const newType = settings.useTurnPassingInitiative.get()
         ? "turnPassing"
         : "classic";

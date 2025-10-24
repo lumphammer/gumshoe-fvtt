@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 import { getAdditiveStates } from "./testHelpers";
 
 describe("getAdditiveStates", () => {
-  test.each(new Array(9).fill(null).map((_, i) => i + 1))(
+  test.each(Array.from({ length: 9 }, (_, i) => i + 1))(
     "getStates: %i states",
     (i) => {
       expect(getAdditiveStates(i)).toMatchSnapshot();

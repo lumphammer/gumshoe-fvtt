@@ -5,7 +5,7 @@ import { Item } from "./Item";
 
 export function SortableTest() {
   const [items, setItems] = useState(
-    new Array(10).fill(null).map((_, i) => (i + 1).toString()),
+    Array.from({ length: 10 }, (_, i) => (i + 1).toString()),
   );
 
   const headers = useMemo(

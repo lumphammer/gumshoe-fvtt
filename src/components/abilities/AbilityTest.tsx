@@ -11,7 +11,7 @@ import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 
-const defaultSpendOptions = new Array(8).fill(null).map((_, i) => {
+const defaultSpendOptions = Array.from({ length: 8 }, (_, i) => {
   const label = i.toString();
   return { label, value: Number(label), enabled: true };
 });
