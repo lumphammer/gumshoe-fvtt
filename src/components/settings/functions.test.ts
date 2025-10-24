@@ -33,12 +33,12 @@ describe("assertNumericFieldOkayness", () => {
       { type: "number", default: 0, name: "" },
       "foo",
       "bar",
-      "Invalid value bar for field ",
+      'Invalid value "bar" for field  (must be a number)',
     ],
-  ])("%s", (name, field, id, value) => {
+  ])("%s", (_name, field, id, value, error) => {
     expect(() => {
       assertNumericFieldOkayness(field, id, value);
-    }).toThrow();
+    }).toThrowError(error);
   });
 
   it.each<OkayTestTuple>([

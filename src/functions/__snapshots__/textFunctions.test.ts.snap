@@ -46,8 +46,7 @@ exports[`convertNotes > converts richText to markdown 1`] = `
 <p>This is a paragraph. The next thing is a dangerous script tag:</p>
 <h2>This is a subtitle</h2>
 <p>This is another paragraph. It has a <a href="https://example.com">link</a> in it. It&#39;s quite long and has a line break in it.</p>
-&lt;script&gt;alert("hello")&lt;/script&gt;
-
+<p>alert(&quot;hello&quot;)</p>
 <p>This is a list:</p>
 <ul>
 <li>item 1</li>
@@ -65,7 +64,7 @@ This is a subtitle
 
 This is another paragraph. It has a [link](https://example.com) in it. It's quite long and has a line break in it.
 
-<script>alert("hello")</script>
+alert("hello")
 
 This is a list:
 
@@ -77,7 +76,7 @@ This is a list:
 
 exports[`convertNotes > converts richText to plain 1`] = `
 {
-  "newHtml": "This is a title<br />===============<br /><br />This is a paragraph. The next thing is a dangerous script tag:<br /><br />This is a subtitle<br />------------------<br /><br />This is another paragraph. It has a [link](https://example.com) in it. It&#39;s quite long and has a line break in it.<br /><br />&lt;script&gt;alert(&quot;hello&quot;)&lt;/script&gt;<br /><br />This is a list:<br /><br />*   item 1<br />*   item 2<br />*   item 3",
+  "newHtml": "This is a title<br />===============<br /><br />This is a paragraph. The next thing is a dangerous script tag:<br /><br />This is a subtitle<br />------------------<br /><br />This is another paragraph. It has a [link](https://example.com) in it. It&#39;s quite long and has a line break in it.<br /><br />alert(&quot;hello&quot;)<br /><br />This is a list:<br /><br />*   item 1<br />*   item 2<br />*   item 3",
   "newSource": "This is a title
 ===============
 
@@ -88,7 +87,7 @@ This is a subtitle
 
 This is another paragraph. It has a [link](https://example.com) in it. It's quite long and has a line break in it.
 
-<script>alert("hello")</script>
+alert("hello")
 
 This is a list:
 

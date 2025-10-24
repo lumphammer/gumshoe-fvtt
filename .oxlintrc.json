@@ -6,7 +6,10 @@
     "react",
     "react-hooks",
     "import",
-    "react-perf"
+    "react-perf",
+    "vitest",
+    "promise"
+
   ],
   "categories": {
     // "correctness": "off"

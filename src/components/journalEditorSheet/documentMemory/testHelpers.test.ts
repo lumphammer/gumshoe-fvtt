@@ -12,7 +12,9 @@ describe("getAdditiveStates", () => {
   test.each([0, -1, -100, 27, 100])(
     "getStates: %i states should throw",
     (i) => {
-      expect(() => getAdditiveStates(i)).toThrow();
+      expect(() => getAdditiveStates(i)).toThrowError(
+        "count must be between 1 and 26",
+      );
     },
   );
 });

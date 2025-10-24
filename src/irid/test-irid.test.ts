@@ -163,28 +163,28 @@ describe("Irid", function () {
 
   test("contrast defaults", function () {
     let color = irid("#fff").contrast();
-    expect(color.toString(), "#000000");
+    expect(color.toString()).toEqual("#000000");
     color = irid("#000").contrast();
-    expect(color.toString(), "#ffffff");
+    expect(color.toString()).toEqual("#ffffff");
   });
 
   test("contrast with given light/dark values", function () {
     let color = irid("#fff").contrast("#dddddd", "#222222");
-    expect(color.toString(), "#222222");
+    expect(color.toString()).toEqual("#222222");
     color = irid("#000").contrast("#dddddd", "#222222");
-    expect(color.toString(), "#dddddd");
+    expect(color.toString()).toEqual("#dddddd");
   });
 
   test("contrast with pathologically dumb values", function () {
     const color = irid("#aaaaaa").contrast("#ffffff", "#aaaaaa");
-    expect(color.toString(), "#ffffff");
+    expect(color.toString()).toEqual("#ffffff");
   });
 
   test("contrast uses luma", function () {
     let color = irid("#3531ff").contrast();
-    expect(color.toString(), "#ffffff");
+    expect(color.toString()).toEqual("#ffffff");
     color = irid("#d8ec00").contrast();
-    expect(color.toString(), "#000000");
+    expect(color.toString()).toEqual("#000000");
   });
 
   test("get red", function () {

@@ -88,22 +88,19 @@ describe("functions", function () {
   });
 
   test("rgbToCSSRGB", function () {
-    expect(
-      rgbToCSSRGB({ type: "rgba", r: 0, g: 136, b: 255 }),
+    expect(rgbToCSSRGB({ type: "rgba", r: 0, g: 136, b: 255 })).toEqual(
       "rgb(0, 136, 255)",
     );
   });
 
   test("rgbToCSSRGB with alpha", function () {
-    expect(
-      rgbToCSSRGB({ type: "rgba", r: 0, g: 136, b: 255, a: 0.7 }),
+    expect(rgbToCSSRGB({ type: "rgba", r: 0, g: 136, b: 255, a: 0.7 })).toEqual(
       "rgba(0, 136, 255, 0.70)",
     );
   });
 
   test("hslToCSSHSL", function () {
-    expect(
-      hslToCSSHSL({ type: "hsla", h: 0.5, s: 0.6, l: 0.7 }),
+    expect(hslToCSSHSL({ type: "hsla", h: 0.5, s: 0.6, l: 0.7 })).toEqual(
       "hsl(180, 60%, 70%)",
     );
   });
@@ -111,17 +108,15 @@ describe("functions", function () {
   test("hslToCSSHSL with alpha", function () {
     expect(
       hslToCSSHSL({ type: "hsla", h: 0.5, s: 0.6, l: 0.7, a: 0.8 }),
-      "hsla(180, 60%, 70%, 0.80)",
-    );
+    ).toEqual("hsla(180, 60%, 70%, 0.80)");
   });
 
   test("rgbToHex", function () {
-    expect(rgbToHex({ type: "rgba", r: 0, g: 136, b: 255 }), "#0088ff");
+    expect(rgbToHex({ type: "rgba", r: 0, g: 136, b: 255 })).toEqual("#0088ff");
   });
 
   test("rgbToHex with alpha", function () {
-    expect(
-      rgbToHex({ type: "rgba", r: 0, g: 136, b: 255, a: 0.5 }),
+    expect(rgbToHex({ type: "rgba", r: 0, g: 136, b: 255, a: 0.5 })).toEqual(
       "#0088ff7f",
     );
   });
@@ -193,6 +188,6 @@ describe("functions", function () {
     expect(hsl.h.toFixed(2)).toEqual("0.00");
     expect(hsl.s.toFixed(2)).toEqual("0.00");
     expect(hsl.l.toFixed(2)).toEqual("1.00");
-    expect(hsl.a, undefined);
+    expect(hsl.a).toEqual(undefined);
   });
 });

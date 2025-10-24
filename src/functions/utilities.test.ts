@@ -30,7 +30,7 @@ describe("moveKeyUp", () => {
     );
   });
   test("move a up", () => {
-    expect(() => moveKeyUp(obj, "a")).toThrow();
+    expect(() => moveKeyUp(obj, "a")).toThrowErrorMatchingInlineSnapshot(`[Error: Cannot move up from index 0]`);
   });
 });
 
@@ -44,7 +44,7 @@ describe("moveKeyDown", () => {
     );
   });
   test("move c up", () => {
-    expect(() => moveKeyDown(obj, "c")).toThrow();
+    expect(() => moveKeyDown(obj, "c")).toThrowErrorMatchingInlineSnapshot(`[Error: Cannot move down from last index]`);
   });
 });
 

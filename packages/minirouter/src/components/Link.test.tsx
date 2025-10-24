@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
@@ -14,7 +15,11 @@ const user = userEvent.setup();
 
 describe("Outside of Router", () => {
   it("throws", () => {
-    expect(() => render(<Link to={d1()}>Example</Link>)).toThrow();
+    expect(() =>
+      render(<Link to={d1()}>Example</Link>),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: useNavigationContext must be used within a Router]`,
+    );
   });
 });
 
@@ -38,7 +43,7 @@ describe("navigate from route", () => {
         </Router>,
       ),
     ).toThrowErrorMatchingInlineSnapshot(
-      '[Error: Link has "from" set to d2 but the current step is not a descendant of that step]',
+      `[Error: Link has "from" set to d2 but the current step is not a descendant of that step]`,
     );
   });
 

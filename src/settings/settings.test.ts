@@ -55,16 +55,30 @@ describe("settings", () => {
       expect(validator?.parse([{ name: "foo", type: "text" }])).toEqual([
         { name: "foo", type: "text" },
       ]);
-      expect(() =>
-        validator?.parse([{ name: "foo", type: "potato" }]),
-      ).toThrow();
-      expect(() => validator?.parse([{ name: "foo", type: 5 }])).toThrow();
-      expect(() => validator?.parse([{ name: "foo", type: null }])).toThrow();
-      expect(() => validator?.parse([{ name: "foo" }])).toThrow();
-      expect(() => validator?.parse([{ type: "text" }])).toThrow();
-      expect(() => validator?.parse([{ name: 5, type: "text" }])).toThrow();
-      expect(() => validator?.parse([{ name: null, type: "text" }])).toThrow();
-      expect(() => validator?.parse({ name: "foo", type: "text" })).toThrow();
+      expect(() => validator?.parse([{ name: "foo", type: "potato" }])).toThrow(
+        "Invalid option",
+      );
+      expect(() => validator?.parse([{ name: "foo", type: 5 }])).toThrow(
+        "Invalid option",
+      );
+      expect(() => validator?.parse([{ name: "foo", type: null }])).toThrow(
+        "Invalid option",
+      );
+      expect(() => validator?.parse([{ name: "foo" }])).toThrow(
+        "Invalid option",
+      );
+      expect(() => validator?.parse([{ type: "text" }])).toThrow(
+        "Invalid input",
+      );
+      expect(() => validator?.parse([{ name: 5, type: "text" }])).toThrow(
+        "Invalid input",
+      );
+      expect(() => validator?.parse([{ name: null, type: "text" }])).toThrow(
+        "Invalid input",
+      );
+      expect(() => validator?.parse({ name: "foo", type: "text" })).toThrow(
+        "Invalid input: expected array",
+      );
     });
   });
   describe("Stats validator", () => {
@@ -111,23 +125,23 @@ describe("settings", () => {
           name: "Foo",
           default: 3,
         }),
-      ).toThrow();
+      ).toThrow(/Invalid input: expected object, received number/);
       expect(() =>
         validator?.parse({
           foo: {
             default: 3,
           },
         }),
-      ).toThrow();
+      ).toThrow("Invalid input");
       expect(() =>
         validator?.parse({
           foo: {
             name: "Foo",
           },
         }),
-      ).toThrow();
-      expect(() => validator?.parse(null)).toThrow();
-      expect(() => validator?.parse(5)).toThrow();
+      ).toThrow("Invalid input");
+      expect(() => validator?.parse(null)).toThrow("Invalid input");
+      expect(() => validator?.parse(5)).toThrow("Invalid input");
     });
   });
 
@@ -135,10 +149,12 @@ describe("settings", () => {
     expect(validator).toBeDefined();
     return {
       expectParseOkay(this: void, value: unknown) {
+        // oxlint-disable-next-line no-standalone-expect
         expect(validator!.parse(value)).toEqual(value);
       },
       expectParseError(this: void, value: unknown) {
-        expect(() => validator!.parse(value)).toThrowError();
+        // oxlint-disable-next-line no-standalone-expect
+        expect(() => validator!.parse(value)).toThrowError("Invalid input");
       },
     };
   }

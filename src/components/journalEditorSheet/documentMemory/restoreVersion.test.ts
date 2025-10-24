@@ -48,10 +48,9 @@ test("restoring a valid version 648", () => {
 test("restoring an invalid version throws", () => {
   expect.assertions(invalidVersions.length);
   for (const serial of invalidVersions) {
-    expect(
-      () => restoreVersion(memory, serial),
-      `${serial} should be an invalid serial number`,
-    ).toThrow();
+    expect(() => restoreVersion(memory, serial)).toThrowError(
+      /Could not find stack with serial \d+/,
+    );
   }
 });
 

@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import { render } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 
@@ -7,7 +8,11 @@ import { direction1 } from "./testItems";
 
 describe("Outside of Router", () => {
   test("should throw", () => {
-    expect(() => render(<Route direction={direction1} />)).toThrow();
+    expect(() =>
+      render(<Route direction={direction1} />),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `[Error: useNavigationContext must be used within a Router]`,
+    );
   });
 });
 
