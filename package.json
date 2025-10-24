@@ -28,6 +28,7 @@
     "do-full-release": "./packages/shared-fvtt-bits/scripts/do-full-release.sh",
     "update-legacy-release-branch": "./scripts/update-legacy-release-branch.sh",
     "extract-packs": "./tasks.ts extractPacks",
+    "oxlint": "oxlint --type-aware",
     "check": "pnpm run typecheck && pnpm run test --run && pnpm run lint:check && pnpm run format:check && pnpm run build"
   },
   "author": "",
@@ -80,6 +81,7 @@
     "nanoid": "^5.1.6",
     "npm": "^11.6.2",
     "oxlint": "^1.24.0",
+    "oxlint-tsgolint": "^0.3.0",
     "prettier": "^3.6.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
