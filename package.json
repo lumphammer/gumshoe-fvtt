@@ -69,7 +69,7 @@
     "eslint": "^9.38.0",
     "eslint-plugin-react-compiler": "19.0.0-beta-ebf51a3-20250411",
     "focusable-selectors": "^0.8.4",
-    "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#7096e09c92a0c276b02cec899e0f58058c6150cd",
+    "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#80cadc2c7a946d43d2a0f9ee8194a41523dcb00c",
     "happy-dom": "^20.0.8",
     "html-escaper": "^3.0.3",
     "immer": "^10.2.0",
