@@ -63,7 +63,7 @@
     "@types/yamljs": "^0.2.34",
     "@typescript/native-preview": "7.0.0-dev.20251026.1",
     "@vitejs/plugin-react-swc": "3.11.0",
-    "@vitest/ui": "^3.2.4",
+    "@vitest/ui": "^4.0.3",
     "case": "^1.6.3",
     "d3-ease": "^3.0.1",
     "eslint": "^9.38.0",
