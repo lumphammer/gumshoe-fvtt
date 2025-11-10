@@ -1,11 +1,11 @@
 import { assertGame } from "../../functions/isGame";
 import { isNullOrEmptyString } from "../../functions/utilities";
-import { Document, NumberField, TypeDataModel } from "../../fvtt-exports";
+import { NumberField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import {
-  ActiveCharacterActor,
   assertActiveCharacterActor,
-} from "../actors/exports";
+  isActiveCharacterActor,
+} from "../actors/types";
 import {
   GeneralAbilityItem,
   isGeneralAbilityItem,
@@ -13,7 +13,12 @@ import {
 import { InvestigatorItem } from "../items/InvestigatorItem";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 
-function getGumshoeInitiative(actor: ActiveCharacterActor): number {
+function getGumshoeInitiative(
+  actor: Actor.Implementation | undefined | null | string,
+): number {
+  if (!isActiveCharacterActor(actor)) {
+    return 0;
+  }
   // get the ability name, and if not set, use the first one on the system
   // config (we had a bug where some chars were getting created without an
   // init ability name)
@@ -49,22 +54,43 @@ export class ClassicCombatantModel extends TypeDataModel<
   }
 
   override _preCreate(
-    data: TypeDataModel.ParentAssignmentType<
-      typeof classicCombatantSchema,
-      InvestigatorCombatant<"classic">
-    >,
-    options: Document.Database.PreCreateOptions<foundry.abstract.types.DatabaseCreateOperation>,
-    user: foundry.documents.User.Implementation,
+    ...[data, options, user]: Parameters<
+      TypeDataModel<
+        typeof classicCombatantSchema,
+        InvestigatorCombatant<"classic">
+      >["_preCreate"]
+    >
   ) {
     assertGame(game);
 
     const actor = data.actorId && game.actors.get(data.actorId);
-    assertActiveCharacterActor(actor);
     const initiative = getGumshoeInitiative(actor);
     if (data.initiative === undefined) {
       this.updateSource({ initiative });
     }
     return super._preCreate(data, options, user);
+  }
+
+  override async _preUpdate(
+    ...[changes, options, user]: Parameters<
+      TypeDataModel<
+        typeof classicCombatantSchema,
+        ClassicCombatant
+      >["_preUpdate"]
+    >
+  ) {
+    return super._preUpdate(changes, options, user);
+  }
+
+  override _onUpdate(
+    ...[changed, options, userId]: Parameters<
+      TypeDataModel<
+        typeof classicCombatantSchema,
+        ClassicCombatant
+      >["_onUpdate"]
+    >
+  ) {
+    return super._onUpdate(changed, options, userId);
   }
 
   async resetInitiative(): Promise<void> {
@@ -87,7 +113,6 @@ export function assertClassicCombatant(
   x: unknown,
 ): asserts x is ClassicCombatant {
   if (!isClassicCombatant(x)) {
-    console.error(x);
     throw new Error("Expected combatant to be a ClassicCombatant");
   }
 }
