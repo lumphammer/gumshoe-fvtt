@@ -151,8 +151,8 @@ importers:
         specifier: 4.4.1
         version: 4.4.1
       marked:
-        specifier: ^16.4.2
-        version: 16.4.2
+        specifier: ^17.0.0
+        version: 17.0.0
       nanoid:
         specifier: ^5.1.6
         version: 5.1.6
@@ -3497,8 +3497,8 @@ packages:
     resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
     engines: {node: '>=6'}
 
-  marked@16.4.2:
-    resolution: {integrity: sha512-TI3V8YYWvkVf3KJe1dRkpnjs68JUPyEa5vjKrp1XEEJUAOaQc+Qj+L1qWbPd0SJuAdQkFU0h73sXXqwDYxsiDA==}
+  marked@17.0.0:
+    resolution: {integrity: sha512-KkDYEWEEiYJw/KC+DVm1zzlpMQSMIu6YRltkcCvwheCp8HWPXCk9JwOmHJKBlGfzcpzcIt6x3sMnTsRm/51oDg==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -8133,7 +8133,7 @@ snapshots:
       semver: 5.7.2
     optional: true
 
-  marked@16.4.2: {}
+  marked@17.0.0: {}
 
   math-intrinsics@1.1.0: {}
 
