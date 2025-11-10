@@ -231,7 +231,11 @@ export class InvestigatorCompendiumDirectory extends CompendiumDirectory {
       );
     }
 
-    pack.apps.forEach((app) => app.render(true));
+    pack.apps.forEach((app) =>
+      app instanceof foundry.appv1.api.Application
+        ? app.render(true)
+        : app.render({ force: true }),
+    );
 
     ui.notifications?.info(
       `Finished importing compendium pack ${verified.label}`,
