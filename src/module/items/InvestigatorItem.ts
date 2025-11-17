@@ -13,7 +13,10 @@ import { isActiveCharacterActor } from "../actors/exports";
 export class InvestigatorItem<
   SubType extends Item.SubType = Item.SubType,
 > extends Item<SubType> {
-  constructor(data: Item.CreateData, context?: Item.ConstructionContext) {
+  constructor(
+    data: Item.CreateData<SubType>,
+    context?: Item.ConstructionContext,
+  ) {
     super(data, context);
     this.type = data.type as SubType;
   }
