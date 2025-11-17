@@ -27,13 +27,13 @@
   "devDependencies": {
     "@emotion/react": "^11.14.0",
     "@lumphammer/shared-fvtt-bits": "workspace:*",
-    "@tsconfig/recommended": "^1.0.11",
+    "@tsconfig/recommended": "^1.0.13",
     "fvtt-types": "github:n3dst4/foundry-vtt-types#documents-v2-temp",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3"
   },
   "volta": {
     "pnpm": "10.14.0",
-    "node": "24.11.0"
+    "node": "24.11.1"
   }
 }
