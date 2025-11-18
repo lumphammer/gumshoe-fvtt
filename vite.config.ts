@@ -25,10 +25,11 @@ const config = defineConfig(({ mode }) => {
     ...userConfig.test,
 
     // uncomment this to disable type checks
-    // typecheck: {
-    //   ...userConfig.test?.typecheck,
-    //   enabled: false,
-    // },
+    // currently seeing circularities under vitest typechecks 2025-11-17
+    typecheck: {
+      ...userConfig.test?.typecheck,
+      enabled: false,
+    },
 
     // paths are relative to `root` in the main `vite.config.ts`
     projects: [

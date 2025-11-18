@@ -5,13 +5,6 @@
 export class InvestigatorActor<
   SubType extends Actor.SubType = Actor.SubType,
 > extends Actor<SubType> {
-  constructor(data: Actor.CreateData, context?: Actor.ConstructionContext) {
-    super(data, context);
-    this.type = data.type as SubType;
-  }
-
-  override type!: SubType;
-
   setName = (name: string): Promise<this | undefined> => {
     return this.update({ name });
   };
