@@ -4,6 +4,7 @@
 	"compilerOptions": {
 		// "noErrorTruncation": true
 		"noImplicitAny": false,
+		"skipLibCheck": false
 	},
 	"references": [
 		{ "path": "./packages/shared-fvtt-bits" },
