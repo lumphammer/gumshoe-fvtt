@@ -20,11 +20,11 @@ export class TurnPassingCombatModel
    */
   _preUpdateDescendantDocuments(
     ...[
-      parent,
-      collection,
-      changes,
-      options,
-      userId,
+      _parent,
+      _collection,
+      _changes,
+      _options,
+      _userId,
     ]: Combat.PreUpdateDescendantDocumentsArgs
   ) {
     //
@@ -32,12 +32,12 @@ export class TurnPassingCombatModel
 
   async onCreateDescendantDocuments(
     ...[
-      parent,
+      _parent,
       collection,
-      documents,
-      data,
-      options,
-      userId,
+      _documents,
+      _data,
+      _options,
+      _userId,
     ]: Combat.OnCreateDescendantDocumentsArgs
   ) {
     if (collection !== "combatants") {
@@ -48,18 +48,20 @@ export class TurnPassingCombatModel
 
   async onUpdateDescendantDocuments(
     ...[
-      parent,
-      collection,
-      documents,
-      changes,
-      options,
-      userId,
+      _parent,
+      _collection,
+      _documents,
+      _changes,
+      _options,
+      _userId,
     ]: Combat.OnUpdateDescendantDocumentsArgs
   ) {
     return Promise.resolve();
   }
 
-  onDeleteDescendantDocuments(...args: Combat.OnDeleteDescendantDocumentsArgs) {
+  onDeleteDescendantDocuments(
+    ..._args: Combat.OnDeleteDescendantDocumentsArgs
+  ) {
     return Promise.resolve();
   }
 
