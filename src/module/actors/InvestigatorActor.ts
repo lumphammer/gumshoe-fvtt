@@ -7,7 +7,6 @@ import { produce } from "immer";
 export class InvestigatorActor<
   SubType extends Actor.SubType = Actor.SubType,
 > extends Actor<SubType> {
-
   /**
    * Handy setter for the actor's name
    */

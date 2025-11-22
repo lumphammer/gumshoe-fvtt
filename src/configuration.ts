@@ -54,6 +54,14 @@ declare module "fvtt-types/configuration" {
     };
   }
 
+  interface ConfiguredCombat<SubType extends Combat.SubType> {
+    document: InvestigatorCombat<SubType>;
+  }
+
+  interface ConfiguredCombatant<SubType extends Combatant.SubType> {
+    document: InvestigatorCombatant<SubType>;
+  }
+
   namespace Hooks {
     interface HookConfig {
       // our hooks
