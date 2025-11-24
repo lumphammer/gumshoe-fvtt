@@ -72,7 +72,7 @@
     "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#3b36e0b373ecee2cee768845df8c925f8b60523a",
     "happy-dom": "^20.0.10",
     "html-escaper": "^3.0.3",
-    "immer": "^10.2.0",
+    "immer": "^11.0.0",
     "jest-diff": "^30.2.0",
     "json5": "^2.2.3",
     "less": "4.4.1",
