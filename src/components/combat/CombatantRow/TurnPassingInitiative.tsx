@@ -1,23 +1,18 @@
 import { keyframes } from "@emotion/react";
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import { FaEdit, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
-import { getTranslated } from "../../functions/getTranslated";
-import { assertGame } from "../../functions/isGame";
-import { requestTurnPass } from "../../functions/utilities";
-import {
-  assertTurnPassingCombatant,
-  TurnPassingCombatant,
-} from "../../module/combat/turnPassingCombatant";
-import { NativeMenuItem } from "../inputs/NativeMenu";
-import { NativeDualFunctionMenu } from "../inputs/NativeMenu/NativeDualFunctionMenu";
-import { NativeMenuLabel } from "../inputs/NativeMenu/NativeMenuLabel";
+import { getTranslated } from "../../../functions/getTranslated";
+import { assertGame } from "../../../functions/isGame";
+import { requestTurnPass, systemLogger } from "../../../functions/utilities";
+import { assertTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
+import { NativeMenuItem } from "../../inputs/NativeMenu";
+import { NativeDualFunctionMenu } from "../../inputs/NativeMenu/NativeDualFunctionMenu";
+import { NativeMenuLabel } from "../../inputs/NativeMenu/NativeMenuLabel";
+import { useTurnPassingTrackerContext } from "../TrackerContext";
+import { useTurnPassingCombatantContext } from "./CombatantContext";
 import { useInititative } from "./useInititative";
-
-interface TurnPassingInitiativeProps {
-  combatant: TurnPassingCombatant;
-}
 
 const playButtonGradientWidth = "3em";
 const playButtonColor1 = "oklch(0.2 0.3 130)";
@@ -32,12 +27,12 @@ const scrollBg = keyframes({
   },
 });
 
-export const TurnPassingInitiative = ({
-  combatant,
-}: TurnPassingInitiativeProps) => {
+export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
   assertGame(game);
+  const { combatant, combatantState } = useTurnPassingCombatantContext();
+  const { combatState, turnIds } = useTurnPassingTrackerContext();
   const combat = combatant.combat;
-  if (combat === null) {
+  if (combat === null || combatState === null || combatantState === null) {
     throw new Error(
       "TurnPassingInitiative must be rendered with a combatant that is in combat.",
     );
@@ -65,13 +60,18 @@ export const TurnPassingInitiative = ({
   }, [combatant]);
 
   const activeTurnPassingCombatant =
-    combat.turn !== null ? combat.turns[combat.turn].id : null;
+    combatState.turn !== null ? turnIds[combatState.turn] : null;
+
+  systemLogger.log(
+    "TurnPassingInitiative",
+    `Rendering turn passing initiative for ${combatant.name} (${combatant.id}). Active turn passing combatant is ${activeTurnPassingCombatant}.`,
+  );
   const isActive = activeTurnPassingCombatant === combatant.id;
   const depleted = combatant.system.passingTurnsRemaining <= 0;
 
   return (
     <>
-      <div css={{ flex: 0 }}>
+      <div css={{ flex: 0, padding: "0.3em 01em 0 0" }}>
         {combatant.system.passingTurnsRemaining}/
         {combatant.system.defaultPassingTurns}
       </div>
@@ -81,7 +81,6 @@ export const TurnPassingInitiative = ({
           className="inline-control"
           css={{
             display: "block",
-            height: "var(--sidebar-item-height)",
             fontSize: "1.4em",
             margin: 0,
             padding: "0 0.2em",
@@ -136,4 +135,4 @@ export const TurnPassingInitiative = ({
       )}
     </>
   );
-};
+});
