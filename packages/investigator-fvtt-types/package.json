@@ -29,7 +29,7 @@
     "@lumphammer/shared-fvtt-bits": "workspace:*",
     "@tsconfig/recommended": "^1.0.13",
     "fvtt-types": "github:n3dst4/foundry-vtt-types#documents-v2-temp",
-    "prettier": "^3.6.2",
+    "prettier": "^3.7.3",
     "typescript": "^5.9.3"
   },
   "volta": {
