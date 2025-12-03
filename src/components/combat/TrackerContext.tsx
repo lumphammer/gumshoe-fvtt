@@ -10,8 +10,8 @@ import { isKnownCombat } from "../../module/combat/types";
 import { registerHookHandler } from "./registerHookHandler";
 
 export type TrackerContextValue<
-  SubType extends
-    Combat.ConfiguredSubType | null = Combat.ConfiguredSubType | null,
+  SubType extends Combat.ConfiguredSubType | null =
+    Combat.ConfiguredSubType | null,
 > = {
   combat: SubType extends Combat.ConfiguredSubType
     ? Combat.OfType<SubType>
