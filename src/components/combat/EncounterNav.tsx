@@ -118,7 +118,7 @@ export const EncounterNav = memo(
         {game.user?.isGM && (
           <button
             type="button"
-            className={"inline-control icon fa-solid fa-xmark"}
+            className={"inline-control icon fa-solid fa-trash"}
             title={localize("COMBAT.End")}
             // data-action doesn't work here - I guess it's in the wrong bit of the
             // DOM tree
