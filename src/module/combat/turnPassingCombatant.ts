@@ -4,7 +4,7 @@ import {
   SchemaField,
   TypeDataModel,
 } from "../../fvtt-exports";
-import { isActiveCharacterActor } from "../actors/exports";
+import { isActiveCharacterActor } from "../actors/types";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 
