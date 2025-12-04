@@ -110,14 +110,6 @@ export const useTrackerContextValue = (combat: Combat.Known | null) => {
             oldData.combatState &&
             oldData.combatState._id === updatedCombat._id
           ) {
-            // const newTurnIds = updatedCombat.turns
-            //   .map((c) => c._id)
-            //   .filter((id) => id !== null);
-            // const turnIds =
-            //   newTurnIds.length === oldData.turnIds.length &&
-            //   newTurnIds.every((id, i) => id === oldData.turnIds[i])
-            //     ? oldData.turnIds
-            //     : newTurnIds;
             const combatState = produce(oldData.combatState, (draft) => {
               foundry.utils.mergeObject(draft, changes);
             });
