@@ -28,7 +28,7 @@ export const Tracker = () => {
   const combat = game.combat as InvestigatorCombat | null;
 
   assertKnownCombat(combat);
-  const combatData = useTrackerContextValue(combat);
+  const trackerContextValue = useTrackerContextValue(combat);
 
   const combatId = combat?._id;
   const combatCount = game.combats?.combats.length ?? 0;
@@ -39,10 +39,10 @@ export const Tracker = () => {
   const nextCombatId = game.combats?.combats[combatIndex + 1]?._id;
 
   return (
-    <TrackerContextProvider value={combatData}>
+    <TrackerContextProvider value={trackerContextValue}>
       {/* HEADER ROWS */}
       <header id="combat-round" className="combat-tracker-header">
-        {combat && (
+        {trackerContextValue.combat && (
           /* TOP ROW: ➕ 1️⃣ 2️⃣ 3️⃣ ⚙️ */
           <EncounterNav
             combatId={combatId}
@@ -53,17 +53,20 @@ export const Tracker = () => {
           />
         )}
 
-        {isTurnPassingCombat(combat) && <TurnPassingTurnNav />}
-        {isClassicCombat(combat) && (
+        {isTurnPassingCombat(trackerContextValue.combat) && (
+          <TurnPassingTurnNav />
+        )}
+        {isClassicCombat(trackerContextValue.combat) && (
           <>
             <ClassicTurnNav />
             <ClassicToolsRow />
           </>
         )}
       </header>
-      {!combat && <NoCombats />}
-      {combat && combat.turns.length === 0 && <NoCombatants />}
-      {combat && <CombatantList />}
+      {!trackerContextValue.combat && <NoCombats />}
+      {trackerContextValue.combat &&
+        trackerContextValue.combat.turns.length === 0 && <NoCombatants />}
+      {trackerContextValue.combat && <CombatantList />}
     </TrackerContextProvider>
   );
 };
