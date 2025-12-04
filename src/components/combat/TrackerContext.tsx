@@ -23,12 +23,14 @@ export type TrackerContextValue<
   isActiveUser: boolean;
 };
 
-const TrackerContext = createContext<TrackerContextValue>({
+const defaultTrackerValue: TrackerContextValue = {
   combatState: null,
   combat: null,
   turnIds: [],
   isActiveUser: false,
-});
+};
+
+const TrackerContext = createContext<TrackerContextValue>(defaultTrackerValue);
 
 export const useTrackerContext = () => {
   return useContext(TrackerContext);
@@ -160,6 +162,14 @@ export const useTrackerContextValue = (combat: Combat.Known | null) => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    return registerHookHandler("deleteCombat", (deletedCombat) => {
+      if (deletedCombat === combat) {
+        setCombatData((oldData) => defaultTrackerValue);
+      }
+    });
+  }, [combat]);
 
   return combatData;
 };
