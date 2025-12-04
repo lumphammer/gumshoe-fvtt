@@ -72,7 +72,12 @@ export const BottomRow = memo(function BottomRow() {
         {effects.map(
           (effect, i) =>
             effect.img && (
-              <img key={i} className="token-effect" src={effect.img} />
+              <img
+                alt={effect.name}
+                key={i}
+                className="token-effect"
+                src={effect.img}
+              />
             ),
         )}
       </div>
