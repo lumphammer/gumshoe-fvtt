@@ -4,7 +4,7 @@ import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import {
   assertActiveCharacterActor,
   isActiveCharacterActor,
-} from "../../module/actors/exports";
+} from "../../module/actors/types";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
 import { settings } from "../../settings/settings";
