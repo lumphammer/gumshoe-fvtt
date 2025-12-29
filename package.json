@@ -61,7 +61,7 @@
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.6",
     "@types/yamljs": "^0.2.34",
-    "@typescript/native-preview": "7.0.0-dev.20251221.1",
+    "@typescript/native-preview": "7.0.0-dev.20251228.1",
     "@vitejs/plugin-react-swc": "3.11.0",
     "@vitest/ui": "^4.0.16",
     "case": "^1.6.3",
