@@ -1,6 +1,6 @@
 import { assertGame } from "../functions/isGame";
 import { UpdateData } from "../fvtt-exports";
-import { isActiveCharacterActor } from "../module/actors/exports";
+import { isActiveCharacterActor } from "../module/actors/types";
 import {
   assertGeneralAbilityItem,
   GeneralAbilityItem,
