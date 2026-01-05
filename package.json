@@ -61,7 +61,7 @@
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.6",
     "@types/yamljs": "^0.2.34",
-    "@typescript/native-preview": "7.0.0-dev.20251228.1",
+    "@typescript/native-preview": "7.0.0-dev.20260104.1",
     "@vitejs/plugin-react-swc": "3.11.0",
     "@vitest/ui": "^4.0.16",
     "case": "^1.6.3",
@@ -72,7 +72,7 @@
     "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#a3a2351e581548bf31f3f604b1243386612eb5f5",
     "happy-dom": "^20.0.11",
     "html-escaper": "^3.0.3",
-    "immer": "^11.1.0",
+    "immer": "^11.1.3",
     "jest-diff": "^30.2.0",
     "json5": "^2.2.3",
     "less": "4.4.1",
@@ -94,7 +94,7 @@
     "vitest": "^3.2.4",
     "xss": "^1.0.15",
     "yamljs": "^0.3.0",
-    "zod": "^4.2.1",
+    "zod": "^4.3.5",
     "zod-validation-error": "^5.0.0"
   },
   "pnpm": {
