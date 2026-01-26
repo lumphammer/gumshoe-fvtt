@@ -25,8 +25,8 @@
   "devDependencies": {
     "@emotion/react": "^11.14.0",
     "@testing-library/jest-dom": "^6.9.1",
-    "@types/react": "^19.2.8",
-    "framer-motion": "^12.25.0",
+    "@types/react": "^19.2.9",
+    "framer-motion": "^12.29.0",
     "react": "^19.2.3",
     "vite": "^7.3.1",
     "vitest": "^2.1.8"
