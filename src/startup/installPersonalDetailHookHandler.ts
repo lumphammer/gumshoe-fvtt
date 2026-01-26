@@ -9,7 +9,7 @@ import { getTranslated } from "../functions/getTranslated";
 import { assertGame } from "../functions/isGame";
 import { isNullOrEmptyString, systemLogger } from "../functions/utilities";
 import { CompendiumCollection, CreateData, DialogV2 } from "../fvtt-exports";
-import { isActiveCharacterActor } from "../module/actors/exports";
+import { isActiveCharacterActor } from "../module/actors/types";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
 import {
   isPersonalDetailItem,
