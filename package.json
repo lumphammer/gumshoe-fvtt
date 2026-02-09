@@ -66,7 +66,7 @@
     "@vitest/ui": "^4.0.18",
     "case": "^1.6.3",
     "d3-ease": "^3.0.1",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.0",
     "eslint-plugin-react-compiler": "19.0.0-beta-ebf51a3-20250411",
     "focusable-selectors": "^0.8.4",
     "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#a3a2351e581548bf31f3f604b1243386612eb5f5",
