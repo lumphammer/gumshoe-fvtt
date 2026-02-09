@@ -48,7 +48,7 @@ export const useAsyncUpdate = (
 
   // a callback for when edits happen
   const onInput = useCallback(
-    (e: React.FormEvent<HTMLInputElement>) => {
+    (e: React.InputEvent<HTMLInputElement>) => {
       const text = e.currentTarget.innerText;
       onChange(text);
     },
