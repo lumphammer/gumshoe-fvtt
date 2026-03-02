@@ -1,21 +1,35 @@
-import { ReactNode } from "react";
-import { PiEmptyLight, PiPeaceLight } from "react-icons/pi";
-
 import { assertGame } from "../../functions/isGame";
-import { assertNotNull, sortByKey } from "../../functions/utilities";
+import { assertNotNull } from "../../functions/utilities";
+import { isClassicCombat } from "../../module/combat/classicCombat";
 import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
-import { CombatantRow } from "./CombatantRow";
+import { assertKnownCombat } from "../../module/combat/types";
+import { ClassicToolsRow } from "./ClassicToolsRow";
+import { ClassicTurnNav } from "./ClassicTurnNav";
+import { CombatantList } from "./CombatantList";
 import { EncounterNav } from "./EncounterNav";
-import { localize } from "./functions";
-import { TurnNav } from "./TurnNav";
+import { NoCombatants } from "./NoCombatants";
+import { NoCombats } from "./NoCombats";
+import {
+  TrackerContextProvider,
+  useTrackerContextValue,
+} from "./TrackerContext";
+import { TurnPassingTurnNav } from "./TurnPassingTurnNav";
 
+/**
+ * The main combat tracker component.
+ */
 export const Tracker = () => {
   assertGame(game);
   assertNotNull(game.user);
 
   // STATE & DERIVED DATA
-  const combat = game.combats?.active as InvestigatorCombat | undefined;
+
+  const combat = game.combat as InvestigatorCombat | null;
+
+  assertKnownCombat(combat);
+  const trackerContextValue = useTrackerContextValue(combat);
+
   const combatId = combat?._id;
   const combatCount = game.combats?.combats.length ?? 0;
   const combatIndex = game.combats?.combats.findIndex(
@@ -23,18 +37,12 @@ export const Tracker = () => {
   );
   const prevCombatId = game.combats?.combats[combatIndex - 1]?._id;
   const nextCombatId = game.combats?.combats[combatIndex + 1]?._id;
-  const isTurnPassing = isTurnPassingCombat(combat);
-
-  // foundry's native combat tracker uses these things called "turns" which are
-  // kinda pre-baked data for the rows in the tracker - each one corresponds to
-  // a combatant in the combat
-  // const turns = combat ? getTurns(combat) : [];
 
   return (
-    <>
+    <TrackerContextProvider value={trackerContextValue}>
       {/* HEADER ROWS */}
       <header id="combat-round" className="combat-tracker-header">
-        {combat && (
+        {trackerContextValue.combat && (
           /* TOP ROW: ➕ 1️⃣ 2️⃣ 3️⃣ ⚙️ */
           <EncounterNav
             combatId={combatId}
@@ -45,96 +53,20 @@ export const Tracker = () => {
           />
         )}
 
-        <TurnNav isTurnPassing={isTurnPassing} combat={combat} game={game} />
+        {isTurnPassingCombat(trackerContextValue.combat) && (
+          <TurnPassingTurnNav />
+        )}
+        {isClassicCombat(trackerContextValue.combat) && (
+          <>
+            <ClassicTurnNav />
+            <ClassicToolsRow />
+          </>
+        )}
       </header>
-      {/* ACTUAL COMBATANTS, or "turns" in early-medieval foundry-speak */}
-      {!combat && (
-        <div
-          css={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-            width: "100%",
-            flexDirection: "column",
-            textAlign: "center",
-            color: "var(--color-text-secondary)",
-          }}
-        >
-          <PiPeaceLight size={100} />
-          <p css={{ fontSize: "1.4em", fontWeight: "300" }}>
-            {localize("investigator.NoCombat")}
-          </p>
-          {game.user.isGM && (
-            <button
-              type="button"
-              // className="combat-control-lg"
-              css={{
-                justifySelf: "stretch",
-                width: "auto",
-              }}
-              data-action="createCombat"
-            >
-              <i className="fa-solid fa-plus" inert />
-              <span>{localize("COMBAT.Create")}</span>
-            </button>
-          )}
-        </div>
-      )}
-      {combat && combat.turns.length === 0 && (
-        <div
-          css={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-            width: "100%",
-            flexDirection: "column",
-            textAlign: "center",
-            color: "var(--color-text-secondary)",
-          }}
-        >
-          <PiEmptyLight size={100} />
-          <p css={{ fontSize: "1.4em", fontWeight: "300" }}>
-            {localize("investigator.NoParticipants")}
-          </p>
-        </div>
-      )}
-      {/* we need to wrap the actual tracker ol in another element so that
-      foundry's autosizing works */}
-      {combat && (
-        <div
-          className="combat-tracker"
-          css={{
-            flex: 1,
-            overflowX: "hidden",
-          }}
-        >
-          <ol
-            // see investigator-combatant-list in the LESS for why we add this class
-            className="plain investigator-combatant-list"
-            css={{
-              position: "relative",
-              flex: 1,
-              height: `${combat.turns.length * 4}em`,
-              overflow: "hidden",
-            }}
-          >
-            {
-              // combatant sorting is done in "Combat" but for rendering stability
-              // we need to un-sort the combatants and then tell each row where it
-              // used to exist in the order
-              sortByKey(combat.turns, "id").map<ReactNode>((combatant) => (
-                <CombatantRow
-                  key={combatant.id}
-                  index={combat.turns.findIndex((x) => x.id === combatant.id)}
-                  combatant={combatant}
-                />
-              ))
-            }
-          </ol>
-        </div>
-      )}
-    </>
+      {!trackerContextValue.combat && <NoCombats />}
+      {trackerContextValue.combat &&
+        trackerContextValue.combat.turns.length === 0 && <NoCombatants />}
+      {trackerContextValue.combat && <CombatantList />}
+    </TrackerContextProvider>
   );
 };

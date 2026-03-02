@@ -2,7 +2,7 @@ import { Stat } from "@lumphammer/investigator-fvtt-types";
 import { useCallback } from "react";
 
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import { assertActiveCharacterActor } from "../../module/actors/exports";
+import { assertActiveCharacterActor } from "../../module/actors/types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 
 interface StatFieldProps {

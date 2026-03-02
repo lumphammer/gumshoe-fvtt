@@ -1,7 +1,9 @@
+import { assertGame } from "../../functions/isGame";
+import { systemLogger } from "../../functions/utilities";
 import { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
-import { isTurnPassingCombat } from "./turnPassingCombat";
+import { isKnownCombat } from "./types";
 
 /**
  * Override base Combat so we can do custom GUMSHOE-style initiative
@@ -9,11 +11,8 @@ import { isTurnPassingCombat } from "./turnPassingCombat";
 export class InvestigatorCombat<
   out SubType extends Combat.SubType = Combat.SubType,
 > extends Combat<SubType> {
-  turnOrders: string[][] = [];
-
-  /**
-   * Override createEmbeddedDocuments to
-   */
+  // ///////////////////////////////////////////////////////////////////////////
+  // override to make sure we're creating the right kind of combatant
   override async createEmbeddedDocuments<
     EmbeddedName extends Combat.Embedded.Name,
   >(
@@ -32,8 +31,8 @@ export class InvestigatorCombat<
     return super.createEmbeddedDocuments(embeddedName, newData, operation);
   }
 
-  // override the base class to make sure we're creating the right kind of
-  // combat
+  // ///////////////////////////////////////////////////////////////////////////
+  // override to make sure we're creating the right kind of combat
   static override create<Temporary extends boolean | undefined = false>(
     data: Combat.CreateData | Combat.CreateData[],
     operation?: Combat.Database.CreateOperation<Temporary>,
@@ -57,6 +56,95 @@ export class InvestigatorCombat<
     return result;
   }
 
+  protected override _preUpdate(
+    ...[changed, options, user]: Parameters<Combat<SubType>["_preUpdate"]>
+  ): Promise<boolean | void> {
+    return super._preUpdate(changed, options, user);
+  }
+
+  protected override _onUpdate(
+    ...[changed, options, userId]: Parameters<Combat<SubType>["_onUpdate"]>
+  ) {
+    systemLogger.log("Combat updated", changed);
+    super._onUpdate(changed, options, userId);
+  }
+
+  protected static override async _preUpdateOperation(
+    ...[documents, operation, user]: Parameters<
+      (typeof Combat)["_preUpdateOperation"]
+    >
+  ) {
+    return super._preUpdateOperation(documents, operation, user);
+  }
+
+  protected static override async _onUpdateOperation(
+    ...[documents, operation, user]: Parameters<
+      (typeof Combat)["_onUpdateOperation"]
+    >
+  ) {
+    return super._onUpdateOperation(documents, operation, user);
+  }
+
+  protected override _preUpdateDescendantDocuments(
+    // destructuring a spread because the type for the args is a tuple 🙃
+    ...[
+      parent,
+      collection,
+      changes,
+      options,
+      userId,
+    ]: Combat.PreUpdateDescendantDocumentsArgs
+  ) {
+    assertGame(game);
+    super._preUpdateDescendantDocuments(
+      ...[parent, collection, changes, options, userId],
+    );
+  }
+
+  protected override _preCreateDescendantDocuments(
+    ...args: Combat.PreCreateDescendantDocumentsArgs
+  ) {
+    super._preCreateDescendantDocuments(...args);
+  }
+
+  protected override _onCreateDescendantDocuments(
+    ...[
+      parent,
+      collection,
+      documents,
+      data,
+      options,
+      userId,
+    ]: Combat.OnCreateDescendantDocumentsArgs
+  ) {
+    if (isKnownCombat(this) && userId === game.userId) {
+      void this.system.onCreateDescendantDocuments(
+        ...[parent, collection, documents, data, options, userId],
+      );
+    }
+    return super._onCreateDescendantDocuments(
+      ...[parent, collection, documents, data, options, userId],
+    );
+  }
+
+  protected override _onUpdateDescendantDocuments(
+    ...args: Combat.OnUpdateDescendantDocumentsArgs
+  ) {
+    if (isKnownCombat(this)) {
+      void this.system.onUpdateDescendantDocuments(...args);
+    }
+    super._onUpdateDescendantDocuments(...args);
+  }
+
+  protected override _onDeleteDescendantDocuments(
+    ...args: Combat.OnDeleteDescendantDocumentsArgs
+  ): void {
+    if (isKnownCombat(this)) {
+      void this.system.onDeleteDescendantDocuments(...args);
+    }
+    super._onDeleteDescendantDocuments(...args);
+  }
+
   protected _compareCombatants = (
     a: InvestigatorCombatant,
     b: InvestigatorCombatant,
@@ -73,15 +161,12 @@ export class InvestigatorCombat<
     this.turns ||= [];
 
     // Determine the turn order and the current turn
-    const turns = this.combatants.contents.sort(this._compareCombatants);
-    if (this.turn !== null) {
-      if (this.turn < 0) {
-        this.turn = 0;
-      } else if (this.turn >= turns.length) {
-        this.turn = 0;
-        this.round++;
-      }
-    }
+    const turns: InvestigatorCombatant[] = isKnownCombat(this)
+      ? this.system
+          .getTurns()
+          .map((cid) => this.combatants.get(cid))
+          .filter((c) => c !== undefined)
+      : [];
 
     // Update state tracking
     const c = this.turn !== null ? turns[this.turn] : undefined;
@@ -94,23 +179,76 @@ export class InvestigatorCombat<
     return (this.turns = turns);
   }
 
+  override prepareDerivedData() {
+    // base combat has loads of assumptions about how combat works, so
+    // super.prepareDerivedData won't call setupTurns if `turns` already has
+    // elements. With this check we ensure it gets called once either way.
+    if (this.turns?.length !== 0) {
+      this.setupTurns();
+    }
+    super.prepareDerivedData();
+  }
+
+  override async startCombat() {
+    // const superResult = await super.startCombat();
+
+    this._playCombatSound("startEncounter");
+
+    if (isKnownCombat(this)) {
+      await this.system.startCombat();
+    }
+    // if (isTurnPassingCombat(this)) {
+    //   this.turn = null;
+    //   await this.update({ turn: null });
+    // }
+    return this;
+  }
+
   override async nextRound() {
-    await super.nextRound();
+    if (isKnownCombat(this)) {
+      await this.system.nextRound();
+    }
+    return this;
+    // await super.nextRound();
     // super.nextRound sets turn to 1, easier to do this than to recreate the
     // whole thing
-    if (isTurnPassingCombat(this)) {
-      this.turn = null;
-      await this.update({ turn: null });
+    // if (isTurnPassingCombat(this)) {
+    //   this.turn = null;
+    //   await this.update({ turn: null });
+    // }
+    // return this;
+  }
+
+  override async previousRound() {
+    if (isKnownCombat(this)) {
+      await this.system.previousRound();
     }
     return this;
   }
 
-  override async startCombat() {
-    const superResult = await super.startCombat();
-    if (isTurnPassingCombat(this)) {
-      this.turn = null;
-      await this.update({ turn: null });
+  override async nextTurn() {
+    if (isKnownCombat(this)) {
+      await this.system.nextTurn();
     }
-    return superResult;
+    return this;
   }
+
+  override async previousTurn() {
+    if (isKnownCombat(this)) {
+      await this.system.previousTurn();
+    }
+    return this;
+  }
+
+  // async swapCombatants(active: string, over: string, direction: "up" | "down") {
+  //   if (isValidCombat(this)) {
+  //     await this.system.moveCombatant(active, over, direction);
+  //   }
+  // }
+
+  // async sortCombatants(): Promise<void> {
+  //   if (this.system instanceof ClassicCombatModel) {
+  //     await this.system.sortCombatants();
+  //   }
+  // }
 }

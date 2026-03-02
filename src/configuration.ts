@@ -45,6 +45,23 @@ declare module "fvtt-types/configuration" {
     name: "investigator";
   }
 
+  namespace foundry.documents.Combat {
+    type SourceOfType<SubType extends Combat.SubType> = Omit<
+      Combat.Source,
+      "system"
+    > & {
+      system: Combat.OfType<SubType>["system"]["_source"];
+    };
+  }
+
+  interface ConfiguredCombat<SubType extends Combat.SubType> {
+    document: InvestigatorCombat<SubType>;
+  }
+
+  interface ConfiguredCombatant<SubType extends Combatant.SubType> {
+    document: InvestigatorCombatant<SubType>;
+  }
+
   namespace Hooks {
     interface HookConfig {
       // our hooks

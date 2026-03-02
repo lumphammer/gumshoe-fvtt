@@ -4,7 +4,7 @@ import { nanoid } from "nanoid";
 import * as c from "../constants";
 import { assertGame } from "../functions/isGame";
 import { isNullOrEmptyString, systemLogger } from "../functions/utilities";
-import { isActiveCharacterActor } from "../module/actors/exports";
+import { isActiveCharacterActor } from "../module/actors/types";
 import { InvestigatorCombat } from "../module/combat/InvestigatorCombat";
 import { pathOfCthulhuPreset } from "../presets";
 import { settings } from "../settings/settings";

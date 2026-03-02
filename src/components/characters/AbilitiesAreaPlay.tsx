@@ -2,7 +2,7 @@ import { Fragment, useContext } from "react";
 
 import { sortEntitiesByName } from "../../functions/utilities";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import { assertActiveCharacterActor } from "../../module/actors/exports";
+import { assertActiveCharacterActor } from "../../module/actors/types";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AbilitySlugPlayNormal } from "./AbilitySlugPlayNormal";
