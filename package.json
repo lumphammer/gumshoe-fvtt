@@ -61,7 +61,7 @@
     "@types/textdiff-patch": "^1.0.2",
     "@types/turndown": "^5.0.6",
     "@types/yamljs": "^0.2.34",
-    "@typescript/native-preview": "7.0.0-dev.20260222.1",
+    "@typescript/native-preview": "7.0.0-dev.20260301.1",
     "@vitejs/plugin-react-swc": "3.11.0",
     "@vitest/ui": "^4.0.18",
     "case": "^1.6.3",
@@ -78,7 +78,7 @@
     "less": "4.4.1",
     "marked": "^17.0.3",
     "nanoid": "^5.1.6",
-    "npm": "^11.10.1",
+    "npm": "^11.11.0",
     "prettier": "^3.8.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -121,7 +121,7 @@
     }
   },
   "engines": {
-    "node": "24.13.1",
+    "node": "24.14.0",
     "pnpm": "10.14.0"
   },
   "packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817a04bbe06a38d17e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748"
