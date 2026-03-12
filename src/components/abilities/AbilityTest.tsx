@@ -36,7 +36,7 @@ export const AbilityTest = () => {
     assertAbilityItem(item);
     return {
       ...option,
-      enabled: option.value <= item.system.pool,
+      enabled: option.value === 0 || option.value <= item.system.pool,
     };
   });
 
