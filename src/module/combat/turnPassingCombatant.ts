@@ -1,10 +1,11 @@
+import { assertGame } from "../../functions/isGame";
 import {
   ArrayField,
   NumberField,
   SchemaField,
   TypeDataModel,
 } from "../../fvtt-exports";
-import { isActiveCharacterActor } from "../actors/exports";
+import { isActiveCharacterActor } from "../actors/types";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 
@@ -50,7 +51,12 @@ export class TurnPassingCombatantModel extends TypeDataModel<
   get passingTurnsRemaining(): number {
     const roundIndex = Math.max(0, this.combat.round - 1);
     if (this.turnInfo[roundIndex] === undefined) {
-      void this.resetPassingTurns();
+      // this is ugly - we're calling a setter from a getter which feels bad and
+      // wrong
+      assertGame(game);
+      if (game.user.isActiveGM) {
+        void this.resetPassingTurns();
+      }
       return this.defaultPassingTurns;
     }
     return this.turnInfo[roundIndex]?.turnsRemaining ?? 0;

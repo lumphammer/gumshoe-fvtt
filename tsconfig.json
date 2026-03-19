@@ -3,7 +3,6 @@
   "exclude": ["packages"],
   "compilerOptions": {
     // "noErrorTruncation": true
-    "skipLibCheck": false,
     "noImplicitAny": false,
   },
   "references": [
