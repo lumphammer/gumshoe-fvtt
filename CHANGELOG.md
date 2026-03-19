@@ -4,10 +4,13 @@
 
 ## Unreleased
 
+* Completely reworked how combats work behind the scenes.
+* GM can now drag & drop combatants in the sidebar to re-order them. Use this for situations like "jumping in" where combatant order can change on the fly (Fixes #87, the oldest bug open issue - 2021!)
 * Fixes for some issues encountered on Forge VTT:
   * Error message in console about `cssRules`.
   * File picker not showing "Forge Assets" and "Bazaaar".
-* Behind the scenes: completely reworked combat, in preparation for being able to do more advanmced combat stuff in future.
+* Fixes an issue where the "long notes" fields might not work until you "edit" one of the others first.
+* Most of the dynamic resources were missing from the token config page.
 
 
 ## 9.10 (2025-06-08)
