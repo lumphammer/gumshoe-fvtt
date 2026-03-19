@@ -2,7 +2,9 @@
   "extends": "./packages/shared-fvtt-bits/dotfiles/import/tsconfig.fvtt.json",
   "exclude": ["packages"],
   "compilerOptions": {
+    "lib": ["DOM", "ESNext"],
     // "noErrorTruncation": true
+    // "skipLibCheck": false,
     "noImplicitAny": false,
   },
   "references": [
