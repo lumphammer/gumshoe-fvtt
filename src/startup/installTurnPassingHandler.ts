@@ -27,6 +27,7 @@ export function installTurnPassingHandler() {
           !combat ||
           !combatant ||
           !isTurnPassingCombatant(combatant) ||
+          // @ts-expect-error some oddity with combatant types
           combatant.system.passingTurnsRemaining <= 0
         ) {
           return;
@@ -36,6 +37,7 @@ export function installTurnPassingHandler() {
           updateData.round = 1;
         }
         const turnIndex = combat.turns.findIndex((c) => c.id === combatantId);
+        // @ts-expect-error some oddity with combatant types
         void combatant.system.removePassingTurn();
         if (turnIndex !== undefined && turnIndex >= 0) {
           updateData.turn = turnIndex;
