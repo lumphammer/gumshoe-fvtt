@@ -2,7 +2,7 @@
 
 (Skipped version numbers are testing releases.)
 
-## Unreleased
+## 9.17 (2026-03-19)
 
 * Completely reworked how combats work behind the scenes.
 * GM can now drag & drop combatants in the sidebar to re-order them. Use this for situations like "jumping in" where combatant order can change on the fly (Fixes #87, the oldest bug open issue - 2021!)
