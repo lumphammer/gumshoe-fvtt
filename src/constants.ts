@@ -65,6 +65,7 @@ export const requestTurnPass = `${systemId}.requestTurnPass`;
 export const socketScope = `system.${systemId}`;
 export const settingsCloseAttempted = `${systemId}.settingsCloseAttempted`;
 export const themeHMR = `${systemId}:themeHMR`;
+export const nextTurn = `${systemId}.nextTurn`;
 
 // css classes
 export const abilityChatMessageClassName = "investigator-ability-test";
