@@ -1,7 +1,7 @@
 import { weapon } from "../../../constants";
 import { sortEntitiesByName } from "../../../functions/utilities";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
-import { assertActiveCharacterActor } from "../../../module/actors/exports";
+import { assertActiveCharacterActor } from "../../../module/actors/types";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { WeaponRowEdit } from "./WeaponRowEdit";

@@ -13,34 +13,37 @@ type CombatUpdateData = foundry.documents.Combat.UpdateData;
 export function installTurnPassingHandler() {
   Hooks.once("ready", () => {
     assertGame(game);
-    if (game.user.isGM) {
-      Hooks.on(
-        constants.requestTurnPass,
-        ({ combatantId }: RequestTurnPassArgs) => {
-          systemLogger.log("requestTurnPass", combatantId);
-          assertGame(game);
-          const combat = game.combat;
-          const combatant = game.combat?.combatants.get(combatantId);
-          if (
-            !combat ||
-            !combatant ||
-            !isTurnPassingCombatant(combatant) ||
-            combatant.system.passingTurnsRemaining <= 0
-          ) {
-            return;
-          }
-          const updateData: CombatUpdateData = {};
-          if (combat.round === 0) {
-            updateData.round = 1;
-          }
-          const turnIndex = combat.turns.findIndex((c) => c.id === combatantId);
-          void combatant.system.removePassingTurn();
-          if (turnIndex !== undefined && turnIndex >= 0) {
-            updateData.turn = turnIndex;
-          }
-          void combat.update(updateData);
-        },
-      );
-    }
+    Hooks.on(
+      constants.requestTurnPass,
+      ({ combatantId }: RequestTurnPassArgs) => {
+        if (!game.user.isActiveGM) {
+          return;
+        }
+        systemLogger.log("requestTurnPass", combatantId);
+        assertGame(game);
+        const combat = game.combat;
+        const combatant = game.combat?.combatants.get(combatantId);
+        if (
+          !combat ||
+          !combatant ||
+          !isTurnPassingCombatant(combatant) ||
+          // @ts-expect-error some oddity with combatant types
+          combatant.system.passingTurnsRemaining <= 0
+        ) {
+          return;
+        }
+        const updateData: CombatUpdateData = {};
+        if (combat.round === 0) {
+          updateData.round = 1;
+        }
+        const turnIndex = combat.turns.findIndex((c) => c.id === combatantId);
+        // @ts-expect-error some oddity with combatant types
+        void combatant.system.removePassingTurn();
+        if (turnIndex !== undefined && turnIndex >= 0) {
+          updateData.turn = turnIndex;
+        }
+        void combat.update(updateData);
+      },
+    );
   });
 }

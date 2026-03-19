@@ -26,7 +26,7 @@ function isInvestigativeAbilityItem(x: unknown): x is InvestigativeAbilityItem {
   return x instanceof Item && x.type === "investigativeAbility";
 }
 
-function isEquipmentItem(x: unknown): x is EquipmentItem {
+function isEquipmentItem(x: Item.Stored): x is EquipmentItem & Item.Stored {
   return x instanceof Item && x.type === "equipment";
 }
 
@@ -39,7 +39,7 @@ export class ActiveCharacterModel<
   TActor extends Actor,
 > extends TypeDataModel<TSchema, TActor> {
   getAbilities(): AbilityItem[] {
-    return this.parent.items.filter(isAbilityItem);
+    return this.parent.items.filter((item) => isAbilityItem(item));
   }
 
   getGeneralAbilities(): GeneralAbilityItem[] {
@@ -57,7 +57,7 @@ export class ActiveCharacterModel<
   }
 
   getWeapons(): WeaponItem[] {
-    return this.parent.items.filter(isWeaponItem);
+    return this.parent.items.filter((item) => isWeaponItem(item));
   }
 
   getTrackerAbilities(): AbilityItem[] {
@@ -196,7 +196,7 @@ export class ActiveCharacterModel<
 
   getPushPool(): GeneralAbilityItem | undefined {
     return this.parent.items.find(
-      (item): item is GeneralAbilityItem =>
+      (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
         isGeneralAbilityItem(item) && item.system.isPushPool,
     );
   }

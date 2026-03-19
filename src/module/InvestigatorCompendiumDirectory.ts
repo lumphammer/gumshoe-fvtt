@@ -207,14 +207,11 @@ export class InvestigatorCompendiumDirectory extends CompendiumDirectory {
     ui.notifications?.info(
       `Beginning import of compendium pack ${verified.label}`,
     );
-    const pack = await CompendiumCollection.createCompendium(
-      {
-        type: verified.entity,
-        label: verified.label,
-        name,
-      },
-      { broadcast: false, data: [] },
-    );
+    const pack = await CompendiumCollection.createCompendium({
+      type: verified.entity,
+      label: verified.label,
+      name,
+    });
     const maker = {
       Actor,
       Item,

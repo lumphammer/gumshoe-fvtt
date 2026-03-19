@@ -273,7 +273,7 @@ export class PCModel extends ActiveCharacterModel<
   // }
 
   getPersonalDetails(): PersonalDetailItem[] {
-    return this.parent.items.filter(isPersonalDetailItem);
+    return this.parent.items.filter((item) => isPersonalDetailItem(item));
   }
 
   getMwItems(): { [type in MwType]: Item[] } {
@@ -408,7 +408,8 @@ export class PCModel extends ActiveCharacterModel<
 
   getNonContinuityCards = (): CardItem[] => {
     return this.parent.items.filter(
-      (item): item is CardItem => isCardItem(item) && !item.system.continuity,
+      (item): item is CardItem & Item.Stored<"card"> =>
+        isCardItem(item) && !item.system.continuity,
     );
   };
 
