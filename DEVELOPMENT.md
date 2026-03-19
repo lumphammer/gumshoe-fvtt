@@ -204,6 +204,8 @@ What this enables (list subject to change):
 > * Uses GitHub Releases instead of GitLab Generic Packages
 >
 > As of 8.2.1 We no longer need to create the release by hand on the Foundry website - it's all handled by a GitHub action. You can see the package management page at https://foundryvtt.com/packages/investigator/edit to check it's worked if you like.
+>
+> As of 8.3, we're dropping the patch number, and also dropping the prerelease signifiers. The latter is because FVTT doesn't recognise them, making it hard to upgrade from a prerelease. The former is to fall in line with FVTT's own numbering scheme, and because the semantics of "semantic versioning" don't really apply to an FVTT package.
 
 To perform a release:
 
