@@ -20,6 +20,7 @@ import { installItemImageHookHandler } from "./startup/installItemImageHookHandl
 import { installKeepTokenImageInSyncWithActor } from "./startup/installKeepTokenImageInSyncWithActor";
 import { installNewCharacterDefaultOccupationHookHandler } from "./startup/installNewCharacterDefaultOccupationHookHandler";
 import { installNewCharacterPacksHookHandler } from "./startup/installNewCharacterPacksHookHandler";
+import { installNextTurnHandler } from "./startup/installNextTurnHandler";
 import { installPersonalDetailHookHandler } from "./startup/installPersonalDetailHookHandler";
 import { installRenderSettingsHandler } from "./startup/installRenderSettingsHandler";
 import { installResourceUpdateHookHandler } from "./startup/installResourceUpdateHookHandler";
@@ -83,6 +84,7 @@ installEquipmentAddedNotifier();
 installCardCategoryHookHandler();
 installItemCombatAbilityHandler();
 installActorCombatAbilityHandler();
+installNextTurnHandler();
 
 /**
  * Recursively get all layer names from a CSSRule and its children.

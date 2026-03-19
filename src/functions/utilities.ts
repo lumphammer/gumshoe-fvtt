@@ -164,6 +164,10 @@ export function requestTurnPass(combatantId: string | null | undefined) {
   broadcastHook(constants.requestTurnPass, payload);
 }
 
+export function requestNextTurn() {
+  broadcastHook(constants.nextTurn, null);
+}
+
 export const makeLogger = (name: string) =>
   console.log.bind(console, `[${name}]`);
 
