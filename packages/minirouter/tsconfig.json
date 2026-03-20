@@ -1,11 +1,12 @@
 {
-	"extends": "../shared-fvtt-bits/dotfiles/import/tsconfig.fvtt.json",
-	"exclude": ["dist"],
-	"compilerOptions": {
-		"composite": true,
-		"declaration": true,
-		"noEmit": false,
-		"emitDeclarationOnly": true,
-		"outDir": "dist",
-	}
+  "extends": "../shared-fvtt-bits/dotfiles/import/tsconfig.fvtt.json",
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "composite": true,
+    "declaration": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+  },
 }
