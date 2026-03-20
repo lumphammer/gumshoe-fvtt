@@ -83,7 +83,7 @@ export const getFolderDescendants = <T extends Document>(folder: any): T[] => {
 
 // version of Object.prototype.hasOwnProperty that's safe even when prototype
 // has been overridden
-export const hasOwnProperty = (x: any, y: string) =>
+export const hasOwnProperty = (x: any, y: string): x is { [y]: unknown } =>
   Object.prototype.hasOwnProperty.call(x, y);
 
 // /**
@@ -146,13 +146,16 @@ export function renameProperty<T>(
  * Send out a socket message to all clients, causing them to call the given hook
  * with the given payload.
  */
-function broadcastHook<T>(hook: string, payload: T) {
-  const socketHookAction: SocketHookAction<T> = {
+function broadcastHook<THook extends Hooks.HookName>(
+  hook: THook,
+  payload: Hooks.HookParameters<THook>,
+) {
+  const socketHookAction: SocketHookAction<THook> = {
     hook,
     payload,
   };
   game.socket?.emit(constants.socketScope, socketHookAction);
-  Hooks.call(hook as any, payload);
+  Hooks.call(hook, ...payload);
 }
 
 /**
@@ -161,11 +164,11 @@ function broadcastHook<T>(hook: string, payload: T) {
 export function requestTurnPass(combatantId: string | null | undefined) {
   if (!combatantId) return;
   const payload: RequestTurnPassArgs = { combatantId };
-  broadcastHook(constants.requestTurnPass, payload);
+  broadcastHook(constants.requestTurnPass, [payload]);
 }
 
 export function requestNextTurn() {
-  broadcastHook(constants.nextTurn, null);
+  broadcastHook(constants.nextTurn, []);
 }
 
 export const makeLogger = (name: string) =>

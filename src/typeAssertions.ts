@@ -1,8 +1,15 @@
 import { hasOwnProperty } from "./functions/utilities";
 import { EquipmentFieldType, SocketHookAction } from "./types";
 
-export function isSocketHookAction<T>(x: unknown): x is SocketHookAction<T> {
-  return hasOwnProperty(x, "hook") && hasOwnProperty(x, "payload");
+export function isSocketHookAction(
+  x: unknown,
+): x is SocketHookAction<Hooks.HookName> {
+  return (
+    hasOwnProperty(x, "hook") &&
+    typeof x["hook"] === "string" &&
+    hasOwnProperty(x, "payload") &&
+    Array.isArray(x["payload"])
+  );
 }
 
 export function isEquipmentFieldType(type: string): type is EquipmentFieldType {

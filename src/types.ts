@@ -7,9 +7,9 @@ import * as constants from "./constants";
  * data send out over the game websocket to request all clients to call the
  * hook `hook` with the given payload
  */
-export type SocketHookAction<T> = {
-  hook: string;
-  payload: T;
+export type SocketHookAction<THook extends Hooks.HookName> = {
+  hook: THook;
+  payload: Hooks.HookParameters<THook>;
 };
 
 /**
