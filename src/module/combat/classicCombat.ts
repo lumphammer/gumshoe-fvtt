@@ -92,16 +92,6 @@ export class ClassicCombatModel
     return classicCombatSchema;
   }
 
-  protected _areTurnsSorted(turns: TurnInfo[]): boolean {
-    const initiatives = turns.map(
-      (t) => this.parent.combatants.get(t.combatantId)?.system.initiative ?? 0,
-    );
-    const turnsAreSorted = initiatives.every(
-      (initiative, i) => i === 0 || initiative > initiatives[i - 1],
-    );
-    return turnsAreSorted;
-  }
-
   // ///////////////////////////////////////////////////////////////////////////
   // _preCreate
   override _preCreate(
@@ -138,7 +128,7 @@ export class ClassicCombatModel
     if (round === undefined) {
       throw new Error("Round not found");
     }
-    const newCombatants = (documents as unknown[]).filter(isClassicCombatant);
+    const newCombatants = documents.filter(isClassicCombatant);
 
     let turns: TurnInfo[];
     if (this.parent.round === 0) {
@@ -166,15 +156,7 @@ export class ClassicCombatModel
 
     // update
     await this.parent.update({
-      system: {
-        rounds: [
-          ...this.rounds.slice(0, parent.round),
-          {
-            turns,
-          },
-          ...this.rounds.slice(parent.round + 1),
-        ],
-      },
+      system: { rounds },
     });
   }
 
@@ -216,7 +198,7 @@ export class ClassicCombatModel
       oldRound.turns.filter((t) => !ids.includes(t.combatantId)) ?? [];
 
     const turnIndex =
-      oldRound.turnIndex === null
+      oldRound.turnIndex === null || turns.length === 0
         ? null
         : Math.min(oldRound.turnIndex, turns.length - 1);
 
@@ -405,8 +387,9 @@ export class ClassicCombatModel
     systemLogger.log("ClassicCombatModel#nextTurn called");
     assertGame(game);
 
-    // if we're not a GM, then fire off a signel to get the active GM's client
-    // to do it
+    // if we're not a GM, then fire off a signal to get the active GM's client
+    // to do it. It's fine if we're not the active GM - any GM will be able to
+    // do it.
     if (!game.user.isGM) {
       requestNextTurn();
       return;

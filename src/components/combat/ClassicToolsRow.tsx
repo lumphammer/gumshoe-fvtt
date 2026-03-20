@@ -2,6 +2,7 @@ import { memo, useCallback } from "react";
 
 import { localize } from "./functions";
 import { useClassicTrackerContext } from "./TrackerContext";
+import { Translate } from "../Translate";
 
 export const ClassicToolsRow = memo(function ToolsRow() {
   const { combat, turnIds } = useClassicTrackerContext();
@@ -28,9 +29,8 @@ export const ClassicToolsRow = memo(function ToolsRow() {
         className=""
         onClick={handleSortCombatants}
         data-tooltip=""
-        aria-label={localize("COMBAT.RoundPrev")}
       >
-        Sort combatants
+        <Translate>SortCombatants</Translate>
       </button>
     </nav>
   );

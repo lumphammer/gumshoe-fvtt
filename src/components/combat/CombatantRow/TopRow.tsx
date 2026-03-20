@@ -32,9 +32,7 @@ export const TopRow = memo(function TopRow() {
         <TurnPassingInitiative />
       ) : isClassicCombatant(combatant) ? (
         <ClassicInitiative />
-      ) : (
-        "null"
-      )}
+      ) : null}
     </div>
   );
 });
