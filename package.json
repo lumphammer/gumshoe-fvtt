@@ -91,7 +91,7 @@
     "turndown": "^7.2.2",
     "typescript": "6.0.2",
     "vite": "8.0.3",
-    "vite-plugin-svgr": "^4.5.0",
+    "vite-plugin-svgr": "^5.0.0",
     "vitest": "^3.2.4",
     "xss": "^1.0.15",
     "yamljs": "^0.3.0",
