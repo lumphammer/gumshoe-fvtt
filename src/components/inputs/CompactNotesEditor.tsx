@@ -43,9 +43,7 @@ export const CompactNotesEditor = ({
   // single item, which probably wouldn't scale very well.
 
   const [richTextEditMode, setRichTextEditMode] = useState(false);
-  const [getRichTextSource, setRichTextSource] = useStateWithGetter(
-    note.source,
-  );
+  const [getRichTextSource] = useStateWithGetter(note.source);
 
   const onSaveRichText = useCallback(async () => {
     await onChange(getRichTextSource());
@@ -79,9 +77,10 @@ export const CompactNotesEditor = ({
             onClick={goEditMode}
           >
             <RichTextEditor
-              onChange={setRichTextSource}
-              onSave={onSaveRichText}
-              value={note.source}
+              className=""
+              onChange={onSaveRichText}
+              html={note.source}
+              documentUUID=""
             />
           </div>
         ) : (

@@ -116,10 +116,11 @@ export const NotesEditor = ({
   } else if (format === "richText") {
     editor = (
       <RichTextEditor
+        // xxx
+        documentUUID={""}
         className={className}
-        value={source}
-        onSave={onSave}
-        onChange={setSource}
+        html={source}
+        onChange={onSave}
       />
     );
   }
