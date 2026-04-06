@@ -134,6 +134,21 @@ export const flaggedMigrations: FlaggedMigrations = {
       }
       return updateData;
     },
+    /**
+     *
+     */
+    convertNotesObjectsToHTML: (item: any, updateData: any) => {
+      if (!updateData.system) {
+        updateData.system = {};
+      }
+      if (item.type === c.card) {
+        updateData.system.description = item.system.description.html;
+        updateData.system.effects = item.system.description.effects;
+      } else {
+        updateData.system.notes = item.system.notes.html;
+      }
+      return updateData;
+    },
   },
   actor: {
     /**

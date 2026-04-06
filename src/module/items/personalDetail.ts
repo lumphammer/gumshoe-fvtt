@@ -1,11 +1,9 @@
 import { NumberField, StringField, TypeDataModel } from "../../fvtt-exports";
-import { NoteWithFormat } from "../../types";
-import { createNotesWithFormatField } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const personalDetailSchema = {
   // notes: NoteWithFormat;
-  notes: createNotesWithFormatField(),
+  notes: new StringField({ nullable: false, required: true }),
   // slotIndex: number;
   slotIndex: new NumberField({ nullable: false, required: true, initial: 0 }),
   // compendiumPackId: string | null;
@@ -20,7 +18,7 @@ export class PersonalDetailModel extends TypeDataModel<
     return personalDetailSchema;
   }
 
-  setNotes = async (newNotes: NoteWithFormat): Promise<void> => {
+  setNotes = async (newNotes: string): Promise<void> => {
     await this.parent.update({ system: { notes: newNotes } });
   };
 

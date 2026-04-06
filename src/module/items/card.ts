@@ -8,8 +8,7 @@ import {
   TypeDataModel,
 } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
-import { CardSystemData, NoteWithFormat } from "../../types";
-import { createNotesWithFormatField } from "../schemaFields";
+import { CardSystemData } from "../../types";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const cardSchema = {
@@ -25,8 +24,8 @@ export const cardSchema = {
     ),
   ),
   continuity: new BooleanField({ nullable: false, required: true }),
-  description: createNotesWithFormatField(),
-  effects: createNotesWithFormatField(),
+  description: new StringField({ nullable: false, required: true }),
+  effects: new StringField({ nullable: false, required: true }),
   flags: new ArrayField(new StringField({ nullable: false, required: true }), {
     nullable: false,
     required: true,
@@ -59,11 +58,11 @@ export class CardModel extends TypeDataModel<typeof cardSchema, CardItem> {
     return this.parent.update({ system: { subtitle } });
   };
 
-  setDescription = (description: NoteWithFormat) => {
+  setDescription = (description: string) => {
     return this.parent.update({ system: { description } });
   };
 
-  setEffects = (effects: NoteWithFormat) => {
+  setEffects = (effects: string) => {
     return this.parent.update({ system: { effects } });
   };
 

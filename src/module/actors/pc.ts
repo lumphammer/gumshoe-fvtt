@@ -1,7 +1,6 @@
 import { CardsAreaSettings } from "../../components/cards/types";
 import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { convertNotes } from "../../functions/textFunctions";
 import {
   ArrayField,
   NumberField,
@@ -64,21 +63,8 @@ export const pcSchema = {
   }),
 
   longNotes: new ArrayField(
-    new SchemaField(
-      {
-        source: new StringField({ nullable: false, required: true }),
-        html: new StringField({ nullable: false, required: true }),
-      },
-      { required: false },
-    ),
+    new StringField({ nullable: false, required: true }),
   ),
-  longNotesFormat: new StringField({
-    nullable: false,
-    required: true,
-    initial: "richText",
-    choices: ["plain", "richText", "markdown"],
-  }),
-
   sheetTheme: new StringField({
     nullable: true,
     required: true,
@@ -99,16 +85,6 @@ type InferredBaseNote =
     any
   >
     ? SourceData<Schema>
-    : never;
-
-type InferredNoteFormat =
-  typeof pcSchema.longNotesFormat extends StringField<
-    any,
-    any,
-    any,
-    infer PersistedType
-  >
-    ? PersistedType
     : never;
 
 /**
@@ -319,24 +295,6 @@ export class PCModel extends ActiveCharacterModel<
     const longNotes = [...(this.longNotes || [])];
     longNotes[i] = note;
     return this.parent.update({ system: { longNotes } });
-  };
-
-  setLongNotesFormat = async (longNotesFormat: InferredNoteFormat) => {
-    const longNotesPromises = (this.longNotes || []).map<
-      Promise<InferredBaseNote>
-    >(async (note) => {
-      const { newHtml, newSource } = await convertNotes(
-        this.longNotesFormat,
-        longNotesFormat,
-        note?.source ?? "",
-      );
-      return {
-        html: newHtml,
-        source: newSource,
-      };
-    });
-    const longNotes = await Promise.all(longNotesPromises);
-    return this.parent.update({ system: { longNotes, longNotesFormat } });
   };
 
   getShortNote = (i: number): string => {

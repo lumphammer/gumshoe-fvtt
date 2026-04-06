@@ -6,8 +6,6 @@ import {
   StringField,
   TypeDataModel,
 } from "../../fvtt-exports";
-import { NoteWithFormat } from "../../types";
-import { createNotesWithFormatField } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const weaponSchema = {
@@ -49,7 +47,7 @@ export const weaponSchema = {
     required: true,
     initial: 0,
   }),
-  notes: createNotesWithFormatField(),
+  notes: new StringField({ nullable: false, required: true }),
   pointBlankDamage: new NumberField({
     nullable: false,
     required: true,
@@ -122,7 +120,7 @@ export class WeaponModel extends TypeDataModel<
     });
   };
 
-  setNotes = async (newNotes: NoteWithFormat): Promise<void> => {
+  setNotes = async (newNotes: string): Promise<void> => {
     await this.parent.update({ system: { notes: newNotes } });
   };
 

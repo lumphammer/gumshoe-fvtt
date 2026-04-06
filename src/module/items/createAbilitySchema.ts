@@ -5,7 +5,6 @@ import {
   SchemaField,
   StringField,
 } from "../../fvtt-exports";
-import { createNotesWithFormatField } from "../schemaFields";
 
 export const createAbilitySchema = () => ({
   allowPoolToExceedRating: new BooleanField({
@@ -38,7 +37,7 @@ export const createAbilitySchema = () => ({
     required: true,
     initial: 0,
   }),
-  notes: createNotesWithFormatField(),
+  notes: new StringField({ nullable: false, required: true }),
   occupational: new BooleanField({
     nullable: false,
     required: true,
