@@ -1,7 +1,3 @@
-import {
-  moveStats,
-  upgradeLongNotesToRichText,
-} from "./legacy/actorMigrations";
 import { migrateItemData } from "./migrateItemData";
 import { FlaggedMigrations } from "./types";
 
@@ -16,12 +12,6 @@ export const migrateActorData = function (
   flaggedMigrations: FlaggedMigrations,
 ) {
   const updateData: any = {};
-
-  // Actor Data Updates
-  // _migrateActorMovement(actor, updateData);
-  // _migrateActorSenses(actor, updateData);
-  upgradeLongNotesToRichText(actorData, updateData);
-  moveStats(actorData, updateData);
 
   for (const actorMigration in flaggedMigrations.actor) {
     flaggedMigrations.actor[actorMigration](actorData, updateData);

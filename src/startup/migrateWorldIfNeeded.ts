@@ -3,7 +3,6 @@ import { assertGame } from "../functions/isGame";
 import { mapObject, systemLogger } from "../functions/utilities";
 import { flaggedMigrations } from "../migrations/flaggedMigrations";
 import { getFlaggedMigrations } from "../migrations/getFlaggedMigrations";
-import { getNeedsMigrationBasedOnLegacyVersionSystem } from "../migrations/legacy/getNeedsMigrationBasedOnLegacyVersionSystem";
 import { migrateWorld } from "../migrations/migrateWorld";
 import {
   MigrationFlags,
@@ -54,17 +53,14 @@ export const migrateWorldIfNeeded = async () => {
     await settings.systemMigrationVersion.set(system.version);
   }
 
-  // now we carry on with the main migration logics
+  // now we carry on with the main migration logic
   // get the migrations that are flagged as needing to run
   const migrationFlags = settings.migrationFlags.get();
   const [needsMigrationBasedOnFlags, filteredMigrations, newMigrationFlags] =
     getFlaggedMigrations(migrationFlags, flaggedMigrations);
 
   // Perform the migration
-  if (
-    getNeedsMigrationBasedOnLegacyVersionSystem() ||
-    needsMigrationBasedOnFlags
-  ) {
+  if (needsMigrationBasedOnFlags) {
     await migrateWorld(filteredMigrations);
     await settings.migrationFlags.set(newMigrationFlags);
   }
