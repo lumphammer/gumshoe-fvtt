@@ -6,7 +6,6 @@ import { TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import {
   MWDifficulty,
-  NoteWithFormat,
   SituationalModifier,
   SpecialitiesMode,
   Unlock,
@@ -296,7 +295,7 @@ export abstract class AbilityModel<
     });
   };
 
-  setNotes = async (newNotes: NoteWithFormat): Promise<void> => {
+  setNotes = async (newNotes: string): Promise<void> => {
     await this.parent.update({ system: { notes: newNotes } });
   };
 

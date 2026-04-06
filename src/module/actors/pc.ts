@@ -76,17 +76,6 @@ export const pcSchema = {
   }),
 };
 
-type InferredBaseNote =
-  typeof pcSchema.longNotes.element extends SchemaField<
-    infer Schema,
-    any,
-    any,
-    any,
-    any
-  >
-    ? SourceData<Schema>
-    : never;
-
 /**
  * System data for a PC
  */
@@ -291,7 +280,7 @@ export class PCModel extends ActiveCharacterModel<
     return this.longNotes?.[i] ?? "";
   };
 
-  setLongNote = (i: number, note: InferredBaseNote) => {
+  setLongNote = (i: number, note: string) => {
     const longNotes = [...(this.longNotes || [])];
     longNotes[i] = note;
     return this.parent.update({ system: { longNotes } });

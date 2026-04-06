@@ -3,7 +3,6 @@
 /* eslint "@typescript-eslint/explicit-function-return-type": "error" */
 
 import { settings } from "../../settings/settings";
-import { NoteWithFormat } from "../../types";
 import { isActiveCharacterActor } from "../actors/types";
 
 /**
@@ -29,16 +28,9 @@ export class InvestigatorItem<
     }
   }
 
-  getNotes = (): NoteWithFormat | undefined => {
-    const system = this.system;
-    const notes =
-      "notes" in system ? (system.notes as NoteWithFormat) : undefined;
-    return (
-      notes ?? {
-        format: "richText",
-        source: "",
-        html: "",
-      }
-    );
-  };
+  // getNotes = (): string | undefined => {
+  //   const system = this.system;
+  //   const notes = "notes" in system ? system.notes : undefined;
+  //   return notes;
+  // };
 }

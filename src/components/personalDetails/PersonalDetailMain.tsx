@@ -8,7 +8,7 @@ import { absoluteCover } from "../absoluteCover";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
-import { NotesEditorWithControls } from "../inputs/NotesEditorWithControls";
+import { RichTextEditor } from "../inputs/RichTextEditor";
 
 export const PersonalDetailMain = () => {
   const { item } = useItemSheetContext();
@@ -79,13 +79,7 @@ export const PersonalDetailMain = () => {
           ))}
         </select>
       </GridField>
-      <NotesEditorWithControls
-        allowChangeFormat
-        format={item.system.notes.format}
-        html={item.system.notes.html}
-        source={item.system.notes.source}
-        onSave={item.system.setNotes}
-      />
+      <RichTextEditor html={item.system.notes} onSave={item.system.setNotes} />
     </InputGrid>
   );
 };

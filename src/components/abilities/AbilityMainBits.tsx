@@ -13,7 +13,7 @@ import { Button, ToolbarButton } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
-import { NotesEditorWithControls } from "../inputs/NotesEditorWithControls";
+import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 import { AbilityBadges } from "./AbilityBadges";
@@ -42,12 +42,7 @@ export const AbilityMainBits = () => {
   );
 
   useEffect(() => {
-    const callback = (
-      actor: Actor,
-      diff: unknown,
-      options: unknown,
-      id: string,
-    ) => {
+    const callback = (actor: Actor) => {
       if (actor.id === item?.actor?.id) {
         setActorInitiativeAbility(
           isActiveCharacterActor(item?.actor) &&
@@ -180,13 +175,8 @@ export const AbilityMainBits = () => {
         </GridField>
       )}
 
-      <NotesEditorWithControls
-        source={item.system.notes.source}
-        format={item.system.notes.format}
-        html={item.system.notes.html}
-        // setSource={ability.setNotesSource}
-        // setFormat={ability.setNotesFormat}
-        allowChangeFormat
+      <RichTextEditor
+        html={item.system.notes}
         onSave={item.system.setNotes}
         css={{
           gridRow: "notes",

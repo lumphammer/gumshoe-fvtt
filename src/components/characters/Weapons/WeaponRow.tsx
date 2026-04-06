@@ -106,7 +106,7 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
     });
   }, [ability, bonusPool, spend, weapon]);
 
-  const rawHtml = weapon.system.notes.html;
+  const rawHtml = weapon.system.notes;
 
   const [html, setHtml] = useState("");
 

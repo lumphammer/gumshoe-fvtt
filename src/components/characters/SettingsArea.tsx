@@ -8,7 +8,6 @@ import { assertPCActor } from "../../module/actors/pc";
 import { runtimeConfig } from "../../runtime";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
-import { NoteFormat } from "../../types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -51,21 +50,6 @@ export const SettingArea = () => {
             <option value={defaultThemeIdentifier}>
               {getTranslated("Default")} ({defaultThemeDisplayName})
             </option>
-          </select>
-        </GridField>
-
-        <GridField label="Notes Format">
-          <select
-            value={actor.system.longNotesFormat}
-            onChange={(e) => {
-              void actor.system.setLongNotesFormat(
-                e.currentTarget.value as NoteFormat,
-              );
-            }}
-          >
-            <option value={"plain"}>{getTranslated("Plain")}</option>
-            <option value={"markdown"}>{getTranslated("Markdown")}</option>
-            <option value={"richText"}>{getTranslated("RichText")}</option>
           </select>
         </GridField>
 

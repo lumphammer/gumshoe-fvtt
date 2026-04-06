@@ -80,8 +80,3 @@ export const cleanAndEnrichHtml = async (originalHtml: string) => {
   const xssedHtml = await cleanHtml(enrichedHtml);
   return xssedHtml;
 };
-
-// /////////////////////////////////////////////////////////////////////////////
-// Converters
-// There are no plaintext <=> markdown converters because it's a no-op.
-// /////////////////////////////////////////////////////////////////////////////

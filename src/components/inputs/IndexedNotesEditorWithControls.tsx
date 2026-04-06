@@ -1,31 +1,34 @@
 import { useCallback } from "react";
 
-import { NoteWithFormat } from "../../types";
-import {
-  NotesEditorWithControls,
-  NotesEditorWithControlsProps,
-} from "./NotesEditorWithControls";
-
-type IndexedNotesEditorWithControlsProps = Omit<
-  NotesEditorWithControlsProps,
-  "onSave"
-> & {
-  index: number;
-  onSave: (note: NoteWithFormat, index: number) => void;
-};
+import { RichTextEditor } from "./RichTextEditor";
 
 export const IndexedNotesEditorWithControls = ({
   index,
   onSave,
-  ...rest
-}: IndexedNotesEditorWithControlsProps) => {
+  className,
+  documentUUID,
+  html,
+}: {
+  index: number;
+  onSave: (note: string, index: number) => void;
+  className?: string;
+  documentUUID?: string;
+  html: string;
+}) => {
   const handleSave = useCallback(
-    (note: NoteWithFormat) => {
+    (note: string) => {
       onSave(note, index);
     },
     [index, onSave],
   );
-  return <NotesEditorWithControls onSave={handleSave} {...rest} />;
+  return (
+    <RichTextEditor
+      onSave={handleSave}
+      className={className}
+      documentUUID={documentUUID}
+      html={html}
+    />
+  );
 };
 
 IndexedNotesEditorWithControls.displayName = "IndexedNotesEditorWithControls";

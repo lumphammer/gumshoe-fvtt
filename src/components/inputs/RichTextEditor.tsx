@@ -14,15 +14,15 @@ export function stripStyleAttributes(html: string) {
 }
 
 export const RichTextEditor = ({
-  html,
-  onChange,
+  className = "",
   documentUUID,
-  className,
+  html,
+  onSave,
 }: {
-  className: string | undefined;
+  className?: string;
+  documentUUID?: string;
   html: string;
-  onChange: (html: string) => void;
-  documentUUID: string;
+  onSave: (html: string) => void;
 }) => {
   // const [html, setHtml] = createSignal(props.initialHtml);
   const divRef = useRef<HTMLDivElement>(null);
@@ -38,11 +38,11 @@ export const RichTextEditor = ({
       name: "system.text",
       value: html,
     });
-    editor.addEventListener("change", () => {
+    editor.addEventListener("save", () => {
       console.log("change", editor.value);
       const strippedHTML = stripStyleAttributes(editor.value);
       console.log("strippedHTML", strippedHTML);
-      onChange(strippedHTML);
+      onSave(strippedHTML);
     });
     divRef.current?.appendChild(editor);
     const div = divRef.current;
@@ -50,7 +50,7 @@ export const RichTextEditor = ({
       div?.removeChild(editor);
       editor.remove();
     };
-  }, [documentUUID, html, onChange]);
+  }, [documentUUID, html, onSave]);
 
   return (
     <div
