@@ -90,7 +90,7 @@
     "tsx": "^4.21.0",
     "turndown": "^7.2.4",
     "typescript": "6.0.2",
-    "vite": "8.0.3",
+    "vite": "8.0.5",
     "vite-plugin-svgr": "^5.2.0",
     "vitest": "^3.2.4",
     "xss": "^1.0.15",
