@@ -21,10 +21,12 @@ export const RichTextEditor = ({
   const divRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
   const [enriched, setEnriched] = useState("");
+  const enrichedRef = useRef(enriched);
 
   useEffect(() => {
     void cleanAndEnrichHtml(html).then((enriched) => {
       setEnriched(enriched);
+      enrichedRef.current = enriched;
     });
   }, [html]);
 
@@ -39,14 +41,21 @@ export const RichTextEditor = ({
       collaborate: true,
       documentUUID: doc.uuid,
       enriched,
-      // enriched: html,
-      // compact: true,
       name,
       value: html,
     });
     editor.addEventListener("save", () => {
       // const strippedHTML = stripStyleAttributes(editor.value);
       onSave(editor.value);
+      // editor.remove();
+      setTimeout(() => {
+        const contentElement = editor
+          .getElementsByClassName("editor-content")
+          .item(0);
+        if (contentElement) {
+          contentElement.innerHTML = enrichedRef.current;
+        }
+      }, 0);
     });
     console.log("mounting");
     divRef.current?.appendChild(editor);
