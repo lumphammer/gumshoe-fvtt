@@ -216,6 +216,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
           gridColumn: "notes / -1",
           gridRow: gridRow + 1,
         }}
+        name="notes"
         note={weapon.system.notes}
         onSave={weapon.system.setNotes}
       />

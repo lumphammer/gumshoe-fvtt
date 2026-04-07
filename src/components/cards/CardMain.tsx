@@ -76,9 +76,9 @@ export const CardMain = () => {
                   }}
                 >
                   <RichTextEditor
+                    name="description"
                     html={item.system.description}
                     className=""
-                    documentUUID=""
                     onSave={item.system.setDescription}
                   />
                 </InputGrid>
@@ -96,9 +96,9 @@ export const CardMain = () => {
                   }}
                 >
                   <RichTextEditor
+                    name="effects"
                     html={item.system.effects}
                     className=""
-                    documentUUID=""
                     onSave={item.system.setEffects}
                   />
                 </InputGrid>

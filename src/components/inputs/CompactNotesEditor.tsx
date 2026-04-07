@@ -9,10 +9,12 @@ export const CompactNotesEditor = ({
   className,
   note,
   onSave,
+  name,
 }: {
   className?: string;
   note: string;
   onSave: (note: string) => Promise<void>;
+  name: string;
 }) => {
   // we do a little more work to avoid always rendering a TinyMCE for every
   // single item, which probably wouldn't scale very well.
@@ -30,12 +32,7 @@ export const CompactNotesEditor = ({
           height: "12em",
         }}
       >
-        <RichTextEditor
-          className=""
-          onSave={onSave}
-          html={note}
-          documentUUID=""
-        />
+        <RichTextEditor name={name} className="" onSave={onSave} html={note} />
       </div>
     </div>
   );

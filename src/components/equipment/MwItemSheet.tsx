@@ -153,6 +153,7 @@ export const MwItemSheet = () => {
           }}
         >
           <RichTextEditor
+            name="notes"
             html={item.system.notes}
             onSave={item.system.setNotes}
             css={{

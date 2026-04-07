@@ -193,6 +193,7 @@ export const NPCSheetFull = () => {
                 >
                   <NotesTypeContext.Provider value="npcNote">
                     <RichTextEditor
+                      name="notes"
                       html={actor.system.notes}
                       onSave={actor.system.setNotes}
                     />
@@ -213,6 +214,7 @@ export const NPCSheetFull = () => {
                 >
                   <NotesTypeContext.Provider value="npcNote">
                     <RichTextEditor
+                      name="gmNotes"
                       html={actor.system.gmNotes}
                       onSave={actor.system.setGMNotes}
                     />

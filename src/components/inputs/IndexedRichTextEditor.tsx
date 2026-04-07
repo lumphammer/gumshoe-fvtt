@@ -6,14 +6,15 @@ export const IndexedRichTextEditor = ({
   index,
   onSave,
   className,
-  documentUUID,
   html,
+  name,
 }: {
   index: number;
   onSave: (note: string, index: number) => void;
   className?: string;
   documentUUID?: string;
   html: string;
+  name: string;
 }) => {
   const handleSave = useCallback(
     (note: string) => {
@@ -23,9 +24,9 @@ export const IndexedRichTextEditor = ({
   );
   return (
     <RichTextEditor
+      name={name}
       onSave={handleSave}
       className={className}
-      documentUUID={documentUUID}
       html={html}
     />
   );

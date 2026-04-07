@@ -296,6 +296,7 @@ export const WeaponMain = () => {
           }}
         >
           <RichTextEditor
+            name="notes"
             html={item.system.notes}
             onSave={item.system.setNotes}
           />

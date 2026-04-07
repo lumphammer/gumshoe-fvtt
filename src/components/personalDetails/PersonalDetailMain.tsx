@@ -89,6 +89,7 @@ export const PersonalDetailMain = () => {
         <RichTextEditor
           html={item.system.notes}
           onSave={item.system.setNotes}
+          name="notes"
         />
       </div>
     </InputGrid>

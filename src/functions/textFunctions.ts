@@ -47,8 +47,6 @@ const createXss = memoizeNullaryOnce(async () => {
 async function enrichHtml(originalHtml: string): Promise<string> {
   if (typeof TextEditor !== "undefined") {
     const enrichedHtml = await TextEditor.enrichHTML(originalHtml, {
-      // @ts-expect-error foundry types don't know about `async` yet
-      async: true,
       // we will always include secrets in the output; the other way is to run
       // this at render time and conditionally include secrets based on
       // permission levels, but we handle that with styles

@@ -96,6 +96,7 @@ export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
         }}
       >
         <RichTextEditor
+          name="notes"
           html={item.system.notes}
           onSave={item.system.setNotes}
         />
