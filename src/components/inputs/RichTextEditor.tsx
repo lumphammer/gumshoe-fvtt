@@ -51,10 +51,16 @@ export const RichTextEditor = ({
   // this effect creates the actual HTMLProseMirrorElement instance and shoves
   // it into the DOM.
   useEffect(() => {
-    // drop out if there's already an editor here -  see [1]
-    if ((divRef.current?.childElementCount ?? 0) > 0) {
+    // drop out if there's already an open editor here -  see [1]
+    const child = divRef.current?.getElementsByTagName("prose-mirror").item(0);
+    if (
+      child instanceof foundry.applications.elements.HTMLProseMirrorElement &&
+      child.open
+    ) {
       systemLogger.log("editor still present, not creating a new one");
       return;
+    } else {
+      child?.remove();
     }
     // borrowed lovingly from
     // https://github.com/asacolips-projects/13th-age/blob/acd49c1d8b1eaf63f544c1d2e5a4aa1a74742c9e/src/module/item/power-sheet-v2.js#L148
@@ -70,8 +76,9 @@ export const RichTextEditor = ({
     editor.addEventListener("save", () => {
       // do the actual save
       onSave(editor.value);
-      // HTMLProseMirrorElement has no way to update the HTML once it's mounted,
-      // so we need to queue up a task to update it by hand from the ref now.
+      // [2] HTMLProseMirrorElement has no way to update the HTML once it's
+      // mounted, so we need to queue up a task to update it by hand from the
+      // ref now.
       setTimeout(() => {
         const contentElement = editor
           .getElementsByClassName("editor-content")
@@ -85,11 +92,12 @@ export const RichTextEditor = ({
     // attach to DOM
     divRef.current?.appendChild(editor);
 
+    const div = divRef.current;
     // teardown function
     return () => {
       // [1] if the editor is open, we do not remove it just because the HTML
-      // has updated. This is because (1) It's super annoying to have your
-      // editing session ended because some *else* saved, and (2) while we're in
+      // has updated. This is because 1. It's super annoying to have your
+      // editing session ended because some *else* saved, and 2. while we're in
       // edit mode, collaborative editing will keep the display up to date.
       // However, see [2].
       if (editor.open) {
@@ -97,6 +105,9 @@ export const RichTextEditor = ({
       } else {
         systemLogger.log("removing editor");
         editor.remove();
+        if (div) {
+          div.innerHTML = "";
+        }
       }
     };
   }, [doc.uuid, enriched, html, name, onSave]);
