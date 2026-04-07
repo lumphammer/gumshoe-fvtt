@@ -145,17 +145,24 @@ export const MwItemSheet = () => {
             <option value="retainer">Retainer</option>
           </select>
         </GridField>
-        <RichTextEditor
-          html={item.system.notes}
-          onSave={item.system.setNotes}
+        <div
           css={{
-            height: "100%",
-            "&&": {
-              resize: "none",
-            },
+            flex: 1,
+            position: "relative",
+            gridColumn: "1/-1",
           }}
-        />
-
+        >
+          <RichTextEditor
+            html={item.system.notes}
+            onSave={item.system.setNotes}
+            css={{
+              height: "100%",
+              "&&": {
+                resize: "none",
+              },
+            }}
+          />
+        </div>
         {/* <GridFieldStacked label="Notes">
           <AsyncTextArea
             value={item.getNotes().source}

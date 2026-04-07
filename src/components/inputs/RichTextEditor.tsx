@@ -37,6 +37,7 @@ export const RichTextEditor = ({
       compact: true,
       name: "system.text",
       value: html,
+      height: "auto",
     });
     editor.addEventListener("save", () => {
       console.log("change", editor.value);
@@ -57,10 +58,24 @@ export const RichTextEditor = ({
       ref={divRef}
       // className={`absolute inset-0 my-2 ${styles["rich-text-editor"]}`}
       css={{
+        // backgroundColor: "#99f7",
         position: "absolute",
-        inset: "2px",
-        marginLeft: "0.5em",
-        marginRight: "0.5em",
+        inset: "0px",
+        ".prosemirror": {
+          // backgroundColor: "#f997",
+          position: "absolute",
+          inset: "0px",
+          "button.icon.toggle": {
+            position: "absolute",
+            top: "0px",
+            right: "0px",
+            width: "2em",
+            height: "2em",
+          },
+          ".menu-container menu": {
+            backgroundColor: "transparent",
+          },
+        },
       }}
       className={`${className} `}
     />

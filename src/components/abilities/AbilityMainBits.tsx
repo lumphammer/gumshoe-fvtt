@@ -174,14 +174,21 @@ export const AbilityMainBits = () => {
           )}
         </GridField>
       )}
-
-      <RichTextEditor
-        html={item.system.notes}
-        onSave={item.system.setNotes}
+      <div
         css={{
-          gridRow: "notes",
+          flex: 1,
+          position: "relative",
+          gridColumn: "1/-1",
         }}
-      />
+      >
+        <RichTextEditor
+          html={item.system.notes}
+          onSave={item.system.setNotes}
+          css={{
+            gridRow: "notes",
+          }}
+        />
+      </div>
       {item.system.hasSpecialities && (
         <GridFieldStacked
           label={

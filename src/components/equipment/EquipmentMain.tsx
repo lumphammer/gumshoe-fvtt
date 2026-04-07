@@ -88,7 +88,18 @@ export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
         },
       )}
 
-      <RichTextEditor html={item.system.notes} onSave={item.system.setNotes} />
+      <div
+        css={{
+          flex: 1,
+          position: "relative",
+          gridColumn: "1/-1",
+        }}
+      >
+        <RichTextEditor
+          html={item.system.notes}
+          onSave={item.system.setNotes}
+        />
+      </div>
     </InputGrid>
   );
 };
