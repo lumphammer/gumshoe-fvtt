@@ -40,7 +40,7 @@ export const NotesArea = () => {
               }}
             >
               <IndexedRichTextEditor
-                name={`longNotes#${i}`}
+                name="longNotes"
                 index={i}
                 html={actor.system.longNotes[i] ?? ""}
                 onSave={updateLongNote}
