@@ -138,14 +138,20 @@ export const flaggedMigrations: FlaggedMigrations = {
      *
      */
     convertNotesObjectsToHTML: (item: any, updateData: any) => {
+      const toHTML = (value: any) => {
+        if (typeof value === "string") {
+          return value;
+        }
+        return value?.html ?? "";
+      };
       if (!updateData.system) {
         updateData.system = {};
       }
       if (item.type === c.card) {
-        updateData.system.description = item.system.description.html;
-        updateData.system.effects = item.system.description.effects;
+        updateData.system.description = toHTML(item.system?.description);
+        updateData.system.effects = toHTML(item.system?.effects);
       } else {
-        updateData.system.notes = item.system.notes.html;
+        updateData.system.notes = toHTML(item.system?.notes);
       }
       return updateData;
     },
