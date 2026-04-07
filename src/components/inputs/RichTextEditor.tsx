@@ -1,5 +1,7 @@
 import { useEffect, useRef } from "react";
 
+import { useTheme } from "../../hooks/useTheme";
+
 // import styles from "./richText.module.css";
 
 export function stripStyleAttributes(html: string) {
@@ -26,6 +28,7 @@ export const RichTextEditor = ({
 }) => {
   // const [html, setHtml] = createSignal(props.initialHtml);
   const divRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     // borrowed lovingly from https://github.com/asacolips-projects/13th-age/blob/acd49c1d8b1eaf63f544c1d2e5a4aa1a74742c9e/src/module/item/power-sheet-v2.js#L148
@@ -37,7 +40,6 @@ export const RichTextEditor = ({
       compact: true,
       name: "system.text",
       value: html,
-      height: "auto",
     });
     editor.addEventListener("save", () => {
       console.log("change", editor.value);
@@ -58,13 +60,13 @@ export const RichTextEditor = ({
       ref={divRef}
       // className={`absolute inset-0 my-2 ${styles["rich-text-editor"]}`}
       css={{
-        // backgroundColor: "#99f7",
+        backgroundColor: theme.colors.backgroundPrimary,
+        border: `1px solid ${theme.colors.controlBorder}`,
         position: "absolute",
         inset: "0px",
         ".prosemirror": {
-          // backgroundColor: "#f997",
           position: "absolute",
-          inset: "0px",
+          inset: "0.5em",
           "button.icon.toggle": {
             position: "absolute",
             top: "0px",

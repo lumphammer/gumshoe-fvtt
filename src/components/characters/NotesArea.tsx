@@ -37,7 +37,7 @@ export const NotesArea = () => {
               css={{
                 flex: 1,
                 position: "relative",
-                minHeight: "12em",
+                minHeight: "10em",
               }}
             >
               <IndexedRichTextEditor
