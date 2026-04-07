@@ -40,9 +40,7 @@ export const RichTextEditor = ({
       height: "auto",
     });
     editor.addEventListener("save", () => {
-      console.log("change", editor.value);
       const strippedHTML = stripStyleAttributes(editor.value);
-      console.log("strippedHTML", strippedHTML);
       onSave(strippedHTML);
     });
     divRef.current?.appendChild(editor);
