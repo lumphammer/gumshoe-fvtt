@@ -2,7 +2,7 @@ import { useCallback } from "react";
 
 import { RichTextEditor } from "./RichTextEditor";
 
-export const IndexedNotesEditorWithControls = ({
+export const IndexedRichTextEditor = ({
   index,
   onSave,
   className,
@@ -31,4 +31,4 @@ export const IndexedNotesEditorWithControls = ({
   );
 };
 
-IndexedNotesEditorWithControls.displayName = "IndexedNotesEditorWithControls";
+IndexedRichTextEditor.displayName = "IndexedNotesEditorWithControls";

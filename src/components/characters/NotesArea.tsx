@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPCActor } from "../../module/actors/pc";
 import { settings } from "../../settings/settings";
-import { IndexedNotesEditorWithControls } from "../inputs/IndexedNotesEditorWithControls";
+import { IndexedRichTextEditor } from "../inputs/IndexedRichTextEditor";
 import { InputGrid } from "../inputs/InputGrid";
 import { NotesTypeContext } from "../NotesTypeContext";
 
@@ -32,13 +32,20 @@ export const NotesArea = () => {
       {longNotesNames.map((name: string, i: number) => {
         return (
           <NotesTypeContext.Provider key={`${name}--${i}`} value="pcNote">
-            <InputGrid css={{ flex: 1, minHeight: "12em" }}>
-              <IndexedNotesEditorWithControls
+            <h3>{name}</h3>
+            <div
+              css={{
+                flex: 1,
+                position: "relative",
+                minHeight: "12em",
+              }}
+            >
+              <IndexedRichTextEditor
                 index={i}
                 html={actor.system.longNotes[i] ?? ""}
                 onSave={updateLongNote}
               />
-            </InputGrid>
+            </div>
           </NotesTypeContext.Provider>
         );
       })}
