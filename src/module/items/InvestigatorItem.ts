@@ -27,10 +27,4 @@ export class InvestigatorItem<
       return systemThemeName;
     }
   }
-
-  // getNotes = (): string | undefined => {
-  //   const system = this.system;
-  //   const notes = "notes" in system ? system.notes : undefined;
-  //   return notes;
-  // };
 }

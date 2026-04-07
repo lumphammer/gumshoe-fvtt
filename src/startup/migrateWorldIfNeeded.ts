@@ -12,8 +12,8 @@ import {
 import { settings } from "../settings/settings";
 
 /**
- * The startup task, which determines whether a migration is needed (using
- * either the legacy system or the new system) and then runs it.
+ * The startup task, which determines whether a migration is needed based on
+ * migration flags, and then runs it if so.
  */
 export const migrateWorldIfNeeded = async () => {
   assertGame(game);
