@@ -33,14 +33,14 @@ export const migrateWorld = async function (
   }
 
   // Migrate World Actors
-  for (const a of game.actors?.contents ?? []) {
+  for (const actor of game.actors?.contents ?? []) {
     try {
-      const updateData = migrateActorData(a, flaggedMigrations);
+      const updateData = migrateActorData(actor, flaggedMigrations);
       if (!foundry.utils.isEmpty(updateData)) {
-        await a.update(updateData);
+        await actor.update(updateData);
       }
     } catch (err: any) {
-      err.message = `Failed ${title} system migration for Actor ${a.name}: ${err.message}`;
+      err.message = `Failed ${title} system migration for Actor ${actor.name}: ${err.message}`;
       systemLogger.error(err);
     }
   }
