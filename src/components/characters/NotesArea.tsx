@@ -4,7 +4,6 @@ import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPCActor } from "../../module/actors/pc";
 import { settings } from "../../settings/settings";
 import { IndexedRichTextEditor } from "../inputs/IndexedRichTextEditor";
-import { InputGrid } from "../inputs/InputGrid";
 import { NotesTypeContext } from "../NotesTypeContext";
 
 export const NotesArea = () => {
