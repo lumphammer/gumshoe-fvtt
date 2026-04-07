@@ -229,7 +229,7 @@ export const flaggedMigrations: FlaggedMigrations = {
       if (actor.type === c.npc) {
         updateData.system.notes = toHTML(actor.system?.notes);
         updateData.system.gmNotes = toHTML(actor.system?.gmNotes);
-      } else {
+      } else if (actor.type === c.pc) {
         updateData.system.longNotes = actor.system?.longNotes.map(toHTML);
       }
       return updateData;
