@@ -12,7 +12,6 @@ export const IndexedRichTextEditor = ({
   index: number;
   onSave: (note: string, index: number) => void;
   className?: string;
-  documentUUID?: string;
   html: string;
   name: string;
 }) => {
@@ -33,4 +32,4 @@ export const IndexedRichTextEditor = ({
   );
 };
 
-IndexedRichTextEditor.displayName = "IndexedNotesEditorWithControls";
+IndexedRichTextEditor.displayName = "IndexedRichTextEditor";
