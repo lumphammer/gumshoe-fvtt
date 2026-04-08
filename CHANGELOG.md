@@ -2,12 +2,14 @@
 
 (Skipped version numbers are testing releases.)
 
-## Unreleased
+## 10.115 (2026-04-08)
 
-* Foundry VTT v14 compatible
+* **Foundry VTT v14 compatible!** 🪄 🎇 🎆 (I used to do some acrobatics to try and support two major Foundry versions at once, but it was a huge pain. So like when I updated to Foundry v13 and dropped v12, I'm dropping v13 here. You'll need to run Foundry v14 for this update.) 
 * All "notes" fields now use the standard Foundry ProseMirror component for editing. This means that the previous, hugely over-engineered system of being able to pick between plain text, markdown, and "rich text" has gone away.
-* As a neat side-effect, we now get collaborative editing - two people opening the same editor should see each other's edits in realtime.
-* And as another neat side-effect, we fix a longstanding but untracked bug: if you are editing a notes area, and navigate away without saving (pick a different tab, or close the sheet,) your work is automatically saved.
+* As a neat side-effect, we now have collaborative editing - two people opening the same editor should see each other's edits in realtime.
+* And as another neat side-effect, this fixes a longstanding but untracked bug: if you are editing a notes area, and navigate away without saving (pick a different tab, or close the sheet,) your work is automatically saved.
+
+If you're wondering where the "115" in "10.115" is coming from - I'm switching to a monotonically increasing build number, a bit like how Foundry does it. This (roughly) the 115th release of *GUMSHOE for Foundry VTT* if you count prereleases 🤯
 
 
 ## 9.17 (2026-03-19)
