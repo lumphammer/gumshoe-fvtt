@@ -2,6 +2,14 @@
 
 (Skipped version numbers are testing releases.)
 
+## Unreleased
+
+* Foundry VTT v14 compatible
+* All "notes" fields now use the standard Foundry ProseMirror component for editing. This means that the previous, hugely over-engineered system of being able to pick between plain text, markdown, and "rich text" has gone away.
+* As a neat side-effect, we now get collaborative editing - two people opening the same editor should see each other's edits in realtime.
+* And as another neat side-effect, we fix a longstanding but untracked bug: if you are editing a notes area, and navigate away without saving (pick a different tab, or close the sheet,) your work is automatically saved.
+
+
 ## 9.17 (2026-03-19)
 
 * Completely reworked how combats work behind the scenes.
