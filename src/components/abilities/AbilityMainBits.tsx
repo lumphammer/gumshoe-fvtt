@@ -98,7 +98,7 @@ export const AbilityMainBits = () => {
     <InputGrid
       css={{
         flex: 1,
-        gridTemplateRows: "auto auto auto auto [notes] 1fr",
+        gridTemplateRows: `${isQuickShock ? "2em" : "2em 2em"} ${isCombatAbility ? "2em" : ""} [notes] 1fr`,
         rowGap: "0.3em",
       }}
     >
