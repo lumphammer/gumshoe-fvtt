@@ -134,21 +134,6 @@ export const flaggedMigrations: FlaggedMigrations = {
       }
       return updateData;
     },
-    /**
-     * We are reverting notes fields to just a string of HTML
-     */
-    // convertNotesObjectsToHTML: (item: any, updateData: any) => {
-    //   if (!updateData.system) {
-    //     updateData.system = {};
-    //   }
-    //   if (item.type === c.card) {
-    //     updateData.system.description = toHTML(item.system?.description);
-    //     updateData.system.effects = toHTML(item.system?.effects);
-    //   } else {
-    //     updateData.system.notes = toHTML(item.system?.notes);
-    //   }
-    //   return updateData;
-    // },
   },
   actor: {
     /**
@@ -212,21 +197,6 @@ export const flaggedMigrations: FlaggedMigrations = {
       }
       updateData.system.initiativeAbility = initiativeAbility;
     },
-    /**
-     * We are reverting notes fields to just a string of HTML
-     */
-    // convertNotesObjectsToHTML: (actor: any, updateData: any) => {
-    //   if (!updateData.system) {
-    //     updateData.system = {};
-    //   }
-    //   if (actor.type === c.npc) {
-    //     updateData.system.notes = toHTML(actor.system?.notes);
-    //     updateData.system.gmNotes = toHTML(actor.system?.gmNotes);
-    //   } else if (actor.type === c.pc) {
-    //     updateData.system.longNotes = actor.system?.longNotes.map(toHTML);
-    //   }
-    //   return updateData;
-    // },
   },
   world: {
     /**
