@@ -95,7 +95,7 @@ export class PCModel extends ActiveCharacterModel<
 
   static migrateData(source) {
     // migrate notes to plain strings
-    source.longNotes = source.longNotes.map(maybeNotesObjectToString);
+    source.longNotes = source.longNotes?.map(maybeNotesObjectToString);
     return super.migrateData(source);
   }
 
