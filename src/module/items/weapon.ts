@@ -1,3 +1,4 @@
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import {
   BooleanField,
   NumberField,
@@ -68,6 +69,11 @@ export class WeaponModel extends TypeDataModel<
 > {
   static defineSchema(): typeof weaponSchema {
     return weaponSchema;
+  }
+
+  static migrateData(source) {
+    source.notes = maybeNotesObjectToString(source.notes);
+    return super.migrateData(source);
   }
 
   setCost = (cost: number) => {

@@ -1,3 +1,4 @@
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { NumberField, StringField, TypeDataModel } from "../../fvtt-exports";
 import { InvestigatorItem } from "./InvestigatorItem";
 
@@ -16,6 +17,11 @@ export class PersonalDetailModel extends TypeDataModel<
 > {
   static defineSchema(): typeof personalDetailSchema {
     return personalDetailSchema;
+  }
+
+  static migrateData(source) {
+    source.notes = maybeNotesObjectToString(source.notes);
+    return super.migrateData(source);
   }
 
   setNotes = async (newNotes: string): Promise<void> => {

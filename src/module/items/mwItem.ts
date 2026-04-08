@@ -1,3 +1,4 @@
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import {
   ArrayField,
   NumberField,
@@ -36,6 +37,11 @@ export const mwItemSchema = {
 export class MwItemModel extends TypeDataModel<typeof mwItemSchema, MwItem> {
   static defineSchema(): typeof mwItemSchema {
     return mwItemSchema;
+  }
+
+  static migrateData(source) {
+    source.notes = maybeNotesObjectToString(source.notes);
+    return super.migrateData(source);
   }
 
   setNotes = async (newNotes: string): Promise<void> => {

@@ -1,3 +1,4 @@
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { SourceData, StringField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { createRecordField } from "../schemaFields";
@@ -42,6 +43,11 @@ export class EquipmentModel extends TypeDataModel<
 > {
   static defineSchema(): typeof equipmentSchema {
     return equipmentSchema;
+  }
+
+  static migrateData(source) {
+    source.notes = maybeNotesObjectToString(source.notes);
+    return super.migrateData(source);
   }
 
   setCategoryId = async (categoryId: string): Promise<void> => {

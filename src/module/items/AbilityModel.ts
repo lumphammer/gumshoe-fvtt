@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { fixLength } from "../../functions/utilities";
 import { TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
@@ -20,6 +21,11 @@ export abstract class AbilityModel<
   TSchema extends AbilitySchema,
   TParent extends InvestigatorItem,
 > extends TypeDataModel<TSchema, TParent> {
+  static migrateData(source) {
+    source.notes = maybeNotesObjectToString(source.notes);
+    return super.migrateData(source);
+  }
+
   /**
    * The situational modifiers that are currently active
    */

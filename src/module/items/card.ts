@@ -1,3 +1,4 @@
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { getById } from "../../functions/utilities";
 import {
   ArrayField,
@@ -40,6 +41,12 @@ export const cardSchema = {
 export class CardModel extends TypeDataModel<typeof cardSchema, CardItem> {
   static defineSchema(): typeof cardSchema {
     return cardSchema;
+  }
+
+  static migrateData(source) {
+    source.description = maybeNotesObjectToString(source.description);
+    source.effects = maybeNotesObjectToString(source.effects);
+    return super.migrateData(source);
   }
 
   setActive = async (active: boolean): Promise<void> => {
