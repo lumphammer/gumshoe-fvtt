@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 import { cleanAndEnrichHtml } from "../../functions/textFunctions";
 import { systemLogger } from "../../functions/utilities";
 import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
-import { useTheme } from "../../hooks/useTheme";
+import { ThemeContext } from "../../themes/ThemeContext";
 
 /**
  * React wrapper around fvtt's HTMLProseMirrorElement
@@ -33,7 +33,7 @@ export const RichTextEditor = ({
   const { doc } = useDocumentSheetContext();
 
   const divRef = useRef<HTMLDivElement>(null);
-  const theme = useTheme();
+  const theme = useContext(ThemeContext);
 
   // enriching HTML is async for some reason, so we need to treat it like a data
   // fetch and set a piece of state for it. We also stash it in a ref so editor
