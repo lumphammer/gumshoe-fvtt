@@ -1,4 +1,5 @@
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
+import { migrateValue } from "../../functions/migrateValue";
 import {
   BooleanField,
   NumberField,
@@ -72,7 +73,7 @@ export class WeaponModel extends TypeDataModel<
   }
 
   static migrateData(source) {
-    source.notes = maybeNotesObjectToString(source.notes);
+    migrateValue(source, "notes", maybeNotesObjectToString);
     return super.migrateData(source);
   }
 

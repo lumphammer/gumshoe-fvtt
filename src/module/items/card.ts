@@ -1,4 +1,5 @@
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
+import { migrateValue } from "../../functions/migrateValue";
 import { getById } from "../../functions/utilities";
 import {
   ArrayField,
@@ -44,8 +45,8 @@ export class CardModel extends TypeDataModel<typeof cardSchema, CardItem> {
   }
 
   static migrateData(source) {
-    source.description = maybeNotesObjectToString(source.description);
-    source.effects = maybeNotesObjectToString(source.effects);
+    migrateValue(source, "description", maybeNotesObjectToString);
+    migrateValue(source, "effects", maybeNotesObjectToString);
     return super.migrateData(source);
   }
 

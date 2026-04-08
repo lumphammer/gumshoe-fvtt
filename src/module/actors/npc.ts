@@ -1,5 +1,6 @@
 import * as c from "../../constants";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
+import { migrateValue } from "../../functions/migrateValue";
 import { NumberField, StringField } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { createActiveCharacterSchema } from "../schemaFields";
@@ -24,8 +25,8 @@ export class NPCModel extends ActiveCharacterModel<typeof npcSchema, NPCActor> {
 
   static migrateData(source) {
     // migrate notes to plain strings
-    source.notes = maybeNotesObjectToString(source.notes);
-    source.gmNotes = maybeNotesObjectToString(source.gmNotes);
+    migrateValue(source, "notes", maybeNotesObjectToString);
+    migrateValue(source, "gmNotes", maybeNotesObjectToString);
     return super.migrateData(source);
   }
 

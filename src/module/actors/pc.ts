@@ -2,6 +2,7 @@ import { CardsAreaSettings } from "../../components/cards/types";
 import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
+import { migrateValue } from "../../functions/migrateValue";
 import {
   ArrayField,
   NumberField,
@@ -95,7 +96,10 @@ export class PCModel extends ActiveCharacterModel<
 
   static migrateData(source) {
     // migrate notes to plain strings
-    source.longNotes = source.longNotes?.map(maybeNotesObjectToString);
+    migrateValue(source, "longNotes", (longNotes) =>
+      longNotes?.map(maybeNotesObjectToString),
+    );
+
     return super.migrateData(source);
   }
 

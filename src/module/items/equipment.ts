@@ -1,4 +1,5 @@
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
+import { migrateValue } from "../../functions/migrateValue";
 import { SourceData, StringField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { createRecordField } from "../schemaFields";
@@ -46,7 +47,7 @@ export class EquipmentModel extends TypeDataModel<
   }
 
   static migrateData(source) {
-    source.notes = maybeNotesObjectToString(source.notes);
+    migrateValue(source, "notes", maybeNotesObjectToString);
     return super.migrateData(source);
   }
 
