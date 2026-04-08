@@ -38,7 +38,7 @@ export function getFlaggedMigrations(
     MigrationFunctionsForType,
     MigrationFlagsForType,
     MigrationTypes
-  >((migrations, type) => {
+  >((migrations) => {
     return mapValues(() => true, migrations);
   }, flaggedMigrations);
 

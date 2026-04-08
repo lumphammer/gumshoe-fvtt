@@ -1,11 +1,11 @@
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { SourceData, StringField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
-import { NoteWithFormat } from "../../types";
-import { createNotesWithFormatField, createRecordField } from "../schemaFields";
+import { createRecordField } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 const equipmentSchema = {
-  notes: createNotesWithFormatField(),
+  notes: new StringField({ nullable: false, required: true }),
   categoryId: new StringField({ nullable: false, required: true }),
   // Currently there's no good way of expressing a union in a DatatModel
   // fields: new TypedObjectField(
@@ -45,6 +45,11 @@ export class EquipmentModel extends TypeDataModel<
     return equipmentSchema;
   }
 
+  static migrateData(source) {
+    source.notes = maybeNotesObjectToString(source.notes);
+    return super.migrateData(source);
+  }
+
   setCategoryId = async (categoryId: string): Promise<void> => {
     const updateData = {
       categoryId,
@@ -68,7 +73,7 @@ export class EquipmentModel extends TypeDataModel<
     await this.parent.update({ [`system.fields.-=${field}`]: null });
   };
 
-  setNotes = async (notes: NoteWithFormat) => {
+  setNotes = async (notes: string) => {
     await this.parent.update({ system: { notes } });
   };
 }

@@ -30,31 +30,6 @@ export type Resource = {
   value: number;
 };
 
-// NOTES -----------------------------------------------------------------------
-
-/**
- * Enum for the types of notes formats we support.
- */
-export type NoteFormat = "plain" | "richText" | "markdown";
-
-/**
- * Sometimes notes don't have a format specified, when the format is handeled
- * externally. E.g. for PCs, the format is specified in the actor data so you
- * get the same format across all notes fields. This type represents the bare
- * minimum of a note, the source and the rendered output.
- */
-export type BaseNote = {
-  source: string;
-  html: string;
-};
-
-/**
- * For notes where they need their own format.
- */
-export type NoteWithFormat = BaseNote & {
-  format: NoteFormat;
-};
-
 // MORIBUND WORLD --------------------------------------------------------------
 
 /** MW Injury status */
@@ -109,14 +84,14 @@ export type RangeTuple = [number, number, number, number];
 /** system data forMoribund World stuff */
 export type MwItemSystemData = {
   mwType: MwType;
-  notes: NoteWithFormat;
+  notes: string;
   charges: number;
   ranges: RangeTuple;
 };
 
 /** system data forpersonal details */
 export type PersonalDetailSystemData = {
-  notes: NoteWithFormat;
+  notes: string;
   slotIndex: number;
   compendiumPackId: string | null;
 };
@@ -133,8 +108,8 @@ export type CardSystemData = {
   supertitle: string;
   title: string;
   subtitle: string;
-  effects: NoteWithFormat;
-  description: NoteWithFormat;
+  effects: string;
+  description: string;
   type: string;
   flags: string[];
   active: boolean;

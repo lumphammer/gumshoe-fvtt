@@ -16,14 +16,16 @@ import { CheckButtons } from "../inputs/CheckButtons";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
-import { NotesEditorWithControls } from "../inputs/NotesEditorWithControls";
+import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Translate } from "../Translate";
 import { performAttack } from "./performAttack";
 
-const defaultSpendOptions = new Array(8).fill(null).map((_, i) => {
-  const label = i.toString();
-  return { label, value: Number(label), enabled: true };
-});
+const defaultSpendOptions = Array.from({ length: 8 })
+  .fill(null)
+  .map((_, i) => {
+    const label = i.toString();
+    return { label, value: Number(label), enabled: true };
+  });
 
 export const WeaponMain = () => {
   const { item } = useItemSheetContext();
@@ -96,12 +98,7 @@ export const WeaponMain = () => {
   );
 
   useEffect(() => {
-    const callback = (
-      actor: Actor,
-      diff: unknown,
-      options: unknown,
-      id: string,
-    ) => {
+    const callback = (actor: Actor) => {
       if (actor.id === weaponActor?.id) {
         setActorInitiativeAbility(
           weaponActor && isPCActor(weaponActor)
@@ -291,14 +288,19 @@ export const WeaponMain = () => {
             )}
           </GridField>
         )}
-
-        <NotesEditorWithControls
-          allowChangeFormat
-          format={item.system.notes.format}
-          html={item.system.notes.html}
-          source={item.system.notes.source}
-          onSave={item.system.setNotes}
-        />
+        <div
+          css={{
+            flex: 1,
+            position: "relative",
+            gridColumn: "1/-1",
+          }}
+        >
+          <RichTextEditor
+            name="notes"
+            html={item.system.notes}
+            onSave={item.system.setNotes}
+          />
+        </div>
       </InputGrid>
     </div>
   );

@@ -41,14 +41,12 @@ export const CardDisplay = ({
   const showText = viewMode === "full";
 
   useEffect(() => {
-    void cleanAndEnrichHtml(card.system.description.html).then(
-      setDescriptionHTML,
-    );
-  }, [card.system.description.html]);
+    void cleanAndEnrichHtml(card.system.description).then(setDescriptionHTML);
+  }, [card.system.description]);
 
   useEffect(() => {
-    void cleanAndEnrichHtml(card.system.effects.html).then(setEffectsHTML);
-  }, [card.system.effects.html]);
+    void cleanAndEnrichHtml(card.system.effects).then(setEffectsHTML);
+  }, [card.system.effects]);
 
   const styleKey = settings.cardCategories
     .get()

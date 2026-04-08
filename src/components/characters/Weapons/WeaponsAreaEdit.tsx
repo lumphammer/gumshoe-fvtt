@@ -35,11 +35,6 @@ export const WeaponsAreaEdit = () => {
               {
                 type: weapon,
                 name: "A new weapon",
-                system: {
-                  notes: {
-                    format: "plain",
-                  },
-                },
               },
             ]);
           }}

@@ -10,7 +10,7 @@ import { ImagePickle } from "../ImagePickle";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
 import { InputGrid } from "../inputs/InputGrid";
-import { NotesEditorWithControls } from "../inputs/NotesEditorWithControls";
+import { RichTextEditor } from "../inputs/RichTextEditor";
 import { NotesTypeContext } from "../NotesTypeContext";
 import { TabContainer } from "../TabContainer";
 import { Translate } from "../Translate";
@@ -192,11 +192,9 @@ export const NPCSheetFull = () => {
                   }}
                 >
                   <NotesTypeContext.Provider value="npcNote">
-                    <NotesEditorWithControls
-                      allowChangeFormat
-                      format={actor.system.notes.format}
-                      html={actor.system.notes.html}
-                      source={actor.system.notes.source}
+                    <RichTextEditor
+                      name="notes"
+                      html={actor.system.notes}
                       onSave={actor.system.setNotes}
                     />
                   </NotesTypeContext.Provider>
@@ -215,11 +213,9 @@ export const NPCSheetFull = () => {
                   }}
                 >
                   <NotesTypeContext.Provider value="npcNote">
-                    <NotesEditorWithControls
-                      allowChangeFormat
-                      format={actor.system.gmNotes.format}
-                      html={actor.system.gmNotes.html}
-                      source={actor.system.gmNotes.source}
+                    <RichTextEditor
+                      name="gmNotes"
+                      html={actor.system.gmNotes}
                       onSave={actor.system.setGMNotes}
                     />
                   </NotesTypeContext.Provider>

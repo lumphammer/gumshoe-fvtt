@@ -1,0 +1,35 @@
+import { useCallback } from "react";
+
+import { RichTextEditor } from "./RichTextEditor";
+
+export const IndexedRichTextEditor = ({
+  index,
+  onSave,
+  className,
+  html,
+  name,
+}: {
+  index: number;
+  onSave: (note: string, index: number) => void;
+  className?: string;
+  html: string;
+  name: string;
+}) => {
+  const indexedName = `${name}#${index}`;
+  const handleSave = useCallback(
+    (note: string) => {
+      onSave(note, index);
+    },
+    [index, onSave],
+  );
+  return (
+    <RichTextEditor
+      name={indexedName}
+      onSave={handleSave}
+      className={className}
+      html={html}
+    />
+  );
+};
+
+IndexedRichTextEditor.displayName = "IndexedRichTextEditor";

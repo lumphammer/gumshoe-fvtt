@@ -12,7 +12,7 @@ import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
-import { NotesEditorWithControls } from "../inputs/NotesEditorWithControls";
+import { RichTextEditor } from "../inputs/RichTextEditor";
 import { TextInput } from "../inputs/TextInput";
 import { Translate } from "../Translate";
 
@@ -145,20 +145,25 @@ export const MwItemSheet = () => {
             <option value="retainer">Retainer</option>
           </select>
         </GridField>
-        <NotesEditorWithControls
-          allowChangeFormat
-          format={item.system.notes.format}
-          html={item.system.notes.html}
-          source={item.system.notes.source}
-          onSave={item.system.setNotes}
+        <div
           css={{
-            height: "100%",
-            "&&": {
-              resize: "none",
-            },
+            flex: 1,
+            position: "relative",
+            gridColumn: "1/-1",
           }}
-        />
-
+        >
+          <RichTextEditor
+            name="notes"
+            html={item.system.notes}
+            onSave={item.system.setNotes}
+            css={{
+              height: "100%",
+              "&&": {
+                resize: "none",
+              },
+            }}
+          />
+        </div>
         {/* <GridFieldStacked label="Notes">
           <AsyncTextArea
             value={item.getNotes().source}

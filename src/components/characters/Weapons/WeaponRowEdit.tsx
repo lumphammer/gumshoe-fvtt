@@ -8,7 +8,7 @@ import { ThemeContext } from "../../../themes/ThemeContext";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
-import { CompactNotesEditor } from "../../inputs/CompactNotesEditor";
+import { IndexedRichTextEditor } from "../../inputs/IndexedRichTextEditor";
 import { OtherableDropDown } from "../../inputs/OtherableDropDown";
 import { Toggle } from "../../inputs/Toggle";
 
@@ -211,14 +211,21 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
         )}
       </div>
 
-      <CompactNotesEditor
+      <div
         css={{
+          position: "relative",
           gridColumn: "notes / -1",
           gridRow: gridRow + 1,
+          minHeight: "6em",
         }}
-        note={weapon.system.notes}
-        onChange={weapon.system.setNotes}
-      />
+      >
+        <IndexedRichTextEditor
+          index={index}
+          name="weapon"
+          html={weapon.system.notes}
+          onSave={weapon.system.setNotes}
+        />
+      </div>
     </>
   );
 };

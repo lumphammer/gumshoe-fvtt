@@ -1,12 +1,12 @@
 import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { fixLength } from "../../functions/utilities";
 import { TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import {
   MWDifficulty,
-  NoteWithFormat,
   SituationalModifier,
   SpecialitiesMode,
   Unlock,
@@ -21,6 +21,11 @@ export abstract class AbilityModel<
   TSchema extends AbilitySchema,
   TParent extends InvestigatorItem,
 > extends TypeDataModel<TSchema, TParent> {
+  static migrateData(source) {
+    source.notes = maybeNotesObjectToString(source.notes);
+    return super.migrateData(source);
+  }
+
   /**
    * The situational modifiers that are currently active
    */
@@ -296,7 +301,7 @@ export abstract class AbilityModel<
     });
   };
 
-  setNotes = async (newNotes: NoteWithFormat): Promise<void> => {
+  setNotes = async (newNotes: string): Promise<void> => {
     await this.parent.update({ system: { notes: newNotes } });
   };
 

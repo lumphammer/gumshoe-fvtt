@@ -1,7 +1,7 @@
 import { CardsAreaSettings } from "../../components/cards/types";
 import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { convertNotes } from "../../functions/textFunctions";
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import {
   ArrayField,
   NumberField,
@@ -64,21 +64,8 @@ export const pcSchema = {
   }),
 
   longNotes: new ArrayField(
-    new SchemaField(
-      {
-        source: new StringField({ nullable: false, required: true }),
-        html: new StringField({ nullable: false, required: true }),
-      },
-      { required: false },
-    ),
+    new StringField({ nullable: false, required: true }),
   ),
-  longNotesFormat: new StringField({
-    nullable: false,
-    required: true,
-    initial: "richText",
-    choices: ["plain", "richText", "markdown"],
-  }),
-
   sheetTheme: new StringField({
     nullable: true,
     required: true,
@@ -89,27 +76,6 @@ export const pcSchema = {
     required: true,
   }),
 };
-
-type InferredBaseNote =
-  typeof pcSchema.longNotes.element extends SchemaField<
-    infer Schema,
-    any,
-    any,
-    any,
-    any
-  >
-    ? SourceData<Schema>
-    : never;
-
-type InferredNoteFormat =
-  typeof pcSchema.longNotesFormat extends StringField<
-    any,
-    any,
-    any,
-    infer PersistedType
-  >
-    ? PersistedType
-    : never;
 
 /**
  * System data for a PC
@@ -125,6 +91,12 @@ export class PCModel extends ActiveCharacterModel<
 > {
   static defineSchema(): typeof pcSchema {
     return pcSchema;
+  }
+
+  static migrateData(source) {
+    // migrate notes to plain strings
+    source.longNotes = source.longNotes?.map(maybeNotesObjectToString);
+    return super.migrateData(source);
   }
 
   getSheetThemeName(): string | null {
@@ -315,28 +287,10 @@ export class PCModel extends ActiveCharacterModel<
     return this.longNotes?.[i] ?? "";
   };
 
-  setLongNote = (i: number, note: InferredBaseNote) => {
+  setLongNote = (i: number, note: string) => {
     const longNotes = [...(this.longNotes || [])];
     longNotes[i] = note;
     return this.parent.update({ system: { longNotes } });
-  };
-
-  setLongNotesFormat = async (longNotesFormat: InferredNoteFormat) => {
-    const longNotesPromises = (this.longNotes || []).map<
-      Promise<InferredBaseNote>
-    >(async (note) => {
-      const { newHtml, newSource } = await convertNotes(
-        this.longNotesFormat,
-        longNotesFormat,
-        note?.source ?? "",
-      );
-      return {
-        html: newHtml,
-        source: newSource,
-      };
-    });
-    const longNotes = await Promise.all(longNotesPromises);
-    return this.parent.update({ system: { longNotes, longNotesFormat } });
   };
 
   getShortNote = (i: number): string => {

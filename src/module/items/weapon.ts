@@ -1,3 +1,4 @@
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import {
   BooleanField,
   NumberField,
@@ -6,8 +7,6 @@ import {
   StringField,
   TypeDataModel,
 } from "../../fvtt-exports";
-import { NoteWithFormat } from "../../types";
-import { createNotesWithFormatField } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const weaponSchema = {
@@ -49,7 +48,7 @@ export const weaponSchema = {
     required: true,
     initial: 0,
   }),
-  notes: createNotesWithFormatField(),
+  notes: new StringField({ nullable: false, required: true }),
   pointBlankDamage: new NumberField({
     nullable: false,
     required: true,
@@ -70,6 +69,11 @@ export class WeaponModel extends TypeDataModel<
 > {
   static defineSchema(): typeof weaponSchema {
     return weaponSchema;
+  }
+
+  static migrateData(source) {
+    source.notes = maybeNotesObjectToString(source.notes);
+    return super.migrateData(source);
   }
 
   setCost = (cost: number) => {
@@ -122,7 +126,7 @@ export class WeaponModel extends TypeDataModel<
     });
   };
 
-  setNotes = async (newNotes: NoteWithFormat): Promise<void> => {
+  setNotes = async (newNotes: string): Promise<void> => {
     await this.parent.update({ system: { notes: newNotes } });
   };
 

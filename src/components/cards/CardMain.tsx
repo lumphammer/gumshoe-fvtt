@@ -1,5 +1,3 @@
-import { useCallback } from "react";
-
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertCardItem } from "../../module/items/card";
 import { absoluteCover } from "../absoluteCover";
@@ -21,28 +19,6 @@ export const CardMain = () => {
 
   const categoryText = summarizeCategoryMemberships(
     item.system.cardCategoryMemberships,
-  );
-
-  const handleDescriptionChange = useCallback(
-    (newSource: string) => {
-      void item.system.setDescription({
-        format: "richText",
-        source: newSource,
-        html: newSource,
-      });
-    },
-    [item],
-  );
-
-  const handleEffectsChange = useCallback(
-    (newSource: string) => {
-      void item.system.setEffects({
-        format: "richText",
-        source: newSource,
-        html: newSource,
-      });
-    },
-    [item],
   );
 
   return (
@@ -100,8 +76,10 @@ export const CardMain = () => {
                   }}
                 >
                   <RichTextEditor
-                    value={item.system.description.html}
-                    onChange={handleDescriptionChange}
+                    name="description"
+                    html={item.system.description}
+                    className=""
+                    onSave={item.system.setDescription}
                   />
                 </InputGrid>
               ),
@@ -118,8 +96,10 @@ export const CardMain = () => {
                   }}
                 >
                   <RichTextEditor
-                    value={item.system.effects.html}
-                    onChange={handleEffectsChange}
+                    name="effects"
+                    html={item.system.effects}
+                    className=""
+                    onSave={item.system.setEffects}
                   />
                 </InputGrid>
               ),

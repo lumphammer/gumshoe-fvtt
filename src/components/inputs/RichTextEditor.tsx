@@ -1,129 +1,146 @@
-import {
-  RefObject,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { systemLogger, wait } from "../../functions/utilities";
-import { TextEditor } from "../../fvtt-exports";
-import { ThemeContext } from "../../themes/ThemeContext";
-import { ThemeV1 } from "../../themes/types";
-import { absoluteCover } from "../absoluteCover";
-import styles from "./RichtextEditor.css?url";
-
-type RichTextEditorProps = {
-  value: string;
-  className?: string;
-  onSave?: () => void;
-  onChange: (newSource: string) => void;
-};
-
-/** handler for making tinyMCE */
-async function makeTinyMce({
-  textAreaRef,
-  handleSave,
-  initialValue,
-  onChange,
-  theme,
-  mceRef,
-}: {
-  textAreaRef: RefObject<HTMLTextAreaElement | null>;
-  handleSave: () => void;
-  initialValue: string;
-  onChange: (newSource: string) => void;
-  theme: ThemeV1;
-  mceRef: { current: tinyMCE.Editor | null };
-}) {
-  if (!textAreaRef.current) return;
-  const mce = await TextEditor.create(
-    {
-      target: textAreaRef.current,
-      save_onsavecallback: handleSave,
-      height: "100%",
-      content_css: [styles],
-    } as any,
-    initialValue,
-  );
-  // we know it always will be an mce (until mce gets deprecated anyway)
-  // but the types don't know that
-  if (!(mce instanceof tinyMCE.Editor)) {
-    return;
-  }
-  mce.on("change", () => {
-    const content = mce.getContent();
-    onChange(content);
-  });
-
-  // cheap hack to prevent it being times new roman
-  const style = document.createElement("style");
-  style.innerHTML = `
-          ${typeof theme.global === "string" ? theme.global : ""}
-          body {
-            --font-primary: ${theme.bodyFont};
-          }
-        `;
-  mce?.contentDocument.head.appendChild(style);
-
-  mceRef.current = mce;
-}
+import { cleanAndEnrichHtml } from "../../functions/textFunctions";
+import { systemLogger } from "../../functions/utilities";
+import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
+import { useTheme } from "../../hooks/useTheme";
 
 /**
- * ham-fisted attempt to cram Foundry's TextEditor, which is itself a wrapper
- * around TnyMCE, into a React component. It follows the same pattern as other
- * reacty controls in that it triggers onChange whenever the user types, and
- * calls onSave if they click the save button.
+ * React wrapper around fvtt's HTMLProseMirrorElement
+ * @param param0
+ * @returns
  */
 export const RichTextEditor = ({
-  value,
-  className,
+  className = "",
+  html,
   onSave,
-  onChange,
-}: RichTextEditorProps) => {
-  const handleSave = useCallback(async () => {
-    // hacky delay to allow the editor to update the content before we try to
-    // save it. I would try harder here but we will almost certainlky end up
-    // using foundry's cool new editor in due course anyway.
-    await wait(500);
-    onSave?.();
-    systemLogger.log("saved");
-  }, [onSave]);
+  name,
+}: {
+  /** optional class */
+  className?: string;
+  /** html string */
+  html: string;
+  /** callback for saving */
+  onSave: (html: string) => void;
+  /**
+   * identifier for collaborative editing. used for matchmaking when multiple
+   * people are in edit mode. It doesn't technically matter what the name is, as
+   * long as everyone editing the same content is using the same name. the best
+   * idea is to use the field name, i.e. "notes".
+   */
+  name: string;
+}) => {
+  const { doc } = useDocumentSheetContext();
 
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const [initialValue] = useState(value);
-  const theme = useContext(ThemeContext);
+  const divRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
 
+  // enriching HTML is async for some reason, so we need to treat it like a data
+  // fetch and set a piece of state for it. We also stash it in a ref so editor
+  // instances can read it even if they have closed over a stale value of
+  // `enriched`.
+  const [enriched, setEnriched] = useState("");
+  const enrichedRef = useRef(enriched);
   useEffect(() => {
-    const mceRef: { current: tinyMCE.Editor | null } = { current: null };
-    void makeTinyMce({
-      textAreaRef,
-      handleSave,
-      initialValue,
-      onChange,
-      theme,
-      mceRef,
+    void cleanAndEnrichHtml(html).then((enriched) => {
+      setEnriched(enriched);
+      enrichedRef.current = enriched;
     });
+  }, [html]);
 
-    // effect tearddown function
+  // this effect creates the actual HTMLProseMirrorElement instance and shoves
+  // it into the DOM.
+  useEffect(() => {
+    // drop out if there's already an open editor here -  see [1]
+    const child = divRef.current?.getElementsByTagName("prose-mirror").item(0);
+    if (
+      child instanceof foundry.applications.elements.HTMLProseMirrorElement &&
+      child.open
+    ) {
+      systemLogger.log("editor still present, not creating a new one");
+      return;
+    } else {
+      child?.remove();
+    }
+    // borrowed lovingly from
+    // https://github.com/asacolips-projects/13th-age/blob/acd49c1d8b1eaf63f544c1d2e5a4aa1a74742c9e/src/module/item/power-sheet-v2.js#L148
+    const editor = foundry.applications.elements.HTMLProseMirrorElement.create({
+      toggled: true,
+      collaborate: true,
+      documentUUID: doc.uuid,
+      enriched,
+      name,
+      value: html,
+    });
+    // set up the save callback
+    editor.addEventListener("save", () => {
+      // do the actual save
+      onSave(editor.value);
+      // [2] HTMLProseMirrorElement has no way to update the HTML once it's
+      // mounted, so we need to queue up a task to update it by hand from the
+      // ref now.
+      setTimeout(() => {
+        const contentElement = editor
+          .getElementsByClassName("editor-content")
+          .item(0);
+        if (contentElement) {
+          systemLogger.log("updating editor content", enrichedRef.current);
+          contentElement.innerHTML = enrichedRef.current;
+        }
+      }, 0);
+    });
+    // attach to DOM
+    divRef.current?.appendChild(editor);
+
+    const div = divRef.current;
+    // teardown function
     return () => {
-      if (mceRef.current) {
-        mceRef.current.destroy();
+      // [1] if the editor is open, we do not remove it just because the HTML
+      // has updated. This is because 1. It's super annoying to have your
+      // editing session ended because some *else* saved, and 2. while we're in
+      // edit mode, collaborative editing will keep the display up to date.
+      // However, see [2].
+      if (editor.open) {
+        systemLogger.log("editor open, not removing");
+      } else {
+        systemLogger.log("removing editor");
+        editor.remove();
+        if (div) {
+          div.innerHTML = "";
+        }
       }
     };
-  }, [handleSave, initialValue, onChange, theme]);
+  }, [doc.uuid, enriched, html, name, onSave]);
 
   return (
-    <form
+    <div
+      ref={divRef}
       css={{
-        ...absoluteCover,
-        backgroundColor: "white",
-        "--font-primary": theme.bodyFont,
+        backgroundColor: theme.colors.backgroundPrimary,
+        border: `1px solid ${theme.colors.controlBorder}`,
+        position: "absolute",
+        inset: "0px",
+        ".prosemirror": {
+          position: "absolute",
+          inset: "0.5em",
+          "button.icon.toggle": {
+            position: "absolute",
+            top: "0px",
+            right: "0px",
+            width: "2em",
+            height: "2em",
+          },
+          ".menu-container": {
+            flexBasis: "min-content",
+            menu: {
+              position: "static",
+              backgroundColor: "transparent",
+              padding: 0,
+            },
+          },
+        },
       }}
-      className={className}
-    >
-      <textarea ref={textAreaRef} css={{ height: "100%" }} />
-    </form>
+      className={`${className} `}
+    ></div>
   );
 };

@@ -1,11 +1,11 @@
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import {
   ArrayField,
   NumberField,
   StringField,
   TypeDataModel,
 } from "../../fvtt-exports";
-import { MwType, NoteWithFormat, RangeTuple } from "../../types";
-import { createNotesWithFormatField } from "../schemaFields";
+import { MwType, RangeTuple } from "../../types";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const mwItemSchema = {
@@ -26,7 +26,7 @@ export const mwItemSchema = {
     ],
     initial: "tweak",
   }),
-  notes: createNotesWithFormatField(),
+  notes: new StringField({ nullable: false, required: true }),
   ranges: new ArrayField(new NumberField({ nullable: false, required: true }), {
     nullable: false,
     required: true,
@@ -39,7 +39,12 @@ export class MwItemModel extends TypeDataModel<typeof mwItemSchema, MwItem> {
     return mwItemSchema;
   }
 
-  setNotes = async (newNotes: NoteWithFormat): Promise<void> => {
+  static migrateData(source) {
+    source.notes = maybeNotesObjectToString(source.notes);
+    return super.migrateData(source);
+  }
+
+  setNotes = async (newNotes: string): Promise<void> => {
     await this.parent.update({ system: { notes: newNotes } });
   };
 
