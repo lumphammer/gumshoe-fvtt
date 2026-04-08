@@ -1,6 +1,7 @@
 import { CardsAreaSettings } from "../../components/cards/types";
 import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import {
   ArrayField,
   NumberField,
@@ -90,6 +91,12 @@ export class PCModel extends ActiveCharacterModel<
 > {
   static defineSchema(): typeof pcSchema {
     return pcSchema;
+  }
+
+  static migrateData(source) {
+    // migrate notes to plain strings
+    source.longNotes = source.longNotes.map(maybeNotesObjectToString);
+    return super.migrateData(source);
   }
 
   getSheetThemeName(): string | null {

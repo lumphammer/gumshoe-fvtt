@@ -1,4 +1,5 @@
 import * as c from "../../constants";
+import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { NumberField, StringField } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { createActiveCharacterSchema } from "../schemaFields";
@@ -19,6 +20,13 @@ export const npcSchema = {
 export class NPCModel extends ActiveCharacterModel<typeof npcSchema, NPCActor> {
   static defineSchema(): typeof npcSchema {
     return npcSchema;
+  }
+
+  static migrateData(source) {
+    // migrate notes to plain strings
+    source.notes = maybeNotesObjectToString(source.notes);
+    source.gmNotes = maybeNotesObjectToString(source.gmNotes);
+    return super.migrateData(source);
   }
 
   getSheetThemeName(): string | null {
