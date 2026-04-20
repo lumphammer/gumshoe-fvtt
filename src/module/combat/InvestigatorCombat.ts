@@ -44,6 +44,9 @@ export class InvestigatorCombat<
   ): Promise<Combat.CreateReturn<Data, Temporary>> {
     const isTurnPassing = settings.useTurnPassingInitiative.get();
     const subType = isTurnPassing ? "turnPassing" : "classic";
+    // this condition previously had a case for data === undefined, but it was
+    // playing hell with the types and I can't see a situation where that would
+    // arise
     if (Array.isArray(data)) {
       for (const d of data) {
         d.type = d.type === undefined ? subType : d.type;
