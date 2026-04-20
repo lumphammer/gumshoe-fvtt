@@ -67,7 +67,7 @@ export const RichTextEditor = ({
     const editor = foundry.applications.elements.HTMLProseMirrorElement.create({
       toggled: true,
       collaborate: true,
-      documentUUID: doc.uuid,
+      documentUUID: doc.uuid ?? undefined,
       enriched,
       name,
       value: html,

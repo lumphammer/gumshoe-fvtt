@@ -1,3 +1,5 @@
+import { MaybeArray } from "fvtt-types/utils";
+
 import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
 import { Document } from "../../fvtt-exports";
@@ -33,16 +35,16 @@ export class InvestigatorCombat<
 
   // ///////////////////////////////////////////////////////////////////////////
   // override to make sure we're creating the right kind of combat
-  static override create<Temporary extends boolean | undefined = false>(
-    data: Combat.CreateData | Combat.CreateData[],
+  static override create<
+    Data extends MaybeArray<Combat.CreateInput>,
+    Temporary extends boolean | undefined = undefined,
+  >(
+    data: Data,
     operation?: Combat.Database.CreateOperation<Temporary>,
-    ...rest: any
-  ): Promise<Combat.TemporaryIf<Temporary> | undefined> {
+  ): Promise<Combat.CreateReturn<Data, Temporary>> {
     const isTurnPassing = settings.useTurnPassingInitiative.get();
     const subType = isTurnPassing ? "turnPassing" : "classic";
-    if (data === undefined) {
-      data = { type: subType };
-    } else if (Array.isArray(data)) {
+    if (Array.isArray(data)) {
       for (const d of data) {
         d.type = d.type === undefined ? subType : d.type;
       }
@@ -97,7 +99,11 @@ export class InvestigatorCombat<
   ) {
     assertGame(game);
     super._preUpdateDescendantDocuments(
-      ...[parent, collection, changes, options, userId],
+      parent,
+      collection,
+      changes,
+      options,
+      userId,
     );
   }
 
@@ -119,11 +125,21 @@ export class InvestigatorCombat<
   ) {
     if (isKnownCombat(this) && userId === game.userId) {
       void this.system.onCreateDescendantDocuments(
-        ...[parent, collection, documents, data, options, userId],
+        parent,
+        collection,
+        documents,
+        data,
+        options,
+        userId,
       );
     }
     return super._onCreateDescendantDocuments(
-      ...[parent, collection, documents, data, options, userId],
+      parent,
+      collection,
+      documents,
+      data,
+      options,
+      userId,
     );
   }
 

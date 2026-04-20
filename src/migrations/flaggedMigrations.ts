@@ -229,7 +229,7 @@ export const flaggedMigrations: FlaggedMigrations = {
       for (const oldBaseCombat of oldBaseCombats) {
         systemLogger.log(`migrating combat ${oldBaseCombat._id}`);
         const baseData = oldBaseCombat.toObject();
-        const newCombat = await InvestigatorCombat.create<false>({
+        const newCombat = await InvestigatorCombat.create({
           ...baseData,
           combatants: baseData.combatants.map((c) => {
             const system = c.system;
