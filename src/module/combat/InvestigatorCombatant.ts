@@ -12,7 +12,7 @@ export class InvestigatorCombatant<
   protected override _preUpdate(
     changed: Combatant.UpdateData,
     options: Combatant.Database.PreUpdateOptions,
-    user: User.Implementation,
+    user: User.Stored,
   ) {
     return super._preUpdate(changed, options, user);
   }
@@ -26,17 +26,17 @@ export class InvestigatorCombatant<
   }
 
   protected static override async _preUpdateOperation(
-    documents: Combatant.Implementation[],
+    documents: Combatant.Stored[],
     operation: Combatant.Database.Update,
-    user: User.Implementation,
+    user: User.Stored,
   ) {
     return super._preUpdateOperation(documents, operation, user);
   }
 
   protected static override async _onUpdateOperation(
-    documents: Combatant.Implementation[],
+    documents: Combatant.Stored[],
     operation: Combatant.Database.Update,
-    user: User.Implementation,
+    user: User.Stored,
   ) {
     return super._onUpdateOperation(documents, operation, user);
   }

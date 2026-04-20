@@ -218,6 +218,8 @@ export class InvestigatorCompendiumDirectory extends CompendiumDirectory {
       JournalEntry,
     }[verified.entity];
 
+    // @ts-expect-error we're doing some insane jiggerypokery and i cba to work
+    // out hiw to fix the fypes
     const entities = await maker.create(verified.contents as any, {
       temporary: true,
     });

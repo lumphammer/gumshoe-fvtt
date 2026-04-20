@@ -9,7 +9,7 @@ overrides:
   vitest: ^3.2.4
   react: ^19.2.5
   '@types/react': ^19.2.14
-  fvtt-types: github:league-of-foundry-developers/foundry-vtt-types#fec20ae1abfa80d00f37d6b59cc7f045865cb3f8
+  fvtt-types: github:league-of-foundry-developers/foundry-vtt-types#94ae41afa15c2bdd72c10326f890b759c0997eef
   tsx: ^4.21.0
   '@swc/plugin-emotion': 10.0.3
   '@vitejs/plugin-react-swc': 3.11.0
@@ -133,8 +133,8 @@ importers:
         specifier: ^0.8.4
         version: 0.8.4
       fvtt-types:
-        specifier: github:league-of-foundry-developers/foundry-vtt-types#fec20ae1abfa80d00f37d6b59cc7f045865cb3f8
-        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/fec20ae1abfa80d00f37d6b59cc7f045865cb3f8(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(@typescript/native-preview@7.0.0-dev.20260419.1)(typescript@6.0.3)'
+        specifier: github:league-of-foundry-developers/foundry-vtt-types#94ae41afa15c2bdd72c10326f890b759c0997eef
+        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/94ae41afa15c2bdd72c10326f890b759c0997eef(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(@typescript/native-preview@7.0.0-dev.20260419.1)(typescript@6.0.3)'
       happy-dom:
         specifier: ^20.9.0
         version: 20.9.0
@@ -226,8 +226,8 @@ importers:
         specifier: ^1.0.13
         version: 1.0.13
       fvtt-types:
-        specifier: github:league-of-foundry-developers/foundry-vtt-types#fec20ae1abfa80d00f37d6b59cc7f045865cb3f8
-        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/fec20ae1abfa80d00f37d6b59cc7f045865cb3f8(f5c8880ad6697820bd31a729e55bc4d7)'
+        specifier: github:league-of-foundry-developers/foundry-vtt-types#94ae41afa15c2bdd72c10326f890b759c0997eef
+        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/94ae41afa15c2bdd72c10326f890b759c0997eef(f5c8880ad6697820bd31a729e55bc4d7)'
       prettier:
         specifier: ^3.8.3
         version: 3.8.3
@@ -298,8 +298,8 @@ importers:
         specifier: ^11.3.4
         version: 11.3.4
       fvtt-types:
-        specifier: github:league-of-foundry-developers/foundry-vtt-types#fec20ae1abfa80d00f37d6b59cc7f045865cb3f8
-        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/fec20ae1abfa80d00f37d6b59cc7f045865cb3f8(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(@typescript/native-preview@7.0.0-dev.20260419.1)(typescript@6.0.3)'
+        specifier: github:league-of-foundry-developers/foundry-vtt-types#94ae41afa15c2bdd72c10326f890b759c0997eef
+        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/94ae41afa15c2bdd72c10326f890b759c0997eef(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(@typescript/native-preview@7.0.0-dev.20260419.1)(typescript@6.0.3)'
       globals:
         specifier: ^17.4.0
         version: 17.4.0
@@ -905,8 +905,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.29':
     resolution: {integrity: sha512-uw6guiW/gcAGPDhLmd77/6lW8QLeiV5RUTsAX46Db6oLhGaVj4lhnPwb184s1bkc8kdVg/+h988dro8GRDpmYQ==}
 
-  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/fec20ae1abfa80d00f37d6b59cc7f045865cb3f8':
-    resolution: {tarball: https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/fec20ae1abfa80d00f37d6b59cc7f045865cb3f8}
+  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/94ae41afa15c2bdd72c10326f890b759c0997eef':
+    resolution: {tarball: https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/94ae41afa15c2bdd72c10326f890b759c0997eef}
     version: 13.346.0
     peerDependencies:
       '@typescript/native-preview': '*'
@@ -5360,7 +5360,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.4
 
-  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/fec20ae1abfa80d00f37d6b59cc7f045865cb3f8(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(@typescript/native-preview@7.0.0-dev.20260419.1)(typescript@6.0.3)':
+  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/94ae41afa15c2bdd72c10326f890b759c0997eef(@pixi/constants@7.4.3)(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/math@7.4.3)(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/ticker@7.4.3)(@typescript/native-preview@7.0.0-dev.20260419.1)(typescript@6.0.3)':
     dependencies:
       '@codemirror/lang-html': 6.4.9
       '@codemirror/lang-javascript': 6.2.4
@@ -5418,7 +5418,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/fec20ae1abfa80d00f37d6b59cc7f045865cb3f8(f5c8880ad6697820bd31a729e55bc4d7)':
+  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/94ae41afa15c2bdd72c10326f890b759c0997eef(f5c8880ad6697820bd31a729e55bc4d7)':
     dependencies:
       '@codemirror/lang-html': 6.4.9
       '@codemirror/lang-javascript': 6.2.4
