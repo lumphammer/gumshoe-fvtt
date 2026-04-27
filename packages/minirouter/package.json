@@ -28,7 +28,7 @@
     "@types/react": "^19.2.14",
     "framer-motion": "^12.38.0",
     "react": "^19.2.5",
-    "vite": "^8.0.8",
+    "vite": "^8.0.10",
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
