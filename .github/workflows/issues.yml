@@ -10,7 +10,7 @@ jobs:
     name: Add issue to project
     runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
-      - uses: actions/add-to-project@v1.0.2
+      - uses: actions/add-to-project@v2
         with:
           # You can target a project in a different organization
           # to the issue
