@@ -107,8 +107,8 @@ export function useCombatantContextValue(
       (
         updatedCombatant: InvestigatorCombatant,
         updates: Combatant.UpdateData,
-        options: Combatant.Database.UpdateOptions,
-        userId: string,
+        _options: Combatant.Database.OnUpdateOptions,
+        _userId: string,
       ) => {
         if (updatedCombatant.id !== combatant.id) return;
         setCombatantState((previousCombatantData) => {
