@@ -19,7 +19,7 @@ export class InvestigatorCombat<
     EmbeddedName extends Combat.Embedded.Name,
   >(
     embeddedName: EmbeddedName,
-    origData: Document.CreateDataForName<EmbeddedName>[] | undefined,
+    origData: Document.CreateDataForName<EmbeddedName>[],
     operation?: Document.Database.CreateOperationForName<EmbeddedName>,
   ): Promise<Array<Document.StoredForName<EmbeddedName>>> {
     const newType = this.type;

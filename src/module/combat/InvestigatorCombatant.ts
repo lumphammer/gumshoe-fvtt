@@ -27,7 +27,7 @@ export class InvestigatorCombatant<
 
   protected static override async _preUpdateOperation(
     documents: Combatant.Stored[],
-    operation: Combatant.Database.Update,
+    operation: Combatant.Database.PreUpdateOperation,
     user: User.Stored,
   ) {
     return super._preUpdateOperation(documents, operation, user);
@@ -35,7 +35,7 @@ export class InvestigatorCombatant<
 
   protected static override async _onUpdateOperation(
     documents: Combatant.Stored[],
-    operation: Combatant.Database.Update,
+    operation: Combatant.Database.OnUpdateOperation,
     user: User.Stored,
   ) {
     return super._onUpdateOperation(documents, operation, user);
