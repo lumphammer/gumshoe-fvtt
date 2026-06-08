@@ -1,2 +1,19 @@
 packages:
-  - 'packages/*'
+  - "packages/*"
+overrides:
+  vite: $vite
+  vitest: $vitest
+  react: $react
+  "@types/react": $@types/react
+  fvtt-types: $fvtt-types
+  tsx: $tsx
+  "@swc/plugin-emotion": $@swc/plugin-emotion
+  "@vitejs/plugin-react-swc": $@vitejs/plugin-react-swc
+  less: $less
+  typescript: $typescript
+  react-dom: $react-dom
+allowedDeprecatedVersions:
+  querystring: "*"
+peerDependencyRules:
+  allowedVersions:
+    meow: "13"

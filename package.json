@@ -98,29 +98,6 @@
     "zod": "^4.4.3",
     "zod-validation-error": "^5.0.0"
   },
-  "pnpm": {
-    "allowedDeprecatedVersions": {
-      "querystring": "*"
-    },
-    "peerDependencyRules": {
-      "allowedVersions": {
-        "meow": "13"
-      }
-    },
-    "overrides": {
-      "vite": "$vite",
-      "vitest": "$vitest",
-      "react": "$react",
-      "@types/react": "$@types/react",
-      "fvtt-types": "$fvtt-types",
-      "tsx": "$tsx",
-      "@swc/plugin-emotion": "$@swc/plugin-emotion",
-      "@vitejs/plugin-react-swc": "$@vitejs/plugin-react-swc",
-      "less": "$less",
-      "typescript": "$typescript",
-      "react-dom": "$react-dom"
-    }
-  },
   "engines": {
     "node": "24.16.0",
     "pnpm": "10.14.0"
