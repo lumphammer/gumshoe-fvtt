@@ -17,3 +17,9 @@ allowedDeprecatedVersions:
 peerDependencyRules:
   allowedVersions:
     meow: "13"
+allowBuilds:
+  "@league-of-foundry-developers/foundry-vtt-types": true
+  "@swc/core": true
+  classic-level: true
+  esbuild: true
+blockExoticSubdeps: false
