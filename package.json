@@ -65,7 +65,7 @@
     "@vitejs/plugin-react-swc": "3.11.0",
     "@vitest/ui": "^4.1.8",
     "case": "^1.6.3",
-    "concurrently": "^9.2.1",
+    "concurrently": "^10.0.3",
     "d3-ease": "^3.0.1",
     "eslint": "^9.39.4",
     "eslint-plugin-react-compiler": "19.0.0-beta-ebf51a3-20250411",
