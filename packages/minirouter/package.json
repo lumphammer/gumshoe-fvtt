@@ -25,14 +25,14 @@
   "devDependencies": {
     "@emotion/react": "^11.14.0",
     "@testing-library/jest-dom": "^6.9.1",
-    "@types/react": "^19.2.15",
+    "@types/react": "^19.2.17",
     "framer-motion": "^12.40.0",
-    "react": "^19.2.6",
-    "vite": "^8.0.14",
+    "react": "^19.2.7",
+    "vite": "^8.0.16",
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
     "@emotion/react": "^11.14.0",
-    "react": "^19.2.6"
+    "react": "^19.2.7"
   }
 }
