@@ -50,7 +50,7 @@ export class InvestigatorTokenDocument extends TokenDocument {
 
       return { bar: resources, value: stats };
     } else {
-      return super.getTrackedAttributes(data, _path);
+      return super.getTrackedAttributes(data ?? undefined, _path);
     }
   }
 

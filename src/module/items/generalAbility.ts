@@ -32,7 +32,7 @@ export const generalAbilitySchema = {
 
 export class GeneralAbilityModel extends AbilityModel<
   typeof generalAbilitySchema,
-  GeneralAbilityItem
+  Item.Stored<"generalAbility">
 > {
   static defineSchema(): typeof generalAbilitySchema {
     return generalAbilitySchema;
