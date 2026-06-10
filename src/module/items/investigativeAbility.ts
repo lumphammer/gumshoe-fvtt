@@ -16,7 +16,7 @@ export const investigativeAbilitySchema = {
 
 export class InvestigativeAbilityModel extends AbilityModel<
   typeof investigativeAbilitySchema,
-  InvestigativeAbilityItem
+  Item.Stored<"investigativeAbility">
 > {
   static defineSchema(): typeof investigativeAbilitySchema {
     return investigativeAbilitySchema;

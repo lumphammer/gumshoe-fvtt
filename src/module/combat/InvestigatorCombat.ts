@@ -180,7 +180,7 @@ export class InvestigatorCombat<
     this.turns ||= [];
 
     // Determine the turn order and the current turn
-    const turns: InvestigatorCombatant[] = isKnownCombat(this)
+    const turns: Combatant.Stored[] = isKnownCombat(this)
       ? this.system
           .getTurns()
           .map((cid) => this.combatants.get(cid))

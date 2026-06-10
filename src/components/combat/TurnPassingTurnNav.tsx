@@ -34,6 +34,7 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav() {
       turnIds.every((turnId) => {
         const turn = combat.turns.find((c) => c.id === turnId);
         if (isTurnPassingCombatant(turn)) {
+          // @ts-expect-error system is `never`
           return turn.system.passingTurnsRemaining <= 0;
         }
         return false;

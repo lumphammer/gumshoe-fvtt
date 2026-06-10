@@ -12,14 +12,13 @@ import {
   Unlock,
 } from "../../types";
 import { AbilitySchema } from "./createAbilitySchema";
-import { InvestigatorItem } from "./InvestigatorItem";
 
 /**
  * AbilityModel
  */
 export abstract class AbilityModel<
   TSchema extends AbilitySchema,
-  TParent extends InvestigatorItem,
+  TParent extends Item.Stored,
 > extends TypeDataModel<TSchema, TParent> {
   static migrateData(source) {
     source.notes = maybeNotesObjectToString(source.notes);
@@ -66,7 +65,7 @@ export abstract class AbilityModel<
     await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
-        actor: this.parent.parent,
+        actor: this.parent.actor as Actor.Stored,
       }),
       content: `
           <div
@@ -96,7 +95,7 @@ export abstract class AbilityModel<
     await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
-        actor: this.parent.parent,
+        actor: this.parent.actor as Actor.Stored,
       }),
       content: `
           <div
@@ -146,7 +145,7 @@ export abstract class AbilityModel<
     const newPool = Math.max(0, this.pool - cost);
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
-        actor: this.parent.parent,
+        actor: this.parent.actor as Actor.Stored,
       }),
       content: `
           <div

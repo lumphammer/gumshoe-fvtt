@@ -32,7 +32,7 @@ export const generalAbilitySchema = {
 
 export class GeneralAbilityModel extends AbilityModel<
   typeof generalAbilitySchema,
-  GeneralAbilityItem
+  Item.Stored<"generalAbility">
 > {
   static defineSchema(): typeof generalAbilitySchema {
     return generalAbilitySchema;
@@ -56,7 +56,7 @@ export class GeneralAbilityModel extends AbilityModel<
     await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
-        actor: this.parent.actor,
+        actor: this.parent.actor as Actor.Stored,
       }),
       content: `
         <div
