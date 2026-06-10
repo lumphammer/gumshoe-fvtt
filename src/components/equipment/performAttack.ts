@@ -100,7 +100,7 @@ export const performAttack =
     const weaponId = weapon._id;
 
     void actualRoll.toMessage({
-      speaker: ChatMessage.getSpeaker({ actor: weapon.actor }),
+      speaker: ChatMessage.getSpeaker({ actor: weapon.actor as Actor.Stored }),
       content: `
     <div
       class="${constants.abilityChatMessageClassName}"

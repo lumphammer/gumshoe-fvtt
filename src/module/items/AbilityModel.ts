@@ -65,7 +65,7 @@ export abstract class AbilityModel<
     await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
-        actor: this.parent.actor,
+        actor: this.parent.actor as Actor.Stored,
       }),
       content: `
           <div
@@ -95,7 +95,7 @@ export abstract class AbilityModel<
     await roll.evaluate();
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
-        actor: this.parent.actor,
+        actor: this.parent.actor as Actor.Stored,
       }),
       content: `
           <div
@@ -145,7 +145,7 @@ export abstract class AbilityModel<
     const newPool = Math.max(0, this.pool - cost);
     await roll.toMessage({
       speaker: ChatMessage.getSpeaker({
-        actor: this.parent.actor,
+        actor: this.parent.actor as Actor.Stored,
       }),
       content: `
           <div
