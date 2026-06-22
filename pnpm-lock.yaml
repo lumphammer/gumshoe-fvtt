@@ -208,7 +208,7 @@ overrides:
   vitest: ^3.2.4
   react: ^19.2.7
   '@types/react': ^19.2.17
-  fvtt-types: github:league-of-foundry-developers/foundry-vtt-types#811e0ed84950faa7e44bd610218835cf1679e3f9
+  fvtt-types: github:league-of-foundry-developers/foundry-vtt-types#44e83112274f477f4f7f4bb9288fd52d2bd64027
   tsx: ^4.22.4
   '@swc/plugin-emotion': 10.0.3
   '@vitejs/plugin-react-swc': 3.11.0
@@ -332,8 +332,8 @@ importers:
         specifier: ^0.8.4
         version: 0.8.4
       fvtt-types:
-        specifier: github:league-of-foundry-developers/foundry-vtt-types#811e0ed84950faa7e44bd610218835cf1679e3f9
-        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/811e0ed84950faa7e44bd610218835cf1679e3f9(099f8585e370160c3cfc8e7e1a4ed595)'
+        specifier: github:league-of-foundry-developers/foundry-vtt-types#44e83112274f477f4f7f4bb9288fd52d2bd64027
+        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/44e83112274f477f4f7f4bb9288fd52d2bd64027(099f8585e370160c3cfc8e7e1a4ed595)'
       happy-dom:
         specifier: ^20.10.6
         version: 20.10.6
@@ -429,8 +429,8 @@ importers:
         specifier: ^1.0.13
         version: 1.0.13
       fvtt-types:
-        specifier: github:league-of-foundry-developers/foundry-vtt-types#811e0ed84950faa7e44bd610218835cf1679e3f9
-        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/811e0ed84950faa7e44bd610218835cf1679e3f9(099f8585e370160c3cfc8e7e1a4ed595)'
+        specifier: github:league-of-foundry-developers/foundry-vtt-types#44e83112274f477f4f7f4bb9288fd52d2bd64027
+        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/44e83112274f477f4f7f4bb9288fd52d2bd64027(099f8585e370160c3cfc8e7e1a4ed595)'
       prettier:
         specifier: ^3.8.4
         version: 3.8.4
@@ -501,8 +501,8 @@ importers:
         specifier: ^11.3.4
         version: 11.3.4
       fvtt-types:
-        specifier: github:league-of-foundry-developers/foundry-vtt-types#811e0ed84950faa7e44bd610218835cf1679e3f9
-        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/811e0ed84950faa7e44bd610218835cf1679e3f9(099f8585e370160c3cfc8e7e1a4ed595)'
+        specifier: github:league-of-foundry-developers/foundry-vtt-types#44e83112274f477f4f7f4bb9288fd52d2bd64027
+        version: '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/44e83112274f477f4f7f4bb9288fd52d2bd64027(099f8585e370160c3cfc8e7e1a4ed595)'
       globals:
         specifier: ^17.4.0
         version: 17.4.0
@@ -1108,8 +1108,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.29':
     resolution: {integrity: sha512-uw6guiW/gcAGPDhLmd77/6lW8QLeiV5RUTsAX46Db6oLhGaVj4lhnPwb184s1bkc8kdVg/+h988dro8GRDpmYQ==}
 
-  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/811e0ed84950faa7e44bd610218835cf1679e3f9':
-    resolution: {gitHosted: true, integrity: sha512-sREarX6au7p9squMWAXcPoqa7uWqy9tCFJySF2P9Kt+L4Iy84M9f9sRsIB+5ZLPfUVwFgbtmXHlfW5mtwy2sqw==, tarball: https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/811e0ed84950faa7e44bd610218835cf1679e3f9}
+  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/44e83112274f477f4f7f4bb9288fd52d2bd64027':
+    resolution: {gitHosted: true, integrity: sha512-Tg3eeOYRjxrB/nN/fN9DAv/ZHCpP2uEu8pzJqUGS8rz5Nyi8Gg9SARwM2JRDJPqpkJqKU2WZ9CfkMzksOADVGA==, tarball: https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/44e83112274f477f4f7f4bb9288fd52d2bd64027}
     version: 13.346.0
     peerDependencies:
       '@typescript/native-preview': '*'
@@ -5724,7 +5724,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.4
 
-  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/811e0ed84950faa7e44bd610218835cf1679e3f9(099f8585e370160c3cfc8e7e1a4ed595)':
+  '@league-of-foundry-developers/foundry-vtt-types@https://codeload.github.com/league-of-foundry-developers/foundry-vtt-types/tar.gz/44e83112274f477f4f7f4bb9288fd52d2bd64027(099f8585e370160c3cfc8e7e1a4ed595)':
     dependencies:
       '@codemirror/lang-html': 6.4.9
       '@codemirror/lang-javascript': 6.2.4
