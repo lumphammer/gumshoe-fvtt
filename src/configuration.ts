@@ -176,23 +176,23 @@ Hooks.once("init", function () {
   CONFIG.ui.combat = InvestigatorCombatTracker;
   CONFIG.ui.compendium = InvestigatorCompendiumDirectory;
 
-  CONFIG.Actor.dataModels["pc"] = PCModel;
-  CONFIG.Actor.dataModels["npc"] = NPCModel;
-  CONFIG.Actor.dataModels["party"] = PartyModel;
+  CONFIG.Actor.dataModels.pc = PCModel;
+  CONFIG.Actor.dataModels.npc = NPCModel;
+  CONFIG.Actor.dataModels.party = PartyModel;
 
-  CONFIG.Item.dataModels["equipment"] = EquipmentModel;
-  CONFIG.Item.dataModels["generalAbility"] = GeneralAbilityModel;
-  CONFIG.Item.dataModels["investigativeAbility"] = InvestigativeAbilityModel;
-  CONFIG.Item.dataModels["weapon"] = WeaponModel;
-  CONFIG.Item.dataModels["mwItem"] = MwItemModel;
-  CONFIG.Item.dataModels["personalDetail"] = PersonalDetailModel;
-  CONFIG.Item.dataModels["card"] = CardModel;
+  CONFIG.Item.dataModels.equipment = EquipmentModel;
+  CONFIG.Item.dataModels.generalAbility = GeneralAbilityModel;
+  CONFIG.Item.dataModels.investigativeAbility = InvestigativeAbilityModel;
+  CONFIG.Item.dataModels.weapon = WeaponModel;
+  CONFIG.Item.dataModels.mwItem = MwItemModel;
+  CONFIG.Item.dataModels.personalDetail = PersonalDetailModel;
+  CONFIG.Item.dataModels.card = CardModel;
 
-  CONFIG.Combat.dataModels["classic"] = ClassicCombatModel;
-  CONFIG.Combat.dataModels["turnPassing"] = TurnPassingCombatModel;
+  CONFIG.Combat.dataModels.classic = ClassicCombatModel;
+  CONFIG.Combat.dataModels.turnPassing = TurnPassingCombatModel;
 
-  CONFIG.Combatant.dataModels["classic"] = ClassicCombatantModel;
-  CONFIG.Combatant.dataModels["turnPassing"] = TurnPassingCombatantModel;
+  CONFIG.Combatant.dataModels.classic = ClassicCombatantModel;
+  CONFIG.Combatant.dataModels.turnPassing = TurnPassingCombatantModel;
 
   // CONFIG.Combat.dataModels["investigator"] = InvestigatorCombat;
 
