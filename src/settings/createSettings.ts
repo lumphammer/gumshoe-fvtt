@@ -61,9 +61,8 @@ export const createSetting =
   // constructor) here.
   <
     TValidator extends
-      | z.ZodType<TSetting>
-      | z.ZodOptional<z.ZodType<TSetting>>
-      | undefined = undefined,
+      z.ZodType<TSetting> | z.ZodOptional<z.ZodType<TSetting>> | undefined =
+      undefined,
   >(
     type: any,
     validator?: TValidator,

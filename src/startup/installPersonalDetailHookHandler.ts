@@ -147,15 +147,13 @@ async function doPersonalDetailStuff(
   assertGame(game);
   // first off, make sure this is a personal detail, being created inside a
   // pc or npc actor, by the current user
-  if (
-    !(
-      game.userId === userId &&
-      isPersonalDetailItem(item) &&
-      isActiveCharacterActor(item.actor) &&
-      item.actor &&
-      isPersonalDetailCreateData(createData)
-    )
-  ) {
+  if (!(
+    game.userId === userId &&
+    isPersonalDetailItem(item) &&
+    isActiveCharacterActor(item.actor) &&
+    item.actor &&
+    isPersonalDetailCreateData(createData)
+  )) {
     return;
   }
   // find out what's already in the slot

@@ -30,9 +30,22 @@ function assertIsImportCandidate(
  * Replacement for the CompendiumDirectory class to enable compendium export /
  * import
  */
-export class InvestigatorCompendiumDirectory extends CompendiumDirectory {
+export class InvestigatorCompendiumDirectory<
+  RenderContext extends CompendiumDirectory.RenderContext =
+    CompendiumDirectory.RenderContext,
+  Configuration extends CompendiumDirectory.Configuration =
+    CompendiumDirectory.Configuration,
+  RenderOptions extends CompendiumDirectory.RenderOptions =
+    CompendiumDirectory.RenderOptions,
+> extends CompendiumDirectory<RenderContext, Configuration, RenderOptions> {
   override _replaceHTML(
-    ...args: Parameters<CompendiumDirectory["_replaceHTML"]>
+    ...args: Parameters<
+      CompendiumDirectory<
+        RenderContext,
+        Configuration,
+        RenderOptions
+      >["_replaceHTML"]
+    >
   ) {
     super._replaceHTML(...args);
     assertGame(game);

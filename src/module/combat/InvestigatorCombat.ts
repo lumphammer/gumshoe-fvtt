@@ -35,13 +35,10 @@ export class InvestigatorCombat<
 
   // ///////////////////////////////////////////////////////////////////////////
   // override to make sure we're creating the right kind of combat
-  static override create<
-    Data extends MaybeArray<Combat.CreateInput>,
-    Temporary extends boolean | undefined = undefined,
-  >(
+  static override create<Data extends MaybeArray<Combat.CreateInput>>(
     data: Data,
-    operation?: Combat.Database.CreateOperation<Temporary>,
-  ): Promise<Combat.CreateReturn<Data, Temporary>> {
+    operation?: Combat.Database.CreateOperation,
+  ): Promise<Combat.CreateReturn<Data>> {
     const isTurnPassing = settings.useTurnPassingInitiative.get();
     const subType = isTurnPassing ? "turnPassing" : "classic";
     // this condition previously had a case for data === undefined, but it was
