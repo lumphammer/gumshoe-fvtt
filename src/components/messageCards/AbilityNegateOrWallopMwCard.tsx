@@ -9,8 +9,7 @@ import { MwCostSlug } from "./MwCostSlug";
 import { MWResult } from "./types";
 
 type WallopNegateMode =
-  | typeof constants.htmlDataModeMwNegate
-  | typeof constants.htmlDataModeMwWallop;
+  typeof constants.htmlDataModeMwNegate | typeof constants.htmlDataModeMwWallop;
 
 interface AbilityNegateOrWallopMwCardProps {
   msg: ChatMessage;
