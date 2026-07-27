@@ -1,8 +1,8 @@
-import { LazyMotion } from "framer-motion";
+import { LazyMotion } from "motion/react";
 import { PropsWithChildren } from "react";
 
 const loadFeatures = () =>
-  import("framer-motion").then((res) => res.domAnimation);
+  import("motion/react").then((res) => res.domAnimation);
 
 export const CustomLazyMotion = ({ children }: PropsWithChildren) => {
   return (
