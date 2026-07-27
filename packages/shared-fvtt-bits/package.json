@@ -7,8 +7,8 @@
   "scripts": {
     "test": "tsc",
     "typecheck": "tsc",
-    "lint:check": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint:check": "oxlint --type-aware --report-unused-disable-directives-severity=error",
+    "lint:fix": "oxlint --type-aware --report-unused-disable-directives-severity=error --fix",
     "format:check": "npx prettier --check src task-core dotfiles",
     "format:fix": "npx prettier --check src task-core dotfiles --write",
     "check": "pnpm run typecheck && pnpm run lint:check && pnpm run format:check"
@@ -29,6 +29,8 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-simple-import-sort": "^14.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
+    "oxlint": "^1.75.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "prettier": "^3.9.6",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

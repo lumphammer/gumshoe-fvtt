@@ -173,6 +173,11 @@ const config = defineConfig([
     rules: { "@typescript-eslint/no-var-requires": ["off"] },
   },
 
+  {
+    files: ["**/dotfiles/import/createViteUserConfig.ts"],
+    rules: { "@typescript-eslint/no-deprecated": "off" },
+  },
+
   // vitest 1.x generates inline snapshots in backticks
   {
     files: ["**/*.test.ts"],

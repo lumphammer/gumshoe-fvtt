@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["../shared-fvtt-bits/dotfiles/import/oxlint.config.json"],
+  "plugins": ["typescript", "react"],
+  "ignorePatterns": ["**/dist", "**/node_modules"],
+  "overrides": [
+    {
+      "files": ["**/*.js"],
+      "rules": {
+        "typescript/no-var-requires": "off"
+      }
+    }
+  ]
+}

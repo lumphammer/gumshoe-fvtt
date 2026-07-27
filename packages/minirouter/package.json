@@ -17,7 +17,9 @@
   },
   "scripts": {
     "test": "vitest",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "lint:check": "oxlint --type-aware --report-unused-disable-directives-severity=error",
+    "lint:fix": "oxlint --type-aware --report-unused-disable-directives-severity=error --fix"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +29,8 @@
     "@testing-library/jest-dom": "^7.0.0",
     "@types/react": "^19.2.17",
     "motion": "^12.42.2",
+    "oxlint": "^1.75.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "react": "^19.2.7",
     "vite": "^8.1.3",
     "vitest": "^2.1.8"

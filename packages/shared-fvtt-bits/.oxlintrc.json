@@ -1,23 +1,14 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "extends": ["./packages/shared-fvtt-bits/dotfiles/import/oxlint.config.json"],
+  "extends": ["./dotfiles/import/oxlint.config.json"],
   "plugins": ["typescript", "react"],
-  "options": {
-    "typeAware": true,
-    "reportUnusedDisableDirectives": "error"
-  },
-  "env": {
-    "builtin": true,
-    "browser": true,
-    "node": true
-  },
   "ignorePatterns": [
     "src/*.js",
     "**/build",
     "**/dist",
     "**/node_modules",
     "*/**/*.eslintrc*.?js",
-    "packages/shared-fvtt-bits/dotfiles/copy"
+    "dotfiles/copy"
   ],
   "overrides": [
     {
@@ -27,9 +18,15 @@
       }
     },
     {
-      "files": ["packages/shared-fvtt-bits/task-core/tasks/declarations.ts"],
+      "files": ["task-core/tasks/declarations.ts"],
       "rules": {
         "no-unused-vars": "off"
+      }
+    },
+    {
+      "files": ["dotfiles/import/createViteUserConfig.ts"],
+      "rules": {
+        "typescript/no-deprecated": "off"
       }
     }
   ]

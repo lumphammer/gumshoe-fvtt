@@ -11,8 +11,8 @@
   "scripts": {
     "test": "tsc",
     "typecheck": "tsc",
-    "lint:check": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint:check": "oxlint --type-aware --report-unused-disable-directives-severity=error",
+    "lint:fix": "oxlint --type-aware --report-unused-disable-directives-severity=error --fix",
     "format:check": "prettier --check ./*.ts",
     "format:fix": "prettier --write ./*.ts"
   },
@@ -29,6 +29,8 @@
     "@lumphammer/shared-fvtt-bits": "workspace:*",
     "@tsconfig/recommended": "^1.0.13",
     "fvtt-types": "github:n3dst4/foundry-vtt-types#documents-v2-temp",
+    "oxlint": "^1.75.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "prettier": "^3.9.4",
     "typescript": "^7.0.2"
   },
