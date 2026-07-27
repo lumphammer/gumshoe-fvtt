@@ -31,7 +31,7 @@
     "fvtt-types": "github:n3dst4/foundry-vtt-types#documents-v2-temp",
     "oxlint": "^1.75.0",
     "oxlint-tsgolint": "^7.0.2001",
-    "prettier": "^3.9.4",
+    "prettier": "^3.9.6",
     "typescript": "^7.0.2"
   },
   "volta": {
