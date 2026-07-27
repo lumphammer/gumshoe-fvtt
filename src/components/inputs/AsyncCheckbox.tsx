@@ -13,6 +13,7 @@ export const AsyncCheckbox = React.memo<AsyncCheckboxProps>(
   ({ checked: checkedProp, onChange: onChangeProp, className, title }) => {
     const [checked, setChecked] = useState(checkedProp);
     useEffect(() => {
+      // eslint-disable-next-line react/react-compiler
       setChecked(checkedProp);
     }, [checkedProp]);
 

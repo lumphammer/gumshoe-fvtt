@@ -128,14 +128,14 @@ export type PickByType<T, P> = Omit<
   { [K in keyof T]: T[K] extends P ? never : K }[keyof T]
 >;
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+// eslint-disable-next-line typescript/no-unsafe-function-type
 export type RecursivePartial<T> = T extends Function
   ? T
   : {
       [P in keyof T]?: RecursivePartial<T[P]>;
     };
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+// eslint-disable-next-line typescript/no-unsafe-function-type
 export type RecursiveRequired<T> = T extends Function
   ? T
   : {

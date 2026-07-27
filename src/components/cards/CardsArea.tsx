@@ -31,7 +31,7 @@ export const CardsArea = () => {
 
   // keep local state in sync with the actor
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // eslint-disable-next-line react/react-compiler
     setCardsAreaSettings({
       category: actor.system.cardsAreaSettings.category,
       sortOrder: actor.system.cardsAreaSettings.sortOrder,

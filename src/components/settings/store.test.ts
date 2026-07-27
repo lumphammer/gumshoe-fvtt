@@ -82,6 +82,7 @@ const initialState: State = {
     personalDetails: [],
     showEmptyInvestigativeCategories: false,
     systemMigrationVersion: "",
+    // eslint-disable-next-line typescript/no-deprecated -- legacy migration fixture
     shortNotes: [],
     firstRun: true,
     journalMemories: {},

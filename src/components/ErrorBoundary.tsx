@@ -3,7 +3,7 @@ import React, { PropsWithChildren } from "react";
 import { systemLogger } from "../functions/utilities";
 import { absoluteCover } from "./absoluteCover";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// eslint-disable-next-line typescript/no-empty-object-type
 type ErrorBoundaryProps = PropsWithChildren<{}>;
 
 interface ErrorBoundaryState {

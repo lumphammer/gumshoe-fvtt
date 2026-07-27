@@ -16,7 +16,7 @@ export function installNextTurnHandler() {
       systemLogger.log("nextTurn");
       assertGame(game);
       const combat = game.combat;
-      combat?.nextTurn();
+      void combat?.nextTurn();
     });
   });
 }

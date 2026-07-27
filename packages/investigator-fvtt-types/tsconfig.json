@@ -1,5 +1,5 @@
 {
-  "include": ["index.ts", "eslint.config.js"],
+  "include": ["index.ts"],
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
@@ -11,5 +11,5 @@
     "noEmit": false,
     "emitDeclarationOnly": true,
     "lib": ["es2020", "dom"],
-  }
+  },
 }
