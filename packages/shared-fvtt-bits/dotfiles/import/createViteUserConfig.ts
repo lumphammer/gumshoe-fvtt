@@ -163,6 +163,7 @@ export function createViteUserConfig({
     // see also https://github.com/vitejs/vite/pull/8674 (this PR should have
     // fixed it, but maybe it's not in the version we're using?)
     // discussion: https://github.com/vitejs/vite/discussions/8640?sort=old
+    // eslint-disable-next-line typescript/no-deprecated -- still needed until migrating this configuration to Oxc
     esbuild: {
       logOverride: { "this-is-undefined-in-esm": "silent" },
       // without this, the class name gets mangled in minification and thus

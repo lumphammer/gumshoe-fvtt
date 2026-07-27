@@ -83,9 +83,9 @@ export const createSlice =
       [key in keyof R]: ReturnType<
         typeof createCase<
           S,
-          R[key] extends (state: infer S1) => void
+          R[key] extends (state: infer _S1) => void
             ? void
-            : R[key] extends (state: infer S1, payload: infer P1) => void
+            : R[key] extends (state: infer _S1, payload: infer P1) => void
               ? P1
               : never
         >

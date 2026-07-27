@@ -51,6 +51,7 @@ export const CombatantList = memo(function CombatantList() {
   const [ids, setIds] = useState<string[]>([]);
 
   useEffect(() => {
+    // eslint-disable-next-line react/react-compiler
     setIds(turnIds);
   }, [turnIds]);
 

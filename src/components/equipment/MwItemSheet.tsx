@@ -77,13 +77,13 @@ export const MwItemSheet = () => {
         css={{ gridArea: "headline" }}
         contentEditable
         // false positives here because "name" gets flagged as a ref
-        // eslint-disable-next-line react-hooks/refs
+        // eslint-disable-next-line react/react-compiler
         onInput={name.onInput}
-        // eslint-disable-next-line react-hooks/refs
+        // eslint-disable-next-line react/react-compiler
         onFocus={name.onFocus}
-        // eslint-disable-next-line react-hooks/refs
+        // eslint-disable-next-line react/react-compiler
         onBlur={name.onBlur}
-        // eslint-disable-next-line react-hooks/refs
+        // eslint-disable-next-line react/react-compiler
         ref={name.contentEditableRef}
       />
 
