@@ -15,5 +15,16 @@
     "@vitejs/plugin-react-swc",
     "less",
     "pnpm"
+  ],
+  "minimumReleaseAge": "1 day",
+  "packageRules": [
+    {
+      "matchPackageNames": ["actions/*"],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    },
+    {
+      "matchDepNames": ["fvtt-types"],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    }
   ]
 }

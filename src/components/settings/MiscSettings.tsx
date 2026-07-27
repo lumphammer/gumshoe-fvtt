@@ -76,6 +76,7 @@ export const MiscSettings = ({ setters }: { setters: Setters }) => {
           onChange={setters.mwHiddenShortNotes}
         />
       </SettingsGridField>
+      {/* eslint-disable-next-line no-useless-assignment */}
       <SettingsGridField label="Use injury status" index={idx++}>
         <Toggle
           checked={settings.useMwInjuryStatus}

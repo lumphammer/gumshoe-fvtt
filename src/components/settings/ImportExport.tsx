@@ -64,6 +64,7 @@ export const ImportExport = () => {
           <Translate>Export</Translate>
         </Button>
       </SettingsGridField>
+      {/* eslint-disable-next-line no-useless-assignment */}
       <SettingsGridField label="Import settings from file" index={idx++}>
         <Button onClick={handleImport}>
           <Translate>Import</Translate>

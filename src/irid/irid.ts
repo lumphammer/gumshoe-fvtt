@@ -199,7 +199,7 @@ export class Irid {
           s: this.hsl.s,
           l: this.hsl.l,
           a: a ?? undefined,
-        }) as any;
+        });
       } else {
         return new Irid({
           type: "rgba",
@@ -207,7 +207,7 @@ export class Irid {
           g: this.rgb.g,
           b: this.rgb.b,
           a: a ?? undefined,
-        }) as any;
+        });
       }
     }
   }

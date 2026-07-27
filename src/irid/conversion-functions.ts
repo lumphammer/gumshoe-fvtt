@@ -76,8 +76,7 @@ export function rgbToHSL(rgb: RGBA): HSLA {
   let b2;
   let h = 0;
   let s = 0;
-  let l = 0;
-  l = (m + v) / 2;
+  const l = (m + v) / 2;
   if (l > 0) {
     vm = v - m;
     s = vm;

@@ -174,6 +174,7 @@ export const AbilitySettings = ({ setters }: { setters: Setters }) => {
           onChange={setters.showEmptyInvestigativeCategories}
         />
       </SettingsGridField>
+      {/* eslint-disable-next-line no-useless-assignment */}
       <SettingsGridField label="Use NPC Combat bonuses?" index={idx++}>
         <Toggle
           checked={settings.useNpcCombatBonuses}

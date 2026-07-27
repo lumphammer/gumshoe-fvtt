@@ -98,7 +98,7 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
           value={settings.genericOccupation}
         />
       </SettingsGridField>
-
+      {/* eslint-disable-next-line no-useless-assignment */}
       <SettingsGridField label="ItemAddedNotifications" index={idx++}>
         <Toggle
           checked={settings.notifyItemAddedToActor}

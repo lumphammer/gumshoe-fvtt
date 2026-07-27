@@ -95,7 +95,7 @@ export function summarizeCategoryCards(
   const lethalCards = cards.slice(0, indexOfLastLethalCard + 1);
   const lethalCardsTotal = countCards(lethalCards, category.id);
 
-  let total = "";
+  let total: string;
   let isOverGoal = false;
   let isOverLimit = false;
   if (category.thresholdType === "limit") {

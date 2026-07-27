@@ -36,7 +36,7 @@ export function loadCustomThemes() {
     }
     systemLogger.log({ files });
     for (const filename of files) {
-      let blob: any = null;
+      let blob: any;
       try {
         const getText = async () => await (await fetch(filename)).text();
         if (jsonRe.test(filename)) {

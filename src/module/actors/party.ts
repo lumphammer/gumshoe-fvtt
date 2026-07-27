@@ -37,7 +37,7 @@ export class PartyModel extends TypeDataModel<
         assertGame(game);
         return game.actors?.get(id);
       })
-      .filter((actor) => actor !== undefined) as Actor[];
+      .filter((actor) => actor !== undefined);
   };
 
   addActorIds = async (newIds: string[]) => {

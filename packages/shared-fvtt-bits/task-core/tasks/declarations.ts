@@ -38,8 +38,7 @@ declare module "@foundryvtt/foundryvtt-cli" {
       jsonOptions?: object;
       transformEntry?: (entry: any) => Promise<false | void>;
       transformName?:
-        | ((doc: any) => Promise<string | void>)
-        | ((doc: any) => string | void);
+        ((doc: any) => Promise<string | void>) | ((doc: any) => string | void);
     }
 
     type Options = CoreOptions & NedbRelatedOptions;

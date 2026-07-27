@@ -99,7 +99,7 @@ export const createSetting =
       get: getSetting<TSetting>(key),
       set: setSetting<TSetting>(key),
       exportable,
-      validator: validator as TValidator,
+      validator: validator,
     };
   };
 
