@@ -1,5 +1,5 @@
 import { CSSObject } from "@emotion/react";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, m } from "motion/react";
 import { memo, ReactNode } from "react";
 
 import { PropsWithChildrenAndDirection } from "../types";
