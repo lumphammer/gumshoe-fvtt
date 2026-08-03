@@ -27,12 +27,12 @@
   "devDependencies": {
     "@emotion/react": "^11.14.0",
     "@testing-library/jest-dom": "^7.0.0",
-    "@types/react": "^19.2.17",
-    "motion": "^12.42.2",
-    "oxlint": "^1.75.0",
+    "@types/react": "^19.2.18",
+    "motion": "^12.43.0",
+    "oxlint": "^1.76.0",
     "oxlint-tsgolint": "^7.0.2001",
     "react": "^19.2.8",
-    "vite": "^8.1.5",
+    "vite": "^8.2.0",
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
