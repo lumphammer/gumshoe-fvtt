@@ -28,7 +28,7 @@
     "@emotion/react": "^11.14.0",
     "@testing-library/jest-dom": "^7.0.0",
     "@types/react": "^19.2.18",
-    "motion": "^12.43.0",
+    "motion": "^13.0.0",
     "oxlint": "^1.77.0",
     "oxlint-tsgolint": "^7.0.2001",
     "react": "^19.2.8",
