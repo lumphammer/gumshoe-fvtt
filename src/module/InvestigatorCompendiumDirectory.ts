@@ -87,10 +87,10 @@ export class InvestigatorCompendiumDirectory<
 
     const exportButton: foundry.applications.ux.ContextMenu.Entry<HTMLElement> =
       {
-        name: "investigator.ExportToFile",
+        label: "investigator.ExportToFile",
         icon: '<i class="fa-solid fa-cloud-arrow-down"></i>',
-        callback: this.#onExportCompendiumPack.bind(this),
-        condition: this.#isPackValidForExport.bind(this),
+        onClick: (event, target) => this.#onExportCompendiumPack(target),
+        visible: this.#isPackValidForExport.bind(this),
       };
 
     const result = [...initial, exportButton];
