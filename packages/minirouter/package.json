@@ -26,10 +26,10 @@
   "license": "ISC",
   "devDependencies": {
     "@emotion/react": "^11.14.0",
-    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/jest-dom": "^7.0.1",
     "@types/react": "^19.2.18",
-    "motion": "^13.0.0",
-    "oxlint": "^1.77.0",
+    "motion": "^13.1.0",
+    "oxlint": "^1.78.0",
     "oxlint-tsgolint": "^7.0.2001",
     "react": "^19.2.8",
     "vite": "^8.2.1",
