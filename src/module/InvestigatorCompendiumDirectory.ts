@@ -5,7 +5,7 @@ import CompendiumDirectory = foundry.applications.sidebar.tabs.CompendiumDirecto
 import { nanoid } from "nanoid";
 
 import { saveAsJsonFile } from "../functions/saveFile";
-import { getUserFile, systemLogger } from "../functions/utilities";
+import { getUserFile } from "../functions/utilities";
 import { RecursivePartial } from "../types";
 
 const importButtonIconClass = "fa-cloud-arrow-up";
@@ -206,13 +206,13 @@ export class InvestigatorCompendiumDirectory<
     if (candidate.label === undefined) {
       throw new Error("Candidate compendium did not contain a label");
     }
-    if (candidate.entity === undefined) {
+    if (!(
+      candidate.entity &&
+      ["Actor", "Item", "JournalEntry"].includes(candidate.entity)
+    )) {
       throw new Error("Candidate compendium did not contain an entity");
     }
-    if (
-      candidate.contents === undefined ||
-      candidate.contents.length === undefined
-    ) {
+    if (!Array.isArray(candidate.contents)) {
       throw new Error("Candidate compendium did not contain any contents");
     }
     const verified = candidate as ExportedCompendium;
@@ -220,27 +220,25 @@ export class InvestigatorCompendiumDirectory<
     ui.notifications?.info(
       `Beginning import of compendium pack ${verified.label}`,
     );
-    const pack = await CompendiumCollection.createCompendium({
-      type: verified.entity,
-      label: verified.label,
-      name,
-    });
     const maker = {
       Actor,
       Item,
       JournalEntry,
     }[verified.entity];
-
-    // @ts-expect-error we're doing some insane jiggerypokery and i cba to work
-    // out hiw to fix the fypes
-    const entities = await maker.create(verified.contents as any, {
-      temporary: true,
+    const pack = await CompendiumCollection.createCompendium({
+      type: verified.entity,
+      label: verified.label,
+      name,
     });
-    for (const entity of entities as any) {
-      await pack.importDocument(entity);
-      systemLogger.log(
-        `Imported ${verified.entity} ${entity.name} into Compendium pack ${pack.collection}`,
-      );
+    try {
+      await maker.createDocuments(verified.contents, {
+        pack: pack.metadata.id,
+      });
+    } catch (e) {
+      try {
+        await pack.deleteCompendium();
+      } catch {}
+      throw e;
     }
 
     pack.apps.forEach((app) =>
