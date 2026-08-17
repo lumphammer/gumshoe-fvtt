@@ -80,7 +80,7 @@ export class InvestigatorCompendiumDirectory<
   /**
    * Get context menu entries for entries in this directory.
    */
-  override _getEntryContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[] {
+  protected override _getEntryContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[] {
     assertGame(game);
     if (!game.user.isGM) return [];
     const initial = super._getEntryContextOptions();

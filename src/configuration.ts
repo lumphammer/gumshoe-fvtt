@@ -153,16 +153,6 @@ declare module "fvtt-types/configuration" {
       rollOrder?: number;
     }
   }
-
-  // fill in a type we need for InvestigatorCompendiumDirectory
-  namespace foundry.applications.sidebar.tabs {
-    // @ts-expect-error fvtt-types - when this errors, CompendiumDirectory has been typed
-    type _T = CompendiumDirectory["_getFilterContextOptions"];
-
-    interface CompendiumDirectory {
-      _getEntryContextOptions(): foundry.applications.ux.ContextMenu.Entry<HTMLElement>[];
-    }
-  }
 }
 
 // runtime configuration

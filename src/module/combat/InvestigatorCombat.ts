@@ -88,23 +88,13 @@ export class InvestigatorCombat<
   }
 
   protected override _preUpdateDescendantDocuments(
-    // destructuring a spread because the type for the args is a tuple 🙃
-    ...[
-      parent,
-      collection,
-      changes,
-      options,
-      userId,
-    ]: Combat.PreUpdateDescendantDocumentsArgs
+    // this is a union of tuples (one per embedded collection), so we keep it
+    // packed and spread it straight back into super - destructuring would
+    // widen it into a tuple of unions and break the correlation 🙃
+    ...args: Combat.PreUpdateDescendantDocumentsArgs
   ) {
     assertGame(game);
-    super._preUpdateDescendantDocuments(
-      parent,
-      collection,
-      changes,
-      options,
-      userId,
-    );
+    super._preUpdateDescendantDocuments(...args);
   }
 
   protected override _preCreateDescendantDocuments(
@@ -114,33 +104,13 @@ export class InvestigatorCombat<
   }
 
   protected override _onCreateDescendantDocuments(
-    ...[
-      parent,
-      collection,
-      documents,
-      data,
-      options,
-      userId,
-    ]: Combat.OnCreateDescendantDocumentsArgs
+    ...args: Combat.OnCreateDescendantDocumentsArgs
   ) {
+    const userId = args[5];
     if (isKnownCombat(this) && userId === game.userId) {
-      void this.system.onCreateDescendantDocuments(
-        parent,
-        collection,
-        documents,
-        data,
-        options,
-        userId,
-      );
+      void this.system.onCreateDescendantDocuments(...args);
     }
-    return super._onCreateDescendantDocuments(
-      parent,
-      collection,
-      documents,
-      data,
-      options,
-      userId,
-    );
+    return super._onCreateDescendantDocuments(...args);
   }
 
   protected override _onUpdateDescendantDocuments(
