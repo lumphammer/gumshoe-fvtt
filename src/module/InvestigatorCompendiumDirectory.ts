@@ -235,7 +235,9 @@ export class InvestigatorCompendiumDirectory<
         pack: pack.metadata.id,
       });
     } catch (e) {
-      await pack.deleteCompendium();
+      try {
+        await pack.deleteCompendium();
+      } catch {}
       throw e;
     }
 
