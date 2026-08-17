@@ -89,7 +89,6 @@ export class InvestigatorJournalSheet extends JournalEntrySheet {
     const pages = this.document.pages.contents.toSorted(
       (a, b) => a.sort - b.sort,
     );
-    // @ts-expect-error pageIndex is not typed
     const page = pages[this.pageIndex];
     const pageClasses = page?.flags[systemId]?.[extraCssClasses] ?? "";
     if (pageClasses !== undefined && pageClasses !== "") {
