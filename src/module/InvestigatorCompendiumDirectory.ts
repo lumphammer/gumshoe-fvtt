@@ -206,13 +206,13 @@ export class InvestigatorCompendiumDirectory<
     if (candidate.label === undefined) {
       throw new Error("Candidate compendium did not contain a label");
     }
-    if (candidate.entity === undefined) {
+    if (!(
+      candidate.entity &&
+      ["Actor", "Item", "JournalEntry"].includes(candidate.entity)
+    )) {
       throw new Error("Candidate compendium did not contain an entity");
     }
-    if (
-      candidate.contents === undefined ||
-      candidate.contents.length === undefined
-    ) {
+    if (!Array.isArray(candidate.contents)) {
       throw new Error("Candidate compendium did not contain any contents");
     }
     const verified = candidate as ExportedCompendium;
@@ -230,9 +230,14 @@ export class InvestigatorCompendiumDirectory<
       label: verified.label,
       name,
     });
-    await maker.createDocuments(verified.contents, {
-      pack: pack.metadata.id,
-    });
+    try {
+      await maker.createDocuments(verified.contents, {
+        pack: pack.metadata.id,
+      });
+    } catch (e) {
+      await pack.deleteCompendium();
+      throw e;
+    }
 
     pack.apps.forEach((app) =>
       app instanceof foundry.appv1.api.Application
