@@ -5,7 +5,7 @@ import CompendiumDirectory = foundry.applications.sidebar.tabs.CompendiumDirecto
 import { nanoid } from "nanoid";
 
 import { saveAsJsonFile } from "../functions/saveFile";
-import { getUserFile, systemLogger } from "../functions/utilities";
+import { getUserFile } from "../functions/utilities";
 import { RecursivePartial } from "../types";
 
 const importButtonIconClass = "fa-cloud-arrow-up";
@@ -220,28 +220,19 @@ export class InvestigatorCompendiumDirectory<
     ui.notifications?.info(
       `Beginning import of compendium pack ${verified.label}`,
     );
-    const pack = await CompendiumCollection.createCompendium({
-      type: verified.entity,
-      label: verified.label,
-      name,
-    });
     const maker = {
       Actor,
       Item,
       JournalEntry,
     }[verified.entity];
-
-    // @ts-expect-error we're doing some insane jiggerypokery and i cba to work
-    // out hiw to fix the fypes
-    const entities = await maker.create(verified.contents as any, {
-      temporary: true,
+    const pack = await CompendiumCollection.createCompendium({
+      type: verified.entity,
+      label: verified.label,
+      name,
     });
-    for (const entity of entities as any) {
-      await pack.importDocument(entity);
-      systemLogger.log(
-        `Imported ${verified.entity} ${entity.name} into Compendium pack ${pack.collection}`,
-      );
-    }
+    await maker.createDocuments(verified.contents, {
+      pack: pack.metadata.id,
+    });
 
     pack.apps.forEach((app) =>
       app instanceof foundry.appv1.api.Application
