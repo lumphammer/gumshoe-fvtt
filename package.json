@@ -68,7 +68,7 @@
     "concurrently": "^10.0.5",
     "d3-ease": "^3.0.1",
     "focusable-selectors": "^0.8.4",
-    "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#7ee4f62126791de57512fd14e0714ba79293193e",
+    "fvtt-types": "github:league-of-foundry-developers/foundry-vtt-types#469972f860cb2f422011027d363ce9c9aac205be",
     "happy-dom": "^20.11.2",
     "html-escaper": "^3.0.3",
     "immer": "^11.1.16",
