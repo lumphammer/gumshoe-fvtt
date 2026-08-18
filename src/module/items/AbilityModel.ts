@@ -2,6 +2,7 @@ import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
+import { migrateValue } from "../../functions/migrateValue";
 import { fixLength } from "../../functions/utilities";
 import { TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
@@ -21,7 +22,7 @@ export abstract class AbilityModel<
   TParent extends Item.Stored,
 > extends TypeDataModel<TSchema, TParent> {
   static migrateData(source) {
-    source.notes = maybeNotesObjectToString(source.notes);
+    migrateValue(source, "notes", maybeNotesObjectToString);
     return super.migrateData(source);
   }
 
