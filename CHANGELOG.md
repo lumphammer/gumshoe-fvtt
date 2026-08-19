@@ -2,6 +2,15 @@
 
 (Skipped version numbers are testing releases.)
 
+## Unreleased
+
+Fixes #148, #835, and #1320.
+
+- Adds a basic build-point counter to the edit tab of the character sheet (not taking system-specific rules into account for now).
+- Added per-character and group totals for investigative and general on the party sheet.
+- Also we now show "extra" abilities (i.e. ones that a character has but which are not part of the current configuration) on the party sheet.
+- Fixed a small regression such that when a character is missing a certain ability, it shows up as en-dash, not 0 on the party sheet.
+
 ## 10.119 (2026-08-19)
 
 - Fixes a bug where adjusting the pool or rating of an ability could wipe out the description text (#1375).
