@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
+import { getTranslated } from "../../functions/getTranslated";
 import { InvestigatorActor } from "../../module/actors/InvestigatorActor";
 import { AbilityItem, isAbilityItem } from "../../module/items/exports";
 import { runtimeConfig } from "../../runtime";
@@ -46,7 +47,7 @@ export const AbilityRow = ({
       <div
         title={
           abilityRowData.isExtra
-            ? "Not in the configured PC packs - shown because a party member has it"
+            ? getTranslated("Ability not in configured packs")
             : undefined
         }
         css={{

@@ -12,6 +12,7 @@
   "investigator.24hRefresh": "24h Refresh",
   "investigator.Abilities": "Abilities",
   "investigator.Ability": "Ability",
+  "investigator.AbilityNotInConfiguredPacks": "Not in the configured PC packs - shown because a party member has it",
   "investigator.AbilityTest": "Ability test",
   "investigator.ActorNameDoesNotHaveAbilityNameAddItNow": "{ActorName} does not have {AbilityName}. Add it now?",
   "investigator.AddEquipment": "Add equipment",
