@@ -2,7 +2,7 @@
 
 (Skipped version numbers are testing releases.)
 
-## Unreleased
+## 10.121 (2026-08-19)
 
 Fixes #148, #835, and #1320.
 
