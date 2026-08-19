@@ -8,6 +8,7 @@ import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AbilitySlugEdit } from "./AbilitySlugEdit";
 import { AbilitySlugEditQuickShockInvestigative } from "./AbilitySlugEditQuickShockInvestigative";
+import { BuildPointsBar } from "./BuildPointsBar";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
 
 const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
@@ -45,6 +46,13 @@ export const AbilitiesAreaEdit = ({
 
   return (
     <>
+      {!npcMode && (
+        <BuildPointsBar
+          investigativeAbilities={Object.values(investigativeAbilities).flat()}
+          generalAbilities={Object.values(generalAbilities).flat()}
+          showInvestigative={!mwMode}
+        />
+      )}
       <div
         css={{
           display: "grid",
