@@ -186,7 +186,7 @@ export const buildRowData = (
       }
       const ability = actor.system.getAbilityByName(name ?? "", abilityType);
       if (actor.id !== null) {
-        const rating = ability?.system.rating ?? 0;
+        const rating = ability?.system.rating;
         actorInfo[actor.id] = {
           abilityId: ability?.id ?? undefined,
           actorId: actor.id,

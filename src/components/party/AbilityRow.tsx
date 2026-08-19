@@ -123,7 +123,7 @@ export const AbilityRow = ({
               textAlign: "center",
             }}
           >
-            {actorInfo?.rating ?? "—"}
+            {actorInfo?.rating ?? "–"}
           </a>
         );
       })}
