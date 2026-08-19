@@ -75,6 +75,41 @@ const compareAbilityDataSources = (
 };
 
 /**
+ * abilities are matched to actors by exact type + name (see
+ * PCModel.getAbilityByName), so that pair is what identifies a row
+ */
+const abilityKey = (item: AbilityItem) => `${item.type}///${item.name ?? ""}`;
+
+/**
+ * find abilities that the party's actors own but which aren't in any of the
+ * configured PC packs, so they can still get a row on the sheet.
+ *
+ * de-duplicated by type + name across the whole party. The first actor who has
+ * one supplies the representative item for the row.
+ */
+const getExtraAbilities = (
+  packAbilities: AbilityItem[],
+  actors: PCActor[],
+): AbilityItem[] => {
+  const seen = new Set(packAbilities.map(abilityKey));
+  const extras: AbilityItem[] = [];
+  for (const actor of actors) {
+    for (const item of actor.items.values()) {
+      if (!isAbilityItem(item)) {
+        continue;
+      }
+      const key = abilityKey(item);
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      extras.push(item);
+    }
+  }
+  return extras;
+};
+
+/**
  * sum the ratings of every ability of the given type that the actor owns.
  */
 const sumRatingsByType = (actor: PCActor, abilityType: AbilityType): number => {
@@ -114,7 +149,10 @@ export const buildRowData = (
 ): RowData[] => {
   const result: RowData[] = [];
 
-  const sorted = abilities.sort(compareAbilityDataSources);
+  const extras = getExtraAbilities(abilities, actors);
+  const extraKeys = new Set(extras.map(abilityKey));
+  // don't sort `abilities` in place - it's held in state by the sheet
+  const sorted = [...abilities, ...extras].sort(compareAbilityDataSources);
 
   let lastType: AbilityType | null = null;
   let lastCategory: string | null = null;
@@ -161,6 +199,7 @@ export const buildRowData = (
     result.push({
       rowType: abilityRowKey,
       abilityItem,
+      isExtra: extraKeys.has(abilityKey(abilityItem)),
       actorInfo,
       total,
     });

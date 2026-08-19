@@ -44,6 +44,11 @@ export const AbilityRow = ({
     <>
       {/* Ability name */}
       <div
+        title={
+          abilityRowData.isExtra
+            ? "Not in the configured PC packs - shown because a party member has it"
+            : undefined
+        }
         css={{
           gridRow: index + 2,
           backgroundColor: headerBg,
@@ -51,6 +56,8 @@ export const AbilityRow = ({
           textAlign: "left",
           position: "sticky",
           left: 0,
+          // extras aren't part of the configured set, so set them apart
+          fontStyle: abilityRowData.isExtra ? "italic" : undefined,
         }}
       >
         {abilityRowData.abilityItem.name}
@@ -90,10 +97,15 @@ export const AbilityRow = ({
                 if (!confirmed) {
                   return;
                 }
+                const source = abilityRowData.abilityItem.toJSON();
+                if (abilityRowData.isExtra) {
+                  // the representative for an extra row is another PC's own
+                  // copy, so start the new one from scratch rather than
+                  // carrying that PC's rating and pool across
+                  source.system = { ...source.system, rating: 0, pool: 0 };
+                }
                 const newAbility = (
-                  await actor.createEmbeddedDocuments("Item", [
-                    abilityRowData.abilityItem.toJSON(),
-                  ])
+                  await actor.createEmbeddedDocuments("Item", [source])
                 )?.[0] as AbilityItem;
                 if (isAbilityItem(newAbility)) {
                   const sheet = newAbility.sheet;

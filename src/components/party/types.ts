@@ -26,6 +26,12 @@ export type ActorAbilityInfo = {
 export type AbilityRowData = {
   rowType: typeof abilityRowKey;
   abilityItem: AbilityItem;
+  /**
+   * true when this ability isn't in any of the configured PC packs, and the
+   * row only exists because one of the party's actors owns it. in that case
+   * `abilityItem` is that actor's own copy rather than a pack original.
+   */
+  isExtra: boolean;
   actorInfo: {
     [actorId: string]: ActorAbilityInfo;
   };
