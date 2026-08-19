@@ -307,26 +307,66 @@ export const PartySheet = () => {
         {/* Rows */}
         {rowData.map((data, i) => {
           if (isTypeHeader(data)) {
-            // Investigative or general
+            // Investigative or general, plus the build point totals for that
+            // type - per actor, and for the party as a whole
             return (
-              <h1
-                key={data.abilityType}
-                css={{
-                  "&&": {
-                    gridRow: i + 2,
-                    padding: "0.5em",
-                    textAlign: "left",
-                    position: "sticky",
-                    left: 0,
-                  },
-                }}
-              >
-                {data.abilityType === constants.generalAbility ? (
-                  <Translate>General</Translate>
-                ) : (
-                  <Translate>Investigative</Translate>
+              <React.Fragment key={data.abilityType}>
+                <h1
+                  css={{
+                    "&&": {
+                      gridRow: i + 2,
+                      gridColumn: 1,
+                      padding: "0.5em",
+                      textAlign: "left",
+                      position: "sticky",
+                      left: 0,
+                      // opaque so the point counters can't scroll underneath
+                      background: theme.colors.bgOpaqueSecondary,
+                    },
+                  }}
+                >
+                  {data.abilityType === constants.generalAbility ? (
+                    <Translate>General</Translate>
+                  ) : (
+                    <Translate>Investigative</Translate>
+                  )}
+                </h1>
+                {actors.map((actor, j) =>
+                  actor?.id == null ? null : (
+                    <div
+                      key={actor.id}
+                      css={{
+                        gridRow: i + 2,
+                        gridColumn: j + 2,
+                        background: theme.colors.backgroundSecondary,
+                        padding: "0.5em",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {data.actorTotals[actor.id] ?? 0}
+                    </div>
+                  ),
                 )}
-              </h1>
+                <div
+                  css={{
+                    gridRow: i + 2,
+                    gridColumn: actors.length + 2,
+                    position: "sticky",
+                    right: 0,
+                    background: theme.colors.bgOpaqueSecondary,
+                    padding: "0.5em",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {data.grandTotal}
+                </div>
+              </React.Fragment>
             );
           } else if (isCategoryHeader(data)) {
             // Category

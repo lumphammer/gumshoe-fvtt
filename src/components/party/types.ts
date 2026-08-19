@@ -7,6 +7,12 @@ export const abilityRowKey = "abilityRowString";
 export type TypeHeaderData = {
   rowType: typeof typeHeaderKey;
   abilityType: AbilityType;
+  /**
+   * per-actor build point totals for this ability type
+   */
+  actorTotals: { [actorId: string]: number };
+  /** the same, summed across the whole party */
+  grandTotal: number;
 };
 export type CategoryHeaderData = {
   rowType: typeof categoryHeaderKey;
