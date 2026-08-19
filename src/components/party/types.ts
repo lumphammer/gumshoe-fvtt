@@ -7,6 +7,12 @@ export const abilityRowKey = "abilityRowString";
 export type TypeHeaderData = {
   rowType: typeof typeHeaderKey;
   abilityType: AbilityType;
+  /**
+   * per-actor build point totals for this ability type
+   */
+  actorTotals: { [actorId: string]: number };
+  /** the same, summed across the whole party */
+  grandTotal: number;
 };
 export type CategoryHeaderData = {
   rowType: typeof categoryHeaderKey;
@@ -20,6 +26,12 @@ export type ActorAbilityInfo = {
 export type AbilityRowData = {
   rowType: typeof abilityRowKey;
   abilityItem: AbilityItem;
+  /**
+   * true when this ability isn't in any of the configured PC packs, and the
+   * row only exists because one of the party's actors owns it. in that case
+   * `abilityItem` is that actor's own copy rather than a pack original.
+   */
+  isExtra: boolean;
   actorInfo: {
     [actorId: string]: ActorAbilityInfo;
   };

@@ -75,6 +75,71 @@ const compareAbilityDataSources = (
 };
 
 /**
+ * abilities are matched to actors by exact type + name (see
+ * PCModel.getAbilityByName), so that pair is what identifies a row
+ */
+const abilityKey = (item: AbilityItem) => `${item.type}///${item.name ?? ""}`;
+
+/**
+ * find abilities that the party's actors own but which aren't in any of the
+ * configured PC packs, so they can still get a row on the sheet.
+ *
+ * de-duplicated by type + name across the whole party. The first actor who has
+ * one supplies the representative item for the row.
+ */
+const getExtraAbilities = (
+  packAbilities: AbilityItem[],
+  actors: PCActor[],
+): AbilityItem[] => {
+  const seen = new Set(packAbilities.map(abilityKey));
+  const extras: AbilityItem[] = [];
+  for (const actor of actors) {
+    for (const item of actor.items.values()) {
+      if (!isAbilityItem(item)) {
+        continue;
+      }
+      const key = abilityKey(item);
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      extras.push(item);
+    }
+  }
+  return extras;
+};
+
+/**
+ * sum the ratings of every ability of the given type that the actor owns.
+ */
+const sumRatingsByType = (actor: PCActor, abilityType: AbilityType): number => {
+  let total = 0;
+  for (const item of actor.items.values()) {
+    if (isAbilityItem(item) && item.type === abilityType) {
+      total += item.system.rating;
+    }
+  }
+  return total;
+};
+
+/**
+ * build the per-actor and party-wide build point totals for one ability type
+ */
+const buildTypeTotals = (actors: PCActor[], abilityType: AbilityType) => {
+  const actorTotals: { [actorId: string]: number } = {};
+  let grandTotal = 0;
+  for (const actor of actors) {
+    if (actor?.id == null) {
+      continue;
+    }
+    const total = sumRatingsByType(actor, abilityType);
+    actorTotals[actor.id] = total;
+    grandTotal += total;
+  }
+  return { actorTotals, grandTotal };
+};
+
+/**
  * given a list of ability tuples and a list of actors, build up the row data
  * we need to render the party sheet
  */
@@ -84,7 +149,10 @@ export const buildRowData = (
 ): RowData[] => {
   const result: RowData[] = [];
 
-  const sorted = abilities.sort(compareAbilityDataSources);
+  const extras = getExtraAbilities(abilities, actors);
+  const extraKeys = new Set(extras.map(abilityKey));
+  // don't sort `abilities` in place - it's held in state by the sheet
+  const sorted = [...abilities, ...extras].sort(compareAbilityDataSources);
 
   let lastType: AbilityType | null = null;
   let lastCategory: string | null = null;
@@ -97,7 +165,11 @@ export const buildRowData = (
     } = abilityItem;
     // const abilityType = ability.type, category, name]
     if (abilityType !== lastType) {
-      result.push({ rowType: typeHeaderKey, abilityType });
+      result.push({
+        rowType: typeHeaderKey,
+        abilityType,
+        ...buildTypeTotals(actors, abilityType),
+      });
       lastType = abilityType;
       lastCategory = null;
     }
@@ -114,7 +186,7 @@ export const buildRowData = (
       }
       const ability = actor.system.getAbilityByName(name ?? "", abilityType);
       if (actor.id !== null) {
-        const rating = ability?.system.rating ?? 0;
+        const rating = ability?.system.rating;
         actorInfo[actor.id] = {
           abilityId: ability?.id ?? undefined,
           actorId: actor.id,
@@ -127,6 +199,7 @@ export const buildRowData = (
     result.push({
       rowType: abilityRowKey,
       abilityItem,
+      isExtra: extraKeys.has(abilityKey(abilityItem)),
       actorInfo,
       total,
     });
