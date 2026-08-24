@@ -20,7 +20,7 @@ export function useShowHideTransition(show: boolean, duration: number) {
     let timeoutId: ReturnType<typeof setTimeout>;
 
     if (show) {
-      // eslint-disable-next-line react/react-compiler
+      // eslint-disable-next-line react/set-state-in-effect
       setTransitionState(TransitionState.startEntering);
       timeoutId = setTimeout(() => {
         setTransitionState(TransitionState.entering);

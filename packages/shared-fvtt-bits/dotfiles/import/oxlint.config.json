@@ -91,7 +91,6 @@
     "react/jsx-handler-names": "off",
     "react/rules-of-hooks": "error",
     "react/exhaustive-deps": "warn",
-    "react/require-render-return": "error",
-    "react/react-compiler": "error"
+    "react/require-render-return": "error"
   }
 }

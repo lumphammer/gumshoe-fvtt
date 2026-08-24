@@ -38,5 +38,3 @@ declare global {
     EMOTION_RUNTIME_AUTO_LABEL: boolean;
   }
 }
-
-export {};
