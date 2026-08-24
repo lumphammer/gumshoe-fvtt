@@ -28,11 +28,11 @@
     "@emotion/react": "^11.14.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@types/react": "^19.2.18",
-    "motion": "^13.1.0",
-    "oxlint": "^1.78.0",
+    "motion": "^13.1.1",
+    "oxlint": "^1.79.0",
     "oxlint-tsgolint": "^7.0.2001",
     "react": "^19.2.8",
-    "vite": "^8.2.1",
+    "vite": "^8.2.2",
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
