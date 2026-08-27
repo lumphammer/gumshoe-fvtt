@@ -5,12 +5,13 @@ import { AbilityNegateOrWallopMwCard } from "../components/messageCards/AbilityN
 import { AbilityTestCard } from "../components/messageCards/AbilityTestCard";
 import { AbilityTestMwCard } from "../components/messageCards/AbilityTestMwCard";
 import { AttackCard } from "../components/messageCards/AttackCard";
+import { BrokenCard } from "../components/messageCards/BrokenCard";
 import { PushCard } from "../components/messageCards/PushCard";
 import { isAbilityCardMode } from "../components/messageCards/types";
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
-import { assertAbilityItem } from "../module/items/exports";
+import { isAbilityItem } from "../module/items/exports";
 import { MWDifficulty } from "../types";
 
 export const installAbilityCardChatWrangler = () => {
@@ -37,13 +38,14 @@ export const installAbilityCardChatWrangler = () => {
       const name = el.getAttribute(constants.htmlDataName);
       const imageUrl = el.getAttribute(constants.htmlDataImageUrl);
 
-      if (actorId === null) {
-        systemLogger.error(
-          `Missing or invalid '${constants.htmlDataActorId}' attribute.`,
-          el,
+      // chat message content is immutable, so anything we can't resolve here is
+      // unfixable - render a static stand-in rather than leaving an empty div
+      const renderBroken = (reason: string) => {
+        createRoot(el).render(
+          <BrokenCard name={name} imageUrl={imageUrl} reason={reason} />,
         );
-        return;
-      }
+      };
+
       if (mode === null || !isAbilityCardMode(mode)) {
         systemLogger.error(
           "Ability test chat message found without a valid " +
@@ -51,26 +53,48 @@ export const installAbilityCardChatWrangler = () => {
             '(Valid values are "test", "spend", "combat", "push"',
           el,
         );
+        renderBroken("BrokenCardInvalidMode");
         return;
       }
 
       // foundry doesn't seem to have a canonical way to just grab an item
       // regardless of where it is (world, actor, token, compendium etc.)
-      const actor = tokenId
-        ? canvas?.tokens?.get(tokenId)?.actor
-        : game.actors?.get(actorId);
+      // try the token first, so that unlinked tokens get their own actor's
+      // data, but fall back to the world actor - either one can be a dead end
+      // (the token may be on a scene we're not looking at, or deleted
+      // entirely) so it's worth trying both before we give up.
+      const actor =
+        (tokenId ? canvas?.tokens?.get(tokenId)?.actor : undefined) ??
+        (actorId ? game.actors?.get(actorId) : undefined);
 
       if (actor === undefined || actor === null) {
-        systemLogger.error(`Could not find actor with id ${actorId}`, el);
+        if (!actorId && !tokenId) {
+          systemLogger.error(
+            `Missing or invalid '${constants.htmlDataActorId}' and ` +
+              `'${constants.htmlDataTokenId}' attributes.`,
+            el,
+          );
+          renderBroken("BrokenCardMissingActorId");
+        } else {
+          systemLogger.error(
+            `Could not find actor with id ${actorId} or token with id ${tokenId}`,
+            el,
+          );
+          renderBroken("BrokenCardMissingActor");
+        }
         return;
       }
 
       const ability = abilityId ? actor.items.get(abilityId) : undefined;
-      assertAbilityItem(ability);
 
       let content: ReactNode;
       if (mode === constants.htmlDataModeAttack) {
         const weapon = weaponId ? actor.items.get(weaponId) : undefined;
+        if (weapon === undefined) {
+          systemLogger.error(`Could not find weapon with id ${weaponId}`, el);
+          renderBroken("BrokenCardMissingItem");
+          return;
+        }
         content = (
           <AttackCard
             msg={chatMessage}
@@ -80,6 +104,10 @@ export const installAbilityCardChatWrangler = () => {
             name={name}
           />
         );
+      } else if (!isAbilityItem(ability)) {
+        systemLogger.error(`Could not find ability with id ${abilityId}`, el);
+        renderBroken("BrokenCardMissingItem");
+        return;
       } else if (mode === constants.htmlDataModeMwTest) {
         // MW TEST
         const difficultyAttr = el.getAttribute(constants.htmlDataMwDifficulty);

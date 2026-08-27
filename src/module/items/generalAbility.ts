@@ -62,11 +62,11 @@ export class GeneralAbilityModel extends AbilityModel<
         <div
           class="${constants.abilityChatMessageClassName}"
           ${constants.htmlDataItemId}="${from?.id ?? this.parent.id}"
-          ${constants.htmlDataActorId}="${this.parent?.id ?? ""}"
+          ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
           ${constants.htmlDataMode}="${constants.htmlDataModePush}"
           ${constants.htmlDataName}="${from?.name ?? this.parent.name}"
           ${constants.htmlDataImageUrl}="${this.parent.img}"
-          ${constants.htmlDataTokenId}="${this.parent?.actor.token?.id ?? ""}"
+          ${constants.htmlDataTokenId}="${this.parent.parent?.token?.id ?? ""}"
         />
       `,
     });
