@@ -46,14 +46,6 @@ export const installAbilityCardChatWrangler = () => {
         );
       };
 
-      if (actorId === null) {
-        systemLogger.error(
-          `Missing or invalid '${constants.htmlDataActorId}' attribute.`,
-          el,
-        );
-        renderBroken("BrokenCardMissingActorId");
-        return;
-      }
       if (mode === null || !isAbilityCardMode(mode)) {
         systemLogger.error(
           "Ability test chat message found without a valid " +
@@ -67,13 +59,29 @@ export const installAbilityCardChatWrangler = () => {
 
       // foundry doesn't seem to have a canonical way to just grab an item
       // regardless of where it is (world, actor, token, compendium etc.)
-      const actor = tokenId
-        ? canvas?.tokens?.get(tokenId)?.actor
-        : game.actors?.get(actorId);
+      // try the token first, so that unlinked tokens get their own actor's
+      // data, but fall back to the world actor - either one can be a dead end
+      // (the token may be on a scene we're not looking at, or deleted
+      // entirely) so it's worth trying both before we give up.
+      const actor =
+        (tokenId ? canvas?.tokens?.get(tokenId)?.actor : undefined) ??
+        (actorId ? game.actors?.get(actorId) : undefined);
 
       if (actor === undefined || actor === null) {
-        systemLogger.error(`Could not find actor with id ${actorId}`, el);
-        renderBroken("BrokenCardMissingActor");
+        if (!actorId && !tokenId) {
+          systemLogger.error(
+            `Missing or invalid '${constants.htmlDataActorId}' and ` +
+              `'${constants.htmlDataTokenId}' attributes.`,
+            el,
+          );
+          renderBroken("BrokenCardMissingActorId");
+        } else {
+          systemLogger.error(
+            `Could not find actor with id ${actorId} or token with id ${tokenId}`,
+            el,
+          );
+          renderBroken("BrokenCardMissingActor");
+        }
         return;
       }
 
