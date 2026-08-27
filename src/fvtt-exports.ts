@@ -19,6 +19,7 @@ export import Document = foundry.abstract.Document;
 export import DocumentSheetV2 = foundry.applications.api.DocumentSheetV2;
 export import FilePicker = foundry.applications.apps.FilePicker;
 export import Game = foundry.Game;
+export import GamePause = foundry.applications.ui.GamePause;
 export import ImagePopout = foundry.applications.apps.ImagePopout;
 export import ItemSheetV2 = foundry.applications.sheets.ItemSheetV2;
 export import JournalEntrySheet = foundry.applications.sheets.journal.JournalEntrySheet;
