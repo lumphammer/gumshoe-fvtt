@@ -2,6 +2,11 @@
 
 (Skipped version numbers are testing releases.)
 
+## Unreleased
+
+- BUGFIX: Push pool chat cards were recording the ability's own id as the actor id, so the card could not find the character it belonged to and rendered as a blank space in the chat log (#1380, thanks @Xyxorswords). This mostly bit you if the ability was pushed from a sidebar actor or a linked token; pushing from an unlinked token happened to work, which is why it went unnoticed for so long. Cards posted before this fix can't be repaired, because the bad id is baked into the message content - but see below.
+- Ability cards that can't be resolved - because the character or the item has since been deleted, or because they were posted by an older version of the system - now render a static "this card can no longer be displayed" placeholder explaining what went wrong, instead of an empty gap. One of these cases used to throw an uncaught error.
+
 ## 10.121 (2026-08-19)
 
 Fixes #148, #835, and #1320.

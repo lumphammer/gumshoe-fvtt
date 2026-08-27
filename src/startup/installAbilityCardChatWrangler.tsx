@@ -5,12 +5,13 @@ import { AbilityNegateOrWallopMwCard } from "../components/messageCards/AbilityN
 import { AbilityTestCard } from "../components/messageCards/AbilityTestCard";
 import { AbilityTestMwCard } from "../components/messageCards/AbilityTestMwCard";
 import { AttackCard } from "../components/messageCards/AttackCard";
+import { BrokenCard } from "../components/messageCards/BrokenCard";
 import { PushCard } from "../components/messageCards/PushCard";
 import { isAbilityCardMode } from "../components/messageCards/types";
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
-import { assertAbilityItem } from "../module/items/exports";
+import { isAbilityItem } from "../module/items/exports";
 import { MWDifficulty } from "../types";
 
 export const installAbilityCardChatWrangler = () => {
@@ -37,11 +38,20 @@ export const installAbilityCardChatWrangler = () => {
       const name = el.getAttribute(constants.htmlDataName);
       const imageUrl = el.getAttribute(constants.htmlDataImageUrl);
 
+      // chat message content is immutable, so anything we can't resolve here is
+      // unfixable - render a static stand-in rather than leaving an empty div
+      const renderBroken = (reason: string) => {
+        createRoot(el).render(
+          <BrokenCard name={name} imageUrl={imageUrl} reason={reason} />,
+        );
+      };
+
       if (actorId === null) {
         systemLogger.error(
           `Missing or invalid '${constants.htmlDataActorId}' attribute.`,
           el,
         );
+        renderBroken("BrokenCardMissingActorId");
         return;
       }
       if (mode === null || !isAbilityCardMode(mode)) {
@@ -51,6 +61,7 @@ export const installAbilityCardChatWrangler = () => {
             '(Valid values are "test", "spend", "combat", "push"',
           el,
         );
+        renderBroken("BrokenCardInvalidMode");
         return;
       }
 
@@ -62,15 +73,20 @@ export const installAbilityCardChatWrangler = () => {
 
       if (actor === undefined || actor === null) {
         systemLogger.error(`Could not find actor with id ${actorId}`, el);
+        renderBroken("BrokenCardMissingActor");
         return;
       }
 
       const ability = abilityId ? actor.items.get(abilityId) : undefined;
-      assertAbilityItem(ability);
 
       let content: ReactNode;
       if (mode === constants.htmlDataModeAttack) {
         const weapon = weaponId ? actor.items.get(weaponId) : undefined;
+        if (weapon === undefined) {
+          systemLogger.error(`Could not find weapon with id ${weaponId}`, el);
+          renderBroken("BrokenCardMissingItem");
+          return;
+        }
         content = (
           <AttackCard
             msg={chatMessage}
@@ -80,6 +96,10 @@ export const installAbilityCardChatWrangler = () => {
             name={name}
           />
         );
+      } else if (!isAbilityItem(ability)) {
+        systemLogger.error(`Could not find ability with id ${abilityId}`, el);
+        renderBroken("BrokenCardMissingItem");
+        return;
       } else if (mode === constants.htmlDataModeMwTest) {
         // MW TEST
         const difficultyAttr = el.getAttribute(constants.htmlDataMwDifficulty);

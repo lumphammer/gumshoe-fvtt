@@ -27,6 +27,10 @@
   "investigator.BaseDamage": "Base damage",
   "investigator.BonusPool": "Bonus pool",
   "investigator.Boost": "Boost?",
+  "investigator.BrokenCardInvalidMode": "This card was written with an unrecognised roll type and can no longer be displayed.",
+  "investigator.BrokenCardMissingActor": "The character this card refers to can no longer be found.",
+  "investigator.BrokenCardMissingActorId": "This card does not record which character it belongs to and can no longer be displayed.",
+  "investigator.BrokenCardMissingItem": "The item this card refers to can no longer be found.",
   "investigator.CanAbilitiesBeBoosted": "Can abilities be boosted",
   "investigator.CanBeInvestigative": "Can be investigative?",
   "investigator.Cancel": "Cancel",
@@ -270,5 +274,6 @@
   "investigator.ImportFromFile": "Import from JSON",
   "investigator.CreateClassicCombat": "Create classic combat",
   "investigator.CreateTurnPassingCombat": "Create turn-passing combat",
-  "investigator.SortCombatants": "Sort Combatants"
+  "investigator.SortCombatants": "Sort Combatants",
+  "investigator.UnknownAbility": "Unknown ability"
 }
