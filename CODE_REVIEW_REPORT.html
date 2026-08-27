@@ -1,0 +1,1625 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Investigator FVTT — Full Code Review</title>
+    <style>
+      :root {
+        --ink: #15212b;
+        --muted: #5b6974;
+        --paper: #f6f3eb;
+        --card: #fffdf8;
+        --line: #d8d4c9;
+        --navy: #102b3b;
+        --teal: #167d79;
+        --critical: #991b1b;
+        --critical-bg: #fee2e2;
+        --high: #b45309;
+        --high-bg: #ffedd5;
+        --medium: #854d0e;
+        --medium-bg: #fef9c3;
+        --low: #075985;
+        --low-bg: #e0f2fe;
+        --good: #166534;
+        --good-bg: #dcfce7;
+        --shadow: 0 16px 45px rgb(16 43 59 / 10%);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(
+            circle at 85% 5%,
+            rgb(22 125 121 / 12%),
+            transparent 26rem
+          ),
+          var(--paper);
+        font:
+          16px/1.62 Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+      a {
+        color: #08635f;
+        text-underline-offset: 0.18em;
+      }
+      code,
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.92em;
+      }
+      code {
+        padding: 0.08rem 0.3rem;
+        border-radius: 0.28rem;
+        background: #ece9df;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+      h2 {
+        margin-bottom: 1rem;
+        font-size: clamp(1.45rem, 3vw, 2rem);
+        letter-spacing: -0.025em;
+      }
+      h3 {
+        margin-bottom: 0.45rem;
+        line-height: 1.3;
+      }
+
+      .hero {
+        color: #f8fafc;
+        background: linear-gradient(125deg, #0b2230, #123f4d 65%, #176861);
+        padding: 4.5rem max(1.2rem, calc((100vw - 1180px) / 2));
+        border-bottom: 5px solid #d6a84b;
+      }
+      .eyebrow {
+        margin: 0 0 0.8rem;
+        color: #92e2d8;
+        font-weight: 750;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        max-width: 920px;
+        margin-bottom: 0.65rem;
+        font-size: clamp(2.3rem, 7vw, 4.8rem);
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+      }
+      .hero .lede {
+        max-width: 800px;
+        margin-bottom: 1.4rem;
+        color: #d9e7eb;
+        font-size: 1.12rem;
+      }
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+      }
+      .meta span {
+        padding: 0.35rem 0.68rem;
+        border: 1px solid rgb(255 255 255 / 22%);
+        border-radius: 999px;
+        background: rgb(255 255 255 / 8%);
+      }
+
+      .shell {
+        width: min(1180px, calc(100% - 2rem));
+        margin: 2rem auto 5rem;
+      }
+      .toc {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        gap: 0.45rem;
+        overflow-x: auto;
+        margin: -2rem 0 2rem;
+        padding: 0.8rem 0;
+        background: linear-gradient(var(--paper) 78%, transparent);
+      }
+      .toc a {
+        flex: 0 0 auto;
+        padding: 0.4rem 0.7rem;
+        color: var(--navy);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--card);
+        text-decoration: none;
+        font-weight: 650;
+        font-size: 0.88rem;
+      }
+      section {
+        scroll-margin-top: 4.5rem;
+        margin-bottom: 3.2rem;
+      }
+      .panel {
+        padding: clamp(1.1rem, 3vw, 2rem);
+        border: 1px solid var(--line);
+        border-radius: 1rem;
+        background: var(--card);
+        box-shadow: var(--shadow);
+      }
+
+      .verdict {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 1rem;
+      }
+      .status {
+        padding: 1.35rem;
+        color: #fff;
+        border-radius: 0.85rem;
+        background: var(--critical);
+      }
+      .status .label {
+        color: #fecaca;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .status strong {
+        display: block;
+        margin: 0.2rem 0;
+        font-size: 2.25rem;
+        line-height: 1.1;
+      }
+      .status p {
+        margin: 0;
+        color: #fee2e2;
+      }
+      .summary-copy p:last-child {
+        margin-bottom: 0;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0.75rem;
+        margin-top: 1rem;
+      }
+      .metric {
+        padding: 1rem;
+        border: 1px solid var(--line);
+        border-radius: 0.75rem;
+        background: rgb(255 255 255 / 62%);
+      }
+      .metric b {
+        display: block;
+        font-size: 1.8rem;
+        line-height: 1;
+      }
+      .metric span {
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+      .metric.critical b {
+        color: var(--critical);
+      }
+      .metric.high b {
+        color: var(--high);
+      }
+      .metric.medium b {
+        color: var(--medium);
+      }
+      .metric.low b {
+        color: var(--low);
+      }
+
+      .priority-grid,
+      .health-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.9rem;
+      }
+      .priority {
+        padding: 1.05rem;
+        border-left: 4px solid var(--critical);
+        border-radius: 0.5rem;
+        background: #fff7ed;
+      }
+      .priority b {
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      .priority p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .finding-list {
+        display: grid;
+        gap: 0.9rem;
+      }
+      .finding {
+        position: relative;
+        padding: 1.25rem 1.35rem 1.25rem 1.6rem;
+        border: 1px solid var(--line);
+        border-radius: 0.8rem;
+        background: var(--card);
+        box-shadow: 0 5px 18px rgb(16 43 59 / 6%);
+        overflow: hidden;
+      }
+      .finding::before {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0.36rem;
+        content: "";
+        background: var(--sev);
+      }
+      .finding-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .finding h3 {
+        font-size: 1.08rem;
+      }
+      .finding p {
+        margin-bottom: 0.55rem;
+      }
+      .finding p:last-child {
+        margin-bottom: 0;
+      }
+      .finding .refs {
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+      .finding .refs a {
+        white-space: nowrap;
+      }
+      .finding .recommendation {
+        padding-top: 0.55rem;
+        border-top: 1px dashed var(--line);
+        color: #34434d;
+        font-size: 0.92rem;
+      }
+      .badge {
+        flex: 0 0 auto;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        color: var(--sev);
+        background: var(--sev-bg);
+        font-size: 0.72rem;
+        font-weight: 850;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .critical-sev {
+        --sev: var(--critical);
+        --sev-bg: var(--critical-bg);
+      }
+      .high-sev {
+        --sev: var(--high);
+        --sev-bg: var(--high-bg);
+      }
+      .medium-sev {
+        --sev: var(--medium);
+        --sev-bg: var(--medium-bg);
+      }
+      .low-sev {
+        --sev: var(--low);
+        --sev-bg: var(--low-bg);
+      }
+
+      .health-card {
+        padding: 1.1rem;
+        border: 1px solid var(--line);
+        border-radius: 0.75rem;
+        background: var(--card);
+      }
+      .grade {
+        float: right;
+        display: grid;
+        place-items: center;
+        width: 2.6rem;
+        height: 2.6rem;
+        color: #fff;
+        border-radius: 50%;
+        background: var(--navy);
+        font-size: 1.15rem;
+        font-weight: 850;
+      }
+      .health-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.91rem;
+      }
+      .good-list {
+        columns: 2;
+        gap: 2rem;
+      }
+      .good-list li {
+        break-inside: avoid;
+        margin-bottom: 0.45rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.93rem;
+      }
+      th,
+      td {
+        padding: 0.72rem;
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        color: var(--muted);
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .pass {
+        color: var(--good);
+        font-weight: 780;
+      }
+      .warn {
+        color: var(--high);
+        font-weight: 780;
+      }
+      .architecture {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.5rem;
+        align-items: stretch;
+      }
+      .architecture div {
+        padding: 0.85rem;
+        text-align: center;
+        border: 1px solid #a8cbc6;
+        border-radius: 0.6rem;
+        background: #effaf8;
+      }
+      .architecture b {
+        display: block;
+      }
+      .architecture span {
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+      .arrow {
+        display: none;
+      }
+      .callout {
+        padding: 1rem 1.15rem;
+        border: 1px solid #a8cbc6;
+        border-radius: 0.65rem;
+        background: #effaf8;
+      }
+      .callout p:last-child {
+        margin-bottom: 0;
+      }
+      .small {
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+      footer {
+        padding: 2rem;
+        color: #d7e5e8;
+        text-align: center;
+        background: var(--navy);
+      }
+
+      @media (max-width: 800px) {
+        .verdict,
+        .priority-grid,
+        .health-grid {
+          grid-template-columns: 1fr;
+        }
+        .metrics {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .architecture {
+          grid-template-columns: 1fr 1fr;
+        }
+        .good-list {
+          columns: 1;
+        }
+        .finding-head {
+          display: block;
+        }
+        .badge {
+          display: inline-block;
+          margin-bottom: 0.5rem;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+          font-size: 11pt;
+        }
+        .hero {
+          padding: 2rem;
+        }
+        .toc {
+          display: none;
+        }
+        .shell {
+          width: 100%;
+          margin: 1rem 0;
+        }
+        .panel,
+        .finding {
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        section {
+          break-before: auto;
+        }
+        a {
+          color: inherit;
+          text-decoration: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <p class="eyebrow">Independent static &amp; behavioral audit</p>
+      <h1>Investigator FVTT<br />Full Code Review</h1>
+      <p class="lede">
+        Correctness, consistency, latent defect, release-integrity,
+        test-coverage, and maintainability review of the Foundry VTT game
+        system.
+      </p>
+      <div class="meta mono">
+        <span>branch main</span><span>commit 03556bc6</span
+        ><span>system 10.123</span><span>27 Aug 2026</span
+        ><span>1,513 files surveyed</span>
+      </div>
+    </header>
+
+    <main class="shell">
+      <nav class="toc" aria-label="Report sections">
+        <a href="#executive">Executive view</a
+        ><a href="#priorities">Priorities</a><a href="#findings">Findings</a
+        ><a href="#health">Code health</a
+        ><a href="#verification">Verification</a><a href="#roadmap">Roadmap</a
+        ><a href="#method">Method</a>
+      </nav>
+
+      <section id="executive" class="panel">
+        <h2>Executive view</h2>
+        <div class="verdict">
+          <div class="summary-copy">
+            <p>
+              <strong
+                >Overall code health: C — serviceable foundation, elevated
+                correctness risk.</strong
+              >
+            </p>
+            <p>
+              The project is readable, typed, modular, and its full check
+              pipeline passes. That positive signal is real. It is not yet a
+              safe release signal: the audit found several silent data-loss
+              paths, lifecycle races at Foundry boundaries, and release tooling
+              that can report success after skipping required work. The current
+              tests do not exercise these paths.
+            </p>
+            <p>
+              The most important theme is <strong>failure integrity</strong>.
+              Builds and migrations can report success after skipping required
+              work, while settings transformations can silently accept and
+              persist damaged data.
+            </p>
+          </div>
+          <div class="status">
+            <span class="label">Release recommendation</span>
+            <strong>Hold</strong>
+            <p>
+              Resolve the four High findings, add regression tests, then rebuild
+              from a clean pack output.
+            </p>
+          </div>
+        </div>
+        <div class="metrics" aria-label="Finding counts">
+          <div class="metric"><b>24</b><span>confirmed findings</span></div>
+          <div class="metric critical"><b>0</b><span>critical</span></div>
+          <div class="metric high"><b>4</b><span>high</span></div>
+          <div class="metric medium"><b>15</b><span>medium</span></div>
+          <div class="metric low"><b>5</b><span>low</span></div>
+        </div>
+      </section>
+
+      <section id="priorities">
+        <h2>Fix first</h2>
+        <div class="priority-grid">
+          <div class="priority">
+            <b>1. Make migrations transactional in outcome</b>
+            <p>
+              Aggregate per-document errors. Never write completion flags or the
+              migrated version when any required entity failed.
+            </p>
+          </div>
+          <div class="priority">
+            <b>2. Protect settings data transformations</b>
+            <p>
+              Fix equipment-field renames and preserve stat bounds during
+              import. Replace snapshots with semantic invariants for identity
+              and cardinality.
+            </p>
+          </div>
+          <div class="priority">
+            <b>3. Make pack builds fail closed</b>
+            <p>
+              Treat open pack locks as a failed production build, and validate
+              all compiled pack outputs before publishing.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="findings">
+        <h2>Confirmed findings</h2>
+        <div class="finding-list">
+          <article class="finding medium-sev" id="ME-15">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-15 · Legacy .db pack paths rely on Foundry compatibility
+                  normalization
+                </h3>
+                <p class="refs">
+                  <a href="public/system.json#L59">public/system.json:59–135</a>
+                  · <span class="mono">build/packs/</span>
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              The first eleven pack entries use the pre-v11
+              <code>.db</code> convention, while pack compilation creates
+              suffix-free LevelDB directories. They still work because Foundry's
+              package migration explicitly applies
+              <code>path.replace(/\.db$/, "")</code> before constructing the
+              absolute pack path. Applying that exact normalization makes all
+              sixteen built packs resolve.
+            </p>
+            <p>
+              <strong>Impact:</strong> no current runtime failure was observed;
+              Foundry 14.359 loaded the exact local build successfully. The
+              residual risk is dependence on a legacy compatibility shim,
+              inconsistent manifest conventions, and false failures in tooling
+              that validates literal paths. This behavior originates in the
+              <a href="https://foundryvtt.com/article/v11-leveldb-packs/"
+                >documented v11 NeDB-to-LevelDB transition</a
+              >.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> remove the legacy suffixes for a
+              v11+-only package, then add a post-build test that resolves every
+              <code>system.json.packs[].path</code> and checks that its LevelDB
+              directory exists. Also reject mixed legacy/current conventions so
+              the manifest remains internally consistent.
+            </p>
+          </article>
+
+          <article class="finding high-sev" id="HI-01">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  HI-01 · Renaming an equipment field corrupts sibling keys
+                </h3>
+                <p class="refs">
+                  <a href="src/components/settings/store.ts#L124"
+                    >store.ts:124–143</a
+                  >
+                  ·
+                  <a
+                    href="src/components/settings/__snapshots__/store.test.ts.snap#L196"
+                    >snapshot:196–211</a
+                  >
+                </p>
+              </div>
+              <span class="badge">High</span>
+            </div>
+            <p>
+              In the reducer's non-target branch, every sibling is written to
+              <code>newFields[payload.fieldId]</code> instead of
+              <code>newFields[id]</code>. With two fields, the sibling is
+              relabeled as the old target; with more fields, siblings overwrite
+              each other and disappear. The current snapshot records this
+              corruption as expected output.
+            </p>
+            <p>
+              <strong>Impact:</strong> field definitions and their semantic
+              mapping to equipment values can be silently lost.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> retain each sibling's original ID.
+              Assert field count, object identity, order, and values
+              before/after rename instead of relying only on a snapshot diff.
+            </p>
+          </article>
+
+          <article class="finding high-sev" id="HI-02">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  HI-02 · Failed entity migrations are permanently marked
+                  complete
+                </h3>
+                <p class="refs">
+                  <a href="src/migrations/migrateWorld.ts#L35"
+                    >migrateWorld.ts:35–89</a
+                  >
+                  ·
+                  <a href="src/migrations/migrateCompendium.ts#L33"
+                    >migrateCompendium.ts:33–67</a
+                  >
+                  ·
+                  <a href="src/startup/migrateWorldIfNeeded.ts#L56"
+                    >migrateWorldIfNeeded.ts:56–65</a
+                  >
+                </p>
+              </div>
+              <span class="badge">High</span>
+            </div>
+            <p>
+              Actor, item, scene, and compendium-entry exceptions are caught and
+              logged, but not propagated. The caller then writes every selected
+              migration flag as complete; the world migration also writes the
+              new system version and announces success.
+            </p>
+            <p>
+              <strong>Impact:</strong> a transient or entity-specific failure
+              leaves a mixed-schema world that will not automatically retry.
+              Subsequent code may assume a migration that never ran for some
+              documents.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> collect failures, restore pack lock
+              state in <code>finally</code>, and commit completion flags only
+              after zero failures. Show affected UUIDs and provide a retry path.
+            </p>
+          </article>
+
+          <article class="finding high-sev" id="HI-03">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  HI-03 · Locked pack databases make the build skip work with
+                  exit code 0
+                </h3>
+                <p class="refs">
+                  <a
+                    href="packages/shared-fvtt-bits/src/vitePluginCompileFvttPacks.ts#L31"
+                    >vitePluginCompileFvttPacks.ts:31–49</a
+                  >
+                </p>
+              </div>
+              <span class="badge">High</span>
+            </div>
+            <p>
+              When locks are found, the Vite <code>closeBundle</code> hook
+              prints an error-colored message and returns successfully.
+              JavaScript and the manifest can therefore be freshly built while
+              compendiums remain stale, missing, or left from another commit.
+            </p>
+            <p>
+              <strong>Impact:</strong> CI/release automation can publish an
+              internally inconsistent artifact while reporting success.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> throw on locks in production builds.
+              Build packs into a staging directory, validate them, and
+              atomically replace the destination only on success.
+            </p>
+          </article>
+
+          <article class="finding high-sev" id="HI-04">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  HI-04 · Settings import silently strips stat minimum and
+                  maximum values
+                </h3>
+                <p class="refs">
+                  <a href="src/settings/validators/statsValidator.ts#L3"
+                    >statsValidator.ts:3–6</a
+                  >
+                  ·
+                  <a href="src/settings/validateImportedSettings.ts#L5"
+                    >validateImportedSettings.ts:5–13</a
+                  >
+                  ·
+                  <a href="src/module/schemaFields.ts#L24"
+                    >schemaFields.ts:24–42</a
+                  >
+                </p>
+              </div>
+              <span class="badge">High</span>
+            </div>
+            <p>
+              The runtime stat shape supports optional <code>min</code> and
+              required/meaningful <code>max</code> bounds, but the Zod import
+              validator declares only <code>name</code> and
+              <code>default</code>. Zod strips the undeclared properties during
+              parsing. A settings export containing bounds therefore imports
+              successfully with those bounds removed.
+            </p>
+            <p>
+              <strong>Impact:</strong> a normal export/import round trip changes
+              PC/NPC resource behavior without warning.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> define the full stat schema and add a
+              round-trip invariant: <code>import(export(settings))</code> must
+              preserve all supported properties.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-01">
+            <div class="finding-head">
+              <div>
+                <h3>ME-01 · “Add equipment” ignores the selected category</h3>
+                <p class="refs">
+                  <a href="src/module/actors/pc.ts#L327">pc.ts:327–343</a> ·
+                  <a
+                    href="src/startup/installEquipmentCategoryHookHandler.ts#L15"
+                    >installEquipmentCategoryHookHandler.ts:15–28</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              <code>createEquipment(categoryId)</code> writes the obsolete
+              <code>system.category</code>, while the model and pre-create hook
+              read <code>system.categoryId</code>. The hook consequently falls
+              back to the first configured category.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> write <code>categoryId</code> and
+              integration-test creation from a non-first category.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-02">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-02 · Valid falsy equipment values are replaced by defaults
+                </h3>
+                <p class="refs">
+                  <a
+                    href="src/startup/installEquipmentCategoryHookHandler.ts#L20"
+                    >installEquipmentCategoryHookHandler.ts:20–27</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              The initializer uses
+              <code>updateData.fields[field] ||= default</code>. Values such as
+              numeric zero, <code>false</code>, and an intentionally empty
+              string are treated as absent and overwritten during
+              create/import/duplicate flows.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> default only when the property is
+              missing or nullish; cover all supported field types and falsy
+              values.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-03">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-03 · A weapon with a deleted ability crashes on attack
+                </h3>
+                <p class="refs">
+                  <a href="src/components/equipment/performAttack.ts#L25"
+                    >performAttack.ts:25–44</a
+                  >
+                  ·
+                  <a href="src/components/equipment/WeaponMain.tsx#L172"
+                    >WeaponMain.tsx:172–199, 246–272</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              The UI can render a “Not Found” configured ability, but attack
+              controls are not disabled for that state. The handler immediately
+              calls <code>assertAbilityItem(ability)</code>, throwing on click.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> disable attacks with an actionable
+              warning or handle the missing reference before entering the roll
+              path.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-04">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-04 · “Skip defeated” checks a different ordering than the
+                  active round
+                </h3>
+                <p class="refs">
+                  <a href="src/module/combat/classicCombat.ts#L402"
+                    >classicCombat.ts:402–420, 456–477</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              Turn indices belong to <code>roundInfo.turns</code>, which can be
+              manually or round-specifically ordered. Defeat checks and the end
+              bound instead index <code>combatants.contents</code>. When the
+              orders differ, navigation can skip a living combatant, stop on a
+              defeated one, or advance rounds early.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> resolve each
+              <code>roundInfo.turns[index].combatantId</code> to its combatant
+              and use <code>roundInfo.turns.length</code> for bounds.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-05">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-05 · Deleting an earlier combatant changes the active turn
+                </h3>
+                <p class="refs">
+                  <a href="src/module/combat/classicCombat.ts#L193"
+                    >classicCombat.ts:193–211</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              After filtering deleted IDs, the code preserves the numeric index
+              rather than the active combatant ID. For turns A/B/C with B
+              active, deleting A leaves B/C but index 1 now selects C.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> preserve and relocate the active ID
+              when it survives; define explicit neighbor behavior when the
+              active combatant is deleted.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-06">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-06 · Rating changes discard valid NBA-style specialities
+                </h3>
+                <p class="refs">
+                  <a href="src/module/items/AbilityModel.ts#L245"
+                    >AbilityModel.ts:245–293</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              The <code>twoThreeFour</code> mode maps rating 1 to two
+              specialities, rating 2 to five, and higher ratings accordingly.
+              Both rating setters truncate the array to raw
+              <code>newRating</code>, not to the computed speciality count.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> calculate the count for the prospective
+              rating and test every mode across rating transitions.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-07">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-07 · Successful journal editor drops deliberately throw an
+                  error
+                </h3>
+                <p class="refs">
+                  <a href="src/components/journalEditorSheet/HTMLEditor.tsx#L82"
+                    >HTMLEditor.tsx:82–120</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              After inserting a generated Foundry content link and focusing
+              Monaco, the callback executes <code>throw new Error("foo")</code>.
+              Every successful link drop ends as a rejected handler and can be
+              surfaced as an unhandled error.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> remove the debug throw and add a
+              component test for drag-data insertion.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-08">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-08 · Textarea drops can suppress text or crash on world
+                  documents
+                </h3>
+                <p class="refs">
+                  <a href="src/components/inputs/TextArea.tsx#L67"
+                    >TextArea.tsx:67–90</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              The handler prevents the default and unconditionally JSON-parses
+              <code>text/plain</code>, so ordinary text drops throw and insert
+              nothing. Its world-document branch uses legacy
+              <code>entity.data._id</code>, which is not the current Foundry
+              document access pattern and can dereference
+              <code>undefined</code>.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> parse drag data defensively, fall back
+              to normal text insertion, and use the current document
+              <code>id</code>/<code>uuid</code> API.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-09">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-09 · Turn-passing state is initialized asynchronously from
+                  a getter
+                </h3>
+                <p class="refs">
+                  <a href="src/module/combat/turnPassingCombatant.ts#L45"
+                    >turnPassingCombatant.ts:45–119</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              Reading <code>passingTurnsRemaining</code> starts an unawaited
+              document update when the round entry is absent. Concurrent
+              add/remove actions use zero as their absent-state base rather than
+              <code>defaultPassingTurns</code>. Network completion order can
+              persist an incorrect result.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> keep getters pure, initialize at a
+              defined round lifecycle point, and serialize updates or perform
+              one atomic derived update.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-10">
+            <div class="finding-head">
+              <div>
+                <h3>ME-10 · The system socket accepts arbitrary hook names</h3>
+                <p class="refs">
+                  <a href="src/startup/installSocketActionHandler.ts#L9"
+                    >installSocketActionHandler.ts:9–16</a
+                  >
+                  ·
+                  <a href="src/typeAssertions.ts#L4">typeAssertions.ts:4–12</a>
+                  ·
+                  <a href="src/startup/installNextTurnHandler.ts#L9"
+                    >installNextTurnHandler.ts:9–20</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              Incoming messages are validated only as
+              <code>{hook: string, payload: array}</code>, then dispatched via
+              <code>Hooks.call</code>. There is no command allowlist, sender
+              identity, ownership context, or per-command validation. The active
+              GM's next-turn hook trusts the relayed request.
+            </p>
+            <p>
+              <strong>Impact:</strong> any connected client capable of emitting
+              on the system socket can invoke any locally registered hook name
+              with attacker-chosen arguments.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> use a discriminated command union,
+              schema-validate each payload, and authorize the requesting user
+              against the relevant actor/combat.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-11">
+            <div class="finding-head">
+              <div>
+                <h3>ME-11 · Stat and card-category IDs can collide silently</h3>
+                <p class="refs">
+                  <a href="src/components/settings/store.ts#L310"
+                    >store.ts:310–353</a
+                  >
+                  ·
+                  <a href="src/functions/utilities.ts#L129"
+                    >utilities.ts:129–142</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              Stat renames do not reject an existing destination key, so one
+              stat overwrites another. Card-category ID edits permit duplicates,
+              making later lookup ambiguous. Equipment category/field editors
+              already reject the equivalent collision, making this an
+              inconsistent safety boundary.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> centralize identifier validation and
+              assert uniqueness after every settings reducer action and import.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-12">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-12 · Concurrent journal saves can lose revision history
+                </h3>
+                <p class="refs">
+                  <a href="src/components/journalEditorSheet/savePage.ts#L32"
+                    >savePage.ts:32–48</a
+                  >
+                  ·
+                  <a href="src/components/journalEditorSheet/HTMLEditor.tsx#L55"
+                    >HTMLEditor.tsx:55–64</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              Each page save performs a read/merge/write of the entire
+              world-level <code>journalMemories</code> object. Two pages or
+              users can read the same old value and write different entries; the
+              last writer deletes the other history update. Debounced async
+              saves are not queued and have no rejection handling.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> store history per page where possible,
+              or serialize/merge writes with revision checks. Await and surface
+              save failures.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-13">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-13 · Two equipment migrations read inconsistent staged
+                  state
+                </h3>
+                <p class="refs">
+                  <a href="src/migrations/flaggedMigrations.ts#L21"
+                    >flaggedMigrations.ts:21–79</a
+                  >
+                  ·
+                  <a href="src/migrations/migrateItemData.ts#L8"
+                    >migrateItemData.ts:8–16</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              When both migrations are pending,
+              <code>setEquipmentCategory</code> writes a default to
+              <code>updateData.system.category</code>;
+              <code>switchCategoryToCategoryId</code> then reads the unchanged
+              source <code>item.system.category</code> and writes that stale
+              value to <code>categoryId</code>. The same function also contains
+              a committed <code>debugger</code> statement.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> make each migration consume staged
+              state (or compose versioned document snapshots) and add tests for
+              upgrades from every supported historical flag combination.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-14">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-14 · Settings save is non-atomic and has no failure
+                  recovery
+                </h3>
+                <p class="refs">
+                  <a href="src/components/settings/Settings.tsx#L58"
+                    >Settings.tsx:58–69</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              Every setting is written concurrently with
+              <code>Promise.all</code>. If one write rejects, earlier writes
+              remain persisted, the success hook is not called, the window does
+              not close, and no user-facing recovery explains which values
+              changed.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> validate the complete draft before
+              writes, apply deterministic updates with error reporting, and
+              either roll back from a captured snapshot or clearly report
+              partial success.
+            </p>
+          </article>
+
+          <article class="finding low-sev" id="LO-01">
+            <div class="finding-head">
+              <div>
+                <h3>LO-01 · The “unowned item” notifier guard is impossible</h3>
+                <p class="refs">
+                  <a href="src/startup/installEquipmentAddedNotifier.ts#L7"
+                    >installEquipmentAddedNotifier.ts:7–16</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Low</span>
+            </div>
+            <p>
+              <code>!item.parent &amp;&amp; isPCActor(item.parent)</code> cannot
+              be true. World items and items on non-PC actors are not rejected
+              as intended, so notification logic can run with no valid PC owner.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> use
+              <code>!item.parent || !isPCActor(item.parent)</code> and cover
+              world, PC, and NPC items.
+            </p>
+          </article>
+
+          <article class="finding low-sev" id="LO-02">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  LO-02 · Turn-passing default is copied from an unrelated
+                  preset field
+                </h3>
+                <p class="refs">
+                  <a href="src/settings/settings.ts#L142"
+                    >settings.ts:142–151</a
+                  >
+                  · <a href="src/presets.ts#L57">presets.ts:57–58</a>
+                </p>
+              </div>
+              <span class="badge">Low</span>
+            </div>
+            <p>
+              <code>useTurnPassingInitiative</code> defaults from
+              <code>pathOfCthulhuPreset.useNpcCombatBonuses</code>. Both happen
+              to be false today, so the defect is latent until preset values
+              diverge.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> reference the matching property and
+              assert registered defaults equal preset defaults.
+            </p>
+          </article>
+
+          <article class="finding low-sev" id="LO-03">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  LO-03 · One QuickShock ability without a push pool gets no
+                  warning
+                </h3>
+                <p class="refs">
+                  <a href="src/module/actors/ActiveCharacterModel.ts#L204"
+                    >ActiveCharacterModel.ts:204–223</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Low</span>
+            </div>
+            <p>
+              The warning condition requires
+              <code>quickShockAbilities.length &gt; 1</code>. The invalid and
+              likely common case of exactly one QuickShock ability with no pool
+              is omitted.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> use a non-zero condition and table-test
+              zero/one/many abilities and pools.
+            </p>
+          </article>
+
+          <article class="finding low-sev" id="LO-04">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  LO-04 · Attacks consume the hidden ammo value on non-ammo
+                  weapons
+                </h3>
+                <p class="refs">
+                  <a href="src/components/equipment/performAttack.ts#L118"
+                    >performAttack.ts:118–127</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Low</span>
+            </div>
+            <p>
+              The attack path always decrements ammo and does not check
+              <code>weapon.system.usesAmmo</code>. Toggling ammo support on
+              later can reveal a value drained by earlier attacks.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> update ammo only when enabled; cover
+              toggling and zero-ammo behavior.
+            </p>
+          </article>
+
+          <article class="finding low-sev" id="LO-05">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  LO-05 · Dice So Nice compatibility overwrites an unrelated
+                  core preference
+                </h3>
+                <p class="refs">
+                  <a href="src/startup/installDSNFix.ts#L3"
+                    >installDSNFix.ts:3–23</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Low</span>
+            </div>
+            <p>
+              When a Dice So Nice setting exists, startup disables simultaneous
+              rolls and also forces <code>core.animateRollTable</code> to true.
+              The latter is unrelated to the documented compatibility change and
+              overwrites a user preference.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> remove the core-setting write unless a
+              documented dependency proves it necessary; never reapply
+              preference mutations on every startup.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="health">
+        <h2>Code health assessment</h2>
+        <div class="health-grid">
+          <div class="health-card">
+            <span class="grade">C−</span>
+            <h3>Correctness</h3>
+            <p>
+              Core happy paths are clear, but silent data transformation,
+              migration, and release failures materially increase operational
+              risk.
+            </p>
+          </div>
+          <div class="health-card">
+            <span class="grade">C</span>
+            <h3>Consistency</h3>
+            <p>
+              Typed models coexist with obsolete property names, uneven
+              identifier validation, and mixed awaited/fire-and-forget lifecycle
+              behavior.
+            </p>
+          </div>
+          <div class="health-card">
+            <span class="grade">C−</span>
+            <h3>Test confidence</h3>
+            <p>
+              347 tests pass, but actors, items, combat, startup hooks, sockets,
+              pack-manifest integrity, and end-to-end Foundry flows are sparse
+              or absent.
+            </p>
+          </div>
+          <div class="health-card">
+            <span class="grade">B</span>
+            <h3>Maintainability</h3>
+            <p>
+              Good feature separation, descriptive names, central settings,
+              typed DataModels, and focused helpers make the code navigable.
+            </p>
+          </div>
+          <div class="health-card">
+            <span class="grade">D+</span>
+            <h3>Release integrity</h3>
+            <p>
+              The build does not validate manifest assets and deliberately
+              succeeds when pack compilation is blocked. This is the largest
+              systemic weakness.
+            </p>
+          </div>
+          <div class="health-card">
+            <span class="grade">C</span>
+            <h3>Dependency hygiene</h3>
+            <p>
+              The audit reports 32 advisories; development tooling and runtime
+              dependencies are not separated, obscuring shipped exposure.
+            </p>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top: 1rem">
+          <h3>Architecture at a glance</h3>
+          <div class="architecture" aria-label="Architecture flow">
+            <div>
+              <b>React sheets</b><span>components, inputs, settings UI</span>
+            </div>
+            <div>
+              <b>Foundry documents</b
+              ><span>actors, items, combat, schemas</span>
+            </div>
+            <div>
+              <b>Startup hooks</b
+              ><span>lifecycle, sockets, creation policy</span>
+            </div>
+            <div>
+              <b>Persistence</b><span>world settings, packs, migrations</span>
+            </div>
+          </div>
+          <p class="small" style="margin: 0.9rem 0 0">
+            The layering is understandable, but correctness concentrates at the
+            seams: hooks mutate documents, UI reducers reshape persistent
+            settings, and release tooling maps source packs to manifest paths.
+            Those seams need contract tests.
+          </p>
+        </div>
+
+        <div class="panel" style="margin-top: 1rem">
+          <h3>What is working well</h3>
+          <ul class="good-list">
+            <li>
+              The complete typecheck, lint, format, test, and production-build
+              pipeline passes.
+            </li>
+            <li>
+              Foundry DataModel schemas give persistent actor/item structures a
+              clear home.
+            </li>
+            <li>
+              UI components and document-domain classes are mostly separated
+              cleanly.
+            </li>
+            <li>
+              Settings registration and validation are centralized and
+              discoverable.
+            </li>
+            <li>
+              Pure journal-memory functions have notably better behavioral test
+              coverage.
+            </li>
+            <li>
+              Names and folder boundaries make a 38k-line TypeScript/JavaScript
+              codebase reasonably navigable.
+            </li>
+          </ul>
+        </div>
+
+        <div class="panel" style="margin-top: 1rem">
+          <h3>Test coverage shape</h3>
+          <p>
+            Vitest reports 27 executed files and 347 tests; there are 24
+            distinct test source files, with the workspace configuration
+            executing three package tests in more than one project. Coverage is
+            concentrated in pure utilities, settings/store snapshots, journal
+            document memory, input components, and the mini-router.
+          </p>
+          <p>
+            <strong>Highest-value missing suites:</strong> actor/item mutation
+            contracts, classic and turn-passing combat state machines,
+            startup-hook behavior with mocked Foundry documents, migration
+            failure/retry behavior, import/export round trips, socket
+            authorization, and manifest-to-build asset validation.
+          </p>
+          <div class="callout">
+            <p>
+              <strong>Why green tests missed HI-01:</strong> the equipment field
+              rename snapshot faithfully captures the wrong key transformation.
+              Snapshot stability verifies “unchanged,” not “correct.”
+              Persistent-data reducers need semantic invariants alongside
+              snapshots.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="verification" class="panel">
+        <h2>Verification record</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Check</th>
+              <th>Result</th>
+              <th>Interpretation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>pnpm run check</code></td>
+              <td class="pass">Pass</td>
+              <td>
+                Typecheck, Vitest, Oxlint, Prettier, and production Vite build
+                all completed.
+              </td>
+            </tr>
+            <tr>
+              <td><code>pnpm run test --run</code></td>
+              <td class="pass">27 files / 347 tests</td>
+              <td>No test or type errors; 24 distinct test source files.</td>
+            </tr>
+            <tr>
+              <td>Manifest path resolution</td>
+              <td class="pass">16 / 16 resolve</td>
+              <td>
+                Eleven literal paths use legacy <code>.db</code> suffixes.
+                Foundry 14 strips that suffix during package migration; all
+                sixteen normalized paths match the built LevelDB directories.
+              </td>
+            </tr>
+            <tr>
+              <td><code>pnpm audit</code></td>
+              <td class="warn">32 advisories</td>
+              <td>
+                1 critical, 19 high, 10 moderate, 2 low. Most are in
+                build/test/type dependency chains; direct Vitest is 3.2.4.
+                Triage shipped versus developer exposure.
+              </td>
+            </tr>
+            <tr>
+              <td><code>git diff --check</code></td>
+              <td class="pass">Pass</td>
+              <td>No whitespace errors before report generation.</td>
+            </tr>
+            <tr>
+              <td>Production build warnings</td>
+              <td class="warn">Future compatibility</td>
+              <td>
+                Native Vite config-loader incompatibilities, extensionless
+                imports, JSON imports without attributes, and deprecated
+                esbuild/rollup configuration.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="small" style="margin: 1rem 0 0">
+          Dependency advisories are reported as code-health risk, not as a claim
+          that all 32 affect the shipped Foundry runtime. The package currently
+          places tooling and application packages together under
+          <code>dependencies</code>, making that distinction harder to automate.
+        </p>
+      </section>
+
+      <section id="roadmap">
+        <h2>Recommended hardening sequence</h2>
+        <div class="panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Work</th>
+                <th>Exit criterion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Release block</strong></td>
+                <td>
+                  HI-01 through HI-04; clean pack rebuild; explicit pack output
+                  validation.
+                </td>
+                <td>
+                  Migration and pack failures make CI/runtime report failure;
+                  settings import round trips are lossless.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>State integrity</strong></td>
+                <td>
+                  ME-01 through ME-06 and ME-09 through ME-14; add state-machine
+                  and reducer invariants.
+                </td>
+                <td>
+                  No mutation relies on stale keys, indices, falsy coercion, or
+                  uncoordinated read/merge/write operations.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Interaction safety</strong></td>
+                <td>
+                  ME-07, ME-08, ME-10; harden drag/drop and socket command
+                  contracts.
+                </td>
+                <td>
+                  Malformed external input is rejected or safely ignored; no
+                  successful UI action ends in an unhandled rejection.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Maintenance</strong></td>
+                <td>
+                  Low findings, dependency separation/upgrades, Vite warning
+                  cleanup, tighter compiler/lint settings.
+                </td>
+                <td>
+                  Audit is triageable by shipped scope; future Vite native
+                  loading is clean; defaults are contract-tested.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="method" class="panel">
+        <h2>Scope and method</h2>
+        <p>
+          This was a repository-wide, evidence-led review of the current
+          <code>main</code> checkout at commit <code>03556bc6</code>. It covered
+          the application and shared package source, manifest/build tooling,
+          migrations, startup hooks, settings/import logic, actor/item/combat
+          models, journal editor, UI interaction paths, tests, and dependency
+          metadata.
+        </p>
+        <p>
+          Findings were accepted when the triggering state and consequence were
+          directly traceable in code or build output. Severity reflects likely
+          data loss, release breakage, privilege boundary, breadth, and recovery
+          cost. No production Foundry world was attached, so the report does not
+          claim exhaustive runtime compatibility across Foundry modules,
+          browsers, or historical world data.
+        </p>
+        <p>
+          <strong>Review scale:</strong> approximately 38,000
+          TypeScript/JavaScript lines; 262 component files, 38 module files, 29
+          startup files, 9 migration files, plus shared packages and generated
+          release artifacts.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      Investigator FVTT code review · generated 27 August 2026 · source state
+      <span class="mono">main@03556bc6</span>
+    </footer>
+  </body>
+</html>
