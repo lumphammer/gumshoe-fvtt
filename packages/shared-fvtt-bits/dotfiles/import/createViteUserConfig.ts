@@ -216,6 +216,14 @@ export function createViteUserConfig({
             plugins: [
               {
                 name: "preset-default",
+                params: {
+                  overrides: {
+                    // SVGO strips the viewBox when it matches the width and
+                    // height, which stops the SVG scaling when we size it with
+                    // CSS. We always want to be able to size these things.
+                    removeViewBox: false,
+                  },
+                },
               },
               // converts `style=color:red` to color=red
               {

@@ -25,6 +25,7 @@ import { InvestigatorCombatTracker } from "./module/combat/InvestigatorCombatTra
 import { TurnPassingCombatModel } from "./module/combat/turnPassingCombat";
 import { TurnPassingCombatantModel } from "./module/combat/turnPassingCombatant";
 import { InvestigatorCompendiumDirectory } from "./module/InvestigatorCompendiumDirectory";
+import { InvestigatorGamePause } from "./module/InvestigatorGamePause";
 import { InvestigatorJournalSheet } from "./module/InvestigatorJournalSheet";
 import { InvestigatorTokenDocument } from "./module/InvestigatorTokenDocument";
 import { CardModel } from "./module/items/card";
@@ -165,6 +166,7 @@ Hooks.once("init", function () {
   CONFIG.Token.documentClass = InvestigatorTokenDocument;
   CONFIG.ui.combat = InvestigatorCombatTracker;
   CONFIG.ui.compendium = InvestigatorCompendiumDirectory;
+  CONFIG.ui.pause = InvestigatorGamePause;
 
   CONFIG.Actor.dataModels.pc = PCModel;
   CONFIG.Actor.dataModels.npc = NPCModel;
