@@ -2,7 +2,7 @@
 
 (Skipped version numbers are testing releases.)
 
-## Unreleased
+## 10.123 (2026-08-27)
 
 - BUGFIX: Chat messages for ability pushes were broken under certain circumstances. This is now fixed. Unfortunately, messsages created with previous versions can't be rescued, but they will at least show a decent placeholder instead of nothing at all (#1380, thanks @Xyxorswords).
 - FEATURE: We now have a nice custom pause banner, for thoe that like looking at spinning things. Thanks @Mystery-Man-From-Ouperspace for the idea.
