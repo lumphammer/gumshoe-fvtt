@@ -41,6 +41,9 @@ export const flaggedMigrations: FlaggedMigrations = {
     addIdtoUnlocks: (item: any, updateData: any) => {
       if (item.type === c.equipment) {
         const unlocks = item.system?.unlocks ?? [];
+        if (unlocks.every((unlock: any) => unlock.id)) {
+          return updateData;
+        }
         const updatedUnlocks = unlocks.map((unlock: any) => {
           if (unlock.id) {
             return unlock;
@@ -62,8 +65,12 @@ export const flaggedMigrations: FlaggedMigrations = {
         item.type === c.investigativeAbility ||
         item.type === c.equipment
       ) {
-        // eslint-disable-next-line no-debugger
-        debugger;
+        if (
+          isNullOrEmptyString(item.system.category) ||
+          !isNullOrEmptyString(item.system.categoryId)
+        ) {
+          return updateData;
+        }
         systemLogger.info(
           `Migrating item ${item.name}. category: ${item.system.category}, categoryId: ${item.system.categoryId}`,
         );
@@ -71,7 +78,7 @@ export const flaggedMigrations: FlaggedMigrations = {
           updateData.system = {};
         }
         updateData.system.categoryId = item.system.category;
-        delete updateData.system.category;
+        updateData.system.category = _del;
         systemLogger.info(
           `Done ${item.name}. updateData: ${JSON.stringify(updateData)}`,
         );
@@ -91,13 +98,13 @@ export const flaggedMigrations: FlaggedMigrations = {
      */
     addIdToCherries: (item: any, updateData: any) => {
       if (item.type !== c.generalAbility) {
-        return;
+        return updateData;
       }
       const needsFix =
         item.system?.unlocks?.some((unlock: any) => unlock.id === undefined) ??
         false;
       if (!needsFix) {
-        return;
+        return updateData;
       }
       if (!updateData.system) {
         updateData.system = {};
@@ -105,7 +112,7 @@ export const flaggedMigrations: FlaggedMigrations = {
       updateData.system.unlocks =
         item.system?.unlocks?.map((unlock: any) => {
           if (unlock.id === undefined) {
-            unlock.id = nanoid();
+            return { ...unlock, id: nanoid() };
           }
           return unlock;
         }) ?? [];
@@ -125,7 +132,12 @@ export const flaggedMigrations: FlaggedMigrations = {
       const affectedAbilityNames = ["health", "stability", "sanity", "magic"];
       const normalisedName = item.name.trim().toLowerCase();
       const isAffected = affectedAbilityNames.includes(normalisedName);
-      if (item.type === c.generalAbility && isAffected) {
+      if (
+        item.type === c.generalAbility &&
+        isAffected &&
+        (item.system.resourceId !== normalisedName ||
+          item.system.linkToResource !== true)
+      ) {
         if (!updateData.system) {
           updateData.system = {};
         }
@@ -143,7 +155,13 @@ export const flaggedMigrations: FlaggedMigrations = {
      * text-based short notes into new personalDetail items.
      */
     turnShortNotesIntoPersonalDetails: (actor: any, updateData: any) => {
-      if (actor.type === c.pc && actor.system.shortNotes) {
+      if (
+        actor.type === c.pc &&
+        !actor.flags?.[c.systemId]?.migrations
+          ?.turnShortNotesIntoPersonalDetails &&
+        ((actor.system.shortNotes?.length ?? 0) > 0 ||
+          !isNullOrEmptyString(actor.system.occupation))
+      ) {
         systemLogger.info(
           `Migrating actor ${actor.name} to turn short notes into personal details`,
         );
@@ -175,6 +193,15 @@ export const flaggedMigrations: FlaggedMigrations = {
         updateData.items = (updateData.items ?? [])
           .concat(shortNoteItems)
           .concat(occupationItem);
+        updateData.flags = {
+          [c.systemId]: {
+            ...actor.flags?.[c.systemId],
+            migrations: {
+              ...actor.flags?.[c.systemId]?.migrations,
+              turnShortNotesIntoPersonalDetails: true,
+            },
+          },
+        };
       }
       return updateData;
     },
@@ -190,7 +217,7 @@ export const flaggedMigrations: FlaggedMigrations = {
         isNullOrEmptyString(initiativeAbility) ||
         !isNullOrEmptyString(actor.system.initiativeAbility)
       ) {
-        return;
+        return updateData;
       }
       if (!updateData.system) {
         updateData.system = {};
@@ -206,6 +233,7 @@ export const flaggedMigrations: FlaggedMigrations = {
     convertShortNotesToPersonalDetails: async () => {
       assertGame(game);
       const shortNotes = game.settings.get("investigator", "shortNotes");
+      if (shortNotes.length === 0) return;
       const personalDetails: PersonalDetail[] = shortNotes.map((name) => ({
         name,
         type: "item",
@@ -215,6 +243,7 @@ export const flaggedMigrations: FlaggedMigrations = {
         "personalDetails",
         personalDetails,
       );
+      await game.settings.set("investigator", "shortNotes", []);
     },
     convertCombats: async () => {
       assertGame(game);
@@ -228,26 +257,56 @@ export const flaggedMigrations: FlaggedMigrations = {
       let newActiveCombat: Combat.Stored | null = null;
       for (const oldBaseCombat of oldBaseCombats) {
         systemLogger.log(`migrating combat ${oldBaseCombat._id}`);
-        const baseData = oldBaseCombat.toObject();
-        const newCombat = await InvestigatorCombat.create({
-          ...baseData,
-          combatants: baseData.combatants.map((c) => {
-            const system = c.system;
-            if (newType === "classic") {
-              system.initiative = c.initiative;
-            }
-            return { ...c, type: newType, system };
-          }),
-          type: newType,
-        });
-        if (newCombat === undefined) {
-          continue;
+        const oldCombatId = oldBaseCombat.id ?? oldBaseCombat._id;
+        if (!oldCombatId) {
+          throw new Error("Cannot migrate a combat without an id");
         }
-        newCombat.setupTurns();
+        let newCombat = game.combats.contents.find(
+          (combat) =>
+            combat.flags?.[c.systemId]?.migratedFromCombatId === oldCombatId,
+        );
+        if (!newCombat) {
+          const baseData = oldBaseCombat.toObject();
+          newCombat = await InvestigatorCombat.create({
+            ...baseData,
+            combatants: baseData.combatants.map((c) => {
+              const system = c.system;
+              if (newType === "classic") {
+                system.initiative = c.initiative;
+              }
+              return { ...c, type: newType, system };
+            }),
+            flags: {
+              ...baseData.flags,
+              [c.systemId]: {
+                ...baseData.flags?.[c.systemId],
+                migratedFromCombatId: oldCombatId,
+                migratedFromActiveCombat: oldBaseCombat.active,
+              },
+            },
+            type: newType,
+          });
+          if (newCombat !== undefined) {
+            newCombat.setupTurns();
+          }
+        }
+        if (newCombat === undefined) {
+          throw new Error(
+            `Failed to create replacement for combat ${oldCombatId}`,
+          );
+        }
         if (oldBaseCombat.active) {
           newActiveCombat = newCombat;
         }
         await oldBaseCombat.delete();
+      }
+      const inactiveReplacement = game.combats.contents.find(
+        (combat) =>
+          combat.flags?.[c.systemId]?.migratedFromActiveCombat &&
+          !combat.active,
+      );
+      if (newActiveCombat === null && inactiveReplacement !== undefined) {
+        newActiveCombat = inactiveReplacement;
       }
       if (newActiveCombat) {
         await newActiveCombat.activate();
