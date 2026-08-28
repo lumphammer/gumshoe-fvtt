@@ -7,24 +7,24 @@
     <title>Investigator FVTT — Full Code Review</title>
     <style>
       :root {
-        --ink: #15212b;
-        --muted: #5b6974;
-        --paper: #f6f3eb;
-        --card: #fffdf8;
-        --line: #d8d4c9;
-        --navy: #102b3b;
-        --teal: #167d79;
-        --critical: #991b1b;
-        --critical-bg: #fee2e2;
-        --high: #b45309;
-        --high-bg: #ffedd5;
-        --medium: #854d0e;
-        --medium-bg: #fef9c3;
-        --low: #075985;
-        --low-bg: #e0f2fe;
-        --good: #166534;
-        --good-bg: #dcfce7;
-        --shadow: 0 16px 45px rgb(16 43 59 / 10%);
+        --ink: #ebdbb2;
+        --muted: #a89984;
+        --paper: #282828;
+        --card: #32302f;
+        --line: #504945;
+        --navy: #1d2021;
+        --teal: #8ec07c;
+        --critical: #fb4934;
+        --critical-bg: rgb(251 73 52 / 16%);
+        --high: #fe8019;
+        --high-bg: rgb(254 128 25 / 16%);
+        --medium: #fabd2f;
+        --medium-bg: rgb(250 189 47 / 16%);
+        --low: #83a598;
+        --low-bg: rgb(131 165 152 / 16%);
+        --good: #b8bb26;
+        --good-bg: rgb(184 187 38 / 16%);
+        --shadow: 0 16px 45px rgb(0 0 0 / 45%);
       }
 
       * {
@@ -39,7 +39,7 @@
         background:
           radial-gradient(
             circle at 85% 5%,
-            rgb(22 125 121 / 12%),
+            rgb(142 192 124 / 10%),
             transparent 26rem
           ),
           var(--paper);
@@ -53,7 +53,7 @@
           sans-serif;
       }
       a {
-        color: #08635f;
+        color: #8ec07c;
         text-underline-offset: 0.18em;
       }
       code,
@@ -64,7 +64,7 @@
       code {
         padding: 0.08rem 0.3rem;
         border-radius: 0.28rem;
-        background: #ece9df;
+        background: #3c3836;
       }
       h1,
       h2,
@@ -83,14 +83,14 @@
       }
 
       .hero {
-        color: #f8fafc;
-        background: linear-gradient(125deg, #0b2230, #123f4d 65%, #176861);
+        color: #fbf1c7;
+        background: linear-gradient(125deg, #1d2021, #282828 65%, #3c3836);
         padding: 4.5rem max(1.2rem, calc((100vw - 1180px) / 2));
-        border-bottom: 5px solid #d6a84b;
+        border-bottom: 5px solid #d79921;
       }
       .eyebrow {
         margin: 0 0 0.8rem;
-        color: #92e2d8;
+        color: #8ec07c;
         font-weight: 750;
         letter-spacing: 0.12em;
         text-transform: uppercase;
@@ -105,7 +105,7 @@
       .hero .lede {
         max-width: 800px;
         margin-bottom: 1.4rem;
-        color: #d9e7eb;
+        color: #d5c4a1;
         font-size: 1.12rem;
       }
       .meta {
@@ -115,9 +115,9 @@
       }
       .meta span {
         padding: 0.35rem 0.68rem;
-        border: 1px solid rgb(255 255 255 / 22%);
+        border: 1px solid rgb(235 219 178 / 18%);
         border-radius: 999px;
-        background: rgb(255 255 255 / 8%);
+        background: rgb(235 219 178 / 8%);
       }
 
       .shell {
@@ -138,7 +138,7 @@
       .toc a {
         flex: 0 0 auto;
         padding: 0.4rem 0.7rem;
-        color: var(--navy);
+        color: var(--ink);
         border: 1px solid var(--line);
         border-radius: 999px;
         background: var(--card);
@@ -170,7 +170,7 @@
         background: var(--critical);
       }
       .status .label {
-        color: #fecaca;
+        color: #fdd8d2;
         font-size: 0.78rem;
         font-weight: 800;
         letter-spacing: 0.12em;
@@ -184,14 +184,14 @@
       }
       .status p {
         margin: 0;
-        color: #fee2e2;
+        color: #f9d8d6;
       }
       .summary-copy .second-pass {
         margin-top: 0.9rem;
         padding: 0.75rem 0.9rem;
         border-left: 0.22rem solid var(--teal);
         border-radius: 0 0.45rem 0.45rem 0;
-        background: rgb(22 125 121 / 8%);
+        background: rgb(142 192 124 / 10%);
         font-size: 0.94rem;
       }
       .summary-copy p:last-child {
@@ -208,7 +208,7 @@
         padding: 1rem;
         border: 1px solid var(--line);
         border-radius: 0.75rem;
-        background: rgb(255 255 255 / 62%);
+        background: rgb(0 0 0 / 18%);
       }
       .metric b {
         display: block;
@@ -242,7 +242,7 @@
         padding: 1.05rem;
         border-left: 4px solid var(--critical);
         border-radius: 0.5rem;
-        background: #fff7ed;
+        background: rgb(254 128 25 / 8%);
       }
       .priority b {
         display: block;
@@ -264,7 +264,7 @@
         border: 1px solid var(--line);
         border-radius: 0.8rem;
         background: var(--card);
-        box-shadow: 0 5px 18px rgb(16 43 59 / 6%);
+        box-shadow: 0 5px 18px rgb(0 0 0 / 25%);
         overflow: hidden;
       }
       .finding::before {
@@ -299,7 +299,7 @@
       .finding .recommendation {
         padding-top: 0.55rem;
         border-top: 1px dashed var(--line);
-        color: #34434d;
+        color: #d5c4a1;
         font-size: 0.92rem;
       }
       .finding .review-note {
@@ -308,7 +308,7 @@
         border-left: 0.22rem solid var(--sev);
         border-radius: 0 0.4rem 0.4rem 0;
         background: var(--sev-bg);
-        color: #34434d;
+        color: #d5c4a1;
         font-size: 0.92rem;
       }
       .finding .review-note .tag {
@@ -426,9 +426,9 @@
       .architecture div {
         padding: 0.85rem;
         text-align: center;
-        border: 1px solid #a8cbc6;
+        border: 1px solid rgb(142 192 124 / 35%);
         border-radius: 0.6rem;
-        background: #effaf8;
+        background: rgb(142 192 124 / 8%);
       }
       .architecture b {
         display: block;
@@ -442,9 +442,9 @@
       }
       .callout {
         padding: 1rem 1.15rem;
-        border: 1px solid #a8cbc6;
+        border: 1px solid rgb(142 192 124 / 35%);
         border-radius: 0.65rem;
-        background: #effaf8;
+        background: rgb(142 192 124 / 8%);
       }
       .callout p:last-child {
         margin-bottom: 0;
@@ -455,7 +455,7 @@
       }
       footer {
         padding: 2rem;
-        color: #d7e5e8;
+        color: #d5c4a1;
         text-align: center;
         background: var(--navy);
       }
