@@ -12,6 +12,7 @@ import { isClassicCombatant } from "./classicCombatant";
 import { findUndefeatedTurnIndex } from "./findUndefeatedTurnIndex";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
+import { removeCombatantTurns } from "./removeCombatantTurns";
 import { ValidCombatModel } from "./types";
 
 function compareCombatants(
@@ -195,13 +196,11 @@ export class ClassicCombatModel
     if (oldRound === undefined) {
       return;
     }
-    const turns =
-      oldRound.turns.filter((t) => !ids.includes(t.combatantId)) ?? [];
-
-    const turnIndex =
-      oldRound.turnIndex === null || turns.length === 0
-        ? null
-        : Math.min(oldRound.turnIndex, turns.length - 1);
+    const { turns, turnIndex } = removeCombatantTurns(
+      oldRound.turns,
+      oldRound.turnIndex,
+      ids,
+    );
 
     const rounds = [...this.rounds];
     rounds[parent.round] = {
