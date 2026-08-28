@@ -571,10 +571,10 @@
               impact was not reachable &mdash; ME-13 is closed as superseded,
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
-              below. That pass left 21 findings open; ME-11, HI-03, HI-04, and
-              ME-01 have since been resolved, leaving 17. The ranking has
-              shifted: the highest-value work is now silent data loss in
-              abilities, not release tooling.
+              below. That pass left 21 findings open; ME-11, HI-03, HI-04,
+              ME-01, and ME-02 have since been resolved, leaving 16. The
+              ranking has shifted: the highest-value work is now silent data
+              loss in abilities, not release tooling.
             </p>
           </div>
           <div class="status">
@@ -587,10 +587,10 @@
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>17</b><span>open findings</span></div>
+          <div class="metric"><b>16</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>1</b><span>high</span></div>
-          <div class="metric medium"><b>10</b><span>medium</span></div>
+          <div class="metric medium"><b>9</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
       </section>
@@ -930,7 +930,7 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-02">
+          <article class="finding medium-sev resolved" id="ME-02">
             <div class="finding-head">
               <div>
                 <h3>
@@ -938,12 +938,17 @@
                 </h3>
                 <p class="refs">
                   <a
-                    href="src/startup/installEquipmentCategoryHookHandler.ts#L20"
-                    >installEquipmentCategoryHookHandler.ts:20–27</a
+                    href="src/startup/applyEquipmentFieldDefaults.ts#L5"
+                    >applyEquipmentFieldDefaults.ts:5–14</a
+                  >
+                  ·
+                  <a
+                    href="src/startup/applyEquipmentFieldDefaults.test.ts#L5"
+                    >applyEquipmentFieldDefaults.test.ts:5–33</a
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               The initializer uses
@@ -953,9 +958,11 @@
               create/import/duplicate flows.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> default only when the property is
-              missing or nullish; cover all supported field types and falsy
-              values.
+              <strong>Resolved 28 August 2026.</strong> Field initialization now
+              copies the current values and applies defaults with nullish
+              assignment. A regression fixture covers empty strings, numeric
+              zero, unchecked booleans, explicit <code>undefined</code>, and a
+              missing field across every supported field type.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1784,7 +1791,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              378 tests pass, and pack-build failure integrity now has focused
+              379 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1875,7 +1882,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 33 executed files and 378 tests across 33 distinct
+            Vitest reports 34 executed files and 379 tests across 34 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -1941,6 +1948,13 @@
               written to <code>system.categoryId</code>.
             </p>
           </div>
+          <div class="callout">
+            <p>
+              <strong>ME-02 regression coverage:</strong> equipment field
+              defaults preserve <code>0</code>, <code>false</code>, and empty
+              strings while filling nullish and missing values.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -1965,8 +1979,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">33 files / 378 tests</td>
-              <td>No test or type errors; 33 distinct test source files.</td>
+              <td class="pass">34 files / 379 tests</td>
+              <td>No test or type errors; 34 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -2034,7 +2048,7 @@
               <tr>
                 <td><strong>State integrity</strong></td>
                 <td>
-                  ME-02 through ME-06 and ME-09 through ME-14; add
+                  ME-03 through ME-06 and ME-09 through ME-14; add
                   state-machine and reducer invariants.
                 </td>
                 <td>

@@ -4,6 +4,7 @@ import {
   isEquipmentItem,
 } from "../module/items/equipment";
 import { settings } from "../settings/settings";
+import { applyEquipmentFieldDefaults } from "./applyEquipmentFieldDefaults";
 
 export const installEquipmentCategoryHookHandler = () => {
   Hooks.on(
@@ -21,10 +22,10 @@ export const installEquipmentCategoryHookHandler = () => {
           categoryId: item.system.categoryId || categoryId,
           fields: item.system.fields || {},
         };
-        const fields = equipmentCategories[categoryId].fields;
-        for (const field in fields) {
-          updateData.fields[field] ||= fields[field].default;
-        }
+        updateData.fields = applyEquipmentFieldDefaults(
+          updateData.fields,
+          equipmentCategories[categoryId].fields,
+        );
         item.updateSource({ system: updateData });
       }
     },
