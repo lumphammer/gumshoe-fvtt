@@ -7,6 +7,7 @@ import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { WeaponItem } from "../../module/items/weapon";
 import { settings } from "../../settings/settings";
+import { consumeWeaponAmmo } from "./consumeWeaponAmmo";
 
 type PerformAttackArgs1 = {
   spend: number;
@@ -122,7 +123,5 @@ export const performAttack =
     await ability?.system.setPool(newPool);
     setBonusPool(newBonusPool);
     setSpend(0);
-    await weapon.system.setAmmo(
-      Math.max(0, weapon.system.ammo.value - weapon.system.ammoPerShot),
-    );
+    await consumeWeaponAmmo(weapon.system);
   };
