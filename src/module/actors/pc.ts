@@ -332,8 +332,7 @@ export class PCModel extends ActiveCharacterModel<
           type: c.equipment,
           name: "New item",
           system: {
-            // @ts-expect-error fvtt-types
-            category: categoryId,
+            categoryId,
           },
         },
       ],

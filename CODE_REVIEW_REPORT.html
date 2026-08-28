@@ -571,9 +571,9 @@
               impact was not reachable &mdash; ME-13 is closed as superseded,
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
-              below. That pass left 21 findings open; ME-11, HI-03, and HI-04
-              have since been resolved, leaving 18. The ranking has shifted:
-              the highest-value work is now silent data loss in settings and
+              below. That pass left 21 findings open; ME-11, HI-03, HI-04, and
+              ME-01 have since been resolved, leaving 17. The ranking has
+              shifted: the highest-value work is now silent data loss in
               abilities, not release tooling.
             </p>
           </div>
@@ -581,15 +581,15 @@
             <span class="label">Release recommendation</span>
             <strong>Hold</strong>
             <p>
-              Resolve the two remaining High findings (ME-01 and ME-06), add
-              regression tests, then rebuild from a clean pack output.
+              Resolve the remaining High finding (ME-06), add regression
+              tests, then rebuild from a clean pack output.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>18</b><span>open findings</span></div>
+          <div class="metric"><b>17</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
-          <div class="metric high"><b>2</b><span>high</span></div>
+          <div class="metric high"><b>1</b><span>high</span></div>
           <div class="metric medium"><b>10</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
@@ -607,12 +607,12 @@
             </p>
           </div>
           <div class="priority">
-            <b>2. Repair the equipment category chain</b>
+            <b>2. Migrate legacy equipment categories</b>
             <p>
-              ME-16 and ME-01 are one defect: nothing populates
-              <code>categoryId</code>, so creation ignores the chosen category
-              and legacy items stay orphaned. Do the rename in
-              <code>migrateData</code>, then delete the two dead migrations.
+              ME-01 now populates <code>categoryId</code> for new equipment, but
+              ME-16 still leaves legacy items orphaned. Confirm an old-world
+              fixture, do the rename in <code>migrateData</code>, then delete
+              the two dead migrations.
             </p>
           </div>
           <div class="priority">
@@ -884,19 +884,23 @@
             </p>
           </article>
 
-          <article class="finding high-sev" id="ME-01">
+          <article class="finding high-sev resolved" id="ME-01">
             <div class="finding-head">
               <div>
                 <h3>ME-01 · “Add equipment” ignores the selected category</h3>
                 <p class="refs">
-                  <a href="src/module/actors/pc.ts#L327">pc.ts:327–343</a> ·
+                  <a href="src/module/actors/pc.ts#L328">pc.ts:328–336</a> ·
+                  <a href="src/module/actors/createEquipmentData.ts#L3"
+                    >createEquipmentData.ts:3–9</a
+                  >
+                  ·
                   <a
-                    href="src/startup/installEquipmentCategoryHookHandler.ts#L15"
-                    >installEquipmentCategoryHookHandler.ts:15–28</a
+                    href="src/module/actors/createEquipmentData.test.ts#L5"
+                    >createEquipmentData.test.ts:5–13</a
                   >
                 </p>
               </div>
-              <span class="badge">High</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               <code>createEquipment(categoryId)</code> writes the obsolete
@@ -905,8 +909,12 @@
               back to the first configured category.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> write <code>categoryId</code> and
-              integration-test creation from a non-first category.
+              <strong>Resolved 28 August 2026.</strong> New equipment data now
+              writes the selected ID to <code>system.categoryId</code> through
+              a typed construction helper; the obsolete property and its
+              <code>@ts-expect-error</code> suppression are gone. A regression
+              test verifies that a non-first requested category survives in
+              the item creation data consumed by Foundry's pre-create hook.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1544,11 +1552,9 @@
               <code>isRealCategory</code> to false and renders an unselected
               dropdown &mdash; but the item is detached from its category and
               its custom fields are unreachable until a user manually re-picks
-              the category on every affected item. This is also the root cause
-              of ME-01: because nothing ever populates
-              <code>categoryId</code>, the pre-create hook's
-              <code>item.system.categoryId || firstCategory</code> fallback is
-              always taken.
+              the category on every affected item. The same obsolete property
+              was written by ME-01's new-equipment path; that producer is now
+              fixed, while this legacy-data path remains open.
             </p>
             <p class="recommendation">
               <strong>Fix/test:</strong> do the rename where Foundry does
@@ -1558,9 +1564,8 @@
               document regardless of migration flags. Then delete
               <code>setEquipmentCategory</code> and
               <code>switchCategoryToCategoryId</code> rather than repairing
-              them, and fix <code>createEquipment</code> to write
-              <code>categoryId</code> (ME-01). Test with a source fixture
-              carrying <code>system.category</code> and no
+              them. Test with a source fixture carrying
+              <code>system.category</code> and no
               <code>categoryId</code>, asserting the loaded document exposes
               the right <code>categoryId</code>. Before deleting, confirm
               against a real pre-categories world that
@@ -1779,7 +1784,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              377 tests pass, and pack-build failure integrity now has focused
+              378 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1870,7 +1875,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 32 executed files and 377 tests across 32 distinct
+            Vitest reports 33 executed files and 378 tests across 33 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -1929,6 +1934,13 @@
               creation skips an occupied generated ID.
             </p>
           </div>
+          <div class="callout">
+            <p>
+              <strong>ME-01 regression coverage:</strong> typed equipment item
+              construction now verifies that a requested non-first category is
+              written to <code>system.categoryId</code>.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -1953,8 +1965,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">32 files / 377 tests</td>
-              <td>No test or type errors; 32 distinct test source files.</td>
+              <td class="pass">33 files / 378 tests</td>
+              <td>No test or type errors; 33 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -2012,8 +2024,7 @@
               <tr>
                 <td><strong>Release block</strong></td>
                 <td>
-                  ME-01 and ME-06; add focused equipment-creation and ability
-                  mutation coverage.
+                  ME-06; add focused ability mutation coverage.
                 </td>
                 <td>
                   Settings import round trips are lossless and user-entered
@@ -2023,8 +2034,8 @@
               <tr>
                 <td><strong>State integrity</strong></td>
                 <td>
-                  ME-01 through ME-06 and ME-09 through ME-14; add state-machine
-                  and reducer invariants.
+                  ME-02 through ME-06 and ME-09 through ME-14; add
+                  state-machine and reducer invariants.
                 </td>
                 <td>
                   No mutation relies on stale keys, indices, falsy coercion, or
