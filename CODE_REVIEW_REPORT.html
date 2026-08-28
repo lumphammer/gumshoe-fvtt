@@ -571,9 +571,10 @@
               impact was not reachable &mdash; ME-13 is closed as superseded,
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
-              below. Net counts are unchanged at 21 open, but the ranking has
-              shifted: the highest-value work is now silent data loss in
-              settings and abilities, not release tooling.
+              below. That pass left 21 findings open; ME-11 has since been
+              resolved, leaving 20. The ranking has shifted: the highest-value
+              work is now silent data loss in settings and abilities, not
+              release tooling.
             </p>
           </div>
           <div class="status">
@@ -586,10 +587,10 @@
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>21</b><span>open findings</span></div>
+          <div class="metric"><b>20</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>3</b><span>high</span></div>
-          <div class="metric medium"><b>12</b><span>medium</span></div>
+          <div class="metric medium"><b>11</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
       </section>
@@ -600,10 +601,9 @@
           <div class="priority">
             <b>1. Stop silent data loss</b>
             <p>
-              HI-04 (import strips stat bounds), ME-06 (rating changes destroy
-              specialities), ME-11 (stat rename deletes a stat). All three
-              discard user-entered data with no error, and all three are
-              small, well-understood fixes.
+              HI-04 (import strips stat bounds) and ME-06 (rating changes
+              destroy specialities). Both discard user-entered data with no
+              error, and both are small, well-understood fixes.
             </p>
           </div>
           <div class="priority">
@@ -1295,7 +1295,7 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-11">
+          <article class="finding medium-sev resolved" id="ME-11">
             <div class="finding-head">
               <div>
                 <h3>ME-11 · Stat and card-category IDs can collide silently</h3>
@@ -1309,7 +1309,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               Stat renames do not reject an existing destination key, so one
@@ -1319,8 +1319,13 @@
               inconsistent safety boundary.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> centralize identifier validation and
-              assert uniqueness after every settings reducer action and import.
+              <strong>Resolved 28 August 2026.</strong> The ordered
+              <code>renameProperty</code> helper now rejects destination-key
+              collisions and is shared by equipment categories, equipment
+              fields, and stats. Card-category mutations and imported settings
+              use the same uniqueness invariant. Generated stat IDs now skip
+              occupied keys instead of deriving an ID that can overwrite an
+              existing stat.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1759,7 +1764,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              360 tests pass, but actors, items, combat, startup hooks, sockets,
+              371 tests pass, but actors, items, combat, startup hooks, sockets,
               pack-manifest integrity, and end-to-end Foundry flows are sparse
               or absent.
             </p>
@@ -1850,11 +1855,10 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 30 executed files and 360 tests; there are 27
-            distinct test source files, with the workspace configuration
-            executing three package tests in more than one project. Coverage is
-            concentrated in pure utilities, settings/store snapshots, journal
-            document memory, input components, and the mini-router.
+            Vitest reports 31 executed files and 371 tests across 31 distinct
+            test source files. Coverage is concentrated in pure utilities,
+            settings/store snapshots, journal document memory, input
+            components, and the mini-router.
           </p>
           <p>
             <strong>Highest-value missing suites:</strong> actor/item mutation
@@ -1886,6 +1890,15 @@
               tab, which shows the last migration error.
             </p>
           </div>
+          <div class="callout">
+            <p>
+              <strong>ME-11 regression coverage:</strong> colliding stat and
+              card-category renames preserve both original entries and report
+              an error. Duplicate card-category IDs are rejected during import,
+              ordered object-key renames reject collisions centrally, and stat
+              creation skips an occupied generated ID.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -1910,8 +1923,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">30 files / 360 tests</td>
-              <td>No test or type errors; 27 distinct test source files.</td>
+              <td class="pass">31 files / 371 tests</td>
+              <td>No test or type errors; 31 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>

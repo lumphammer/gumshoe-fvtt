@@ -35,6 +35,22 @@ it("should throw an error if there is an unknown key", () => {
   );
 });
 
+it("should reject duplicate card category ids", () => {
+  const category = {
+    id: "duplicate",
+    singleName: "Category",
+    pluralName: "Categories",
+    threshold: 3,
+    thresholdType: "none",
+  } as const;
+
+  expect(() =>
+    validateImportedSettings(
+      JSON.stringify({ cardCategories: [category, category] }),
+    ),
+  ).toThrow('Card category ID "duplicate" is duplicated');
+});
+
 it("should throw an error if the text is not JSON", () => {
   // this is now testing for the node 20 version of the error
   expect(() =>

@@ -121,16 +121,42 @@ export function assertNotNull<T>(t: T | undefined | null): asserts t is T {
   }
 }
 
+export function findDuplicate<T>(values: Iterable<T>): T | undefined {
+  const seen = new Set<T>();
+  for (const value of values) {
+    if (seen.has(value)) return value;
+    seen.add(value);
+  }
+  return undefined;
+}
+
+export function assertUniqueIds(
+  ids: Iterable<string>,
+  description = "ID",
+): void {
+  const duplicate = findDuplicate(ids);
+  if (duplicate !== undefined) {
+    throw new Error(`Cannot use duplicate ${description} "${duplicate}"`);
+  }
+}
+
 /**
  * create a new object with a key "renamed" in the same order
  * this keeps the renamed key in the same relative order, if you're relying on
- * JS's object key order being stable
+ * JS's object key order being stable. A rename to an existing key is rejected
+ * rather than silently overwriting either value.
  */
 export function renameProperty<T>(
   oldProp: string,
   newProp: string,
   subject: Record<string, T>,
+  description = "property ID",
 ) {
+  if (oldProp === newProp) return subject;
+  assertUniqueIds(
+    Object.keys(subject).map((key) => (key === oldProp ? newProp : key)),
+    description,
+  );
   const result: Record<string, T> = {};
   for (const p in subject) {
     if (p === oldProp) {

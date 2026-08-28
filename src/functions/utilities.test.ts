@@ -116,6 +116,21 @@ describe("renameProperty", () => {
   ])("renameProperty(%s, %s, %s)", (input, oldName, newName, expected) => {
     expect(renameProperty(oldName, newName, input)).toEqual(expected);
   });
+
+  test("rejects a rename to an existing key without losing either value", () => {
+    const input = { a: 1, b: 2 };
+
+    expect(() => renameProperty("a", "b", input, "test ID")).toThrow(
+      'Cannot use duplicate test ID "b"',
+    );
+    expect(input).toEqual({ a: 1, b: 2 });
+  });
+
+  test("treats renaming a key to itself as a no-op", () => {
+    const input = { a: 1, b: 2 };
+
+    expect(renameProperty("a", "a", input)).toBe(input);
+  });
 });
 
 describe("memoizeNullaryOnce", () => {

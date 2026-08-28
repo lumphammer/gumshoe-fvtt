@@ -205,6 +205,87 @@ describe("reducer", () => {
     expect(resultFields["field2"]).toBe(fields["field2"]);
   });
 
+  it("rejects a stat id which is already used without losing either stat", () => {
+    const state = structuredClone(initialState);
+    state.settings.pcStats["pcStat1"] = {
+      name: "Second stat",
+      default: 1,
+    };
+
+    const result = slice.reducer(
+      state,
+      slice.creators.setStatId({
+        which: "pcStats",
+        oldStatId: "pcStat0",
+        newStatId: "pcStat1",
+      }),
+    );
+
+    expect(result).toEqual(state);
+    expect(Object.keys(result.settings.pcStats)).toEqual([
+      "pcStat0",
+      "pcStat1",
+    ]);
+    expect(onErrorFn).toHaveBeenCalledWith(
+      new Error('Cannot use duplicate stat ID "pcStat1"'),
+    );
+  });
+
+  it("rejects a card category id which is already used", () => {
+    const state = structuredClone(initialState);
+    state.settings.cardCategories = [
+      {
+        id: "first",
+        singleName: "First",
+        pluralName: "First",
+        threshold: 3,
+        thresholdType: "none",
+      },
+      {
+        id: "second",
+        singleName: "Second",
+        pluralName: "Second",
+        threshold: 3,
+        thresholdType: "none",
+      },
+    ];
+
+    const result = slice.reducer(
+      state,
+      slice.creators.setCardCategoryId({ id: "first", newId: "second" }),
+    );
+
+    expect(result).toEqual(state);
+    expect(result.settings.cardCategories.map(({ id }) => id)).toEqual([
+      "first",
+      "second",
+    ]);
+    expect(onErrorFn).toHaveBeenCalledWith(
+      new Error('Cannot use duplicate card category ID "second"'),
+    );
+  });
+
+  it("does not overwrite an existing generated stat id when adding a stat", () => {
+    const state = structuredClone(initialState);
+    state.settings.pcStats["stat2"] = {
+      name: "Existing stat",
+      default: 2,
+    };
+
+    const result = slice.reducer(
+      state,
+      slice.creators.addStat({ which: "pcStats" }),
+    );
+
+    expect(result.settings.pcStats["stat2"]).toEqual({
+      name: "Existing stat",
+      default: 2,
+    });
+    expect(result.settings.pcStats["stat3"]).toEqual({ name: "", default: 0 });
+    expect(Object.keys(result.settings.pcStats)).toHaveLength(3);
+    expect(onErrorFn).not.toHaveBeenCalled();
+  });
+
   it.each<TestTuple>([
     [
       "set a value using setSome",
