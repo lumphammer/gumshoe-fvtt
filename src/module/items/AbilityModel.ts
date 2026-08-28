@@ -3,7 +3,6 @@ import { nanoid } from "nanoid";
 import * as constants from "../../constants";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
-import { fixLength } from "../../functions/utilities";
 import { TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import {
@@ -13,6 +12,7 @@ import {
   Unlock,
 } from "../../types";
 import { AbilitySchema } from "./createAbilitySchema";
+import { getSpecialitiesCount, resizeSpecialities } from "./resizeSpecialities";
 
 /**
  * AbilityModel
@@ -243,33 +243,29 @@ export abstract class AbilityModel<
   };
 
   getSpecialities = (): string[] => {
-    return fixLength(this.specialities, this.getSpecialitesCount(), "");
+    return resizeSpecialities(this.specialities, {
+      hasSpecialities: this.hasSpecialities,
+      rating: this.rating,
+      specialitiesMode: this.specialitiesMode,
+    });
   };
 
   getSpecialitesCount = (): number => {
-    if (!this.hasSpecialities) {
-      return 0;
-    } else if (this.specialitiesMode === "twoThreeFour") {
-      // NBA langauges style
-      switch (this.rating) {
-        case 0:
-          return 0;
-        case 1:
-          return 2;
-        case 2:
-          return 5;
-        default:
-          return Math.max(0, (this.rating - 2) * 4 + 5);
-      }
-    } else {
-      return this.rating;
-    }
+    return getSpecialitiesCount({
+      hasSpecialities: this.hasSpecialities,
+      rating: this.rating,
+      specialitiesMode: this.specialitiesMode,
+    });
   };
 
   setSpecialities = async (newSpecs: string[]): Promise<void> => {
     await this.parent.update({
       system: {
-        specialities: fixLength(newSpecs, this.getSpecialitesCount(), ""),
+        specialities: resizeSpecialities(newSpecs, {
+          hasSpecialities: this.hasSpecialities,
+          rating: this.rating,
+          specialitiesMode: this.specialitiesMode,
+        }),
       },
     });
   };
@@ -278,7 +274,11 @@ export abstract class AbilityModel<
     await this.parent.update({
       system: {
         rating: newRating,
-        specialities: fixLength(this.specialities, newRating, ""),
+        specialities: resizeSpecialities(this.specialities, {
+          hasSpecialities: this.hasSpecialities,
+          rating: newRating,
+          specialitiesMode: this.specialitiesMode,
+        }),
       },
     });
   };
@@ -288,7 +288,11 @@ export abstract class AbilityModel<
       system: {
         rating: newRating,
         pool: newRating,
-        specialities: fixLength(this.specialities, newRating, ""),
+        specialities: resizeSpecialities(this.specialities, {
+          hasSpecialities: this.hasSpecialities,
+          rating: newRating,
+          specialitiesMode: this.specialitiesMode,
+        }),
       },
     });
   };

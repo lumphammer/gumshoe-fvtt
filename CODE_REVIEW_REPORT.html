@@ -572,24 +572,24 @@
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
               below. That pass left 21 findings open; ME-11, HI-03, HI-04,
-              ME-01, ME-02, ME-03, ME-04, and ME-05 have since been resolved,
-              leaving 13. The ranking has shifted: the highest-value work is
-              now silent data loss in abilities, not release tooling.
+              ME-01, ME-02, ME-03, ME-04, ME-05, and ME-06 have since been
+              resolved, leaving 12. No Critical or High findings remain.
             </p>
           </div>
           <div class="status">
             <span class="label">Release recommendation</span>
-            <strong>Hold</strong>
+            <strong>Conditional go</strong>
             <p>
-              Resolve the remaining High finding (ME-06), add regression
-              tests, then rebuild from a clean pack output.
+              The release-blocking findings are resolved. Consciously accept or
+              resolve the remaining Medium and Low findings, especially ME-10
+              and ME-16, before release.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>13</b><span>open findings</span></div>
+          <div class="metric"><b>12</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
-          <div class="metric high"><b>1</b><span>high</span></div>
+          <div class="metric high"><b>0</b><span>high</span></div>
           <div class="metric medium"><b>6</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
@@ -599,11 +599,11 @@
         <h2>Fix first</h2>
         <div class="priority-grid">
           <div class="priority">
-            <b>1. Preserve ability specialities</b>
+            <b>1. Restrict socket commands</b>
             <p>
-              ME-06 makes rating changes destroy valid specialities. It
-              discards user-entered data with no error and has a small,
-              well-understood fix.
+              ME-10 lets connected clients choose arbitrary local hook names
+              and arguments. Replace that generic relay with validated,
+              authorized commands.
             </p>
           </div>
           <div class="priority">
@@ -1123,19 +1123,23 @@
             </p>
           </article>
 
-          <article class="finding high-sev" id="ME-06">
+          <article class="finding high-sev resolved" id="ME-06">
             <div class="finding-head">
               <div>
                 <h3>
                   ME-06 · Rating changes discard valid NBA-style specialities
                 </h3>
                 <p class="refs">
-                  <a href="src/module/items/AbilityModel.ts#L245"
-                    >AbilityModel.ts:245–293</a
+                  <a href="src/module/items/AbilityModel.ts#L248"
+                    >AbilityModel.ts:248–300</a
+                  >
+                  ·
+                  <a href="src/module/items/resizeSpecialities.test.ts#L8"
+                    >resizeSpecialities.test.ts:8–36</a
                   >
                 </p>
               </div>
-              <span class="badge">High</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               The <code>twoThreeFour</code> mode maps rating 1 to two
@@ -1144,8 +1148,12 @@
               <code>newRating</code>, not to the computed speciality count.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> calculate the count for the prospective
-              rating and test every mode across rating transitions.
+              <strong>Resolved 28 August 2026.</strong> Speciality sizing now
+              takes an explicit prospective rating and is shared by display,
+              editing, and both rating setters. Eight table-driven cases cover
+              disabled, one-per-rating, and NBA-style modes across ratings zero
+              through three; a regression case verifies that all five valid
+              rating-two NBA specialities survive unchanged.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1809,7 +1817,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              391 tests pass, and pack-build failure integrity now has focused
+              400 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1900,7 +1908,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 37 executed files and 391 tests across 37 distinct
+            Vitest reports 38 executed files and 400 tests across 38 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -1994,6 +2002,13 @@
               previous, or empty-state fallback.
             </p>
           </div>
+          <div class="callout">
+            <p>
+              <strong>ME-06 regression coverage:</strong> all speciality modes
+              use the prospective rating, including the five-slot NBA rating
+              transition that previously discarded three entered values.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -2018,8 +2033,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">37 files / 391 tests</td>
-              <td>No test or type errors; 37 distinct test source files.</td>
+              <td class="pass">38 files / 400 tests</td>
+              <td>No test or type errors; 38 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -2077,18 +2092,18 @@
               <tr>
                 <td><strong>Release block</strong></td>
                 <td>
-                  ME-06; add focused ability mutation coverage.
+                  Complete: pack failure integrity, settings round trips,
+                  equipment creation, and ability mutation coverage.
                 </td>
                 <td>
-                  Settings import round trips are lossless and user-entered
-                  ability data survives category and rating changes.
+                  Met: clean production build passes and no Critical or High
+                  findings remain.
                 </td>
               </tr>
               <tr>
                 <td><strong>State integrity</strong></td>
                 <td>
-                  ME-06 and ME-09 through ME-14; add
-                  state-machine and reducer invariants.
+                  ME-09 through ME-14; add state-machine and reducer invariants.
                 </td>
                 <td>
                   No mutation relies on stale keys, indices, falsy coercion, or
