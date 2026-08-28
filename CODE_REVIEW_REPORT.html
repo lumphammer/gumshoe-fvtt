@@ -572,8 +572,8 @@
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
               below. That pass left 21 findings open; HI-03, HI-04, ME-01
-              through ME-12, ME-14, and ME-16 have since been resolved, leaving
-              5. No Critical, High, or Medium findings remain.
+              through ME-12, ME-14, ME-16, and LO-05 have since been resolved,
+              leaving 4. No Critical, High, or Medium findings remain.
             </p>
           </div>
           <div class="status">
@@ -581,16 +581,16 @@
             <strong>Go with accepted low risks</strong>
             <p>
               The release-blocking findings are resolved. Consciously accept or
-              resolve the five remaining Low findings before release.
+              resolve the four remaining Low findings before release.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>5</b><span>open findings</span></div>
+          <div class="metric"><b>4</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
           <div class="metric medium"><b>0</b><span>medium</span></div>
-          <div class="metric low"><b>5</b><span>low</span></div>
+          <div class="metric low"><b>4</b><span>low</span></div>
         </div>
       </section>
 
@@ -600,7 +600,7 @@
           <div class="priority">
             <b>1. Take the free wins</b>
             <p>
-              LO-01, LO-03, LO-04 and LO-05 are one-liners with
+              LO-01, LO-03 and LO-04 are one-liners with
               disproportionate reliability value.
             </p>
           </div>
@@ -1837,7 +1837,7 @@
             </p>
           </article>
 
-          <article class="finding low-sev" id="LO-05">
+          <article class="finding low-sev resolved" id="LO-05">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1850,7 +1850,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Low</span>
+              <span class="badge">Resolved</span>
             </div>
             <p>
               When a Dice So Nice setting exists, startup disables simultaneous
@@ -1872,6 +1872,13 @@
               cannot keep <code>core.animateRollTable</code> switched off at
               all &mdash; it is re-forced to <code>true</code> every session.
               Deleting <code>installDSNFix.ts:22</code> is the whole fix.
+            </p>
+            <p class="resolution-note">
+              <strong>Resolution · 28 Aug 2026:</strong> Startup no longer
+              writes <code>core.animateRollTable</code>. Two focused tests prove
+              that both known Dice So Nice simultaneous-roll settings are
+              disabled when present, no settings are written when the module is
+              absent, and no core preference is touched.
             </p>
           </article>
         </div>
@@ -1902,7 +1909,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              447 tests pass, and pack-build failure integrity now has focused
+              449 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1993,7 +2000,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 45 executed files and 447 tests across 45 distinct
+            Vitest reports 46 executed files and 449 tests across 46 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -2156,8 +2163,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">45 files / 447 tests</td>
-              <td>No test or type errors; 45 distinct test source files.</td>
+              <td class="pass">46 files / 449 tests</td>
+              <td>No test or type errors; 46 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
