@@ -1,5 +1,6 @@
 import * as constants from "../constants";
-import { RequestTurnPassArgs, SocketHookAction } from "../types";
+import { SystemSocketAction } from "../types";
+import { dispatchSystemSocketActionToHooks } from "./systemSocketActions";
 
 interface NameHaver {
   name: string | null;
@@ -168,20 +169,11 @@ export function renameProperty<T>(
   return result;
 }
 
-/**
- * Send out a socket message to all clients, causing them to call the given hook
- * with the given payload.
- */
-function broadcastHook<THook extends Hooks.HookName>(
-  hook: THook,
-  payload: Hooks.HookParameters<THook>,
-) {
-  const socketHookAction: SocketHookAction<THook> = {
-    hook,
-    payload,
-  };
-  game.socket?.emit(constants.socketScope, socketHookAction);
-  Hooks.call(hook, ...payload);
+function broadcastSystemSocketAction(action: SystemSocketAction) {
+  game.socket?.emit(constants.socketScope, action);
+  if (game.userId) {
+    dispatchSystemSocketActionToHooks(action, game.userId);
+  }
 }
 
 /**
@@ -189,12 +181,11 @@ function broadcastHook<THook extends Hooks.HookName>(
  */
 export function requestTurnPass(combatantId: string | null | undefined) {
   if (!combatantId) return;
-  const payload: RequestTurnPassArgs = { combatantId };
-  broadcastHook(constants.requestTurnPass, [payload]);
+  broadcastSystemSocketAction({ type: "requestTurnPass", combatantId });
 }
 
 export function requestNextTurn() {
-  broadcastHook(constants.nextTurn, []);
+  broadcastSystemSocketAction({ type: "requestNextTurn" });
 }
 
 export const makeLogger = (name: string) =>

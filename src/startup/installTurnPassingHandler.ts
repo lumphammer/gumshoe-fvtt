@@ -1,4 +1,5 @@
 import * as constants from "../constants";
+import { canUserRequestCombatAction } from "../functions/canUserRequestCombatAction";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { isTurnPassingCombatant } from "../module/combat/turnPassingCombatant";
@@ -15,7 +16,7 @@ export function installTurnPassingHandler() {
     assertGame(game);
     Hooks.on(
       constants.requestTurnPass,
-      ({ combatantId }: RequestTurnPassArgs) => {
+      ({ combatantId }: RequestTurnPassArgs, requestingUserId: string) => {
         if (!game.user.isActiveGM) {
           return;
         }
@@ -23,9 +24,12 @@ export function installTurnPassingHandler() {
         assertGame(game);
         const combat = game.combat;
         const combatant = game.combat?.combatants.get(combatantId);
+        const requestingUser = game.users.get(requestingUserId);
         if (
           !combat ||
           !combatant ||
+          !requestingUser ||
+          !canUserRequestCombatAction(requestingUser, combatant) ||
           !isTurnPassingCombatant(combatant) ||
           // @ts-expect-error some oddity with combatant types
           combatant.system.passingTurnsRemaining <= 0

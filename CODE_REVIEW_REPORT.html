@@ -572,7 +572,7 @@
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
               below. That pass left 21 findings open; HI-03, HI-04, ME-01
-              through ME-09, and ME-11 have since been resolved, leaving 9. No
+              through ME-11 have since been resolved, leaving 8. No
               Critical or High findings remain.
             </p>
           </div>
@@ -581,16 +581,16 @@
             <strong>Conditional go</strong>
             <p>
               The release-blocking findings are resolved. Consciously accept or
-              resolve the remaining Medium and Low findings, especially ME-10
+              resolve the remaining Medium and Low findings, especially ME-12
               and ME-16, before release.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>9</b><span>open findings</span></div>
+          <div class="metric"><b>8</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
-          <div class="metric medium"><b>3</b><span>medium</span></div>
+          <div class="metric medium"><b>2</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
       </section>
@@ -599,20 +599,20 @@
         <h2>Fix first</h2>
         <div class="priority-grid">
           <div class="priority">
-            <b>1. Restrict socket commands</b>
-            <p>
-              ME-10 lets connected clients choose arbitrary local hook names
-              and arguments. Replace that generic relay with validated,
-              authorized commands.
-            </p>
-          </div>
-          <div class="priority">
-            <b>2. Migrate legacy equipment categories</b>
+            <b>1. Migrate legacy equipment categories</b>
             <p>
               ME-01 now populates <code>categoryId</code> for new equipment, but
               ME-16 still leaves legacy items orphaned. Confirm an old-world
               fixture, do the rename in <code>migrateData</code>, then delete
               the two dead migrations.
+            </p>
+          </div>
+          <div class="priority">
+            <b>2. Serialize journal history saves</b>
+            <p>
+              ME-12 can lose one page's revision history when concurrent saves
+              overwrite the shared world setting. Merge against the latest
+              value in a serialized write path and surface failures.
             </p>
           </div>
           <div class="priority">
@@ -1342,23 +1342,27 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-10">
+          <article class="finding medium-sev resolved" id="ME-10">
             <div class="finding-head">
               <div>
                 <h3>ME-10 · The system socket accepts arbitrary hook names</h3>
                 <p class="refs">
                   <a href="src/startup/installSocketActionHandler.ts#L9"
-                    >installSocketActionHandler.ts:9–16</a
+                    >installSocketActionHandler.ts:10–25</a
                   >
                   ·
-                  <a href="src/typeAssertions.ts#L4">typeAssertions.ts:4–12</a>
+                  <a href="src/typeAssertions.ts#L4">typeAssertions.ts:4–20</a>
                   ·
                   <a href="src/startup/installNextTurnHandler.ts#L9"
-                    >installNextTurnHandler.ts:9–20</a
+                    >installNextTurnHandler.ts:10–30</a
+                  >
+                  ·
+                  <a href="src/functions/systemSocketActions.test.ts#L7"
+                    >systemSocketActions.test.ts:7–75</a
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge">Resolved</span>
             </div>
             <p>
               Incoming messages are validated only as
@@ -1376,6 +1380,19 @@
               <strong>Fix/test:</strong> use a discriminated command union,
               schema-validate each payload, and authorize the requesting user
               against the relevant actor/combat.
+            </p>
+            <p class="resolution">
+              <strong>Resolved · 28 Aug 2026.</strong> The generic hook relay is
+              replaced by an exact two-command union whose payloads reject
+              missing, extra, and incorrectly typed fields. Foundry's custom
+              socket relay supplies the authenticated sender ID (verified in
+              both the installed v13 and v14 server implementations), which is
+              passed through command dispatch. The active GM now accepts a
+              player request only when Foundry lists that player among the
+              relevant combatant's controllers; GM requests remain allowed.
+              Sixteen regression cases cover rejected arbitrary hooks and
+              malformed commands, allowlisted dispatch, authenticated identity
+              propagation, and GM/owner/non-owner authorization.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1861,7 +1878,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              419 tests pass, and pack-build failure integrity now has focused
+              435 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1952,7 +1969,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 41 executed files and 419 tests across 41 distinct
+            Vitest reports 42 executed files and 435 tests across 42 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -2075,6 +2092,14 @@
               unrelated combatants or later recovery.
             </p>
           </div>
+          <div class="callout">
+            <p>
+              <strong>ME-10 regression coverage:</strong> arbitrary hooks and
+              malformed commands are rejected; allowlisted commands preserve
+              Foundry's authenticated sender ID and require GM or combatant
+              control authority.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -2099,8 +2124,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">41 files / 419 tests</td>
-              <td>No test or type errors; 41 distinct test source files.</td>
+              <td class="pass">42 files / 435 tests</td>
+              <td>No test or type errors; 42 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -2180,7 +2205,7 @@
               <tr>
                 <td><strong>Interaction safety</strong></td>
                 <td>
-                  ME-10; harden the socket command contract.
+                  Complete: drag/drop and socket command contracts are hardened.
                 </td>
                 <td>
                   Malformed external input is rejected or safely ignored; no

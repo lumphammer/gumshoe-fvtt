@@ -1,15 +1,22 @@
 import { hasOwnProperty } from "./functions/utilities";
-import { EquipmentFieldType, SocketHookAction } from "./types";
+import { EquipmentFieldType, SystemSocketAction } from "./types";
 
-export function isSocketHookAction(
-  x: unknown,
-): x is SocketHookAction<Hooks.HookName> {
-  return (
-    hasOwnProperty(x, "hook") &&
-    typeof x["hook"] === "string" &&
-    hasOwnProperty(x, "payload") &&
-    Array.isArray(x["payload"])
-  );
+export function isSystemSocketAction(x: unknown): x is SystemSocketAction {
+  if (x === null || Array.isArray(x) || typeof x !== "object") return false;
+  if (!hasOwnProperty(x, "type") || typeof x["type"] !== "string") return false;
+
+  if (x["type"] === "requestNextTurn") {
+    return Object.keys(x).length === 1;
+  }
+  if (x["type"] === "requestTurnPass") {
+    return (
+      Object.keys(x).length === 2 &&
+      hasOwnProperty(x, "combatantId") &&
+      typeof x["combatantId"] === "string" &&
+      x["combatantId"].length > 0
+    );
+  }
+  return false;
 }
 
 export function isEquipmentFieldType(type: string): type is EquipmentFieldType {
