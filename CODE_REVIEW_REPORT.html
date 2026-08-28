@@ -186,6 +186,14 @@
         margin: 0;
         color: #fee2e2;
       }
+      .summary-copy .second-pass {
+        margin-top: 0.9rem;
+        padding: 0.75rem 0.9rem;
+        border-left: 0.22rem solid var(--teal);
+        border-radius: 0 0.45rem 0.45rem 0;
+        background: rgb(22 125 121 / 8%);
+        font-size: 0.94rem;
+      }
       .summary-copy p:last-child {
         margin-bottom: 0;
       }
@@ -293,6 +301,24 @@
         border-top: 1px dashed var(--line);
         color: #34434d;
         font-size: 0.92rem;
+      }
+      .finding .review-note {
+        margin-top: 0.6rem;
+        padding: 0.6rem 0.8rem;
+        border-left: 0.22rem solid var(--sev);
+        border-radius: 0 0.4rem 0.4rem 0;
+        background: var(--sev-bg);
+        color: #34434d;
+        font-size: 0.92rem;
+      }
+      .finding .review-note .tag {
+        display: block;
+        margin-bottom: 0.2rem;
+        color: var(--sev);
+        font-size: 0.72rem;
+        font-weight: 850;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
       .badge {
         flex: 0 0 auto;
@@ -536,22 +562,35 @@
               work, while settings transformations can silently accept and
               persist damaged data.
             </p>
+            <p class="second-pass">
+              <strong>Second-pass review, 28 August 2026.</strong> Every open
+              finding was re-verified against the code by a second reviewer.
+              All of them describe real defects; none were spurious. Severities
+              moved in both directions &mdash; ME-01 and ME-06 up to High as
+              user-facing data loss, HI-03 and ME-14 down as their stated
+              impact was not reachable &mdash; ME-13 is closed as superseded,
+              and one new finding (ME-16) was added for the root cause it was
+              circling. Per-finding verification notes are recorded inline
+              below. Net counts are unchanged at 21 open, but the ranking has
+              shifted: the highest-value work is now silent data loss in
+              settings and abilities, not release tooling.
+            </p>
           </div>
           <div class="status">
             <span class="label">Release recommendation</span>
             <strong>Hold</strong>
             <p>
-              Resolve the two remaining High findings, add regression tests,
-              then rebuild from a clean pack output.
+              Resolve the three High findings (HI-04, ME-01, ME-06), add
+              regression tests, then rebuild from a clean pack output.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
           <div class="metric"><b>21</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
-          <div class="metric high"><b>2</b><span>high</span></div>
-          <div class="metric medium"><b>14</b><span>medium</span></div>
-          <div class="metric low"><b>5</b><span>low</span></div>
+          <div class="metric high"><b>3</b><span>high</span></div>
+          <div class="metric medium"><b>12</b><span>medium</span></div>
+          <div class="metric low"><b>6</b><span>low</span></div>
         </div>
       </section>
 
@@ -559,24 +598,29 @@
         <h2>Fix first</h2>
         <div class="priority-grid">
           <div class="priority">
-            <b>1. Make pack builds fail closed</b>
+            <b>1. Stop silent data loss</b>
             <p>
-              Treat open pack locks as a failed production build, and validate
-              all compiled pack outputs before publishing.
+              HI-04 (import strips stat bounds), ME-06 (rating changes destroy
+              specialities), ME-11 (stat rename deletes a stat). All three
+              discard user-entered data with no error, and all three are
+              small, well-understood fixes.
             </p>
           </div>
           <div class="priority">
-            <b>2. Protect settings data transformations</b>
+            <b>2. Repair the equipment category chain</b>
             <p>
-              Preserve stat bounds during import. Continue using semantic
-              invariants for identity and cardinality alongside snapshots.
+              ME-16 and ME-01 are one defect: nothing populates
+              <code>categoryId</code>, so creation ignores the chosen category
+              and legacy items stay orphaned. Do the rename in
+              <code>migrateData</code>, then delete the two dead migrations.
             </p>
           </div>
           <div class="priority">
-            <b>3. Strengthen migration coverage</b>
+            <b>3. Fix the free wins, then the combat ordering</b>
             <p>
-              Extend the new failure/retry contract to startup-hook integration
-              and successful real-world migration fixtures.
+              ME-07, LO-01, LO-03, LO-04 and LO-05 are one-liners. After those,
+              ME-04 and ME-05 both have a correct pattern already present
+              elsewhere in <code>classicCombat.ts</code> to copy.
             </p>
           </div>
         </div>
@@ -719,7 +763,7 @@
             </p>
           </article>
 
-          <article class="finding high-sev" id="HI-03">
+          <article class="finding medium-sev" id="HI-03">
             <div class="finding-head">
               <div>
                 <h3>
@@ -733,7 +777,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">High</span>
+              <span class="badge">Medium</span>
             </div>
             <p>
               When locks are found, the Vite <code>closeBundle</code> hook
@@ -742,13 +786,31 @@
               compendiums remain stale, missing, or left from another commit.
             </p>
             <p>
-              <strong>Impact:</strong> CI/release automation can publish an
-              internally inconsistent artifact while reporting success.
+              <strong>Impact:</strong> a build can be published with stale,
+              missing, or wrong-commit compendiums while reporting success.
             </p>
             <p class="recommendation">
               <strong>Fix/test:</strong> throw on locks in production builds.
               Build packs into a staging directory, validate them, and
               atomically replace the destination only on success.
+            </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed, downgraded High &rarr; Medium.</strong> The
+              mechanism is exactly as described &mdash; line 66 is a bare
+              <code>return</code> after the red message, so the process exits
+              0. But the stated CI/release impact is not reachable for this
+              repo: releases run through
+              <code>lumphammer/gh-actions</code> on a fresh GitHub runner
+              (<code>.github/workflows/ci-cd.yml</code>), where
+              <code>./build/packs</code> does not exist and no Foundry process
+              is holding locks, so the early return never fires. The real
+              exposure is a local production build with the world open, which
+              is the case the red message already exists to warn about. Worth
+              fixing so no script can be fooled; not a release-integrity hole.
+              Note also that the ME-15 <code>validateManifestPackPaths</code>
+              check sits <em>after</em> this early return, so it does not cover
+              the locked-pack path.
             </p>
           </article>
 
@@ -792,9 +854,22 @@
               round-trip invariant: <code>import(export(settings))</code> must
               preserve all supported properties.
             </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed by execution, severity agreed.</strong> Running
+              <code>statsValidator.parse({ hp: { name, default, min, max } })</code>
+              returns <code>{ name, default }</code> &mdash; the bounds are
+              stripped, as claimed. <code>Stat</code> declares
+              <code>min?</code>/<code>max?</code>, both are user-editable in
+              <code>StatSettingsRow.tsx:176–184</code> and consumed as input
+              bounds in <code>StatField.tsx:29–30</code>, so this is live data
+              being silently dropped by a normal round trip. The suggested
+              round-trip invariant test is the right shape and should cover
+              every validator, not just stats.
+            </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-01">
+          <article class="finding high-sev" id="ME-01">
             <div class="finding-head">
               <div>
                 <h3>ME-01 · “Add equipment” ignores the selected category</h3>
@@ -806,7 +881,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge">High</span>
             </div>
             <p>
               <code>createEquipment(categoryId)</code> writes the obsolete
@@ -817,6 +892,18 @@
             <p class="recommendation">
               <strong>Fix/test:</strong> write <code>categoryId</code> and
               integration-test creation from a non-first category.
+            </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed, upgraded Medium &rarr; High.</strong> This is
+              a plain user-facing break in a core authoring workflow: every
+              &ldquo;add equipment&rdquo; lands in the first configured
+              category regardless of which one the user clicked. Note that
+              <code>pc.ts:335</code> carries a <code>@ts-expect-error</code>
+              directly above the offending <code>category:</code> line, which
+              is suppressing the very type error that would have caught this
+              &mdash; removing the suppression is part of the fix, not
+              incidental cleanup. Same root cause as ME-16; fix them together.
             </p>
           </article>
 
@@ -846,6 +933,19 @@
               <strong>Fix/test:</strong> default only when the property is
               missing or nullish; cover all supported field types and falsy
               values.
+            </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed.</strong> <code>||=</code> treats every falsy
+              value as absent. Concretely: a checkbox field whose configured
+              default is <code>true</code> flips a deliberate
+              <code>false</code> back to <code>true</code>, and a numeric field
+              with a non-zero default resets a legitimate <code>0</code>.
+              First creation is unaffected because <code>fields</code> is empty
+              anyway &mdash; the exposure is duplicate, import, and any other
+              path where <code>preCreateItem</code> fires with populated
+              <code>fields</code>. Use an <code>in</code> check or
+              <code>??=</code>, not <code>||=</code>.
             </p>
           </article>
 
@@ -877,6 +977,20 @@
               warning or handle the missing reference before entering the roll
               path.
             </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed.</strong> The four range buttons
+              (<code>WeaponMain.tsx:172–199</code>) gate only on
+              <code>ammoFail || !item.system.isXRange</code>, while the
+              &ldquo;NotFound!&rdquo; badge at <code>:255</code> proves the
+              component already knows <code>ability === undefined</code> is a
+              reachable state. Clicking reaches
+              <code>assertAbilityItem(ability)</code>
+              (<code>exports.ts:13–17</code>) and throws
+              <code>&quot;Expected an ability item&quot;</code>. Adding
+              <code>|| ability === undefined</code> to the four
+              <code>disabled</code> expressions is the minimal fix.
+            </p>
           </article>
 
           <article class="finding medium-sev" id="ME-04">
@@ -906,6 +1020,22 @@
               <code>roundInfo.turns[index].combatantId</code> to its combatant
               and use <code>roundInfo.turns.length</code> for bounds.
             </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed, with two pieces of corroborating
+              evidence.</strong> The orders genuinely do diverge: there is a
+              drag-to-reorder path at <code>classicCombat.ts:513–522</code>
+              that splices <code>roundInfo.turns</code> into an arbitrary order
+              independent of <code>combatants.contents</code>, and
+              <code>nextRound</code> (<code>:268–278</code>) carries the
+              previous order forward while appending new combatants. Separately,
+              <code>gotoRound</code> in the same file
+              (<code>:311–333</code>) already does this correctly via
+              <code>roundInfo.turns.findIndex</code>, so
+              <code>nextTurn</code>/<code>previousTurn</code> are inconsistent
+              with their own immediate neighbours &mdash; the correct pattern is
+              already in the file to copy.
+            </p>
           </article>
 
           <article class="finding medium-sev" id="ME-05">
@@ -932,9 +1062,20 @@
               when it survives; define explicit neighbor behavior when the
               active combatant is deleted.
             </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed.</strong> <code>classicCombat.ts:200–203</code>
+              clamps the old numeric <code>turnIndex</code> against the new
+              array length instead of relocating the active
+              <code>combatantId</code>. Worth noting
+              <code>nextRound</code> (<code>:283–290</code>) already does the
+              right thing &mdash; it looks up the previous combatant by ID with
+              <code>findIndex</code> before clamping &mdash; so, as with ME-04,
+              the correct pattern is already in the file.
+            </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-06">
+          <article class="finding high-sev" id="ME-06">
             <div class="finding-head">
               <div>
                 <h3>
@@ -946,7 +1087,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge">High</span>
             </div>
             <p>
               The <code>twoThreeFour</code> mode maps rating 1 to two
@@ -957,6 +1098,24 @@
             <p class="recommendation">
               <strong>Fix/test:</strong> calculate the count for the prospective
               rating and test every mode across rating transitions.
+            </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed, upgraded Medium &rarr; High.</strong> This is
+              silent destruction of user-entered text, not just a display
+              inconsistency: a rating-2 ability in <code>twoThreeFour</code>
+              mode should hold five specialities but
+              <code>fixLength(this.specialities, newRating, "")</code>
+              truncates the stored array to two, discarding three. It stays
+              invisible because <code>getSpecialities()</code> re-pads to the
+              correct count at read time, so the empty slots reappear while the
+              text is already gone. It is also a shipped configuration, not a
+              hypothetical: <code>src/packs/niceBlackAgentsAbilities/investigativeAbility_Languages_OSM38zfrAW6UM5Y7.yml</code>
+              sets <code>specialitiesMode: twoThreeFour</code>. Implementation
+              note: <code>getSpecialitesCount()</code> reads
+              <code>this.rating</code>, i.e. the <em>current</em> rating, so it
+              cannot be dropped in as-is &mdash; the count must be computed for
+              the incoming <code>newRating</code>.
             </p>
           </article>
 
@@ -984,6 +1143,14 @@
             <p class="recommendation">
               <strong>Fix/test:</strong> remove the debug throw and add a
               component test for drag-data insertion.
+            </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed &mdash; this is the cheapest fix in the
+              report.</strong> <code>HTMLEditor.tsx:118</code> is a literal
+              <code>throw new Error("foo")</code> sitting on the success path,
+              after the edit has been applied and the editor refocused. Delete
+              the line.
             </p>
           </article>
 
@@ -1015,6 +1182,20 @@
               to normal text insertion, and use the current document
               <code>id</code>/<code>uuid</code> API.
             </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed, and the second half is worse than
+              described.</strong> The world-document branch fails earlier than
+              at <code>entity.data._id</code>:
+              <code>(config.collection as any).instance</code> is a v9-era
+              accessor that is <code>undefined</code> in v13, so
+              <code>.get(data.id)</code> throws first. Treat that whole branch
+              as needing a rewrite rather than a field rename. This is live
+              code, not dead: <code>TextArea</code> reaches the UI through
+              <code>AsyncTextArea</code>, used by
+              <code>ImageEditor.tsx:37</code> and
+              <code>MwItemSheet.tsx:168</code>.
+            </p>
           </article>
 
           <article class="finding medium-sev" id="ME-09">
@@ -1043,6 +1224,21 @@
               <strong>Fix/test:</strong> keep getters pure, initialize at a
               defined round lifecycle point, and serialize updates or perform
               one atomic derived update.
+            </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed; the code already admits it.</strong> There is a
+              comment in the getter reading &ldquo;this is ugly - we're calling
+              a setter from a getter which feels bad and wrong&rdquo;. The
+              race is real as described: the getter fires an unawaited
+              <code>resetPassingTurns()</code> that will write
+              <code>defaultPassingTurns</code>, while
+              <code>addPassingTurn</code>/<code>removePassingTurn</code> base
+              their arithmetic on <code>?? 0</code>, so whichever update lands
+              last wins. One extra wrinkle: the reset is gated on
+              <code>game.user.isActiveGM</code>, so on a player's client the
+              getter returns a <code>defaultPassingTurns</code> that was never
+              persisted anywhere.
             </p>
           </article>
 
@@ -1081,6 +1277,22 @@
               schema-validate each payload, and authorize the requesting user
               against the relevant actor/combat.
             </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Mechanism confirmed, severity agreed, impact
+              overstated.</strong> There is genuinely no allowlist and no
+              sender check. But &ldquo;invoke any locally registered hook with
+              attacker-chosen arguments&rdquo; reads as arbitrary write access,
+              which it is not: most Foundry hooks are notifications rather than
+              commands, so calling <code>updateActor</code> tells listeners an
+              actor changed, it does not change one. The concrete exploitable
+              behaviour is that any player can drive <code>nextTurn</code> on
+              the active GM's client out of turn, plus whatever a listener does
+              in response to a fabricated event. The threat model is also a
+              player already invited to the table, not an anonymous internet
+              caller. Medium is right and the discriminated-union fix is cheap;
+              just don't triage it as a remote-code-execution class issue.
+            </p>
           </article>
 
           <article class="finding medium-sev" id="ME-11">
@@ -1109,6 +1321,22 @@
             <p class="recommendation">
               <strong>Fix/test:</strong> centralize identifier validation and
               assert uniqueness after every settings reducer action and import.
+            </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed, and worse than &ldquo;collide&rdquo; for
+              stats.</strong> <code>renameProperty</code>
+              (<code>utilities.ts:129–142</code>) builds a fresh object as it
+              iterates, so renaming <code>a</code> &rarr; <code>b</code> when
+              <code>b</code> already exists yields a single <code>b</code> key
+              &mdash; one stat is deleted outright, and <em>which</em> one
+              depends on key insertion order. This is silent data loss, not
+              ambiguity. The guard to copy already exists two functions away:
+              the HI-01 fix at <code>store.ts:129–133</code> throws on a
+              colliding destination ID for equipment fields, and
+              <code>changeCategoryId</code> does the same for categories.
+              Applying that same check in <code>setStatId</code> and
+              <code>setCardCategoryId</code> closes this.
             </p>
           </article>
 
@@ -1142,9 +1370,22 @@
               or serialize/merge writes with revision checks. Await and surface
               save failures.
             </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed.</strong> <code>savePage.ts:43–47</code> spreads
+              the whole world-level <code>journalMemories</code> object and
+              writes it back, so the last writer wins for the entire
+              collection. The debounced caller
+              (<code>HTMLEditor.tsx:59–64</code>) neither awaits nor catches the
+              returned promise, so a rejected save is silent. Note this is the
+              same anti-pattern as the per-document migration store that was
+              removed in <code>81318e69</code>: a single world setting used as
+              a growing keyed collection with read-modify-write access. Worth
+              fixing as one class of problem, and worth avoiding in new code.
+            </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-13">
+          <article class="finding medium-sev resolved" id="ME-13">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1161,7 +1402,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               When both migrations are pending,
@@ -1177,9 +1418,24 @@
               state (or compose versioned document snapshots) and add tests for
               upgrades from every supported historical flag combination.
             </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Resolved / superseded &mdash; closing this one.</strong>
+              The committed <code>debugger</code> went in
+              <code>76878935</code>, and <code>switchCategoryToCategoryId</code>
+              now returns early when <code>item.system.category</code> is
+              empty, so it no longer writes a stale value to
+              <code>categoryId</code>. The general point about migrations not
+              seeing each other's staged updates is a fair design observation,
+              but it has no live consequence here, because
+              <code>system.category</code> is not in the equipment schema at
+              all. The real defect underneath this finding is tracked as ME-16;
+              fix that instead of building a staged-state composition mechanism
+              for a field that no longer exists.
+            </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-14">
+          <article class="finding low-sev" id="ME-14">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1192,7 +1448,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge">Low</span>
             </div>
             <p>
               Every setting is written concurrently with
@@ -1206,6 +1462,91 @@
               writes, apply deterministic updates with error reporting, and
               either roll back from a captured snapshot or clearly report
               partial success.
+            </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Description accurate, downgraded Medium &rarr;
+              Low.</strong> Settings are independent values with no
+              cross-setting invariant that a partial write violates, and the
+              user does get a signal, in that the window fails to close. Adding
+              error reporting that names the failed key is worth doing; a
+              snapshot-and-rollback mechanism would be over-engineering for
+              this surface. Note the handler has since changed: it now filters
+              on <code>managedBySettingsForm</code> so that migration
+              bookkeeping and other externally-written settings are not
+              clobbered by a stale form copy. That reduces how many writes are
+              in flight but does not change atomicity, so this finding still
+              stands as written.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="ME-16">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  ME-16 · Both equipment-category migrations target a field the
+                  schema no longer defines
+                </h3>
+                <p class="refs">
+                  <a href="src/migrations/flaggedMigrations.ts#L21"
+                    >flaggedMigrations.ts:21–85</a
+                  >
+                  ·
+                  <a href="src/module/items/equipment.ts#L8"
+                    >equipment.ts:8–52</a
+                  >
+                  ·
+                  <a href="src/module/actors/pc.ts#L327">pc.ts:327–343</a>
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              <code>equipmentSchema</code> declares
+              <code>categoryId</code> and no <code>category</code>. Both
+              flagged migrations that exist to populate a category nevertheless
+              read and write <code>system.category</code>:
+              <code>setEquipmentCategory</code> writes a default into
+              <code>updateData.system.category</code>, which the DataModel
+              drops on update, and <code>switchCategoryToCategoryId</code>
+              branches on <code>item.system.category</code>, which is not a
+              schema field and so is absent from the loaded document. Both are
+              therefore inert, and there is no
+              <code>category</code>&nbsp;&rarr;&nbsp;<code>categoryId</code>
+              rename in <code>EquipmentModel.migrateData</code>, which handles
+              only <code>notes</code>.
+            </p>
+            <p>
+              <strong>Impact:</strong> equipment from a world that predates
+              category IDs keeps <code>categoryId: ""</code> indefinitely. The
+              sheet degrades rather than crashing &mdash;
+              <code>EquipmentMain.tsx:25–35</code> resolves
+              <code>isRealCategory</code> to false and renders an unselected
+              dropdown &mdash; but the item is detached from its category and
+              its custom fields are unreachable until a user manually re-picks
+              the category on every affected item. This is also the root cause
+              of ME-01: because nothing ever populates
+              <code>categoryId</code>, the pre-create hook's
+              <code>item.system.categoryId || firstCategory</code> fallback is
+              always taken.
+            </p>
+            <p class="recommendation">
+              <strong>Fix/test:</strong> do the rename where Foundry does
+              renames &mdash; at source level in
+              <code>EquipmentModel.migrateData</code>, alongside the existing
+              <code>notes</code> migration, so it runs on load for every
+              document regardless of migration flags. Then delete
+              <code>setEquipmentCategory</code> and
+              <code>switchCategoryToCategoryId</code> rather than repairing
+              them, and fix <code>createEquipment</code> to write
+              <code>categoryId</code> (ME-01). Test with a source fixture
+              carrying <code>system.category</code> and no
+              <code>categoryId</code>, asserting the loaded document exposes
+              the right <code>categoryId</code>. Before deleting, confirm
+              against a real pre-categories world that
+              <code>system.category</code> is in fact stripped from the loaded
+              document, since that behaviour is what makes the two migrations
+              dead.
             </p>
           </article>
 
@@ -1230,6 +1571,16 @@
               <strong>Fix/test:</strong> use
               <code>!item.parent || !isPCActor(item.parent)</code> and cover
               world, PC, and NPC items.
+            </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed.</strong> <code>!item.parent &amp;&amp;
+              isPCActor(item.parent)</code> is unsatisfiable, so
+              <code>isNotOwned</code> is always <code>false</code> and the guard
+              rejects nothing. World items therefore reach the notifier and can
+              whisper a message with an empty
+              <code>ActorName</code>, and items on NPC actors are not filtered
+              either. The suggested replacement is correct.
             </p>
           </article>
 
@@ -1259,6 +1610,17 @@
               <strong>Fix/test:</strong> reference the matching property and
               assert registered defaults equal preset defaults.
             </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed, and latent as stated.</strong>
+              <code>settings.ts:151</code> reads
+              <code>pathOfCthulhuPreset.useNpcCombatBonuses</code>; the
+              correctly-named <code>useTurnPassingInitiative</code> does exist
+              on the preset at <code>presets.ts:58</code>. Both are
+              <code>false</code> today, so there is no current misbehaviour
+              &mdash; this is a copy-paste waiting to bite when a preset
+              diverges.
+            </p>
           </article>
 
           <article class="finding low-sev" id="LO-03">
@@ -1286,6 +1648,15 @@
               <strong>Fix/test:</strong> use a non-zero condition and table-test
               zero/one/many abilities and pools.
             </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed.</strong> <code>quickShockAbilities.length &gt;
+              1 &amp;&amp; pools.length &lt; 1</code> misses exactly the case
+              most likely to occur in practice: a single QuickShock ability and
+              no push pool. The neighbouring checks in the same function use
+              <code>&gt; 1</code> and <code>=== 0</code> correctly for their own
+              conditions, so this reads as a one-character slip.
+            </p>
           </article>
 
           <article class="finding low-sev" id="LO-04">
@@ -1311,6 +1682,16 @@
             <p class="recommendation">
               <strong>Fix/test:</strong> update ammo only when enabled; cover
               toggling and zero-ammo behavior.
+            </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed.</strong> <code>performAttack.ts:126</code>
+              calls <code>setAmmo</code> unconditionally; there is no
+              <code>usesAmmo</code> check anywhere in that file, even though
+              every other ammo consumer guards on it
+              (<code>WeaponRow.tsx:80</code>, <code>WeaponMain.tsx:126</code>).
+              A weapon with ammo disabled quietly drains its hidden counter, so
+              enabling ammo later reveals a depleted value.
             </p>
           </article>
 
@@ -1339,6 +1720,16 @@
               <strong>Fix/test:</strong> remove the core-setting write unless a
               documented dependency proves it necessary; never reapply
               preference mutations on every startup.
+            </p>
+            <p class="review-note">
+              <span class="tag">Second-pass review · 28 Aug 2026</span>
+              <strong>Confirmed, slightly worse than described.</strong>
+              <code>installDSNFix</code> is awaited from the
+              <code>ready</code> hook (<code>investigator.ts:57</code>), so the
+              write runs on <em>every</em> login, not once. The user therefore
+              cannot keep <code>core.animateRollTable</code> switched off at
+              all &mdash; it is re-forced to <code>true</code> every session.
+              Deleting <code>installDSNFix.ts:22</code> is the whole fix.
             </p>
           </article>
         </div>
