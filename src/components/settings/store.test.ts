@@ -168,6 +168,41 @@ describe("reducer", () => {
     expect(result).toEqual(initialState);
   });
 
+  it("preserves sibling equipment fields when changing a field id", () => {
+    const state = structuredClone(initialState);
+    const fields = state.settings.equipmentCategories["category0"].fields;
+    fields["field2"] = {
+      name: "Third field",
+      type: "checkbox",
+      default: true,
+    };
+
+    const result = slice.reducer(
+      state,
+      slice.creators.changeFieldId({
+        categoryId: "category0",
+        fieldId: "field0",
+        newFieldId: "renamedField",
+      }),
+    );
+    const resultFields =
+      result.settings.equipmentCategories["category0"].fields;
+
+    expect(Object.keys(resultFields)).toEqual([
+      "renamedField",
+      "field1",
+      "field2",
+    ]);
+    expect(resultFields).toStrictEqual({
+      renamedField: fields["field0"],
+      field1: fields["field1"],
+      field2: fields["field2"],
+    });
+    expect(resultFields["renamedField"]).toBe(fields["field0"]);
+    expect(resultFields["field1"]).toBe(fields["field1"]);
+    expect(resultFields["field2"]).toBe(fields["field2"]);
+  });
+
   it.each<TestTuple>([
     [
       "set a value using setSome",

@@ -137,7 +137,7 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
         if (id === payload.fieldId) {
           newFields[payload.newFieldId] = field;
         } else {
-          newFields[payload.fieldId] = field;
+          newFields[id] = field;
         }
       }
       cats[payload.categoryId].fields = newFields;

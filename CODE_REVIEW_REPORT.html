@@ -541,15 +541,15 @@
             <span class="label">Release recommendation</span>
             <strong>Hold</strong>
             <p>
-              Resolve the four High findings, add regression tests, then rebuild
-              from a clean pack output.
+              Resolve the three remaining High findings, add regression tests,
+              then rebuild from a clean pack output.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>23</b><span>open findings</span></div>
+          <div class="metric"><b>22</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
-          <div class="metric high"><b>4</b><span>high</span></div>
+          <div class="metric high"><b>3</b><span>high</span></div>
           <div class="metric medium"><b>14</b><span>medium</span></div>
           <div class="metric low"><b>5</b><span>low</span></div>
         </div>
@@ -568,9 +568,8 @@
           <div class="priority">
             <b>2. Protect settings data transformations</b>
             <p>
-              Fix equipment-field renames and preserve stat bounds during
-              import. Replace snapshots with semantic invariants for identity
-              and cardinality.
+              Preserve stat bounds during import. Continue using semantic
+              invariants for identity and cardinality alongside snapshots.
             </p>
           </div>
           <div class="priority">
@@ -620,46 +619,43 @@
             <p class="recommendation">
               <strong>Verification:</strong> <code>pnpm run build</code>
               regenerated all sixteen packs with Foundry stopped and passed the
-              post-build literal-path validation. Typecheck and 347 tests also
+              post-build literal-path validation. Typecheck and 348 tests also
               pass.
             </p>
           </article>
 
-          <article class="finding high-sev" id="HI-01">
+          <article class="finding high-sev resolved" id="HI-01">
             <div class="finding-head">
               <div>
-                <h3>
-                  HI-01 · Renaming an equipment field corrupts sibling keys
-                </h3>
+                <h3>HI-01 · Equipment-field ID change corrupts sibling keys</h3>
                 <p class="refs">
                   <a href="src/components/settings/store.ts#L124"
                     >store.ts:124–143</a
                   >
                   ·
-                  <a
-                    href="src/components/settings/__snapshots__/store.test.ts.snap#L196"
-                    >snapshot:196–211</a
+                  <a href="src/components/settings/store.test.ts#L171"
+                    >store.test.ts:171–203</a
                   >
                 </p>
               </div>
-              <span class="badge">High</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
-              In the reducer's non-target branch, every sibling is written to
-              <code>newFields[payload.fieldId]</code> instead of
-              <code>newFields[id]</code>. With two fields, the sibling is
-              relabeled as the old target; with more fields, siblings overwrite
-              each other and disappear. The current snapshot records this
-              corruption as expected output.
+              <strong>Resolved 28 August 2026.</strong> The reducer now keeps
+              each non-target field under its original ID
+              (<code>newFields[id]</code>) while assigning the selected field to
+              its requested ID. The old non-target branch instead used the
+              selected field's old ID for every sibling.
             </p>
             <p>
-              <strong>Impact:</strong> field definitions and their semantic
-              mapping to equipment values can be silently lost.
+              A regression test changes one field ID in a three-field category
+              and asserts key order, all values, and referential identity for
+              both the renamed field and its siblings. The corrected snapshot
+              now records only the intended key replacement.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> retain each sibling's original ID.
-              Assert field count, object identity, order, and values
-              before/after rename instead of relying only on a snapshot diff.
+              <strong>Verification:</strong> the settings-store suite passes
+              with 41 tests and no type errors.
             </p>
           </article>
 
@@ -1355,7 +1351,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              347 tests pass, but actors, items, combat, startup hooks, sockets,
+              348 tests pass, but actors, items, combat, startup hooks, sockets,
               pack-manifest integrity, and end-to-end Foundry flows are sparse
               or absent.
             </p>
@@ -1446,7 +1442,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 27 executed files and 347 tests; there are 24
+            Vitest reports 27 executed files and 348 tests; there are 24
             distinct test source files, with the workspace configuration
             executing three package tests in more than one project. Coverage is
             concentrated in pure utilities, settings/store snapshots, journal
@@ -1461,11 +1457,10 @@
           </p>
           <div class="callout">
             <p>
-              <strong>Why green tests missed HI-01:</strong> the equipment field
-              rename snapshot faithfully captures the wrong key transformation.
-              Snapshot stability verifies “unchanged,” not “correct.”
-              Persistent-data reducers need semantic invariants alongside
-              snapshots.
+              <strong>HI-01 regression coverage:</strong> the former snapshot
+              faithfully captured the wrong key transformation. It is now paired
+              with a semantic test for key order, cardinality, values, and
+              identity across a three-field ID change.
             </p>
           </div>
         </div>
@@ -1492,7 +1487,7 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">27 files / 347 tests</td>
+              <td class="pass">27 files / 348 tests</td>
               <td>No test or type errors; 24 distinct test source files.</td>
             </tr>
             <tr>
@@ -1551,7 +1546,7 @@
               <tr>
                 <td><strong>Release block</strong></td>
                 <td>
-                  HI-01 through HI-04; clean pack rebuild; explicit pack output
+                  HI-02 through HI-04; clean pack rebuild; explicit pack output
                   validation.
                 </td>
                 <td>
