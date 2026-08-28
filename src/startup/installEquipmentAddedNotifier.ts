@@ -7,12 +7,13 @@ import { settings } from "../settings/settings";
 export function installEquipmentAddedNotifier() {
   Hooks.on("createItem", async (item: Item, opts: unknown, userId: string) => {
     assertGame(game);
-    const isNotOwned = !item.parent && isPCActor(item.parent);
+    // isPCActor is an instanceof check, so this also rejects world items
+    const isNotOwnedByPC = !isPCActor(item.parent);
     const gameHasNoUsers = !game.users;
     const notMyFault = game.userId !== userId;
     const settingsOff = !settings.notifyItemAddedToActor.get();
 
-    if (isNotOwned || gameHasNoUsers || notMyFault || settingsOff) {
+    if (isNotOwnedByPC || gameHasNoUsers || notMyFault || settingsOff) {
       return;
     }
 
