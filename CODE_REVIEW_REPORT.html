@@ -254,6 +254,38 @@
         font-size: 0.92rem;
       }
 
+      .lede-2 {
+        max-width: 62rem;
+        margin-bottom: 1.2rem;
+        color: var(--muted);
+      }
+      .metrics-note {
+        margin-top: 0.7rem;
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+      .cleared-grid {
+        display: grid;
+        gap: 0.9rem;
+        grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+      }
+      .cleared {
+        padding: 0.95rem 1.1rem;
+        border: 1px solid var(--line);
+        border-left: 0.22rem solid var(--good);
+        border-radius: 0.6rem;
+        background: rgb(184 187 38 / 7%);
+      }
+      .cleared b {
+        display: block;
+        margin-bottom: 0.35rem;
+        color: var(--good);
+      }
+      .cleared p {
+        margin-bottom: 0;
+        font-size: 0.9rem;
+      }
       .finding-list {
         display: grid;
         gap: 0.9rem;
@@ -523,17 +555,18 @@
         system.
       </p>
       <div class="meta mono">
-        <span>branch main</span><span>commit 03556bc6</span
-        ><span>system 10.123</span><span>27 Aug 2026</span
-        ><span>1,513 files surveyed</span>
+        <span>branch code-report</span><span>commit 835bba85</span
+        ><span>system 10.123</span><span>first review 27 Aug 2026</span
+        ><span>second review 29 Aug 2026</span><span>551 TS/TSX sources</span>
       </div>
     </header>
 
     <main class="shell">
       <nav class="toc" aria-label="Report sections">
         <a href="#executive">Executive view</a
-        ><a href="#priorities">Priorities</a><a href="#findings">Findings</a
-        ><a href="#health">Code health</a
+        ><a href="#priorities">Priorities</a
+        ><a href="#review-2">Second review</a><a href="#not-defects">Cleared</a
+        ><a href="#findings">First review</a><a href="#health">Code health</a
         ><a href="#verification">Verification</a><a href="#roadmap">Roadmap</a
         ><a href="#method">Method</a>
       </nav>
@@ -556,22 +589,36 @@
               regression tests cover each substantive correction.
             </p>
             <p>
-              The remaining risks are chiefly <strong>maintenance and
-              integration depth</strong>: dependency advisories need
-              shipped-scope triage, Vite reports future-compatibility warnings,
-              and a mocked unit suite cannot replace exercising complete
-              Foundry document lifecycles in a real world.
+              The remaining risks are chiefly
+              <strong>maintenance and integration depth</strong>: dependency
+              advisories need shipped-scope triage, Vite reports
+              future-compatibility warnings, and a mocked unit suite cannot
+              replace exercising complete Foundry document lifecycles in a real
+              world.
             </p>
             <p class="second-pass">
-              <strong>Second-pass review, 28 August 2026.</strong> Every open
-              finding was re-verified against the code by a second reviewer.
-              All of them describe real defects; none were spurious. Severities
-              moved in both directions &mdash; ME-01 and ME-06 up to High as
-              user-facing data loss, HI-03 and ME-14 down as their stated
-              impact was not reachable &mdash; ME-13 is closed as superseded,
-              and one new finding (ME-16) was added for the root cause it was
-              circling. Per-finding verification notes are recorded inline
-              below. That pass left 21 findings open; HI-03, HI-04, ME-01
+              <strong>Independent second review, 29 August 2026.</strong> A
+              fresh pass over the whole codebase on the
+              <span class="mono">code-report</span> branch, after every
+              first-review finding was resolved. It found
+              <strong>ten new issues</strong> &mdash; five Medium, five Low, no
+              Critical or High. None of them overlap the first review's
+              findings; they sit in chat-message construction, ordered-record
+              helpers, dialog lifecycle, a broadcast hook, and the type-level
+              guard that was supposed to prevent HI-04. Every one was verified
+              by running it. Four further hypotheses were tested and cleared,
+              and are recorded rather than discarded.
+            </p>
+            <p class="second-pass">
+              <strong>First-review second-pass, 28 August 2026.</strong> Every
+              open finding was re-verified against the code by a second
+              reviewer. All of them describe real defects; none were spurious.
+              Severities moved in both directions &mdash; ME-01 and ME-06 up to
+              High as user-facing data loss, HI-03 and ME-14 down as their
+              stated impact was not reachable &mdash; ME-13 is closed as
+              superseded, and one new finding (ME-16) was added for the root
+              cause it was circling. Per-finding verification notes are recorded
+              inline below. That pass left 21 findings open; HI-03, HI-04, ME-01
               through ME-12, ME-14, ME-16, and LO-01 through LO-05 have since
               been resolved. No confirmed findings remain open.
             </p>
@@ -580,35 +627,724 @@
             <span class="label">Release recommendation</span>
             <strong>Go</strong>
             <p>
-              The full pipeline passes and every confirmed review finding is
-              resolved. Track the documented maintenance work separately.
+              The full pipeline passes and no open finding blocks a release: the
+              second review's ten items are correctness and clarity work, not
+              data loss or release integrity. Take R2-01 and R2-02 before the
+              next feature.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>0</b><span>open findings</span></div>
+          <div class="metric"><b>10</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
-          <div class="metric medium"><b>0</b><span>medium</span></div>
-          <div class="metric low"><b>0</b><span>low</span></div>
+          <div class="metric medium"><b>5</b><span>medium</span></div>
+          <div class="metric low"><b>5</b><span>low</span></div>
         </div>
+        <p class="metrics-note">
+          Counts are for the second review. All 25 first-review findings remain
+          resolved; they are kept below as the record of that work.
+        </p>
       </section>
 
       <section id="priorities">
-        <h2>Follow-up hardening</h2>
+        <h2>Priorities</h2>
         <div class="priority-grid">
           <div class="priority">
-            <b>No confirmed defects remain</b>
+            <b>1 &middot; Escape what goes into chat HTML</b>
             <p>
-              Continue with dependency triage, Vite compatibility cleanup, and
-              real-Foundry integration coverage as maintenance work.
+              <a href="#R2-01">R2-01</a> is the only finding a user hits by
+              accident: name a weapon with a double quote and its chat card is
+              wrong from then on. Four interpolation sites, plus two through
+              <code>getTranslated</code>.
+            </p>
+          </div>
+          <div class="priority">
+            <b>2 &middot; Make the ordering invariant explicit</b>
+            <p>
+              <a href="#R2-02">R2-02</a>: settings order lives in object key
+              order, which silently stops working for integer-like IDs the UI
+              lets users type. Reject them at entry, or stop encoding order in
+              keys.
+            </p>
+          </div>
+          <div class="priority">
+            <b>3 &middot; Fix the guard that missed HI-04</b>
+            <p>
+              <a href="#R2-05">R2-05</a>: swapping mutual
+              <code>toExtend</code> for <code>toEqualTypeOf</code> is a one-line
+              change per validator that restores a check the project already
+              believes it has.
+            </p>
+          </div>
+          <div class="priority">
+            <b>4 &middot; Dialog and hook lifecycle</b>
+            <p>
+              <a href="#R2-03">R2-03</a>, <a href="#R2-09">R2-09</a> and
+              <a href="#R2-04">R2-04</a> are all "this async path has no closing
+              branch". Small fixes, and they share a testing approach.
+            </p>
+          </div>
+          <div class="priority">
+            <b>5 &middot; Maintenance, unchanged</b>
+            <p>
+              Dependency triage by shipped scope, Vite future-compatibility
+              warnings, and real-Foundry integration coverage carry over from
+              the first review.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="review-2">
+        <h2>Second review &mdash; open findings</h2>
+        <p class="lede-2">
+          A fresh, independent pass over the current
+          <span class="mono">code-report</span> branch, carried out after every
+          first-review finding had been resolved. It is not a re-check of that
+          work; it is a new survey of the whole codebase, so the findings below
+          are in areas the first review did not reach. Each one was verified by
+          execution &mdash; against a DOM parser, the TypeScript type checker,
+          Node, or the installed Foundry v14 source &mdash; before being written
+          down. Four further hypotheses were tested and cleared; they are
+          recorded under <a href="#not-defects">Investigated and cleared</a> so
+          nobody spends the time twice.
+        </p>
+        <div class="finding-list">
+          <article class="finding medium-sev" id="R2-01">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  R2-01 · Chat cards are assembled by string interpolation, so a
+                  quote in a document name breaks them
+                </h3>
+                <p class="refs">
+                  <a href="src/module/items/AbilityModel.ts#L79"
+                    >AbilityModel.ts:79, 109</a
+                  >
+                  ·
+                  <a href="src/module/items/generalAbility.ts#L67"
+                    >generalAbility.ts:67</a
+                  >
+                  ·
+                  <a href="src/components/equipment/performAttack.ts#L113"
+                    >performAttack.ts:113</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              Every ability test, spend, push and attack builds its chat message
+              as a template string and drops the document name straight into an
+              HTML attribute:
+              <code>${constants.htmlDataName}="${this.parent.name}"</code>.
+              Nothing escapes it. The reader side is fine &mdash;
+              <code>installAbilityCardChatWrangler</code> pulls the values back
+              out with <code>getAttribute</code> and hands them to React &mdash;
+              but by then the damage is done in the markup.
+            </p>
+            <p>
+              <strong>Impact:</strong> an item called
+              <span class="mono">Colt "Peacemaker"</span> produces
+              <code>data-name="Colt "</code>, so the chat card shows a truncated
+              name. Double quotes in weapon and ability names are ordinary, not
+              exotic. The same hole accepts attribute injection: a name of
+              <span class="mono">x" onmouseover="alert(1)</span> puts a live
+              event handler on an element in every recipient's chat log.
+            </p>
+            <p>
+              The <code>getTranslated</code> path has the same shape.
+              <code>Localization#format</code> is a plain
+              <code>String#replace</code> with no escaping (<span class="mono"
+                >localization.mjs:444</span
+              >), so
+              <a href="src/startup/installEquipmentAddedNotifier.ts#L40"
+                >installEquipmentAddedNotifier.ts:40</a
+              >
+              and
+              <a href="src/module/actors/ActiveCharacterModel.ts#L87"
+                >ActiveCharacterModel.ts:87, 126</a
+              >
+              also put unescaped item, actor and user names into chat content.
+            </p>
+            <p class="review-note">
+              <span class="tag">Verified by execution</span>
+              The four cases were run through a DOM parser using the real
+              template from <code>testAbility</code>.
+              <span class="mono">Peacemaker</span> and
+              <span class="mono">Bob's Gun</span> survive intact;
+              <span class="mono">Colt "Peacemaker"</span> parses as
+              <span class="mono">"Colt "</span>; and the injection case yields
+              both <code>data-name="x"</code> and a real
+              <code>onmouseover</code> attribute on the element.
+            </p>
+            <p class="review-note">
+              <span class="tag">Severity rationale</span>
+              Not rated higher, because it is not a new privilege boundary:
+              Foundry treats chat content as trusted HTML and does not sanitise
+              it (<span class="mono">chat-message.mjs:414</span>), and a player
+              can already call <code>ChatMessage.create</code> with arbitrary
+              content from their own console. The realistic damage is the broken
+              card, which needs no attacker at all &mdash; only a double quote
+              in a weapon name.
+            </p>
+            <p class="recommendation">
+              <strong>Fix:</strong> route the four attribute values through
+              <code>foundry.utils.escapeHTML</code> at the point of
+              interpolation, or better, build the element with
+              <code>document.createElement</code> and
+              <code>setAttribute</code> and hand over its
+              <code>outerHTML</code>, so escaping is not something a future
+              template can forget. Cover it with a test that round-trips a name
+              containing a double quote through build-then-parse.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="R2-02">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  R2-02 · Ordered-record helpers silently break on integer-like
+                  IDs
+                </h3>
+                <p class="refs">
+                  <a href="src/functions/utilities.ts#L243"
+                    >utilities.ts:243–279</a
+                  >
+                  ·
+                  <a href="src/functions/utilities.ts#L150"
+                    >utilities.ts:150–172</a
+                  >
+                  ·
+                  <a href="src/components/settings/store.ts#L65"
+                    >store.ts:65–130</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              Equipment categories, equipment fields and PC/NPC stats are stored
+              as objects keyed by ID, and their display order <em>is</em> the
+              object's key order. <code>moveKeyUp</code>,
+              <code>moveKeyDown</code> and <code>renameProperty</code> therefore
+              rebuild the object through <code>Object.entries</code> and
+              <code>Object.fromEntries</code>. That contract holds only while
+              every key is non-integer-like: JavaScript orders integer-like keys
+              first and numerically, regardless of insertion order.
+            </p>
+            <p>
+              All three ID sets are free text in the settings dialog
+              (<code>changeCategoryId</code>, <code>changeFieldId</code>,
+              <code>setStatId</code>), so a user can name a category
+              <span class="mono">1</span> or a stat
+              <span class="mono">10</span> without any warning.
+            </p>
+            <p>
+              <strong>Impact:</strong> the move-up/move-down buttons become
+              silent no-ops for the affected rows, and a rename can jump a row
+              to the top of the list. Nothing errors and nothing is lost &mdash;
+              the UI just stops obeying. <code>renameProperty</code> carries a
+              doc comment promising it "keeps the renamed key in the same
+              relative order", which is exactly what stops being true.
+            </p>
+            <p class="review-note">
+              <span class="tag">Verified by execution</span>
+              With
+              <code>{ "10": …, "2": …, "gear": … }</code>, the object's own key
+              order is already <code>["2", "10", "gear"]</code>;
+              <code>moveKeyUp(obj, "2")</code> returns the identical order (a
+              no-op), and <code>renameProperty("gear", "1", obj)</code> returns
+              <code>["1", "2", "10"]</code> &mdash; the renamed key has moved
+              from last to first. The same rename on non-numeric keys behaves
+              correctly.
+            </p>
+            <p class="recommendation">
+              <strong>Fix:</strong> the cheap containment is to reject
+              integer-like IDs where they are entered, alongside the existing
+              duplicate-ID check in <code>assertUniqueIds</code> &mdash; one
+              guard, three call sites, and the invariant becomes stated rather
+              than assumed. The thorough fix is to stop encoding order in key
+              order and carry an explicit ordered array of IDs, which also
+              removes the reason <code>renameProperty</code> exists.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="R2-03">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  R2-03 · Dismissing the personal-detail dialog leaves the
+                  handler waiting forever
+                </h3>
+                <p class="refs">
+                  <a href="src/startup/installPersonalDetailHookHandler.ts#L44"
+                    >installPersonalDetailHookHandler.ts:44–81</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              <code>askUserAboutAddingOrReplacing</code> wraps a
+              <code>DialogV2</code> in a hand-rolled promise that is resolved
+              only from the two button callbacks. Closing the dialog with the
+              window's X or with Escape runs neither, so the promise never
+              settles and the <code>await</code> in
+              <code>doPersonalDetailStuff</code> never returns.
+            </p>
+            <p>
+              <strong>Impact:</strong> the item has already been created by this
+              point &mdash; the hook is <code>preCreateItem</code> but the work
+              is fired off with <code>void</code>, so creation does not wait. A
+              user who dismisses the dialog therefore gets the new personal
+              detail added silently alongside the existing one, never sees the
+              follow-up "add all items from pack?" prompt, and gets no
+              indication that anything was skipped. The pending promise and its
+              dialog closure leak for the rest of the session.
+            </p>
+            <p>
+              The stray <code>return false;</code> at line 80, inside a
+              <code>Promise</code> executor where it means nothing, is a fossil
+              of when this ran synchronously in <code>preCreateItem</code> and
+              cancelled creation by returning false. That is worth knowing
+              before changing the flow.
+            </p>
+            <p class="recommendation">
+              <strong>Fix:</strong> use <code>DialogV2.wait()</code>, which
+              resolves on close and supports <code>rejectClose</code>, instead
+              of wiring the promise by hand; treat dismissal as "add" (the
+              current default button) or as an explicit cancel. While there,
+              decide whether creation should actually block on the answer
+              &mdash; the current ordering is load-bearing and undocumented.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="R2-04">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  R2-04 · The party sheet writes from a broadcast hook without
+                  checking who caused it
+                </h3>
+                <p class="refs">
+                  <a href="src/components/party/PartySheet.tsx#L48"
+                    >PartySheet.tsx:48–56</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              <code>deleteActor</code> fires on every connected client. The
+              party sheet's handler responds by writing the filtered actor list
+              back to the party actor, with no check on which user performed the
+              deletion &mdash; even though the handler receives
+              <code>userId</code> and the parameter is sitting there with the
+              comment <span class="mono">// probably?</span> next to it.
+            </p>
+            <p>
+              <strong>Impact:</strong> every client with the party sheet open
+              issues the same <code>party.update</code> at once. The GM's write
+              wins; the players' writes are redundant at best and rejected for
+              lack of permission at worst, which surfaces as an error toast
+              Foundry raises on their behalf (<span class="mono"
+                >socket-interface.mjs:36</span
+              >). The more players have the sheet open, the more noise.
+            </p>
+            <p class="review-note">
+              <span class="tag">Consistency</span>
+              This is the only place in the codebase that gets it wrong. All
+              twelve writing hook handlers under
+              <span class="mono">src/startup/</span> guard with
+              <code>game.userId !== userId</code> or
+              <code>game.user.isActiveGM</code> &mdash;
+              <code>installEquipmentCategoryHookHandler</code>,
+              <code>installResourceUpdateHookHandler</code>,
+              <code>installKeepTokenImageInSyncWithActor</code> and the rest.
+              The convention is established and followed everywhere else.
+            </p>
+            <p class="recommendation">
+              <strong>Fix:</strong> return early unless
+              <code>game.userId === userId</code>. Note also that the handler
+              shadows the outer <code>actorIds</code> binding with a local of
+              the same name, which makes the write harder to read than it needs
+              to be.
+            </p>
+          </article>
+
+          <article class="finding medium-sev" id="R2-05">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  R2-05 · The validator/type parity test cannot catch the defect
+                  it was written for
+                </h3>
+                <p class="refs">
+                  <a href="src/settings/validators/validatorTypes.test-d.ts#L17"
+                    >validatorTypes.test-d.ts:17–54</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Medium</span>
+            </div>
+            <p>
+              The four Zod validators are kept in step with the published types
+              by a type test that asserts mutual assignability:
+              <code>expectTypeOf&lt;A&gt;().toExtend&lt;B&gt;()</code> in both
+              directions. That is a deliberate, well-commented guard &mdash; and
+              it is blind to precisely the failure it guards against.
+            </p>
+            <p>
+              A missing <em>optional</em> property passes both directions. An
+              object without <code>min</code>/<code>max</code> still satisfies
+              <code>Stat</code>, because they are optional; and
+              <code>Stat</code> still satisfies the narrower shape, because it
+              has everything that shape requires. Zod meanwhile strips whatever
+              the schema does not declare, so the property is silently dropped
+              on import.
+            </p>
+            <p>
+              <strong>Impact:</strong> HI-04 in the first review &mdash; stat
+              bounds discarded by an export/import round trip &mdash; was
+              exactly this, and this test was already in place and green while
+              it happened. The next optional property added to
+              <code>Stat</code>, <code>CardCategory</code>,
+              <code>PersonalDetail</code> or
+              <code>EquipmentFieldMetadata</code> will be lost the same way,
+              just as quietly. All four validators are complete <em>today</em>;
+              nothing keeps them that way.
+            </p>
+            <p class="review-note">
+              <span class="tag">Verified by execution</span>
+              The pre-HI-04 stats shape (<code
+                >Record&lt;string, { name: string; default: number }&gt;</code
+              >) was run against <code>Record&lt;string, Stat&gt;</code>: the
+              mutual <code>toExtend</code> pair passes. Swapping one assertion
+              to <code>toEqualTypeOf</code> fails it, naming
+              <code>min</code> and <code>max</code> in the error.
+            </p>
+            <p class="recommendation">
+              <strong>Fix:</strong> replace each mutual
+              <code>toExtend</code> pair with a single
+              <code>toEqualTypeOf</code>. It is a smaller test that catches
+              strictly more, and it is a one-line change per validator. Pair it
+              with the export/import round-trip assertion the first review
+              recommended for every validator, not just stats.
+            </p>
+          </article>
+
+          <article class="finding low-sev" id="R2-06">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  R2-06 · Equipment field defaults are skipped when the category
+                  ID does not resolve
+                </h3>
+                <p class="refs">
+                  <a
+                    href="src/startup/installEquipmentCategoryHookHandler.ts#L27"
+                    >installEquipmentCategoryHookHandler.ts:27</a
+                  >
+                  ·
+                  <a href="src/module/items/equipment.ts#L64"
+                    >equipment.ts:64</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Low</span>
+            </div>
+            <p>
+              The pre-create hook reads
+              <code>equipmentCategories[categoryId].fields</code> with no
+              optional chaining. <code>categoryId</code> comes from the incoming
+              item and falls back to <code>Object.keys(…)[0]</code>, so it can
+              be a category the world no longer configures &mdash; an item
+              imported from another world or compendium, an item whose category
+              was since deleted or renamed, or one carrying a legacy name
+              assigned by <code>migrateCategoryToCategoryId</code>. If no
+              categories are configured at all, the fallback is
+              <code>undefined</code> and the lookup fails the same way.
+            </p>
+            <p>
+              <strong>Impact:</strong> contained but untidy. Foundry catches
+              exceptions thrown inside hooks (<span class="mono"
+                >hooks.mjs:161–167</span
+              >), so the item is still created &mdash; just without its
+              category's field defaults, and with a stack trace in the console
+              the user cannot act on.
+            </p>
+            <p class="review-note">
+              <span class="tag">Consistency</span>
+              <code>EquipmentModel.setCategoryId</code> performs the identical
+              lookup and guards it:
+              <code
+                >settings.equipmentCategories.get()[categoryId]?.fields ??
+                {}</code
+              >. The same expression, guarded in the model and unguarded in the
+              hook, in the same feature.
+            </p>
+            <p class="recommendation">
+              <strong>Fix:</strong> match the model's guard, and decide
+              deliberately what an unresolvable category should mean &mdash;
+              probably falling back to the first configured category, which is
+              already the intent of the surrounding code.
+            </p>
+          </article>
+
+          <article class="finding low-sev" id="R2-07">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  R2-07 · <code>assertNotNull</code> does not check for null
+                </h3>
+                <p class="refs">
+                  <a href="src/functions/utilities.ts#L119"
+                    >utilities.ts:119–123</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Low</span>
+            </div>
+            <p>
+              The signature is
+              <code
+                >assertNotNull&lt;T&gt;(t: T | undefined | null): asserts t is
+                T</code
+              >, but the body only tests <code>t === undefined</code> and throws
+              <span class="mono">"t was undefined"</span>. A
+              <code>null</code> passes the assertion and is then typed as
+              <code>T</code> for the rest of the scope.
+            </p>
+            <p>
+              <strong>Impact:</strong> none today. Its two production call sites
+              are <code>game.user</code> and <code>CONFIG.Investigator</code>,
+              neither of which is null in practice. It is a trap rather than a
+              bug: the name, the signature and the behaviour disagree, so the
+              first person who reaches for it on a genuinely nullable value
+              &mdash; <code>combat.combatant</code>, <code>item.actor</code>,
+              <code>styleKeyCategoryId</code>, all of which are nullable here
+              &mdash; gets a silent pass and a crash further down.
+            </p>
+            <p class="recommendation">
+              <strong>Fix:</strong> check <code>== null</code> to cover both,
+              and take a description argument so the thrown message names what
+              was missing.
+            </p>
+          </article>
+
+          <article class="finding low-sev" id="R2-08">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  R2-08 · <code>AsyncTextInput</code> and
+                  <code>AsyncTextArea</code> advertise an
+                  <code>index</code> they never pass
+                </h3>
+                <p class="refs">
+                  <a href="src/components/inputs/AsyncTextInput.tsx#L6"
+                    >AsyncTextInput.tsx:6–19</a
+                  >
+                  ·
+                  <a href="src/components/inputs/AsyncTextArea.tsx#L7"
+                    >AsyncTextArea.tsx:7–17</a
+                  >
+                  ·
+                  <a href="src/hooks/useAsyncUpdate.ts#L34"
+                    >useAsyncUpdate.ts:34–44</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Low</span>
+            </div>
+            <p>
+              Both components declare
+              <code
+                >onChange: (newValue: string, index?: number) =&gt; void</code
+              >
+              and an <code>index</code> prop, and both destructure
+              <code>index</code> out of props without ever using it.
+              <code>useAsyncUpdate</code> types its callback as taking one
+              argument and calls it with one, so the second parameter is always
+              <code>undefined</code>.
+            </p>
+            <p>
+              <strong>Impact:</strong> nothing is broken now &mdash; no caller
+              passes <code>index</code>, because indexed use goes through the
+              separate <code>IndexedAsyncTextInput</code> and
+              <code>IndexedRichTextEditor</code>. The problem is that the type
+              says otherwise. A handler written as
+              <code>(value, index) =&gt; setLongNote(index, value)</code>
+              against this signature type-checks cleanly and writes to
+              <code>undefined</code> at runtime.
+            </p>
+            <p class="recommendation">
+              <strong>Fix:</strong> drop the <code>index</code> prop and the
+              second callback parameter from both components. The
+              <code>Indexed…</code> variants already own that job.
+            </p>
+          </article>
+
+          <article class="finding low-sev" id="R2-09">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  R2-09 · A personal detail in an unconfigured slot throws
+                  inside the create hook
+                </h3>
+                <p class="refs">
+                  <a href="src/startup/installPersonalDetailHookHandler.ts#L38"
+                    >installPersonalDetailHookHandler.ts:36–40</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Low</span>
+            </div>
+            <p>
+              The dialog's prompt text indexes the configured slot list
+              directly:
+              <code>settings.personalDetails.get()[slotIndex ?? 0].name</code>.
+              A personal detail whose <code>slotIndex</code> is beyond the
+              current world's list &mdash; dragged in from a compendium built
+              under a different preset, or surviving a preset change that
+              shortened the list &mdash; makes that <code>undefined.name</code>.
+            </p>
+            <p>
+              <strong>Impact:</strong> the throw happens inside a voided async
+              call from a hook, so it becomes an unhandled rejection: the
+              replace-or-add dialog never appears and the user simply ends up
+              with two details stacked in one slot, with no explanation. Shares
+              a root with <a href="#R2-03">R2-03</a> and is worth fixing in the
+              same pass.
+            </p>
+            <p class="recommendation">
+              <strong>Fix:</strong> optional-chain the lookup and fall back to a
+              generic label; the occupation branch immediately above already
+              takes its label from a setting rather than an index.
+            </p>
+          </article>
+
+          <article class="finding low-sev" id="R2-10">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  R2-10 · Five modules are unreachable from the entry point
+                </h3>
+                <p class="refs">
+                  <a href="src/startup/installFlaggedMigrationSplatter.ts#L1"
+                    >installFlaggedMigrationSplatter.ts</a
+                  >
+                  ·
+                  <a href="src/module/combat/schemaPlayground.ts#L1"
+                    >schemaPlayground.ts</a
+                  >
+                  · <a href="src/functions/pipe.ts#L1">pipe.ts</a> ·
+                  <a href="src/hooks/useStateWithGetter.ts#L1"
+                    >useStateWithGetter.ts</a
+                  >
+                  ·
+                  <a href="src/hooks/useWhyDidYouUpdate.ts#L1"
+                    >useWhyDidYouUpdate.ts</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Low</span>
+            </div>
+            <p>
+              None of these is imported by anything but its own test.
+              <code>installFlaggedMigrationSplatter</code> is the notable one:
+              it exists to hang a <code>window.splatMigration</code> debug
+              helper off the global object, is written as though it were a
+              startup task, and is never called from
+              <code>investigator.ts</code>. Anyone reading the migration code
+              would reasonably assume that escape hatch is available. It is not.
+            </p>
+            <p>
+              <code>schemaPlayground.ts</code> is an explicit type-exploration
+              scratch file, and <code>useWhyDidYouUpdate</code> is a debug hook;
+              both are defensible to keep, but neither is obviously so from its
+              own contents. <code>pipe.ts</code> retains a passing test suite
+              for code nothing uses.
+            </p>
+            <p class="recommendation">
+              <strong>Fix:</strong> delete what is finished with; for anything
+              kept deliberately, say so in a one-line comment at the top. None
+              of it reaches the bundle &mdash; Vite only walks reachable modules
+              &mdash; so this is about the reader, not the artifact.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="not-defects" class="panel">
+        <h2>Investigated and cleared</h2>
+        <p>
+          These looked like defects and are not. They are recorded with the
+          evidence so the same reasoning does not have to be redone.
+        </p>
+        <div class="cleared-grid">
+          <div class="cleared">
+            <b>Resource sync does not loop</b>
+            <p>
+              <code>installResourceUpdateHookHandler</code> writes an actor
+              resource when an ability's pool changes, and writes the ability's
+              pool when the resource changes. That reads like a cycle. It
+              terminates because Foundry drops empty diffs before dispatch
+              (<span class="mono">client-backend.mjs:262</span>), so the second
+              hop is a no-op write that fires no hook. Clamping cases converge
+              in one extra hop.
+            </p>
+          </div>
+          <div class="cleared">
+            <b>The party sheet does not re-render forever</b>
+            <p>
+              <code>actors</code> is memoised on
+              <code>party.system.getActorIds()</code>, and effect&nbsp;2 sets
+              state from it. If that returned a fresh array per call the pair
+              would loop. It returns <code>this.actorIds</code> directly &mdash;
+              the DataModel's own array, stable between updates &mdash; so it
+              does not.
+            </p>
+          </div>
+          <div class="cleared">
+            <b>Journal pages survive compendium export</b>
+            <p>
+              <code>#onExportCompendiumPack</code> puts
+              <code>document.pages</code>, an <code>EmbeddedCollection</code>,
+              through <code>JSON.stringify</code>. A Map subclass normally
+              serialises to <code>{}</code>, which would have meant exporting
+              journal compendia as empty shells. Foundry's
+              <code>Collection</code> defines <code>toJSON</code> (<span
+                class="mono"
+                >collection.mjs:210</span
+              >) returning a mapped array, so the pages come through.
+            </p>
+          </div>
+          <div class="cleared">
+            <b>Fire-and-forget document writes are mostly covered</b>
+            <p>
+              There are 131 <code>void someDocument.update(…)</code> call sites
+              and none has a rejection handler. Foundry raises the notification
+              itself for server-side failures before rejecting (<span
+                class="mono"
+                >socket-interface.mjs:33–37</span
+              >), so the user is not left blind for the common case. What stays
+              silent is a client-side throw before dispatch &mdash; a validation
+              error, or a bug in one of the system's own async methods. Worth
+              knowing; not worth 131 edits.
             </p>
           </div>
         </div>
       </section>
 
       <section id="findings">
-        <h2>Confirmed findings</h2>
+        <h2>First review &mdash; findings (all resolved)</h2>
+        <p class="lede-2">
+          The record of the 27&ndash;28 August review and the remediation work
+          on this branch. Every item here is resolved; they are kept for the
+          reasoning, not as open work.
+        </p>
         <div class="finding-list">
           <article class="finding medium-sev resolved" id="ME-15">
             <div class="finding-head">
@@ -739,8 +1475,9 @@
               <strong>Verification:</strong> focused tests cover a failed world
               actor migration (no completion write, error surfaced), multiple
               failing targets reported in one error, the automatic attempt cap,
-              an explicit GM retry past that cap, and compendium lock restoration
-              when either an entry update or <code>pack.migrate()</code> fails.
+              an explicit GM retry past that cap, and compendium lock
+              restoration when either an entry update or
+              <code>pack.migrate()</code> fails.
             </p>
           </article>
 
@@ -778,32 +1515,32 @@
             <p class="recommendation">
               <strong>Resolved 28 August 2026.</strong> Production and default
               builds now throw when pack locks are detected. Explicit
-              development-mode builds retain the best-effort behavior needed
-              for local watch builds, but still validate the existing manifest
-              paths before returning. Compilation now targets a sibling staging
+              development-mode builds retain the best-effort behavior needed for
+              local watch builds, but still validate the existing manifest paths
+              before returning. Compilation now targets a sibling staging
               directory; only a fully compiled, manifest-valid pack set is
-              promoted, with the prior output restored if promotion fails.
-              Five regression tests cover locked production and development
-              builds, failed compilation, failed staging validation, and a
-              successful clean replacement.
+              promoted, with the prior output restored if promotion fails. Five
+              regression tests cover locked production and development builds,
+              failed compilation, failed staging validation, and a successful
+              clean replacement.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
               <strong>Confirmed, downgraded High &rarr; Medium.</strong> The
               mechanism is exactly as described &mdash; line 66 is a bare
-              <code>return</code> after the red message, so the process exits
-              0. But the stated CI/release impact is not reachable for this
-              repo: releases run through
-              <code>lumphammer/gh-actions</code> on a fresh GitHub runner
-              (<code>.github/workflows/ci-cd.yml</code>), where
+              <code>return</code> after the red message, so the process exits 0.
+              But the stated CI/release impact is not reachable for this repo:
+              releases run through <code>lumphammer/gh-actions</code> on a fresh
+              GitHub runner (<code>.github/workflows/ci-cd.yml</code>), where
               <code>./build/packs</code> does not exist and no Foundry process
               is holding locks, so the early return never fires. The real
-              exposure is a local production build with the world open, which
-              is the case the red message already exists to warn about. Worth
+              exposure is a local production build with the world open, which is
+              the case the red message already exists to warn about. Worth
               fixing so no script can be fooled; not a release-integrity hole.
-              Note also that the ME-15 <code>validateManifestPackPaths</code>
-              check sits <em>after</em> this early return, so it does not cover
-              the locked-pack path.
+              Note also that the ME-15
+              <code>validateManifestPackPaths</code> check sits
+              <em>after</em> this early return, so it does not cover the
+              locked-pack path.
             </p>
           </article>
 
@@ -853,7 +1590,9 @@
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
               <strong>Confirmed by execution, severity agreed.</strong> Running
-              <code>statsValidator.parse({ hp: { name, default, min, max } })</code>
+              <code
+                >statsValidator.parse({ hp: { name, default, min, max } })</code
+              >
               returns <code>{ name, default }</code> &mdash; the bounds are
               stripped, as claimed. <code>Stat</code> declares
               <code>min?</code>/<code>max?</code>, both are user-editable in
@@ -875,8 +1614,7 @@
                     >createEquipmentData.ts:3–9</a
                   >
                   ·
-                  <a
-                    href="src/module/actors/createEquipmentData.test.ts#L5"
+                  <a href="src/module/actors/createEquipmentData.test.ts#L5"
                     >createEquipmentData.test.ts:5–13</a
                   >
                 </p>
@@ -891,23 +1629,24 @@
             </p>
             <p class="recommendation">
               <strong>Resolved 28 August 2026.</strong> New equipment data now
-              writes the selected ID to <code>system.categoryId</code> through
-              a typed construction helper; the obsolete property and its
+              writes the selected ID to <code>system.categoryId</code> through a
+              typed construction helper; the obsolete property and its
               <code>@ts-expect-error</code> suppression are gone. A regression
-              test verifies that a non-first requested category survives in
-              the item creation data consumed by Foundry's pre-create hook.
+              test verifies that a non-first requested category survives in the
+              item creation data consumed by Foundry's pre-create hook.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
-              <strong>Confirmed, upgraded Medium &rarr; High.</strong> This is
-              a plain user-facing break in a core authoring workflow: every
-              &ldquo;add equipment&rdquo; lands in the first configured
-              category regardless of which one the user clicked. Note that
-              <code>pc.ts:335</code> carries a <code>@ts-expect-error</code>
-              directly above the offending <code>category:</code> line, which
-              is suppressing the very type error that would have caught this
-              &mdash; removing the suppression is part of the fix, not
-              incidental cleanup. Same root cause as ME-16; fix them together.
+              <strong>Confirmed, upgraded Medium &rarr; High.</strong> This is a
+              plain user-facing break in a core authoring workflow: every
+              &ldquo;add equipment&rdquo; lands in the first configured category
+              regardless of which one the user clicked. Note that
+              <code>pc.ts:335</code> carries a
+              <code>@ts-expect-error</code> directly above the offending
+              <code>category:</code> line, which is suppressing the very type
+              error that would have caught this &mdash; removing the suppression
+              is part of the fix, not incidental cleanup. Same root cause as
+              ME-16; fix them together.
             </p>
           </article>
 
@@ -918,13 +1657,11 @@
                   ME-02 · Valid falsy equipment values are replaced by defaults
                 </h3>
                 <p class="refs">
-                  <a
-                    href="src/startup/applyEquipmentFieldDefaults.ts#L5"
+                  <a href="src/startup/applyEquipmentFieldDefaults.ts#L5"
                     >applyEquipmentFieldDefaults.ts:5–14</a
                   >
                   ·
-                  <a
-                    href="src/startup/applyEquipmentFieldDefaults.test.ts#L5"
+                  <a href="src/startup/applyEquipmentFieldDefaults.test.ts#L5"
                     >applyEquipmentFieldDefaults.test.ts:5–33</a
                   >
                 </p>
@@ -951,10 +1688,10 @@
               value as absent. Concretely: a checkbox field whose configured
               default is <code>true</code> flips a deliberate
               <code>false</code> back to <code>true</code>, and a numeric field
-              with a non-zero default resets a legitimate <code>0</code>.
-              First creation is unaffected because <code>fields</code> is empty
-              anyway &mdash; the exposure is duplicate, import, and any other
-              path where <code>preCreateItem</code> fires with populated
+              with a non-zero default resets a legitimate <code>0</code>. First
+              creation is unaffected because <code>fields</code> is empty anyway
+              &mdash; the exposure is duplicate, import, and any other path
+              where <code>preCreateItem</code> fires with populated
               <code>fields</code>. Use an <code>in</code> check or
               <code>??=</code>, not <code>||=</code>.
             </p>
@@ -1038,23 +1775,25 @@
             <p class="recommendation">
               <strong>Resolved 28 August 2026.</strong> Forward and backward
               navigation now resolve combatants by each round turn's
-              <code>combatantId</code>, treating missing combatants as skippable,
-              and the forward round boundary uses the round's own turn count.
-              Four regression cases cover divergent ordering in both
+              <code>combatantId</code>, treating missing combatants as
+              skippable, and the forward round boundary uses the round's own
+              turn count. Four regression cases cover divergent ordering in both
               directions and crossing either round boundary after defeated
               combatants.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
-              <strong>Confirmed, with two pieces of corroborating
-              evidence.</strong> The orders genuinely do diverge: there is a
-              drag-to-reorder path at <code>classicCombat.ts:513–522</code>
-              that splices <code>roundInfo.turns</code> into an arbitrary order
-              independent of <code>combatants.contents</code>, and
+              <strong
+                >Confirmed, with two pieces of corroborating evidence.</strong
+              >
+              The orders genuinely do diverge: there is a drag-to-reorder path
+              at <code>classicCombat.ts:513–522</code> that splices
+              <code>roundInfo.turns</code> into an arbitrary order independent
+              of <code>combatants.contents</code>, and
               <code>nextRound</code> (<code>:268–278</code>) carries the
               previous order forward while appending new combatants. Separately,
-              <code>gotoRound</code> in the same file
-              (<code>:311–333</code>) already does this correctly via
+              <code>gotoRound</code> in the same file (<code>:311–333</code>)
+              already does this correctly via
               <code>roundInfo.turns.findIndex</code>, so
               <code>nextTurn</code>/<code>previousTurn</code> are inconsistent
               with their own immediate neighbours &mdash; the correct pattern is
@@ -1094,10 +1833,10 @@
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
-              <strong>Confirmed.</strong> <code>classicCombat.ts:200–203</code>
-              clamps the old numeric <code>turnIndex</code> against the new
-              array length instead of relocating the active
-              <code>combatantId</code>. Worth noting
+              <strong>Confirmed.</strong>
+              <code>classicCombat.ts:200–203</code> clamps the old numeric
+              <code>turnIndex</code> against the new array length instead of
+              relocating the active <code>combatantId</code>. Worth noting
               <code>nextRound</code> (<code>:283–290</code>) already does the
               right thing &mdash; it looks up the previous combatant by ID with
               <code>findIndex</code> before clamping &mdash; so, as with ME-04,
@@ -1148,7 +1887,10 @@
               invisible because <code>getSpecialities()</code> re-pads to the
               correct count at read time, so the empty slots reappear while the
               text is already gone. It is also a shipped configuration, not a
-              hypothetical: <code>src/packs/niceBlackAgentsAbilities/investigativeAbility_Languages_OSM38zfrAW6UM5Y7.yml</code>
+              hypothetical:
+              <code
+                >src/packs/niceBlackAgentsAbilities/investigativeAbility_Languages_OSM38zfrAW6UM5Y7.yml</code
+              >
               sets <code>specialitiesMode: twoThreeFour</code>. Implementation
               note: <code>getSpecialitesCount()</code> reads
               <code>this.rating</code>, i.e. the <em>current</em> rating, so it
@@ -1187,13 +1929,16 @@
               <strong>Resolved 28 August 2026.</strong> The debug throw is gone,
               and successful link insertion now uses a focused helper that
               applies the Monaco edit and refocuses the editor normally. Two
-              regression cases cover successful insertion and empty-link
-              no-op behavior.
+              regression cases cover successful insertion and empty-link no-op
+              behavior.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
-              <strong>Confirmed &mdash; this is the cheapest fix in the
-              report.</strong> <code>HTMLEditor.tsx:118</code> is a literal
+              <strong
+                >Confirmed &mdash; this is the cheapest fix in the
+                report.</strong
+              >
+              <code>HTMLEditor.tsx:118</code> is a literal
               <code>throw new Error("foo")</code> sitting on the success path,
               after the edit has been applied and the editor refocused. Delete
               the line.
@@ -1239,15 +1984,17 @@
               ordinary text to the browser. Both current UUID payloads and
               legacy ID/pack payloads are handed to Foundry's own
               <code>TextEditor.getContentLink</code>; the v9 collection access
-              is gone and malformed or unresolvable data is ignored safely.
-              Nine regression cases cover plain and malformed text, JSON
-              non-objects, and current world, compendium, and legacy payloads.
+              is gone and malformed or unresolvable data is ignored safely. Nine
+              regression cases cover plain and malformed text, JSON non-objects,
+              and current world, compendium, and legacy payloads.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
-              <strong>Confirmed, and the second half is worse than
-              described.</strong> The world-document branch fails earlier than
-              at <code>entity.data._id</code>:
+              <strong
+                >Confirmed, and the second half is worse than described.</strong
+              >
+              The world-document branch fails earlier than at
+              <code>entity.data._id</code>:
               <code>(config.collection as any).instance</code> is a v9-era
               accessor that is <code>undefined</code> in v13, so
               <code>.get(data.id)</code> throws first. Treat that whole branch
@@ -1296,8 +2043,8 @@
             </p>
             <p class="resolution">
               <strong>Resolved · 28 Aug 2026.</strong> The getter now derives an
-              absent round from <code>defaultPassingTurns</code> without writing.
-              Combat start, round changes, and newly-created combatants
+              absent round from <code>defaultPassingTurns</code> without
+              writing. Combat start, round changes, and newly-created combatants
               explicitly initialize missing state. Add, remove, reset, and
               initialization writes share a per-document queue and re-read the
               latest system model before deriving each update, preventing stale
@@ -1311,8 +2058,8 @@
               <span class="tag">Second-pass review · 28 Aug 2026</span>
               <strong>Confirmed; the code already admits it.</strong> There is a
               comment in the getter reading &ldquo;this is ugly - we're calling
-              a setter from a getter which feels bad and wrong&rdquo;. The
-              race is real as described: the getter fires an unawaited
+              a setter from a getter which feels bad and wrong&rdquo;. The race
+              is real as described: the getter fires an unawaited
               <code>resetPassingTurns()</code> that will write
               <code>defaultPassingTurns</code>, while
               <code>addPassingTurn</code>/<code>removePassingTurn</code> base
@@ -1378,19 +2125,22 @@
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
-              <strong>Mechanism confirmed, severity agreed, impact
-              overstated.</strong> There is genuinely no allowlist and no
-              sender check. But &ldquo;invoke any locally registered hook with
-              attacker-chosen arguments&rdquo; reads as arbitrary write access,
-              which it is not: most Foundry hooks are notifications rather than
-              commands, so calling <code>updateActor</code> tells listeners an
-              actor changed, it does not change one. The concrete exploitable
-              behaviour is that any player can drive <code>nextTurn</code> on
-              the active GM's client out of turn, plus whatever a listener does
-              in response to a fabricated event. The threat model is also a
-              player already invited to the table, not an anonymous internet
-              caller. Medium is right and the discriminated-union fix is cheap;
-              just don't triage it as a remote-code-execution class issue.
+              <strong
+                >Mechanism confirmed, severity agreed, impact
+                overstated.</strong
+              >
+              There is genuinely no allowlist and no sender check. But
+              &ldquo;invoke any locally registered hook with attacker-chosen
+              arguments&rdquo; reads as arbitrary write access, which it is not:
+              most Foundry hooks are notifications rather than commands, so
+              calling <code>updateActor</code> tells listeners an actor changed,
+              it does not change one. The concrete exploitable behaviour is that
+              any player can drive <code>nextTurn</code> on the active GM's
+              client out of turn, plus whatever a listener does in response to a
+              fabricated event. The threat model is also a player already
+              invited to the table, not an anonymous internet caller. Medium is
+              right and the discriminated-union fix is cheap; just don't triage
+              it as a remote-code-execution class issue.
             </p>
           </article>
 
@@ -1428,19 +2178,22 @@
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
-              <strong>Confirmed, and worse than &ldquo;collide&rdquo; for
-              stats.</strong> <code>renameProperty</code>
-              (<code>utilities.ts:129–142</code>) builds a fresh object as it
-              iterates, so renaming <code>a</code> &rarr; <code>b</code> when
-              <code>b</code> already exists yields a single <code>b</code> key
-              &mdash; one stat is deleted outright, and <em>which</em> one
-              depends on key insertion order. This is silent data loss, not
-              ambiguity. The guard to copy already exists two functions away:
-              the HI-01 fix at <code>store.ts:129–133</code> throws on a
-              colliding destination ID for equipment fields, and
-              <code>changeCategoryId</code> does the same for categories.
-              Applying that same check in <code>setStatId</code> and
-              <code>setCardCategoryId</code> closes this.
+              <strong
+                >Confirmed, and worse than &ldquo;collide&rdquo; for
+                stats.</strong
+              >
+              <code>renameProperty</code> (<code>utilities.ts:129–142</code>)
+              builds a fresh object as it iterates, so renaming
+              <code>a</code> &rarr; <code>b</code> when <code>b</code> already
+              exists yields a single <code>b</code> key &mdash; one stat is
+              deleted outright, and <em>which</em> one depends on key insertion
+              order. This is silent data loss, not ambiguity. The guard to copy
+              already exists two functions away: the HI-01 fix at
+              <code>store.ts:129–133</code> throws on a colliding destination ID
+              for equipment fields, and <code>changeCategoryId</code> does the
+              same for categories. Applying that same check in
+              <code>setStatId</code> and <code>setCardCategoryId</code> closes
+              this.
             </p>
           </article>
 
@@ -1459,7 +2212,8 @@
                     >HTMLEditor.tsx:59–70</a
                   >
                   ·
-                  <a href="src/components/journalEditorSheet/savePage.test.ts#L54"
+                  <a
+                    href="src/components/journalEditorSheet/savePage.test.ts#L54"
                     >savePage.test.ts:54–154</a
                   >
                 </p>
@@ -1480,8 +2234,8 @@
             </p>
             <p class="resolution">
               <strong>Resolved · 28 Aug 2026.</strong> Revision memory now lives
-              on its own <code>JournalEntryPage</code> flag and is written in the
-              same embedded-document update as the content, eliminating the
+              on its own <code>JournalEntryPage</code> flag and is written in
+              the same embedded-document update as the content, eliminating the
               shared world-setting read/merge/write collision. Same-page saves
               use the shared serialized-update helper, re-read the latest stored
               revision before deriving the next one, and do not block saves to
@@ -1496,14 +2250,14 @@
               <span class="tag">Second-pass review · 28 Aug 2026</span>
               <strong>Confirmed.</strong> <code>savePage.ts:43–47</code> spreads
               the whole world-level <code>journalMemories</code> object and
-              writes it back, so the last writer wins for the entire
-              collection. The debounced caller
-              (<code>HTMLEditor.tsx:59–64</code>) neither awaits nor catches the
-              returned promise, so a rejected save is silent. Note this is the
-              same anti-pattern as the per-document migration store that was
-              removed in <code>81318e69</code>: a single world setting used as
-              a growing keyed collection with read-modify-write access. Worth
-              fixing as one class of problem, and worth avoiding in new code.
+              writes it back, so the last writer wins for the entire collection.
+              The debounced caller (<code>HTMLEditor.tsx:59–64</code>) neither
+              awaits nor catches the returned promise, so a rejected save is
+              silent. Note this is the same anti-pattern as the per-document
+              migration store that was removed in <code>81318e69</code>: a
+              single world setting used as a growing keyed collection with
+              read-modify-write access. Worth fixing as one class of problem,
+              and worth avoiding in new code.
             </p>
           </article>
 
@@ -1543,13 +2297,12 @@
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
               <strong>Resolved / superseded &mdash; closing this one.</strong>
-              The committed <code>debugger</code> went in
-              <code>76878935</code>, and <code>switchCategoryToCategoryId</code>
-              now returns early when <code>item.system.category</code> is
-              empty, so it no longer writes a stale value to
-              <code>categoryId</code>. The general point about migrations not
-              seeing each other's staged updates is a fair design observation,
-              but it has no live consequence here, because
+              The committed <code>debugger</code> went in <code>76878935</code>,
+              and <code>switchCategoryToCategoryId</code> now returns early when
+              <code>item.system.category</code> is empty, so it no longer writes
+              a stale value to <code>categoryId</code>. The general point about
+              migrations not seeing each other's staged updates is a fair design
+              observation, but it has no live consequence here, because
               <code>system.category</code> is not in the equipment schema at
               all. The real defect underneath this finding is tracked as ME-16;
               fix that instead of building a staged-state composition mechanism
@@ -1587,28 +2340,29 @@
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
-              <strong>Description accurate, downgraded Medium &rarr;
-              Low.</strong> Settings are independent values with no
-              cross-setting invariant that a partial write violates, and the
-              user does get a signal, in that the window fails to close. Adding
-              error reporting that names the failed key is worth doing; a
-              snapshot-and-rollback mechanism would be over-engineering for
-              this surface. Note the handler has since changed: it now filters
-              on <code>managedBySettingsForm</code> so that migration
-              bookkeeping and other externally-written settings are not
-              clobbered by a stale form copy. That reduces how many writes are
-              in flight but does not change atomicity, so this finding still
-              stands as written.
+              <strong
+                >Description accurate, downgraded Medium &rarr; Low.</strong
+              >
+              Settings are independent values with no cross-setting invariant
+              that a partial write violates, and the user does get a signal, in
+              that the window fails to close. Adding error reporting that names
+              the failed key is worth doing; a snapshot-and-rollback mechanism
+              would be over-engineering for this surface. Note the handler has
+              since changed: it now filters on
+              <code>managedBySettingsForm</code> so that migration bookkeeping
+              and other externally-written settings are not clobbered by a stale
+              form copy. That reduces how many writes are in flight but does not
+              change atomicity, so this finding still stands as written.
             </p>
             <p class="resolution-note">
               <strong>Resolution · 28 Aug 2026:</strong>
               <code>saveSettings</code> now validates every form-managed value
-              before performing any write, then saves settings sequentially in
-              a stable order. A rejected write leaves the form open and shows
-              a permanent notification naming the failed key and the number of
+              before performing any write, then saves settings sequentially in a
+              stable order. A rejected write leaves the form open and shows a
+              permanent notification naming the failed key and the number of
               preceding settings already saved. Four focused tests cover
-              validation-before-write, ordering, partial-failure reporting,
-              and exclusion of settings managed outside the form.
+              validation-before-write, ordering, partial-failure reporting, and
+              exclusion of settings managed outside the form.
             </p>
           </article>
 
@@ -1634,17 +2388,18 @@
               <span class="badge">Resolved</span>
             </div>
             <p>
-              <code>equipmentSchema</code> declares
-              <code>categoryId</code> and no <code>category</code>. Both
-              flagged migrations that exist to populate a category nevertheless
-              read and write <code>system.category</code>:
+              <code>equipmentSchema</code> declares <code>categoryId</code> and
+              no <code>category</code>. Both flagged migrations that exist to
+              populate a category nevertheless read and write
+              <code>system.category</code>:
               <code>setEquipmentCategory</code> writes a default into
-              <code>updateData.system.category</code>, which the DataModel
-              drops on update, and <code>switchCategoryToCategoryId</code>
-              branches on <code>item.system.category</code>, which is not a
-              schema field and so is absent from the loaded document. Both are
-              therefore inert, and there is no
-              <code>category</code>&nbsp;&rarr;&nbsp;<code>categoryId</code>
+              <code>updateData.system.category</code>, which the DataModel drops
+              on update, and <code>switchCategoryToCategoryId</code> branches on
+              <code>item.system.category</code>, which is not a schema field and
+              so is absent from the loaded document. Both are therefore inert,
+              and there is no <code>category</code>&nbsp;&rarr;&nbsp;<code
+                >categoryId</code
+              >
               rename in <code>EquipmentModel.migrateData</code>, which handles
               only <code>notes</code>.
             </p>
@@ -1669,18 +2424,17 @@
               <code>setEquipmentCategory</code> and
               <code>switchCategoryToCategoryId</code> rather than repairing
               them. Test with a source fixture carrying
-              <code>system.category</code> and no
-              <code>categoryId</code>, asserting the loaded document exposes
-              the right <code>categoryId</code>. Before deleting, confirm
-              against a real pre-categories world that
-              <code>system.category</code> is in fact stripped from the loaded
-              document, since that behaviour is what makes the two migrations
-              dead.
+              <code>system.category</code> and no <code>categoryId</code>,
+              asserting the loaded document exposes the right
+              <code>categoryId</code>. Before deleting, confirm against a real
+              pre-categories world that <code>system.category</code> is in fact
+              stripped from the loaded document, since that behaviour is what
+              makes the two migrations dead.
             </p>
             <p class="resolution-note">
-              <strong>Resolution · 28 Aug 2026:</strong> A shared,
-              idempotent <code>migrateCategoryToCategoryId</code> helper now
-              renames the raw legacy field before schema cleaning in both
+              <strong>Resolution · 28 Aug 2026:</strong> A shared, idempotent
+              <code>migrateCategoryToCategoryId</code> helper now renames the
+              raw legacy field before schema cleaning in both
               <code>AbilityModel.migrateData</code> and
               <code>EquipmentModel.migrateData</code>. Equipment with neither
               field receives the first currently configured category; an
@@ -1716,13 +2470,13 @@
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
-              <strong>Confirmed.</strong> <code>!item.parent &amp;&amp;
-              isPCActor(item.parent)</code> is unsatisfiable, so
-              <code>isNotOwned</code> is always <code>false</code> and the guard
-              rejects nothing. World items therefore reach the notifier and can
-              whisper a message with an empty
-              <code>ActorName</code>, and items on NPC actors are not filtered
-              either. The suggested replacement is correct.
+              <strong>Confirmed.</strong>
+              <code>!item.parent &amp;&amp; isPCActor(item.parent)</code> is
+              unsatisfiable, so <code>isNotOwned</code> is always
+              <code>false</code> and the guard rejects nothing. World items
+              therefore reach the notifier and can whisper a message with an
+              empty <code>ActorName</code>, and items on NPC actors are not
+              filtered either. The suggested replacement is correct.
             </p>
             <p class="resolution-note">
               <strong>Resolution · 28 Aug 2026:</strong> The notifier now uses
@@ -1774,7 +2528,8 @@
               <code>useTurnPassingInitiative</code> now reads its matching
               preset property. Setting definitions expose the exact default
               passed to Foundry registration, and a contract test ties this
-              setting to <code>pathOfCthulhuPreset.useTurnPassingInitiative</code>
+              setting to
+              <code>pathOfCthulhuPreset.useTurnPassingInitiative</code>
               so equal current values cannot mask another copy-paste error.
             </p>
           </article>
@@ -1806,12 +2561,16 @@
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
-              <strong>Confirmed.</strong> <code>quickShockAbilities.length &gt;
-              1 &amp;&amp; pools.length &lt; 1</code> misses exactly the case
-              most likely to occur in practice: a single QuickShock ability and
-              no push pool. The neighbouring checks in the same function use
-              <code>&gt; 1</code> and <code>=== 0</code> correctly for their own
-              conditions, so this reads as a one-character slip.
+              <strong>Confirmed.</strong>
+              <code
+                >quickShockAbilities.length &gt; 1 &amp;&amp; pools.length &lt;
+                1</code
+              >
+              misses exactly the case most likely to occur in practice: a single
+              QuickShock ability and no push pool. The neighbouring checks in
+              the same function use <code>&gt; 1</code> and
+              <code>=== 0</code> correctly for their own conditions, so this
+              reads as a one-character slip.
             </p>
             <p class="resolution-note">
               <strong>Resolution · 28 Aug 2026:</strong> Any non-zero number of
@@ -1847,8 +2606,9 @@
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
-              <strong>Confirmed.</strong> <code>performAttack.ts:126</code>
-              calls <code>setAmmo</code> unconditionally; there is no
+              <strong>Confirmed.</strong>
+              <code>performAttack.ts:126</code> calls
+              <code>setAmmo</code> unconditionally; there is no
               <code>usesAmmo</code> check anywhere in that file, even though
               every other ammo consumer guards on it
               (<code>WeaponRow.tsx:80</code>, <code>WeaponMain.tsx:126</code>).
@@ -1897,8 +2657,8 @@
               <code>installDSNFix</code> is awaited from the
               <code>ready</code> hook (<code>investigator.ts:57</code>), so the
               write runs on <em>every</em> login, not once. The user therefore
-              cannot keep <code>core.animateRollTable</code> switched off at
-              all &mdash; it is re-forced to <code>true</code> every session.
+              cannot keep <code>core.animateRollTable</code> switched off at all
+              &mdash; it is re-forced to <code>true</code> every session.
               Deleting <code>installDSNFix.ts:22</code> is the whole fix.
             </p>
             <p class="resolution-note">
@@ -1916,38 +2676,46 @@
         <h2>Code health assessment</h2>
         <div class="health-grid">
           <div class="health-card">
-            <span class="grade">B+</span>
+            <span class="grade">B</span>
             <h3>Correctness</h3>
             <p>
-              All confirmed correctness defects are resolved, with focused
-              regression coverage around data transformation, concurrency, and
-              Foundry boundary failures.
+              Every first-review defect is resolved with regression coverage.
+              The second review found no Critical or High defects in the rest of
+              the codebase, but five Medium ones &mdash; concentrated where
+              strings are built by concatenation and where async paths have no
+              closing branch.
             </p>
           </div>
           <div class="health-card">
-            <span class="grade">B</span>
+            <span class="grade">B+</span>
             <h3>Consistency</h3>
             <p>
-              Persistent identifiers, category migrations, settings defaults,
-              and async mutation paths now follow consistent contracts. Some
-              older APIs and compatibility code remain stylistically uneven.
+              Conventions are strong and, notably, followed: twelve of thirteen
+              writing hook handlers guard on the originating user, and the
+              exceptions found (<a href="#R2-04">R2-04</a>,
+              <a href="#R2-06">R2-06</a>) are single deviations from a rule the
+              codebase otherwise keeps.
             </p>
           </div>
           <div class="health-card">
-            <span class="grade">B</span>
+            <span class="grade">C+</span>
             <h3>Test confidence</h3>
             <p>
-              464 tests pass, including focused coverage for every substantive
-              review fix. Full Foundry-world and browser-level integration
-              flows remain sparse.
+              479 tests pass across 45 files. But 20 test files cover 246
+              component sources, seven of those for one subsystem, and no sheet
+              component is tested at all. <a href="#R2-05">R2-05</a> shows a
+              guard that was green while the defect it targeted shipped.
             </p>
           </div>
           <div class="health-card">
             <span class="grade">B</span>
             <h3>Maintainability</h3>
             <p>
-              Good feature separation, descriptive names, central settings,
-              typed DataModels, and focused helpers make the code navigable.
+              Good feature separation, descriptive names, central settings and
+              typed DataModels make the code navigable. Restrained use of escape
+              hatches: 13 <code>@ts-expect-error</code> and 30
+              <code>as any</code> across 36k lines. Five modules are unreachable
+              (<a href="#R2-10">R2-10</a>).
             </p>
           </div>
           <div class="health-card">
@@ -2028,10 +2796,63 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 49 executed files and 464 tests across 49 distinct
-            test source files. Coverage is concentrated in pure utilities,
-            settings/store snapshots, journal document memory, input
-            components, and the mini-router.
+            Vitest reports 45 files and 479 tests, all passing. The
+            <em>distribution</em> is the interesting part, and the second review
+            measured it per directory:
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Area</th>
+                <th>Test files</th>
+                <th>Source files</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>src/components</code></td>
+                <td class="warn">20</td>
+                <td>246</td>
+              </tr>
+              <tr>
+                <td><code>src/migrations</code></td>
+                <td class="pass">4</td>
+                <td>9</td>
+              </tr>
+              <tr>
+                <td><code>src/functions</code></td>
+                <td class="pass">4</td>
+                <td>14</td>
+              </tr>
+              <tr>
+                <td><code>src/module</code></td>
+                <td class="warn">6</td>
+                <td>44</td>
+              </tr>
+              <tr>
+                <td><code>src/startup</code></td>
+                <td class="warn">3</td>
+                <td>30</td>
+              </tr>
+              <tr>
+                <td><code>src/settings</code></td>
+                <td class="pass">3</td>
+                <td>10</td>
+              </tr>
+              <tr>
+                <td><code>src/hooks</code></td>
+                <td class="warn">1</td>
+                <td>11</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Seven of the twenty component test files cover
+            <code>journalEditorSheet/documentMemory</code> alone. No sheet
+            component &mdash; PC, NPC, party, item, settings &mdash; has a test.
+            That is the shape of a codebase whose pure functions are well
+            covered and whose <em>integration seams</em> are not, which matches
+            where both reviews found their defects.
           </p>
           <p>
             <strong>Highest-value missing suites:</strong> real-world Foundry
@@ -2056,18 +2877,18 @@
               data, clear legacy world settings, and reuse interrupted combat
               replacements instead of duplicating them. Repeated automatic
               failures stop retrying after the attempt cap, and a GM-requested
-              retry runs regardless. The attempt counter caps automatic
-              retries at two, suppressing the startup error notification once
-              exhausted, and a GM can retry explicitly from the Misc settings
-              tab, which shows the last migration error.
+              retry runs regardless. The attempt counter caps automatic retries
+              at two, suppressing the startup error notification once exhausted,
+              and a GM can retry explicitly from the Misc settings tab, which
+              shows the last migration error.
             </p>
           </div>
           <div class="callout">
             <p>
               <strong>HI-03 regression coverage:</strong> five tests exercise
               locked production and development builds, compilation and
-              validation failures that preserve the prior output, and
-              successful staged replacement.
+              validation failures that preserve the prior output, and successful
+              staged replacement.
             </p>
           </div>
           <div class="callout">
@@ -2080,8 +2901,8 @@
           <div class="callout">
             <p>
               <strong>ME-11 regression coverage:</strong> colliding stat and
-              card-category renames preserve both original entries and report
-              an error. Duplicate card-category IDs are rejected during import,
+              card-category renames preserve both original entries and report an
+              error. Duplicate card-category IDs are rejected during import,
               ordered object-key renames reject collisions centrally, and stat
               creation skips an occupied generated ID.
             </p>
@@ -2189,9 +3010,50 @@
               </td>
             </tr>
             <tr>
-              <td><code>pnpm run test --run</code></td>
-              <td class="pass">49 files / 464 tests</td>
-              <td>No test or type errors; 49 distinct test source files.</td>
+              <td><code>pnpm vitest run</code></td>
+              <td class="pass">45 files / 479 tests</td>
+              <td>
+                No test or type errors, at
+                <span class="mono">835bba85</span> on
+                <span class="mono">code-report</span>.
+              </td>
+            </tr>
+            <tr>
+              <td>Chat-card attribute parsing</td>
+              <td class="warn">Breaks on a quote</td>
+              <td>
+                The real template run through a DOM parser: a name containing
+                <code>"</code> truncates, and an injected handler attaches.
+                Evidence for <a href="#R2-01">R2-01</a>.
+              </td>
+            </tr>
+            <tr>
+              <td>Ordered-record key order</td>
+              <td class="warn">No-op on numeric IDs</td>
+              <td>
+                <code>moveKeyUp</code> and <code>renameProperty</code> executed
+                against integer-like keys in Node. Evidence for
+                <a href="#R2-02">R2-02</a>.
+              </td>
+            </tr>
+            <tr>
+              <td>Validator parity type test</td>
+              <td class="warn">Passes when it should fail</td>
+              <td>
+                The pre-HI-04 stats shape passes mutual
+                <code>toExtend</code> and fails <code>toEqualTypeOf</code>.
+                Evidence for <a href="#R2-05">R2-05</a>.
+              </td>
+            </tr>
+            <tr>
+              <td>Foundry v14 source cross-check</td>
+              <td class="pass">4 hypotheses cleared</td>
+              <td>
+                Socket relay identity, empty-diff suppression, hook error
+                trapping, and <code>Collection#toJSON</code> read from the
+                installed server and client code. See
+                <a href="#not-defects">Investigated and cleared</a>.
+              </td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -2314,10 +3176,44 @@
           browsers, or historical world data.
         </p>
         <p>
-          <strong>Review scale:</strong> approximately 38,000
-          TypeScript/JavaScript lines; 262 component files, 38 module files, 29
-          startup files, 9 migration files, plus shared packages and generated
-          release artifacts.
+          <strong>Review scale:</strong> approximately 36,400
+          TypeScript/JavaScript lines of non-test source across 551 TS/TSX
+          files; 246 component files, 44 module files, 30 startup files, 9
+          migration files, plus shared packages and generated release artifacts.
+        </p>
+
+        <h3>Second review &mdash; method</h3>
+        <p>
+          The 29 August pass reviewed the <code>code-report</code> branch at
+          <code>835bba85</code>, after the first review's findings had been
+          remediated. It deliberately did not re-audit that work; it swept the
+          codebase for defect classes the first pass did not cover &mdash;
+          string-built markup, object-key ordering assumptions, promise
+          lifecycles with no closing branch, broadcast hooks that write, dead
+          modules, and the integrity of the project's own type-level guards.
+        </p>
+        <p>
+          The bar for reporting was
+          <strong>reproduction, not reasoning</strong>. Every finding below was
+          demonstrated by running something: the chat-card template through a
+          DOM parser, the ordering helpers in Node, the parity assertions
+          through the type checker, and reachability questions against the
+          installed Foundry v14 client and server source in
+          <span class="mono">~/FoundryVTT-Node-14.367</span>. Four candidate
+          findings did not survive that bar and were moved to
+          <a href="#not-defects">Investigated and cleared</a> with their
+          evidence, because a hypothesis that has been properly killed is worth
+          as much to the next reader as one that survived.
+        </p>
+        <p>
+          <strong>Known limits.</strong> No Foundry world was attached, so no
+          finding here rests on observed runtime behaviour in a live game; the
+          Foundry-source cross-checks are static reads of v14.367 and may not
+          hold for other versions. Coverage of the 246-file component tree was
+          driven by size, complexity and pattern-matching rather than being
+          exhaustive &mdash; the sheet components in particular were surveyed,
+          not read line by line. Dependency advisories were counted, not
+          triaged.
         </p>
       </section>
     </main>
