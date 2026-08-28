@@ -572,7 +572,7 @@
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
               below. That pass left 21 findings open; HI-03, HI-04, ME-01
-              through ME-12 have since been resolved, leaving 7. No
+              through ME-12 and ME-14 have since been resolved, leaving 6. No
               Critical or High findings remain.
             </p>
           </div>
@@ -587,11 +587,11 @@
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>7</b><span>open findings</span></div>
+          <div class="metric"><b>6</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
           <div class="metric medium"><b>1</b><span>medium</span></div>
-          <div class="metric low"><b>6</b><span>low</span></div>
+          <div class="metric low"><b>5</b><span>low</span></div>
         </div>
       </section>
 
@@ -612,13 +612,6 @@
             <p>
               LO-01, LO-03, LO-04 and LO-05 are one-liners with
               disproportionate reliability value.
-            </p>
-          </div>
-          <div class="priority">
-            <b>3. Make settings failures actionable</b>
-            <p>
-              ME-14 should identify the setting that failed to save and clearly
-              report partial success instead of failing the window silently.
             </p>
           </div>
         </div>
@@ -1574,7 +1567,7 @@
             </p>
           </article>
 
-          <article class="finding low-sev" id="ME-14">
+          <article class="finding low-sev resolved" id="ME-14">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1587,7 +1580,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Low</span>
+              <span class="badge">Resolved</span>
             </div>
             <p>
               Every setting is written concurrently with
@@ -1616,6 +1609,16 @@
               clobbered by a stale form copy. That reduces how many writes are
               in flight but does not change atomicity, so this finding still
               stands as written.
+            </p>
+            <p class="resolution-note">
+              <strong>Resolution · 28 Aug 2026:</strong>
+              <code>saveSettings</code> now validates every form-managed value
+              before performing any write, then saves settings sequentially in
+              a stable order. A rejected write leaves the form open and shows
+              a permanent notification naming the failed key and the number of
+              preceding settings already saved. Four focused tests cover
+              validation-before-write, ordering, partial-failure reporting,
+              and exclusion of settings managed outside the form.
             </p>
           </article>
 
@@ -1895,7 +1898,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              440 tests pass, and pack-build failure integrity now has focused
+              444 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1986,7 +1989,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 43 executed files and 440 tests across 43 distinct
+            Vitest reports 44 executed files and 444 tests across 44 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -2149,8 +2152,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">43 files / 440 tests</td>
-              <td>No test or type errors; 43 distinct test source files.</td>
+              <td class="pass">44 files / 444 tests</td>
+              <td>No test or type errors; 44 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -2219,7 +2222,7 @@
               <tr>
                 <td><strong>State integrity</strong></td>
                 <td>
-                  ME-14 and ME-16; add state-machine and reducer invariants.
+                  ME-16; add state-machine and reducer invariants.
                 </td>
                 <td>
                   No mutation relies on stale keys, indices, falsy coercion, or
