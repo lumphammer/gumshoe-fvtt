@@ -571,9 +571,9 @@
               impact was not reachable &mdash; ME-13 is closed as superseded,
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
-              below. That pass left 21 findings open; ME-11 and HI-03 have
-              since been resolved, leaving 19. The ranking has shifted: the
-              highest-value work is now silent data loss in settings and
+              below. That pass left 21 findings open; ME-11, HI-03, and HI-04
+              have since been resolved, leaving 18. The ranking has shifted:
+              the highest-value work is now silent data loss in settings and
               abilities, not release tooling.
             </p>
           </div>
@@ -581,15 +581,15 @@
             <span class="label">Release recommendation</span>
             <strong>Hold</strong>
             <p>
-              Resolve the three High findings (HI-04, ME-01, ME-06), add
+              Resolve the two remaining High findings (ME-01 and ME-06), add
               regression tests, then rebuild from a clean pack output.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>19</b><span>open findings</span></div>
+          <div class="metric"><b>18</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
-          <div class="metric high"><b>3</b><span>high</span></div>
+          <div class="metric high"><b>2</b><span>high</span></div>
           <div class="metric medium"><b>10</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
@@ -599,11 +599,11 @@
         <h2>Fix first</h2>
         <div class="priority-grid">
           <div class="priority">
-            <b>1. Stop silent data loss</b>
+            <b>1. Preserve ability specialities</b>
             <p>
-              HI-04 (import strips stat bounds) and ME-06 (rating changes
-              destroy specialities). Both discard user-entered data with no
-              error, and both are small, well-understood fixes.
+              ME-06 makes rating changes destroy valid specialities. It
+              discards user-entered data with no error and has a small,
+              well-understood fix.
             </p>
           </div>
           <div class="priority">
@@ -826,7 +826,7 @@
             </p>
           </article>
 
-          <article class="finding high-sev" id="HI-04">
+          <article class="finding high-sev resolved" id="HI-04">
             <div class="finding-head">
               <div>
                 <h3>
@@ -835,11 +835,11 @@
                 </h3>
                 <p class="refs">
                   <a href="src/settings/validators/statsValidator.ts#L3"
-                    >statsValidator.ts:3–6</a
+                    >statsValidator.ts:3–11</a
                   >
                   ·
-                  <a href="src/settings/validateImportedSettings.ts#L5"
-                    >validateImportedSettings.ts:5–13</a
+                  <a href="src/settings/validateImportedSettings.test.ts#L18"
+                    >validateImportedSettings.test.ts:18–31</a
                   >
                   ·
                   <a href="src/module/schemaFields.ts#L24"
@@ -847,7 +847,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">High</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               The runtime stat shape supports optional <code>min</code> and
@@ -862,9 +862,12 @@
               PC/NPC resource behavior without warning.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> define the full stat schema and add a
-              round-trip invariant: <code>import(export(settings))</code> must
-              preserve all supported properties.
+              <strong>Resolved 28 August 2026.</strong> The stat import schema
+              now declares optional numeric <code>min</code> and
+              <code>max</code> properties, matching the published
+              <code>Stat</code> type. A regression test round-trips bounded PC
+              and NPC stats through JSON export/import and verifies that every
+              supported property survives unchanged.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1776,7 +1779,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              376 tests pass, and pack-build failure integrity now has focused
+              377 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1867,7 +1870,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 32 executed files and 376 tests across 32 distinct
+            Vitest reports 32 executed files and 377 tests across 32 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -1912,6 +1915,13 @@
           </div>
           <div class="callout">
             <p>
+              <strong>HI-04 regression coverage:</strong> bounded PC and NPC
+              stat definitions now round-trip through settings JSON without
+              losing <code>min</code> or <code>max</code>.
+            </p>
+          </div>
+          <div class="callout">
+            <p>
               <strong>ME-11 regression coverage:</strong> colliding stat and
               card-category renames preserve both original entries and report
               an error. Duplicate card-category IDs are rejected during import,
@@ -1943,7 +1953,7 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">32 files / 376 tests</td>
+              <td class="pass">32 files / 377 tests</td>
               <td>No test or type errors; 32 distinct test source files.</td>
             </tr>
             <tr>
@@ -2002,8 +2012,8 @@
               <tr>
                 <td><strong>Release block</strong></td>
                 <td>
-                  HI-04, ME-01, and ME-06; add settings import round-trip
-                  coverage.
+                  ME-01 and ME-06; add focused equipment-creation and ability
+                  mutation coverage.
                 </td>
                 <td>
                   Settings import round trips are lossless and user-entered

@@ -15,6 +15,21 @@ it("should validate an empty object", () => {
   expect(validatedResult).toEqual({});
 });
 
+it("should preserve stat bounds through an export/import round trip", () => {
+  const exportedSettings = {
+    pcStats: {
+      health: { name: "Health", default: 10, min: 0, max: 20 },
+    },
+    npcStats: {
+      alertness: { name: "Alertness", default: 0, min: -5, max: 5 },
+    },
+  };
+
+  expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
+    exportedSettings,
+  );
+});
+
 it("should throw an error if the settings are the wrong type", () => {
   expect(() =>
     validateImportedSettings(
