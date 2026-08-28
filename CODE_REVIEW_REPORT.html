@@ -572,8 +572,8 @@
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
               below. That pass left 21 findings open; ME-11, HI-03, HI-04,
-              ME-01, ME-02, and ME-03 have since been resolved, leaving 15.
-              The ranking has shifted: the highest-value work is now silent
+              ME-01, ME-02, ME-03, and ME-04 have since been resolved, leaving
+              14. The ranking has shifted: the highest-value work is now silent
               data loss in abilities, not release tooling.
             </p>
           </div>
@@ -587,10 +587,10 @@
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>15</b><span>open findings</span></div>
+          <div class="metric"><b>14</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>1</b><span>high</span></div>
-          <div class="metric medium"><b>8</b><span>medium</span></div>
+          <div class="metric medium"><b>7</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
       </section>
@@ -619,7 +619,7 @@
             <b>3. Fix the free wins, then the combat ordering</b>
             <p>
               ME-07, LO-01, LO-03, LO-04 and LO-05 are one-liners. After those,
-              ME-04 and ME-05 both have a correct pattern already present
+              ME-05 has a correct identity-preserving pattern already present
               elsewhere in <code>classicCombat.ts</code> to copy.
             </p>
           </div>
@@ -1027,7 +1027,7 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-04">
+          <article class="finding medium-sev resolved" id="ME-04">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1035,12 +1035,17 @@
                   active round
                 </h3>
                 <p class="refs">
-                  <a href="src/module/combat/classicCombat.ts#L402"
-                    >classicCombat.ts:402–420, 456–477</a
+                  <a href="src/module/combat/classicCombat.ts#L408"
+                    >classicCombat.ts:408–486</a
+                  >
+                  ·
+                  <a
+                    href="src/module/combat/findUndefeatedTurnIndex.test.ts#L13"
+                    >findUndefeatedTurnIndex.test.ts:13–27</a
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               Turn indices belong to <code>roundInfo.turns</code>, which can be
@@ -1050,9 +1055,13 @@
               defeated one, or advance rounds early.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> resolve each
-              <code>roundInfo.turns[index].combatantId</code> to its combatant
-              and use <code>roundInfo.turns.length</code> for bounds.
+              <strong>Resolved 28 August 2026.</strong> Forward and backward
+              navigation now resolve combatants by each round turn's
+              <code>combatantId</code>, treating missing combatants as skippable,
+              and the forward round boundary uses the round's own turn count.
+              Four regression cases cover divergent ordering in both
+              directions and crossing either round boundary after defeated
+              combatants.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1795,7 +1804,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              383 tests pass, and pack-build failure integrity now has focused
+              387 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1886,7 +1895,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 35 executed files and 383 tests across 35 distinct
+            Vitest reports 36 executed files and 387 tests across 36 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -1966,6 +1975,13 @@
               ammo and range constraints.
             </p>
           </div>
+          <div class="callout">
+            <p>
+              <strong>ME-04 regression coverage:</strong> defeated-combatant
+              skipping follows the active round's reordered IDs forwards and
+              backwards and respects that round's boundaries.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -1990,8 +2006,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">35 files / 383 tests</td>
-              <td>No test or type errors; 35 distinct test source files.</td>
+              <td class="pass">36 files / 387 tests</td>
+              <td>No test or type errors; 36 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -2059,7 +2075,7 @@
               <tr>
                 <td><strong>State integrity</strong></td>
                 <td>
-                  ME-04 through ME-06 and ME-09 through ME-14; add
+                  ME-05 through ME-06 and ME-09 through ME-14; add
                   state-machine and reducer invariants.
                 </td>
                 <td>

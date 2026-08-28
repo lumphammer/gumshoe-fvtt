@@ -9,6 +9,7 @@ import {
   TypeDataModel,
 } from "../../fvtt-exports";
 import { isClassicCombatant } from "./classicCombatant";
+import { findUndefeatedTurnIndex } from "./findUndefeatedTurnIndex";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 import { ValidCombatModel } from "./types";
@@ -25,7 +26,7 @@ function compareCombatants(
 
 type RoundInfo = SchemaField.InitializedData<typeof roundInfoField.fields>;
 
-type TurnInfo = SchemaField.InitializedData<typeof turnInfoField.fields>;
+export type TurnInfo = SchemaField.InitializedData<typeof turnInfoField.fields>;
 
 const turnInfoField = new SchemaField(
   {
@@ -410,13 +411,17 @@ export class ClassicCombatModel
 
     // Skip defeated combatants if the setting is enabled
     if (this.parent.settings.skipDefeated) {
-      while (this.parent.combatants.contents[nextTurnIndex]?.isDefeated) {
-        nextTurnIndex++;
-      }
+      nextTurnIndex = findUndefeatedTurnIndex(
+        roundInfo.turns,
+        nextTurnIndex,
+        1,
+        (combatantId) =>
+          this.parent.combatants.get(combatantId)?.isDefeated ?? true,
+      );
     }
 
     // Maybe advance to the next round
-    if (nextTurnIndex >= this.parent.combatants.contents.length) {
+    if (nextTurnIndex >= roundInfo.turns.length) {
       return await this.nextRound("first");
     }
 
@@ -467,9 +472,13 @@ export class ClassicCombatModel
 
     // Skip defeated combatants if the setting is enabled
     if (this.parent.settings.skipDefeated) {
-      while (this.parent.combatants.contents[previousTurnIndex]?.isDefeated) {
-        previousTurnIndex--;
-      }
+      previousTurnIndex = findUndefeatedTurnIndex(
+        roundInfo.turns,
+        previousTurnIndex,
+        -1,
+        (combatantId) =>
+          this.parent.combatants.get(combatantId)?.isDefeated ?? true,
+      );
     }
 
     // Maybe advance to the next round
