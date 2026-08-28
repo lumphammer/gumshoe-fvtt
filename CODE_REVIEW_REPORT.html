@@ -572,7 +572,7 @@
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
               below. That pass left 21 findings open; HI-03, HI-04, ME-01
-              through ME-08, and ME-11 have since been resolved, leaving 10. No
+              through ME-09, and ME-11 have since been resolved, leaving 9. No
               Critical or High findings remain.
             </p>
           </div>
@@ -587,10 +587,10 @@
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>10</b><span>open findings</span></div>
+          <div class="metric"><b>9</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
-          <div class="metric medium"><b>4</b><span>medium</span></div>
+          <div class="metric medium"><b>3</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
       </section>
@@ -1277,7 +1277,7 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-09">
+          <article class="finding medium-sev resolved" id="ME-09">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1285,12 +1285,20 @@
                   a getter
                 </h3>
                 <p class="refs">
-                  <a href="src/module/combat/turnPassingCombatant.ts#L45"
-                    >turnPassingCombatant.ts:45–119</a
+                  <a href="src/module/combat/turnPassingCombatant.ts#L58"
+                    >turnPassingCombatant.ts:58–117</a
+                  >
+                  ·
+                  <a href="src/module/combat/turnPassingCombat.ts#L34"
+                    >turnPassingCombat.ts:34–107</a
+                  >
+                  ·
+                  <a href="src/module/combat/passingTurnState.test.ts#L9"
+                    >passingTurnState.test.ts:9–97</a
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge">Resolved</span>
             </div>
             <p>
               Reading <code>passingTurnsRemaining</code> starts an unawaited
@@ -1303,6 +1311,19 @@
               <strong>Fix/test:</strong> keep getters pure, initialize at a
               defined round lifecycle point, and serialize updates or perform
               one atomic derived update.
+            </p>
+            <p class="resolution">
+              <strong>Resolved · 28 Aug 2026.</strong> The getter now derives an
+              absent round from <code>defaultPassingTurns</code> without writing.
+              Combat start, round changes, and newly-created combatants
+              explicitly initialize missing state. Add, remove, reset, and
+              initialization writes share a per-document queue and re-read the
+              latest system model before deriving each update, preventing stale
+              read/merge/write races. The model's incorrect
+              <code>classic</code> parent subtype was also corrected. Eight
+              regression cases cover default and zero semantics, absent-state
+              arithmetic, immutable round updates, serialized execution,
+              independent combatants, and recovery after a failed write.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1840,7 +1861,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              411 tests pass, and pack-build failure integrity now has focused
+              419 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1931,7 +1952,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 40 executed files and 411 tests across 40 distinct
+            Vitest reports 41 executed files and 419 tests across 41 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -2046,6 +2067,14 @@
               Foundry document payloads are recognized for link resolution.
             </p>
           </div>
+          <div class="callout">
+            <p>
+              <strong>ME-09 regression coverage:</strong> missing rounds derive
+              from configured defaults, stored zero remains authoritative, and
+              per-combatant update queues serialize races without blocking
+              unrelated combatants or later recovery.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -2070,8 +2099,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">40 files / 411 tests</td>
-              <td>No test or type errors; 40 distinct test source files.</td>
+              <td class="pass">41 files / 419 tests</td>
+              <td>No test or type errors; 41 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -2140,7 +2169,8 @@
               <tr>
                 <td><strong>State integrity</strong></td>
                 <td>
-                  ME-09 through ME-14; add state-machine and reducer invariants.
+                  ME-12, ME-14, and ME-16; add state-machine and reducer
+                  invariants.
                 </td>
                 <td>
                   No mutation relies on stale keys, indices, falsy coercion, or
