@@ -4,6 +4,7 @@ import { SourceData, StringField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { createRecordField } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
+import { migrateCategoryToCategoryId } from "./migrateCategoryToCategoryId";
 
 const equipmentSchema = {
   notes: new StringField({ nullable: false, required: true }),
@@ -48,6 +49,10 @@ export class EquipmentModel extends TypeDataModel<
 
   static migrateData(source) {
     migrateValue(source, "notes", maybeNotesObjectToString);
+    migrateCategoryToCategoryId(
+      source,
+      () => Object.keys(settings.equipmentCategories.get())[0] ?? "",
+    );
     return super.migrateData(source);
   }
 

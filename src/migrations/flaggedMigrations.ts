@@ -6,33 +6,11 @@ import { assertGame } from "../functions/isGame";
 import { isNullOrEmptyString, systemLogger } from "../functions/utilities";
 import { isActiveCharacterActor } from "../module/actors/types";
 import { InvestigatorCombat } from "../module/combat/InvestigatorCombat";
-import { pathOfCthulhuPreset } from "../presets";
 import { settings } from "../settings/settings";
 import { FlaggedMigrations } from "./types";
 
 export const flaggedMigrations: FlaggedMigrations = {
   item: {
-    /**
-     * If you launch a world that predates the concept of equipment categories,
-     * your category list will be initialised to the default value, which is a
-     * single category called "general". This migration will set the category
-     * field on any existing equipment.
-     */
-    setEquipmentCategory: (item: any, updateData: any) => {
-      if (
-        item.type === c.equipment &&
-        isNullOrEmptyString(item.system.category)
-      ) {
-        systemLogger.info(`Migrating item ${item.name} to set category`);
-        if (!updateData.system) {
-          updateData.system = {};
-        }
-        updateData.system.category = Object.keys(
-          pathOfCthulhuPreset.equipmentCategories,
-        )[0];
-      }
-      return updateData;
-    },
     /**
      * We've added an id to the unlocks array, which makes it easier to do
      * in/out UI transitions. This migration will add an id to any existing
@@ -59,33 +37,6 @@ export const flaggedMigrations: FlaggedMigrations = {
         };
       }
     },
-    switchCategoryToCategoryId: (item: any, updateData: any) => {
-      if (
-        item.type === c.generalAbility ||
-        item.type === c.investigativeAbility ||
-        item.type === c.equipment
-      ) {
-        if (
-          isNullOrEmptyString(item.system.category) ||
-          !isNullOrEmptyString(item.system.categoryId)
-        ) {
-          return updateData;
-        }
-        systemLogger.info(
-          `Migrating item ${item.name}. category: ${item.system.category}, categoryId: ${item.system.categoryId}`,
-        );
-        if (!updateData.system) {
-          updateData.system = {};
-        }
-        updateData.system.categoryId = item.system.category;
-        delete updateData.system.category;
-        systemLogger.info(
-          `Done ${item.name}. updateData: ${JSON.stringify(updateData)}`,
-        );
-      }
-      return updateData;
-    },
-
     /*
      * Once up a time, cherries (unlocks) did not have ids. This made it hard to
      * manage them except by index.

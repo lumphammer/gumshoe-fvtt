@@ -25,9 +25,6 @@ vi.mock("../module/actors/types", () => ({
 vi.mock("../module/combat/InvestigatorCombat", () => ({
   InvestigatorCombat: { create: mocks.createCombat },
 }));
-vi.mock("../presets", () => ({
-  pathOfCthulhuPreset: { equipmentCategories: { general: {} } },
-}));
 vi.mock("../settings/settings", () => ({
   settings: {
     combatAbilities: mocks.combatAbilities,
@@ -58,44 +55,6 @@ describe("flagged migrations", () => {
   });
 
   it("does not reapply completed item migrations", () => {
-    const equipmentCategoryUpdate: Record<string, any> = {};
-    flaggedMigrations.item["setEquipmentCategory"](
-      { type: c.equipment, name: "Torch", system: { category: "" } },
-      equipmentCategoryUpdate,
-    );
-    expect(equipmentCategoryUpdate["system"].category).toBe("general");
-    expect(
-      flaggedMigrations.item["setEquipmentCategory"](
-        {
-          type: c.equipment,
-          name: "Torch",
-          system: { category: equipmentCategoryUpdate["system"].category },
-        },
-        {},
-      ),
-    ).toEqual({});
-
-    const categoryUpdate: Record<string, any> = {};
-    flaggedMigrations.item["switchCategoryToCategoryId"](
-      {
-        type: c.equipment,
-        name: "Torch",
-        system: { category: "general", categoryId: "" },
-      },
-      categoryUpdate,
-    );
-    expect(categoryUpdate).toEqual({ system: { categoryId: "general" } });
-    expect(
-      flaggedMigrations.item["switchCategoryToCategoryId"](
-        {
-          type: c.equipment,
-          name: "Torch",
-          system: { category: "general", categoryId: "general" },
-        },
-        {},
-      ),
-    ).toEqual({});
-
     const unlockUpdate: Record<string, any> = {};
     flaggedMigrations.item["addIdtoUnlocks"](
       { type: c.equipment, system: { unlocks: [{ name: "Open" }] } },

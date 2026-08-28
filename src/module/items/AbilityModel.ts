@@ -12,6 +12,7 @@ import {
   Unlock,
 } from "../../types";
 import { AbilitySchema } from "./createAbilitySchema";
+import { migrateCategoryToCategoryId } from "./migrateCategoryToCategoryId";
 import { getSpecialitiesCount, resizeSpecialities } from "./resizeSpecialities";
 
 /**
@@ -23,6 +24,7 @@ export abstract class AbilityModel<
 > extends TypeDataModel<TSchema, TParent> {
   static migrateData(source) {
     migrateValue(source, "notes", maybeNotesObjectToString);
+    migrateCategoryToCategoryId(source);
     return super.migrateData(source);
   }
 
