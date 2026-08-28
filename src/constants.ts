@@ -11,7 +11,6 @@ export const reactTemplatePath =
   `${templatesPath}/react-application.hbs` as const;
 export const customSystem = "customSystem";
 export const genericOccupationDefault = "Investigator";
-export const showEmptyInvestigativeCategoriesDefault = true;
 export const inputThrottleTime = 500;
 
 // item types

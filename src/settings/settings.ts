@@ -111,7 +111,7 @@ export const settings = {
   showEmptyInvestigativeCategories: createSettingBoolean({
     key: "showEmptyInvestigativeCategories",
     name: "Show empty investigative categories?",
-    default: true,
+    default: pathOfCthulhuPreset.showEmptyInvestigativeCategories,
   }),
   systemMigrationVersion: createSettingString({
     key: "systemMigrationVersion",
@@ -148,7 +148,7 @@ export const settings = {
   useTurnPassingInitiative: createSettingBoolean({
     key: "useTurnPassingInitiative",
     name: "Use turn-passing initiative?",
-    default: pathOfCthulhuPreset.useNpcCombatBonuses,
+    default: pathOfCthulhuPreset.useTurnPassingInitiative,
   }),
 
   // ///////////////////////////////////////////////////////////////////////////

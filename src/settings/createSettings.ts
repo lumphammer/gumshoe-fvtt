@@ -34,6 +34,7 @@ interface SettingFactoryArgs<T> {
 
 interface SettingObject<T, TValidator extends z.ZodType | undefined> {
   key: string;
+  default: T;
   get: () => T;
   // set: (value: T) => Promise<T>;
   set: (
@@ -99,6 +100,7 @@ export const createSetting =
     });
     return {
       key,
+      default: _default,
       get: getSetting<TSetting>(key),
       set: setSetting<TSetting>(key),
       exportable,

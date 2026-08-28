@@ -1,6 +1,10 @@
+import { readFileSync } from "fs";
+import { dirname, resolve } from "path";
+import { fileURLToPath } from "url";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
+import { pathOfCthulhuPreset } from "../presets";
 import { createSetting } from "./createSettings";
 import { settings } from "./settings";
 
@@ -44,6 +48,49 @@ describe("createSetting", () => {
 });
 
 describe("settings", () => {
+  // `pathOfCthulhuPreset` is the built-in default preset, so a setting which
+  // shares its name must register the same default. Copying the wrong preset
+  // property is otherwise invisible whenever the two values happen to match.
+  const presetBackedSettings = Object.keys(pathOfCthulhuPreset).filter(
+    (key) => key in settings,
+  );
+
+  it.each(presetBackedSettings)(
+    "registers the matching preset default for %s",
+    (key) => {
+      expect(settings[key as keyof typeof settings].default).toEqual(
+        pathOfCthulhuPreset[key as keyof typeof pathOfCthulhuPreset],
+      );
+    },
+  );
+
+  // The value check above can't see a setting which reads the *wrong* preset
+  // property when both properties happen to hold the same value - which is
+  // exactly the state a copy-paste error hides in. So we also check the source
+  // text: within each setting definition, the preset property named in
+  // `default:` must match that definition's `key`.
+  it("reads each preset default from the identically-named property", () => {
+    const source = readFileSync(
+      resolve(dirname(fileURLToPath(import.meta.url)), "settings.ts"),
+      "utf8",
+    );
+    const definitions = source.split(/^ {4}key: "/m).slice(1);
+    const presetBackedDefinitions = definitions.flatMap((definition) => {
+      const key = definition.slice(0, definition.indexOf('"'));
+      const presetProperty = /^ {4}default: pathOfCthulhuPreset\.(\w+),$/m.exec(
+        definition,
+      )?.[1];
+      return presetProperty === undefined ? [] : [[key, presetProperty]];
+    });
+
+    // a sanity floor, so that a future reformat which stops the scan matching
+    // anything fails loudly instead of passing vacuously
+    expect(presetBackedDefinitions.length).toBeGreaterThanOrEqual(15);
+    expect(
+      presetBackedDefinitions.filter(([key, property]) => key !== property),
+    ).toEqual([]);
+  });
+
   describe("personalDetails", () => {
     it("should be an array of strings", () => {
       const validator = settings.personalDetails.validator;
