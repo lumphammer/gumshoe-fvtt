@@ -572,9 +572,9 @@
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
               below. That pass left 21 findings open; ME-11, HI-03, HI-04,
-              ME-01, and ME-02 have since been resolved, leaving 16. The
-              ranking has shifted: the highest-value work is now silent data
-              loss in abilities, not release tooling.
+              ME-01, ME-02, and ME-03 have since been resolved, leaving 15.
+              The ranking has shifted: the highest-value work is now silent
+              data loss in abilities, not release tooling.
             </p>
           </div>
           <div class="status">
@@ -587,10 +587,10 @@
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>16</b><span>open findings</span></div>
+          <div class="metric"><b>15</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>1</b><span>high</span></div>
-          <div class="metric medium"><b>9</b><span>medium</span></div>
+          <div class="metric medium"><b>8</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
       </section>
@@ -979,23 +979,24 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-03">
+          <article class="finding medium-sev resolved" id="ME-03">
             <div class="finding-head">
               <div>
                 <h3>
                   ME-03 · A weapon with a deleted ability crashes on attack
                 </h3>
                 <p class="refs">
-                  <a href="src/components/equipment/performAttack.ts#L25"
-                    >performAttack.ts:25–44</a
+                  <a
+                    href="src/components/equipment/isWeaponAttackDisabled.ts#L7"
+                    >isWeaponAttackDisabled.ts:7–11</a
                   >
                   ·
-                  <a href="src/components/equipment/WeaponMain.tsx#L172"
-                    >WeaponMain.tsx:172–199, 246–272</a
+                  <a href="src/components/equipment/WeaponMain.tsx#L127"
+                    >WeaponMain.tsx:127–206</a
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               The UI can render a “Not Found” configured ability, but attack
@@ -1003,9 +1004,12 @@
               calls <code>assertAbilityItem(ability)</code>, throwing on click.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> disable attacks with an actionable
-              warning or handle the missing reference before entering the roll
-              path.
+              <strong>Resolved 28 August 2026.</strong> All four range buttons
+              now share one eligibility rule that disables attacks when the
+              configured ability is missing, while the existing
+              <code>NotFound!</code> indicator identifies the configuration to
+              repair. Four regression cases cover a missing ability, depleted
+              ammo, an unavailable range, and a valid attack.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1791,7 +1795,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              379 tests pass, and pack-build failure integrity now has focused
+              383 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1882,7 +1886,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 34 executed files and 379 tests across 34 distinct
+            Vitest reports 35 executed files and 383 tests across 35 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -1955,6 +1959,13 @@
               strings while filling nullish and missing values.
             </p>
           </div>
+          <div class="callout">
+            <p>
+              <strong>ME-03 regression coverage:</strong> attack controls are
+              disabled for a missing configured ability as well as the existing
+              ammo and range constraints.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -1979,8 +1990,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">34 files / 379 tests</td>
-              <td>No test or type errors; 34 distinct test source files.</td>
+              <td class="pass">35 files / 383 tests</td>
+              <td>No test or type errors; 35 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -2048,7 +2059,7 @@
               <tr>
                 <td><strong>State integrity</strong></td>
                 <td>
-                  ME-03 through ME-06 and ME-09 through ME-14; add
+                  ME-04 through ME-06 and ME-09 through ME-14; add
                   state-machine and reducer invariants.
                 </td>
                 <td>
