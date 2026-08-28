@@ -61,77 +61,77 @@
       "name": "pathOfCthulhuAbilities",
       "label": "Trail of Cthulhu Abilities",
       "system": "investigator",
-      "path": "./packs/pathOfCthulhuAbilities.db",
+      "path": "./packs/pathOfCthulhuAbilities",
       "type": "Item"
     },
     {
       "name": "niceBlackAgentsAbilities",
       "label": "Night's Black Agents Abilities",
       "system": "investigator",
-      "path": "./packs/niceBlackAgentsAbilities.db",
+      "path": "./packs/niceBlackAgentsAbilities",
       "type": "Item"
     },
     {
       "name": "nothingToFearAbilities",
       "label": "Fear Itself Abilities",
       "system": "investigator",
-      "path": "./packs/nothingToFearAbilities.db",
+      "path": "./packs/nothingToFearAbilities",
       "type": "Item"
     },
     {
       "name": "pallidStarsAbilities",
       "label": "Ashen Stars Abilities",
       "system": "investigator",
-      "path": "./packs/pallidStarsAbilities.db",
+      "path": "./packs/pallidStarsAbilities",
       "type": "Item"
     },
     {
       "name": "missingAbilitiesNote",
       "label": "WE NOW HAVE FULL ABILITY COMPENDIUMS!",
       "system": "investigator",
-      "path": "./packs/fullCompendiumsNote.db",
+      "path": "./packs/fullCompendiumsNote",
       "type": "JournalEntry"
     },
     {
       "name": "opponentAbilities",
       "label": "Opponent Abilities",
       "system": "investigator",
-      "path": "./packs/opponentAbilities.db",
+      "path": "./packs/opponentAbilities",
       "type": "Item"
     },
     {
       "name": "srdWeapons",
       "label": "SRD Weapons",
       "system": "investigator",
-      "path": "./packs/srdWeapons.db",
+      "path": "./packs/srdWeapons",
       "type": "Item"
     },
     {
       "name": "srdAbilities",
       "label": "SRD Abilities",
       "system": "investigator",
-      "path": "./packs/srdAbilities.db",
+      "path": "./packs/srdAbilities",
       "type": "Item"
     },
     {
       "name": "castingTheRunesAbilities",
       "label": "Casting the Runes Abilities",
       "system": "investigator",
-      "path": "./packs/castingTheRunesAbilities.db",
+      "path": "./packs/castingTheRunesAbilities",
       "type": "Item"
     },
     {
       "name": "esoterroristsAbilities",
       "label": "Esoterrorists Abilities",
       "system": "investigator",
-      "path": "./packs/esoterroristsAbilities.db",
+      "path": "./packs/esoterroristsAbilities",
       "type": "Item"
     },
     {
       "name": "moribundWorldAbilities",
       "label": "Dying Earth Abilities",
       "system": "investigator",
-      "path": "./packs/moribundWorldAbilities.db",
+      "path": "./packs/moribundWorldAbilities",
       "type": "Item"
     },
     {

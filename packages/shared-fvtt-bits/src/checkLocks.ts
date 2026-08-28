@@ -9,6 +9,7 @@ export const checkLocks = (dir: string) => {
     // if destDir is not a directory, throw an error
     if (!existsSync(dir)) {
       resolve("");
+      return;
     }
     const data: string[] = [];
     const proc = exec(

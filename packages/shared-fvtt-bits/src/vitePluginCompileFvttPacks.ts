@@ -1,6 +1,7 @@
 import { compilePack } from "@foundryvtt/foundryvtt-cli";
 import chalk from "chalk";
-import { existsSync } from "fs";
+import { existsSync, readFileSync, statSync } from "fs";
+import { dirname, resolve } from "path";
 import { readdir } from "fs/promises";
 import { PluginOption } from "vite";
 
@@ -10,6 +11,50 @@ type vitePluginCompileFvttPacksOptions = {
   srcDir?: string;
   destDir?: string;
 };
+
+type PackManifest = {
+  packs?: Array<{ name: string; path: string }>;
+};
+
+/**
+ * Find the built package manifest sitting alongside the compiled packs. Systems
+ * and modules use different file names, so we accept either.
+ */
+function findManifestPath(destDir: string) {
+  const packageRoot = dirname(destDir);
+  const manifestPath = ["system.json", "module.json"]
+    .map((name) => resolve(packageRoot, name))
+    .find((candidate) => existsSync(candidate));
+  if (manifestPath === undefined) {
+    throw new Error(
+      `Could not find a system.json or module.json in ${packageRoot}`,
+    );
+  }
+  return manifestPath;
+}
+
+export function validateManifestPackPaths(
+  destDir: string,
+  actualPackRoot = destDir,
+) {
+  const manifestPath = findManifestPath(destDir);
+  const manifest = JSON.parse(
+    readFileSync(manifestPath, "utf8"),
+  ) as PackManifest;
+  const missingPacks = (manifest.packs ?? []).filter(({ path }) => {
+    const packPath = resolve(dirname(manifestPath), path);
+    return !existsSync(packPath) || !statSync(packPath).isDirectory();
+  });
+
+  if (missingPacks.length > 0) {
+    const details = missingPacks
+      .map(({ name, path }) => `- ${name}: ${path}`)
+      .join("\n");
+    throw new Error(
+      `The following compendium paths in ${manifestPath} do not resolve to LevelDB directories:\n${details}`,
+    );
+  }
+}
 
 /**
  * This plugin will compile your compendium packs from YAMLs in `./src/packs`
@@ -45,6 +90,7 @@ export function vitePluginCompileFvttPacks({
 
       // id srcDir doesn't exist or is empty, don't compile packs
       if (!existsSync(srcDir) || (await readdir(srcDir)).length === 0) {
+        validateManifestPackPaths(destDir);
         console.log(chalk.cyan(`No packs found in ${srcDir}`));
         return;
       }
@@ -57,6 +103,7 @@ export function vitePluginCompileFvttPacks({
           yaml: true,
         });
       }
+      validateManifestPackPaths(destDir);
       // list contents of destDir
       const contents = (await readdir(destDir))
         .map((f) => `${chalk.dim(`${destDir}/`)}${chalk.cyan(f)}`)

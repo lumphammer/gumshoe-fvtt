@@ -305,6 +305,17 @@
         letter-spacing: 0.08em;
         text-transform: uppercase;
       }
+      .finding.resolved {
+        opacity: 0.78;
+      }
+      .finding.resolved h3 {
+        text-decoration: line-through;
+        text-decoration-thickness: 0.12em;
+      }
+      .badge.resolved {
+        color: var(--good);
+        background: var(--good-bg);
+      }
       .critical-sev {
         --sev: var(--critical);
         --sev-bg: var(--critical-bg);
@@ -536,10 +547,10 @@
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>24</b><span>confirmed findings</span></div>
+          <div class="metric"><b>23</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>4</b><span>high</span></div>
-          <div class="metric medium"><b>15</b><span>medium</span></div>
+          <div class="metric medium"><b>14</b><span>medium</span></div>
           <div class="metric low"><b>5</b><span>low</span></div>
         </div>
       </section>
@@ -575,7 +586,7 @@
       <section id="findings">
         <h2>Confirmed findings</h2>
         <div class="finding-list">
-          <article class="finding medium-sev" id="ME-15">
+          <article class="finding medium-sev resolved" id="ME-15">
             <div class="finding-head">
               <div>
                 <h3>
@@ -587,33 +598,30 @@
                   · <span class="mono">build/packs/</span>
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
-              The first eleven pack entries use the pre-v11
-              <code>.db</code> convention, while pack compilation creates
-              suffix-free LevelDB directories. They still work because Foundry's
-              package migration explicitly applies
-              <code>path.replace(/\.db$/, "")</code> before constructing the
-              absolute pack path. Applying that exact normalization makes all
-              sixteen built packs resolve.
+              <strong>Resolved 28 August 2026.</strong> The first eleven pack
+              entries now use suffix-free LevelDB paths, matching the compiler
+              output. The compiler also validates every literal
+              <code>build/system.json</code> pack path after compilation; the
+              rebuilt artifact verified all sixteen paths as directories.
             </p>
             <p>
-              <strong>Impact:</strong> no current runtime failure was observed;
-              Foundry 14.359 loaded the exact local build successfully. The
-              residual risk is dependence on a legacy compatibility shim,
-              inconsistent manifest conventions, and false failures in tooling
-              that validates literal paths. This behavior originates in the
+              <strong>Root cause:</strong> the prior manifest used the pre-v11
+              <code>.db</code> convention while compilation created suffix-free
+              directories. It still worked because Foundry's package migration
+              applies <code>path.replace(/\.db$/, "")</code> before opening a
+              pack. That compatibility behavior originates in the
               <a href="https://foundryvtt.com/article/v11-leveldb-packs/"
                 >documented v11 NeDB-to-LevelDB transition</a
               >.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> remove the legacy suffixes for a
-              v11+-only package, then add a post-build test that resolves every
-              <code>system.json.packs[].path</code> and checks that its LevelDB
-              directory exists. Also reject mixed legacy/current conventions so
-              the manifest remains internally consistent.
+              <strong>Verification:</strong> <code>pnpm run build</code>
+              regenerated all sixteen packs with Foundry stopped and passed the
+              post-build literal-path validation. Typecheck and 347 tests also
+              pass.
             </p>
           </article>
 
@@ -1489,11 +1497,10 @@
             </tr>
             <tr>
               <td>Manifest path resolution</td>
-              <td class="pass">16 / 16 resolve</td>
+              <td class="pass">Resolved: 16 / 16</td>
               <td>
-                Eleven literal paths use legacy <code>.db</code> suffixes.
-                Foundry 14 strips that suffix during package migration; all
-                sixteen normalized paths match the built LevelDB directories.
+                All source paths are suffix-free and all literal
+                <code>build/system.json</code> paths match LevelDB directories.
               </td>
             </tr>
             <tr>
