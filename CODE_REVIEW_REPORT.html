@@ -572,8 +572,8 @@
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
               below. That pass left 21 findings open; ME-11, HI-03, HI-04,
-              ME-01, ME-02, ME-03, ME-04, ME-05, and ME-06 have since been
-              resolved, leaving 12. No Critical or High findings remain.
+              ME-01 through ME-07, HI-03, HI-04, and ME-11 have since been
+              resolved, leaving 11. No Critical or High findings remain.
             </p>
           </div>
           <div class="status">
@@ -587,10 +587,10 @@
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>12</b><span>open findings</span></div>
+          <div class="metric"><b>11</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
-          <div class="metric medium"><b>6</b><span>medium</span></div>
+          <div class="metric medium"><b>5</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
       </section>
@@ -618,7 +618,7 @@
           <div class="priority">
             <b>3. Take the free wins</b>
             <p>
-              ME-07, LO-01, LO-03, LO-04 and LO-05 are one-liners with
+              LO-01, LO-03, LO-04 and LO-05 are one-liners with
               disproportionate reliability value.
             </p>
           </div>
@@ -1175,7 +1175,7 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-07">
+          <article class="finding medium-sev resolved" id="ME-07">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1183,12 +1183,17 @@
                   error
                 </h3>
                 <p class="refs">
-                  <a href="src/components/journalEditorSheet/HTMLEditor.tsx#L82"
-                    >HTMLEditor.tsx:82–120</a
+                  <a href="src/components/journalEditorSheet/HTMLEditor.tsx#L83"
+                    >HTMLEditor.tsx:83–113</a
+                  >
+                  ·
+                  <a
+                    href="src/components/journalEditorSheet/insertDroppedContentLink.test.ts#L5"
+                    >insertDroppedContentLink.test.ts:5–30</a
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               After inserting a generated Foundry content link and focusing
@@ -1197,8 +1202,11 @@
               surfaced as an unhandled error.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> remove the debug throw and add a
-              component test for drag-data insertion.
+              <strong>Resolved 28 August 2026.</strong> The debug throw is gone,
+              and successful link insertion now uses a focused helper that
+              applies the Monaco edit and refocuses the editor normally. Two
+              regression cases cover successful insertion and empty-link
+              no-op behavior.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1817,7 +1825,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              400 tests pass, and pack-build failure integrity now has focused
+              402 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1908,7 +1916,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 38 executed files and 400 tests across 38 distinct
+            Vitest reports 39 executed files and 402 tests across 39 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -2009,6 +2017,13 @@
               transition that previously discarded three entered values.
             </p>
           </div>
+          <div class="callout">
+            <p>
+              <strong>ME-07 regression coverage:</strong> successful Monaco
+              content-link drops insert at the requested position and refocus
+              without throwing; empty links remain no-ops.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -2033,8 +2048,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">38 files / 400 tests</td>
-              <td>No test or type errors; 38 distinct test source files.</td>
+              <td class="pass">39 files / 402 tests</td>
+              <td>No test or type errors; 39 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -2113,8 +2128,7 @@
               <tr>
                 <td><strong>Interaction safety</strong></td>
                 <td>
-                  ME-07, ME-08, ME-10; harden drag/drop and socket command
-                  contracts.
+                  ME-08 and ME-10; harden drag/drop and socket command contracts.
                 </td>
                 <td>
                   Malformed external input is rejected or safely ignored; no

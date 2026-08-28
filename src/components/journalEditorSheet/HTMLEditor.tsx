@@ -115,7 +115,6 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
             },
           ]);
           editor.focus();
-          throw new Error("foo");
         }
       });
 
