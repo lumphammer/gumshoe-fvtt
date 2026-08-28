@@ -571,9 +571,9 @@
               impact was not reachable &mdash; ME-13 is closed as superseded,
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
-              below. That pass left 21 findings open; ME-11, HI-03, HI-04,
-              ME-01 through ME-07, HI-03, HI-04, and ME-11 have since been
-              resolved, leaving 11. No Critical or High findings remain.
+              below. That pass left 21 findings open; HI-03, HI-04, ME-01
+              through ME-08, and ME-11 have since been resolved, leaving 10. No
+              Critical or High findings remain.
             </p>
           </div>
           <div class="status">
@@ -587,10 +587,10 @@
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>11</b><span>open findings</span></div>
+          <div class="metric"><b>10</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
-          <div class="metric medium"><b>5</b><span>medium</span></div>
+          <div class="metric medium"><b>4</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
       </section>
@@ -1218,7 +1218,7 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="ME-08">
+          <article class="finding medium-sev resolved" id="ME-08">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1227,11 +1227,16 @@
                 </h3>
                 <p class="refs">
                   <a href="src/components/inputs/TextArea.tsx#L67"
-                    >TextArea.tsx:67–90</a
+                    >TextArea.tsx:68–87</a
+                  >
+                  ·
+                  <a
+                    href="src/components/inputs/parseFoundryDragData.test.ts#L5"
+                    >parseFoundryDragData.test.ts:5–30</a
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge">Resolved</span>
             </div>
             <p>
               The handler prevents the default and unconditionally JSON-parses
@@ -1245,6 +1250,16 @@
               <strong>Fix/test:</strong> parse drag data defensively, fall back
               to normal text insertion, and use the current document
               <code>id</code>/<code>uuid</code> API.
+            </p>
+            <p class="resolution">
+              <strong>Resolved · 28 Aug 2026.</strong> The textarea now claims a
+              drop only after recognizing a Foundry document payload, leaving
+              ordinary text to the browser. Both current UUID payloads and
+              legacy ID/pack payloads are handed to Foundry's own
+              <code>TextEditor.getContentLink</code>; the v9 collection access
+              is gone and malformed or unresolvable data is ignored safely.
+              Nine regression cases cover plain and malformed text, JSON
+              non-objects, and current world, compendium, and legacy payloads.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1825,7 +1840,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              402 tests pass, and pack-build failure integrity now has focused
+              411 tests pass, and pack-build failure integrity now has focused
               coverage. Actors, items, combat, startup hooks, sockets, and
               end-to-end Foundry flows remain sparse or absent.
             </p>
@@ -1916,7 +1931,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 39 executed files and 402 tests across 39 distinct
+            Vitest reports 40 executed files and 411 tests across 40 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -2024,6 +2039,13 @@
               without throwing; empty links remain no-ops.
             </p>
           </div>
+          <div class="callout">
+            <p>
+              <strong>ME-08 regression coverage:</strong> ordinary and malformed
+              text drops retain native behavior, while current UUID and legacy
+              Foundry document payloads are recognized for link resolution.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -2048,8 +2070,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">39 files / 402 tests</td>
-              <td>No test or type errors; 39 distinct test source files.</td>
+              <td class="pass">40 files / 411 tests</td>
+              <td>No test or type errors; 40 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -2128,7 +2150,7 @@
               <tr>
                 <td><strong>Interaction safety</strong></td>
                 <td>
-                  ME-08 and ME-10; harden drag/drop and socket command contracts.
+                  ME-10; harden the socket command contract.
                 </td>
                 <td>
                   Malformed external input is rejected or safely ignored; no

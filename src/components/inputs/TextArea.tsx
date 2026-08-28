@@ -1,7 +1,8 @@
 import React, { ChangeEvent, useCallback, useContext, useRef } from "react";
 
-import { assertGame } from "../../functions/isGame";
+import { TextEditor } from "../../fvtt-exports";
 import { IdContext } from "../IdContext";
+import { parseFoundryDragData } from "./parseFoundryDragData";
 
 type TextAreaProps = {
   className?: string;
@@ -68,27 +69,19 @@ export const TextArea = ({
   const onDropEditorData = async (
     event: React.DragEvent<HTMLTextAreaElement>,
   ) => {
-    event.preventDefault();
-    const data = JSON.parse(event.dataTransfer.getData("text/plain"));
-    if (!data?.id) return;
+    const data = parseFoundryDragData(event.dataTransfer.getData("text/plain"));
+    if (data === null) return;
 
-    // Case 1 - Document from Compendium Pack
-    if (data.pack) {
-      assertGame(game);
-      const pack = game.packs.get(data.pack);
-      if (!pack) return;
-      const document = await pack.getDocument(data.id);
-      const link = `@Compendium[${data.pack}.${data.id}]{${document?.name}}`;
-      onChange?.(squirtTextIntoTextarea(link, textareaRef.current), index);
-    } else if (data.type) {
-      // Case 2 - Document from World
-      const config = CONFIG[data.type as "Actor" | "Item" | "Scene"];
-      if (!config) return false;
-      const entity = (config.collection as any).instance.get(data.id);
-      if (!entity) return false;
-      const link = `@${data.type}[${entity.data._id}]{${entity.name}}`;
-      onChange?.(squirtTextIntoTextarea(link, textareaRef.current), index);
+    event.preventDefault();
+    let link: string | null;
+    try {
+      link = await TextEditor.getContentLink(data);
+    } catch {
+      return;
     }
+    if (link === null) return;
+
+    onChange?.(squirtTextIntoTextarea(link, textareaRef.current), index);
   };
 
   return (
