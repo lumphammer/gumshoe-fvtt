@@ -78,7 +78,7 @@ export const flaggedMigrations: FlaggedMigrations = {
           updateData.system = {};
         }
         updateData.system.categoryId = item.system.category;
-        updateData.system.category = _del;
+        delete updateData.system.category;
         systemLogger.info(
           `Done ${item.name}. updateData: ${JSON.stringify(updateData)}`,
         );
@@ -300,16 +300,25 @@ export const flaggedMigrations: FlaggedMigrations = {
         }
         await oldBaseCombat.delete();
       }
-      const inactiveReplacement = game.combats.contents.find(
-        (combat) =>
-          combat.flags?.[c.systemId]?.migratedFromActiveCombat &&
-          !combat.active,
-      );
-      if (newActiveCombat === null && inactiveReplacement !== undefined) {
-        newActiveCombat = inactiveReplacement;
+      // If an earlier run was interrupted after deleting the old combat but
+      // before activating its replacement, finish that job now.
+      if (newActiveCombat === null) {
+        newActiveCombat =
+          game.combats.contents.find(
+            (combat) =>
+              combat.flags?.[c.systemId]?.migratedFromActiveCombat &&
+              !combat.active,
+          ) ?? null;
       }
       if (newActiveCombat) {
         await newActiveCombat.activate();
+        // clear the marker so we can't keep re-activating a combat that the
+        // GM has since deliberately deactivated.
+        await newActiveCombat.setFlag(
+          c.systemId,
+          "migratedFromActiveCombat",
+          false,
+        );
       }
     },
   },

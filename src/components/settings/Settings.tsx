@@ -56,13 +56,18 @@ export const Settings = () => {
   }, [handleClose]);
 
   const handleClickSave = useCallback(async () => {
-    const proms = Object.keys(settings).map(async (k) => {
-      // temporarily disbaled becaue ts is being weird and `set` is coming out
-      // as `any` but it should actually be an error
-      // x@ts-expect-error Too much work to explain to TS that these guys
-      // really do match up
-      await settings[k].set(tempStateRef.current.settings[k]);
-    });
+    // settings which aren't managed by this form (migration bookkeeping and
+    // friends) can be written by other code while this form is open, so we
+    // must not write our stale copy of them back on save.
+    const proms = Object.keys(settings)
+      .filter((k) => settings[k as keyof typeof settings].managedBySettingsForm)
+      .map(async (k) => {
+        // temporarily disbaled becaue ts is being weird and `set` is coming out
+        // as `any` but it should actually be an error
+        // x@ts-expect-error Too much work to explain to TS that these guys
+        // really do match up
+        await settings[k].set(tempStateRef.current.settings[k]);
+      });
     await Promise.all(proms);
     Hooks.call(settingsSaved);
     await foundryApplication.close({ submitted: true });

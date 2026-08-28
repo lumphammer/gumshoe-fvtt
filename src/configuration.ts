@@ -127,6 +127,18 @@ declare module "fvtt-types/configuration" {
   }
 
   interface FlagConfig {
+    Combat: {
+      investigator: {
+        /** the id of the pre-typed-combat combat this one replaces */
+        migratedFromCombatId: string;
+        /**
+         * set when the combat we replaced was the active one, and cleared once
+         * we've activated this one. Lets an interrupted migration finish the
+         * job on a retry without re-activating it forever after.
+         */
+        migratedFromActiveCombat: boolean;
+      };
+    };
     JournalEntry: {
       investigator: {
         extraCssClasses: string;

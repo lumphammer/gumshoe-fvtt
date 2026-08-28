@@ -70,6 +70,8 @@ const initialState: State = {
       playlist: {},
       world: {},
     },
+    migrationAttempts: 0,
+    migrationLastError: "",
     useTurnPassingInitiative: false,
     genericOccupation: "",
     investigativeAbilityCategories: [],

@@ -39,7 +39,6 @@ import { flaggedMigrations } from "./flaggedMigrations";
 
 describe("flagged migrations", () => {
   beforeEach(() => {
-    Object.assign(globalThis, { _del: "forced-deletion" });
     mocks.assertGame.mockReset();
     mocks.combatAbilities.get.mockReset();
     mocks.combatAbilities.get.mockReturnValue(["Athletics"]);
@@ -85,9 +84,7 @@ describe("flagged migrations", () => {
       },
       categoryUpdate,
     );
-    expect(categoryUpdate).toEqual({
-      system: { category: "forced-deletion", categoryId: "general" },
-    });
+    expect(categoryUpdate).toEqual({ system: { categoryId: "general" } });
     expect(
       flaggedMigrations.item["switchCategoryToCategoryId"](
         {
@@ -226,8 +223,15 @@ describe("flagged migrations", () => {
     const replacement = {
       activate: vi.fn().mockResolvedValue(undefined),
       active: false,
-      flags: {},
+      flags: {} as any,
       id: "new-combat",
+      setFlag: vi.fn().mockImplementation((scope, key, value) => {
+        replacement.flags[scope] = {
+          ...replacement.flags[scope],
+          [key]: value,
+        };
+        return Promise.resolve();
+      }),
       setupTurns: vi.fn(),
       type: "classic",
     };
@@ -255,6 +259,12 @@ describe("flagged migrations", () => {
 
     expect(mocks.createCombat).toHaveBeenCalledTimes(1);
     expect(oldCombat.delete).toHaveBeenCalledTimes(2);
+    expect(replacement.activate).toHaveBeenCalledTimes(1);
+    // the marker is consumed, so a later run can't re-activate a combat the
+    // GM has since deactivated
+    expect(replacement.flags[c.systemId].migratedFromActiveCombat).toBe(false);
+
+    await flaggedMigrations.world["convertCombats"](null, null);
     expect(replacement.activate).toHaveBeenCalledTimes(1);
   });
 });

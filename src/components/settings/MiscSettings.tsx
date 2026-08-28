@@ -1,7 +1,10 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 import { getDevMode } from "../../functions/utilities";
+import { settings as systemSettings } from "../../settings/settings";
+import { retryFailedMigrations } from "../../startup/migrateWorldIfNeeded";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
+import { Button } from "../inputs/Button";
 import { InputGrid } from "../inputs/InputGrid";
 import { ListEdit } from "../inputs/ListEdit";
 import { Toggle } from "../inputs/Toggle";
@@ -17,6 +20,22 @@ export const MiscSettings = ({ setters }: { setters: Setters }) => {
   let idx = 0;
 
   const { settings } = useContext(StateContext);
+  const [isRetryingMigrations, setIsRetryingMigrations] = useState(false);
+  // read live rather than from the form state: migrations can run while this
+  // dialog is open, and these settings aren't managed by the form anyway.
+  const [lastMigrationError, setLastMigrationError] = useState(() =>
+    systemSettings.migrationLastError.get(),
+  );
+
+  const retryMigrations = async () => {
+    setIsRetryingMigrations(true);
+    try {
+      await retryFailedMigrations();
+    } finally {
+      setLastMigrationError(systemSettings.migrationLastError.get());
+      setIsRetryingMigrations(false);
+    }
+  };
 
   return (
     <InputGrid
@@ -76,7 +95,6 @@ export const MiscSettings = ({ setters }: { setters: Setters }) => {
           onChange={setters.mwHiddenShortNotes}
         />
       </SettingsGridField>
-      {/* eslint-disable-next-line no-useless-assignment */}
       <SettingsGridField label="Use injury status" index={idx++}>
         <Toggle
           checked={settings.useMwInjuryStatus}
@@ -89,6 +107,27 @@ export const MiscSettings = ({ setters }: { setters: Setters }) => {
         #################################################################### */}
 
       <ImportExport />
+
+      {/* ####################################################################
+          MIGRATION RECOVERY
+        #################################################################### */}
+
+      {lastMigrationError !== "" && (
+        <>
+          <hr css={{ gridColumn: "label / end" }} />
+          <h2 css={{ gridColumn: "label / end" }}>
+            <Translate>Migration recovery</Translate>
+          </h2>
+          <SettingsGridField label="Last migration error" index={idx++}>
+            <div css={{ fontFamily: "monospace" }}>{lastMigrationError}</div>
+          </SettingsGridField>
+          <SettingsGridField label="Retry migration" index={idx}>
+            <Button disabled={isRetryingMigrations} onClick={retryMigrations}>
+              {isRetryingMigrations ? "Retrying…" : "Retry now"}
+            </Button>
+          </SettingsGridField>
+        </>
+      )}
     </InputGrid>
   );
 };

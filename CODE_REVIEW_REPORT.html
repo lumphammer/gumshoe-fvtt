@@ -541,15 +541,15 @@
             <span class="label">Release recommendation</span>
             <strong>Hold</strong>
             <p>
-              Resolve the three remaining High findings, add regression tests,
+              Resolve the two remaining High findings, add regression tests,
               then rebuild from a clean pack output.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>22</b><span>open findings</span></div>
+          <div class="metric"><b>21</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
-          <div class="metric high"><b>3</b><span>high</span></div>
+          <div class="metric high"><b>2</b><span>high</span></div>
           <div class="metric medium"><b>14</b><span>medium</span></div>
           <div class="metric low"><b>5</b><span>low</span></div>
         </div>
@@ -559,10 +559,10 @@
         <h2>Fix first</h2>
         <div class="priority-grid">
           <div class="priority">
-            <b>1. Make migrations transactional in outcome</b>
+            <b>1. Make pack builds fail closed</b>
             <p>
-              Aggregate per-document errors. Never write completion flags or the
-              migrated version when any required entity failed.
+              Treat open pack locks as a failed production build, and validate
+              all compiled pack outputs before publishing.
             </p>
           </div>
           <div class="priority">
@@ -573,10 +573,10 @@
             </p>
           </div>
           <div class="priority">
-            <b>3. Make pack builds fail closed</b>
+            <b>3. Strengthen migration coverage</b>
             <p>
-              Treat open pack locks as a failed production build, and validate
-              all compiled pack outputs before publishing.
+              Extend the new failure/retry contract to startup-hook integration
+              and successful real-world migration fixtures.
             </p>
           </div>
         </div>
@@ -659,7 +659,7 @@
             </p>
           </article>
 
-          <article class="finding high-sev" id="HI-02">
+          <article class="finding high-sev resolved" id="HI-02">
             <div class="finding-head">
               <div>
                 <h3>
@@ -667,12 +667,12 @@
                   complete
                 </h3>
                 <p class="refs">
-                  <a href="src/migrations/migrateWorld.ts#L35"
-                    >migrateWorld.ts:35–89</a
+                  <a href="src/migrations/migrateWorld.ts#L26"
+                    >migrateWorld.ts:26–119</a
                   >
                   ·
-                  <a href="src/migrations/migrateCompendium.ts#L33"
-                    >migrateCompendium.ts:33–67</a
+                  <a href="src/migrations/migrateCompendium.ts#L19"
+                    >migrateCompendium.ts:19–115</a
                   >
                   ·
                   <a href="src/startup/migrateWorldIfNeeded.ts#L56"
@@ -680,24 +680,42 @@
                   >
                 </p>
               </div>
-              <span class="badge">High</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
-              Actor, item, scene, and compendium-entry exceptions are caught and
-              logged, but not propagated. The caller then writes every selected
-              migration flag as complete; the world migration also writes the
-              new system version and announces success.
+              <strong>Resolved 28 August 2026.</strong> World, document, pack,
+              and compendium-entry failures are now accumulated with an affected
+              document UUID (where available) and rethrown as a single migration
+              failure, so <code>migrationFlags</code> is only written when the
+              whole run succeeds. Every registered migration was made idempotent
+              first, which is what makes a retry safe: replay guards use already
+              -migrated data, persistent per-document markers, cleared legacy
+              source settings, or a one-shot combat-replacement marker.
             </p>
             <p>
-              <strong>Impact:</strong> a transient or entity-specific failure
-              leaves a mixed-schema world that will not automatically retry.
-              Subsequent code may assume a migration that never ran for some
-              documents.
+              Because migrations are idempotent, a retry simply re-runs the
+              outstanding set over every document; documents that were already
+              migrated produce an empty update and are skipped. There is
+              therefore no per-document progress bookkeeping — just a
+              <code>migrationAttempts</code> counter. Foundry retries once on
+              the next GM startup, then stops trying automatically after the
+              second failure, and a GM can retry by hand from
+              <em>GUMSHOE Settings &gt; Misc</em>, which also shows the last
+              error.
+            </p>
+            <p>
+              Compendium lock state is restored in an awaited
+              <code>finally</code> block, including when
+              <code>pack.migrate()</code> or an individual entry update fails.
+              The failure notification and error identify the affected migration
+              targets.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> collect failures, restore pack lock
-              state in <code>finally</code>, and commit completion flags only
-              after zero failures. Show affected UUIDs and provide a retry path.
+              <strong>Verification:</strong> focused tests cover a failed world
+              actor migration (no completion write, error surfaced), multiple
+              failing targets reported in one error, the automatic attempt cap,
+              an explicit GM retry past that cap, and compendium lock restoration
+              when either an entry update or <code>pack.migrate()</code> fails.
             </p>
           </article>
 
@@ -1333,9 +1351,8 @@
             <span class="grade">C−</span>
             <h3>Correctness</h3>
             <p>
-              Core happy paths are clear, but silent data transformation,
-              migration, and release failures materially increase operational
-              risk.
+              Core happy paths are clear, but silent data transformation and
+              release failures materially increase operational risk.
             </p>
           </div>
           <div class="health-card">
@@ -1351,7 +1368,7 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              348 tests pass, but actors, items, combat, startup hooks, sockets,
+              360 tests pass, but actors, items, combat, startup hooks, sockets,
               pack-manifest integrity, and end-to-end Foundry flows are sparse
               or absent.
             </p>
@@ -1442,7 +1459,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 27 executed files and 348 tests; there are 24
+            Vitest reports 30 executed files and 360 tests; there are 27
             distinct test source files, with the workspace configuration
             executing three package tests in more than one project. Coverage is
             concentrated in pure utilities, settings/store snapshots, journal
@@ -1452,7 +1469,7 @@
             <strong>Highest-value missing suites:</strong> actor/item mutation
             contracts, classic and turn-passing combat state machines,
             startup-hook behavior with mocked Foundry documents, migration
-            failure/retry behavior, import/export round trips, socket
+            success-path fixtures, import/export round trips, socket
             authorization, and manifest-to-build asset validation.
           </p>
           <div class="callout">
@@ -1461,6 +1478,21 @@
               faithfully captured the wrong key transformation. It is now paired
               with a semantic test for key order, cardinality, values, and
               identity across a three-field ID change.
+            </p>
+          </div>
+          <div class="callout">
+            <p>
+              <strong>HI-02 regression coverage:</strong> a failed entity now
+              rejects the world migration before any completion write, while a
+              failed compendium update restores its original lock state and
+              reports the entry ID. Replays preserve migrated item and actor
+              data, clear legacy world settings, and reuse interrupted combat
+              replacements instead of duplicating them. Repeated automatic
+              failures stop retrying after the attempt cap, and a GM-requested
+              retry runs regardless. The attempt counter caps automatic
+              retries at two, suppressing the startup error notification once
+              exhausted, and a GM can retry explicitly from the Misc settings
+              tab, which shows the last migration error.
             </p>
           </div>
         </div>
@@ -1487,8 +1519,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">27 files / 348 tests</td>
-              <td>No test or type errors; 24 distinct test source files.</td>
+              <td class="pass">30 files / 360 tests</td>
+              <td>No test or type errors; 27 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -1546,7 +1578,7 @@
               <tr>
                 <td><strong>Release block</strong></td>
                 <td>
-                  HI-02 through HI-04; clean pack rebuild; explicit pack output
+                  HI-03 through HI-04; clean pack rebuild; explicit pack output
                   validation.
                 </td>
                 <td>
