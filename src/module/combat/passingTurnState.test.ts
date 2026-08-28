@@ -1,7 +1,7 @@
 import { expect, it, vi } from "vitest";
 
+import { createSerializedUpdateQueue } from "../../functions/createSerializedUpdateQueue";
 import {
-  createSerializedPassingTurnUpdater,
   getPassingTurnsRemaining,
   updatePassingTurnInfo,
 } from "./passingTurnState";
@@ -40,7 +40,7 @@ it("updates one round without mutating the existing state", () => {
 });
 
 it("serializes updates for the same combatant", async () => {
-  const serialize = createSerializedPassingTurnUpdater<object>();
+  const serialize = createSerializedUpdateQueue<object>();
   const combatant = {};
   const order: string[] = [];
   let releaseFirst: () => void = vi.fn();
@@ -66,7 +66,7 @@ it("serializes updates for the same combatant", async () => {
 });
 
 it("allows updates for different combatants to run concurrently", async () => {
-  const serialize = createSerializedPassingTurnUpdater<object>();
+  const serialize = createSerializedUpdateQueue<object>();
   const started: string[] = [];
 
   const updates = ["one", "two"].map((name) =>
@@ -81,7 +81,7 @@ it("allows updates for different combatants to run concurrently", async () => {
 });
 
 it("continues the queue after a failed update", async () => {
-  const serialize = createSerializedPassingTurnUpdater<object>();
+  const serialize = createSerializedUpdateQueue<object>();
   const combatant = {};
   const laterUpdate = vi.fn();
 

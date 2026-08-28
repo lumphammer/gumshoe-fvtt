@@ -22,19 +22,3 @@ export function updatePassingTurnInfo(
   };
   return updated;
 }
-
-export function createSerializedPassingTurnUpdater<Key extends object>() {
-  const pendingUpdates = new WeakMap<Key, Promise<void>>();
-
-  return (key: Key, update: () => Promise<void>): Promise<void> => {
-    const previousUpdate = pendingUpdates.get(key) ?? Promise.resolve();
-    const currentUpdate = previousUpdate.then(update);
-    pendingUpdates.set(
-      key,
-      currentUpdate.catch(() => {
-        // Keep a failed update from preventing later updates from running.
-      }),
-    );
-    return currentUpdate;
-  };
-}

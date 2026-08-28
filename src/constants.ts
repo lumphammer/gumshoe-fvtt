@@ -100,6 +100,7 @@ export const passingTurnsRemaining = "passingTurnsRemaining";
 export const extraPassingTurns = "extraPassingTurns";
 export const extraCssClasses = "extraCssClasses";
 export const journalMemories = "journalMemories";
+export const journalMemory = "journalMemory";
 
 // magic values
 
