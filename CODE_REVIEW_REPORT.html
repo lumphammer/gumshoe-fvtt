@@ -571,10 +571,10 @@
               impact was not reachable &mdash; ME-13 is closed as superseded,
               and one new finding (ME-16) was added for the root cause it was
               circling. Per-finding verification notes are recorded inline
-              below. That pass left 21 findings open; ME-11 has since been
-              resolved, leaving 20. The ranking has shifted: the highest-value
-              work is now silent data loss in settings and abilities, not
-              release tooling.
+              below. That pass left 21 findings open; ME-11 and HI-03 have
+              since been resolved, leaving 19. The ranking has shifted: the
+              highest-value work is now silent data loss in settings and
+              abilities, not release tooling.
             </p>
           </div>
           <div class="status">
@@ -587,10 +587,10 @@
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>20</b><span>open findings</span></div>
+          <div class="metric"><b>19</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>3</b><span>high</span></div>
-          <div class="metric medium"><b>11</b><span>medium</span></div>
+          <div class="metric medium"><b>10</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
       </section>
@@ -763,7 +763,7 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="HI-03">
+          <article class="finding medium-sev resolved" id="HI-03">
             <div class="finding-head">
               <div>
                 <h3>
@@ -772,12 +772,17 @@
                 </h3>
                 <p class="refs">
                   <a
-                    href="packages/shared-fvtt-bits/src/vitePluginCompileFvttPacks.ts#L31"
-                    >vitePluginCompileFvttPacks.ts:31–49</a
+                    href="packages/shared-fvtt-bits/src/vitePluginCompileFvttPacks.ts#L52"
+                    >vitePluginCompileFvttPacks.ts:52–161</a
+                  >
+                  ·
+                  <a
+                    href="packages/shared-fvtt-bits/src/vitePluginCompileFvttPacks.test.ts#L52"
+                    >vitePluginCompileFvttPacks.test.ts:52–114</a
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               When locks are found, the Vite <code>closeBundle</code> hook
@@ -790,9 +795,16 @@
               missing, or wrong-commit compendiums while reporting success.
             </p>
             <p class="recommendation">
-              <strong>Fix/test:</strong> throw on locks in production builds.
-              Build packs into a staging directory, validate them, and
-              atomically replace the destination only on success.
+              <strong>Resolved 28 August 2026.</strong> Production and default
+              builds now throw when pack locks are detected. Explicit
+              development-mode builds retain the best-effort behavior needed
+              for local watch builds, but still validate the existing manifest
+              paths before returning. Compilation now targets a sibling staging
+              directory; only a fully compiled, manifest-valid pack set is
+              promoted, with the prior output restored if promotion fails.
+              Five regression tests cover locked production and development
+              builds, failed compilation, failed staging validation, and a
+              successful clean replacement.
             </p>
             <p class="review-note">
               <span class="tag">Second-pass review · 28 Aug 2026</span>
@@ -1764,9 +1776,9 @@
             <span class="grade">C−</span>
             <h3>Test confidence</h3>
             <p>
-              371 tests pass, but actors, items, combat, startup hooks, sockets,
-              pack-manifest integrity, and end-to-end Foundry flows are sparse
-              or absent.
+              376 tests pass, and pack-build failure integrity now has focused
+              coverage. Actors, items, combat, startup hooks, sockets, and
+              end-to-end Foundry flows remain sparse or absent.
             </p>
           </div>
           <div class="health-card">
@@ -1855,7 +1867,7 @@
         <div class="panel" style="margin-top: 1rem">
           <h3>Test coverage shape</h3>
           <p>
-            Vitest reports 31 executed files and 371 tests across 31 distinct
+            Vitest reports 32 executed files and 376 tests across 32 distinct
             test source files. Coverage is concentrated in pure utilities,
             settings/store snapshots, journal document memory, input
             components, and the mini-router.
@@ -1864,8 +1876,8 @@
             <strong>Highest-value missing suites:</strong> actor/item mutation
             contracts, classic and turn-passing combat state machines,
             startup-hook behavior with mocked Foundry documents, migration
-            success-path fixtures, import/export round trips, socket
-            authorization, and manifest-to-build asset validation.
+            success-path fixtures, import/export round trips, and socket
+            authorization.
           </p>
           <div class="callout">
             <p>
@@ -1888,6 +1900,14 @@
               retries at two, suppressing the startup error notification once
               exhausted, and a GM can retry explicitly from the Misc settings
               tab, which shows the last migration error.
+            </p>
+          </div>
+          <div class="callout">
+            <p>
+              <strong>HI-03 regression coverage:</strong> five tests exercise
+              locked production and development builds, compilation and
+              validation failures that preserve the prior output, and
+              successful staged replacement.
             </p>
           </div>
           <div class="callout">
@@ -1923,8 +1943,8 @@
             </tr>
             <tr>
               <td><code>pnpm run test --run</code></td>
-              <td class="pass">31 files / 371 tests</td>
-              <td>No test or type errors; 31 distinct test source files.</td>
+              <td class="pass">32 files / 376 tests</td>
+              <td>No test or type errors; 32 distinct test source files.</td>
             </tr>
             <tr>
               <td>Manifest path resolution</td>
@@ -1982,12 +2002,12 @@
               <tr>
                 <td><strong>Release block</strong></td>
                 <td>
-                  HI-03 through HI-04; clean pack rebuild; explicit pack output
-                  validation.
+                  HI-04, ME-01, and ME-06; add settings import round-trip
+                  coverage.
                 </td>
                 <td>
-                  Migration and pack failures make CI/runtime report failure;
-                  settings import round trips are lossless.
+                  Settings import round trips are lossless and user-entered
+                  ability data survives category and rating changes.
                 </td>
               </tr>
               <tr>
