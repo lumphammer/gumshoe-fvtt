@@ -28,6 +28,10 @@ vi.mock("../settings/settings", () => ({
     personalDetails: { get: () => [{ name: "Drive" }] },
   },
 }));
+vi.mock("../functions/utilities", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  systemLogger: { error: vi.fn(), log: vi.fn() },
+}));
 
 import { installPersonalDetailHookHandler } from "./installPersonalDetailHookHandler";
 
@@ -51,7 +55,12 @@ function setUp() {
       if (event === "preCreateItem") handler = fn;
     },
   });
-  vi.stubGlobal("game", { userId: "user1", packs: [] });
+  vi.stubGlobal("game", {
+    userId: "user1",
+    packs: [],
+    i18n: { localize: (key: string) => key, format: (key: string) => key },
+  });
+  vi.stubGlobal("ui", { notifications: { error: vi.fn() } });
   const existing = { id: "existing1", system: { slotIndex: 0 } };
   const actor = {
     items: [existing],
@@ -146,6 +155,21 @@ describe("installPersonalDetailHookHandler", () => {
       ),
     ).toBeUndefined();
     expect(mocks.wait).not.toHaveBeenCalled();
+  });
+
+  it("still asks when the detail is in a slot this world has not configured", async () => {
+    const { handler, actor, item, createData } = setUp();
+    // slot 7 is not in the mocked one-entry personalDetails list
+    createData.system.slotIndex = 7;
+    (actor.items[0] as any).system.slotIndex = 7;
+    mocks.wait.mockResolvedValue(null);
+
+    expect(handler(item, createData, {}, "user1")).toBe(false);
+
+    await vi.waitFor(() =>
+      expect(actor.createEmbeddedDocuments).toHaveBeenCalled(),
+    );
+    expect(mocks.wait).toHaveBeenCalled();
   });
 
   it("ignores creations made by another user", () => {

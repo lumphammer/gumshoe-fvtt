@@ -613,14 +613,14 @@
               <span class="mono">code-report</span> branch, after every
               first-review finding was resolved. It found
               <strong>eleven new issues</strong> &mdash; four Medium, seven Low,
-              no Critical or High. R2-01 and R2-05 have since been fixed on this
-              branch and R2-02 closed as won't-fix, leaving eight open. None of
-              them overlap the first review's findings; they sit in chat-message
-              construction, ordered-record helpers, dialog lifecycle, a
-              broadcast hook, and the type-level guard that was supposed to
-              prevent HI-04. Every one was verified by running it. Four further
-              hypotheses were tested and cleared, and are recorded rather than
-              discarded.
+              no Critical or High. R2-01, R2-03, R2-05 and R2-09 have since been
+              fixed on this branch and R2-02 closed as won't-fix, leaving six
+              open. None of them overlap the first review's findings; they sit
+              in chat-message construction, ordered-record helpers, dialog
+              lifecycle, a broadcast hook, and the type-level guard that was
+              supposed to prevent HI-04. Every one was verified by running it.
+              Four further hypotheses were tested and cleared, and are recorded
+              rather than discarded.
             </p>
             <p class="second-pass">
               <strong>First-review second-pass, 28 August 2026.</strong> Every
@@ -642,26 +642,26 @@
             <p>
               The full pipeline passes and no open finding blocks a release: the
               second review's remaining items are correctness and clarity work,
-              not data loss or release integrity. R2-01 and R2-05 are fixed and
-              R2-02 is accepted as a known cost until the ordered records become
-              arrays; the dialog and hook lifecycle items are next.
+              not data loss or release integrity. R2-01, R2-03, R2-05 and R2-09
+              are fixed and R2-02 is accepted as a known cost until the ordered
+              records become arrays; R2-04 is the last of the lifecycle items.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>8</b><span>open findings</span></div>
+          <div class="metric"><b>6</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
-          <div class="metric medium"><b>2</b><span>medium</span></div>
-          <div class="metric low"><b>6</b><span>low</span></div>
+          <div class="metric medium"><b>1</b><span>medium</span></div>
+          <div class="metric low"><b>5</b><span>low</span></div>
         </div>
         <p class="metrics-note">
           Counts are for the second review's open items. It raised eleven
-          findings; R2-01 and R2-05 are resolved, R2-01's localized-content half
-          was split out as R2-11, which remains open, and R2-02 is closed as
-          won't-fix pending the ordered-record migration. All 25 first-review
-          findings remain resolved; they are kept below as the record of that
-          work.
+          findings; R2-01, R2-03, R2-05 and R2-09 are resolved, R2-01's
+          localized-content half was split out as R2-11, which remains open, and
+          R2-02 is closed as won't-fix pending the ordered-record migration. All
+          25 first-review findings remain resolved; they are kept below as the
+          record of that work.
         </p>
       </section>
 
@@ -671,9 +671,9 @@
           <div class="priority">
             <b>1 &middot; Dialog and hook lifecycle</b>
             <p>
-              <a href="#R2-03">R2-03</a>, <a href="#R2-09">R2-09</a> and
-              <a href="#R2-04">R2-04</a> are all "this async path has no closing
-              branch". Small fixes, and they share a testing approach.
+              <a href="#R2-04">R2-04</a> is what is left of this group after
+              R2-03 and R2-09: an async path with no closing branch. The
+              hook-handler test added for R2-03 is the pattern to follow.
             </p>
           </div>
           <div class="priority">
@@ -710,15 +710,15 @@
         <p class="lede-2">
           A fresh, independent pass over the current
           <span class="mono">code-report</span> branch, carried out after every
-          first-review finding had been resolved. R2-01 and R2-05 have since
-          been fixed on this branch and R2-02 accepted as a won't-fix; all three
-          are struck through below, and the rest are open. It is not a re-check
-          of that work; it is a new survey of the whole codebase, so the
-          findings below are in areas the first review did not reach. Each one
-          was verified by execution &mdash; against a DOM parser, the TypeScript
-          type checker, Node, or the installed Foundry v14 source &mdash; before
-          being written down. Four further hypotheses were tested and cleared;
-          they are recorded under
+          first-review finding had been resolved. R2-01, R2-03, R2-05 and R2-09
+          have since been fixed on this branch and R2-02 accepted as a
+          won't-fix; those five are struck through below, and the rest are open.
+          It is not a re-check of that work; it is a new survey of the whole
+          codebase, so the findings below are in areas the first review did not
+          reach. Each one was verified by execution &mdash; against a DOM
+          parser, the TypeScript type checker, Node, or the installed Foundry
+          v14 source &mdash; before being written down. Four further hypotheses
+          were tested and cleared; they are recorded under
           <a href="#not-defects">Investigated and cleared</a> so nobody spends
           the time twice.
         </p>
@@ -907,7 +907,7 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="R2-03">
+          <article class="finding medium-sev resolved" id="R2-03">
             <div class="finding-head">
               <div>
                 <h3>
@@ -920,10 +920,18 @@
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
-              <code>askUserAboutAddingOrReplacing</code> wraps a
+              <strong>Resolved 29 August 2026.</strong> The dialog is now a
+              <code>DialogV2.wait</code>, and dismissal is treated as "add" -
+              the default button. The ordering question was settled too: the
+              hook cancels the creation, asks, and re-issues it, so the item no
+              longer exists before the user has answered. The description below
+              is kept as the record of the defect.
+            </p>
+            <p>
+              <code>askUserAboutAddingOrReplacing</code> wrapped a
               <code>DialogV2</code> in a hand-rolled promise that is resolved
               only from the two button callbacks. Closing the dialog with the
               window's X or with Escape runs neither, so the promise never
@@ -947,13 +955,29 @@
               cancelled creation by returning false. That is worth knowing
               before changing the flow.
             </p>
-            <p class="recommendation">
-              <strong>Fix:</strong> use <code>DialogV2.wait()</code>, which
-              resolves on close and supports <code>rejectClose</code>, instead
-              of wiring the promise by hand; treat dismissal as "add" (the
-              current default button) or as an explicit cancel. While there,
-              decide whether creation should actually block on the answer
-              &mdash; the current ordering is load-bearing and undocumented.
+            <p class="resolution">
+              <strong>Fix applied:</strong> <code>DialogV2.wait</code> resolves
+              to the pressed button's action, or <code>null</code> when the
+              dialog is dismissed, which the handler maps to "add". The hook now
+              returns <code>false</code> to cancel the create whenever it has a
+              question to ask &mdash; a slot conflict, a compendium pack, or
+              both &mdash; and <code>resolveThenCreate</code> re-issues it
+              afterwards with an <code>investigatorPersonalDetailHandled</code>
+              option so the second pass falls straight through. The stray
+              <code>return false</code> is gone; a real one has taken its place.
+              Creations with no question to ask are left alone entirely, so the
+              common path costs nothing.
+            </p>
+            <p class="resolution">
+              <strong>Verification:</strong> six new tests around the registered
+              hook cover dismissal-as-add, replace-then-create ordering, the
+              cancel-and-re-issue round trip, and the three cases that must fall
+              through untouched. Flipping the dismissal mapping to "replace"
+              fails the dismissal test, so it is not vacuous. The re-issued
+              creation is safe against the other five
+              <code>preCreateItem</code> handlers: all of them only call
+              <code>updateSource</code> on the pending document, so running them
+              twice changes nothing.
             </p>
           </article>
 
@@ -1235,7 +1259,7 @@
             </p>
           </article>
 
-          <article class="finding low-sev" id="R2-09">
+          <article class="finding low-sev resolved" id="R2-09">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1248,10 +1272,17 @@
                   >
                 </p>
               </div>
-              <span class="badge">Low</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
-              The dialog's prompt text indexes the configured slot list
+              <strong>Resolved 29 August 2026.</strong> Fixed alongside
+              <a href="#R2-03">R2-03</a>, and promoted from "worth fixing in the
+              same pass" to "must be": once the hook cancels creation before
+              asking, this throw loses the item instead of duplicating it. The
+              description below is kept as the record of the defect.
+            </p>
+            <p>
+              The dialog's prompt text indexed the configured slot list
               directly:
               <code>settings.personalDetails.get()[slotIndex ?? 0].name</code>.
               A personal detail whose <code>slotIndex</code> is beyond the
@@ -1267,10 +1298,16 @@
               a root with <a href="#R2-03">R2-03</a> and is worth fixing in the
               same pass.
             </p>
-            <p class="recommendation">
-              <strong>Fix:</strong> optional-chain the lookup and fall back to a
-              generic label; the occupation branch immediately above already
-              takes its label from a setting rather than an index.
+            <p class="resolution">
+              <strong>Fix applied:</strong> the lookup is optional-chained and
+              falls back to Foundry's own
+              <code>TYPES.Item.personalDetail</code> label, which is translated
+              in every locale, so no new key was needed. The re-issued creation
+              also carries a <code>catch</code> that logs and notifies, because
+              under the new ordering any failure between cancelling and
+              re-creating would otherwise drop the item without a word. Covered
+              by a test that puts the detail in a slot the world has not
+              configured; it fails if the optional chain is removed.
             </p>
           </article>
 
@@ -2796,7 +2833,7 @@
             <span class="grade">C+</span>
             <h3>Test confidence</h3>
             <p>
-              484 tests pass across 46 files. But 20 test files cover 246
+              491 tests pass across 47 files. But 20 test files cover 246
               component sources, seven of those for one subsystem, and no sheet
               component is tested at all. <a href="#R2-05">R2-05</a> was a guard
               that stayed green while the defect it targeted shipped; it is
@@ -3108,10 +3145,10 @@
             </tr>
             <tr>
               <td><code>pnpm vitest run</code></td>
-              <td class="pass">46 files / 484 tests</td>
+              <td class="pass">47 files / 491 tests</td>
               <td>
                 No test or type errors, at
-                <span class="mono">5ad1d99a</span> on
+                <span class="mono">d48e30f7</span> on
                 <span class="mono">code-report</span>.
               </td>
             </tr>

@@ -33,12 +33,18 @@ function isPersonalDetailCreateData(x: any): x is PersonalDetailItemCreateData {
 async function askUserAboutAddingOrReplacing(
   createData: PersonalDetailItemCreateData,
 ): Promise<"add" | "replace"> {
+  assertGame(game);
+  // the slot may not exist in this world's list - the detail could have come
+  // from a compendium built under a different preset, or outlived a preset
+  // change that shortened the list - so fall back to the generic type label
+  const slotName =
+    settings.personalDetails.get()[createData.system?.slotIndex ?? 0]?.name ??
+    game.i18n.localize("TYPES.Item.personalDetail");
   const tlMessage = getTranslated("Replace existing {Thing} with {Name}?", {
     Thing:
       createData.system?.slotIndex === occupationSlotIndex
         ? settings.occupationLabel.get()
-        : settings.personalDetails.get()[createData.system?.slotIndex ?? 0]
-            .name,
+        : slotName,
     Name: createData.name,
   });
   const result = await DialogV2.wait({
@@ -208,13 +214,20 @@ export function installPersonalDetailHookHandler() {
       if (itemsAlreadyInSlot.length === 0 && pack === undefined) {
         return;
       }
+      // creation has been cancelled by the time this runs, so a failure here
+      // loses the item silently unless we say something
       void resolveThenCreate(
         actor,
         item.toObject(),
         createData,
         itemsAlreadyInSlot,
         pack,
-      );
+      ).catch((error: unknown) => {
+        systemLogger.error("Failed to add personal detail", error);
+        ui.notifications?.error(
+          `Failed to add "${createData.name}" - see the console for details`,
+        );
+      });
       // cancel this creation; `resolveThenCreate` will re-issue it once the
       // user has answered
       return false;
