@@ -613,14 +613,14 @@
               <span class="mono">code-report</span> branch, after every
               first-review finding was resolved. It found
               <strong>eleven new issues</strong> &mdash; four Medium, seven Low,
-              no Critical or High. All but one have since been settled on this
-              branch: nine are fixed and R2-02 is closed as won't-fix, leaving
-              R2-11 open. None of them overlap the first review's findings; they
-              sit in chat-message construction, ordered-record helpers, dialog
-              lifecycle, a broadcast hook, and the type-level guard that was
-              supposed to prevent HI-04. Every one was verified by running it.
-              Four further hypotheses were tested and cleared, and are recorded
-              rather than discarded.
+              no Critical or High. All of them have since been settled on this
+              branch: ten are fixed and R2-02 is closed as won't-fix. No second
+              review finding remains open. None of them overlap the first
+              review's findings; they sit in chat-message construction,
+              ordered-record helpers, dialog lifecycle, a broadcast hook, and
+              the type-level guard that was supposed to prevent HI-04. Every one
+              was verified by running it. Four further hypotheses were tested
+              and cleared, and are recorded rather than discarded.
             </p>
             <p class="second-pass">
               <strong>First-review second-pass, 28 August 2026.</strong> Every
@@ -641,27 +641,24 @@
             <strong>Go</strong>
             <p>
               The full pipeline passes and no open finding blocks a release: the
-              second review's remaining items are correctness and clarity work,
-              not data loss or release integrity. Every Medium is now either
-              fixed or accepted, and the Lows are down to one. R2-02 is the only
-              knowing omission: a known cost until the ordered records become
-              arrays.
+              second review's findings are all settled. R2-02 is the only
+              knowing omission: a known cost, accepted deliberately, until the
+              ordered records become arrays.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>1</b><span>open findings</span></div>
+          <div class="metric"><b>0</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
           <div class="metric medium"><b>0</b><span>medium</span></div>
-          <div class="metric low"><b>1</b><span>low</span></div>
+          <div class="metric low"><b>0</b><span>low</span></div>
         </div>
         <p class="metrics-note">
           Counts are for the second review's open items. It raised eleven
-          findings. R2-01 and R2-03 through R2-10 are resolved, apart from
-          R2-02, which is closed as won't-fix pending the ordered-record
-          migration. R2-01's localized-content half was split out as R2-11,
-          which is the one still open. All 25 first-review findings remain
+          findings, plus R2-11, split out of R2-01 while fixing it. All are
+          resolved except R2-02, which is closed as won't-fix pending the
+          ordered-record migration. All 25 first-review findings remain
           resolved; they are kept below as the record of that work.
         </p>
       </section>
@@ -704,16 +701,16 @@
           A fresh, independent pass over the current
           <span class="mono">code-report</span> branch, carried out after every
           first-review finding had been resolved. R2-01, R2-03, R2-04, R2-05,
-          R2-06, R2-07, R2-08, R2-09 and R2-10 have since been fixed on this
-          branch and R2-02 accepted as a won't-fix; those ten are struck through
-          below, and only R2-11 is still open. It is not a re-check of that
-          work; it is a new survey of the whole codebase, so the findings below
-          are in areas the first review did not reach. Each one was verified by
-          execution &mdash; against a DOM parser, the TypeScript type checker,
-          Node, or the installed Foundry v14 source &mdash; before being written
-          down. Four further hypotheses were tested and cleared; they are
-          recorded under <a href="#not-defects">Investigated and cleared</a> so
-          nobody spends the time twice.
+          R2-06 through R2-11 have since been fixed on this branch and R2-02
+          accepted as a won't-fix, so everything below is struck through. It is
+          not a re-check of that work; it is a new survey of the whole codebase,
+          so the findings below are in areas the first review did not reach.
+          Each one was verified by execution &mdash; against a DOM parser, the
+          TypeScript type checker, Node, or the installed Foundry v14 source
+          &mdash; before being written down. Four further hypotheses were tested
+          and cleared; they are recorded under
+          <a href="#not-defects">Investigated and cleared</a> so nobody spends
+          the time twice.
         </p>
         <div class="finding-list">
           <article class="finding medium-sev resolved" id="R2-01">
@@ -1454,7 +1451,7 @@
             </p>
           </article>
 
-          <article class="finding low-sev" id="R2-11">
+          <article class="finding low-sev resolved" id="R2-11">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1471,8 +1468,14 @@
                   >
                 </p>
               </div>
-              <span class="badge">Low</span>
+              <span class="badge resolved">Resolved</span>
             </div>
+            <p>
+              <strong>Resolved 29 August 2026.</strong> Investigating the call
+              sites showed the problem was wider than described here and that
+              both suggested fixes were wrong; see below. The description is
+              kept as the record of the defect.
+            </p>
             <p>
               Split out of <a href="#R2-01">R2-01</a>, which is resolved. This
               half has the same cause and a different fix, so it did not travel
@@ -1490,13 +1493,55 @@
               <span class="mono">&lt;</span> still injects markup into the
               recipient's chat log.
             </p>
-            <p class="recommendation">
-              <strong>Fix:</strong> escape the substituted values with
-              <code>foundry.utils.escapeHTML</code> before passing them to
-              <code>getTranslated</code>, or escape inside
-              <code>getTranslated</code> itself so every caller inherits it. The
-              second is better if no caller relies on passing markup through
-              &mdash; worth checking the handful of call sites first.
+            <p class="review-note">
+              <span class="tag">Both options were wrong</span>
+              Escaping inside <code>getTranslated</code> would have been
+              actively harmful: of its fifty call sites, most render into React
+              JSX, which escapes already, so a category named
+              <span class="mono">Bob &amp; Alice</span> would have rendered
+              visibly as <span class="mono">Bob &amp;amp; Alice</span>. And
+              escaping only the two call sites named above would have missed
+              most of the problem.
+            </p>
+            <p class="review-note">
+              <span class="tag">The real scope</span>
+              Only six <code>getTranslated</code> calls pass values at all
+              &mdash; but <code>confirmADoodleDo</code> builds
+              <code>&lt;p&gt;${tlMessage}&lt;/p&gt;</code> as DialogV2 content
+              and forwards its own <code>values</code> through. That is sixteen
+              callers, fifteen of which pass user-controlled document names, and
+              <a href="src/components/journalEditorSheet/PageEditor.tsx#L32"
+                >PageEditor.tsx:32</a
+              >
+              interpolates a page name into the message itself with
+              <code>translate: false</code>, where no amount of value-escaping
+              would reach it.
+            </p>
+            <p class="resolution">
+              <strong>Fix applied,</strong> split by shape. Where the result is
+              wrapped in a paragraph &mdash; <code>confirmADoodleDo</code> and
+              the personal-detail dialog &mdash; the element is built through
+              the DOM with <code>textContent</code>, which fixes all sixteen
+              confirm callers at once and needs no escaping logic. Where the
+              content <em>is</em> the translated string &mdash;
+              <code>ActiveCharacterModel.broadcastUserMessage</code> and
+              <code>installEquipmentAddedNotifier</code> &mdash; a new
+              <code>getTranslatedHtml</code> escapes the substituted values,
+              with a docblock saying not to use it for anything React renders.
+            </p>
+            <p class="review-note">
+              <span class="tag">Checked, not assumed</span>
+              DialogV2 button labels are set with
+              <code>span.innerText</code> (<span class="mono"
+                >dialog.mjs:249</span
+              >), so only <code>content</code> is HTML and the label path needed
+              nothing. And exactly one translation key across all ten locales
+              contains markup &mdash;
+              <code>DamageAtRangeNameWithWeaponName</code>, with a
+              <code>&lt;b&gt;</code> &mdash; and it is referenced nowhere in
+              <span class="mono">src/</span>, so treating message text as text
+              breaks nothing. Three tests, each checked against the pre-fix
+              code.
             </p>
           </article>
         </div>
@@ -2188,7 +2233,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Resolved</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               The handler prevents the default and unconditionally JSON-parses
@@ -2252,7 +2297,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Resolved</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               Reading <code>passingTurnsRemaining</code> starts an unawaited
@@ -2316,7 +2361,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Resolved</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               Incoming messages are validated only as
@@ -2443,7 +2488,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Resolved</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               Each page save performs a read/merge/write of the entire
@@ -2548,7 +2593,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Resolved</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               Every setting is written concurrently with
@@ -2610,7 +2655,7 @@
                   <a href="src/module/actors/pc.ts#L327">pc.ts:327–343</a>
                 </p>
               </div>
-              <span class="badge">Resolved</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               <code>equipmentSchema</code> declares <code>categoryId</code> and
@@ -2681,7 +2726,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Resolved</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               <code>!item.parent &amp;&amp; isPCActor(item.parent)</code> cannot
@@ -2725,7 +2770,7 @@
                   · <a href="src/presets.ts#L57">presets.ts:57–58</a>
                 </p>
               </div>
-              <span class="badge">Resolved</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               <code>useTurnPassingInitiative</code> defaults from
@@ -2772,7 +2817,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Resolved</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               The warning condition requires
@@ -2818,7 +2863,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Resolved</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               The attack path always decrements ammo and does not check
@@ -2863,7 +2908,7 @@
                   >
                 </p>
               </div>
-              <span class="badge">Resolved</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
               When a Dice So Nice setting exists, startup disables simultaneous
@@ -2926,7 +2971,7 @@
             <span class="grade">C+</span>
             <h3>Test confidence</h3>
             <p>
-              482 tests pass across 47 files. But 20 test files cover 246
+              485 tests pass across 49 files. But 20 test files cover 246
               component sources, seven of those for one subsystem, and no sheet
               component is tested at all. <a href="#R2-05">R2-05</a> was a guard
               that stayed green while the defect it targeted shipped; it is
@@ -3238,10 +3283,10 @@
             </tr>
             <tr>
               <td><code>pnpm vitest run</code></td>
-              <td class="pass">47 files / 482 tests</td>
+              <td class="pass">49 files / 485 tests</td>
               <td>
                 No test or type errors, at
-                <span class="mono">19486346</span> on
+                <span class="mono">a3464b3f</span> on
                 <span class="mono">code-report</span>.
               </td>
             </tr>

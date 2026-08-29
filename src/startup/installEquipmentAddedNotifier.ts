@@ -1,4 +1,4 @@
-import { getTranslated } from "../functions/getTranslated";
+import { getTranslatedHtml } from "../functions/getTranslated";
 import { assertGame } from "../functions/isGame";
 import { isPCActor } from "../module/actors/pc";
 import { settings } from "../settings/settings";
@@ -36,7 +36,8 @@ export function installEquipmentAddedNotifier() {
           speaker: ChatMessage.getSpeaker({
             alias: game.user.name,
           }),
-          content: getTranslated("ItemNameAddedToActorName", {
+          // chat message content is HTML, and these are user-supplied names
+          content: getTranslatedHtml("ItemNameAddedToActorName", {
             ItemName: item.name,
             ActorName: item.parent?.name ?? "",
           }),

@@ -47,8 +47,12 @@ async function askUserAboutAddingOrReplacing(
         : slotName,
     Name: createData.name,
   });
+  const content = document.createElement("p");
+  content.textContent = tlMessage;
   const result = await DialogV2.wait({
-    content: `<p>${tlMessage}</p>`,
+    // through the DOM, so the item name can't break out - same reason as
+    // buildAbilityCardContent
+    content: content.outerHTML,
     window: {
       title: "Replace or add?",
     },

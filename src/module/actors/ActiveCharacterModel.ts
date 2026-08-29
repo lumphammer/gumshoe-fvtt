@@ -1,5 +1,8 @@
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { getTranslated } from "../../functions/getTranslated";
+import {
+  getTranslated,
+  getTranslatedHtml,
+} from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
 import { DataSchema, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
@@ -83,7 +86,8 @@ export class ActiveCharacterModel<
       speaker: ChatMessage.getSpeaker({
         alias: game.user.name ?? "",
       }),
-      content: getTranslated(text, {
+      // chat message content is HTML, and these are user-supplied names
+      content: getTranslatedHtml(text, {
         ActorName: this.parent.name ?? "",
         UserName: game.user.name ?? "",
         ...extraData,
