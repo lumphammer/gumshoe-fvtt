@@ -29,10 +29,12 @@ interface SettingFactoryArgs<T> {
   default: T;
   onChange?: (newVal: T) => void;
   exportable?: boolean;
+  managedBySettingsForm?: boolean;
 }
 
 interface SettingObject<T, TValidator extends z.ZodType | undefined> {
   key: string;
+  default: T;
   get: () => T;
   // set: (value: T) => Promise<T>;
   set: (
@@ -44,6 +46,7 @@ interface SettingObject<T, TValidator extends z.ZodType | undefined> {
     >
   >;
   exportable: boolean;
+  managedBySettingsForm: boolean;
   validator?: TValidator;
 }
 
@@ -79,6 +82,7 @@ export const createSetting =
     choices,
     onChange,
     exportable = true,
+    managedBySettingsForm = true,
   }: SettingFactoryArgs<TSetting>): SettingObject<TSetting, TValidator> => {
     Hooks.once("init", () => {
       assertGame(game);
@@ -96,9 +100,11 @@ export const createSetting =
     });
     return {
       key,
+      default: _default,
       get: getSetting<TSetting>(key),
       set: setSetting<TSetting>(key),
       exportable,
+      managedBySettingsForm,
       validator: validator,
     };
   };

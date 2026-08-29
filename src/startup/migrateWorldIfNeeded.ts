@@ -1,6 +1,7 @@
 import system from "../../public/system.json";
 import { assertGame } from "../functions/isGame";
 import { mapObject, systemLogger } from "../functions/utilities";
+import { errorMessage } from "../migrations/failures";
 import { flaggedMigrations } from "../migrations/flaggedMigrations";
 import { getFlaggedMigrations } from "../migrations/getFlaggedMigrations";
 import { migrateWorld } from "../migrations/migrateWorld";
@@ -12,10 +13,21 @@ import {
 import { settings } from "../settings/settings";
 
 /**
+ * How many times we let a migration fail on startup before we give up and
+ * leave it to the GM to retry by hand. Without this, a migration that fails
+ * every time nags the GM with an error notification on every single login.
+ */
+export const maximumAutomaticMigrationAttempts = 2;
+
+/**
  * The startup task, which determines whether a migration is needed based on
  * migration flags, and then runs it if so.
+ *
+ * All migrations are idempotent, so a retry re-runs the whole outstanding set
+ * over every document. Documents that were already migrated produce an empty
+ * update and are skipped, so this costs nothing but a little CPU.
  */
-export const migrateWorldIfNeeded = async () => {
+export const migrateWorldIfNeeded = async ({ force = false } = {}) => {
   assertGame(game);
 
   if (!game.user.isGM) {
@@ -59,9 +71,35 @@ export const migrateWorldIfNeeded = async () => {
   const [needsMigrationBasedOnFlags, filteredMigrations, newMigrationFlags] =
     getFlaggedMigrations(migrationFlags, flaggedMigrations);
 
-  // Perform the migration
-  if (needsMigrationBasedOnFlags) {
+  if (!needsMigrationBasedOnFlags) {
+    return;
+  }
+
+  // Perform the migration, keeping count of how many times we've tried, so
+  // that a permanently broken migration eventually stops nagging the GM.
+  const attempts = settings.migrationAttempts.get();
+  if (!force && attempts >= maximumAutomaticMigrationAttempts) {
+    systemLogger.warn(
+      `Skipping ${system.title} system migration after ${attempts} failed attempts. A GM can retry it from GUMSHOE Settings > Misc.`,
+    );
+    return;
+  }
+
+  try {
     await migrateWorld(filteredMigrations);
     await settings.migrationFlags.set(newMigrationFlags);
+    await settings.migrationAttempts.set(0);
+    await settings.migrationLastError.set("");
+  } catch (error) {
+    // migrateWorld has already logged and notified; all we do here is count.
+    await settings.migrationAttempts.set(attempts + 1);
+    await settings.migrationLastError.set(errorMessage(error));
   }
 };
+
+/**
+ * Run any outstanding migrations regardless of how many times they've already
+ * failed. Wired up to a button in the settings dialog.
+ */
+export const retryFailedMigrations = async () =>
+  migrateWorldIfNeeded({ force: true });

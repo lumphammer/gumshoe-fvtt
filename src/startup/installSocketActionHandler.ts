@@ -1,18 +1,25 @@
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
-import { isSocketHookAction } from "../typeAssertions";
+import { dispatchSystemSocketActionToHooks } from "../functions/systemSocketActions";
+import { isSystemSocketAction } from "../typeAssertions";
 
 /**
- * Installs a socket handler that listens for socket messages and calls the
- * appropriate hook.
+ * Installs a socket handler for the system's explicitly supported commands.
+ * Foundry's custom socket relay appends the authenticated sender's user ID.
  */
 export function installSocketActionHandler() {
   Hooks.on("ready", () => {
     assertGame(game);
-    game.socket?.on(constants.socketScope, (data: unknown) => {
-      if (isSocketHookAction(data)) {
-        Hooks.call(data.hook, ...data.payload);
-      }
-    });
+    game.socket?.on(
+      constants.socketScope,
+      (data: unknown, requestingUserId: unknown) => {
+        if (
+          isSystemSocketAction(data) &&
+          typeof requestingUserId === "string"
+        ) {
+          dispatchSystemSocketActionToHooks(data, requestingUserId);
+        }
+      },
+    );
   });
 }

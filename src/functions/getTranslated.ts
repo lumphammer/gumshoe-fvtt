@@ -21,3 +21,26 @@ export function getTranslated(
   const has = game.i18n.has(prefixed, false);
   return `${debug ? (has ? "✔ " : "❌ ") : ""}${local}`;
 }
+
+/**
+ * Like `getTranslated`, but for results which become HTML rather than text -
+ * chat message content, dialog content. The substituted values are escaped,
+ * because they are usually document names, which users control.
+ *
+ * Do not use this for anything React renders: React escapes already, so a name
+ * containing `&` or `'` would come out double-escaped.
+ */
+export function getTranslatedHtml(
+  text: string,
+  values: Record<string, string> = {},
+) {
+  return getTranslated(
+    text,
+    Object.fromEntries(
+      Object.entries(values).map(([key, value]) => [
+        key,
+        foundry.utils.escapeHTML(value),
+      ]),
+    ),
+  );
+}

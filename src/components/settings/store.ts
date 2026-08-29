@@ -1,11 +1,8 @@
-import {
-  CardCategory,
-  EquipmentFieldMetadata,
-  PresetV1,
-} from "@lumphammer/investigator-fvtt-types";
+import { CardCategory, PresetV1 } from "@lumphammer/investigator-fvtt-types";
 import { nanoid } from "nanoid";
 
 import {
+  assertUniqueIds,
   getDevMode,
   moveKeyDown,
   moveKeyUp,
@@ -38,6 +35,12 @@ const defaultStoreArgs: CreateSliceArgs = {
 export const createSystemSlice = (args: CreateSliceArgs) =>
   createSlice<State>(args)({
     setSome: (draft, payload: { newSettings: Partial<SettingsDict> }) => {
+      if (payload.newSettings.cardCategories !== undefined) {
+        assertUniqueIds(
+          payload.newSettings.cardCategories.map(({ id }) => id),
+          "card category ID",
+        );
+      }
       Object.assign(draft.settings, payload.newSettings);
     },
     addCategory: (draft: State) => {
@@ -62,22 +65,12 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
       { settings }: State,
       payload: { oldCategoryId: string; newCategoryId: string },
     ) => {
-      const newCats: typeof settings.equipmentCategories = {};
-      if (settings.equipmentCategories[payload.newCategoryId]) {
-        throw new Error(
-          `Cannot change category id to "${payload.newCategoryId}" - already exists`,
-        );
-      }
-      for (const [id, category] of Object.entries(
+      settings.equipmentCategories = renameProperty(
+        payload.oldCategoryId,
+        payload.newCategoryId,
         settings.equipmentCategories,
-      )) {
-        if (id === payload.oldCategoryId) {
-          newCats[payload.newCategoryId] = category;
-        } else {
-          newCats[id] = category;
-        }
-      }
-      settings.equipmentCategories = newCats;
+        "equipment category ID",
+      );
     },
     moveCategoryUp: (
       { settings }: State,
@@ -125,22 +118,12 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
       { settings: { equipmentCategories: cats } }: State,
       payload: { categoryId: string; fieldId: string; newFieldId: string },
     ) => {
-      const newFields: Record<string, EquipmentFieldMetadata> = {};
-      if (cats[payload.categoryId].fields[payload.newFieldId]) {
-        throw new Error(
-          `Cannot change field id to "${payload.newFieldId}" - already exists`,
-        );
-      }
-      for (const [id, field] of Object.entries(
+      cats[payload.categoryId].fields = renameProperty(
+        payload.fieldId,
+        payload.newFieldId,
         cats[payload.categoryId].fields,
-      )) {
-        if (id === payload.fieldId) {
-          newFields[payload.newFieldId] = field;
-        } else {
-          newFields[payload.fieldId] = field;
-        }
-      }
-      cats[payload.categoryId].fields = newFields;
+        "equipment field ID",
+      );
     },
 
     setFieldType: (
@@ -248,9 +231,17 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
         // and finally, set the actual preset id
         systemPreset: payload.presetId,
       };
+      assertUniqueIds(
+        draft.settings.cardCategories.map(({ id }) => id),
+        "card category ID",
+      );
     },
     addStat: (draft: State, { which }: { which: PcOrNpc }) => {
-      const newId = `stat${Object.keys(draft.settings[which]).length}`;
+      let suffix = Object.keys(draft.settings[which]).length;
+      while (Object.hasOwn(draft.settings[which], `stat${suffix}`)) {
+        suffix += 1;
+      }
+      const newId = `stat${suffix}`;
       draft.settings[which][newId] = { name: "", default: 0 };
     },
     setStatMin: (
@@ -319,12 +310,17 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
         oldStatId,
         newStatId,
         draft.settings[which],
+        "stat ID",
       );
     },
     throwError: (draft: State, { message }: { message: string }) => {
       throw new Error(message);
     },
     addCardCategory: (draft: State, payload: { id: string }) => {
+      assertUniqueIds(
+        [...draft.settings.cardCategories.map(({ id }) => id), payload.id],
+        "card category ID",
+      );
       draft.settings.cardCategories.push({
         id: payload.id,
         singleName: "New category",
@@ -349,12 +345,26 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
       draft: State,
       { id, newId }: { id: string; newId: string },
     ) => {
-      draft.settings.cardCategories.find((c) => c.id === id)!.id = newId;
+      const categoryIndex = draft.settings.cardCategories.findIndex(
+        (category) => category.id === id,
+      );
+      const category = draft.settings.cardCategories[categoryIndex];
+      assertUniqueIds(
+        draft.settings.cardCategories.map((candidate, index) =>
+          index === categoryIndex ? newId : candidate.id,
+        ),
+        "card category ID",
+      );
+      category.id = newId;
     },
     setCardCategories: (
       draft: State,
       { newCardCategories }: { newCardCategories: CardCategory[] },
     ) => {
+      assertUniqueIds(
+        newCardCategories.map(({ id }) => id),
+        "card category ID",
+      );
       draft.settings.cardCategories = newCardCategories;
     },
   });

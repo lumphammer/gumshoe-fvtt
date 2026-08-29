@@ -15,6 +15,63 @@ it("should validate an empty object", () => {
   expect(validatedResult).toEqual({});
 });
 
+it("should preserve stat bounds through an export/import round trip", () => {
+  const exportedSettings = {
+    pcStats: {
+      health: { name: "Health", default: 10, min: 0, max: 20 },
+    },
+    npcStats: {
+      alertness: { name: "Alertness", default: 0, min: -5, max: 5 },
+    },
+  };
+
+  expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
+    exportedSettings,
+  );
+});
+
+it("should preserve card category style keys through a round trip", () => {
+  const exportedSettings = {
+    cardCategories: [
+      {
+        id: "clue",
+        singleName: "Clue",
+        pluralName: "Clues",
+        styleKey: "cardStyleA",
+        threshold: 3,
+        thresholdType: "goal" as const,
+      },
+    ],
+  };
+
+  expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
+    exportedSettings,
+  );
+});
+
+it("should preserve equipment number field bounds through a round trip", () => {
+  const exportedSettings = {
+    equipmentCategories: {
+      general: {
+        name: "General",
+        fields: {
+          quantity: {
+            name: "Quantity",
+            type: "number" as const,
+            default: 1,
+            min: 0,
+            max: 99,
+          },
+        },
+      },
+    },
+  };
+
+  expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
+    exportedSettings,
+  );
+});
+
 it("should throw an error if the settings are the wrong type", () => {
   expect(() =>
     validateImportedSettings(
@@ -33,6 +90,22 @@ it("should throw an error if there is an unknown key", () => {
   ).toThrowErrorMatchingInlineSnapshot(
     `[ZodValidationError: Validation error: Unrecognized key: "unknownKey"]`,
   );
+});
+
+it("should reject duplicate card category ids", () => {
+  const category = {
+    id: "duplicate",
+    singleName: "Category",
+    pluralName: "Categories",
+    threshold: 3,
+    thresholdType: "none",
+  } as const;
+
+  expect(() =>
+    validateImportedSettings(
+      JSON.stringify({ cardCategories: [category, category] }),
+    ),
+  ).toThrow('Card category ID "duplicate" is duplicated');
 });
 
 it("should throw an error if the text is not JSON", () => {

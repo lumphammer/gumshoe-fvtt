@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import * as constants from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { assertGame } from "../../functions/isGame";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPartyActor } from "../../module/actors/party";
 import { isPCActor } from "../../module/actors/pc";
@@ -47,13 +48,21 @@ export const PartySheet = () => {
 
     const onActorDeleted = (
       deletedActor: Actor.Implementation,
-      something: unknown, // i cannot tell what this is supposed to be
-      userId: string, // probably?
+      options: unknown,
+      userId: string,
     ) => {
-      const actorIds = party.system.actorIds.filter(
+      assertGame(game);
+      // deleteActor is broadcast to every client, so without this every client
+      // with the party sheet open would issue the same update at once. the
+      // active GM does it rather than whoever deleted the actor, because the
+      // deleting player may not have permission to write to the party actor
+      if (!game.user.isActiveGM) {
+        return;
+      }
+      const remainingActorIds = party.system.actorIds.filter(
         (id) => id !== deletedActor.id,
       );
-      void party.update({ system: { actorIds } });
+      void party.update({ system: { actorIds: remainingActorIds } });
     };
 
     const onUpdateDeleteCreateItem = async (item: InvestigatorItem) => {

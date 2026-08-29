@@ -4,6 +4,8 @@
 
 import { produce } from "immer";
 
+import { SourceData } from "../../fvtt-exports";
+
 export class InvestigatorActor<
   SubType extends Actor.SubType = Actor.SubType,
 > extends Actor<SubType> {
@@ -20,16 +22,16 @@ export class InvestigatorActor<
   // These are the effects that need to be shown in the combat tracker
 
   // the most recent calculated data
-  protected _currentCombatantEffectsData: SchemaField.SourceData<ActiveEffect.Schema>[] =
+  protected _currentCombatantEffectsData: SourceData<ActiveEffect.Schema>[] =
     this._getCombatantEffectsData();
 
   // store of registered handlers
   protected _combatantEffectsHandlers: Set<
-    (effects: SchemaField.SourceData<ActiveEffect.Schema>[]) => void
+    (effects: SourceData<ActiveEffect.Schema>[]) => void
   > = new Set();
 
   // calculate new data
-  protected _getCombatantEffectsData(): SchemaField.SourceData<ActiveEffect.Schema>[] {
+  protected _getCombatantEffectsData(): SourceData<ActiveEffect.Schema>[] {
     return this.temporaryEffects
       .filter((e) => !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED))
       .map((e) => e.toJSON());
@@ -37,7 +39,7 @@ export class InvestigatorActor<
 
   // add a new handler
   registerCombatantEffectsHandler(
-    handler: (effects: SchemaField.SourceData<ActiveEffect.Schema>[]) => void,
+    handler: (effects: SourceData<ActiveEffect.Schema>[]) => void,
   ): () => void {
     this._combatantEffectsHandlers.add(handler);
     handler(this._currentCombatantEffectsData);
@@ -74,11 +76,11 @@ export class InvestigatorActor<
   protected _currentImmutableData = this.toJSON();
 
   protected _immutableDataUpdateHandlers: Set<
-    (data: SchemaField.SourceData<Actor.Schema>) => void
+    (data: SourceData<Actor.Schema>) => void
   > = new Set();
 
   registerImmutableDataUpdateHandler(
-    handler: (data: SchemaField.SourceData<Actor.Schema>) => void,
+    handler: (data: SourceData<Actor.Schema>) => void,
   ): () => void {
     this._immutableDataUpdateHandlers.add(handler);
     handler(this._currentImmutableData);

@@ -130,9 +130,9 @@ exports[`reducer > should apply a preset 1`] = `
       "migrationFlags": Object {
         "actor": Object {},
         "item": Object {},
-@@ -61,15 +63,33 @@
-        "world": Object {},
-      },
+@@ -63,15 +65,33 @@
+      "migrationAttempts": 0,
+      "migrationLastError": "",
       "useTurnPassingInitiative": false,
 -     "genericOccupation": "",
 -     "investigativeAbilityCategories": Array [],
@@ -171,7 +171,7 @@ exports[`reducer > should apply a preset 1`] = `
       "showEmptyInvestigativeCategories": false,
       "systemMigrationVersion": "",
       "shortNotes": Array [],
-@@ -78,5 +98,7 @@
+@@ -80,5 +100,7 @@
       "cardCategories": Array [],
       "useCards": false,
       "notifyItemAddedToActor": false,
@@ -194,7 +194,7 @@ exports[`reducer > should change a category id 1`] = `
 `;
 
 exports[`reducer > should change a field id 1`] = `
-"@@ -23,12 +23,12 @@
+"@@ -23,7 +23,7 @@
         "category0": Object {
           "name": "initial category",
           "fields": Object {
@@ -202,13 +202,7 @@ exports[`reducer > should change a field id 1`] = `
 +           "foo": Object {
               "name": "Initial field",
               "type": "string",
-              "default": "default value",
-            },
--           "field1": Object {
-+           "field0": Object {
-              "name": "Initial field",
-              "type": "number",
-              "min": 0,"
+              "default": "default value","
 `;
 
 exports[`reducer > should delete a category 1`] = `
@@ -512,9 +506,9 @@ exports[`reducer > should set a stat name 1`] = `
 `;
 
 exports[`reducer > should set a value using setSome 1`] = `
-"@@ -61,7 +61,7 @@
-        "world": Object {},
-      },
+"@@ -63,7 +63,7 @@
+      "migrationAttempts": 0,
+      "migrationLastError": "",
       "useTurnPassingInitiative": false,
 -     "genericOccupation": "",
 +     "genericOccupation": "foo",

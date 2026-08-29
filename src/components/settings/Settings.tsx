@@ -5,6 +5,11 @@ import { settingsCloseAttempted, settingsSaved } from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/isGame";
 import { useTheme } from "../../hooks/useTheme";
+import {
+  getSettingsSaveErrorMessage,
+  saveSettings,
+  SettingsSaveError,
+} from "../../settings/saveSettings";
 import { settings } from "../../settings/settings";
 import { absoluteCover } from "../absoluteCover";
 import { CSSReset } from "../CSSReset";
@@ -56,16 +61,17 @@ export const Settings = () => {
   }, [handleClose]);
 
   const handleClickSave = useCallback(async () => {
-    const proms = Object.keys(settings).map(async (k) => {
-      // temporarily disbaled becaue ts is being weird and `set` is coming out
-      // as `any` but it should actually be an error
-      // x@ts-expect-error Too much work to explain to TS that these guys
-      // really do match up
-      await settings[k].set(tempStateRef.current.settings[k]);
-    });
-    await Promise.all(proms);
-    Hooks.call(settingsSaved);
-    await foundryApplication.close({ submitted: true });
+    try {
+      await saveSettings(tempStateRef.current.settings, settings);
+      Hooks.call(settingsSaved);
+      await foundryApplication.close({ submitted: true });
+    } catch (error) {
+      const message =
+        error instanceof SettingsSaveError
+          ? getSettingsSaveErrorMessage(error)
+          : `Could not save settings: ${String(error)}`;
+      ui.notifications?.error(message, { permanent: true });
+    }
   }, [foundryApplication, tempStateRef]);
 
   // if anything attempts to close the window without our approval, we block it

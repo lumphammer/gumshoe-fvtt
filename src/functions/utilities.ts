@@ -1,5 +1,6 @@
 import * as constants from "../constants";
-import { RequestTurnPassArgs, SocketHookAction } from "../types";
+import { SystemSocketAction } from "../types";
+import { dispatchSystemSocketActionToHooks } from "./systemSocketActions";
 
 interface NameHaver {
   name: string | null;
@@ -115,22 +116,55 @@ export function getDevMode() {
   );
 }
 
-export function assertNotNull<T>(t: T | undefined | null): asserts t is T {
-  if (t === undefined) {
-    throw new Error("t was undefined");
+/**
+ * Assert that a value is neither `null` nor `undefined`. `description` names
+ * the value, so the thrown error says what was missing.
+ */
+export function assertNotNull<T>(
+  t: T | undefined | null,
+  description: string,
+): asserts t is T {
+  if (t == null) {
+    throw new Error(`${description} was ${t === null ? "null" : "undefined"}`);
+  }
+}
+
+export function findDuplicate<T>(values: Iterable<T>): T | undefined {
+  const seen = new Set<T>();
+  for (const value of values) {
+    if (seen.has(value)) return value;
+    seen.add(value);
+  }
+  return undefined;
+}
+
+export function assertUniqueIds(
+  ids: Iterable<string>,
+  description = "ID",
+): void {
+  const duplicate = findDuplicate(ids);
+  if (duplicate !== undefined) {
+    throw new Error(`Cannot use duplicate ${description} "${duplicate}"`);
   }
 }
 
 /**
  * create a new object with a key "renamed" in the same order
  * this keeps the renamed key in the same relative order, if you're relying on
- * JS's object key order being stable
+ * JS's object key order being stable. A rename to an existing key is rejected
+ * rather than silently overwriting either value.
  */
 export function renameProperty<T>(
   oldProp: string,
   newProp: string,
   subject: Record<string, T>,
+  description = "property ID",
 ) {
+  if (oldProp === newProp) return subject;
+  assertUniqueIds(
+    Object.keys(subject).map((key) => (key === oldProp ? newProp : key)),
+    description,
+  );
   const result: Record<string, T> = {};
   for (const p in subject) {
     if (p === oldProp) {
@@ -142,20 +176,11 @@ export function renameProperty<T>(
   return result;
 }
 
-/**
- * Send out a socket message to all clients, causing them to call the given hook
- * with the given payload.
- */
-function broadcastHook<THook extends Hooks.HookName>(
-  hook: THook,
-  payload: Hooks.HookParameters<THook>,
-) {
-  const socketHookAction: SocketHookAction<THook> = {
-    hook,
-    payload,
-  };
-  game.socket?.emit(constants.socketScope, socketHookAction);
-  Hooks.call(hook, ...payload);
+function broadcastSystemSocketAction(action: SystemSocketAction) {
+  game.socket?.emit(constants.socketScope, action);
+  if (game.userId) {
+    dispatchSystemSocketActionToHooks(action, game.userId);
+  }
 }
 
 /**
@@ -163,12 +188,11 @@ function broadcastHook<THook extends Hooks.HookName>(
  */
 export function requestTurnPass(combatantId: string | null | undefined) {
   if (!combatantId) return;
-  const payload: RequestTurnPassArgs = { combatantId };
-  broadcastHook(constants.requestTurnPass, [payload]);
+  broadcastSystemSocketAction({ type: "requestTurnPass", combatantId });
 }
 
 export function requestNextTurn() {
-  broadcastHook(constants.nextTurn, []);
+  broadcastSystemSocketAction({ type: "requestNextTurn" });
 }
 
 export const makeLogger = (name: string) =>

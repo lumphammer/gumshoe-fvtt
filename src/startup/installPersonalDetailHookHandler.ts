@@ -9,7 +9,10 @@ import { getTranslated } from "../functions/getTranslated";
 import { assertGame } from "../functions/isGame";
 import { isNullOrEmptyString, systemLogger } from "../functions/utilities";
 import { CompendiumCollection, CreateData, DialogV2 } from "../fvtt-exports";
-import { isActiveCharacterActor } from "../module/actors/types";
+import {
+  ActiveCharacterActor,
+  isActiveCharacterActor,
+} from "../module/actors/types";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
 import {
   isPersonalDetailItem,
@@ -29,60 +32,53 @@ function isPersonalDetailCreateData(x: any): x is PersonalDetailItemCreateData {
 
 async function askUserAboutAddingOrReplacing(
   createData: PersonalDetailItemCreateData,
-  itemsAlreadyInSlot: InvestigatorItem[],
-) {
+): Promise<"add" | "replace"> {
+  assertGame(game);
+  // the slot may not exist in this world's list - the detail could have come
+  // from a compendium built under a different preset, or outlived a preset
+  // change that shortened the list - so fall back to the generic type label
+  const slotName =
+    settings.personalDetails.get()[createData.system?.slotIndex ?? 0]?.name ??
+    game.i18n.localize("TYPES.Item.personalDetail");
   const tlMessage = getTranslated("Replace existing {Thing} with {Name}?", {
     Thing:
       createData.system?.slotIndex === occupationSlotIndex
         ? settings.occupationLabel.get()
-        : settings.personalDetails.get()[createData.system?.slotIndex ?? 0]
-            .name,
+        : slotName,
     Name: createData.name,
   });
-  const replaceText = getTranslated("Replace");
-  const addText = getTranslated("Add");
-  const promise = new Promise<boolean>((resolve) => {
-    const onAdd = () => {
-      resolve(true);
-    };
-    const onReplace = async () => {
-      const itemIds = itemsAlreadyInSlot?.map((item) => item.id ?? "") ?? [];
-
-      await itemsAlreadyInSlot?.[0].actor?.deleteEmbeddedDocuments(
-        "Item",
-        itemIds,
-      );
-      resolve(true);
-    };
-
-    const dialog = new DialogV2({
-      content: `<p>${tlMessage}</p>`,
-      window: {
-        title: "Replace or add?",
+  const content = document.createElement("p");
+  content.textContent = tlMessage;
+  const result = await DialogV2.wait({
+    // through the DOM, so the item name can't break out - same reason as
+    // buildAbilityCardContent
+    content: content.outerHTML,
+    window: {
+      title: "Replace or add?",
+    },
+    buttons: [
+      {
+        icon: '<i class="fas fa-eraser"></i>',
+        label: getTranslated("Replace"),
+        action: "replace",
       },
-      buttons: [
-        {
-          icon: '<i class="fas fa-eraser"></i>',
-          label: replaceText,
-          callback: onReplace,
-          action: "replace",
-        },
-        {
-          icon: '<i class="fas fa-plus"></i>',
-          label: addText,
-          callback: onAdd,
-          default: true,
-          action: "add",
-        },
-      ],
-    });
-    void dialog.render({ force: true });
-    return false;
+      {
+        icon: '<i class="fas fa-plus"></i>',
+        label: getTranslated("Add"),
+        default: true,
+        action: "add",
+      },
+    ],
   });
-  await promise;
+  // dismissing the dialog with Escape or the window's X resolves `null`; treat
+  // that as "add", which is the default button
+  return result === "replace" ? "replace" : "add";
 }
 
-async function addPack(pack: CompendiumCollection.Any, item: InvestigatorItem) {
+async function addPack(
+  pack: CompendiumCollection.Any,
+  actor: ActiveCharacterActor,
+) {
   const shouldAdd = await confirmADoodleDo({
     message: "Add all items from pack {Name}?",
     cancelText: getTranslated("Cancel"),
@@ -102,7 +98,7 @@ async function addPack(pack: CompendiumCollection.Any, item: InvestigatorItem) {
         packItem.type === generalAbility ||
         packItem.type === investigativeAbility
       ) {
-        const existingAbility = item.actor?.items.find(
+        const existingAbility = actor.items.find(
           (actorItem: Item) =>
             actorItem.type === packItem.type &&
             actorItem.name === packItem.name,
@@ -130,7 +126,7 @@ async function addPack(pack: CompendiumCollection.Any, item: InvestigatorItem) {
       };
     });
     systemLogger.log("items", items);
-    await (item.actor as any).update({ items });
+    await (actor as any).update({ items });
     ui.notifications?.info(
       `Added or updated ${
         items.length === 1 ? "one item" : `${items.length} items`
@@ -139,43 +135,36 @@ async function addPack(pack: CompendiumCollection.Any, item: InvestigatorItem) {
   }
 }
 
-async function doPersonalDetailStuff(
-  item: InvestigatorItem,
-  createData: Item.CreateData,
-  userId: string,
+/**
+ * Creation is cancelled in the `preCreateItem` hook while we ask the user what
+ * they want, then re-issued from here with this option set, so that the second
+ * pass falls straight through instead of asking again.
+ */
+const alreadyHandled = "investigatorPersonalDetailHandled";
+
+async function resolveThenCreate(
+  actor: ActiveCharacterActor,
+  source: Item.CreateData,
+  createData: PersonalDetailItemCreateData,
+  itemsAlreadyInSlot: InvestigatorItem[],
+  pack: CompendiumCollection.Any | undefined,
 ) {
-  assertGame(game);
-  // first off, make sure this is a personal detail, being created inside a
-  // pc or npc actor, by the current user
-  if (!(
-    game.userId === userId &&
-    isPersonalDetailItem(item) &&
-    isActiveCharacterActor(item.actor) &&
-    item.actor &&
-    isPersonalDetailCreateData(createData)
-  )) {
-    return;
-  }
-  // find out what's already in the slot
-  const itemsAlreadyInSlot = item.actor?.items.filter(
-    (item) =>
-      isPersonalDetailItem(item) &&
-      item.system.slotIndex === createData.system?.slotIndex,
-  );
-  // if anything, ask the user if they want to replace or add
-  if ((itemsAlreadyInSlot?.length ?? 0) > 0) {
-    await askUserAboutAddingOrReplacing(createData, itemsAlreadyInSlot);
-  }
-
-  // add compendium pack stuff, if any
-  if (!isNullOrEmptyString(createData.system?.compendiumPackId)) {
-    const pack = game.packs?.find(
-      (p) => p.collection === createData.system?.compendiumPackId,
-    );
-
-    if (pack) {
-      await addPack(pack, item);
+  if (itemsAlreadyInSlot.length > 0) {
+    const choice = await askUserAboutAddingOrReplacing(createData);
+    if (choice === "replace") {
+      await actor.deleteEmbeddedDocuments(
+        "Item",
+        itemsAlreadyInSlot.map((item) => item.id ?? ""),
+      );
     }
+  }
+  await actor.createEmbeddedDocuments("Item", [source], {
+    // fvtt-types only knows about foundry's own operation keys, but anything
+    // else in here is passed through to the hooks untouched
+    [alreadyHandled]: true,
+  } as unknown as Item.Database.CreateOperation);
+  if (pack !== undefined) {
+    await addPack(pack, actor);
   }
 }
 
@@ -186,20 +175,66 @@ export function installPersonalDetailHookHandler() {
    *   and if so, ask the user if they want to replace or add
    * 2. if there's a compendium pack attached, then add the items from it
    *
+   * both of those need the user to answer a dialog, so when either applies we
+   * cancel the creation, ask, and then create the item ourselves - otherwise
+   * the item would already exist by the time the user was asked about it.
    */
-  // document: InvestigatorItem<"base" | Document.ModuleSubType | "equipment" | "generalAbility" | "investigativeAbility" | "weapon" | "mwItem" | "personalDetail" | "card">,
-  // data: Item.CreateData,
-  // options: Document.Database.PreCreateOptions<DatabaseCreateOperation>,
-
   Hooks.on(
     "preCreateItem",
     (
       item: InvestigatorItem,
       createData: Item.CreateData,
-      options: unknown,
+      options: Record<string, unknown>,
       userId: string,
     ) => {
-      void doPersonalDetailStuff(item, createData, userId);
+      assertGame(game);
+      // first off, make sure this is a personal detail, being created inside a
+      // pc or npc actor, by the current user
+      if (!(
+        game.userId === userId &&
+        isPersonalDetailItem(item) &&
+        isActiveCharacterActor(item.actor) &&
+        isPersonalDetailCreateData(createData)
+      )) {
+        return;
+      }
+      // this is the creation we re-issued ourselves - everything was settled
+      // before it was sent
+      if (options[alreadyHandled] === true) {
+        return;
+      }
+      const actor = item.actor;
+      // find out what's already in the slot
+      const itemsAlreadyInSlot = actor.items.filter(
+        (other) =>
+          isPersonalDetailItem(other) &&
+          other.system.slotIndex === createData.system?.slotIndex,
+      );
+      const pack = isNullOrEmptyString(createData.system?.compendiumPackId)
+        ? undefined
+        : game.packs?.find(
+            (p) => p.collection === createData.system?.compendiumPackId,
+          );
+      if (itemsAlreadyInSlot.length === 0 && pack === undefined) {
+        return;
+      }
+      // creation has been cancelled by the time this runs, so a failure here
+      // loses the item silently unless we say something
+      void resolveThenCreate(
+        actor,
+        item.toObject(),
+        createData,
+        itemsAlreadyInSlot,
+        pack,
+      ).catch((error: unknown) => {
+        systemLogger.error("Failed to add personal detail", error);
+        ui.notifications?.error(
+          `Failed to add "${createData.name}" - see the console for details`,
+        );
+      });
+      // cancel this creation; `resolveThenCreate` will re-issue it once the
+      // user has answered
+      return false;
     },
   );
 }

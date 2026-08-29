@@ -1,8 +1,23 @@
 import { TypeDataModel } from "../../fvtt-exports";
 import { InvestigatorCombat } from "./InvestigatorCombat";
+import { isTurnPassingCombatant } from "./turnPassingCombatant";
 import { ValidCombatModel } from "./types";
 
 export const TurnPassingCombatSchema = {};
+
+/**
+ * Give every turn-passing combatant in `combatants` its starting turn count for
+ * the current round, if it doesn't have one already.
+ */
+async function initializePassingTurns(
+  combatants: Iterable<Combatant.Implementation>,
+) {
+  await Promise.all(
+    [...combatants]
+      .filter(isTurnPassingCombatant)
+      .map((combatant) => combatant.system.initializePassingTurns()),
+  );
+}
 
 export class TurnPassingCombatModel
   extends TypeDataModel<
@@ -34,7 +49,7 @@ export class TurnPassingCombatModel
     ...[
       _parent,
       collection,
-      _documents,
+      documents,
       _data,
       _options,
       _userId,
@@ -43,7 +58,7 @@ export class TurnPassingCombatModel
     if (collection !== "combatants") {
       return;
     }
-    return Promise.resolve();
+    await initializePassingTurns(documents);
   }
 
   async onUpdateDescendantDocuments(
@@ -73,14 +88,17 @@ export class TurnPassingCombatModel
 
   async startCombat() {
     await this.parent.update({ round: 1 });
+    await initializePassingTurns(this.parent.combatants.contents);
   }
 
   async nextRound() {
     await this.parent.update({ round: this.parent.round + 1, turn: null });
+    await initializePassingTurns(this.parent.combatants.contents);
   }
 
   async previousRound() {
     await this.parent.update({ round: this.parent.round - 1 });
+    await initializePassingTurns(this.parent.combatants.contents);
   }
 
   async nextTurn() {

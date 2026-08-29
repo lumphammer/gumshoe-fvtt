@@ -3,13 +3,13 @@ import { useCallback, useMemo, useState } from "react";
 import { AiOutlineHeart } from "react-icons/ai";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { settings } from "../../settings/settings";
 import { createDocumentMemory } from "./documentMemory/createDocumentMemory";
 import { getAccessibleEdits } from "./documentMemory/getAccessibleEdits";
 import { rehydrate } from "./documentMemory/rehydrate";
 import { restoreVersion } from "./documentMemory/restoreVersion";
-import { getMemoryId } from "./getMemoryId";
+import { getStoredDocumentMemory } from "./getStoredDocumentMemory";
 import { ToolbarButton, useToolbarContent } from "./magicToolbar";
+import { notifyJournalSaveError } from "./notifyJournalSaveError";
 import { savePage } from "./savePage";
 
 interface HTMLHistoryProps {
@@ -27,15 +27,14 @@ export const HTMLHistory = ({
   saveDocument,
   cancelHistoryMode,
 }: HTMLHistoryProps) => {
-  const memoryId = useMemo(() => getMemoryId(page), [page]);
   const memory = useMemo(() => {
-    const storedBarememory = settings.journalMemories.get()?.[memoryId];
+    const storedBarememory = getStoredDocumentMemory(page);
     if (storedBarememory) {
       return rehydrate(storedBarememory);
     } else {
       return createDocumentMemory(30);
     }
-  }, [memoryId]);
+  }, [page]);
   const revisions = useMemo(
     () => getAccessibleEdits(memory).toReversed(),
     [memory],
@@ -69,8 +68,12 @@ export const HTMLHistory = ({
     });
     if (yes) {
       const state = restoreVersion(memory, revisions[activeDiffIndex].serial);
-      await savePage(page, state, memory);
-      cancelHistoryMode();
+      try {
+        await savePage(page, state, memory);
+        cancelHistoryMode();
+      } catch (error) {
+        notifyJournalSaveError(error);
+      }
     }
   }, [activeDiffIndex, cancelHistoryMode, memory, page, revisions]);
 

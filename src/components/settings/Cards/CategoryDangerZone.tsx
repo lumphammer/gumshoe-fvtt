@@ -2,11 +2,12 @@ import { useNavigationContext } from "@lumphammer/minirouter";
 import { useCallback, useContext } from "react";
 
 import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
+import { assertUniqueIds } from "../../../functions/utilities";
 import { Button } from "../../inputs/Button";
 import { GridField } from "../../inputs/GridField";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Translate } from "../../Translate";
-import { DispatchContext } from "../contexts";
+import { DispatchContext, StateContext } from "../contexts";
 import { useStateSelector } from "../hooks";
 import { store } from "../store";
 import { cardCategory, categoryDangerZone } from "./directions";
@@ -17,6 +18,7 @@ type CategoryDangerZoneProps = {
 
 export const CategoryDangerZone = ({ id }: CategoryDangerZoneProps) => {
   const dispatch = useContext(DispatchContext);
+  const { settings } = useContext(StateContext);
   const { navigate } = useNavigationContext();
 
   const { value: category, freeze } = useStateSelector((s) =>
@@ -33,6 +35,19 @@ export const CategoryDangerZone = ({ id }: CategoryDangerZoneProps) => {
       category.id,
     );
     if (newId) {
+      try {
+        assertUniqueIds(
+          settings.cardCategories.map((candidate) =>
+            candidate.id === category.id ? newId : candidate.id,
+          ),
+          "card category ID",
+        );
+      } catch (error) {
+        ui.notifications?.error(`Settings error: ${String(error)}`, {
+          permanent: true,
+        });
+        return;
+      }
       freeze();
       dispatch(
         store.creators.setCardCategoryId({
@@ -42,7 +57,7 @@ export const CategoryDangerZone = ({ id }: CategoryDangerZoneProps) => {
       );
       navigate("root", [cardCategory(newId), categoryDangerZone()]);
     }
-  }, [category, dispatch, freeze, navigate]);
+  }, [category, dispatch, freeze, navigate, settings.cardCategories]);
 
   const handleDelete = useCallback(async () => {
     const aye = await confirmADoodleDo({

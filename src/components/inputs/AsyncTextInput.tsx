@@ -3,8 +3,7 @@ import { TextInput } from "./TextInput";
 
 export type AsyncTextInputProps = {
   value: undefined | string;
-  onChange: (newValue: string, index?: number) => void;
-  index?: number;
+  onChange: (newValue: string) => void;
   className?: string;
   disabled?: boolean;
   placeholder?: string;
@@ -16,7 +15,6 @@ export const AsyncTextInput = ({
   className,
   disabled,
   placeholder,
-  index,
 }: AsyncTextInputProps) => {
   const { onChange, onFocus, onBlur, display } = useAsyncUpdate(
     value,

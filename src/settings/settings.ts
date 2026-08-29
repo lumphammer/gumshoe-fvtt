@@ -111,13 +111,14 @@ export const settings = {
   showEmptyInvestigativeCategories: createSettingBoolean({
     key: "showEmptyInvestigativeCategories",
     name: "Show empty investigative categories?",
-    default: true,
+    default: pathOfCthulhuPreset.showEmptyInvestigativeCategories,
   }),
   systemMigrationVersion: createSettingString({
     key: "systemMigrationVersion",
     name: "System migration version",
     default: c.defaultMigratedSystemVersion,
     exportable: false,
+    managedBySettingsForm: false,
   }),
   systemPreset: createSettingString({
     key: "systemPreset",
@@ -147,7 +148,7 @@ export const settings = {
   useTurnPassingInitiative: createSettingBoolean({
     key: "useTurnPassingInitiative",
     name: "Use turn-passing initiative?",
-    default: pathOfCthulhuPreset.useNpcCombatBonuses,
+    default: pathOfCthulhuPreset.useTurnPassingInitiative,
   }),
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -199,6 +200,34 @@ export const settings = {
       world: {},
     },
     exportable: false,
+    managedBySettingsForm: false,
+  }),
+
+  /**
+   * How many times a migration run has failed since the last successful one.
+   * Once this hits `maximumAutomaticMigrationAttempts` we stop retrying on
+   * startup and wait for the GM to ask for a retry from the settings dialog.
+   *
+   * Note this counts runs, not individual migrations: while it is exhausted,
+   * migrations added by a later system version also wait for that manual
+   * retry, which is deliberate - replaying a newer migration on top of a world
+   * an older one failed to migrate is not safe.
+   */
+  migrationAttempts: createSetting<number>()(Number)({
+    key: "migrationAttempts",
+    name: "Migration attempts",
+    default: 0,
+    exportable: false,
+    managedBySettingsForm: false,
+  }),
+
+  /** The error from the most recent failed migration run, for the GM to see. */
+  migrationLastError: createSettingString({
+    key: "migrationLastError",
+    name: "Last migration error",
+    default: "",
+    exportable: false,
+    managedBySettingsForm: false,
   }),
 
   firstRun: createSettingBoolean({
@@ -206,6 +235,7 @@ export const settings = {
     name: "First run?",
     default: true,
     exportable: false,
+    managedBySettingsForm: false,
   }),
 
   journalMemories: createSetting<DocumentMemoryCollection>()(Object)({
@@ -213,6 +243,7 @@ export const settings = {
     name: "Journal memories",
     default: {},
     exportable: false,
+    managedBySettingsForm: false,
   }),
 
   useCards: createSettingBoolean({

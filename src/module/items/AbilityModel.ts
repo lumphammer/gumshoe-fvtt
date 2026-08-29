@@ -1,9 +1,9 @@
 import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
+import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
-import { fixLength } from "../../functions/utilities";
 import { TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import {
@@ -13,6 +13,8 @@ import {
   Unlock,
 } from "../../types";
 import { AbilitySchema } from "./createAbilitySchema";
+import { migrateCategoryToCategoryId } from "./migrateCategoryToCategoryId";
+import { getSpecialitiesCount, resizeSpecialities } from "./resizeSpecialities";
 
 /**
  * AbilityModel
@@ -23,6 +25,7 @@ export abstract class AbilityModel<
 > extends TypeDataModel<TSchema, TParent> {
   static migrateData(source) {
     migrateValue(source, "notes", maybeNotesObjectToString);
+    migrateCategoryToCategoryId(source);
     return super.migrateData(source);
   }
 
@@ -68,17 +71,14 @@ export abstract class AbilityModel<
       speaker: ChatMessage.getSpeaker({
         actor: this.parent.actor as Actor.Stored,
       }),
-      content: `
-          <div
-            class="${constants.abilityChatMessageClassName}"
-            ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
-            ${constants.htmlDataMode}="${constants.htmlDataModeTest}"
-            ${constants.htmlDataName}="${this.parent.name}"
-            ${constants.htmlDataImageUrl}="${this.parent.img}"
-            ${constants.htmlDataTokenId}="${this.parent.parent?.token?.id ?? ""}"
-          />
-        `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: this.parent.id,
+        [constants.htmlDataActorId]: this.parent.parent?.id,
+        [constants.htmlDataMode]: constants.htmlDataModeTest,
+        [constants.htmlDataName]: this.parent.name,
+        [constants.htmlDataImageUrl]: this.parent.img,
+        [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
+      }),
     });
     const pool = this.pool - (Number(spend) || 0);
     await this.parent.update({ system: { pool } });
@@ -98,17 +98,14 @@ export abstract class AbilityModel<
       speaker: ChatMessage.getSpeaker({
         actor: this.parent.actor as Actor.Stored,
       }),
-      content: `
-          <div
-            class="${constants.abilityChatMessageClassName}"
-            ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
-            ${constants.htmlDataMode}="${constants.htmlDataModeSpend}"
-            ${constants.htmlDataName}="${this.parent.name}"
-            ${constants.htmlDataImageUrl}="${this.parent.img}"
-            ${constants.htmlDataTokenId}="${this.parent.parent?.token?.id ?? ""}"
-          />
-        `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: this.parent.id,
+        [constants.htmlDataActorId]: this.parent.parent?.id,
+        [constants.htmlDataMode]: constants.htmlDataModeSpend,
+        [constants.htmlDataName]: this.parent.name,
+        [constants.htmlDataImageUrl]: this.parent.img,
+        [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
+      }),
     });
     const boost = settings.useBoost.get() && this.boost ? 1 : 0;
     const pool = this.pool - (Number(spend) || 0) + boost;
@@ -148,19 +145,16 @@ export abstract class AbilityModel<
       speaker: ChatMessage.getSpeaker({
         actor: this.parent.actor as Actor.Stored,
       }),
-      content: `
-          <div
-            class="${constants.abilityChatMessageClassName}"
-            ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
-            ${constants.htmlDataMode}="${constants.htmlDataModeMwTest}"
-            ${constants.htmlDataMwDifficulty} = ${difficulty}
-            ${constants.htmlDataMwBoonLevy} = ${boonLevy}
-            ${constants.htmlDataMwReRoll} = ${reRoll === null ? '""' : reRoll}
-            ${constants.htmlDataMwPool} = ${newPool}
-            ${constants.htmlDataTokenId}="${this.parent.parent?.token?.id ?? ""}"
-          />
-        `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: this.parent.id,
+        [constants.htmlDataActorId]: this.parent.parent?.id,
+        [constants.htmlDataMode]: constants.htmlDataModeMwTest,
+        [constants.htmlDataMwDifficulty]: difficulty,
+        [constants.htmlDataMwBoonLevy]: boonLevy,
+        [constants.htmlDataMwReRoll]: reRoll,
+        [constants.htmlDataMwPool]: newPool,
+        [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
+      }),
     });
     await this.parent.update({ system: { pool: newPool } });
   }
@@ -168,15 +162,12 @@ export abstract class AbilityModel<
   async mWNegateIllustrious(): Promise<void> {
     const newPool = Math.max(0, this.pool - constants.mwNegateCost);
     await ChatMessage.create({
-      content: `
-          <div
-            class="${constants.abilityChatMessageClassName}"
-            ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
-            ${constants.htmlDataMode}="${constants.htmlDataModeMwNegate}"
-            ${constants.htmlDataMwPool} = ${newPool}
-          />
-        `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: this.parent.id,
+        [constants.htmlDataActorId]: this.parent.parent?.id,
+        [constants.htmlDataMode]: constants.htmlDataModeMwNegate,
+        [constants.htmlDataMwPool]: newPool,
+      }),
     });
     await this.parent.update({ system: { pool: newPool } });
   }
@@ -184,15 +175,12 @@ export abstract class AbilityModel<
   async mWWallop(): Promise<void> {
     const newPool = Math.max(0, this.pool - constants.mwWallopCost);
     await ChatMessage.create({
-      content: `
-          <div
-            class="${constants.abilityChatMessageClassName}"
-            ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
-            ${constants.htmlDataMode}="${constants.htmlDataModeMwWallop}"
-            ${constants.htmlDataMwPool} = ${newPool}
-          />
-        `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: this.parent.id,
+        [constants.htmlDataActorId]: this.parent.parent?.id,
+        [constants.htmlDataMode]: constants.htmlDataModeMwWallop,
+        [constants.htmlDataMwPool]: newPool,
+      }),
     });
     await this.parent.update({ system: { pool: newPool } });
   }
@@ -243,33 +231,29 @@ export abstract class AbilityModel<
   };
 
   getSpecialities = (): string[] => {
-    return fixLength(this.specialities, this.getSpecialitesCount(), "");
+    return resizeSpecialities(this.specialities, {
+      hasSpecialities: this.hasSpecialities,
+      rating: this.rating,
+      specialitiesMode: this.specialitiesMode,
+    });
   };
 
   getSpecialitesCount = (): number => {
-    if (!this.hasSpecialities) {
-      return 0;
-    } else if (this.specialitiesMode === "twoThreeFour") {
-      // NBA langauges style
-      switch (this.rating) {
-        case 0:
-          return 0;
-        case 1:
-          return 2;
-        case 2:
-          return 5;
-        default:
-          return Math.max(0, (this.rating - 2) * 4 + 5);
-      }
-    } else {
-      return this.rating;
-    }
+    return getSpecialitiesCount({
+      hasSpecialities: this.hasSpecialities,
+      rating: this.rating,
+      specialitiesMode: this.specialitiesMode,
+    });
   };
 
   setSpecialities = async (newSpecs: string[]): Promise<void> => {
     await this.parent.update({
       system: {
-        specialities: fixLength(newSpecs, this.getSpecialitesCount(), ""),
+        specialities: resizeSpecialities(newSpecs, {
+          hasSpecialities: this.hasSpecialities,
+          rating: this.rating,
+          specialitiesMode: this.specialitiesMode,
+        }),
       },
     });
   };
@@ -278,7 +262,11 @@ export abstract class AbilityModel<
     await this.parent.update({
       system: {
         rating: newRating,
-        specialities: fixLength(this.specialities, newRating, ""),
+        specialities: resizeSpecialities(this.specialities, {
+          hasSpecialities: this.hasSpecialities,
+          rating: newRating,
+          specialitiesMode: this.specialitiesMode,
+        }),
       },
     });
   };
@@ -288,7 +276,11 @@ export abstract class AbilityModel<
       system: {
         rating: newRating,
         pool: newRating,
-        specialities: fixLength(this.specialities, newRating, ""),
+        specialities: resizeSpecialities(this.specialities, {
+          hasSpecialities: this.hasSpecialities,
+          rating: newRating,
+          specialitiesMode: this.specialitiesMode,
+        }),
       },
     });
   };

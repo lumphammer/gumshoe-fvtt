@@ -3,6 +3,7 @@ import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { settings } from "../settings/settings";
+import { createFailureCollector, describeDocument } from "./failures";
 import { flaggedMigrations } from "./flaggedMigrations";
 import { migrateActorData } from "./migrateActorData";
 import { migrateCompendium } from "./migrateCompendium";
@@ -21,6 +22,8 @@ export const migrateWorld = async function (
   flaggedMigrations: FlaggedMigrations,
 ) {
   assertGame(game);
+  const { failures, record: recordFailure } = createFailureCollector();
+
   (ui as any).notifications.info(
     `Applying ${title} System Migration for version ${game.system.version}.
     Please be patient and do not close your game or shut down your server.`,
@@ -29,7 +32,11 @@ export const migrateWorld = async function (
 
   // apply flagged world migrations
   for (const worldMigration in flaggedMigrations.world) {
-    await flaggedMigrations.world[worldMigration](null, null);
+    try {
+      await flaggedMigrations.world[worldMigration](null, null);
+    } catch (error) {
+      recordFailure(`world migration ${worldMigration}`, error);
+    }
   }
 
   // Migrate World Actors
@@ -39,9 +46,8 @@ export const migrateWorld = async function (
       if (!foundry.utils.isEmpty(updateData)) {
         await actor.update(updateData);
       }
-    } catch (err: any) {
-      err.message = `Failed ${title} system migration for Actor ${actor.name}: ${err.message}`;
-      systemLogger.error(err);
+    } catch (error) {
+      recordFailure(`Actor ${describeDocument(actor)}`, error);
     }
   }
 
@@ -53,9 +59,8 @@ export const migrateWorld = async function (
         systemLogger.log(`Migrating Item entity ${item.name}`);
         await item.update(updateData);
       }
-    } catch (err: any) {
-      err.message = `Failed ${title} system migration for Item ${item.name}: ${err.message}`;
-      systemLogger.error(err);
+    } catch (error) {
+      recordFailure(`Item ${describeDocument(item)}`, error);
     }
   }
 
@@ -67,9 +72,8 @@ export const migrateWorld = async function (
         systemLogger.log(`Migrating Scene entity ${s.name}`);
         await s.update(updateData);
       }
-    } catch (err: any) {
-      err.message = `Failed {title} system migration for Scene ${s.name}: ${err.message}`;
-      systemLogger.error(err);
+    } catch (error) {
+      recordFailure(`Scene ${describeDocument(s)}`, error);
     }
   }
 
@@ -78,7 +82,21 @@ export const migrateWorld = async function (
     systemLogger.log(`Migrating Compendium pack ${pack.metadata.label}`);
     if (pack.locked) continue;
     if (!["Actor", "Item", "Scene"].includes(pack.metadata.type)) continue;
-    await migrateCompendium(pack, flaggedMigrations);
+    try {
+      await migrateCompendium(pack, flaggedMigrations);
+    } catch (error) {
+      recordFailure(`Compendium ${pack.collection}`, error);
+    }
+  }
+
+  if (failures.length > 0) {
+    const error = new Error(
+      `${title} system migration failed for ${failures.length} target${
+        failures.length === 1 ? "" : "s"
+      }: ${failures.join("; ")}`,
+    );
+    ui.notifications?.error(error.message, { permanent: true });
+    throw error;
   }
 
   // Set the migration as complete

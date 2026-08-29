@@ -67,14 +67,15 @@ declare module "fvtt-types/configuration" {
     interface HookConfig {
       // our hooks
       [constants.newPCPacksUpdated]: (newPacks: string[]) => Promise<void>;
-      [constants.requestTurnPass]: ({
-        combatantId,
-      }: RequestTurnPassArgs) => void;
+      [constants.requestTurnPass]: (
+        { combatantId }: RequestTurnPassArgs,
+        requestingUserId: string,
+      ) => void;
       [constants.settingsSaved]: () => void;
       [constants.settingsCloseAttempted]: () => void;
       [constants.newNPCPacksUpdated]: (newPacks: string[]) => void;
       [constants.themeHMR]: (themeName: string) => void;
-      [constants.nextTurn]: () => void;
+      [constants.nextTurn]: (requestingUserId: string) => void;
 
       // third-party hooks
       devModeReady: () => void;
@@ -127,6 +128,18 @@ declare module "fvtt-types/configuration" {
   }
 
   interface FlagConfig {
+    Combat: {
+      investigator: {
+        /** the id of the pre-typed-combat combat this one replaces */
+        migratedFromCombatId: string;
+        /**
+         * set when the combat we replaced was the active one, and cleared once
+         * we've activated this one. Lets an interrupted migration finish the
+         * job on a retry without re-activating it forever after.
+         */
+        migratedFromActiveCombat: boolean;
+      };
+    };
     JournalEntry: {
       investigator: {
         extraCssClasses: string;

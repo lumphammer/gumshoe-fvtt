@@ -14,6 +14,7 @@ import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import type { DocumentMemory } from "./documentMemory/types";
 import { useToolbarContent } from "./magicToolbar";
 import { ToolbarButton } from "./magicToolbar/ToolbarButton";
+import { notifyJournalSaveError } from "./notifyJournalSaveError";
 import { savePage } from "./savePage";
 
 interface HTMLEditorProps {
@@ -59,7 +60,11 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
     () =>
       // eslint-disable-next-line react/refs -- false positive
       debounce(async (content: string) => {
-        memoryRef.current = await savePage(page, content, memoryRef.current);
+        try {
+          memoryRef.current = await savePage(page, content, memoryRef.current);
+        } catch (error) {
+          notifyJournalSaveError(error);
+        }
       }, SAVE_DEBOUNCE_MS),
     [page],
   );
@@ -115,7 +120,6 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
             },
           ]);
           editor.focus();
-          throw new Error("foo");
         }
       });
 

@@ -1,5 +1,8 @@
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { getTranslated } from "../../functions/getTranslated";
+import {
+  getTranslated,
+  getTranslatedHtml,
+} from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
 import { DataSchema, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
@@ -10,6 +13,7 @@ import type { GeneralAbilityItem } from "../items/generalAbility";
 import type { InvestigativeAbilityItem } from "../items/investigativeAbility";
 import type { InvestigatorItem } from "../items/InvestigatorItem";
 import type { WeaponItem } from "../items/weapon";
+import { getPushPoolWarningKeys } from "./getPushPoolWarningKeys";
 
 function isAbilityItem(x: unknown): x is AbilityItem {
   return (
@@ -82,7 +86,8 @@ export class ActiveCharacterModel<
       speaker: ChatMessage.getSpeaker({
         alias: game.user.name ?? "",
       }),
-      content: getTranslated(text, {
+      // chat message content is HTML, and these are user-supplied names
+      content: getTranslatedHtml(text, {
         ActorName: this.parent.name ?? "",
         UserName: game.user.name ?? "",
         ...extraData,
@@ -202,7 +207,6 @@ export class ActiveCharacterModel<
   }
 
   getPushPoolWarnings(): string[] {
-    const warnings: string[] = [];
     const pools = this.parent.items.filter(
       (item: InvestigatorItem): item is GeneralAbilityItem =>
         isGeneralAbilityItem(item) && item.system.isPushPool,
@@ -211,16 +215,9 @@ export class ActiveCharacterModel<
       (item: InvestigatorItem): item is InvestigativeAbilityItem =>
         isInvestigativeAbilityItem(item) && item.system.isQuickShock,
     );
-    if (pools.length > 1) {
-      warnings.push(getTranslated("TooManyPushPools"));
-    }
-    if (quickShockAbilities.length > 1 && pools.length < 1) {
-      warnings.push(getTranslated("QuickShockAbilityWithoutPushPool"));
-    }
-    if (quickShockAbilities.length === 0 && pools.length > 0) {
-      warnings.push(getTranslated("PushPoolWithoutQuickShockAbility"));
-    }
-    return warnings;
+    return getPushPoolWarningKeys(pools.length, quickShockAbilities.length).map(
+      (key) => getTranslated(key),
+    );
   }
 
   // ###########################################################################

@@ -8,7 +8,7 @@ import { cssHSLToHSL, cssRGBToRGB, hexToRGB } from "./parsing-functions";
 describe("functions", function () {
   test("hexToRGB (6 digits)", function () {
     const rgb = hexToRGB("#0088ff");
-    assertNotNull(rgb);
+    assertNotNull(rgb, "rgb");
     expect(rgb.r).toEqual(0);
     expect(rgb.g).toEqual(136);
     expect(rgb.b).toEqual(255);
@@ -17,7 +17,7 @@ describe("functions", function () {
 
   test("hexToRGB (8 digits)", function () {
     const rgb = hexToRGB("#0088ff7f");
-    assertNotNull(rgb);
+    assertNotNull(rgb, "rgb");
     expect(rgb.r).toEqual(0);
     expect(rgb.g).toEqual(136);
     expect(rgb.b).toEqual(255);
@@ -26,7 +26,7 @@ describe("functions", function () {
 
   test("hexToRGB (3 digits)", function () {
     const rgb = hexToRGB("#08f");
-    assertNotNull(rgb);
+    assertNotNull(rgb, "rgb");
     expect(rgb.r).toEqual(0);
     expect(rgb.g).toEqual(136);
     expect(rgb.b).toEqual(255);
@@ -35,7 +35,7 @@ describe("functions", function () {
 
   test("hexToRGB (4 digits)", function () {
     const rgb = hexToRGB("#08f8");
-    assertNotNull(rgb);
+    assertNotNull(rgb, "rgb");
     expect(rgb.r).toEqual(0);
     expect(rgb.g).toEqual(136);
     expect(rgb.b).toEqual(255);
@@ -44,7 +44,7 @@ describe("functions", function () {
 
   test("simple rgb", function () {
     const rgb = cssRGBToRGB("rgb(0, 136, 255)");
-    assertNotNull(rgb);
+    assertNotNull(rgb, "rgb");
     expect(rgb.r).toEqual(0);
     expect(rgb.g).toEqual(136);
     expect(rgb.b).toEqual(255);
@@ -53,7 +53,7 @@ describe("functions", function () {
 
   test("rgb with percent", function () {
     const rgb = cssRGBToRGB("rgb(0%, 50%, 100%)");
-    assertNotNull(rgb);
+    assertNotNull(rgb, "rgb");
     expect(rgb.r).toEqual(0);
     expect(rgb.g).toEqual(127);
     expect(rgb.b).toEqual(255);
@@ -62,7 +62,7 @@ describe("functions", function () {
 
   test("rgba", function () {
     const rgb = cssRGBToRGB("rgba(0, 136, 255, 0.7)");
-    assertNotNull(rgb);
+    assertNotNull(rgb, "rgb");
     expect(rgb.r).toEqual(0);
     expect(rgb.g).toEqual(136);
     expect(rgb.b).toEqual(255);
@@ -71,7 +71,7 @@ describe("functions", function () {
 
   test("hsl", function () {
     const hsl = cssHSLToHSL("hsl(180, 60%, 70%)");
-    assertNotNull(hsl);
+    assertNotNull(hsl, "hsl");
     expect(hsl.h).toEqual(0.5);
     expect(hsl.s).toEqual(0.6);
     expect(hsl.l).toEqual(0.7);
@@ -80,7 +80,7 @@ describe("functions", function () {
 
   test("hsla", function () {
     const hsl = cssHSLToHSL("hsl(180, 60%, 70%, 0.8)");
-    assertNotNull(hsl);
+    assertNotNull(hsl, "hsl");
     expect(hsl.h).toEqual(0.5);
     expect(hsl.s).toEqual(0.6);
     expect(hsl.l).toEqual(0.7);

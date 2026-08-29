@@ -1,13 +1,20 @@
-import { assertGame } from "../../functions/isGame";
 import {
   ArrayField,
   NumberField,
   SchemaField,
   TypeDataModel,
 } from "../../fvtt-exports";
+import { createSerializedUpdateQueue } from "../../functions/createSerializedUpdateQueue";
 import { isActiveCharacterActor } from "../actors/types";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
+import {
+  getPassingTurnsRemaining,
+  updatePassingTurnInfo,
+} from "./passingTurnState";
+
+const serializePassingTurnUpdate =
+  createSerializedUpdateQueue<InvestigatorCombatant>();
 
 export const turnPassingCombatantSchema = {
   turnInfo: new ArrayField(
@@ -27,7 +34,7 @@ export const turnPassingCombatantSchema = {
 
 export class TurnPassingCombatantModel extends TypeDataModel<
   typeof turnPassingCombatantSchema,
-  InvestigatorCombatant<"classic">
+  InvestigatorCombatant<"turnPassing">
 > {
   static defineSchema(): typeof turnPassingCombatantSchema {
     return turnPassingCombatantSchema;
@@ -50,16 +57,11 @@ export class TurnPassingCombatantModel extends TypeDataModel<
 
   get passingTurnsRemaining(): number {
     const roundIndex = Math.max(0, this.combat.round - 1);
-    if (this.turnInfo[roundIndex] === undefined) {
-      // this is ugly - we're calling a setter from a getter which feels bad and
-      // wrong
-      assertGame(game);
-      if (game.user.isActiveGM) {
-        void this.resetPassingTurns();
-      }
-      return this.defaultPassingTurns;
-    }
-    return this.turnInfo[roundIndex]?.turnsRemaining ?? 0;
+    return getPassingTurnsRemaining(
+      this.turnInfo,
+      roundIndex,
+      this.defaultPassingTurns,
+    );
   }
 
   // passingTurnsRemaining: isTurnPassingCombatant(combatant)
@@ -69,54 +71,49 @@ export class TurnPassingCombatantModel extends TypeDataModel<
   //   ? (combatant.actor?.system.initiativePassingTurns ?? 1)
   //   : 1,
 
-  async resetPassingTurns() {
+  private updatePassingTurns(
+    getNextValue: (currentValue: number) => number,
+    onlyIfMissing = false,
+  ): Promise<void> {
     const roundIndex = Math.max(0, this.combat.round - 1);
-    const turnInfo = [...this.turnInfo];
-    turnInfo[roundIndex] = {
-      ...turnInfo[roundIndex],
-      turnsRemaining: this.defaultPassingTurns,
-    };
+    const defaultPassingTurns = this.defaultPassingTurns;
 
-    await this.parent.update({
-      system: {
-        turnInfo,
-      },
+    return serializePassingTurnUpdate(this.parent, async () => {
+      const currentSystem = this.parent.system;
+      const storedValue = currentSystem.turnInfo[roundIndex]?.turnsRemaining;
+      if (onlyIfMissing && storedValue !== undefined) return;
+
+      const currentValue = storedValue ?? defaultPassingTurns;
+      const turnInfo = updatePassingTurnInfo(
+        currentSystem.turnInfo,
+        roundIndex,
+        getNextValue(currentValue),
+      );
+      await this.parent.update({
+        system: {
+          turnInfo,
+        },
+      });
     });
   }
 
-  async addPassingTurn() {
-    const roundIndex = Math.max(0, this.combat.round - 1);
-    const turnsRemaining = (this.turnInfo[roundIndex]?.turnsRemaining ?? 0) + 1;
-    const turnInfo = [...this.turnInfo];
-    turnInfo[roundIndex] = {
-      ...turnInfo[roundIndex],
-      turnsRemaining,
-    };
-
-    await this.parent.update({
-      system: {
-        turnInfo,
-      },
-    });
+  initializePassingTurns(): Promise<void> {
+    return this.updatePassingTurns((turnsRemaining) => turnsRemaining, true);
   }
 
-  async removePassingTurn() {
-    const roundIndex = Math.max(0, this.combat.round - 1);
-    const turnsRemaining = Math.max(
-      0,
-      (this.turnInfo[roundIndex]?.turnsRemaining ?? 0) - 1,
+  resetPassingTurns(): Promise<void> {
+    const defaultPassingTurns = this.defaultPassingTurns;
+    return this.updatePassingTurns(() => defaultPassingTurns);
+  }
+
+  addPassingTurn(): Promise<void> {
+    return this.updatePassingTurns((turnsRemaining) => turnsRemaining + 1);
+  }
+
+  removePassingTurn(): Promise<void> {
+    return this.updatePassingTurns((turnsRemaining) =>
+      Math.max(0, turnsRemaining - 1),
     );
-    const turnInfo = [...this.turnInfo];
-    turnInfo[roundIndex] = {
-      ...turnInfo[roundIndex],
-      turnsRemaining,
-    };
-
-    await this.parent.update({
-      system: {
-        turnInfo,
-      },
-    });
   }
 }
 

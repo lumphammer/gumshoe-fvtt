@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 
 import {
+  assertNotNull,
   debounce,
   fixLength,
   isNullOrEmptyString,
@@ -115,6 +116,21 @@ describe("renameProperty", () => {
     [{ a: 1, b: 2 }, "b", "c", { a: 1, c: 2 }],
   ])("renameProperty(%s, %s, %s)", (input, oldName, newName, expected) => {
     expect(renameProperty(oldName, newName, input)).toEqual(expected);
+  });
+
+  test("rejects a rename to an existing key without losing either value", () => {
+    const input = { a: 1, b: 2 };
+
+    expect(() => renameProperty("a", "b", input, "test ID")).toThrow(
+      'Cannot use duplicate test ID "b"',
+    );
+    expect(input).toEqual({ a: 1, b: 2 });
+  });
+
+  test("treats renaming a key to itself as a no-op", () => {
+    const input = { a: 1, b: 2 };
+
+    expect(renameProperty("a", "a", input)).toBe(input);
   });
 });
 
@@ -345,5 +361,25 @@ describe("trimLeadingPunctuation", () => {
     expect(trimLeadingPunctuation("::foo")).toBe("foo");
     expect(trimLeadingPunctuation("--foo")).toBe("foo");
     expect(trimLeadingPunctuation('""foo')).toBe("foo");
+  });
+});
+
+describe("assertNotNull", () => {
+  test("throws for null and undefined, naming the value", () => {
+    expect(() => {
+      assertNotNull(null, "combatant");
+    }).toThrow("combatant was null");
+    expect(() => {
+      assertNotNull(undefined, "combatant");
+    }).toThrow("combatant was undefined");
+  });
+
+  test("passes falsy values that are neither", () => {
+    expect(() => {
+      assertNotNull(0, "count");
+      assertNotNull("", "name");
+      assertNotNull(false, "flag");
+      assertNotNull(NaN, "amount");
+    }).not.toThrow();
   });
 });

@@ -124,6 +124,10 @@ export const WeaponMain = () => {
   }, [abilityName, item.actor]);
 
   const ammoFail = item.system.usesAmmo && item.system.ammo.value <= 0;
+  // the configured ability can have been deleted or renamed, in which case
+  // there's nothing to roll against - see the "NotFound!" indicator below.
+  const attackDisabled = (rangeEnabled: boolean) =>
+    ability === undefined || ammoFail || !rangeEnabled;
 
   const sheet = item.sheet;
   assertApplicationV2(sheet);
@@ -171,28 +175,28 @@ export const WeaponMain = () => {
             )}
             <Button
               css={{ lineHeight: 1, flex: 1 }}
-              disabled={ammoFail || !item.system.isPointBlank}
+              disabled={attackDisabled(item.system.isPointBlank)}
               onClick={onPointBlank}
             >
               <Translate>Point Blank</Translate>
             </Button>
             <Button
               css={{ lineHeight: 1, flex: 1 }}
-              disabled={ammoFail || !item.system.isCloseRange}
+              disabled={attackDisabled(item.system.isCloseRange)}
               onClick={onCloseRange}
             >
               <Translate>Close Range</Translate>
             </Button>
             <Button
               css={{ lineHeight: 1, flex: 1 }}
-              disabled={ammoFail || !item.system.isNearRange}
+              disabled={attackDisabled(item.system.isNearRange)}
               onClick={onNearRange}
             >
               <Translate>Near Range</Translate>
             </Button>
             <Button
               css={{ lineHeight: 1, flex: 1 }}
-              disabled={ammoFail || !item.system.isLongRange}
+              disabled={attackDisabled(item.system.isLongRange)}
               onClick={onLongRange}
             >
               <Translate>Long Range</Translate>

@@ -25,7 +25,7 @@ type CombatantContextValue<
 > = {
   combatantState: SourceData<Combatant.Schema>;
   combatant: TCombatant;
-  effects: SchemaField.SourceData<ActiveEffect.Schema>[];
+  effects: SourceData<ActiveEffect.Schema>[];
   resource: number;
 };
 
@@ -125,9 +125,7 @@ export function useCombatantContextValue(
   }, [combatant]);
 
   // effects data
-  const [effects, setEffects] = useState<
-    SchemaField.SourceData<ActiveEffect.Schema>[]
-  >([]);
+  const [effects, setEffects] = useState<SourceData<ActiveEffect.Schema>[]>([]);
   useEffect(() => {
     return combatant.actor?.registerCombatantEffectsHandler((effects) => {
       setEffects(effects);

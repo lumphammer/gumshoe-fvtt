@@ -1,4 +1,4 @@
-import { getTranslated } from "../functions/getTranslated";
+import { getTranslatedHtml } from "../functions/getTranslated";
 import { assertGame } from "../functions/isGame";
 import { isPCActor } from "../module/actors/pc";
 import { settings } from "../settings/settings";
@@ -7,12 +7,13 @@ import { settings } from "../settings/settings";
 export function installEquipmentAddedNotifier() {
   Hooks.on("createItem", async (item: Item, opts: unknown, userId: string) => {
     assertGame(game);
-    const isNotOwned = !item.parent && isPCActor(item.parent);
+    // isPCActor is an instanceof check, so this also rejects world items
+    const isNotOwnedByPC = !isPCActor(item.parent);
     const gameHasNoUsers = !game.users;
     const notMyFault = game.userId !== userId;
     const settingsOff = !settings.notifyItemAddedToActor.get();
 
-    if (isNotOwned || gameHasNoUsers || notMyFault || settingsOff) {
+    if (isNotOwnedByPC || gameHasNoUsers || notMyFault || settingsOff) {
       return;
     }
 
@@ -35,7 +36,8 @@ export function installEquipmentAddedNotifier() {
           speaker: ChatMessage.getSpeaker({
             alias: game.user.name,
           }),
-          content: getTranslated("ItemNameAddedToActorName", {
+          // chat message content is HTML, and these are user-supplied names
+          content: getTranslatedHtml("ItemNameAddedToActorName", {
             ItemName: item.name,
             ActorName: item.parent?.name ?? "",
           }),

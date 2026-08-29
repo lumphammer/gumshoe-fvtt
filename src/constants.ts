@@ -11,7 +11,6 @@ export const reactTemplatePath =
   `${templatesPath}/react-application.hbs` as const;
 export const customSystem = "customSystem";
 export const genericOccupationDefault = "Investigator";
-export const showEmptyInvestigativeCategoriesDefault = true;
 export const inputThrottleTime = 500;
 
 // item types
@@ -100,6 +99,7 @@ export const passingTurnsRemaining = "passingTurnsRemaining";
 export const extraPassingTurns = "extraPassingTurns";
 export const extraCssClasses = "extraCssClasses";
 export const journalMemories = "journalMemories";
+export const journalMemory = "journalMemory";
 
 // magic values
 

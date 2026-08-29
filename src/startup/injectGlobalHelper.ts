@@ -7,11 +7,11 @@ import { themeFactory } from "../themes/functions";
 export const injectGlobalHelper = () => {
   CONFIG.Investigator = {
     installTheme: (id: string, seed: ThemeSeedV1) => {
-      assertNotNull(CONFIG.Investigator);
+      assertNotNull(CONFIG.Investigator, "CONFIG.Investigator");
       runtimeConfig.themes[id] = themeFactory(seed);
     },
     installPreset: (id: string, preset: PresetV1) => {
-      assertNotNull(CONFIG.Investigator);
+      assertNotNull(CONFIG.Investigator, "CONFIG.Investigator");
       runtimeConfig.presets[id] = preset;
     },
   };

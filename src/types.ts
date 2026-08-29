@@ -4,15 +4,6 @@ import * as constants from "./constants";
 // SOCKET STUFF ----------------------------------------------------------------
 
 /**
- * data send out over the game websocket to request all clients to call the
- * hook `hook` with the given payload
- */
-export type SocketHookAction<THook extends Hooks.HookName> = {
-  hook: THook;
-  payload: Hooks.HookParameters<THook>;
-};
-
-/**
  * args passed to the `requestTurnPass` hook. this is sent out over the
  * websocket and broadcast to everyone. the GM's client picks it up and acts on
  * it.
@@ -20,6 +11,15 @@ export type SocketHookAction<THook extends Hooks.HookName> = {
 export type RequestTurnPassArgs = {
   combatantId: string;
 };
+
+export type SystemSocketAction =
+  | {
+      type: "requestNextTurn";
+    }
+  | {
+      type: "requestTurnPass";
+      combatantId: string;
+    };
 
 // FOUNDRY STUFF ---------------------------------------------------------------
 

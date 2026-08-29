@@ -1,4 +1,5 @@
 import * as constants from "../../constants";
+import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
 import { assertGame } from "../../functions/isGame";
 import { PoolTerm } from "../../fvtt-exports";
 import { isNPCActor } from "../../module/actors/npc";
@@ -7,6 +8,7 @@ import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { WeaponItem } from "../../module/items/weapon";
 import { settings } from "../../settings/settings";
+import { consumeWeaponAmmo } from "./consumeWeaponAmmo";
 
 type PerformAttackArgs1 = {
   spend: number;
@@ -101,18 +103,15 @@ export const performAttack =
 
     void actualRoll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: weapon.actor as Actor.Stored }),
-      content: `
-    <div
-      class="${constants.abilityChatMessageClassName}"
-      ${constants.htmlDataItemId}="${abilityId}"
-      ${constants.htmlDataActorId}="${actorId}"
-      ${constants.htmlDataMode}="${constants.htmlDataModeAttack}"
-      ${constants.htmlDataRange}="${rangeName}"
-      ${constants.htmlDataWeaponId}="${weaponId}"
-      ${constants.htmlDataName}="${weapon.name}"
-      ${constants.htmlDataImageUrl}="${weapon.img}"
-    />
-  `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: abilityId,
+        [constants.htmlDataActorId]: actorId,
+        [constants.htmlDataMode]: constants.htmlDataModeAttack,
+        [constants.htmlDataRange]: rangeName,
+        [constants.htmlDataWeaponId]: weaponId,
+        [constants.htmlDataName]: weapon.name,
+        [constants.htmlDataImageUrl]: weapon.img,
+      }),
     });
 
     const currentPool = ability?.system.pool ?? 0;
@@ -122,7 +121,5 @@ export const performAttack =
     await ability?.system.setPool(newPool);
     setBonusPool(newBonusPool);
     setSpend(0);
-    await weapon.system.setAmmo(
-      Math.max(0, weapon.system.ammo.value - weapon.system.ammoPerShot),
-    );
+    await consumeWeaponAmmo(weapon.system);
   };

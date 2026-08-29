@@ -12,6 +12,12 @@ interface confirmADoodleDoArgs {
   translate?: boolean;
 }
 
+const paragraph = (text: string) => {
+  const p = document.createElement("p");
+  p.textContent = text;
+  return p.outerHTML;
+};
+
 /**
  * Pop up a foundry confirmation box. Returns a promise that resolves `true`
  * when the user clicks the confirm button.
@@ -49,7 +55,9 @@ export const confirmADoodleDo = ({
       window: {
         title: "Confirm",
       },
-      content: `<p>${tlMessage}</p>`,
+      // build the paragraph through the DOM rather than interpolating: callers
+      // put document names in here, and none of them wants markup
+      content: paragraph(tlMessage),
       buttons: [
         {
           label: tlCancelText,

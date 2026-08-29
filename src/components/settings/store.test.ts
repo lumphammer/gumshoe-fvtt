@@ -70,6 +70,8 @@ const initialState: State = {
       playlist: {},
       world: {},
     },
+    migrationAttempts: 0,
+    migrationLastError: "",
     useTurnPassingInitiative: false,
     genericOccupation: "",
     investigativeAbilityCategories: [],
@@ -166,6 +168,122 @@ describe("reducer", () => {
     const result = slice.reducer(initialState, { type: "FOOEY" });
     // no point snapshotting this
     expect(result).toEqual(initialState);
+  });
+
+  it("preserves sibling equipment fields when changing a field id", () => {
+    const state = structuredClone(initialState);
+    const fields = state.settings.equipmentCategories["category0"].fields;
+    fields["field2"] = {
+      name: "Third field",
+      type: "checkbox",
+      default: true,
+    };
+
+    const result = slice.reducer(
+      state,
+      slice.creators.changeFieldId({
+        categoryId: "category0",
+        fieldId: "field0",
+        newFieldId: "renamedField",
+      }),
+    );
+    const resultFields =
+      result.settings.equipmentCategories["category0"].fields;
+
+    expect(Object.keys(resultFields)).toEqual([
+      "renamedField",
+      "field1",
+      "field2",
+    ]);
+    expect(resultFields).toStrictEqual({
+      renamedField: fields["field0"],
+      field1: fields["field1"],
+      field2: fields["field2"],
+    });
+    expect(resultFields["renamedField"]).toBe(fields["field0"]);
+    expect(resultFields["field1"]).toBe(fields["field1"]);
+    expect(resultFields["field2"]).toBe(fields["field2"]);
+  });
+
+  it("rejects a stat id which is already used without losing either stat", () => {
+    const state = structuredClone(initialState);
+    state.settings.pcStats["pcStat1"] = {
+      name: "Second stat",
+      default: 1,
+    };
+
+    const result = slice.reducer(
+      state,
+      slice.creators.setStatId({
+        which: "pcStats",
+        oldStatId: "pcStat0",
+        newStatId: "pcStat1",
+      }),
+    );
+
+    expect(result).toEqual(state);
+    expect(Object.keys(result.settings.pcStats)).toEqual([
+      "pcStat0",
+      "pcStat1",
+    ]);
+    expect(onErrorFn).toHaveBeenCalledWith(
+      new Error('Cannot use duplicate stat ID "pcStat1"'),
+    );
+  });
+
+  it("rejects a card category id which is already used", () => {
+    const state = structuredClone(initialState);
+    state.settings.cardCategories = [
+      {
+        id: "first",
+        singleName: "First",
+        pluralName: "First",
+        threshold: 3,
+        thresholdType: "none",
+      },
+      {
+        id: "second",
+        singleName: "Second",
+        pluralName: "Second",
+        threshold: 3,
+        thresholdType: "none",
+      },
+    ];
+
+    const result = slice.reducer(
+      state,
+      slice.creators.setCardCategoryId({ id: "first", newId: "second" }),
+    );
+
+    expect(result).toEqual(state);
+    expect(result.settings.cardCategories.map(({ id }) => id)).toEqual([
+      "first",
+      "second",
+    ]);
+    expect(onErrorFn).toHaveBeenCalledWith(
+      new Error('Cannot use duplicate card category ID "second"'),
+    );
+  });
+
+  it("does not overwrite an existing generated stat id when adding a stat", () => {
+    const state = structuredClone(initialState);
+    state.settings.pcStats["stat2"] = {
+      name: "Existing stat",
+      default: 2,
+    };
+
+    const result = slice.reducer(
+      state,
+      slice.creators.addStat({ which: "pcStats" }),
+    );
+
+    expect(result.settings.pcStats["stat2"]).toEqual({
+      name: "Existing stat",
+      default: 2,
+    });
+    expect(result.settings.pcStats["stat3"]).toEqual({ name: "", default: 0 });
+    expect(Object.keys(result.settings.pcStats)).toHaveLength(3);
+    expect(onErrorFn).not.toHaveBeenCalled();
   });
 
   it.each<TestTuple>([
