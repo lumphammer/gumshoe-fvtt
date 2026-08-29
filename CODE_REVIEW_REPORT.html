@@ -613,9 +613,9 @@
               <span class="mono">code-report</span> branch, after every
               first-review finding was resolved. It found
               <strong>eleven new issues</strong> &mdash; four Medium, seven Low,
-              no Critical or High. R2-01, R2-03, R2-04, R2-05, R2-09 and R2-10
-              have since been fixed on this branch and R2-02 closed as
-              won't-fix, leaving four, all Low. None of them overlap the first
+              no Critical or High. R2-01, R2-03, R2-04, R2-05, R2-06, R2-09 and
+              R2-10 have since been fixed on this branch and R2-02 closed as
+              won't-fix, leaving three, all Low. None of them overlap the first
               review's findings; they sit in chat-message construction,
               ordered-record helpers, dialog lifecycle, a broadcast hook, and
               the type-level guard that was supposed to prevent HI-04. Every one
@@ -643,26 +643,26 @@
               The full pipeline passes and no open finding blocks a release: the
               second review's remaining items are correctness and clarity work,
               not data loss or release integrity. Every Medium is now either
-              fixed or accepted: R2-01, R2-03, R2-04, R2-05, R2-09 and R2-10 are
-              fixed, and R2-02 is a known cost until the ordered records become
-              arrays.
+              fixed or accepted: R2-01, R2-03, R2-04, R2-05, R2-06, R2-09 and
+              R2-10 are fixed, and R2-02 is a known cost until the ordered
+              records become arrays.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>4</b><span>open findings</span></div>
+          <div class="metric"><b>3</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
           <div class="metric medium"><b>0</b><span>medium</span></div>
-          <div class="metric low"><b>4</b><span>low</span></div>
+          <div class="metric low"><b>3</b><span>low</span></div>
         </div>
         <p class="metrics-note">
           Counts are for the second review's open items. It raised eleven
-          findings; R2-01, R2-03, R2-04, R2-05, R2-09 and R2-10 are resolved,
-          R2-01's localized-content half was split out as R2-11, which remains
-          open, and R2-02 is closed as won't-fix pending the ordered-record
-          migration. All 25 first-review findings remain resolved; they are kept
-          below as the record of that work.
+          findings; R2-01, R2-03, R2-04, R2-05, R2-06, R2-09 and R2-10 are
+          resolved, R2-01's localized-content half was split out as R2-11, which
+          remains open, and R2-02 is closed as won't-fix pending the
+          ordered-record migration. All 25 first-review findings remain
+          resolved; they are kept below as the record of that work.
         </p>
       </section>
 
@@ -704,8 +704,8 @@
           A fresh, independent pass over the current
           <span class="mono">code-report</span> branch, carried out after every
           first-review finding had been resolved. R2-01, R2-03, R2-04, R2-05,
-          R2-09 and R2-10 have since been fixed on this branch and R2-02
-          accepted as a won't-fix; those seven are struck through below, and the
+          R2-06, R2-09 and R2-10 have since been fixed on this branch and R2-02
+          accepted as a won't-fix; those eight are struck through below, and the
           rest are open. It is not a re-check of that work; it is a new survey
           of the whole codebase, so the findings below are in areas the first
           review did not reach. Each one was verified by execution &mdash;
@@ -1122,7 +1122,7 @@
             </p>
           </article>
 
-          <article class="finding low-sev" id="R2-06">
+          <article class="finding low-sev resolved" id="R2-06">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1140,10 +1140,15 @@
                   >
                 </p>
               </div>
-              <span class="badge">Low</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
-              The pre-create hook reads
+              <strong>Resolved 29 August 2026.</strong> The lookup is guarded
+              the way the model already guards it. The description below is kept
+              as the record of the defect.
+            </p>
+            <p>
+              The pre-create hook read
               <code>equipmentCategories[categoryId].fields</code> with no
               optional chaining. <code>categoryId</code> comes from the incoming
               item and falls back to <code>Object.keys(…)[0]</code>, so it can
@@ -1172,11 +1177,30 @@
               >. The same expression, guarded in the model and unguarded in the
               hook, in the same feature.
             </p>
-            <p class="recommendation">
-              <strong>Fix:</strong> match the model's guard, and decide
-              deliberately what an unresolvable category should mean &mdash;
-              probably falling back to the first configured category, which is
-              already the intent of the surrounding code.
+            <p class="resolution">
+              <strong>Fix applied:</strong>
+              <code>equipmentCategories[categoryId]?.fields ?? {}</code>, the
+              same expression the model uses. The redundant
+              <code>item.system.categoryId || categoryId</code> &mdash; which
+              could only ever equal <code>categoryId</code> &mdash; is gone too.
+            </p>
+            <p class="resolution">
+              <strong
+                >The fallback this finding suggested was the wrong call.</strong
+              >
+              Reassigning an unresolvable category to the first configured one
+              would rewrite imported data, and it turns out the system already
+              has an answer for this case:
+              <a
+                href="src/components/characters/Equipment/EquipmentArea.tsx#L14"
+                >EquipmentArea.tsx:14&ndash;18</a
+              >
+              collects items whose category is not in the configured list into
+              an "Uncategorized" bucket. So the id is left alone, which also
+              means the item snaps back into place if the category is restored
+              or the settings re-imported. Three tests cover the resolving case,
+              the empty-id fallback and the unresolvable case; the last one
+              fails if the optional chain is removed.
             </p>
           </article>
 
@@ -2873,7 +2897,7 @@
             <span class="grade">C+</span>
             <h3>Test confidence</h3>
             <p>
-              477 tests pass across 46 files. But 20 test files cover 246
+              480 tests pass across 47 files. But 20 test files cover 246
               component sources, seven of those for one subsystem, and no sheet
               component is tested at all. <a href="#R2-05">R2-05</a> was a guard
               that stayed green while the defect it targeted shipped; it is
@@ -3185,10 +3209,10 @@
             </tr>
             <tr>
               <td><code>pnpm vitest run</code></td>
-              <td class="pass">46 files / 477 tests</td>
+              <td class="pass">47 files / 480 tests</td>
               <td>
                 No test or type errors, at
-                <span class="mono">8e148efb</span> on
+                <span class="mono">71841a37</span> on
                 <span class="mono">code-report</span>.
               </td>
             </tr>
