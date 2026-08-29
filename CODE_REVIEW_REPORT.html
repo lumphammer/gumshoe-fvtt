@@ -613,14 +613,14 @@
               <span class="mono">code-report</span> branch, after every
               first-review finding was resolved. It found
               <strong>eleven new issues</strong> &mdash; four Medium, seven Low,
-              no Critical or High. R2-01, R2-03, R2-05 and R2-09 have since been
-              fixed on this branch and R2-02 closed as won't-fix, leaving six
-              open. None of them overlap the first review's findings; they sit
-              in chat-message construction, ordered-record helpers, dialog
-              lifecycle, a broadcast hook, and the type-level guard that was
-              supposed to prevent HI-04. Every one was verified by running it.
-              Four further hypotheses were tested and cleared, and are recorded
-              rather than discarded.
+              no Critical or High. R2-01, R2-03, R2-04, R2-05 and R2-09 have
+              since been fixed on this branch and R2-02 closed as won't-fix,
+              leaving five, all Low. None of them overlap the first review's
+              findings; they sit in chat-message construction, ordered-record
+              helpers, dialog lifecycle, a broadcast hook, and the type-level
+              guard that was supposed to prevent HI-04. Every one was verified
+              by running it. Four further hypotheses were tested and cleared,
+              and are recorded rather than discarded.
             </p>
             <p class="second-pass">
               <strong>First-review second-pass, 28 August 2026.</strong> Every
@@ -642,22 +642,22 @@
             <p>
               The full pipeline passes and no open finding blocks a release: the
               second review's remaining items are correctness and clarity work,
-              not data loss or release integrity. R2-01, R2-03, R2-05 and R2-09
-              are fixed and R2-02 is accepted as a known cost until the ordered
-              records become arrays; R2-04 is the last of the lifecycle items.
+              not data loss or release integrity. Every Medium is now either
+              fixed or accepted: R2-01, R2-03, R2-04, R2-05 and R2-09 are fixed,
+              and R2-02 is a known cost until the ordered records become arrays.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>6</b><span>open findings</span></div>
+          <div class="metric"><b>5</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
-          <div class="metric medium"><b>1</b><span>medium</span></div>
+          <div class="metric medium"><b>0</b><span>medium</span></div>
           <div class="metric low"><b>5</b><span>low</span></div>
         </div>
         <p class="metrics-note">
           Counts are for the second review's open items. It raised eleven
-          findings; R2-01, R2-03, R2-05 and R2-09 are resolved, R2-01's
+          findings; R2-01, R2-03, R2-04, R2-05 and R2-09 are resolved, R2-01's
           localized-content half was split out as R2-11, which remains open, and
           R2-02 is closed as won't-fix pending the ordered-record migration. All
           25 first-review findings remain resolved; they are kept below as the
@@ -669,15 +669,7 @@
         <h2>Priorities</h2>
         <div class="priority-grid">
           <div class="priority">
-            <b>1 &middot; Dialog and hook lifecycle</b>
-            <p>
-              <a href="#R2-04">R2-04</a> is what is left of this group after
-              R2-03 and R2-09: an async path with no closing branch. The
-              hook-handler test added for R2-03 is the pattern to follow.
-            </p>
-          </div>
-          <div class="priority">
-            <b>2 &middot; Escape the rest of the chat HTML</b>
+            <b>1 &middot; Escape the rest of the chat HTML</b>
             <p>
               <a href="#R2-11">R2-11</a> is what is left of R2-01 after the card
               markers were fixed: names substituted into localized strings that
@@ -686,7 +678,7 @@
             </p>
           </div>
           <div class="priority">
-            <b>3 &middot; Replace the ordered records with arrays</b>
+            <b>2 &middot; Replace the ordered records with arrays</b>
             <p>
               The structural fix that closes <a href="#R2-02">R2-02</a> for
               good: equipment categories, equipment fields and PC/NPC stats
@@ -695,7 +687,7 @@
             </p>
           </div>
           <div class="priority">
-            <b>4 &middot; Maintenance, unchanged</b>
+            <b>3 &middot; Maintenance, unchanged</b>
             <p>
               Dependency triage by shipped scope, Vite future-compatibility
               warnings, and real-Foundry integration coverage carry over from
@@ -710,9 +702,9 @@
         <p class="lede-2">
           A fresh, independent pass over the current
           <span class="mono">code-report</span> branch, carried out after every
-          first-review finding had been resolved. R2-01, R2-03, R2-05 and R2-09
-          have since been fixed on this branch and R2-02 accepted as a
-          won't-fix; those five are struck through below, and the rest are open.
+          first-review finding had been resolved. R2-01, R2-03, R2-04, R2-05 and
+          R2-09 have since been fixed on this branch and R2-02 accepted as a
+          won't-fix; those six are struck through below, and the rest are open.
           It is not a re-check of that work; it is a new survey of the whole
           codebase, so the findings below are in areas the first review did not
           reach. Each one was verified by execution &mdash; against a DOM
@@ -981,7 +973,7 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="R2-04">
+          <article class="finding medium-sev resolved" id="R2-04">
             <div class="finding-head">
               <div>
                 <h3>
@@ -994,11 +986,16 @@
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
+              <strong>Resolved 29 August 2026.</strong> The handler now returns
+              unless <code>game.user.isActiveGM</code>. The description below is
+              kept as the record of the defect.
+            </p>
+            <p>
               <code>deleteActor</code> fires on every connected client. The
-              party sheet's handler responds by writing the filtered actor list
+              party sheet's handler responded by writing the filtered actor list
               back to the party actor, with no check on which user performed the
               deletion &mdash; even though the handler receives
               <code>userId</code> and the parameter is sitting there with the
@@ -1025,12 +1022,28 @@
               <code>installKeepTokenImageInSyncWithActor</code> and the rest.
               The convention is established and followed everywhere else.
             </p>
-            <p class="recommendation">
-              <strong>Fix:</strong> return early unless
-              <code>game.userId === userId</code>. Note also that the handler
-              shadows the outer <code>actorIds</code> binding with a local of
-              the same name, which makes the write harder to read than it needs
-              to be.
+            <p class="resolution">
+              <strong>Fix applied:</strong> the guard is
+              <code>game.user.isActiveGM</code>, not the
+              <code>game.userId === userId</code> this finding originally
+              recommended. The convention elsewhere is right for hooks that fire
+              on the acting user's own document, but this write targets the
+              party actor, and a player who deletes their own PC may well not
+              have permission to write to it. Guarding on the deleting user
+              would have narrowed the failure rather than removed it. The
+              shadowed <code>actorIds</code> local is renamed, and the two
+              parameters carrying <span class="mono">// probably?</span> and
+              <span class="mono">// i cannot tell what this is</span> are named
+              correctly against
+              <span class="mono">client-backend.mjs:466</span>.
+            </p>
+            <p class="resolution">
+              <strong>Known limitation, not introduced here:</strong> this
+              handler is registered inside the party sheet's
+              <code>useEffect</code>, so the cleanup only happens if some client
+              has the sheet open &mdash; now specifically a GM's client.
+              Registering it at startup instead would make it unconditional, but
+              that is a larger change than this finding, and it was left alone.
             </p>
           </article>
 
@@ -3148,7 +3161,7 @@
               <td class="pass">47 files / 491 tests</td>
               <td>
                 No test or type errors, at
-                <span class="mono">d48e30f7</span> on
+                <span class="mono">152930d8</span> on
                 <span class="mono">code-report</span>.
               </td>
             </tr>
