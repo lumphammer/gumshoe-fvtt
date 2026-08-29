@@ -1,4 +1,5 @@
 import * as constants from "../../constants";
+import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
 import { assertGame } from "../../functions/isGame";
 import { PoolTerm } from "../../fvtt-exports";
 import { isNPCActor } from "../../module/actors/npc";
@@ -102,18 +103,15 @@ export const performAttack =
 
     void actualRoll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: weapon.actor as Actor.Stored }),
-      content: `
-    <div
-      class="${constants.abilityChatMessageClassName}"
-      ${constants.htmlDataItemId}="${abilityId}"
-      ${constants.htmlDataActorId}="${actorId}"
-      ${constants.htmlDataMode}="${constants.htmlDataModeAttack}"
-      ${constants.htmlDataRange}="${rangeName}"
-      ${constants.htmlDataWeaponId}="${weaponId}"
-      ${constants.htmlDataName}="${weapon.name}"
-      ${constants.htmlDataImageUrl}="${weapon.img}"
-    />
-  `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: abilityId,
+        [constants.htmlDataActorId]: actorId,
+        [constants.htmlDataMode]: constants.htmlDataModeAttack,
+        [constants.htmlDataRange]: rangeName,
+        [constants.htmlDataWeaponId]: weaponId,
+        [constants.htmlDataName]: weapon.name,
+        [constants.htmlDataImageUrl]: weapon.img,
+      }),
     });
 
     const currentPool = ability?.system.pool ?? 0;

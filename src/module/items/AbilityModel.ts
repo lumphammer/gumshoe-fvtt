@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
+import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
 import { TypeDataModel } from "../../fvtt-exports";
@@ -70,17 +71,14 @@ export abstract class AbilityModel<
       speaker: ChatMessage.getSpeaker({
         actor: this.parent.actor as Actor.Stored,
       }),
-      content: `
-          <div
-            class="${constants.abilityChatMessageClassName}"
-            ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
-            ${constants.htmlDataMode}="${constants.htmlDataModeTest}"
-            ${constants.htmlDataName}="${this.parent.name}"
-            ${constants.htmlDataImageUrl}="${this.parent.img}"
-            ${constants.htmlDataTokenId}="${this.parent.parent?.token?.id ?? ""}"
-          />
-        `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: this.parent.id,
+        [constants.htmlDataActorId]: this.parent.parent?.id,
+        [constants.htmlDataMode]: constants.htmlDataModeTest,
+        [constants.htmlDataName]: this.parent.name,
+        [constants.htmlDataImageUrl]: this.parent.img,
+        [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
+      }),
     });
     const pool = this.pool - (Number(spend) || 0);
     await this.parent.update({ system: { pool } });
@@ -100,17 +98,14 @@ export abstract class AbilityModel<
       speaker: ChatMessage.getSpeaker({
         actor: this.parent.actor as Actor.Stored,
       }),
-      content: `
-          <div
-            class="${constants.abilityChatMessageClassName}"
-            ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
-            ${constants.htmlDataMode}="${constants.htmlDataModeSpend}"
-            ${constants.htmlDataName}="${this.parent.name}"
-            ${constants.htmlDataImageUrl}="${this.parent.img}"
-            ${constants.htmlDataTokenId}="${this.parent.parent?.token?.id ?? ""}"
-          />
-        `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: this.parent.id,
+        [constants.htmlDataActorId]: this.parent.parent?.id,
+        [constants.htmlDataMode]: constants.htmlDataModeSpend,
+        [constants.htmlDataName]: this.parent.name,
+        [constants.htmlDataImageUrl]: this.parent.img,
+        [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
+      }),
     });
     const boost = settings.useBoost.get() && this.boost ? 1 : 0;
     const pool = this.pool - (Number(spend) || 0) + boost;
@@ -150,19 +145,16 @@ export abstract class AbilityModel<
       speaker: ChatMessage.getSpeaker({
         actor: this.parent.actor as Actor.Stored,
       }),
-      content: `
-          <div
-            class="${constants.abilityChatMessageClassName}"
-            ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
-            ${constants.htmlDataMode}="${constants.htmlDataModeMwTest}"
-            ${constants.htmlDataMwDifficulty} = ${difficulty}
-            ${constants.htmlDataMwBoonLevy} = ${boonLevy}
-            ${constants.htmlDataMwReRoll} = ${reRoll === null ? '""' : reRoll}
-            ${constants.htmlDataMwPool} = ${newPool}
-            ${constants.htmlDataTokenId}="${this.parent.parent?.token?.id ?? ""}"
-          />
-        `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: this.parent.id,
+        [constants.htmlDataActorId]: this.parent.parent?.id,
+        [constants.htmlDataMode]: constants.htmlDataModeMwTest,
+        [constants.htmlDataMwDifficulty]: difficulty,
+        [constants.htmlDataMwBoonLevy]: boonLevy,
+        [constants.htmlDataMwReRoll]: reRoll,
+        [constants.htmlDataMwPool]: newPool,
+        [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
+      }),
     });
     await this.parent.update({ system: { pool: newPool } });
   }
@@ -170,15 +162,12 @@ export abstract class AbilityModel<
   async mWNegateIllustrious(): Promise<void> {
     const newPool = Math.max(0, this.pool - constants.mwNegateCost);
     await ChatMessage.create({
-      content: `
-          <div
-            class="${constants.abilityChatMessageClassName}"
-            ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
-            ${constants.htmlDataMode}="${constants.htmlDataModeMwNegate}"
-            ${constants.htmlDataMwPool} = ${newPool}
-          />
-        `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: this.parent.id,
+        [constants.htmlDataActorId]: this.parent.parent?.id,
+        [constants.htmlDataMode]: constants.htmlDataModeMwNegate,
+        [constants.htmlDataMwPool]: newPool,
+      }),
     });
     await this.parent.update({ system: { pool: newPool } });
   }
@@ -186,15 +175,12 @@ export abstract class AbilityModel<
   async mWWallop(): Promise<void> {
     const newPool = Math.max(0, this.pool - constants.mwWallopCost);
     await ChatMessage.create({
-      content: `
-          <div
-            class="${constants.abilityChatMessageClassName}"
-            ${constants.htmlDataItemId}="${this.parent.id}"
-            ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
-            ${constants.htmlDataMode}="${constants.htmlDataModeMwWallop}"
-            ${constants.htmlDataMwPool} = ${newPool}
-          />
-        `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: this.parent.id,
+        [constants.htmlDataActorId]: this.parent.parent?.id,
+        [constants.htmlDataMode]: constants.htmlDataModeMwWallop,
+        [constants.htmlDataMwPool]: newPool,
+      }),
     });
     await this.parent.update({ system: { pool: newPool } });
   }

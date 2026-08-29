@@ -601,8 +601,9 @@
               fresh pass over the whole codebase on the
               <span class="mono">code-report</span> branch, after every
               first-review finding was resolved. It found
-              <strong>ten new issues</strong> &mdash; five Medium, five Low, no
-              Critical or High. None of them overlap the first review's
+              <strong>eleven new issues</strong> &mdash; four Medium, seven Low,
+              no Critical or High. R2-01 has since been fixed on this branch,
+              leaving ten open. None of them overlap the first review's
               findings; they sit in chat-message construction, ordered-record
               helpers, dialog lifecycle, a broadcast hook, and the type-level
               guard that was supposed to prevent HI-04. Every one was verified
@@ -628,9 +629,9 @@
             <strong>Go</strong>
             <p>
               The full pipeline passes and no open finding blocks a release: the
-              second review's ten items are correctness and clarity work, not
-              data loss or release integrity. Take R2-01 and R2-02 before the
-              next feature.
+              second review's remaining items are correctness and clarity work,
+              not data loss or release integrity. R2-01 is fixed; take R2-02
+              before the next feature.
             </p>
           </div>
         </div>
@@ -638,11 +639,13 @@
           <div class="metric"><b>10</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
-          <div class="metric medium"><b>5</b><span>medium</span></div>
-          <div class="metric low"><b>5</b><span>low</span></div>
+          <div class="metric medium"><b>4</b><span>medium</span></div>
+          <div class="metric low"><b>6</b><span>low</span></div>
         </div>
         <p class="metrics-note">
-          Counts are for the second review. All 25 first-review findings remain
+          Counts are for the second review's open items. It raised eleven
+          findings; R2-01 is resolved, and its localized-content half was split
+          out as R2-11, which remains open. All 25 first-review findings remain
           resolved; they are kept below as the record of that work.
         </p>
       </section>
@@ -651,16 +654,7 @@
         <h2>Priorities</h2>
         <div class="priority-grid">
           <div class="priority">
-            <b>1 &middot; Escape what goes into chat HTML</b>
-            <p>
-              <a href="#R2-01">R2-01</a> is the only finding a user hits by
-              accident: name a weapon with a double quote and its chat card is
-              wrong from then on. Four interpolation sites, plus two through
-              <code>getTranslated</code>.
-            </p>
-          </div>
-          <div class="priority">
-            <b>2 &middot; Make the ordering invariant explicit</b>
+            <b>1 &middot; Make the ordering invariant explicit</b>
             <p>
               <a href="#R2-02">R2-02</a>: settings order lives in object key
               order, which silently stops working for integer-like IDs the UI
@@ -669,7 +663,7 @@
             </p>
           </div>
           <div class="priority">
-            <b>3 &middot; Fix the guard that missed HI-04</b>
+            <b>2 &middot; Fix the guard that missed HI-04</b>
             <p>
               <a href="#R2-05">R2-05</a>: swapping mutual
               <code>toExtend</code> for <code>toEqualTypeOf</code> is a one-line
@@ -678,11 +672,20 @@
             </p>
           </div>
           <div class="priority">
-            <b>4 &middot; Dialog and hook lifecycle</b>
+            <b>3 &middot; Dialog and hook lifecycle</b>
             <p>
               <a href="#R2-03">R2-03</a>, <a href="#R2-09">R2-09</a> and
               <a href="#R2-04">R2-04</a> are all "this async path has no closing
               branch". Small fixes, and they share a testing approach.
+            </p>
+          </div>
+          <div class="priority">
+            <b>4 &middot; Escape the rest of the chat HTML</b>
+            <p>
+              <a href="#R2-11">R2-11</a> is what is left of R2-01 after the card
+              markers were fixed: names substituted into localized strings that
+              become chat content. One escape call, or one change inside
+              <code>getTranslated</code>.
             </p>
           </div>
           <div class="priority">
@@ -697,21 +700,23 @@
       </section>
 
       <section id="review-2">
-        <h2>Second review &mdash; open findings</h2>
+        <h2>Second review &mdash; findings</h2>
         <p class="lede-2">
           A fresh, independent pass over the current
           <span class="mono">code-report</span> branch, carried out after every
-          first-review finding had been resolved. It is not a re-check of that
-          work; it is a new survey of the whole codebase, so the findings below
-          are in areas the first review did not reach. Each one was verified by
-          execution &mdash; against a DOM parser, the TypeScript type checker,
-          Node, or the installed Foundry v14 source &mdash; before being written
-          down. Four further hypotheses were tested and cleared; they are
-          recorded under <a href="#not-defects">Investigated and cleared</a> so
-          nobody spends the time twice.
+          first-review finding had been resolved. R2-01 has since been fixed on
+          this branch and is struck through below; the rest are open. It is not
+          a re-check of that work; it is a new survey of the whole codebase, so
+          the findings below are in areas the first review did not reach. Each
+          one was verified by execution &mdash; against a DOM parser, the
+          TypeScript type checker, Node, or the installed Foundry v14 source
+          &mdash; before being written down. Four further hypotheses were tested
+          and cleared; they are recorded under
+          <a href="#not-defects">Investigated and cleared</a> so nobody spends
+          the time twice.
         </p>
         <div class="finding-list">
-          <article class="finding medium-sev" id="R2-01">
+          <article class="finding medium-sev resolved" id="R2-01">
             <div class="finding-head">
               <div>
                 <h3>
@@ -732,10 +737,20 @@
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
-              Every ability test, spend, push and attack builds its chat message
+              <strong>Resolved 29 August 2026.</strong> The six card-marker
+              sites now build their element with
+              <code>document.createElement</code> and
+              <code>setAttribute</code> through a shared
+              <code>buildAbilityCardContent</code> helper, and hand over its
+              <code>outerHTML</code>, so escaping is not something a future
+              template can forget. The description below is kept as the record
+              of the defect.
+            </p>
+            <p>
+              Every ability test, spend, push and attack built its chat message
               as a template string and drops the document name straight into an
               HTML attribute:
               <code>${constants.htmlDataName}="${this.parent.name}"</code>.
@@ -754,19 +769,9 @@
               event handler on an element in every recipient's chat log.
             </p>
             <p>
-              The <code>getTranslated</code> path has the same shape.
-              <code>Localization#format</code> is a plain
-              <code>String#replace</code> with no escaping (<span class="mono"
-                >localization.mjs:444</span
-              >), so
-              <a href="src/startup/installEquipmentAddedNotifier.ts#L40"
-                >installEquipmentAddedNotifier.ts:40</a
-              >
-              and
-              <a href="src/module/actors/ActiveCharacterModel.ts#L87"
-                >ActiveCharacterModel.ts:87, 126</a
-              >
-              also put unescaped item, actor and user names into chat content.
+              The <code>getTranslated</code> path has the same shape, but not
+              the same fix: it is split out as <a href="#R2-11">R2-11</a> and
+              remains open.
             </p>
             <p class="review-note">
               <span class="tag">Verified by execution</span>
@@ -789,15 +794,24 @@
               card, which needs no attacker at all &mdash; only a double quote
               in a weapon name.
             </p>
-            <p class="recommendation">
-              <strong>Fix:</strong> route the four attribute values through
-              <code>foundry.utils.escapeHTML</code> at the point of
-              interpolation, or better, build the element with
-              <code>document.createElement</code> and
-              <code>setAttribute</code> and hand over its
-              <code>outerHTML</code>, so escaping is not something a future
-              template can forget. Cover it with a test that round-trips a name
-              containing a double quote through build-then-parse.
+            <p class="resolution">
+              <strong>Fix applied:</strong>
+              <a href="src/functions/buildAbilityCardContent.ts#L1"
+                >buildAbilityCardContent.ts</a
+              >
+              takes a record of attribute name to value and sets each through
+              the DOM; nullish values become empty attributes, which is what
+              <code>installAbilityCardChatWrangler</code> already expects for
+              "not applicable". Two latent bugs went with it: the Moribund World
+              attributes were emitted unquoted (<code
+                >data-mw-difficulty = ${difficulty}</code
+              >), and <code>data-mw-re-roll</code> emitted a literal
+              <span class="mono">""</span> for the null case, which the reader
+              tested for truthiness and turned into <code>NaN</code>. Covered by
+              a build-then-parse test that round-trips a name containing a
+              double quote and an injected <code>&lt;img&gt;</code>; the test
+              was checked against the old interpolating implementation and fails
+              there.
             </p>
           </article>
 
@@ -1272,6 +1286,52 @@
               kept deliberately, say so in a one-line comment at the top. None
               of it reaches the bundle &mdash; Vite only walks reachable modules
               &mdash; so this is about the reader, not the artifact.
+            </p>
+          </article>
+
+          <article class="finding low-sev" id="R2-11">
+            <div class="finding-head">
+              <div>
+                <h3>
+                  R2-11 · Localized chat content interpolates names without
+                  escaping
+                </h3>
+                <p class="refs">
+                  <a href="src/startup/installEquipmentAddedNotifier.ts#L40"
+                    >installEquipmentAddedNotifier.ts:40</a
+                  >
+                  ·
+                  <a href="src/module/actors/ActiveCharacterModel.ts#L87"
+                    >ActiveCharacterModel.ts:87, 126</a
+                  >
+                </p>
+              </div>
+              <span class="badge">Low</span>
+            </div>
+            <p>
+              Split out of <a href="#R2-01">R2-01</a>, which is resolved. This
+              half has the same cause and a different fix, so it did not travel
+              with it. <code>Localization#format</code> is a plain
+              <code>String#replace</code> with no escaping (<span class="mono"
+                >localization.mjs:444</span
+              >), and both call sites hand it item, actor and user names to
+              substitute into a string that becomes chat message content.
+            </p>
+            <p>
+              <strong>Impact:</strong> lower reach than R2-01 &mdash; these are
+              notification messages rather than interactive cards, and the
+              substituted value lands in text rather than inside an attribute,
+              so a plain double quote is harmless. A name containing
+              <span class="mono">&lt;</span> still injects markup into the
+              recipient's chat log.
+            </p>
+            <p class="recommendation">
+              <strong>Fix:</strong> escape the substituted values with
+              <code>foundry.utils.escapeHTML</code> before passing them to
+              <code>getTranslated</code>, or escape inside
+              <code>getTranslated</code> itself so every caller inherits it. The
+              second is better if no caller relies on passing markup through
+              &mdash; worth checking the handful of call sites first.
             </p>
           </article>
         </div>
@@ -3011,20 +3071,21 @@
             </tr>
             <tr>
               <td><code>pnpm vitest run</code></td>
-              <td class="pass">45 files / 479 tests</td>
+              <td class="pass">46 files / 482 tests</td>
               <td>
                 No test or type errors, at
-                <span class="mono">835bba85</span> on
+                <span class="mono">99f6028a</span> on
                 <span class="mono">code-report</span>.
               </td>
             </tr>
             <tr>
               <td>Chat-card attribute parsing</td>
-              <td class="warn">Breaks on a quote</td>
+              <td class="pass">Fixed</td>
               <td>
-                The real template run through a DOM parser: a name containing
-                <code>"</code> truncates, and an injected handler attaches.
-                Evidence for <a href="#R2-01">R2-01</a>.
+                The old template, run through a DOM parser, truncated a name
+                containing <code>"</code> and attached an injected handler. The
+                DOM-built replacement survives both, and the test fails against
+                the old implementation. Evidence for <a href="#R2-01">R2-01</a>.
               </td>
             </tr>
             <tr>

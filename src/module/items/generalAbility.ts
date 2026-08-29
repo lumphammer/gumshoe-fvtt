@@ -1,4 +1,5 @@
 import * as constants from "../../constants";
+import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
 import { BooleanField, NumberField, StringField } from "../../fvtt-exports";
 import { MwRefreshGroup } from "../../types";
 import { AbilityModel } from "./AbilityModel";
@@ -58,17 +59,14 @@ export class GeneralAbilityModel extends AbilityModel<
       speaker: ChatMessage.getSpeaker({
         actor: this.parent.actor as Actor.Stored,
       }),
-      content: `
-        <div
-          class="${constants.abilityChatMessageClassName}"
-          ${constants.htmlDataItemId}="${from?.id ?? this.parent.id}"
-          ${constants.htmlDataActorId}="${this.parent.parent?.id ?? ""}"
-          ${constants.htmlDataMode}="${constants.htmlDataModePush}"
-          ${constants.htmlDataName}="${from?.name ?? this.parent.name}"
-          ${constants.htmlDataImageUrl}="${this.parent.img}"
-          ${constants.htmlDataTokenId}="${this.parent.parent?.token?.id ?? ""}"
-        />
-      `,
+      content: buildAbilityCardContent({
+        [constants.htmlDataItemId]: from?.id ?? this.parent.id,
+        [constants.htmlDataActorId]: this.parent.parent?.id,
+        [constants.htmlDataMode]: constants.htmlDataModePush,
+        [constants.htmlDataName]: from?.name ?? this.parent.name,
+        [constants.htmlDataImageUrl]: this.parent.img,
+        [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
+      }),
     });
     const pool = this.pool - 1;
     await this.parent.update({ system: { pool } });
