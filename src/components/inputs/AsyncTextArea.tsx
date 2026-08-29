@@ -4,9 +4,8 @@ import { TextArea } from "./TextArea";
 type AsyncTextAreaProps = {
   className?: string;
   value: string;
-  onChange: (value: string, index?: number) => void;
+  onChange: (value: string) => void;
   disabled?: boolean;
-  index?: number;
 };
 
 export const AsyncTextArea = ({
@@ -14,7 +13,6 @@ export const AsyncTextArea = ({
   value,
   onChange: onChangeOrig,
   disabled,
-  index,
 }: AsyncTextAreaProps) => {
   const { onChange, onFocus, onBlur, display } = useAsyncUpdate(
     value,
