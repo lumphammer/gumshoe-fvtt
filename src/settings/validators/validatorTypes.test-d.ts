@@ -13,42 +13,36 @@ import { ValidatorStats } from "./statsValidator";
 // types without also creating a dependency on zod for the consumers of the
 // types. So, we maintain both - but use these type tests to ensure that the zod
 // validator and the types are in sync.
+//
+// these must be `toEqualTypeOf`, not mutual `toExtend`. a missing *optional*
+// property passes assignability in both directions, so the mutual form was
+// green throughout HI-04, where the stats validator was missing `min`/`max`
+// and zod was silently stripping them on import.
 
 describe("statsValidator", () => {
   it("should match the type from the types package", () => {
-    expectTypeOf<ValidatorStats>().toExtend<PresetV1["pcStats"]>();
-    expectTypeOf<PresetV1["pcStats"]>().toExtend<ValidatorStats>();
-    expectTypeOf<ValidatorStats>().toExtend<PresetV1["npcStats"]>();
-    expectTypeOf<PresetV1["npcStats"]>().toExtend<ValidatorStats>();
+    expectTypeOf<ValidatorStats>().toEqualTypeOf<PresetV1["pcStats"]>();
+    expectTypeOf<ValidatorStats>().toEqualTypeOf<PresetV1["npcStats"]>();
   });
 });
 describe("personalDetailsValidator", () => {
   it("should match the type from the types package", () => {
-    expectTypeOf<ValidatorPersonalDetails>().toExtend<
+    expectTypeOf<ValidatorPersonalDetails>().toEqualTypeOf<
       PresetV1["personalDetails"]
     >();
-    expectTypeOf<
-      PresetV1["personalDetails"]
-    >().toExtend<ValidatorPersonalDetails>();
   });
 });
 describe("equipmentCategoriesValidator", () => {
   it("should match the type from the types package", () => {
-    expectTypeOf<ValidatorEquipmentCategories>().toExtend<
+    expectTypeOf<ValidatorEquipmentCategories>().toEqualTypeOf<
       PresetV1["equipmentCategories"]
     >();
-    expectTypeOf<
-      PresetV1["equipmentCategories"]
-    >().toExtend<ValidatorEquipmentCategories>();
   });
 });
 describe("cardCategoriesValidator", () => {
   it("should match the type from the types package", () => {
-    expectTypeOf<ValidatorCardCategories>().toExtend<
+    expectTypeOf<ValidatorCardCategories>().toEqualTypeOf<
       PresetV1["cardCategories"]
     >();
-    expectTypeOf<
-      PresetV1["cardCategories"]
-    >().toExtend<ValidatorCardCategories>();
   });
 });

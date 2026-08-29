@@ -613,9 +613,9 @@
               <span class="mono">code-report</span> branch, after every
               first-review finding was resolved. It found
               <strong>eleven new issues</strong> &mdash; four Medium, seven Low,
-              no Critical or High. R2-01 has since been fixed on this branch and
-              R2-02 closed as won't-fix, leaving nine open. None of them overlap
-              the first review's findings; they sit in chat-message
+              no Critical or High. R2-01 and R2-05 have since been fixed on this
+              branch and R2-02 closed as won't-fix, leaving eight open. None of
+              them overlap the first review's findings; they sit in chat-message
               construction, ordered-record helpers, dialog lifecycle, a
               broadcast hook, and the type-level guard that was supposed to
               prevent HI-04. Every one was verified by running it. Four further
@@ -642,25 +642,26 @@
             <p>
               The full pipeline passes and no open finding blocks a release: the
               second review's remaining items are correctness and clarity work,
-              not data loss or release integrity. R2-01 is fixed and R2-02 is
-              accepted as a known cost until the ordered records become arrays;
-              take R2-05 before the next feature.
+              not data loss or release integrity. R2-01 and R2-05 are fixed and
+              R2-02 is accepted as a known cost until the ordered records become
+              arrays; the dialog and hook lifecycle items are next.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>9</b><span>open findings</span></div>
+          <div class="metric"><b>8</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
-          <div class="metric medium"><b>3</b><span>medium</span></div>
+          <div class="metric medium"><b>2</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
         <p class="metrics-note">
           Counts are for the second review's open items. It raised eleven
-          findings; R2-01 is resolved, its localized-content half was split out
-          as R2-11, which remains open, and R2-02 is closed as won't-fix pending
-          the ordered-record migration. All 25 first-review findings remain
-          resolved; they are kept below as the record of that work.
+          findings; R2-01 and R2-05 are resolved, R2-01's localized-content half
+          was split out as R2-11, which remains open, and R2-02 is closed as
+          won't-fix pending the ordered-record migration. All 25 first-review
+          findings remain resolved; they are kept below as the record of that
+          work.
         </p>
       </section>
 
@@ -668,16 +669,7 @@
         <h2>Priorities</h2>
         <div class="priority-grid">
           <div class="priority">
-            <b>1 &middot; Fix the guard that missed HI-04</b>
-            <p>
-              <a href="#R2-05">R2-05</a>: swapping mutual
-              <code>toExtend</code> for <code>toEqualTypeOf</code> is a one-line
-              change per validator that restores a check the project already
-              believes it has.
-            </p>
-          </div>
-          <div class="priority">
-            <b>2 &middot; Dialog and hook lifecycle</b>
+            <b>1 &middot; Dialog and hook lifecycle</b>
             <p>
               <a href="#R2-03">R2-03</a>, <a href="#R2-09">R2-09</a> and
               <a href="#R2-04">R2-04</a> are all "this async path has no closing
@@ -685,7 +677,7 @@
             </p>
           </div>
           <div class="priority">
-            <b>3 &middot; Escape the rest of the chat HTML</b>
+            <b>2 &middot; Escape the rest of the chat HTML</b>
             <p>
               <a href="#R2-11">R2-11</a> is what is left of R2-01 after the card
               markers were fixed: names substituted into localized strings that
@@ -694,7 +686,7 @@
             </p>
           </div>
           <div class="priority">
-            <b>4 &middot; Replace the ordered records with arrays</b>
+            <b>3 &middot; Replace the ordered records with arrays</b>
             <p>
               The structural fix that closes <a href="#R2-02">R2-02</a> for
               good: equipment categories, equipment fields and PC/NPC stats
@@ -703,7 +695,7 @@
             </p>
           </div>
           <div class="priority">
-            <b>5 &middot; Maintenance, unchanged</b>
+            <b>4 &middot; Maintenance, unchanged</b>
             <p>
               Dependency triage by shipped scope, Vite future-compatibility
               warnings, and real-Foundry integration coverage carry over from
@@ -718,16 +710,17 @@
         <p class="lede-2">
           A fresh, independent pass over the current
           <span class="mono">code-report</span> branch, carried out after every
-          first-review finding had been resolved. R2-01 has since been fixed on
-          this branch and R2-02 accepted as a won't-fix; both are struck through
-          below, and the rest are open. It is not a re-check of that work; it is
-          a new survey of the whole codebase, so the findings below are in areas
-          the first review did not reach. Each one was verified by execution
-          &mdash; against a DOM parser, the TypeScript type checker, Node, or
-          the installed Foundry v14 source &mdash; before being written down.
-          Four further hypotheses were tested and cleared; they are recorded
-          under <a href="#not-defects">Investigated and cleared</a> so nobody
-          spends the time twice.
+          first-review finding had been resolved. R2-01 and R2-05 have since
+          been fixed on this branch and R2-02 accepted as a won't-fix; all three
+          are struck through below, and the rest are open. It is not a re-check
+          of that work; it is a new survey of the whole codebase, so the
+          findings below are in areas the first review did not reach. Each one
+          was verified by execution &mdash; against a DOM parser, the TypeScript
+          type checker, Node, or the installed Foundry v14 source &mdash; before
+          being written down. Four further hypotheses were tested and cleared;
+          they are recorded under
+          <a href="#not-defects">Investigated and cleared</a> so nobody spends
+          the time twice.
         </p>
         <div class="finding-list">
           <article class="finding medium-sev resolved" id="R2-01">
@@ -1017,7 +1010,7 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="R2-05">
+          <article class="finding medium-sev resolved" id="R2-05">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1030,11 +1023,18 @@
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
-              The four Zod validators are kept in step with the published types
-              by a type test that asserts mutual assignability:
+              <strong>Resolved 29 August 2026.</strong> Each mutual
+              <code>toExtend</code> pair is now a single
+              <code>toEqualTypeOf</code>, and the reason is recorded in the file
+              so the weaker form is not reintroduced as a simplification. The
+              description below is kept as the record of the defect.
+            </p>
+            <p>
+              The four Zod validators were kept in step with the published types
+              by a type test that asserted mutual assignability:
               <code>expectTypeOf&lt;A&gt;().toExtend&lt;B&gt;()</code> in both
               directions. That is a deliberate, well-commented guard &mdash; and
               it is blind to precisely the failure it guards against.
@@ -1068,13 +1068,19 @@
               to <code>toEqualTypeOf</code> fails it, naming
               <code>min</code> and <code>max</code> in the error.
             </p>
-            <p class="recommendation">
-              <strong>Fix:</strong> replace each mutual
-              <code>toExtend</code> pair with a single
-              <code>toEqualTypeOf</code>. It is a smaller test that catches
-              strictly more, and it is a one-line change per validator. Pair it
-              with the export/import round-trip assertion the first review
-              recommended for every validator, not just stats.
+            <p class="resolution">
+              <strong>Fix applied:</strong> the eight
+              <code>toExtend</code> assertions became four
+              <code>toEqualTypeOf</code> ones &mdash; a smaller test that
+              catches strictly more. Checked against the pre-HI-04 shape:
+              deleting <code>min</code> and <code>max</code> from
+              <code>statsValidator</code> now fails the type test, naming both
+              properties, where the old form stayed green. The round-trip
+              assertion was extended to the other two validators carrying
+              optional properties &mdash; <code>styleKey</code> on card
+              categories, <code>min</code>/<code>max</code> on number equipment
+              fields &mdash; and both were confirmed to fail when the property
+              is dropped from the schema.
             </p>
           </article>
 
@@ -2790,10 +2796,12 @@
             <span class="grade">C+</span>
             <h3>Test confidence</h3>
             <p>
-              479 tests pass across 45 files. But 20 test files cover 246
+              484 tests pass across 46 files. But 20 test files cover 246
               component sources, seven of those for one subsystem, and no sheet
-              component is tested at all. <a href="#R2-05">R2-05</a> shows a
-              guard that was green while the defect it targeted shipped.
+              component is tested at all. <a href="#R2-05">R2-05</a> was a guard
+              that stayed green while the defect it targeted shipped; it is
+              fixed, but the grade is about the coverage shape, not that one
+              test.
             </p>
           </div>
           <div class="health-card">
@@ -3100,10 +3108,10 @@
             </tr>
             <tr>
               <td><code>pnpm vitest run</code></td>
-              <td class="pass">46 files / 482 tests</td>
+              <td class="pass">46 files / 484 tests</td>
               <td>
                 No test or type errors, at
-                <span class="mono">99f6028a</span> on
+                <span class="mono">5ad1d99a</span> on
                 <span class="mono">code-report</span>.
               </td>
             </tr>
@@ -3128,11 +3136,12 @@
             </tr>
             <tr>
               <td>Validator parity type test</td>
-              <td class="warn">Passes when it should fail</td>
+              <td class="pass">Fixed</td>
               <td>
-                The pre-HI-04 stats shape passes mutual
-                <code>toExtend</code> and fails <code>toEqualTypeOf</code>.
-                Evidence for <a href="#R2-05">R2-05</a>.
+                The pre-HI-04 stats shape passed mutual
+                <code>toExtend</code> and fails the
+                <code>toEqualTypeOf</code> assertions that replaced it. Evidence
+                for <a href="#R2-05">R2-05</a>.
               </td>
             </tr>
             <tr>
