@@ -2,6 +2,11 @@ import { useEffect, useRef } from "react";
 
 import { systemLogger } from "../functions/utilities";
 
+/**
+ * Debug hook: logs which props changed between renders. Deliberately kept even
+ * though nothing imports it - drop a call into a component when you need to
+ * find out why it is re-rendering.
+ */
 export function useWhyDidYouUpdate(name: string, props: any) {
   // Get a mutable ref object where we can store props ...
   // ... for comparison next time this hook runs.
