@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 
 import {
+  assertNotNull,
   debounce,
   fixLength,
   isNullOrEmptyString,
@@ -360,5 +361,25 @@ describe("trimLeadingPunctuation", () => {
     expect(trimLeadingPunctuation("::foo")).toBe("foo");
     expect(trimLeadingPunctuation("--foo")).toBe("foo");
     expect(trimLeadingPunctuation('""foo')).toBe("foo");
+  });
+});
+
+describe("assertNotNull", () => {
+  test("throws for null and undefined, naming the value", () => {
+    expect(() => {
+      assertNotNull(null, "combatant");
+    }).toThrow("combatant was null");
+    expect(() => {
+      assertNotNull(undefined, "combatant");
+    }).toThrow("combatant was undefined");
+  });
+
+  test("passes falsy values that are neither", () => {
+    expect(() => {
+      assertNotNull(0, "count");
+      assertNotNull("", "name");
+      assertNotNull(false, "flag");
+      assertNotNull(NaN, "amount");
+    }).not.toThrow();
   });
 });

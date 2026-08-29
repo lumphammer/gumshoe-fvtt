@@ -116,9 +116,16 @@ export function getDevMode() {
   );
 }
 
-export function assertNotNull<T>(t: T | undefined | null): asserts t is T {
-  if (t === undefined) {
-    throw new Error("t was undefined");
+/**
+ * Assert that a value is neither `null` nor `undefined`. `description` names
+ * the value, so the thrown error says what was missing.
+ */
+export function assertNotNull<T>(
+  t: T | undefined | null,
+  description: string,
+): asserts t is T {
+  if (t == null) {
+    throw new Error(`${description} was ${t === null ? "null" : "undefined"}`);
   }
 }
 

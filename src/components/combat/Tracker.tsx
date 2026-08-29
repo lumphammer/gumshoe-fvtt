@@ -21,7 +21,7 @@ import { TurnPassingTurnNav } from "./TurnPassingTurnNav";
  */
 export const Tracker = () => {
   assertGame(game);
-  assertNotNull(game.user);
+  assertNotNull(game.user, "game.user");
 
   // STATE & DERIVED DATA
 

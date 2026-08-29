@@ -614,13 +614,14 @@
               first-review finding was resolved. It found
               <strong>eleven new issues</strong> &mdash; four Medium, seven Low,
               no Critical or High. R2-01, R2-03, R2-04, R2-05, R2-06, R2-09 and
-              R2-10 have since been fixed on this branch and R2-02 closed as
-              won't-fix, leaving three, all Low. None of them overlap the first
-              review's findings; they sit in chat-message construction,
-              ordered-record helpers, dialog lifecycle, a broadcast hook, and
-              the type-level guard that was supposed to prevent HI-04. Every one
-              was verified by running it. Four further hypotheses were tested
-              and cleared, and are recorded rather than discarded.
+              R2-07 and R2-10 have since been fixed on this branch and R2-02
+              closed as won't-fix, leaving two, both Low. None of them overlap
+              the first review's findings; they sit in chat-message
+              construction, ordered-record helpers, dialog lifecycle, a
+              broadcast hook, and the type-level guard that was supposed to
+              prevent HI-04. Every one was verified by running it. Four further
+              hypotheses were tested and cleared, and are recorded rather than
+              discarded.
             </p>
             <p class="second-pass">
               <strong>First-review second-pass, 28 August 2026.</strong> Every
@@ -643,26 +644,26 @@
               The full pipeline passes and no open finding blocks a release: the
               second review's remaining items are correctness and clarity work,
               not data loss or release integrity. Every Medium is now either
-              fixed or accepted: R2-01, R2-03, R2-04, R2-05, R2-06, R2-09 and
-              R2-10 are fixed, and R2-02 is a known cost until the ordered
-              records become arrays.
+              fixed or accepted: R2-01, R2-03 through R2-07, R2-09 and R2-10 are
+              fixed, and R2-02 is a known cost until the ordered records become
+              arrays.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>3</b><span>open findings</span></div>
+          <div class="metric"><b>2</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
           <div class="metric medium"><b>0</b><span>medium</span></div>
-          <div class="metric low"><b>3</b><span>low</span></div>
+          <div class="metric low"><b>2</b><span>low</span></div>
         </div>
         <p class="metrics-note">
           Counts are for the second review's open items. It raised eleven
-          findings; R2-01, R2-03, R2-04, R2-05, R2-06, R2-09 and R2-10 are
-          resolved, R2-01's localized-content half was split out as R2-11, which
-          remains open, and R2-02 is closed as won't-fix pending the
-          ordered-record migration. All 25 first-review findings remain
-          resolved; they are kept below as the record of that work.
+          findings; R2-01, R2-03 through R2-07, R2-09 and R2-10 are resolved,
+          R2-01's localized-content half was split out as R2-11, which remains
+          open, and R2-02 is closed as won't-fix pending the ordered-record
+          migration. All 25 first-review findings remain resolved; they are kept
+          below as the record of that work.
         </p>
       </section>
 
@@ -704,11 +705,11 @@
           A fresh, independent pass over the current
           <span class="mono">code-report</span> branch, carried out after every
           first-review finding had been resolved. R2-01, R2-03, R2-04, R2-05,
-          R2-06, R2-09 and R2-10 have since been fixed on this branch and R2-02
-          accepted as a won't-fix; those eight are struck through below, and the
-          rest are open. It is not a re-check of that work; it is a new survey
-          of the whole codebase, so the findings below are in areas the first
-          review did not reach. Each one was verified by execution &mdash;
+          R2-06, R2-07, R2-09 and R2-10 have since been fixed on this branch and
+          R2-02 accepted as a won't-fix; those nine are struck through below,
+          and the rest are open. It is not a re-check of that work; it is a new
+          survey of the whole codebase, so the findings below are in areas the
+          first review did not reach. Each one was verified by execution &mdash;
           against a DOM parser, the TypeScript type checker, Node, or the
           installed Foundry v14 source &mdash; before being written down. Four
           further hypotheses were tested and cleared; they are recorded under
@@ -1204,7 +1205,7 @@
             </p>
           </article>
 
-          <article class="finding low-sev" id="R2-07">
+          <article class="finding low-sev resolved" id="R2-07">
             <div class="finding-head">
               <div>
                 <h3>
@@ -1216,10 +1217,15 @@
                   >
                 </p>
               </div>
-              <span class="badge">Low</span>
+              <span class="badge resolved">Resolved</span>
             </div>
             <p>
-              The signature is
+              <strong>Resolved 29 August 2026.</strong> The check is now
+              <code>== null</code>, and the helper takes a description. The
+              description below is kept as the record of the defect.
+            </p>
+            <p>
+              The signature was
               <code
                 >assertNotNull&lt;T&gt;(t: T | undefined | null): asserts t is
                 T</code
@@ -1238,10 +1244,16 @@
               <code>styleKeyCategoryId</code>, all of which are nullable here
               &mdash; gets a silent pass and a crash further down.
             </p>
-            <p class="recommendation">
-              <strong>Fix:</strong> check <code>== null</code> to cover both,
-              and take a description argument so the thrown message names what
-              was missing.
+            <p class="resolution">
+              <strong>Fix applied:</strong> both recommendations, and the
+              description is required rather than optional &mdash; there are
+              only twelve call sites, and an optional one would have left the
+              useless message in place wherever nobody bothered. The error now
+              distinguishes null from undefined, so it says which it was. Two
+              tests: null and undefined each throw naming the value, and
+              <code>0</code>, <code>""</code>, <code>false</code> and
+              <code>NaN</code> all pass. The first fails against the old
+              <code>=== undefined</code> body.
             </p>
           </article>
 
@@ -2897,7 +2909,7 @@
             <span class="grade">C+</span>
             <h3>Test confidence</h3>
             <p>
-              480 tests pass across 47 files. But 20 test files cover 246
+              482 tests pass across 47 files. But 20 test files cover 246
               component sources, seven of those for one subsystem, and no sheet
               component is tested at all. <a href="#R2-05">R2-05</a> was a guard
               that stayed green while the defect it targeted shipped; it is
@@ -3209,10 +3221,10 @@
             </tr>
             <tr>
               <td><code>pnpm vitest run</code></td>
-              <td class="pass">47 files / 480 tests</td>
+              <td class="pass">47 files / 482 tests</td>
               <td>
                 No test or type errors, at
-                <span class="mono">71841a37</span> on
+                <span class="mono">8a5d0045</span> on
                 <span class="mono">code-report</span>.
               </td>
             </tr>
