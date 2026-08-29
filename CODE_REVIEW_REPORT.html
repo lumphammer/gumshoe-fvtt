@@ -374,6 +374,17 @@
         color: var(--good);
         background: var(--good-bg);
       }
+      .finding.wontfix {
+        opacity: 0.78;
+      }
+      .finding.wontfix h3 {
+        text-decoration: line-through;
+        text-decoration-thickness: 0.12em;
+      }
+      .badge.wontfix {
+        color: var(--muted);
+        background: rgb(168 153 132 / 16%);
+      }
       .critical-sev {
         --sev: var(--critical);
         --sev-bg: var(--critical-bg);
@@ -602,13 +613,14 @@
               <span class="mono">code-report</span> branch, after every
               first-review finding was resolved. It found
               <strong>eleven new issues</strong> &mdash; four Medium, seven Low,
-              no Critical or High. R2-01 has since been fixed on this branch,
-              leaving ten open. None of them overlap the first review's
-              findings; they sit in chat-message construction, ordered-record
-              helpers, dialog lifecycle, a broadcast hook, and the type-level
-              guard that was supposed to prevent HI-04. Every one was verified
-              by running it. Four further hypotheses were tested and cleared,
-              and are recorded rather than discarded.
+              no Critical or High. R2-01 has since been fixed on this branch and
+              R2-02 closed as won't-fix, leaving nine open. None of them overlap
+              the first review's findings; they sit in chat-message
+              construction, ordered-record helpers, dialog lifecycle, a
+              broadcast hook, and the type-level guard that was supposed to
+              prevent HI-04. Every one was verified by running it. Four further
+              hypotheses were tested and cleared, and are recorded rather than
+              discarded.
             </p>
             <p class="second-pass">
               <strong>First-review second-pass, 28 August 2026.</strong> Every
@@ -630,22 +642,24 @@
             <p>
               The full pipeline passes and no open finding blocks a release: the
               second review's remaining items are correctness and clarity work,
-              not data loss or release integrity. R2-01 is fixed; take R2-02
-              before the next feature.
+              not data loss or release integrity. R2-01 is fixed and R2-02 is
+              accepted as a known cost until the ordered records become arrays;
+              take R2-05 before the next feature.
             </p>
           </div>
         </div>
         <div class="metrics" aria-label="Finding counts">
-          <div class="metric"><b>10</b><span>open findings</span></div>
+          <div class="metric"><b>9</b><span>open findings</span></div>
           <div class="metric critical"><b>0</b><span>critical</span></div>
           <div class="metric high"><b>0</b><span>high</span></div>
-          <div class="metric medium"><b>4</b><span>medium</span></div>
+          <div class="metric medium"><b>3</b><span>medium</span></div>
           <div class="metric low"><b>6</b><span>low</span></div>
         </div>
         <p class="metrics-note">
           Counts are for the second review's open items. It raised eleven
-          findings; R2-01 is resolved, and its localized-content half was split
-          out as R2-11, which remains open. All 25 first-review findings remain
+          findings; R2-01 is resolved, its localized-content half was split out
+          as R2-11, which remains open, and R2-02 is closed as won't-fix pending
+          the ordered-record migration. All 25 first-review findings remain
           resolved; they are kept below as the record of that work.
         </p>
       </section>
@@ -654,16 +668,7 @@
         <h2>Priorities</h2>
         <div class="priority-grid">
           <div class="priority">
-            <b>1 &middot; Make the ordering invariant explicit</b>
-            <p>
-              <a href="#R2-02">R2-02</a>: settings order lives in object key
-              order, which silently stops working for integer-like IDs the UI
-              lets users type. Reject them at entry, or stop encoding order in
-              keys.
-            </p>
-          </div>
-          <div class="priority">
-            <b>2 &middot; Fix the guard that missed HI-04</b>
+            <b>1 &middot; Fix the guard that missed HI-04</b>
             <p>
               <a href="#R2-05">R2-05</a>: swapping mutual
               <code>toExtend</code> for <code>toEqualTypeOf</code> is a one-line
@@ -672,7 +677,7 @@
             </p>
           </div>
           <div class="priority">
-            <b>3 &middot; Dialog and hook lifecycle</b>
+            <b>2 &middot; Dialog and hook lifecycle</b>
             <p>
               <a href="#R2-03">R2-03</a>, <a href="#R2-09">R2-09</a> and
               <a href="#R2-04">R2-04</a> are all "this async path has no closing
@@ -680,12 +685,21 @@
             </p>
           </div>
           <div class="priority">
-            <b>4 &middot; Escape the rest of the chat HTML</b>
+            <b>3 &middot; Escape the rest of the chat HTML</b>
             <p>
               <a href="#R2-11">R2-11</a> is what is left of R2-01 after the card
               markers were fixed: names substituted into localized strings that
               become chat content. One escape call, or one change inside
               <code>getTranslated</code>.
+            </p>
+          </div>
+          <div class="priority">
+            <b>4 &middot; Replace the ordered records with arrays</b>
+            <p>
+              The structural fix that closes <a href="#R2-02">R2-02</a> for
+              good: equipment categories, equipment fields and PC/NPC stats
+              carry their order in object key order today. Larger than a
+              finding, tracked here as the reason R2-02 is not being patched.
             </p>
           </div>
           <div class="priority">
@@ -705,15 +719,15 @@
           A fresh, independent pass over the current
           <span class="mono">code-report</span> branch, carried out after every
           first-review finding had been resolved. R2-01 has since been fixed on
-          this branch and is struck through below; the rest are open. It is not
-          a re-check of that work; it is a new survey of the whole codebase, so
-          the findings below are in areas the first review did not reach. Each
-          one was verified by execution &mdash; against a DOM parser, the
-          TypeScript type checker, Node, or the installed Foundry v14 source
-          &mdash; before being written down. Four further hypotheses were tested
-          and cleared; they are recorded under
-          <a href="#not-defects">Investigated and cleared</a> so nobody spends
-          the time twice.
+          this branch and R2-02 accepted as a won't-fix; both are struck through
+          below, and the rest are open. It is not a re-check of that work; it is
+          a new survey of the whole codebase, so the findings below are in areas
+          the first review did not reach. Each one was verified by execution
+          &mdash; against a DOM parser, the TypeScript type checker, Node, or
+          the installed Foundry v14 source &mdash; before being written down.
+          Four further hypotheses were tested and cleared; they are recorded
+          under <a href="#not-defects">Investigated and cleared</a> so nobody
+          spends the time twice.
         </p>
         <div class="finding-list">
           <article class="finding medium-sev resolved" id="R2-01">
@@ -815,7 +829,7 @@
             </p>
           </article>
 
-          <article class="finding medium-sev" id="R2-02">
+          <article class="finding medium-sev wontfix" id="R2-02">
             <div class="finding-head">
               <div>
                 <h3>
@@ -836,8 +850,19 @@
                   >
                 </p>
               </div>
-              <span class="badge">Medium</span>
+              <span class="badge wontfix">Won't fix</span>
             </div>
+            <p>
+              <strong>Won't fix, 29 August 2026.</strong> The defect is real and
+              the description below stands. The cheap guard was declined
+              deliberately: it buys a stated invariant at the cost of a new
+              validation path and three call sites of plumbing, in service of a
+              data shape that should not exist. The real fix is to replace the
+              ordered records with arrays of objects, at which point the
+              helpers, the guard and the invariant all go away together. Fixing
+              this in place would be work spent making the wrong structure
+              safer.
+            </p>
             <p>
               Equipment categories, equipment fields and PC/NPC stats are stored
               as objects keyed by ID, and their display order <em>is</em> the
@@ -875,13 +900,17 @@
               correctly.
             </p>
             <p class="recommendation">
-              <strong>Fix:</strong> the cheap containment is to reject
-              integer-like IDs where they are entered, alongside the existing
-              duplicate-ID check in <code>assertUniqueIds</code> &mdash; one
-              guard, three call sites, and the invariant becomes stated rather
-              than assumed. The thorough fix is to stop encoding order in key
-              order and carry an explicit ordered array of IDs, which also
-              removes the reason <code>renameProperty</code> exists.
+              <strong>Disposition:</strong> deferred to the ordered-record
+              migration. Two fixes were available: reject integer-like IDs where
+              they are entered, alongside the existing duplicate-ID check in
+              <code>assertUniqueIds</code> &mdash; one guard, three call sites;
+              or stop encoding order in key order and carry an array of objects
+              instead. The second subsumes the first and removes the reason
+              <code>renameProperty</code> exists, so the first is not worth
+              paying for in the meantime. Until then the failure is a
+              user-visible no-op on the move buttons for integer-like IDs, with
+              no data loss &mdash; recorded here so it is a known cost rather
+              than a surprise.
             </p>
           </article>
 
@@ -3094,7 +3123,7 @@
               <td>
                 <code>moveKeyUp</code> and <code>renameProperty</code> executed
                 against integer-like keys in Node. Evidence for
-                <a href="#R2-02">R2-02</a>.
+                <a href="#R2-02">R2-02</a>, which is accepted as won't-fix.
               </td>
             </tr>
             <tr>
