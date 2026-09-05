@@ -28,13 +28,13 @@
     "@emotion/react": "^11.14.0",
     "@lumphammer/shared-fvtt-bits": "workspace:*",
     "@tsconfig/recommended": "^1.0.13",
-    "oxlint": "^1.79.0",
+    "oxlint": "^1.81.0",
     "oxlint-tsgolint": "^7.0.2001",
     "prettier": "^3.9.6",
     "typescript": "catalog:"
   },
   "volta": {
     "pnpm": "10.14.0",
-    "node": "24.19.0"
+    "node": "24.20.0"
   }
 }
