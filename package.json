@@ -69,7 +69,7 @@
     "d3-ease": "^3.0.1",
     "focusable-selectors": "^0.8.4",
     "fvtt-types": "14.366.0-beta.20260821132143",
-    "happy-dom": "^20.11.6",
+    "happy-dom": "^20.14.0",
     "html-escaper": "^3.0.3",
     "immer": "^11.1.18",
     "jest-diff": "^30.4.1",

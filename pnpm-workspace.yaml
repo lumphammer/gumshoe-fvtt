@@ -12,6 +12,7 @@ overrides:
   less: $less
   typescript: $typescript
   react-dom: $react-dom
+  happy-dom: $happy-dom
 allowedDeprecatedVersions:
   querystring: "*"
 peerDependencyRules:
