@@ -106,9 +106,8 @@
     },
     "packageManager": {
       "name": "pnpm",
-      "version": "11.23.0",
+      "version": "12.3.2",
       "onFail": "download"
     }
-  },
-  "devDependencies": {}
+  }
 }
