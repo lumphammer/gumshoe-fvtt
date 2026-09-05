@@ -1,18 +1,31 @@
 packages:
   - "packages/*"
+catalog:
+  vite: 8.2.2
+  vitest: ^3.2.4
+  react: ^19.2.8
+  "@types/react": ^19.2.18
+  fvtt-types: 14.366.0-beta.20260821132143
+  tsx: ^4.23.12
+  "@swc/plugin-emotion": 10.0.3
+  "@vitejs/plugin-react-swc": 3.11.0
+  less: 4.4.1
+  typescript: 7.0.2
+  react-dom: ^19.2.8
+  happy-dom: ^20.14.0
 overrides:
-  vite: $vite
-  vitest: $vitest
-  react: $react
-  "@types/react": $@types/react
-  fvtt-types: $fvtt-types
-  tsx: $tsx
-  "@swc/plugin-emotion": $@swc/plugin-emotion
-  "@vitejs/plugin-react-swc": $@vitejs/plugin-react-swc
-  less: $less
-  typescript: $typescript
-  react-dom: $react-dom
-  happy-dom: $happy-dom
+  vite: "catalog:"
+  vitest: "catalog:"
+  react: "catalog:"
+  "@types/react": "catalog:"
+  fvtt-types: "catalog:"
+  tsx: "catalog:"
+  "@swc/plugin-emotion": "catalog:"
+  "@vitejs/plugin-react-swc": "catalog:"
+  less: "catalog:"
+  typescript: "catalog:"
+  react-dom: "catalog:"
+  happy-dom: "catalog:"
 allowedDeprecatedVersions:
   querystring: "*"
 peerDependencyRules:
