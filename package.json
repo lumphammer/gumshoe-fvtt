@@ -62,7 +62,7 @@
     "@types/turndown": "^5.0.6",
     "@types/yamljs": "^0.2.34",
     "@vitejs/plugin-react-swc": "catalog:",
-    "@vitest/ui": "^4.1.11",
+    "@vitest/ui": "^5.0.0",
     "case": "^1.6.3",
     "concurrently": "^10.0.5",
     "d3-ease": "^3.0.1",
