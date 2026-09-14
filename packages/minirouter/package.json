@@ -29,7 +29,7 @@
     "@testing-library/jest-dom": "^7.0.1",
     "@types/react": "catalog:",
     "motion": "^13.2.0",
-    "oxlint": "^1.81.0",
+    "oxlint": "^1.82.0",
     "oxlint-tsgolint": "^7.0.2001",
     "react": "catalog:",
     "vite": "catalog:",
