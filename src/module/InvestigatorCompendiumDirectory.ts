@@ -1,5 +1,5 @@
 import { assertGame } from "../functions/isGame";
-import { CompendiumCollection } from "../fvtt-exports";
+import { ApplicationV2, CompendiumCollection } from "../fvtt-exports";
 import CompendiumDirectory = foundry.applications.sidebar.tabs.CompendiumDirectory;
 
 import { nanoid } from "nanoid";
@@ -241,11 +241,11 @@ export class InvestigatorCompendiumDirectory<
       throw e;
     }
 
-    pack.apps.forEach((app) =>
-      app instanceof foundry.appv1.api.Application
-        ? app.render(true)
-        : app.render({ force: true }),
-    );
+    pack.apps.forEach((app) => {
+      if (app instanceof ApplicationV2) {
+        void app.render({ force: true });
+      }
+    });
 
     ui.notifications?.info(
       `Finished importing compendium pack ${verified.label}`,

@@ -6,7 +6,7 @@ import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 import * as constants from "./constants";
 import {
   ActorsCollection,
-  Application,
+  ApplicationV2,
   ItemsCollection,
   JournalCollection,
 } from "./fvtt-exports";
@@ -80,10 +80,12 @@ declare module "fvtt-types/configuration" {
       // third-party hooks
       devModeReady: () => void;
       "PopOut:dialog": (
-        dialoggedApp: Application,
+        // XXX reviewer - poppout support is currently broken, so I'm not sure
+        // if using Application V2 is sane here
+        dialoggedApp: ApplicationV2,
         info: PopOut.DialogHookInfo,
       ) => void;
-      "PopOut:popout": (poppedApp: Application, newWindow: Window) => void;
+      "PopOut:popout": (poppedApp: ApplicationV2, newWindow: Window) => void;
     }
   }
 

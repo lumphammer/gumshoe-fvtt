@@ -4,7 +4,6 @@ import CreateData = foundry.data.fields.SchemaField.CreateData;
 import UpdateData = foundry.data.fields.SchemaField.UpdateData;
 
 export import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
-export import Application = foundry.appv1.api.Application;
 export import ApplicationV2 = foundry.applications.api.ApplicationV2;
 export import ArrayField = foundry.data.fields.ArrayField;
 export import ClientSettings = foundry.helpers.ClientSettings;

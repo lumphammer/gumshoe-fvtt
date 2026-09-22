@@ -1,5 +1,5 @@
 /// <reference types="vite-plugin-svgr/client" />
-import { Application } from "./fvtt-exports";
+import { ApplicationV2 } from "./fvtt-exports";
 
 declare global {
   const Babele: any;
@@ -8,7 +8,7 @@ declare global {
   namespace PopOut {
     interface DialogHookInfo {
       /** the parent app */
-      app: Application;
+      app: ApplicationV2;
       children: Array<any>;
       close: () => void;
       css: string;
