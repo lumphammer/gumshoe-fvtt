@@ -16,7 +16,7 @@ import {
 } from "react";
 
 import { assertGame } from "../functions/isGame";
-import { Application, ApplicationV2 } from "../fvtt-exports";
+import { ApplicationV2 } from "../fvtt-exports";
 import { irid } from "../irid/irid";
 import { ThemeContext } from "../themes/ThemeContext";
 import { ThemeV1 } from "../themes/types";
@@ -29,22 +29,16 @@ type CSSResetProps = PropsWithChildren<{
   noStyleAppWindow?: boolean;
 }>;
 
-function safeGetAppId(app: Application | ApplicationV2 | undefined | null) {
-  if (app instanceof Application) {
-    return app.appId.toString();
-  } else if (app instanceof ApplicationV2) {
+function safeGetAppId(app: ApplicationV2 | undefined | null) {
+  if (app instanceof ApplicationV2) {
     return app.id;
   } else {
     return undefined;
   }
 }
 
-function safeGetAppElement(
-  app: Application | ApplicationV2 | undefined | null,
-) {
-  if (app instanceof Application) {
-    return app?.element.get(0);
-  } else if (app instanceof ApplicationV2) {
+function safeGetAppElement(app: ApplicationV2 | undefined | null) {
+  if (app instanceof ApplicationV2) {
     return app.element;
   } else {
     return undefined;
@@ -79,13 +73,13 @@ export const CSSReset = ({
   const [head, setHead] = useState(safeGetAppElement(app)?.closest("head"));
 
   useEffect(() => {
-    const popoutHandler = (poppedApp: Application, newWindow: Window) => {
+    const popoutHandler = (poppedApp: ApplicationV2, newWindow: Window) => {
       if (safeGetAppId(poppedApp) === safeGetAppId(app)) {
         setHead(newWindow.document.head);
       }
     };
     const dialogHandler = (
-      dialoggedApp: Application,
+      dialoggedApp: ApplicationV2,
       info: PopOut.DialogHookInfo,
     ) => {
       if (safeGetAppId(dialoggedApp) === safeGetAppId(app)) {

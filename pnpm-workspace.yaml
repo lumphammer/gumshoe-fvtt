@@ -5,8 +5,8 @@ catalog:
   vitest: ^3.2.4
   react: ^19.3.0
   "@types/react": ^19.3.0
-  fvtt-types: 14.366.0-beta.20260906223049
-  tsx: ^4.23.13
+  fvtt-types: 14.366.0-beta.20260921014328
+  tsx: ^4.23.15
   "@swc/plugin-emotion": 10.0.3
   "@vitejs/plugin-react-swc": 3.11.0
   less: 4.4.1
