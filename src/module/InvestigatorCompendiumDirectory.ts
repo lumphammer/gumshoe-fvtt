@@ -244,6 +244,8 @@ export class InvestigatorCompendiumDirectory<
     pack.apps.forEach((app) => {
       if (app instanceof ApplicationV2) {
         void app.render({ force: true });
+      } else {
+        app.render(true);
       }
     });
 

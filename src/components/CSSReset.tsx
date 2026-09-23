@@ -73,8 +73,11 @@ export const CSSReset = ({
   const [head, setHead] = useState(safeGetAppElement(app)?.closest("head"));
 
   useEffect(() => {
+    // if we don't have an id, we can't tell whether a popped-out app is ours,
+    // so don't try to match - two undefineds are not the same app.
+    const appId = safeGetAppId(app);
     const popoutHandler = (poppedApp: ApplicationV2, newWindow: Window) => {
-      if (safeGetAppId(poppedApp) === safeGetAppId(app)) {
+      if (appId !== undefined && safeGetAppId(poppedApp) === appId) {
         setHead(newWindow.document.head);
       }
     };
@@ -82,7 +85,7 @@ export const CSSReset = ({
       dialoggedApp: ApplicationV2,
       info: PopOut.DialogHookInfo,
     ) => {
-      if (safeGetAppId(dialoggedApp) === safeGetAppId(app)) {
+      if (appId !== undefined && safeGetAppId(dialoggedApp) === appId) {
         setHead(info.window.document.head);
       }
     };

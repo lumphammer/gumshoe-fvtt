@@ -80,8 +80,9 @@ declare module "fvtt-types/configuration" {
       // third-party hooks
       devModeReady: () => void;
       "PopOut:dialog": (
-        // XXX reviewer - poppout support is currently broken, so I'm not sure
-        // if using Application V2 is sane here
+        // PopOut! can in principle hand us a v1 app, but everything it can pop
+        // out from core under v13 is v2, and consumers narrow with instanceof
+        // anyway, so a v1 app degrades to "not our app" rather than crashing.
         dialoggedApp: ApplicationV2,
         info: PopOut.DialogHookInfo,
       ) => void;
