@@ -28,9 +28,9 @@
     "@emotion/react": "^11.14.0",
     "@lumphammer/shared-fvtt-bits": "workspace:*",
     "@tsconfig/recommended": "^1.0.13",
-    "oxlint": "^1.83.0",
-    "oxlint-tsgolint": "^7.0.2002",
-    "prettier": "^3.9.8",
+    "oxlint": "^1.85.0",
+    "oxlint-tsgolint": "^7.0.2003",
+    "prettier": "^3.9.9",
     "typescript": "catalog:"
   },
   "volta": {
