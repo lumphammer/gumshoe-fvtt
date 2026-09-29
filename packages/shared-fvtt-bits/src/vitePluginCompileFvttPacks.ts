@@ -3,7 +3,7 @@ import chalk from "chalk";
 import { existsSync, readFileSync, statSync } from "fs";
 import { basename, dirname, isAbsolute, relative, resolve, sep } from "path";
 import { mkdir, mkdtemp, readdir, rename, rm } from "fs/promises";
-import { PluginOption } from "vite";
+import type { PluginOption } from "vite";
 
 import { checkLocks } from "./checkLocks.ts";
 

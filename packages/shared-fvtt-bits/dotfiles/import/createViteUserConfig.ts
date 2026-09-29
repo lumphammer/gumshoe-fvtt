@@ -8,7 +8,7 @@ import type { PluginOption, UserConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 
 import { vitePluginCompileFvttPacks as compilePacks } from "../../src/vitePluginCompileFvttPacks.ts";
-import { CreateFvttViteConfigArgs } from "./types.ts";
+import type { CreateFvttViteConfigArgs } from "./types.ts";
 
 function kebabCaseToCamelCase(str: string) {
   return str.replace(/-([a-z0-9])/g, (g) => g[1].toUpperCase());

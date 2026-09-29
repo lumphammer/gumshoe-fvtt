@@ -26,6 +26,9 @@
     // project.
     "allowJs": true,
     "noEmit": true,
+    // lets us write `.ts` extensions in imports, which vite's native config
+    // loader (i.e. node) needs
+    "allowImportingTsExtensions": true,
     "noPropertyAccessFromIndexSignature": true,
     // turn it on, they say...
     // https://www.typescriptlang.org/tsconfig/#skipLibCheck
