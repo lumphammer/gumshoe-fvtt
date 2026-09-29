@@ -1,9 +1,8 @@
+import type { DragEndEvent, MeasuringConfiguration } from "@dnd-kit/core";
 import {
   closestCenter,
   DndContext,
-  DragEndEvent,
   KeyboardSensor,
-  MeasuringConfiguration,
   MeasuringStrategy,
   PointerSensor,
   useSensor,

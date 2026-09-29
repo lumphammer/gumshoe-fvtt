@@ -5,7 +5,7 @@ import { assertGame } from "../../functions/isGame";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertMwItem } from "../../module/items/mwItem";
-import { MwType } from "../../types";
+import type { MwType } from "../../types";
 import { absoluteCover } from "../absoluteCover";
 import { ImagePickle } from "../ImagePickle";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";

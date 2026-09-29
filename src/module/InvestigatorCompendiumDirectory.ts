@@ -6,7 +6,7 @@ import { nanoid } from "nanoid";
 
 import { saveAsJsonFile } from "../functions/saveFile";
 import { getUserFile } from "../functions/utilities";
-import { RecursivePartial } from "../types";
+import type { RecursivePartial } from "../types";
 
 const importButtonIconClass = "fa-cloud-arrow-up";
 const importButtonSpinnerClasses = ["fa-spinner", "fa-pulse"];

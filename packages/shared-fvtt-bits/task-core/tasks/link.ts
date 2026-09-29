@@ -2,7 +2,7 @@ import chalk from "chalk";
 import fs from "fs-extra";
 import path from "path";
 
-import { TaskArgs } from "../types";
+import type { TaskArgs } from "../types";
 
 /**
  * Link build to foundrydata

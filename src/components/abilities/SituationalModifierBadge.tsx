@@ -1,8 +1,8 @@
 import { useContext } from "react";
 
-import { AbilityItem } from "../../module/items/exports";
+import type { AbilityItem } from "../../module/items/exports";
 import { ThemeContext } from "../../themes/ThemeContext";
-import { SituationalModifier } from "../../types";
+import type { SituationalModifier } from "../../types";
 
 interface SituationalModifierBadgeProps {
   situationalModifier: SituationalModifier;

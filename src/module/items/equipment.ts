@@ -1,6 +1,7 @@
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
-import { SourceData, StringField, TypeDataModel } from "../../fvtt-exports";
+import type { SourceData } from "../../fvtt-exports";
+import { StringField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { createRecordField } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";

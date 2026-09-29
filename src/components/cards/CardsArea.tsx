@@ -14,7 +14,7 @@ import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute
 import { CardsAreaSettingsSheet } from "./CardsAreaSettings";
 import { CategorizedCardArray } from "./CategorizedCardArray";
 import { CardsAreaSettingsContext } from "./contexts";
-import { CardsAreaSettings } from "./types";
+import type { CardsAreaSettings } from "./types";
 import { UncategorizedCardArray } from "./UncategorizedCardArray";
 
 const settingsDirection = createDirection("settings");

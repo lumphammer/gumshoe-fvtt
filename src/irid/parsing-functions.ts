@@ -1,4 +1,4 @@
-import { HSLA, RGBA } from "./types";
+import type { HSLA, RGBA } from "./types";
 
 export function parseHexValue(str: string): number {
   if (str.length === 1) {

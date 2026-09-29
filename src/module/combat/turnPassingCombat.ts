@@ -1,7 +1,7 @@
 import { TypeDataModel } from "../../fvtt-exports";
 import { InvestigatorCombat } from "./InvestigatorCombat";
 import { isTurnPassingCombatant } from "./turnPassingCombatant";
-import { ValidCombatModel } from "./types";
+import type { ValidCombatModel } from "./types";
 
 export const TurnPassingCombatSchema = {};
 

@@ -1,4 +1,4 @@
-import { TaskArgs } from "../types";
+import type { TaskArgs } from "../types";
 
 export function helloWorld({ log }: TaskArgs) {
   log("Hello, world!");

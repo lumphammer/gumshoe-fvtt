@@ -1,25 +1,25 @@
-import { CardsAreaSettings } from "../../components/cards/types";
+import type { CardsAreaSettings } from "../../components/cards/types";
 import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
+import type { SourceData } from "../../fvtt-exports";
 import {
   ArrayField,
   NumberField,
   SchemaField,
-  SourceData,
   StringField,
 } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
-import { AbilityType, MwRefreshGroup, MwType } from "../../types";
-import { CardItem, isCardItem } from "../items/card";
-import { AbilityItem, isAbilityItem } from "../items/exports";
+import type { AbilityType, MwRefreshGroup, MwType } from "../../types";
+import type { CardItem } from "../items/card";
+import { isCardItem } from "../items/card";
+import type { AbilityItem } from "../items/exports";
+import { isAbilityItem } from "../items/exports";
 import { isGeneralAbilityItem } from "../items/generalAbility";
 import { assertMwItem, isMwItem } from "../items/mwItem";
-import {
-  isPersonalDetailItem,
-  PersonalDetailItem,
-} from "../items/personalDetail";
+import type { PersonalDetailItem } from "../items/personalDetail";
+import { isPersonalDetailItem } from "../items/personalDetail";
 import { createActiveCharacterSchema } from "../schemaFields";
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
 import { InvestigatorActor } from "./InvestigatorActor";

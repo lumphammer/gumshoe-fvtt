@@ -1,4 +1,5 @@
-import { settings, SettingsDict } from "./settings";
+import type { SettingsDict } from "./settings";
+import { settings } from "./settings";
 
 type settingsKey = keyof typeof settings;
 

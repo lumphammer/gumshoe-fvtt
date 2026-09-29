@@ -1,5 +1,5 @@
 import * as constants from "../constants";
-import { SystemSocketAction } from "../types";
+import type { SystemSocketAction } from "../types";
 import { dispatchSystemSocketActionToHooks } from "./systemSocketActions";
 
 interface NameHaver {

@@ -1,21 +1,14 @@
+import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import {
   DndContext,
-  DragEndEvent,
   DragOverlay,
-  DragStartEvent,
   useDraggable,
   useDroppable,
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { produce } from "immer";
-import React, {
-  CSSProperties,
-  forwardRef,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import type { CSSProperties, PropsWithChildren } from "react";
+import React, { forwardRef, useCallback, useContext, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { ThemeContext } from "../../../themes/ThemeContext";

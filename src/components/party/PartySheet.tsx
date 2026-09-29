@@ -6,8 +6,9 @@ import { assertGame } from "../../functions/isGame";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPartyActor } from "../../module/actors/party";
 import { isPCActor } from "../../module/actors/pc";
-import { AbilityItem, isAbilityItem } from "../../module/items/exports";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { AbilityItem } from "../../module/items/exports";
+import { isAbilityItem } from "../../module/items/exports";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { runtimeConfig } from "../../runtime";
 import { settings } from "../../settings/settings";
 import { CSSReset } from "../CSSReset";
@@ -18,7 +19,8 @@ import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 import { AbilityRow } from "./AbilityRow";
 import { buildRowData, getSystemAbilities } from "./functions";
-import { isCategoryHeader, isTypeHeader, RowData } from "./types";
+import type { RowData } from "./types";
+import { isCategoryHeader, isTypeHeader } from "./types";
 
 export const PartySheet = () => {
   const { actor: party } = useActorSheetContext();

@@ -1,4 +1,4 @@
-import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
+import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { memo } from "react";
 
 import { assertGame } from "../../../functions/isGame";

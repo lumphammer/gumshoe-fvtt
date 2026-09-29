@@ -4,7 +4,7 @@ import { createFailureCollector, describeDocument } from "./failures";
 import { migrateActorData } from "./migrateActorData";
 import { migrateItemData } from "./migrateItemData";
 import { migrateSceneData } from "./migrateSceneData";
-import { FlaggedMigrations } from "./types";
+import type { FlaggedMigrations } from "./types";
 
 /**
  * Apply migration rules to all Entities within a single Compendium pack

@@ -2,7 +2,7 @@
  * See https://github.com/foundryvtt/foundryvtt-cli?tab=readme-ov-file#api
  */
 declare module "@foundryvtt/foundryvtt-cli" {
-  import { DumpOptions } from "js-yaml";
+  import type { DumpOptions } from "js-yaml";
 
   //
   namespace compilePack {

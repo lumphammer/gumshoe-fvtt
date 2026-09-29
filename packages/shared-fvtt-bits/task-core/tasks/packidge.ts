@@ -1,4 +1,4 @@
-import { TaskArgs } from "../types";
+import type { TaskArgs } from "../types";
 
 /**
  * create a releasable package

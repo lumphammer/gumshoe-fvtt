@@ -1,8 +1,8 @@
-import { PresetV1 } from "@lumphammer/investigator-fvtt-types";
+import type { PresetV1 } from "@lumphammer/investigator-fvtt-types";
 
 import { basePresets } from "./presets";
 import { baseThemes } from "./themes/baseThemes";
-import { ThemeV1 } from "./themes/types";
+import type { ThemeV1 } from "./themes/types";
 
 export interface RuntimeConfig {
   themes: {

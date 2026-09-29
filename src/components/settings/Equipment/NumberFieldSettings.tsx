@@ -1,4 +1,4 @@
-import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
+import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 import { useCallback, useContext } from "react";
 
 import { useRefStash } from "../../../hooks/useRefStash";

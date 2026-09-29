@@ -5,7 +5,7 @@ import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { AbilityBadges } from "../abilities/AbilityBadges";
 import { Button } from "../inputs/Button";
 

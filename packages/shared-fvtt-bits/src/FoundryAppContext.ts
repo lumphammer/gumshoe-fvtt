@@ -1,4 +1,5 @@
-import React, { Context } from "react";
+import type { Context } from "react";
+import React from "react";
 
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
 

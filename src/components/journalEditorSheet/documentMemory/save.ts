@@ -3,7 +3,7 @@ import applyDiff from "textdiff-patch";
 
 import { createStack } from "./createStack";
 import { isMagicSerial } from "./isMagicSerial";
-import { DocumentMemory, Edit, Stack } from "./types";
+import type { DocumentMemory, Edit, Stack } from "./types";
 
 /**
  * This function pushes a new state onto a stack and returns the new stack.

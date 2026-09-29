@@ -1,4 +1,4 @@
-import { PCActor } from "../../module/actors/pc";
+import type { PCActor } from "../../module/actors/pc";
 import { GridField } from "../inputs/GridField";
 import { PersonalDetailSlug } from "./PersonalDetailSlug";
 import { Slug } from "./Slug";

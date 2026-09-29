@@ -1,17 +1,17 @@
 /// <reference types="vitest" />
 import { defineConfig } from "vite";
 
-import { name } from "./package.json";
+import packageManifest from "./package.json" with { type: "json" };
 // see https://vite.dev/config/#configuring-vite
 // loading from the package `@lumphammer/shared-fvtt-bits` is possible but
 // requires extra config and breaks vitest
-import { createViteUserConfig } from "./packages/shared-fvtt-bits/dotfiles/import/createViteUserConfig";
-import { id as foundryPackageId } from "./public/system.json";
+import { createViteUserConfig } from "./packages/shared-fvtt-bits/dotfiles/import/createViteUserConfig.ts";
+import systemManifest from "./public/system.json" with { type: "json" };
 
 const config = defineConfig(({ mode }) => {
   const userConfig = createViteUserConfig({
     mode,
-    foundryPackageId,
+    foundryPackageId: systemManifest.id,
     packageType: "system",
     importMetaUrl: import.meta.url,
   });
@@ -35,7 +35,7 @@ const config = defineConfig(({ mode }) => {
     projects: [
       {
         extends: "../vite.config.ts",
-        test: { name },
+        test: { name: packageManifest.name },
       },
       "../packages/*",
     ],

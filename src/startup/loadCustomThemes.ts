@@ -1,4 +1,4 @@
-import { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
+import type { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
 
 import { defaultCustomThemePath } from "../constants";
 import { assertGame } from "../functions/isGame";

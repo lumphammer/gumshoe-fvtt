@@ -3,7 +3,7 @@ import React, { Fragment, useCallback, useContext } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { assertAbilityItem } from "../../module/items/exports";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { AbilityBadges } from "../abilities/AbilityBadges";
 import { SpecialityList } from "../abilities/SpecialityList";
 import { AsyncCheckbox } from "../inputs/AsyncCheckbox";

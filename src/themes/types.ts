@@ -1,5 +1,5 @@
-import { CSSObject } from "@emotion/react";
-import {
+import type { CSSObject } from "@emotion/react";
+import type {
   CardsAreaStyles,
   CardStyles,
   ThemeSeedV1,

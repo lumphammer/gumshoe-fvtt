@@ -1,4 +1,4 @@
-import { CSSObject } from "@emotion/react";
+import type { CSSObject } from "@emotion/react";
 
 import { useItemSheetContext } from "../hooks/useSheetContexts";
 import { useTheme } from "../hooks/useTheme";

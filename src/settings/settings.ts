@@ -1,14 +1,14 @@
-import { PresetV1 } from "@lumphammer/investigator-fvtt-types";
+import type { PresetV1 } from "@lumphammer/investigator-fvtt-types";
 import { z } from "zod";
 
-import { DocumentMemoryCollection } from "../components/journalEditorSheet/documentMemory";
+import type { DocumentMemoryCollection } from "../components/journalEditorSheet/documentMemory";
 import * as c from "../constants";
 import { mapValues } from "../functions/utilities";
-import { MigrationFlags } from "../migrations/types";
+import type { MigrationFlags } from "../migrations/types";
 import { pathOfCthulhuPreset } from "../presets";
 import { runtimeConfig } from "../runtime";
-import { ThemeV1 } from "../themes/types";
-import { Mandatory } from "../types";
+import type { ThemeV1 } from "../themes/types";
+import type { Mandatory } from "../types";
 import {
   createSetting,
   createSettingArrayOfString,

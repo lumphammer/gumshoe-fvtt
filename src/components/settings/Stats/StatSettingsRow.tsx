@@ -1,4 +1,4 @@
-import { Stat } from "@lumphammer/investigator-fvtt-types";
+import type { Stat } from "@lumphammer/investigator-fvtt-types";
 import { useCallback, useContext } from "react";
 
 import { useRefStash } from "../../../hooks/useRefStash";
@@ -10,7 +10,7 @@ import { Toggle } from "../../inputs/Toggle";
 import { Translate } from "../../Translate";
 import { DispatchContext } from "../contexts";
 import { store } from "../store";
-import { PcOrNpc } from "../types";
+import type { PcOrNpc } from "../types";
 
 interface StatSettingsRowProps {
   index: number;

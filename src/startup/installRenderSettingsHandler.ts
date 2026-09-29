@@ -1,6 +1,6 @@
 import { getTranslated } from "../functions/getTranslated";
 import { assertGame } from "../functions/isGame";
-import { ApplicationV2 } from "../fvtt-exports";
+import type { ApplicationV2 } from "../fvtt-exports";
 import { investigatorSettingsClassInstance } from "../module/SettingsClass";
 
 export const installRenderSettingsHandler = () => {

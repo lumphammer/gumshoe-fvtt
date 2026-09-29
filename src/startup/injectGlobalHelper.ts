@@ -1,4 +1,7 @@
-import { PresetV1, ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
+import type {
+  PresetV1,
+  ThemeSeedV1,
+} from "@lumphammer/investigator-fvtt-types";
 
 import { assertNotNull } from "../functions/utilities";
 import { runtimeConfig } from "../runtime";

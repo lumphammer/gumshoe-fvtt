@@ -1,10 +1,5 @@
-import {
-  PropsWithChildren,
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import type { PropsWithChildren } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
 // adapted from https://github.com/mui/material-ui/blob/next/packages/mui-lab/src/Masonry/Masonry.js

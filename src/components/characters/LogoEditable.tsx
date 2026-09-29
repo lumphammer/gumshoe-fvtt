@@ -1,4 +1,4 @@
-import { CSSObject } from "@emotion/react";
+import type { CSSObject } from "@emotion/react";
 import { useContext } from "react";
 
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";

@@ -1,12 +1,13 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { occupationSlotIndex } from "../../constants";
 import { assertGame } from "../../functions/isGame";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
 import { assertPCActor } from "../../module/actors/pc";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import { PersonalDetailItem } from "../../module/items/personalDetail";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { PersonalDetailItem } from "../../module/items/personalDetail";
 import { settings } from "../../settings/settings";
 import { CardsArea } from "../cards/CardsArea";
 import { CSSReset } from "../CSSReset";

@@ -6,7 +6,7 @@ import {
   StringField,
   TypeDataModel,
 } from "../../fvtt-exports";
-import { MwType, RangeTuple } from "../../types";
+import type { MwType, RangeTuple } from "../../types";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const mwItemSchema = {

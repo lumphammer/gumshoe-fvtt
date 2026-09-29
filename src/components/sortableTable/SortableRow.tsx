@@ -1,6 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { PropsWithChildren, useContext } from "react";
+import type { PropsWithChildren } from "react";
+import { useContext } from "react";
 
 import { DragHandle } from "../settings/DragDrop/DragHandle";
 import { ActiveIdContext } from "./ActiveIdContext";

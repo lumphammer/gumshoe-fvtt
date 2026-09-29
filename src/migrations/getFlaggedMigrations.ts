@@ -1,5 +1,5 @@
 import { mapValues } from "../functions/utilities";
-import {
+import type {
   FlaggedMigrations,
   MigrationFlags,
   MigrationFlagsForType,

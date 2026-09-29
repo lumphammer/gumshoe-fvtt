@@ -1,4 +1,4 @@
-import { SettingsDict } from "../../settings/settings";
+import type { SettingsDict } from "../../settings/settings";
 
 export type Setters = {
   [k in keyof SettingsDict]: (newVal: SettingsDict[k]) => void;

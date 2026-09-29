@@ -1,4 +1,4 @@
-import { Stack } from "./types";
+import type { Stack } from "./types";
 
 /**
  * Create a new empty stack

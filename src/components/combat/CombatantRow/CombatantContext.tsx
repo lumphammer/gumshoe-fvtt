@@ -1,23 +1,13 @@
 import { produce } from "immer";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import type { ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-import { SourceData } from "../../../fvtt-exports";
-import {
-  ClassicCombatant,
-  isClassicCombatant,
-} from "../../../module/combat/classicCombatant";
-import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
-import {
-  isTurnPassingCombatant,
-  TurnPassingCombatant,
-} from "../../../module/combat/turnPassingCombatant";
+import type { SourceData } from "../../../fvtt-exports";
+import type { ClassicCombatant } from "../../../module/combat/classicCombatant";
+import { isClassicCombatant } from "../../../module/combat/classicCombatant";
+import type { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
+import type { TurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
+import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import { registerHookHandler } from "../registerHookHandler";
 
 type CombatantContextValue<

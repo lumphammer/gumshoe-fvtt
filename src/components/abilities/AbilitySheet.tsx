@@ -1,7 +1,7 @@
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { settings } from "../../settings/settings";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";

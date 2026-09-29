@@ -1,5 +1,5 @@
-import { InvestigatorItem } from "../module/items/InvestigatorItem";
-import { FlaggedMigrations } from "./types";
+import type { InvestigatorItem } from "../module/items/InvestigatorItem";
+import type { FlaggedMigrations } from "./types";
 
 /**
  * Migrate a single Item entity to incorporate latest data model changes

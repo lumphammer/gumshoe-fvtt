@@ -1,10 +1,8 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 
-import {
-  ItemWithTransitionState,
-  useListShowHideTransition,
-} from "./useListShowHideTransition";
+import type { ItemWithTransitionState } from "./useListShowHideTransition";
+import { useListShowHideTransition } from "./useListShowHideTransition";
 
 function identity<T>(value: T): T {
   return value;

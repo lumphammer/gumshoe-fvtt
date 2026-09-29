@@ -1,4 +1,4 @@
-import { PresetV1 } from "@lumphammer/investigator-fvtt-types";
+import type { PresetV1 } from "@lumphammer/investigator-fvtt-types";
 
 import { npcPackName, packNames, systemId } from "./constants";
 

@@ -1,6 +1,6 @@
 import { forwardRef, useCallback } from "react";
 
-import { SituationalModifier } from "../../types";
+import type { SituationalModifier } from "../../types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { Button } from "../inputs/Button";

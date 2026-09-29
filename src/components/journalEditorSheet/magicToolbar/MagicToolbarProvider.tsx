@@ -1,10 +1,11 @@
-import React, { PropsWithChildren, useCallback, useState } from "react";
+import type { PropsWithChildren } from "react";
+import React, { useCallback, useState } from "react";
 
 import {
   MagicToolbarContentContext,
   MagicToolbarRegisterContext,
 } from "./contexts";
-import { MagicToolbarContent, MagicToolbarContentEntry } from "./types";
+import type { MagicToolbarContent, MagicToolbarContentEntry } from "./types";
 
 type MagicToolbarProviderProps = PropsWithChildren;
 

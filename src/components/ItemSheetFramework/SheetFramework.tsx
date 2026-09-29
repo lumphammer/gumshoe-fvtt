@@ -1,4 +1,5 @@
-import { PropsWithChildren, ReactNode, useEffect, useState } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { AbilityItem } from "../../module/items/exports";
+import type { AbilityItem } from "../../module/items/exports";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 

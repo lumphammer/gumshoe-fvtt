@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import { OutletContextValue } from "../types";
+import type { OutletContextValue } from "../types";
 
 /**
  * An Outlet is a bit of context-driven magic that allows you to control

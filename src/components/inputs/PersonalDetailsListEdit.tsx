@@ -1,4 +1,4 @@
-import {
+import type {
   PersonalDetail,
   PersonalDetailType,
 } from "@lumphammer/investigator-fvtt-types";

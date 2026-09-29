@@ -1,5 +1,5 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 export const NativeMenuLabel = ({ children }: PropsWithChildren) => (
   <DropdownMenu.Label asChild>

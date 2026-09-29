@@ -6,11 +6,9 @@ import {
   assertActiveCharacterActor,
   isActiveCharacterActor,
 } from "../actors/types";
-import {
-  GeneralAbilityItem,
-  isGeneralAbilityItem,
-} from "../items/generalAbility";
-import { InvestigatorItem } from "../items/InvestigatorItem";
+import type { GeneralAbilityItem } from "../items/generalAbility";
+import { isGeneralAbilityItem } from "../items/generalAbility";
+import type { InvestigatorItem } from "../items/InvestigatorItem";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 
 function getGumshoeInitiative(

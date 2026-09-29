@@ -2,9 +2,9 @@ import React, { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { useTheme } from "../../hooks/useTheme";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
-import { AbilityCardMode } from "./types";
+import type { AbilityCardMode } from "./types";
 
 interface PushCardProps {
   msg: ChatMessage;

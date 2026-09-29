@@ -1,12 +1,7 @@
-import { Draft, produce } from "immer";
-import {
-  Context,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import type { Draft } from "immer";
+import { produce } from "immer";
+import type { Context } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 /**
  * A minimal case for all actions - there will always be a `type` and a

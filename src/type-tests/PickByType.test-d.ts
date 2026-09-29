@@ -1,6 +1,6 @@
 import { describe, expectTypeOf, it } from "vitest";
 
-import { PickByType } from "../types";
+import type { PickByType } from "../types";
 
 interface Foo {
   a: number;

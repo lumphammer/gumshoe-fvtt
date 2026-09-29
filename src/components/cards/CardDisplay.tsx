@@ -4,11 +4,11 @@ import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated } from "../../functions/getTranslated";
 import { cleanAndEnrichHtml } from "../../functions/textFunctions";
 import { isNullOrEmptyString } from "../../functions/utilities";
-import { CardItem } from "../../module/items/card";
+import type { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { summarizeCategoryMemberships } from "./functions";
-import { CardsViewMode } from "./types";
+import type { CardsViewMode } from "./types";
 
 interface CardDisplayProps {
   card: CardItem;

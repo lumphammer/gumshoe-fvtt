@@ -8,16 +8,13 @@ import { confirmADoodleDo } from "../functions/confirmADoodleDo";
 import { getTranslated } from "../functions/getTranslated";
 import { assertGame } from "../functions/isGame";
 import { isNullOrEmptyString, systemLogger } from "../functions/utilities";
-import { CompendiumCollection, CreateData, DialogV2 } from "../fvtt-exports";
-import {
-  ActiveCharacterActor,
-  isActiveCharacterActor,
-} from "../module/actors/types";
-import { InvestigatorItem } from "../module/items/InvestigatorItem";
-import {
-  isPersonalDetailItem,
-  personalDetailSchema,
-} from "../module/items/personalDetail";
+import type { CompendiumCollection, CreateData } from "../fvtt-exports";
+import { DialogV2 } from "../fvtt-exports";
+import type { ActiveCharacterActor } from "../module/actors/types";
+import { isActiveCharacterActor } from "../module/actors/types";
+import type { InvestigatorItem } from "../module/items/InvestigatorItem";
+import type { personalDetailSchema } from "../module/items/personalDetail";
+import { isPersonalDetailItem } from "../module/items/personalDetail";
 import { settings } from "../settings/settings";
 
 type PersonalDetailItemCreateData = {

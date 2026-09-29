@@ -4,7 +4,7 @@ import { createDocumentMemory } from "./documentMemory/createDocumentMemory";
 import { dehydrate } from "./documentMemory/dehydrate";
 import { rehydrate } from "./documentMemory/rehydrate";
 import { save } from "./documentMemory/save";
-import { DocumentMemory } from "./documentMemory/types";
+import type { DocumentMemory } from "./documentMemory/types";
 import { getMemoryId } from "./getMemoryId";
 import { getStoredDocumentMemory } from "./getStoredDocumentMemory";
 

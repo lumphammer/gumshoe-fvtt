@@ -1,7 +1,7 @@
 import { useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
-import { CardItem } from "../../module/items/card";
+import type { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { CardArray } from "./CardArray";

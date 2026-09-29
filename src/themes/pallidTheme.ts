@@ -1,7 +1,7 @@
 import { systemId } from "../constants";
 import { irid } from "../irid/irid";
 import { themeFactory } from "./functions";
-import { ThemeV1 } from "./types";
+import type { ThemeV1 } from "./types";
 
 const pallidBlur = "5px";
 const pallidOffset = "3px";

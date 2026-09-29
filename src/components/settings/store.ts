@@ -1,4 +1,7 @@
-import { CardCategory, PresetV1 } from "@lumphammer/investigator-fvtt-types";
+import type {
+  CardCategory,
+  PresetV1,
+} from "@lumphammer/investigator-fvtt-types";
 import { nanoid } from "nanoid";
 
 import {
@@ -10,11 +13,12 @@ import {
   systemLogger,
 } from "../../functions/utilities";
 import { pathOfCthulhuPreset } from "../../presets";
-import { SettingsDict } from "../../settings/settings";
-import { EquipmentFieldType } from "../../types";
+import type { SettingsDict } from "../../settings/settings";
+import type { EquipmentFieldType } from "../../types";
 import { assertNumericFieldOkayness } from "./functions";
-import { createSlice, CreateSliceArgs } from "./reducerTools";
-import { PcOrNpc, State } from "./types";
+import type { CreateSliceArgs } from "./reducerTools";
+import { createSlice } from "./reducerTools";
+import type { PcOrNpc, State } from "./types";
 
 const defaultStoreArgs: CreateSliceArgs = {
   log(...args) {

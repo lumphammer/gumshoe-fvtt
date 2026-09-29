@@ -1,7 +1,7 @@
-import { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
+import type { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
 import { createContext } from "react";
 
-import { Mandatory } from "../types";
+import type { Mandatory } from "../types";
 
 /**
  * As of writing, this is "pcNote" | "npcNote" | "itemNote". It accidentally

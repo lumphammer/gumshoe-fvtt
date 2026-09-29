@@ -1,4 +1,4 @@
-import { AnyDirection, Direction } from "./types";
+import type { AnyDirection, Direction } from "./types";
 import { useNavigationContext } from "./useNavigationContext";
 
 type ParamsFromDirection<T extends AnyDirection> =

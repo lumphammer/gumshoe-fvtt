@@ -1,4 +1,4 @@
-import { BareDocumentMemory, Stack } from "./types";
+import type { BareDocumentMemory, Stack } from "./types";
 
 /**
  * Given a memory object, return all stacks in the memory

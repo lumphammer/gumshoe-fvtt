@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { writeFile } from "fs/promises";
 import path from "path";
 
-import { TaskArgs } from "../types";
+import type { TaskArgs } from "../types";
 
 /**
  * go though the compendium packs, and for each one, emit an untranslated

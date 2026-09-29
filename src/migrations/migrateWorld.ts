@@ -9,7 +9,7 @@ import { migrateActorData } from "./migrateActorData";
 import { migrateCompendium } from "./migrateCompendium";
 import { migrateItemData } from "./migrateItemData";
 import { migrateSceneData } from "./migrateSceneData";
-import { FlaggedMigrations } from "./types";
+import type { FlaggedMigrations } from "./types";
 
 const title = system.title;
 

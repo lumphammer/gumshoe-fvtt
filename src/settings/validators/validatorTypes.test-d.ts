@@ -1,10 +1,10 @@
-import { PresetV1 } from "@lumphammer/investigator-fvtt-types";
+import type { PresetV1 } from "@lumphammer/investigator-fvtt-types";
 import { describe, expectTypeOf, it } from "vitest";
 
-import { ValidatorCardCategories } from "./cardCategoriesValidator";
-import { ValidatorEquipmentCategories } from "./equipmentCategoriesValidator";
-import { ValidatorPersonalDetails } from "./personalDetailsValidator";
-import { ValidatorStats } from "./statsValidator";
+import type { ValidatorCardCategories } from "./cardCategoriesValidator";
+import type { ValidatorEquipmentCategories } from "./equipmentCategoriesValidator";
+import type { ValidatorPersonalDetails } from "./personalDetailsValidator";
+import type { ValidatorStats } from "./statsValidator";
 
 // we need to publish types for these settings in an npm package for third
 // parties, but on the other hand we also have a zod validator for them, which

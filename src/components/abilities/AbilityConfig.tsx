@@ -1,4 +1,5 @@
-import { ChangeEvent, useCallback, useState } from "react";
+import type { ChangeEvent } from "react";
+import { useCallback, useState } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
@@ -8,7 +9,7 @@ import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
 import { settings } from "../../settings/settings";
-import { MwRefreshGroup, SpecialitiesMode } from "../../types";
+import type { MwRefreshGroup, SpecialitiesMode } from "../../types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { Button } from "../inputs/Button";

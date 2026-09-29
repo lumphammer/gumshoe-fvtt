@@ -1,8 +1,7 @@
 import { nanoid } from "nanoid";
+import type { ChangeEvent, ReactNode } from "react";
 import {
-  ChangeEvent,
   Fragment,
-  ReactNode,
   useCallback,
   useContext,
   useMemo,

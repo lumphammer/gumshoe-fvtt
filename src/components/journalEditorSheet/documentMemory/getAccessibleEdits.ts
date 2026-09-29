@@ -1,5 +1,5 @@
 import { getStacks } from "./getStacks";
-import { BareDocumentMemory, Edit } from "./types";
+import type { BareDocumentMemory, Edit } from "./types";
 
 /**
  * Given a memory object, return all edits in the memory

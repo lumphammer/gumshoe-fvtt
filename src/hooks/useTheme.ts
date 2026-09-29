@@ -4,7 +4,7 @@ import * as constants from "../constants";
 import { runtimeConfig } from "../runtime";
 import { settings } from "../settings/settings";
 import { tealTheme } from "../themes/tealTheme";
-import { ThemeV1 } from "../themes/types";
+import type { ThemeV1 } from "../themes/types";
 import { useRefStash } from "./useRefStash";
 
 function getThemeByName(name: string | null) {

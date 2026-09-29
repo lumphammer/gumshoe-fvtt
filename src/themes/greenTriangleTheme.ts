@@ -1,7 +1,7 @@
 import { systemId } from "../constants";
 import { averiaLibre } from "./constants";
 import { themeFactory } from "./functions";
-import { ThemeV1 } from "./types";
+import type { ThemeV1 } from "./types";
 
 export const greenTriangleTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",

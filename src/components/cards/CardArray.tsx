@@ -1,12 +1,12 @@
 import { useContext } from "react";
 
-import { CardItem } from "../../module/items/card";
+import type { CardItem } from "../../module/items/card";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Masonry } from "../Masonry";
 import { Translate } from "../Translate";
 import { CardArrayCard } from "./CardArrayCard";
 import { CardsAreaSettingsContext } from "./contexts";
-import { CardsColumnWidth } from "./types";
+import type { CardsColumnWidth } from "./types";
 
 interface CardArrayProps {
   cards: CardItem[];

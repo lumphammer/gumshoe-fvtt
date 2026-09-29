@@ -4,7 +4,7 @@ import { journalMemory, systemId } from "../../constants";
 import { createDocumentMemory } from "./documentMemory/createDocumentMemory";
 import { dehydrate } from "./documentMemory/dehydrate";
 import { save } from "./documentMemory/save";
-import { BareDocumentMemory } from "./documentMemory/types";
+import type { BareDocumentMemory } from "./documentMemory/types";
 import { getMemoryId } from "./getMemoryId";
 import { savePage } from "./savePage";
 

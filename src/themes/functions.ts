@@ -1,7 +1,10 @@
-import { CSSObject, ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
+import type {
+  CSSObject,
+  ThemeSeedV1,
+} from "@lumphammer/investigator-fvtt-types";
 
 import { irid } from "../irid/irid";
-import { ThemeV1 } from "./types";
+import type { ThemeV1 } from "./types";
 
 const defaultFontScaleFactor = 14;
 

@@ -1,7 +1,8 @@
-import { ReactNode, useContext, useEffect, useId, useMemo } from "react";
+import type { ReactNode } from "react";
+import { useContext, useEffect, useId, useMemo } from "react";
 
 import { MagicToolbarRegisterContext } from "./contexts";
-import { MagicToolbarContentEntry } from "./types";
+import type { MagicToolbarContentEntry } from "./types";
 
 /**
  * Register content with the magic toolbar. HIGHLY recommended to use `useMemo`

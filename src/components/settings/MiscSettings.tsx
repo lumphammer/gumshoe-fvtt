@@ -12,7 +12,7 @@ import { Translate } from "../Translate";
 import { StateContext } from "./contexts";
 import { ImportExport } from "./ImportExport";
 import { SettingsGridField } from "./SettingsGridField";
-import { Setters } from "./types";
+import type { Setters } from "./types";
 
 export const MiscSettings = ({ setters }: { setters: Setters }) => {
   const isDevMode = getDevMode();

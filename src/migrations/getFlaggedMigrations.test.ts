@@ -3,7 +3,7 @@
 import { describe, expect, test } from "vitest";
 
 import { getFlaggedMigrations } from "./getFlaggedMigrations";
-import { FlaggedMigrations, MigrationFlags } from "./types";
+import type { FlaggedMigrations, MigrationFlags } from "./types";
 
 const emptyFlaggedMigrations: FlaggedMigrations = {
   item: {},

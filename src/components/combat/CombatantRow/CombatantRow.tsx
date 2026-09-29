@@ -1,14 +1,11 @@
-import {
-  AnimateLayoutChanges,
-  defaultAnimateLayoutChanges,
-  useSortable,
-} from "@dnd-kit/sortable";
+import type { AnimateLayoutChanges } from "@dnd-kit/sortable";
+import { defaultAnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
 import { memo } from "react";
 
 import { assertGame } from "../../../functions/isGame";
-import { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
+import type { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import { NativeContextMenuWrapper } from "../../inputs/NativeMenu/NativeContextMenuWrapper";
 import {

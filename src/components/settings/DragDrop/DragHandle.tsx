@@ -1,4 +1,4 @@
-import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
+import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { useContext, useMemo } from "react";
 import { FaGripLines } from "react-icons/fa6";
 

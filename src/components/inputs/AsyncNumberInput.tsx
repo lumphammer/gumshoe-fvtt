@@ -3,7 +3,7 @@ import React, { useCallback } from "react";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { Button } from "./Button";
 import { TextInput } from "./TextInput";
-import { ValidationResult } from "./types";
+import type { ValidationResult } from "./types";
 
 type AsyncNumberInputProps = {
   value: undefined | number;

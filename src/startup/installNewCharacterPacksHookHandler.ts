@@ -1,6 +1,6 @@
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
-import { InvestigatorActor } from "../module/actors/InvestigatorActor";
+import type { InvestigatorActor } from "../module/actors/InvestigatorActor";
 import { isNPCActor } from "../module/actors/npc";
 import { isPCActor } from "../module/actors/pc";
 import { settings } from "../settings/settings";

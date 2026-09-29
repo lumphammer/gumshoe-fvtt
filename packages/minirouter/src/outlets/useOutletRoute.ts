@@ -1,4 +1,5 @@
-import { ReactNode, useContext, useEffect, useId, useMemo } from "react";
+import type { ReactNode } from "react";
+import { useContext, useEffect, useId, useMemo } from "react";
 
 import { useNavigationContext } from "../useNavigationContext";
 import { OutletContext } from "./OutletContext";

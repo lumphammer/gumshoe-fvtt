@@ -1,4 +1,5 @@
-import { RefObject, useLayoutEffect, useRef, useState } from "react";
+import type { RefObject } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 type FoundryThemeClass = "theme-dark" | "theme-light";
 

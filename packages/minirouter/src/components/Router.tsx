@@ -1,7 +1,8 @@
-import React, { PropsWithChildren, useMemo, useState } from "react";
+import type { PropsWithChildren } from "react";
+import React, { useMemo, useState } from "react";
 
 import { NavigationContext } from "../NavigationContext";
-import { AnyStep, NavigationContextValue } from "../types";
+import type { AnyStep, NavigationContextValue } from "../types";
 
 function deepEquals(a: any, b: any) {
   return JSON.stringify(a) === JSON.stringify(b);

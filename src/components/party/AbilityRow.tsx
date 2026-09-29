@@ -1,13 +1,14 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
-import { InvestigatorActor } from "../../module/actors/InvestigatorActor";
-import { AbilityItem, isAbilityItem } from "../../module/items/exports";
+import type { InvestigatorActor } from "../../module/actors/InvestigatorActor";
+import type { AbilityItem } from "../../module/items/exports";
+import { isAbilityItem } from "../../module/items/exports";
 import { runtimeConfig } from "../../runtime";
 import { settings } from "../../settings/settings";
-import { AbilityRowData } from "./types";
+import type { AbilityRowData } from "./types";
 
 type AbilityRowProps = {
   abilityRowData: AbilityRowData;

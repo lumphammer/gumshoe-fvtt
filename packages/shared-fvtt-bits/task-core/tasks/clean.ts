@@ -1,6 +1,6 @@
 import { rimraf } from "rimraf";
 
-import { TaskArgs } from "../types";
+import type { TaskArgs } from "../types";
 
 /**
  * Remove built files from `build` folder

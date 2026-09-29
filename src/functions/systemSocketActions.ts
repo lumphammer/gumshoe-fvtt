@@ -1,5 +1,5 @@
 import * as constants from "../constants";
-import { RequestTurnPassArgs, SystemSocketAction } from "../types";
+import type { RequestTurnPassArgs, SystemSocketAction } from "../types";
 
 export type SystemSocketActionHandlers = {
   requestNextTurn(requestingUserId: string): void;

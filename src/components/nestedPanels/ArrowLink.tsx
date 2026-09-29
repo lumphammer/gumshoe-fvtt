@@ -1,5 +1,6 @@
 import { Link } from "@lumphammer/minirouter";
-import { ComponentProps, useContext } from "react";
+import type { ComponentProps } from "react";
+import { useContext } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 
 import { ThemeContext } from "../../themes/ThemeContext";

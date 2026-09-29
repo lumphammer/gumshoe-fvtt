@@ -8,7 +8,7 @@ import {
   ItemSheetV2,
   JournalEntrySheet,
 } from "../fvtt-exports";
-import { InvestigatorActor } from "../module/actors/InvestigatorActor";
+import type { InvestigatorActor } from "../module/actors/InvestigatorActor";
 
 export const useItemSheetContext = () => {
   const app = useContext(FoundryAppContext);

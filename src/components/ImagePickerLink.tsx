@@ -1,4 +1,5 @@
-import React, { PropsWithChildren, useCallback, useContext } from "react";
+import type { PropsWithChildren } from "react";
+import React, { useCallback, useContext } from "react";
 
 import { ThemeContext } from "../themes/ThemeContext";
 

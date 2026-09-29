@@ -4,7 +4,7 @@ import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import { BootArgs, FoundryConfig, Manifest, TaskArgs } from "./types";
+import type { BootArgs, FoundryConfig, Manifest, TaskArgs } from "./types";
 
 // logging function
 export const log = console.log.bind(console, chalk.green("[task]"));

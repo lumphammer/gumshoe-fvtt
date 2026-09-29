@@ -1,4 +1,4 @@
-import { CSSObject, SerializedStyles } from "@emotion/react";
+import type { CSSObject, SerializedStyles } from "@emotion/react";
 export { CSSObject } from "@emotion/react";
 
 /**

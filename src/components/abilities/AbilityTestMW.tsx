@@ -4,7 +4,7 @@ import { mwNegateCost, mwWallopCost } from "../../constants";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertGeneralAbilityItem } from "../../module/items/generalAbility";
 import { ThemeContext } from "../../themes/ThemeContext";
-import { MWDifficulty } from "../../types";
+import type { MWDifficulty } from "../../types";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";

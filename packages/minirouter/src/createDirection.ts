@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 
-import { AnyStep, Direction, Step } from "./types";
+import type { AnyStep, Direction, Step } from "./types";
 
 export const createDirection = function <TParams = void>(
   description: string,
