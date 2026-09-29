@@ -1,14 +1,16 @@
 /// <reference types="vitest" />
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 
 // const name = "minirouter";
 
 const config = defineConfig(({ mode }) => {
+  const rootDir = path.dirname(fileURLToPath(import.meta.url));
   return {
     root: "src/",
-    publicDir: path.resolve(__dirname, "public"),
+    publicDir: path.resolve(rootDir, "public"),
 
     test: {
       // fix "document is not defined"
