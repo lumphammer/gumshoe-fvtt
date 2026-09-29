@@ -1,8 +1,8 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 
-import { createViteUserConfig } from "./createViteUserConfig";
-import type { CreateFvttViteConfigArgs } from "./types";
+import { createViteUserConfig } from "./createViteUserConfig.ts";
+import type { CreateFvttViteConfigArgs } from "./types.ts";
 
 export function createFvttViteConfig(args: CreateFvttViteConfigArgs) {
   const config = defineConfig(({ mode }) => {
