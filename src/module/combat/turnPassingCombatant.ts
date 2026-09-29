@@ -6,7 +6,7 @@ import {
 } from "../../fvtt-exports";
 import { createSerializedUpdateQueue } from "../../functions/createSerializedUpdateQueue";
 import { isActiveCharacterActor } from "../actors/types";
-import { InvestigatorCombat } from "./InvestigatorCombat";
+import type { InvestigatorCombat } from "./InvestigatorCombat";
 import { InvestigatorCombatant } from "./InvestigatorCombatant";
 import {
   getPassingTurnsRemaining,

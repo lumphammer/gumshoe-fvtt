@@ -1,4 +1,5 @@
-import React, { Fragment, ReactNode, useContext, useMemo } from "react";
+import type { ReactNode } from "react";
+import React, { Fragment, useContext, useMemo } from "react";
 
 import { MagicToolbarContentContext } from "./contexts";
 

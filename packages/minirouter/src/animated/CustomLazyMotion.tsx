@@ -1,5 +1,5 @@
 import { LazyMotion } from "motion/react";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 const loadFeatures = () =>
   import("motion/react").then((res) => res.domAnimation);

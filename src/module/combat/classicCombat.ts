@@ -1,8 +1,8 @@
 import { assertGame } from "../../functions/isGame";
 import { requestNextTurn, systemLogger } from "../../functions/utilities";
+import type { DataModel } from "../../fvtt-exports";
 import {
   ArrayField,
-  DataModel,
   NumberField,
   SchemaField,
   StringField,
@@ -11,9 +11,9 @@ import {
 import { isClassicCombatant } from "./classicCombatant";
 import { findUndefeatedTurnIndex } from "./findUndefeatedTurnIndex";
 import { InvestigatorCombat } from "./InvestigatorCombat";
-import { InvestigatorCombatant } from "./InvestigatorCombatant";
+import type { InvestigatorCombatant } from "./InvestigatorCombatant";
 import { removeCombatantTurns } from "./removeCombatantTurns";
-import { ValidCombatModel } from "./types";
+import type { ValidCombatModel } from "./types";
 
 function compareCombatants(
   a: InvestigatorCombatant,

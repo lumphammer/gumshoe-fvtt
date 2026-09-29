@@ -1,4 +1,4 @@
-import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
+import type { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 import { nanoid } from "nanoid";
 
 import * as c from "../constants";
@@ -7,7 +7,7 @@ import { isNullOrEmptyString, systemLogger } from "../functions/utilities";
 import { isActiveCharacterActor } from "../module/actors/types";
 import { InvestigatorCombat } from "../module/combat/InvestigatorCombat";
 import { settings } from "../settings/settings";
-import { FlaggedMigrations } from "./types";
+import type { FlaggedMigrations } from "./types";
 
 export const flaggedMigrations: FlaggedMigrations = {
   item: {

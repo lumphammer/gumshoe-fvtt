@@ -13,7 +13,7 @@ import {
   SettingsGridField,
   SettingsGridFieldStacked,
 } from "./SettingsGridField";
-import { Setters } from "./types";
+import type { Setters } from "./types";
 
 export const AbilitySettings = ({ setters }: { setters: Setters }) => {
   assertGame(game);

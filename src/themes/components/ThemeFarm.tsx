@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { runtimeConfig } from "../../runtime";
 import { TextInputTest } from "./TextInputTest";

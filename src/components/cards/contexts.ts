@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import { CardsAreaSettings } from "./types";
+import type { CardsAreaSettings } from "./types";
 
 export const CardsAreaSettingsContext = createContext<CardsAreaSettings>({
   category: "all",

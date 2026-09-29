@@ -1,4 +1,5 @@
-import React, { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
+import React from "react";
 
 import { runtimeConfig } from "../runtime";
 import { settings } from "../settings/settings";

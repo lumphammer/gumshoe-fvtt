@@ -1,6 +1,6 @@
 import { afterAll, beforeEach, expect, test, vi } from "vitest";
 
-import { DocumentMemory } from ".";
+import type { DocumentMemory } from ".";
 import { createDocumentMemory } from "./createDocumentMemory";
 import { save } from "./save";
 import { advanceTime10s, epoch, getAdditiveStates } from "./testHelpers";

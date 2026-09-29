@@ -2,7 +2,7 @@ import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppCo
 import React, { useCallback, useContext } from "react";
 
 import { getById } from "../../functions/utilities";
-import { CardItem } from "../../module/items/card";
+import type { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { CardDisplay } from "./CardDisplay";

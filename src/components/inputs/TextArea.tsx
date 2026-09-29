@@ -1,4 +1,5 @@
-import React, { ChangeEvent, useCallback, useContext, useRef } from "react";
+import type { ChangeEvent } from "react";
+import React, { useCallback, useContext, useRef } from "react";
 
 import { TextEditor } from "../../fvtt-exports";
 import { IdContext } from "../IdContext";

@@ -1,10 +1,10 @@
-import { MaybeArray } from "fvtt-types/utils";
+import type { MaybeArray } from "fvtt-types/utils";
 
 import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
-import { Document } from "../../fvtt-exports";
+import type { Document } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
-import { InvestigatorCombatant } from "./InvestigatorCombatant";
+import type { InvestigatorCombatant } from "./InvestigatorCombatant";
 import { isKnownCombat } from "./types";
 
 /**

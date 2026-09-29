@@ -1,11 +1,8 @@
 import { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import {
-  AbilityItem,
-  assertAbilityItem,
-  isAbilityItem,
-} from "../../module/items/exports";
+import type { AbilityItem } from "../../module/items/exports";
+import { assertAbilityItem, isAbilityItem } from "../../module/items/exports";
 import {
   assertGeneralAbilityItem,
   isGeneralAbilityItem,

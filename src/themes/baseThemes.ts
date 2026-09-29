@@ -10,7 +10,7 @@ import { niceThemeDark } from "./niceThemeDark";
 import { olderThanMemoryTheme } from "./olderThanMemoryTheme";
 import { pallidTheme } from "./pallidTheme";
 import { tealTheme } from "./tealTheme";
-import { ThemeV1 } from "./types";
+import type { ThemeV1 } from "./types";
 import { unsafeRealityTheme } from "./unsafeRealityTheme";
 
 // remember to update the HMR setup below any time you modify this export.

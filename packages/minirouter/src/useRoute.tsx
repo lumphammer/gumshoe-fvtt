@@ -1,10 +1,11 @@
-import { PropsWithChildren, useMemo } from "react";
+import type { PropsWithChildren } from "react";
+import { useMemo } from "react";
 
 // import { DevTools } from "./DevTools";
 import { NavigationContext } from "./NavigationContext";
 import { OutletContext } from "./outlets/OutletContext";
 import { useOutletRoute } from "./outlets/useOutletRoute";
-import { AnyDirection, AnyStep, NavigationContextValue } from "./types";
+import type { AnyDirection, AnyStep, NavigationContextValue } from "./types";
 import { useNavigationContext } from "./useNavigationContext";
 
 type UseRouteArgs = PropsWithChildren<{

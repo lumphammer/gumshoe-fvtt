@@ -1,9 +1,10 @@
 import { cx } from "@emotion/css";
-import { ChangeEvent, useCallback, useContext } from "react";
+import type { ChangeEvent } from "react";
+import { useCallback, useContext } from "react";
 
 import { ThemeContext } from "../../themes/ThemeContext";
 import { IdContext } from "../IdContext";
-import { ValidationResult } from "./types";
+import type { ValidationResult } from "./types";
 
 type TextInputProps = {
   className?: string;

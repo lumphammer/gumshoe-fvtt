@@ -1,6 +1,6 @@
 import { irid } from "../irid/irid";
 import { themeFactory } from "./functions";
-import { ThemeV1 } from "./types";
+import type { ThemeV1 } from "./types";
 
 const white = irid("white");
 const black = irid("black");

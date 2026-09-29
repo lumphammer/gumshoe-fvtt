@@ -1,10 +1,10 @@
 import * as constants from "../../constants";
 import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
 import { BooleanField, NumberField, StringField } from "../../fvtt-exports";
-import { MwRefreshGroup } from "../../types";
+import type { MwRefreshGroup } from "../../types";
 import { AbilityModel } from "./AbilityModel";
 import { createAbilitySchema } from "./createAbilitySchema";
-import { InvestigativeAbilityItem } from "./investigativeAbility";
+import type { InvestigativeAbilityItem } from "./investigativeAbility";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const generalAbilitySchema = {

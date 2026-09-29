@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { FlaggedMigrations } from "./types";
+import type { FlaggedMigrations } from "./types";
 
 const mocks = vi.hoisted(() => ({
   flaggedMigrations: {

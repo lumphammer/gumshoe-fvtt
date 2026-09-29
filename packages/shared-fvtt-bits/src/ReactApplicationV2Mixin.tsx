@@ -1,9 +1,11 @@
-import { DeepPartial } from "fvtt-types/utils";
-import { ReactNode, StrictMode } from "react";
-import { createRoot, Root } from "react-dom/client";
+import type { DeepPartial } from "fvtt-types/utils";
+import type { ReactNode } from "react";
+import { StrictMode } from "react";
+import type { Root } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 
 import { FoundryAppContext } from "./FoundryAppContext";
-import { Constructor } from "./types";
+import type { Constructor } from "./types";
 
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
 type RenderOptions = foundry.applications.api.ApplicationV2.RenderOptions;

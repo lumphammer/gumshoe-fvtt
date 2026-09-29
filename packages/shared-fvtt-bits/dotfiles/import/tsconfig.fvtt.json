@@ -29,6 +29,9 @@
     // lets us write `.ts` extensions in imports, which vite's native config
     // loader (i.e. node) needs
     "allowImportingTsExtensions": true,
+    // type-only imports must use `import type` so that tools which just strip
+    // types (e.g. node) don't leave behind imports of nonexistent values
+    "verbatimModuleSyntax": true,
     "noPropertyAccessFromIndexSignature": true,
     // turn it on, they say...
     // https://www.typescriptlang.org/tsconfig/#skipLibCheck

@@ -1,7 +1,5 @@
+import type { CSSProperties, PropsWithChildren, RefObject } from "react";
 import React, {
-  CSSProperties,
-  PropsWithChildren,
-  RefObject,
   useCallback,
   useContext,
   useEffect,

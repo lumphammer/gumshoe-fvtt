@@ -3,7 +3,7 @@ import { canUserRequestCombatAction } from "../functions/canUserRequestCombatAct
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { isTurnPassingCombatant } from "../module/combat/turnPassingCombatant";
-import { RequestTurnPassArgs } from "../types";
+import type { RequestTurnPassArgs } from "../types";
 
 type CombatUpdateData = foundry.documents.Combat.UpdateData;
 

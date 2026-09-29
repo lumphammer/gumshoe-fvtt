@@ -8,7 +8,7 @@ import { InputGrid } from "../../inputs/InputGrid";
 import { Toggle } from "../../inputs/Toggle";
 import { StateContext } from "../contexts";
 // import { store } from "../store";
-import { Setters } from "../types";
+import type { Setters } from "../types";
 import { Categories } from "./Categories";
 
 interface CardsSettingsProps {

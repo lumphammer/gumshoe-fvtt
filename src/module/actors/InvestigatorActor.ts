@@ -4,7 +4,7 @@
 
 import { produce } from "immer";
 
-import { SourceData } from "../../fvtt-exports";
+import type { SourceData } from "../../fvtt-exports";
 
 export class InvestigatorActor<
   SubType extends Actor.SubType = Actor.SubType,

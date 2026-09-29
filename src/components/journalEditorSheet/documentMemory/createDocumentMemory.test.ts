@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import { createDocumentMemory } from "./createDocumentMemory";
-import { DocumentMemory } from "./types";
+import type { DocumentMemory } from "./types";
 
 describe("createDocumentMemory", () => {
   test.each([3, 4, 5, 6, 100, 1000])(

@@ -4,9 +4,10 @@ import {
   getTranslatedHtml,
 } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
-import { DataSchema, TypeDataModel } from "../../fvtt-exports";
+import type { DataSchema } from "../../fvtt-exports";
+import { TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
-import { MwInjuryStatus } from "../../types";
+import type { MwInjuryStatus } from "../../types";
 import type { EquipmentItem } from "../items/equipment";
 import type { AbilityItem } from "../items/exports";
 import type { GeneralAbilityItem } from "../items/generalAbility";

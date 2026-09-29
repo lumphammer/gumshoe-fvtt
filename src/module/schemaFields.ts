@@ -1,7 +1,7 @@
-import { AnyObject } from "fvtt-types/utils";
+import type { AnyObject } from "fvtt-types/utils";
 
+import type { DataField } from "../fvtt-exports";
 import {
-  DataField,
   NumberField,
   ObjectField,
   SchemaField,

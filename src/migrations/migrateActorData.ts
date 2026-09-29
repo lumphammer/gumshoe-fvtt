@@ -1,5 +1,5 @@
 import { migrateItemData } from "./migrateItemData";
-import { FlaggedMigrations } from "./types";
+import type { FlaggedMigrations } from "./types";
 
 /**
  * Migrate a single Actor entity to incorporate latest data model changes

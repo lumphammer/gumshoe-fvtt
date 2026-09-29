@@ -5,7 +5,7 @@ import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import { sortEntitiesByName } from "../../../functions/utilities";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { ThemeContext } from "../../../themes/ThemeContext";
-import { MwType } from "../../../types";
+import type { MwType } from "../../../types";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 

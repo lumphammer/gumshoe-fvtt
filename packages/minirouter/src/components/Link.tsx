@@ -1,11 +1,7 @@
-import React, {
-  ComponentProps,
-  forwardRef,
-  PropsWithChildren,
-  useCallback,
-} from "react";
+import type { ComponentProps, PropsWithChildren } from "react";
+import React, { forwardRef, useCallback } from "react";
 
-import { AnyStep, DirectionType } from "../types";
+import type { AnyStep, DirectionType } from "../types";
 import { useNavigationContext } from "../useNavigationContext";
 
 type LinkProps = ComponentProps<"a"> &

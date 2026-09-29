@@ -1,5 +1,6 @@
 import * as ContextMenu from "@radix-ui/react-context-menu";
-import { memo, PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
+import { memo } from "react";
 
 export const NativeContextMenuWrapper = memo(function NativeContextMenuWrapper({
   children,

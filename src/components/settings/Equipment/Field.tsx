@@ -1,5 +1,6 @@
-import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
-import { ChangeEventHandler, useCallback, useContext } from "react";
+import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
+import type { ChangeEventHandler } from "react";
+import { useCallback, useContext } from "react";
 import {
   FaArrowDown,
   FaArrowUp,

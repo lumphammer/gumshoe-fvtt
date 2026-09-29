@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PropsWithChildrenAndDirection } from "../types";
+import type { PropsWithChildrenAndDirection } from "../types";
 import { useRoute } from "../useRoute";
 
 /**

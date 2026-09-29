@@ -1,12 +1,12 @@
 // this helps with getting declarations to work
 // import "fvtt-types/configuration";
 
-import { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
+import type { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
 
 import * as constants from "./constants";
+import type { ApplicationV2 } from "./fvtt-exports";
 import {
   ActorsCollection,
-  ApplicationV2,
   ItemsCollection,
   JournalCollection,
 } from "./fvtt-exports";

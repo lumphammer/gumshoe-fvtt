@@ -5,8 +5,8 @@ import { PoolTerm } from "../../fvtt-exports";
 import { isNPCActor } from "../../module/actors/npc";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import { WeaponItem } from "../../module/items/weapon";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { WeaponItem } from "../../module/items/weapon";
 import { settings } from "../../settings/settings";
 import { consumeWeaponAmmo } from "./consumeWeaponAmmo";
 

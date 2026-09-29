@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
-import { AsyncTextInput, AsyncTextInputProps } from "./AsyncTextInput";
+import type { AsyncTextInputProps } from "./AsyncTextInput";
+import { AsyncTextInput } from "./AsyncTextInput";
 
 // basically the same as AsyncTextInputProps but with `index`, and onChnage
 // also accepts an index.

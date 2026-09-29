@@ -2,7 +2,8 @@ import { hslToRGB, rgbToHSL } from "./conversion-functions";
 import { hslToCSSHSL, rgbToCSSRGB, rgbToHex } from "./formatting-functions";
 import { cssHSLToHSL, cssRGBToRGB, hexToRGB } from "./parsing-functions";
 import { swatches } from "./swatches";
-import { Color, HSLA, isHSLA, isRGBA, RGBA } from "./types";
+import type { Color, HSLA, RGBA } from "./types";
+import { isHSLA, isRGBA } from "./types";
 
 const invalidErrorMessage = "Invalid color specification";
 const invalidInternalStateMessage = "Invalid internal state";

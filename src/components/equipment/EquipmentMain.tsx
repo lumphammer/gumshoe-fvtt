@@ -1,4 +1,5 @@
-import { ChangeEvent, useCallback } from "react";
+import type { ChangeEvent } from "react";
+import { useCallback } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";

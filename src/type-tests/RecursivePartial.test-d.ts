@@ -1,6 +1,6 @@
 import { describe, expectTypeOf, it } from "vitest";
 
-import { RecursivePartial, RecursiveRequired } from "../types";
+import type { RecursivePartial, RecursiveRequired } from "../types";
 
 // I've broken this out into a separate file because I was seeing some odd hangs
 // when running vitest typecheck with multiple `describe` blocks in the same

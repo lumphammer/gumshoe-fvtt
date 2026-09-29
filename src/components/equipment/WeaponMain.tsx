@@ -6,7 +6,7 @@ import { getTranslated } from "../../functions/getTranslated";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isPCActor } from "../../module/actors/pc";
 import { isAbilityItem } from "../../module/items/exports";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { assertWeaponItem } from "../../module/items/weapon";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";

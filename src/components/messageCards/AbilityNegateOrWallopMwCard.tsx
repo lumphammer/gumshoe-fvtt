@@ -2,11 +2,11 @@ import React, { useCallback } from "react";
 
 import * as constants from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
 import { MwButton } from "./MwButton";
 import { MwCostSlug } from "./MwCostSlug";
-import { MWResult } from "./types";
+import type { MWResult } from "./types";
 
 type WallopNegateMode =
   typeof constants.htmlDataModeMwNegate | typeof constants.htmlDataModeMwWallop;

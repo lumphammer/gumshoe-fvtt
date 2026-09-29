@@ -1,4 +1,4 @@
-import { HSLA, RGBA } from "./types";
+import type { HSLA, RGBA } from "./types";
 
 export function hslToCSSHSL(hsl: HSLA) {
   return (

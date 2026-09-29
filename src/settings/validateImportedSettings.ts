@@ -1,6 +1,7 @@
 import { fromZodError } from "zod-validation-error/v4";
 
-import { SettingsDict, superValidator } from "./settings";
+import type { SettingsDict } from "./settings";
+import { superValidator } from "./settings";
 
 export function validateImportedSettings(rawText: string) {
   // if JSON parsing fails, we get an error straight from Node

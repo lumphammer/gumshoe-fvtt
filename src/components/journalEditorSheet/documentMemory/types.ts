@@ -1,4 +1,4 @@
-import { Change } from "textdiff-create";
+import type { Change } from "textdiff-create";
 
 /**
  * An edit to a document. The change itself is a diff from textdiff-create, and

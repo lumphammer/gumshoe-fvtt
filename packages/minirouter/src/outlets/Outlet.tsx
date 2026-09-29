@@ -1,4 +1,5 @@
-import { Fragment, memo, PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
+import { Fragment, memo } from "react";
 
 import { useOutletProvider } from "./useOutletProvider";
 

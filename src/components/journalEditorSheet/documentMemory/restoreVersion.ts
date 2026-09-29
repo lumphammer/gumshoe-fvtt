@@ -1,6 +1,6 @@
 import applyDiff from "textdiff-patch";
 
-import { DocumentMemory } from ".";
+import type { DocumentMemory } from ".";
 import { getStacks } from "./getStacks";
 
 /**

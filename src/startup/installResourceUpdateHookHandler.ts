@@ -1,13 +1,13 @@
 import { assertGame } from "../functions/isGame";
-import { UpdateData } from "../fvtt-exports";
+import type { UpdateData } from "../fvtt-exports";
 import { isActiveCharacterActor } from "../module/actors/types";
+import type { GeneralAbilityItem } from "../module/items/generalAbility";
 import {
   assertGeneralAbilityItem,
-  GeneralAbilityItem,
   isGeneralAbilityItem,
 } from "../module/items/generalAbility";
-import { InvestigatorItem } from "../module/items/InvestigatorItem";
-import { createActiveCharacterSchema } from "../module/schemaFields";
+import type { InvestigatorItem } from "../module/items/InvestigatorItem";
+import type { createActiveCharacterSchema } from "../module/schemaFields";
 
 // previously these were the only four resource attributes in the system.
 // for legacy compatibility (e.g. if people have content in compendium packs

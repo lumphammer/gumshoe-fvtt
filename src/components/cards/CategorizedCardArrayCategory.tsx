@@ -1,8 +1,8 @@
-import { CardCategory } from "@lumphammer/investigator-fvtt-types";
+import type { CardCategory } from "@lumphammer/investigator-fvtt-types";
 import { useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
-import { CardItem } from "../../module/items/card";
+import type { CardItem } from "../../module/items/card";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { CardArray } from "./CardArray";
 import { summarizeCategoryCards } from "./functions";

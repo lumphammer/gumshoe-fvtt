@@ -1,13 +1,13 @@
 import React, { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { AbilityItem } from "../../module/items/exports";
-import { MWDifficulty } from "../../types";
+import type { AbilityItem } from "../../module/items/exports";
+import type { MWDifficulty } from "../../types";
 import { Translate } from "../Translate";
 import { DiceTerms } from "./DiceTerms";
 import { MwButton } from "./MwButton";
 import { MwCostSlug } from "./MwCostSlug";
-import { MWResult } from "./types";
+import type { MWResult } from "./types";
 
 interface AbilityTestMwCardProps {
   msg: ChatMessage;

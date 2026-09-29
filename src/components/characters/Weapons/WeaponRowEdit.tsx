@@ -2,7 +2,7 @@ import { useCallback, useContext } from "react";
 
 import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { assertGame } from "../../../functions/isGame";
-import { WeaponItem } from "../../../module/items/weapon";
+import type { WeaponItem } from "../../../module/items/weapon";
 import { settings } from "../../../settings/settings";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";

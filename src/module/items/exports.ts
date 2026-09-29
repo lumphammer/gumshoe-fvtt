@@ -1,8 +1,7 @@
-import { GeneralAbilityItem, isGeneralAbilityItem } from "./generalAbility";
-import {
-  InvestigativeAbilityItem,
-  isInvestigativeAbilityItem,
-} from "./investigativeAbility";
+import type { GeneralAbilityItem } from "./generalAbility";
+import { isGeneralAbilityItem } from "./generalAbility";
+import type { InvestigativeAbilityItem } from "./investigativeAbility";
+import { isInvestigativeAbilityItem } from "./investigativeAbility";
 
 export type AbilityItem = GeneralAbilityItem | InvestigativeAbilityItem;
 

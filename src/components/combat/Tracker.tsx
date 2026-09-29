@@ -1,7 +1,7 @@
 import { assertGame } from "../../functions/isGame";
 import { assertNotNull } from "../../functions/utilities";
 import { isClassicCombat } from "../../module/combat/classicCombat";
-import { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
+import type { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { assertKnownCombat } from "../../module/combat/types";
 import { ClassicToolsRow } from "./ClassicToolsRow";

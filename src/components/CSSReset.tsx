@@ -1,25 +1,16 @@
 import createCache from "@emotion/cache";
 import { css } from "@emotion/css";
-import {
-  CacheProvider as EmotionCacheProvider,
-  CSSObject,
-  Global,
-} from "@emotion/react";
+import type { CSSObject } from "@emotion/react";
+import { CacheProvider as EmotionCacheProvider, Global } from "@emotion/react";
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import {
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import type { PropsWithChildren } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { assertGame } from "../functions/isGame";
 import { ApplicationV2 } from "../fvtt-exports";
 import { irid } from "../irid/irid";
 import { ThemeContext } from "../themes/ThemeContext";
-import { ThemeV1 } from "../themes/types";
+import type { ThemeV1 } from "../themes/types";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 type CSSResetProps = PropsWithChildren<{

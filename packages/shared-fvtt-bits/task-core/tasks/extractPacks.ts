@@ -6,7 +6,7 @@ import { mkdir, readdir, readFile, rm, writeFile } from "fs/promises";
 import prettier from "prettier";
 
 import { checkLocks } from "../../src/checkLocks";
-import { TaskArgs } from "../types";
+import type { TaskArgs } from "../types";
 
 function transformName(doc: {
   name: string;

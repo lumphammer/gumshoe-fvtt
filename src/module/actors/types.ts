@@ -1,5 +1,7 @@
-import { isNPCActor, NPCActor } from "./npc";
-import { isPCActor, PCActor } from "./pc";
+import type { NPCActor } from "./npc";
+import { isNPCActor } from "./npc";
+import type { PCActor } from "./pc";
+import { isPCActor } from "./pc";
 
 export type ActiveCharacterActor = PCActor | NPCActor;
 

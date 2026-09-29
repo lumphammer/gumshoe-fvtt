@@ -1,6 +1,7 @@
-import React, { ReactNode, useCallback, useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
-import { OutletContextValue } from "../types";
+import type { OutletContextValue } from "../types";
 import { OutletContext } from "./OutletContext";
 
 /**

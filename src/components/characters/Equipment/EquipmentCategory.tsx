@@ -1,10 +1,10 @@
-import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
+import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import React, { useCallback, useContext } from "react";
 
 import { sortEntitiesByName } from "../../../functions/utilities";
-import { PCActor } from "../../../module/actors/pc";
-import { EquipmentItem } from "../../../module/items/equipment";
+import type { PCActor } from "../../../module/actors/pc";
+import type { EquipmentItem } from "../../../module/items/equipment";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";

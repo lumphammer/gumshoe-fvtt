@@ -1,5 +1,6 @@
-import MonacoEditor, { Monaco, OnMount } from "@monaco-editor/react";
-import { JSONValue } from "fvtt-types/utils";
+import type { Monaco, OnMount } from "@monaco-editor/react";
+import MonacoEditor from "@monaco-editor/react";
+import type { JSONValue } from "fvtt-types/utils";
 import htmlParser from "prettier/plugins/html";
 import prettier from "prettier/standalone";
 import { useCallback, useMemo, useRef } from "react";

@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 import { assertAbilityItem } from "../../module/items/exports";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { SpecListItem } from "./SpecListItem";
 
 type SpecialityListProps = {

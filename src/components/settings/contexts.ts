@@ -1,8 +1,9 @@
 import { createContext } from "react";
 
 import { systemLogger } from "../../functions/utilities";
-import { getSettingsDict, SettingsDict } from "../../settings/settings";
-import { State } from "./types";
+import type { SettingsDict } from "../../settings/settings";
+import { getSettingsDict } from "../../settings/settings";
+import type { State } from "./types";
 
 /**
  * Context for settings dispatch funtion

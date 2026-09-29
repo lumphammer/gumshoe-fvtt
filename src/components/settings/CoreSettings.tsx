@@ -11,7 +11,7 @@ import { Toggle } from "../inputs/Toggle";
 import { DispatchContext, StateContext } from "./contexts";
 import { SettingsGridField } from "./SettingsGridField";
 import { store } from "./store";
-import { Setters } from "./types";
+import type { Setters } from "./types";
 
 interface CoreSettingsProps {
   setters: Setters;

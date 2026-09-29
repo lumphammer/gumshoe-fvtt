@@ -1,4 +1,5 @@
-import React, { PropsWithChildren, ReactNode, useContext } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
+import React, { useContext } from "react";
 
 import { CloseContext } from "./Dropdown";
 

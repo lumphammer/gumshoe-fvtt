@@ -1,6 +1,6 @@
 import { Token } from "../fvtt-exports";
 import { migrateActorData } from "./migrateActorData";
-import { FlaggedMigrations } from "./types";
+import type { FlaggedMigrations } from "./types";
 
 /**
  * Migrate a single Scene entity to incorporate changes to the data model of it's actor data overrides

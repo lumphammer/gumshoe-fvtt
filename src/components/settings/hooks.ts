@@ -2,11 +2,12 @@ import { produce } from "immer";
 import { useCallback, useMemo, useReducer } from "react";
 
 import { useRefStash } from "../../hooks/useRefStash";
-import { getSettingsDict, SettingsDict } from "../../settings/settings";
+import type { SettingsDict } from "../../settings/settings";
+import { getSettingsDict } from "../../settings/settings";
 import { StateContext } from "./contexts";
 import { createUseSelectorHook } from "./reducerTools";
 import { store } from "./store";
-import { Setters } from "./types";
+import type { Setters } from "./types";
 
 /**
  * Top-level hook for settings state. This sets up the reducer and temporary

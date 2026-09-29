@@ -1,7 +1,7 @@
-import { CardCategory } from "@lumphammer/investigator-fvtt-types";
+import type { CardCategory } from "@lumphammer/investigator-fvtt-types";
 import { useCallback } from "react";
 
-import { CardItem } from "../../module/items/card";
+import type { CardItem } from "../../module/items/card";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";

@@ -1,6 +1,7 @@
 import { assertGame } from "../functions/isGame";
-import { InvestigatorItem } from "../module/items/InvestigatorItem";
-import { isWeaponItem, WeaponSystemData } from "../module/items/weapon";
+import type { InvestigatorItem } from "../module/items/InvestigatorItem";
+import type { WeaponSystemData } from "../module/items/weapon";
+import { isWeaponItem } from "../module/items/weapon";
 import { settings } from "../settings/settings";
 
 export const installItemCombatAbilityHandler = () => {

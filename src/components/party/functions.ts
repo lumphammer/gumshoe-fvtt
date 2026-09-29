@@ -1,17 +1,13 @@
 import * as constants from "../../constants";
 import { assertGame } from "../../functions/isGame";
-import { PCActor } from "../../module/actors/pc";
-import { AbilityItem, isAbilityItem } from "../../module/items/exports";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { PCActor } from "../../module/actors/pc";
+import type { AbilityItem } from "../../module/items/exports";
+import { isAbilityItem } from "../../module/items/exports";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { settings } from "../../settings/settings";
-import { AbilityType } from "../../types";
-import {
-  abilityRowKey,
-  ActorAbilityInfo,
-  categoryHeaderKey,
-  RowData,
-  typeHeaderKey,
-} from "./types";
+import type { AbilityType } from "../../types";
+import type { ActorAbilityInfo, RowData } from "./types";
+import { abilityRowKey, categoryHeaderKey, typeHeaderKey } from "./types";
 
 /**
  * get a sorted list of ability tuples

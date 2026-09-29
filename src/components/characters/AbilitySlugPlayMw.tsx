@@ -4,7 +4,7 @@ import React, { Fragment, useCallback, useContext, useState } from "react";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
-import { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Button } from "../inputs/Button";
 
 type AbilitySlugPlayMwProps = {

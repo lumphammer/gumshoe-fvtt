@@ -1,5 +1,5 @@
 import { createStack } from "./createStack";
-import { DocumentMemory } from "./types";
+import type { DocumentMemory } from "./types";
 
 /**
  * Create a new empty document memory

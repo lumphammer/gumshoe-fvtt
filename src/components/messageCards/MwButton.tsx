@@ -1,10 +1,10 @@
-import { CSSObject } from "@emotion/react";
+import type { CSSObject } from "@emotion/react";
 
 import { useHover } from "../../hooks/useHover";
 import { Button } from "../inputs/Button";
 import { useShowHideTransition } from "../transitions/useShowHideTransition";
 import { Translate } from "../Translate";
-import { MWResult } from "./types";
+import type { MWResult } from "./types";
 
 type MwButtonProps = {
   deets: MWResult;

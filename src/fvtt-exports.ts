@@ -1,7 +1,10 @@
-import DataSchema = foundry.data.fields.DataSchema;
-import SourceData = foundry.data.fields.SchemaField.SourceData;
-import CreateData = foundry.data.fields.SchemaField.CreateData;
-import UpdateData = foundry.data.fields.SchemaField.UpdateData;
+type DataSchema = foundry.data.fields.DataSchema;
+type SourceData<Fields extends DataSchema> =
+  foundry.data.fields.SchemaField.SourceData<Fields>;
+type CreateData<Fields extends DataSchema> =
+  foundry.data.fields.SchemaField.CreateData<Fields>;
+type UpdateData<Fields extends DataSchema> =
+  foundry.data.fields.SchemaField.UpdateData<Fields>;
 
 export import ActorSheetV2 = foundry.applications.sheets.ActorSheetV2;
 export import ApplicationV2 = foundry.applications.api.ApplicationV2;

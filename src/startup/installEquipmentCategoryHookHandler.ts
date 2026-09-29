@@ -1,8 +1,6 @@
 import { assertGame } from "../functions/isGame";
-import {
-  EquipmentSystemData,
-  isEquipmentItem,
-} from "../module/items/equipment";
+import type { EquipmentSystemData } from "../module/items/equipment";
+import { isEquipmentItem } from "../module/items/equipment";
 import { settings } from "../settings/settings";
 import { applyEquipmentFieldDefaults } from "./applyEquipmentFieldDefaults";
 

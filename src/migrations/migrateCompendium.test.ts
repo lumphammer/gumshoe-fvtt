@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { migrateCompendium } from "./migrateCompendium";
-import { FlaggedMigrations } from "./types";
+import type { FlaggedMigrations } from "./types";
 
 const mocks = vi.hoisted(() => ({
   migrateActorData: vi.fn(),

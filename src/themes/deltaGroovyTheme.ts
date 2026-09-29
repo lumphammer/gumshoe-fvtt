@@ -1,7 +1,7 @@
 import { systemId } from "../constants";
 import { averiaLibre } from "./constants";
 import { createStarburstGradient, themeFactory } from "./functions";
-import { ThemeV1 } from "./types";
+import type { ThemeV1 } from "./types";
 
 const colors = [
   // "#f4e83f", // this is a bright yellow, dropping it for now

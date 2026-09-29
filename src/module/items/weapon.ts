@@ -1,10 +1,10 @@
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
+import type { SourceData } from "../../fvtt-exports";
 import {
   BooleanField,
   NumberField,
   SchemaField,
-  SourceData,
   StringField,
   TypeDataModel,
 } from "../../fvtt-exports";

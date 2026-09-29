@@ -1,10 +1,11 @@
-import { ReactNode, useCallback, useContext } from "react";
+import type { ReactNode} from "react";
+import { useCallback, useContext } from "react";
 
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { DispatchContext, StateContext } from "../contexts";
 import { store } from "../store";
-import { PcOrNpc } from "../types";
+import type { PcOrNpc } from "../types";
 import { StatSettingsRow } from "./StatSettingsRow";
 
 interface StatsSettingsEditorProps {

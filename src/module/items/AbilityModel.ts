@@ -6,13 +6,13 @@ import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToStri
 import { migrateValue } from "../../functions/migrateValue";
 import { TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
-import {
+import type {
   MWDifficulty,
   SituationalModifier,
   SpecialitiesMode,
   Unlock,
 } from "../../types";
-import { AbilitySchema } from "./createAbilitySchema";
+import type { AbilitySchema } from "./createAbilitySchema";
 import { migrateCategoryToCategoryId } from "./migrateCategoryToCategoryId";
 import { getSpecialitiesCount, resizeSpecialities } from "./resizeSpecialities";
 

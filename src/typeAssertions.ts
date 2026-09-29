@@ -1,5 +1,5 @@
 import { hasOwnProperty } from "./functions/utilities";
-import { EquipmentFieldType, SystemSocketAction } from "./types";
+import type { EquipmentFieldType, SystemSocketAction } from "./types";
 
 export function isSystemSocketAction(x: unknown): x is SystemSocketAction {
   if (x === null || Array.isArray(x) || typeof x !== "object") return false;

@@ -1,12 +1,6 @@
 import { useNavigationContext } from "@lumphammer/minirouter";
-import React, {
-  memo,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-} from "react";
+import type { PropsWithChildren } from "react";
+import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
 
 import { ThemeContext } from "../../themes/ThemeContext";
 import { ArrowLink } from "./ArrowLink";

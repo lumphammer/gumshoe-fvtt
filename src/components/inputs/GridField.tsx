@@ -1,6 +1,7 @@
-import { CSSObject } from "@lumphammer/investigator-fvtt-types";
+import type { CSSObject } from "@lumphammer/investigator-fvtt-types";
 import { nanoid } from "nanoid";
-import { DragEventHandler, useMemo } from "react";
+import type { DragEventHandler } from "react";
+import { useMemo } from "react";
 
 import { IdContext } from "../IdContext";
 import { Translate } from "../Translate";

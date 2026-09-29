@@ -1,4 +1,4 @@
-import { Constructor } from "./types";
+import type { Constructor } from "./types";
 
 import DocumentSheetV2 = foundry.applications.api.DocumentSheetV2;
 

@@ -1,9 +1,9 @@
-import { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
+import type { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
 
 import { averiaLibre } from "./constants";
 import { createBasicTabStyle, themeFactory } from "./functions";
 import { tealTheme } from "./tealTheme";
-import { ThemeV1 } from "./types";
+import type { ThemeV1 } from "./types";
 
 const stripe1 = "#e2e3e9";
 const stripe2 = "#ececed";

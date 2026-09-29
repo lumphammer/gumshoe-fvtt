@@ -1,4 +1,4 @@
-import { Stat } from "@lumphammer/investigator-fvtt-types";
+import type { Stat } from "@lumphammer/investigator-fvtt-types";
 import { useCallback } from "react";
 
 import { useActorSheetContext } from "../../hooks/useSheetContexts";

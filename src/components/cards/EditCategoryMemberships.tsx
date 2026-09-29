@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
-import { CardItem } from "../../module/items/card";
+import type { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";

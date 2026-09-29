@@ -1,10 +1,10 @@
-import { CardCategory } from "@lumphammer/investigator-fvtt-types";
+import type { CardCategory } from "@lumphammer/investigator-fvtt-types";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { getById } from "../../functions/utilities";
-import { CardItem } from "../../module/items/card";
+import type { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
-import { CardCategoryMembership } from "../../types";
+import type { CardCategoryMembership } from "../../types";
 
 /**
  * Produce a string for a card summarizing its category memebr ships. Examples:

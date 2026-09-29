@@ -1,7 +1,8 @@
-import { PropsWithChildren, useContext } from "react";
+import type { PropsWithChildren } from "react";
+import { useContext } from "react";
 
 import { ModeContext } from "./modeContext";
-import { ItemSheetMode } from "./types";
+import type { ItemSheetMode } from "./types";
 type ModeSelectProps = PropsWithChildren<{
   mode: ItemSheetMode;
 }>;

@@ -1,5 +1,5 @@
 import { CSSReset } from "../../components/CSSReset";
-import { ThemeV1 } from "../types";
+import type { ThemeV1 } from "../types";
 
 type ThemeSwatchProps = {
   theme: ThemeV1;

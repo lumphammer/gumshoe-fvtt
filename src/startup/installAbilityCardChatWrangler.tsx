@@ -1,4 +1,5 @@
-import { ReactNode, StrictMode } from "react";
+import type { ReactNode } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import { AbilityNegateOrWallopMwCard } from "../components/messageCards/AbilityNegateOrWallopMwCard";
@@ -12,7 +13,7 @@ import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { isAbilityItem } from "../module/items/exports";
-import { MWDifficulty } from "../types";
+import type { MWDifficulty } from "../types";
 
 export const installAbilityCardChatWrangler = () => {
   Hooks.on(

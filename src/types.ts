@@ -1,6 +1,6 @@
-import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
+import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 
-import * as constants from "./constants";
+import type * as constants from "./constants";
 // SOCKET STUFF ----------------------------------------------------------------
 
 /**

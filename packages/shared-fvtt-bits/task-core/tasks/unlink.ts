@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import fs from "fs-extra";
 
-import { TaskArgs } from "../types";
+import type { TaskArgs } from "../types";
 
 /**
  * Remove the link to foundrydata

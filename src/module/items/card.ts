@@ -10,7 +10,7 @@ import {
   TypeDataModel,
 } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
-import { CardSystemData } from "../../types";
+import type { CardSystemData } from "../../types";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const cardSchema = {

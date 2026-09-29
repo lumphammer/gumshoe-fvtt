@@ -1,5 +1,6 @@
 import { AnimatePresence, m } from "motion/react";
-import { memo, PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
+import { memo } from "react";
 
 import { absoluteCover } from "../absoluteCover";
 import { useOutletProvider } from "../outlets/useOutletProvider";

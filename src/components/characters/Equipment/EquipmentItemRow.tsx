@@ -1,8 +1,8 @@
-import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
+import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 import React, { useCallback, useContext, useState } from "react";
 
 import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
-import { EquipmentItem } from "../../../module/items/equipment";
+import type { EquipmentItem } from "../../../module/items/equipment";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { CheckOrCross } from "./CheckOrCross";
 

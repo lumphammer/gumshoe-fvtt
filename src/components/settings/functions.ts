@@ -1,4 +1,4 @@
-import { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
+import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 
 export function assertNumericFieldOkayness(
   field: EquipmentFieldMetadata | undefined,

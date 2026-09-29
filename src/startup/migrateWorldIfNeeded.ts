@@ -5,7 +5,7 @@ import { errorMessage } from "../migrations/failures";
 import { flaggedMigrations } from "../migrations/flaggedMigrations";
 import { getFlaggedMigrations } from "../migrations/getFlaggedMigrations";
 import { migrateWorld } from "../migrations/migrateWorld";
-import {
+import type {
   MigrationFlags,
   MigrationFunction,
   MigrationFunctionsForType,

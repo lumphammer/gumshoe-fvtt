@@ -1,6 +1,6 @@
 import { journalMemory, systemId } from "../../constants";
 import { settings } from "../../settings/settings";
-import { BareDocumentMemory } from "./documentMemory/types";
+import type { BareDocumentMemory } from "./documentMemory/types";
 import { getMemoryId } from "./getMemoryId";
 
 export function getStoredDocumentMemory(

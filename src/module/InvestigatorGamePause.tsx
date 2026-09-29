@@ -1,6 +1,7 @@
-import { DeepPartial } from "fvtt-types/utils";
+import type { DeepPartial } from "fvtt-types/utils";
 import { StrictMode } from "react";
-import { createRoot, Root } from "react-dom/client";
+import type { Root } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 
 import { GamePauseBanner } from "../components/GamePauseBanner";
 import { assertGame } from "../functions/isGame";

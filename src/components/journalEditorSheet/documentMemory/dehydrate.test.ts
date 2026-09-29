@@ -4,7 +4,7 @@ import { createDocumentMemory } from "./createDocumentMemory";
 import { dehydrate } from "./dehydrate";
 import { save } from "./save";
 import { advanceTime10s, getAdditiveStates } from "./testHelpers";
-import { BareDocumentMemory, DocumentMemory } from "./types";
+import type { BareDocumentMemory, DocumentMemory } from "./types";
 
 vi.setSystemTime(0);
 let documentMemory = createDocumentMemory(3);

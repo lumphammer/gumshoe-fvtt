@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertAbilityItem } from "../../module/items/exports";

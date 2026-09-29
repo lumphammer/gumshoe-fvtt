@@ -1,5 +1,5 @@
 import { fixLength } from "../../functions/utilities";
-import { SpecialitiesMode } from "../../types";
+import type { SpecialitiesMode } from "../../types";
 
 type SpecialitiesSettings = {
   hasSpecialities: boolean;
