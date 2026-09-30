@@ -5,6 +5,7 @@ import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { ArrowLink } from "./ArrowLink";
 import { focusableSelector } from "./focusableSelector";
+import { ShowBackLinkContext } from "./ShowBackLinkContext";
 
 const defaultPanelMargin = "3em";
 
@@ -16,6 +17,7 @@ type NestedPanelProps = PropsWithChildren<{
 export const NestedPanel = memo<NestedPanelProps>(
   ({ children, className, margin = defaultPanelMargin }) => {
     const theme = useContext(ThemeContext);
+    const showBackLink = useContext(ShowBackLinkContext);
     const { navigate, currentStep } = useNavigationContext();
     const childrenAreaRef = useRef<HTMLDivElement>(null);
     const ref = useRef<HTMLDivElement>(null);
@@ -71,16 +73,18 @@ export const NestedPanel = memo<NestedPanelProps>(
             pointerEvents: "all",
           }}
         >
-          <div className="nav-bar">
-            <ArrowLink back to="up">
-              Back
-            </ArrowLink>
-          </div>
+          {showBackLink && (
+            <div className="nav-bar">
+              <ArrowLink back to="up">
+                Back
+              </ArrowLink>
+            </div>
+          )}
           {/* actual children */}
           <div
             ref={childrenAreaRef}
             className="children-box"
-            css={{ flex: 1, paddingTop: "1em" }}
+            css={{ flex: 1, paddingTop: showBackLink ? "1em" : undefined }}
           >
             {children}
           </div>

@@ -3,6 +3,7 @@ import {
   useNavigationContext,
 } from "@lumphammer/minirouter";
 import { SlideInRoute } from "@lumphammer/minirouter/animated";
+import type { ReactNode } from "react";
 import React from "react";
 
 import { absoluteCover } from "../absoluteCover";
@@ -12,6 +13,11 @@ type SlideInNestedPanelRouteProps = PropsWithChildrenAndDirection<{
   className?: string;
   margin?: string | number;
   closeOnClickOutside?: boolean;
+  /**
+   * Routes nested under this one which should slide in over the whole area
+   * rather than inside this panel.
+   */
+  childRoutes?: ReactNode;
 }>;
 
 const BlurPanel = () => {
@@ -32,7 +38,14 @@ const BlurPanel = () => {
 };
 
 export const SlideInNestedPanelRoute = React.memo<SlideInNestedPanelRouteProps>(
-  ({ children, direction, className, margin, closeOnClickOutside }) => {
+  ({
+    children,
+    direction,
+    className,
+    margin,
+    closeOnClickOutside,
+    childRoutes,
+  }) => {
     return (
       <SlideInRoute
         direction={direction}
@@ -41,6 +54,7 @@ export const SlideInNestedPanelRoute = React.memo<SlideInNestedPanelRouteProps>(
         <NestedPanel className={className} margin={margin}>
           {children}
         </NestedPanel>
+        {childRoutes}
       </SlideInRoute>
     );
   },

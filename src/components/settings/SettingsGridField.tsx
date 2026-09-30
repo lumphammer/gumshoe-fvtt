@@ -5,43 +5,60 @@ import { ThemeContext } from "../../themes/ThemeContext";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 
-type SettingsGridFieldProps = ComponentProps<typeof GridField> & {
-  index?: number;
+/**
+ * A row in a settings `InputGrid`. Each row is a subgrid spanning the whole
+ * grid, so the alternating tint covers both the label and the control, and the
+ * label can be centred against the control. Rows are striped by position, so
+ * conditionally rendered rows don't break the pattern (this relies on rows
+ * being the only `div`s directly inside the grid).
+ */
+const useRowStyle = () => {
+  const theme = useContext(ThemeContext);
+  return {
+    gridColumn: "label / end",
+    padding: "0.5em",
+    "&:nth-of-type(odd)": {
+      background: theme.colors.backgroundSecondary,
+    },
+  };
 };
 
+type SettingsGridFieldProps = ComponentProps<typeof GridField>;
+
 export const SettingsGridField = ({
-  index = 0,
+  labelStyle,
   ...props
 }: SettingsGridFieldProps) => {
-  const tint = index % 2 === 0;
-  const theme = useContext(ThemeContext);
+  const rowStyle = useRowStyle();
   return (
-    <GridField
-      {...props}
+    <div
       css={{
-        padding: "0.5em",
-        background: tint ? theme.colors.backgroundSecondary : "none",
+        ...rowStyle,
+        display: "grid",
+        gridTemplateColumns: "subgrid",
+        alignItems: "center",
       }}
-    />
+    >
+      <GridField
+        {...props}
+        labelStyle={{ alignSelf: "center", paddingTop: 0, ...labelStyle }}
+      />
+    </div>
   );
 };
 
 SettingsGridField.displayName = "SettingsGridField";
 
-export const SettingsGridFieldStacked = ({
-  index = 0,
-  ...props
-}: SettingsGridFieldProps) => {
-  const tint = index % 2 === 0;
-  const theme = useContext(ThemeContext);
+type SettingsGridFieldStackedProps = ComponentProps<typeof GridFieldStacked>;
+
+export const SettingsGridFieldStacked = (
+  props: SettingsGridFieldStackedProps,
+) => {
+  const rowStyle = useRowStyle();
   return (
-    <GridFieldStacked
-      {...props}
-      css={{
-        padding: "0.5em",
-        background: tint ? theme.colors.backgroundSecondary : "none",
-      }}
-    />
+    <div css={rowStyle}>
+      <GridFieldStacked {...props} />
+    </div>
   );
 };
 

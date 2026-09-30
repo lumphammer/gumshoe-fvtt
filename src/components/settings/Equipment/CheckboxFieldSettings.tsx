@@ -1,8 +1,8 @@
 import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 import { useCallback, useContext } from "react";
 
+import { SettingsGridField } from "../SettingsGridField";
 import { Toggle } from "../../inputs/Toggle";
-import { Translate } from "../../Translate";
 import { DispatchContext } from "../contexts";
 import { store } from "../store";
 
@@ -33,20 +33,9 @@ export const CheckboxFieldSettings = ({
   );
 
   return (
-    <div
-      css={{
-        display: "flex",
-      }}
-    >
-      <div css={{ flex: 0, paddingRight: "1em" }}>
-        <Translate>Default</Translate>
-      </div>
-      <Toggle
-        // css={{ flex: 1 }}
-        checked={field.default}
-        onChange={handleChangeDefault}
-      />
-    </div>
+    <SettingsGridField label="Default">
+      <Toggle checked={field.default} onChange={handleChangeDefault} />
+    </SettingsGridField>
   );
 };
 

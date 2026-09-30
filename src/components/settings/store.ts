@@ -10,6 +10,7 @@ import {
   moveKeyDown,
   moveKeyUp,
   renameProperty,
+  reorderKeys,
   systemLogger,
 } from "../../functions/utilities";
 import { pathOfCthulhuPreset } from "../../presets";
@@ -92,6 +93,15 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
       settings.equipmentCategories = moveKeyDown(
         settings.equipmentCategories,
         categoryId,
+      );
+    },
+    setCategoryOrder: (
+      { settings }: State,
+      { newOrder }: { newOrder: string[] },
+    ) => {
+      settings.equipmentCategories = reorderKeys(
+        settings.equipmentCategories,
+        newOrder,
       );
     },
     addField: (
@@ -218,6 +228,12 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
     ) => {
       cats[categoryId].fields = moveKeyDown(cats[categoryId].fields, fieldId);
     },
+    setFieldOrder: (
+      { settings: { equipmentCategories: cats } }: State,
+      { categoryId, newOrder }: { categoryId: string; newOrder: string[] },
+    ) => {
+      cats[categoryId].fields = reorderKeys(cats[categoryId].fields, newOrder);
+    },
     applyPreset: (
       draft: State,
       payload: { preset: PresetV1; presetId: string },
@@ -301,6 +317,12 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
       { which, statId }: { which: PcOrNpc; statId: string },
     ) => {
       delete draft.settings[which][statId];
+    },
+    setStatOrder: (
+      draft: State,
+      { which, newOrder }: { which: PcOrNpc; newOrder: string[] },
+    ) => {
+      draft.settings[which] = reorderKeys(draft.settings[which], newOrder);
     },
     setStatId: (
       draft: State,

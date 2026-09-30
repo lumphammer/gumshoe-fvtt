@@ -23,11 +23,13 @@ import { createPortal } from "react-dom";
 
 import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
+import { Translate } from "../Translate";
 import { ActiveIdContext } from "./ActiveIdContext";
 import { SortableRow } from "./SortableRow";
 
 type Header = {
   id: string;
+  /** translated for display; leave empty for no header text */
   label: string;
 };
 
@@ -112,19 +114,23 @@ export const SortableTable = ({
                 gap: "0.5em",
               }}
             >
-              <div
-                css={{
-                  gridColumn: "1/-1",
-                  display: "grid",
-                  gridTemplateColumns: "subgrid",
-                  borderBottom: `1px solid ${controlBorder}`,
-                }}
-              >
-                <div />
-                {headers.map((header) => (
-                  <div key={header.label}>{header.label}</div>
-                ))}
-              </div>
+              {headers.length > 0 && (
+                <div
+                  css={{
+                    gridColumn: "1/-1",
+                    display: "grid",
+                    gridTemplateColumns: "subgrid",
+                    borderBottom: `1px solid ${controlBorder}`,
+                  }}
+                >
+                  <div />
+                  {headers.map((header) => (
+                    <div key={header.id}>
+                      {header.label && <Translate>{header.label}</Translate>}
+                    </div>
+                  ))}
+                </div>
+              )}
               {items.map((id) => (
                 <SortableRow key={id} id={id}>
                   {renderItem(id)}

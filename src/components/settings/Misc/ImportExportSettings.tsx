@@ -1,19 +1,19 @@
 import { useContext, useState } from "react";
 
-import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
-import { saveAsJsonFile } from "../../functions/saveFile";
-import { getUserFile } from "../../functions/utilities";
-import { getExportableSettingsDict } from "../../settings/getExportableSettingsDict";
-import { validateImportedSettings } from "../../settings/validateImportedSettings";
-import { Button } from "../inputs/Button";
-import { TextInput } from "../inputs/TextInput";
-import { Translate } from "../Translate";
-import { DirtyContext, DispatchContext, StateContext } from "./contexts";
-import { SettingsGridField } from "./SettingsGridField";
-import { store } from "./store";
+import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
+import { saveAsJsonFile } from "../../../functions/saveFile";
+import { getUserFile } from "../../../functions/utilities";
+import { getExportableSettingsDict } from "../../../settings/getExportableSettingsDict";
+import { validateImportedSettings } from "../../../settings/validateImportedSettings";
+import { Button } from "../../inputs/Button";
+import { InputGrid } from "../../inputs/InputGrid";
+import { TextInput } from "../../inputs/TextInput";
+import { Translate } from "../../Translate";
+import { DirtyContext, DispatchContext, StateContext } from "../contexts";
+import { SettingsGridField } from "../SettingsGridField";
+import { store } from "../store";
 
-export const ImportExport = () => {
-  let idx = 0;
+export const ImportExportSettings = () => {
   const dispatch = useContext(DispatchContext);
   const { settings: settingsState } = useContext(StateContext);
   const isDirty = useContext(DirtyContext);
@@ -52,26 +52,24 @@ export const ImportExport = () => {
   };
 
   return (
-    <>
-      <hr css={{ gridColumn: "label / end" }} />
-      <h2 css={{ gridColumn: "label / end" }}>
-        <Translate>Import/Export</Translate> (BETA - please report bugs!)
-      </h2>
-      <SettingsGridField label="Export settings to file" index={idx++}>
+    <InputGrid>
+      <p css={{ gridColumn: "label / end", marginTop: 0 }}>
+        BETA - please report bugs!
+      </p>
+      <SettingsGridField label="Export settings to file">
         <Translate>ItemName</Translate>
         <TextInput value={filename} onChange={setFilename} />
         <Button onClick={handleExport}>
           <Translate>Export</Translate>
         </Button>
       </SettingsGridField>
-      {/* eslint-disable-next-line no-useless-assignment */}
-      <SettingsGridField label="Import settings from file" index={idx++}>
+      <SettingsGridField label="Import settings from file">
         <Button onClick={handleImport}>
           <Translate>Import</Translate>
         </Button>
       </SettingsGridField>
-    </>
+    </InputGrid>
   );
 };
 
-ImportExport.displayName = "ImportExport";
+ImportExportSettings.displayName = "ImportExportSettings";

@@ -3,11 +3,7 @@ import React, { useCallback, useContext } from "react";
 import * as constants from "../../constants";
 import { assertGame } from "../../functions/isGame";
 import { runtimeConfig } from "../../runtime";
-import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { InputGrid } from "../inputs/InputGrid";
-import { ListEdit } from "../inputs/ListEdit";
-import { PersonalDetailsListEdit } from "../inputs/PersonalDetailsListEdit";
-import { Toggle } from "../inputs/Toggle";
 import { DispatchContext, StateContext } from "./contexts";
 import { SettingsGridField } from "./SettingsGridField";
 import { store } from "./store";
@@ -40,9 +36,6 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
     },
     [dispatch, presets, setters],
   );
-
-  let idx = 0;
-
   return (
     <InputGrid
       css={{
@@ -62,7 +55,7 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
           )}
         </select>
       </SettingsGridField>
-      <SettingsGridField label="Visual Theme" index={idx++}>
+      <SettingsGridField label="Visual Theme">
         <select
           value={settings.defaultThemeName}
           onChange={(e) => {
@@ -75,35 +68,6 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
             </option>
           ))}
         </select>
-      </SettingsGridField>
-      <SettingsGridField label="Occupation Label" index={idx++}>
-        <AsyncTextInput
-          value={settings.occupationLabel}
-          onChange={setters.occupationLabel}
-        />
-      </SettingsGridField>
-      <SettingsGridField label="Personal details" index={idx++}>
-        <PersonalDetailsListEdit
-          personalDetails={settings.personalDetails}
-          onChange={setters.personalDetails}
-        />
-      </SettingsGridField>
-      <SettingsGridField label="Notes Fields" index={idx++}>
-        <ListEdit value={settings.longNotes} onChange={setters.longNotes} />
-      </SettingsGridField>
-
-      <SettingsGridField label="Generic Occupation" index={idx++}>
-        <AsyncTextInput
-          onChange={setters.genericOccupation}
-          value={settings.genericOccupation}
-        />
-      </SettingsGridField>
-      {/* eslint-disable-next-line no-useless-assignment */}
-      <SettingsGridField label="ItemAddedNotifications" index={idx++}>
-        <Toggle
-          checked={settings.notifyItemAddedToActor}
-          onChange={setters.notifyItemAddedToActor}
-        />
       </SettingsGridField>
     </InputGrid>
   );

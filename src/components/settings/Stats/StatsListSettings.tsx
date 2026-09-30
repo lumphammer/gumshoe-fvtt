@@ -4,49 +4,50 @@ import { useCallback, useContext } from "react";
 import { DispatchContext, StateContext } from "../contexts";
 import { SettingsSortableList } from "../SettingsSortableList";
 import { store } from "../store";
-import { equipmentCategory } from "./directions";
+import type { PcOrNpc } from "../types";
+import { stat } from "./directions";
 
-export const EquipmentSettings = () => {
+export const StatsListSettings = ({ which }: { which: PcOrNpc }) => {
+  const stats = useContext(StateContext).settings[which];
   const dispatch = useContext(DispatchContext);
-  const { settings } = useContext(StateContext);
   const { navigate } = useNavigationContext();
-  const categories = settings.equipmentCategories;
-  const ids = Object.keys(categories);
+  const ids = Object.keys(stats);
 
   const handleAdd = useCallback(() => {
-    // new categories go on the end
-    const index = Object.keys(categories).length;
-    dispatch(store.creators.addCategory());
-    navigate("here", equipmentCategory(index));
-  }, [categories, dispatch, navigate]);
+    // new stats go on the end
+    const index = Object.keys(stats).length;
+    dispatch(store.creators.addStat({ which }));
+    navigate("here", stat(index));
+  }, [dispatch, navigate, stats, which]);
 
   const handleReorder = useCallback(
     (newOrder: number[]) => {
-      const ids = Object.keys(categories);
+      const ids = Object.keys(stats);
       dispatch(
-        store.creators.setCategoryOrder({
+        store.creators.setStatOrder({
+          which,
           newOrder: newOrder.map((i) => ids[i]),
         }),
       );
     },
-    [categories, dispatch],
+    [dispatch, stats, which],
   );
 
   return (
     <SettingsSortableList
       css={{ height: "100%" }}
       rows={ids.map((id) => ({
-        name: categories[id].name,
+        name: stats[id].name,
         detail: <code>{id}</code>,
       }))}
-      linkTo={equipmentCategory}
+      linkTo={stat}
       onReorder={handleReorder}
       onAdd={handleAdd}
-      addLabel="Add Category"
+      addLabel="Add Stat"
       detailHeader="Unique Id"
-      emptyMessage="No equipment categories yet."
+      emptyMessage="No stats yet."
     />
   );
 };
 
-EquipmentSettings.displayName = "EquipmentSettings";
+StatsListSettings.displayName = "StatsListSettings";
