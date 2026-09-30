@@ -1,4 +1,3 @@
-import { Router } from "@lumphammer/minirouter";
 import { SlideInOutlet } from "@lumphammer/minirouter/animated";
 import { useCallback, useContext } from "react";
 
@@ -26,39 +25,37 @@ export const CardsSettings = ({ setters }: CardsSettingsProps) => {
   );
 
   return (
-    <Router>
-      <SlideInOutlet after>
-        <div
-          data-testid="cards-settings"
-          css={{
-            ...absoluteCover,
-            display: "flex",
-            flexDirection: "column",
-            padding: "0.5em",
-            pointerEvents: "auto",
-          }}
-        >
-          <div>
-            <InputGrid css={{}}>
-              <GridField label="Use cards?">
-                <Toggle
-                  checked={settings.useCards}
-                  onChange={handleChangeUseCards}
-                />
-              </GridField>
-            </InputGrid>
-          </div>
-          {settings.useCards && (
-            <>
-              <div css={{ flex: 1, position: "relative" }}>
-                <Categories />
-              </div>
-            </>
-          )}
-          {/* <DevTools /> */}
+    <SlideInOutlet after>
+      <div
+        data-testid="cards-settings"
+        css={{
+          ...absoluteCover,
+          display: "flex",
+          flexDirection: "column",
+          padding: "0.5em",
+          pointerEvents: "auto",
+        }}
+      >
+        <div>
+          <InputGrid css={{}}>
+            <GridField label="Use cards?">
+              <Toggle
+                checked={settings.useCards}
+                onChange={handleChangeUseCards}
+              />
+            </GridField>
+          </InputGrid>
         </div>
-      </SlideInOutlet>
-    </Router>
+        {settings.useCards && (
+          <>
+            <div css={{ flex: 1, position: "relative" }}>
+              <Categories />
+            </div>
+          </>
+        )}
+        {/* <DevTools /> */}
+      </div>
+    </SlideInOutlet>
   );
 };
 

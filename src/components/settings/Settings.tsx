@@ -1,5 +1,14 @@
+import { Router } from "@lumphammer/minirouter";
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import { useCallback, useContext, useEffect } from "react";
+import {
+  FaChartSimple,
+  FaDiceD20,
+  FaEllipsis,
+  FaLayerGroup,
+  FaSliders,
+  FaToolbox,
+} from "react-icons/fa6";
 
 import { settingsCloseAttempted, settingsSaved } from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
@@ -14,7 +23,7 @@ import { settings } from "../../settings/settings";
 import { absoluteCover } from "../absoluteCover";
 import { CSSReset } from "../CSSReset";
 import { Button } from "../inputs/Button";
-import { TabContainer } from "../TabContainer";
+import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
 import { Translate } from "../Translate";
 import { AbilitySettings } from "./AbilitySettings";
 import { CardsSettings } from "./Cards/CardsSettings";
@@ -25,9 +34,18 @@ import {
   StateContext,
 } from "./contexts";
 import { CoreSettings } from "./CoreSettings";
+import {
+  abilitySettings,
+  cardsSettings,
+  coreSettings,
+  equipmentSettings,
+  miscSettings,
+  statsSettings,
+} from "./directions";
 import { EquipmentSettings } from "./Equipment/EquipmentSettings";
 import { useSettingsState } from "./hooks";
 import { MiscSettings } from "./MiscSettings";
+import { SettingsMenuLink } from "./SettingsMenuLink";
 import { StatsSettings } from "./Stats/StatsSettings";
 
 export const Settings = () => {
@@ -74,6 +92,45 @@ export const Settings = () => {
     }
   }, [foundryApplication, tempStateRef]);
 
+  const pages = [
+    {
+      direction: coreSettings,
+      label: "Core",
+      icon: <FaSliders />,
+      content: <CoreSettings setters={setters} />,
+    },
+    {
+      direction: abilitySettings,
+      label: "Abilities",
+      icon: <FaDiceD20 />,
+      content: <AbilitySettings setters={setters} />,
+    },
+    {
+      direction: equipmentSettings,
+      label: "Equipment",
+      icon: <FaToolbox />,
+      content: <EquipmentSettings />,
+    },
+    {
+      direction: statsSettings,
+      label: "Stats",
+      icon: <FaChartSimple />,
+      content: <StatsSettings />,
+    },
+    {
+      direction: cardsSettings,
+      label: "Cards",
+      icon: <FaLayerGroup />,
+      content: <CardsSettings setters={setters} />,
+    },
+    {
+      direction: miscSettings,
+      label: "Misc",
+      icon: <FaEllipsis />,
+      content: <MiscSettings setters={setters} />,
+    },
+  ];
+
   // if anything attempts to close the window without our approval, we block it
   // in the SettingsClass and fire this event for us to handle here
   useEffect(() => {
@@ -98,42 +155,49 @@ export const Settings = () => {
                 padding: "0.5em",
               }}
             >
-              <div css={{ flex: 1, overflow: "auto", position: "relative" }}>
-                <TabContainer
-                  defaultTab="core"
-                  tabs={[
-                    {
-                      id: "core",
-                      label: "Core",
-                      content: <CoreSettings setters={setters} />,
-                    },
-                    {
-                      id: "abilities",
-                      label: "Abilities",
-                      content: <AbilitySettings setters={setters} />,
-                    },
-                    {
-                      id: "equipment",
-                      label: "Equipment",
-                      content: <EquipmentSettings />,
-                    },
-                    {
-                      id: "stats",
-                      label: "Stats",
-                      content: <StatsSettings />,
-                    },
-                    {
-                      id: "cards",
-                      label: "Cards",
-                      content: <CardsSettings setters={setters} />,
-                    },
-                    {
-                      id: "misc",
-                      label: "Misc",
-                      content: <MiscSettings setters={setters} />,
-                    },
-                  ]}
-                />
+              <div css={{ flex: 1, overflow: "hidden", position: "relative" }}>
+                <Router>
+                  <nav
+                    data-testid="settings-menu"
+                    css={{
+                      ...absoluteCover,
+                      overflow: "auto",
+                      ...theme.panelStylePrimary,
+                    }}
+                  >
+                    {pages.map(({ direction, label, icon }) => (
+                      <SettingsMenuLink
+                        key={label}
+                        to={direction()}
+                        label={label}
+                        icon={icon}
+                      />
+                    ))}
+                  </nav>
+                  {pages.map(({ direction, label, content }) => (
+                    <SlideInNestedPanelRoute
+                      key={label}
+                      direction={direction}
+                      margin="0em"
+                    >
+                      <div
+                        css={{
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <h2 css={{ font: theme.displayFont, marginTop: 0 }}>
+                          <Translate>{label}</Translate>
+                        </h2>
+                        {/* some pages cover their parent, so give them one */}
+                        <div css={{ flex: 1, position: "relative" }}>
+                          {content}
+                        </div>
+                      </div>
+                    </SlideInNestedPanelRoute>
+                  ))}
+                </Router>
               </div>
               <div
                 css={{
