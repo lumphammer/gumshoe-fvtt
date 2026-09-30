@@ -5,6 +5,7 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { Button } from "../inputs/Button";
 import { SortableTable } from "../sortableTable";
 import { Translate } from "../Translate";
+import { SettingsEmptyState } from "./SettingsEmptyState";
 
 type SettingsStringListProps = {
   value: string[];
@@ -14,6 +15,8 @@ type SettingsStringListProps = {
   /** allow drag-to-reorder. Turn this off where order doesn't mean anything */
   sortable?: boolean;
   addLabel?: string;
+  /** shown instead of the list when it's empty */
+  emptyMessage?: string;
   className?: string;
 };
 
@@ -27,6 +30,7 @@ export const SettingsStringList = ({
   nonempty = false,
   sortable = true,
   addLabel = "Add item",
+  emptyMessage = "Nothing here yet.",
   className,
 }: SettingsStringListProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -127,9 +131,7 @@ export const SettingsStringList = ({
       css={{ display: "flex", flexDirection: "column", gap: "0.5em" }}
     >
       {value.length === 0 ? (
-        <i>
-          <Translate>Empty List</Translate>
-        </i>
+        <SettingsEmptyState message={emptyMessage} />
       ) : sortable ? (
         <SortableTable
           css={{ position: "relative", padding: 0 }}

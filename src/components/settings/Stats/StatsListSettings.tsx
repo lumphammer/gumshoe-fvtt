@@ -45,6 +45,7 @@ export const StatsListSettings = ({ which }: { which: PcOrNpc }) => {
       onAdd={handleAdd}
       addLabel="Add Stat"
       detailHeader="Unique Id"
+      emptyMessage="No stats yet."
     />
   );
 };

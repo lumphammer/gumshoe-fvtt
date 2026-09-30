@@ -44,6 +44,7 @@ export const PersonalDetailsSettings = ({ setters }: { setters: Setters }) => {
         onAdd={handleAdd}
         addLabel="Add personal detail"
         detailHeader="Type"
+        emptyMessage="No personal details yet."
       />
     </div>
   );

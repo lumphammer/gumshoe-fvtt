@@ -53,6 +53,7 @@ export const ActorSettingsRoutes = ({ setters }: { setters: Setters }) => {
           value={settings.longNotes}
           onChange={setters.longNotes}
           addLabel="Add notes field"
+          emptyMessage="No notes fields yet."
         />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute

@@ -143,6 +143,7 @@ export const EquipmentCategorySettings = () => {
         onAdd={handleAddField}
         addLabel="Add Field"
         detailHeader="Type"
+        emptyMessage="This category has no fields yet."
       />
     </div>
   );

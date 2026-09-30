@@ -5,6 +5,7 @@ import { useCallback } from "react";
 import { Button } from "../inputs/Button";
 import { SortableTable } from "../sortableTable";
 import { Translate } from "../Translate";
+import { SettingsEmptyState } from "./SettingsEmptyState";
 import { useListHoverBg } from "./useListHoverBg";
 
 type SettingsSortableListProps = {
@@ -17,6 +18,8 @@ type SettingsSortableListProps = {
   addLabel: string;
   nameHeader?: string;
   detailHeader?: string;
+  /** shown instead of the list when it's empty */
+  emptyMessage?: string;
   className?: string;
 };
 
@@ -34,6 +37,7 @@ export const SettingsSortableList = ({
   addLabel,
   nameHeader = "Name",
   detailHeader = "",
+  emptyMessage = "Nothing here yet.",
   className,
 }: SettingsSortableListProps) => {
   const hoverBg = useListHoverBg();
@@ -109,13 +113,7 @@ export const SettingsSortableList = ({
           { label: nameHeader, id: "name" },
           { label: detailHeader, id: "detail" },
         ]}
-        emptyMessage={
-          <p>
-            <i>
-              <Translate>Empty List</Translate>
-            </i>
-          </p>
-        }
+        emptyMessage={<SettingsEmptyState message={emptyMessage} />}
       />
     </div>
   );

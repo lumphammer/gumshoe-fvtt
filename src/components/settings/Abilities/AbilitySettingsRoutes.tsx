@@ -38,6 +38,7 @@ export const AbilitySettingsRoutes = ({ setters }: { setters: Setters }) => {
           onChange={setters.investigativeAbilityCategories}
           nonempty
           addLabel="Add ability category"
+          emptyMessage="No categories yet."
         />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute
@@ -52,6 +53,7 @@ export const AbilitySettingsRoutes = ({ setters }: { setters: Setters }) => {
           onChange={setters.generalAbilityCategories}
           nonempty
           addLabel="Add ability category"
+          emptyMessage="No categories yet."
         />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={pcAbilityPacks} margin="0em">

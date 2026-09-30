@@ -29,6 +29,7 @@ export const CombatSettingsRoutes = ({ setters }: { setters: Setters }) => {
           nonempty
           sortable={false}
           addLabel="Add combat ability"
+          emptyMessage="No combat abilities yet."
         />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={combatOptions} margin="0em">

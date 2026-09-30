@@ -44,6 +44,7 @@ export const EquipmentSettings = () => {
       onAdd={handleAdd}
       addLabel="Add Category"
       detailHeader="Unique Id"
+      emptyMessage="No equipment categories yet."
     />
   );
 };

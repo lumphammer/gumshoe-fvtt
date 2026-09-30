@@ -43,6 +43,7 @@ export const Categories = ({ className }: { className?: string }) => {
       onAdd={handleAdd}
       addLabel="Add card category"
       detailHeader="Style Key"
+      emptyMessage="No card categories have been added yet."
     />
   );
 };

@@ -29,6 +29,7 @@ export const DyingEarthSettings = ({ setters }: { setters: Setters }) => {
           value={settings.mwHiddenShortNotes}
           onChange={setters.mwHiddenShortNotes}
           sortable={false}
+          emptyMessage="No fields are hidden."
         />
       </SettingsGridField>
       <SettingsGridField label="Use injury status">

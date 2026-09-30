@@ -337,5 +337,14 @@
   "investigator.OptionsForDyingEarthDescription": "Settings for Dying Earth-style games",
   "investigator.ImportExportDescription": "Save these settings to a file, or load them from one",
   "investigator.DeveloperOptionsDescription": "Tools for working on the system",
-  "investigator.MigrationRecoveryDescription": "Retry a data migration that failed"
+  "investigator.MigrationRecoveryDescription": "Retry a data migration that failed",
+  "investigator.NothingHereYet": "Nothing here yet.",
+  "investigator.NoPersonalDetailsYet": "No personal details yet.",
+  "investigator.NoStatsYet": "No stats yet.",
+  "investigator.NoEquipmentCategoriesYet": "No equipment categories yet.",
+  "investigator.ThisCategoryHasNoFieldsYet": "This category has no fields yet.",
+  "investigator.NoNotesFieldsYet": "No notes fields yet.",
+  "investigator.NoCombatAbilitiesYet": "No combat abilities yet.",
+  "investigator.NoCategoriesYet": "No categories yet.",
+  "investigator.NoFieldsAreHidden": "No fields are hidden."
 }
