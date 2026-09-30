@@ -278,7 +278,6 @@
   "investigator.UnknownAbility": "Unknown ability",
   "investigator.SettingsHome": "Settings Home",
   "investigator.Breadcrumbs": "Breadcrumbs",
-  "investigator.CardCategory": "Card category",
   "investigator.Combat": "Combat",
   "investigator.CombatOptions": "Combat options",
   "investigator.Actors": "Actors",
@@ -300,6 +299,8 @@
   "investigator.DeletePersonalDetailName": "Delete personal detail \"{Name}\"?",
   "investigator.DeleteStatName": "Delete stat \"{Name}\"?",
   "investigator.DeleteEquipmentCategoryName": "Delete equipment category \"{Name}\"?",
+  "investigator.DeleteCardCategoryName": "Delete card category \"{Name}\"?",
+  "investigator.AddCardCategory": "Add card category",
   "investigator.DeleteFieldName": "Delete field \"{Name}\"?",
   "investigator.ItemsFromTheseCompendiumPacksAreAddedToEveryNewPC": "Items from these compendium packs are added to every new PC.",
   "investigator.ItemsFromTheseCompendiumPacksAreAddedToEveryNewNPC": "Items from these compendium packs are added to every new NPC."

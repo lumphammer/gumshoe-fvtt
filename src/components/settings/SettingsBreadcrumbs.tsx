@@ -11,7 +11,7 @@ import { getTranslated } from "../../functions/getTranslated";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 import { npcStats, personalDetail } from "./Actors/directions";
-import { cardCategory, categoryDangerZone } from "./Cards/directions";
+import { cardCategory } from "./Cards/directions";
 import { StateContext } from "./contexts";
 import { equipmentCategory, equipmentField } from "./Equipment/directions";
 import { stat } from "./Stats/directions";
@@ -45,10 +45,7 @@ export const SettingsBreadcrumbs = ({ pages }: SettingsBreadcrumbsProps) => {
       return <Translate>{page.label}</Translate>;
     }
     if (cardCategory.match(step)) {
-      const category = settings.cardCategories.find(
-        (c) => c.id === step.params,
-      );
-      return category?.singleName ?? <Translate>Card category</Translate>;
+      return settings.cardCategories[step.params]?.singleName || unnamed;
     }
     if (personalDetail.match(step)) {
       return settings.personalDetails[step.params]?.name || unnamed;
@@ -68,9 +65,6 @@ export const SettingsBreadcrumbs = ({ pages }: SettingsBreadcrumbsProps) => {
       ];
       const field = category && Object.values(category.fields)[step.params];
       return field?.name || unnamed;
-    }
-    if (categoryDangerZone.match(step)) {
-      return <Translate>Danger Zone</Translate>;
     }
     return step.direction.description;
   };

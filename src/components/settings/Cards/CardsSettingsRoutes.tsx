@@ -1,5 +1,5 @@
 import { SlideInNestedPanelRoute } from "../../nestedPanels/SlideInNestedPanelRoute";
-import { Category } from "./Category";
+import { CardCategorySettings } from "./CardCategorySettings";
 import { cardCategory } from "./directions";
 
 /**
@@ -10,7 +10,7 @@ import { cardCategory } from "./directions";
 export const CardsSettingsRoutes = () => {
   return (
     <SlideInNestedPanelRoute direction={cardCategory} margin="0em">
-      <Category />
+      <CardCategorySettings />
     </SlideInNestedPanelRoute>
   );
 };
