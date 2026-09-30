@@ -23,6 +23,7 @@ import { settings } from "../../settings/settings";
 import { absoluteCover } from "../absoluteCover";
 import { CSSReset } from "../CSSReset";
 import { Button } from "../inputs/Button";
+import { ShowBackLinkContext } from "../nestedPanels/ShowBackLinkContext";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
 import { Translate } from "../Translate";
 import { AbilitySettings } from "./AbilitySettings";
@@ -46,6 +47,7 @@ import {
 import { EquipmentSettings } from "./Equipment/EquipmentSettings";
 import { useSettingsState } from "./hooks";
 import { MiscSettings } from "./MiscSettings";
+import { SettingsBreadcrumbs } from "./SettingsBreadcrumbs";
 import { SettingsMenuLink } from "./SettingsMenuLink";
 import { StatsSettings } from "./Stats/StatsSettings";
 
@@ -157,51 +159,45 @@ export const Settings = () => {
                 padding: "0.5em",
               }}
             >
-              <div css={{ flex: 1, overflow: "hidden", position: "relative" }}>
+              <ShowBackLinkContext.Provider value={false}>
                 <Router>
-                  <nav
-                    data-testid="settings-menu"
-                    css={{
-                      ...absoluteCover,
-                      overflow: "auto",
-                      ...theme.panelStylePrimary,
-                    }}
+                  <SettingsBreadcrumbs pages={pages} />
+                  <div
+                    css={{ flex: 1, overflow: "hidden", position: "relative" }}
                   >
-                    {pages.map(({ direction, label, icon }) => (
-                      <SettingsMenuLink
-                        key={label}
-                        to={direction()}
-                        label={label}
-                        icon={icon}
-                      />
-                    ))}
-                  </nav>
-                  {pages.map(({ direction, label, content, childRoutes }) => (
-                    <SlideInNestedPanelRoute
-                      key={label}
-                      direction={direction}
-                      margin="0em"
-                      childRoutes={childRoutes}
+                    <nav
+                      data-testid="settings-menu"
+                      css={{
+                        ...absoluteCover,
+                        overflow: "auto",
+                        ...theme.panelStylePrimary,
+                      }}
                     >
-                      <div
-                        css={{
-                          height: "100%",
-                          display: "flex",
-                          flexDirection: "column",
-                        }}
+                      {pages.map(({ direction, label, icon }) => (
+                        <SettingsMenuLink
+                          key={label}
+                          to={direction()}
+                          label={label}
+                          icon={icon}
+                        />
+                      ))}
+                    </nav>
+                    {pages.map(({ direction, label, content, childRoutes }) => (
+                      <SlideInNestedPanelRoute
+                        key={label}
+                        direction={direction}
+                        margin="0em"
+                        childRoutes={childRoutes}
                       >
-                        <h2 css={{ font: theme.displayFont, marginTop: 0 }}>
-                          <Translate>{label}</Translate>
-                        </h2>
                         {/* some pages cover their parent, so give them one */}
-                        <div css={{ flex: 1, position: "relative" }}>
+                        <div css={{ height: "100%", position: "relative" }}>
                           {content}
                         </div>
-                      </div>
-                    </SlideInNestedPanelRoute>
-                  ))}
+                      </SlideInNestedPanelRoute>
+                    ))}
+                  </div>
                 </Router>
-              </div>
+              </ShowBackLinkContext.Provider>
               <div
                 css={{
                   display: "flex",

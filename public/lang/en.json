@@ -275,5 +275,8 @@
   "investigator.CreateClassicCombat": "Create classic combat",
   "investigator.CreateTurnPassingCombat": "Create turn-passing combat",
   "investigator.SortCombatants": "Sort Combatants",
-  "investigator.UnknownAbility": "Unknown ability"
+  "investigator.UnknownAbility": "Unknown ability",
+  "investigator.SettingsHome": "Settings Home",
+  "investigator.Breadcrumbs": "Breadcrumbs",
+  "investigator.CardCategory": "Card category"
 }
