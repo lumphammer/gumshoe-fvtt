@@ -1,4 +1,6 @@
 import {
+  generalAbilityCategories,
+  investigativeAbilityCategories,
   npcAbilityPacks,
   npcStats,
   pcAbilityPacks,
@@ -11,6 +13,11 @@ import {
  */
 export const actorPages = [
   { direction: pcOptions, label: "PC Options" },
+  {
+    direction: investigativeAbilityCategories,
+    label: "Investigative ability categories",
+  },
+  { direction: generalAbilityCategories, label: "General ability categories" },
   { direction: pcAbilityPacks, label: "PC Ability compendiums" },
   { direction: npcAbilityPacks, label: "NPC Ability compendiums" },
   { direction: pcStats, label: "PC Stats" },

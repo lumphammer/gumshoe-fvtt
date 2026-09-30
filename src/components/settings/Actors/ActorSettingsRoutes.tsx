@@ -1,8 +1,14 @@
+import { useContext } from "react";
+
+import { ListEdit } from "../../inputs/ListEdit";
 import { SlideInNestedPanelRoute } from "../../nestedPanels/SlideInNestedPanelRoute";
+import { StateContext } from "../contexts";
 import { StatsSettingsEditor } from "../Stats/StatsSettingsEditor";
 import type { Setters } from "../types";
 import { AbilityPacksSettings } from "./AbilityPacksSettings";
 import {
+  generalAbilityCategories,
+  investigativeAbilityCategories,
   npcAbilityPacks,
   npcStats,
   pcAbilityPacks,
@@ -17,10 +23,32 @@ import { PcOptionsSettings } from "./PcOptionsSettings";
  * settings area.
  */
 export const ActorSettingsRoutes = ({ setters }: { setters: Setters }) => {
+  const { settings } = useContext(StateContext);
+
   return (
     <>
       <SlideInNestedPanelRoute direction={pcOptions} margin="0em">
         <PcOptionsSettings setters={setters} />
+      </SlideInNestedPanelRoute>
+      <SlideInNestedPanelRoute
+        direction={investigativeAbilityCategories}
+        margin="0em"
+      >
+        <ListEdit
+          value={settings.investigativeAbilityCategories}
+          onChange={setters.investigativeAbilityCategories}
+          nonempty
+        />
+      </SlideInNestedPanelRoute>
+      <SlideInNestedPanelRoute
+        direction={generalAbilityCategories}
+        margin="0em"
+      >
+        <ListEdit
+          value={settings.generalAbilityCategories}
+          onChange={setters.generalAbilityCategories}
+          nonempty
+        />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={pcAbilityPacks} margin="0em">
         <AbilityPacksSettings which="newPCPacks" setters={setters} />

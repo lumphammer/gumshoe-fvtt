@@ -26,10 +26,22 @@ export const PcOptionsSettings = ({ setters }: { setters: Setters }) => {
           value={settings.genericOccupation}
         />
       </SettingsGridField>
-      <SettingsGridField label="ItemAddedNotifications" index={idx}>
+      <SettingsGridField label="ItemAddedNotifications" index={idx++}>
         <Toggle
           checked={settings.notifyItemAddedToActor}
           onChange={setters.notifyItemAddedToActor}
+        />
+      </SettingsGridField>
+      <SettingsGridField label="Can Abilities be Boosted?" index={idx++}>
+        <Toggle checked={settings.useBoost} onChange={setters.useBoost} />
+      </SettingsGridField>
+      <SettingsGridField
+        label="Show empty Investigative categories?"
+        index={idx}
+      >
+        <Toggle
+          checked={settings.showEmptyInvestigativeCategories}
+          onChange={setters.showEmptyInvestigativeCategories}
         />
       </SettingsGridField>
     </InputGrid>
