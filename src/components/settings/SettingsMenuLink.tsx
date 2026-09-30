@@ -1,8 +1,9 @@
 import { type AnyStep, Link } from "@lumphammer/minirouter";
 import type { ReactNode } from "react";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 
+import { irid } from "../../irid/irid";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 
@@ -21,6 +22,12 @@ export const SettingsMenuLink = ({
   icon,
 }: SettingsMenuLinkProps) => {
   const theme = useContext(ThemeContext);
+  // translucent so it shows up against whatever is behind the menu, be it a
+  // textured backdrop or a flat panel
+  const hoverBg = useMemo(
+    () => irid(theme.colors.glow).opacity(0.25).toString(),
+    [theme.colors.glow],
+  );
 
   return (
     <Link
@@ -36,8 +43,11 @@ export const SettingsMenuLink = ({
         fontSize: "1.2em",
         textShadow: "none",
         "&:hover, &:focus-visible": {
-          backgroundColor: theme.colors.bgOpaquePrimary,
+          backgroundColor: hoverBg,
           textShadow: "none",
+        },
+        "&:hover .chevron, &:focus-visible .chevron": {
+          transform: "translateX(0.2em)",
         },
       }}
     >
@@ -56,7 +66,10 @@ export const SettingsMenuLink = ({
       >
         <Translate>{label}</Translate>
       </span>
-      <FaChevronRight css={{ opacity: 0.6 }} />
+      <FaChevronRight
+        className="chevron"
+        css={{ opacity: 0.6, transition: "transform 100ms ease-out" }}
+      />
     </Link>
   );
 };
