@@ -39,22 +39,21 @@ export class InvestigatorCombat<
     data: Data,
     operation?: Combat.Database.CreateOperation,
   ): Promise<Combat.CreateReturn<Data>> {
-    const isTurnPassing = settings.useTurnPassingInitiative.get();
-    const subType = isTurnPassing ? "turnPassing" : "classic";
-    // this condition previously had a case for data === undefined, but it was
-    // playing hell with the types and I can't see a situation where that would
-    // arise
+    const subType = settings.useTurnPassingInitiative.get()
+      ? "turnPassing"
+      : "classic";
+    // fvtt-types has Data as non-nullable/non-undefined, but
+    // Combat#_onCombatCreate calls Combat$1.implementation.create() with no
+    // arguments, so we do need to guard against it here and below.
     if (Array.isArray(data)) {
       for (const d of data) {
         d.type = d.type === undefined ? subType : d.type;
       }
-    } else {
+    } else if (data !== undefined) {
       data.type = data.type === undefined ? subType : data.type;
     }
 
-    // in theory .create methods on documents can always take an array, but
-    // Combat#_onCreate has some logic that assumes a single item
-    const result = super.create(data, operation);
+    const result = super.create(data ?? { type: subType }, operation);
     return result;
   }
 
