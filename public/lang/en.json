@@ -280,5 +280,7 @@
   "investigator.Breadcrumbs": "Breadcrumbs",
   "investigator.CardCategory": "Card category",
   "investigator.CompendiumPacks": "Compendium Packs",
-  "investigator.OtherOptions": "Other options"
+  "investigator.OtherOptions": "Other options",
+  "investigator.Combat": "Combat",
+  "investigator.CombatOptions": "Combat options"
 }

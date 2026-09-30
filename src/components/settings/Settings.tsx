@@ -9,6 +9,7 @@ import {
   FaSliders,
   FaToolbox,
 } from "react-icons/fa6";
+import { LuSwords } from "react-icons/lu";
 
 import { settingsCloseAttempted, settingsSaved } from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
@@ -30,6 +31,8 @@ import { abilityPages } from "./Abilities/abilityPages";
 import { AbilitySettingsRoutes } from "./Abilities/AbilitySettingsRoutes";
 import { CardsSettings } from "./Cards/CardsSettings";
 import { CardsSettingsRoutes } from "./Cards/CardsSettingsRoutes";
+import { combatPages } from "./Combat/combatPages";
+import { CombatSettingsRoutes } from "./Combat/CombatSettingsRoutes";
 import {
   DirtyContext,
   DispatchContext,
@@ -40,6 +43,7 @@ import { CoreSettings } from "./CoreSettings";
 import {
   abilitySettings,
   cardsSettings,
+  combatSettings,
   coreSettings,
   equipmentSettings,
   miscSettings,
@@ -113,6 +117,13 @@ export const Settings = () => {
       childRoutes: <AbilitySettingsRoutes setters={setters} />,
     },
     {
+      direction: combatSettings,
+      label: "Combat",
+      icon: <LuSwords />,
+      content: <SettingsMenu pages={combatPages} />,
+      childRoutes: <CombatSettingsRoutes setters={setters} />,
+    },
+    {
       direction: equipmentSettings,
       label: "Equipment",
       icon: <FaToolbox />,
@@ -167,7 +178,12 @@ export const Settings = () => {
               <ShowBackLinkContext.Provider value={false}>
                 <Router>
                   <SettingsBreadcrumbs
-                    pages={[...pages, ...abilityPages, ...statsPages]}
+                    pages={[
+                      ...pages,
+                      ...abilityPages,
+                      ...combatPages,
+                      ...statsPages,
+                    ]}
                   />
                   <div
                     css={{ flex: 1, overflow: "hidden", position: "relative" }}

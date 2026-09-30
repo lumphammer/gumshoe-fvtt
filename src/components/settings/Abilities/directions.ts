@@ -7,5 +7,4 @@ export const investigativeAbilityCategories = createDirection(
 export const generalAbilityCategories = createDirection(
   "generalAbilityCategories",
 );
-export const combatAbilities = createDirection("combatAbilities");
 export const otherAbilityOptions = createDirection("otherAbilityOptions");

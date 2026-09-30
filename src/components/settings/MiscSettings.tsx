@@ -50,12 +50,6 @@ export const MiscSettings = ({ setters }: { setters: Setters }) => {
           value={settings.customThemePath}
         />
       </SettingsGridField>
-      <SettingsGridField label="Use turn-passing initiative?" index={idx++}>
-        <Toggle
-          checked={settings.useTurnPassingInitiative}
-          onChange={setters.useTurnPassingInitiative}
-        />
-      </SettingsGridField>
 
       {isDevMode && (
         <SettingsGridField label="Debug translations?" index={idx++}>

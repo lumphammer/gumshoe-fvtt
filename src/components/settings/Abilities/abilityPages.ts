@@ -1,5 +1,4 @@
 import {
-  combatAbilities,
   compendiumPacks,
   generalAbilityCategories,
   investigativeAbilityCategories,
@@ -16,6 +15,5 @@ export const abilityPages = [
     label: "Investigative ability categories",
   },
   { direction: generalAbilityCategories, label: "General ability categories" },
-  { direction: combatAbilities, label: "Combat abilities" },
   { direction: otherAbilityOptions, label: "Other options" },
 ];

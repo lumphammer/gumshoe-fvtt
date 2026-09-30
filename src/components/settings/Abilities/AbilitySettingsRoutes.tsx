@@ -6,7 +6,6 @@ import { StateContext } from "../contexts";
 import type { Setters } from "../types";
 import { CompendiumPacksSettings } from "./CompendiumPacksSettings";
 import {
-  combatAbilities,
   compendiumPacks,
   generalAbilityCategories,
   investigativeAbilityCategories,
@@ -44,13 +43,6 @@ export const AbilitySettingsRoutes = ({ setters }: { setters: Setters }) => {
         <ListEdit
           value={settings.generalAbilityCategories}
           onChange={setters.generalAbilityCategories}
-          nonempty
-        />
-      </SlideInNestedPanelRoute>
-      <SlideInNestedPanelRoute direction={combatAbilities} margin="0em">
-        <ListEdit
-          value={settings.combatAbilities}
-          onChange={setters.combatAbilities}
           nonempty
         />
       </SlideInNestedPanelRoute>

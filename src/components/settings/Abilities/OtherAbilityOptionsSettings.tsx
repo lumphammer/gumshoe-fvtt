@@ -22,18 +22,11 @@ export const OtherAbilityOptionsSettings = ({
       </SettingsGridField>
       <SettingsGridField
         label="Show empty Investigative categories?"
-        index={idx++}
+        index={idx}
       >
         <Toggle
           checked={settings.showEmptyInvestigativeCategories}
           onChange={setters.showEmptyInvestigativeCategories}
-        />
-      </SettingsGridField>
-      {/* eslint-disable-next-line no-useless-assignment */}
-      <SettingsGridField label="Use NPC Combat bonuses?" index={idx++}>
-        <Toggle
-          checked={settings.useNpcCombatBonuses}
-          onChange={setters.useNpcCombatBonuses}
         />
       </SettingsGridField>
     </InputGrid>
