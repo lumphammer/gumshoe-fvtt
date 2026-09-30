@@ -9,24 +9,21 @@ import type { Setters } from "../types";
 
 export const PcOptionsSettings = ({ setters }: { setters: Setters }) => {
   const { settings } = useContext(StateContext);
-
-  let idx = 0;
-
   return (
     <InputGrid>
-      <SettingsGridField label="Occupation Label" index={idx++}>
+      <SettingsGridField label="Occupation Label">
         <AsyncTextInput
           value={settings.occupationLabel}
           onChange={setters.occupationLabel}
         />
       </SettingsGridField>
-      <SettingsGridField label="Generic Occupation" index={idx++}>
+      <SettingsGridField label="Generic Occupation">
         <AsyncTextInput
           onChange={setters.genericOccupation}
           value={settings.genericOccupation}
         />
       </SettingsGridField>
-      <SettingsGridField label="ItemAddedNotifications" index={idx}>
+      <SettingsGridField label="ItemAddedNotifications">
         <Toggle
           checked={settings.notifyItemAddedToActor}
           onChange={setters.notifyItemAddedToActor}

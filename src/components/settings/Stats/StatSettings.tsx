@@ -5,7 +5,7 @@ import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
-import { GridField } from "../../inputs/GridField";
+import { SettingsGridField } from "../SettingsGridField";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Translate } from "../../Translate";
 import { DispatchContext } from "../contexts";
@@ -116,44 +116,44 @@ export const StatSettings = ({ which }: { which: PcOrNpc }) => {
 
   return (
     <InputGrid>
-      <GridField label="Name">
+      <SettingsGridField label="Name">
         <AsyncTextInput value={stat.name} onChange={handleChangeName} />
-      </GridField>
+      </SettingsGridField>
       <SettingsIdField
         id={statId}
         name={stat.name}
         warning="Actors store their values for this stat under its ID."
         onChange={handleChangeId}
       />
-      <GridField label="Default">
+      <SettingsGridField label="Default">
         <AsyncNumberInput
           value={stat.default}
           onChange={handleChangeDefault}
           min={stat.min}
           max={stat.max}
         />
-      </GridField>
-      <GridField label="Min">
+      </SettingsGridField>
+      <SettingsGridField label="Min">
         <OptionalNumberInput
           value={stat.min}
           onToggle={handleToggleMin}
           onChange={handleChangeMin}
           max={stat.max}
         />
-      </GridField>
-      <GridField label="Max">
+      </SettingsGridField>
+      <SettingsGridField label="Max">
         <OptionalNumberInput
           value={stat.max}
           onToggle={handleToggleMax}
           onChange={handleChangeMax}
           min={stat.min}
         />
-      </GridField>
-      <GridField label="Delete">
+      </SettingsGridField>
+      <SettingsGridField label="Delete">
         <Button css={{ width: "auto" }} onClick={handleClickDelete}>
           <i className="fas fa-trash" /> <Translate>Delete</Translate>
         </Button>
-      </GridField>
+      </SettingsGridField>
     </InputGrid>
   );
 };

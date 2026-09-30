@@ -8,18 +8,15 @@ import type { Setters } from "../types";
 
 export const CombatOptionsSettings = ({ setters }: { setters: Setters }) => {
   const { settings } = useContext(StateContext);
-
-  let idx = 0;
-
   return (
     <InputGrid>
-      <SettingsGridField label="Use NPC Combat bonuses?" index={idx++}>
+      <SettingsGridField label="Use NPC Combat bonuses?">
         <Toggle
           checked={settings.useNpcCombatBonuses}
           onChange={setters.useNpcCombatBonuses}
         />
       </SettingsGridField>
-      <SettingsGridField label="Use turn-passing initiative?" index={idx}>
+      <SettingsGridField label="Use turn-passing initiative?">
         <Toggle
           checked={settings.useTurnPassingInitiative}
           onChange={setters.useTurnPassingInitiative}

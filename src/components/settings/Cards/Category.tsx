@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
-import { GridField } from "../../inputs/GridField";
+import { SettingsGridField } from "../SettingsGridField";
 import { InputGrid } from "../../inputs/InputGrid";
 import { ArrowLink } from "../../nestedPanels/ArrowLink";
 import { SlideInNestedPanelRoute } from "../../nestedPanels/SlideInNestedPanelRoute";
@@ -79,25 +79,25 @@ export const Category = () => {
     <>
       <h2>Card category</h2>
       <InputGrid>
-        <GridField label="ItemNameSingle">
+        <SettingsGridField label="ItemNameSingle">
           <AsyncTextInput
             value={category?.singleName}
             onChange={handleSingleNameChange}
           />
-        </GridField>
-        <GridField label="ItemNamePlural">
+        </SettingsGridField>
+        <SettingsGridField label="ItemNamePlural">
           <AsyncTextInput
             value={category?.pluralName}
             onChange={handlePluralNameChange}
           />
-        </GridField>
-        <GridField label="StyleKey">
+        </SettingsGridField>
+        <SettingsGridField label="StyleKey">
           <AsyncTextInput
             value={category?.styleKey ?? ""}
             onChange={handleStyleKeyChange}
           />
-        </GridField>
-        <GridField label="GoalOrLimit">
+        </SettingsGridField>
+        <SettingsGridField label="GoalOrLimit">
           <select
             value={category?.thresholdType ?? "none"}
             onChange={handleGoalOrLimitChange}
@@ -112,15 +112,15 @@ export const Category = () => {
               <Translate>Limit</Translate>
             </option>
           </select>
-        </GridField>
+        </SettingsGridField>
 
         {limitType !== "none" && (
-          <GridField label={limitType === "goal" ? "Goal" : "Limit"}>
+          <SettingsGridField label={limitType === "goal" ? "Goal" : "Limit"}>
             <AsyncNumberInput
               value={category?.threshold ?? 3}
               onChange={handleSoftLimitChange}
             />
-          </GridField>
+          </SettingsGridField>
         )}
       </InputGrid>
       <p css={{ textAlign: "right" }}>

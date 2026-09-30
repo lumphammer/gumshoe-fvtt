@@ -45,7 +45,13 @@ export const ListEdit = ({
   }, [onChange, value]);
 
   return (
-    <div>
+    <div
+      css={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.5em",
+      }}
+    >
       {value.length === 0 && (
         <i>
           <Translate>Empty List</Translate>
@@ -57,51 +63,42 @@ export const ListEdit = ({
           css={{
             display: "flex",
             flexDirection: "row",
+            alignItems: "center",
+            gap: "0.5em",
           }}
         >
-          <div
+          <input
             css={{
-              width: "12em",
-              position: "relative",
+              flex: 1,
+              minWidth: 0,
             }}
-          >
-            <input
-              css={{
-                width: "12em",
-              }}
-              data-index={i}
-              type="text"
-              value={s}
-              onChange={onInputChange}
-            />
-          </div>
-          <div
+            data-index={i}
+            type="text"
+            value={s}
+            onChange={onInputChange}
+          />
+          <button
             css={{
-              width: "6em",
-              position: "relative",
+              flex: "0 0 auto",
+              width: "auto",
             }}
+            data-index={i}
+            onClick={onClickDelete}
+            disabled={value.length < 2 && nonempty}
           >
-            <button
-              data-index={i}
-              onClick={onClickDelete}
-              disabled={value.length < 2 && nonempty}
-            >
-              <i className="fas fa-trash" />
-            </button>
-          </div>
+            <i className="fas fa-trash" />
+          </button>
         </div>
       ))}
-      <div
+      <Button
+        onClick={onClickAdd}
         css={{
-          display: "flex",
-          flexDirection: "row",
-          width: "18em",
+          width: "100%",
+          margin: 0,
         }}
       >
-        <Button onClick={onClickAdd}>
-          <i className="fas fa-plus" /> <Translate>Add item</Translate>
-        </Button>
-      </div>
+        <i className="fas fa-plus" /> <Translate>Add item</Translate>
+      </Button>
     </div>
   );
 };

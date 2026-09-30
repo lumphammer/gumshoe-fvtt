@@ -26,10 +26,10 @@ export const MigrationRecoverySettings = () => {
 
   return (
     <InputGrid>
-      <SettingsGridField label="Last migration error" index={0}>
+      <SettingsGridField label="Last migration error">
         <div css={{ fontFamily: "monospace" }}>{lastMigrationError}</div>
       </SettingsGridField>
-      <SettingsGridField label="Retry migration" index={1}>
+      <SettingsGridField label="Retry migration">
         <Button disabled={isRetryingMigrations} onClick={retryMigrations}>
           {isRetryingMigrations ? "Retrying…" : "Retry now"}
         </Button>

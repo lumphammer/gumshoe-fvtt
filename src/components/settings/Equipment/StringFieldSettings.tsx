@@ -2,7 +2,7 @@ import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types
 import { useCallback, useContext } from "react";
 
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
-import { GridField } from "../../inputs/GridField";
+import { SettingsGridField } from "../SettingsGridField";
 import { DispatchContext } from "../contexts";
 import { store } from "../store";
 
@@ -33,9 +33,9 @@ export const StringFieldSettings = ({
   );
 
   return (
-    <GridField label="Default">
+    <SettingsGridField label="Default">
       <AsyncTextInput value={field.default} onChange={handleChangeDefault} />
-    </GridField>
+    </SettingsGridField>
   );
 };
 

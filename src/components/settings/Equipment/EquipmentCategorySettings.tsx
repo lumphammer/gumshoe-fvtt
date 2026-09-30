@@ -4,7 +4,7 @@ import { useCallback, useContext } from "react";
 import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
-import { GridField } from "../../inputs/GridField";
+import { SettingsGridField } from "../SettingsGridField";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Translate } from "../../Translate";
 import { DispatchContext } from "../contexts";
@@ -106,20 +106,20 @@ export const EquipmentCategorySettings = () => {
   return (
     <div css={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <InputGrid>
-        <GridField label="Category Name">
+        <SettingsGridField label="Category Name">
           <AsyncTextInput value={category.name} onChange={handleChangeName} />
-        </GridField>
+        </SettingsGridField>
         <SettingsIdField
           id={categoryId}
           name={category.name}
           warning="This will remove category information from any equipment using the current ID."
           onChange={handleChangeId}
         />
-        <GridField label="Delete">
+        <SettingsGridField label="Delete">
           <Button css={{ width: "auto" }} onClick={handleClickDelete}>
             <i className="fas fa-trash" /> <Translate>Delete</Translate>
           </Button>
-        </GridField>
+        </SettingsGridField>
       </InputGrid>
       <h3>
         <Translate>Fields</Translate>

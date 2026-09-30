@@ -3,7 +3,7 @@ import { useCallback, useContext } from "react";
 
 import { useRefStash } from "../../../hooks/useRefStash";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
-import { GridField } from "../../inputs/GridField";
+import { SettingsGridField } from "../SettingsGridField";
 import { DispatchContext } from "../contexts";
 import { OptionalNumberInput } from "../OptionalNumberInput";
 import { store } from "../store";
@@ -95,30 +95,30 @@ export const NumberFieldSettings = ({
 
   return (
     <>
-      <GridField label="Default">
+      <SettingsGridField label="Default">
         <AsyncNumberInput
           value={field.default}
           onChange={handleChangeDefault}
           min={field.min}
           max={field.max}
         />
-      </GridField>
-      <GridField label="Min">
+      </SettingsGridField>
+      <SettingsGridField label="Min">
         <OptionalNumberInput
           value={field.min}
           onToggle={handleToggleMin}
           onChange={handleChangeMin}
           max={field.max}
         />
-      </GridField>
-      <GridField label="Max">
+      </SettingsGridField>
+      <SettingsGridField label="Max">
         <OptionalNumberInput
           value={field.max}
           onToggle={handleToggleMax}
           onChange={handleChangeMax}
           min={field.min}
         />
-      </GridField>
+      </SettingsGridField>
     </>
   );
 };

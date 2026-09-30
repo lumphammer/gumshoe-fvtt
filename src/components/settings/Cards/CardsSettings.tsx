@@ -1,7 +1,7 @@
 import { useCallback, useContext } from "react";
 
 import { absoluteCover } from "../../absoluteCover";
-import { GridField } from "../../inputs/GridField";
+import { SettingsGridField } from "../SettingsGridField";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Toggle } from "../../inputs/Toggle";
 import { StateContext } from "../contexts";
@@ -35,12 +35,12 @@ export const CardsSettings = ({ setters }: CardsSettingsProps) => {
     >
       <div>
         <InputGrid css={{}}>
-          <GridField label="Use cards?">
+          <SettingsGridField label="Use cards?">
             <Toggle
               checked={settings.useCards}
               onChange={handleChangeUseCards}
             />
-          </GridField>
+          </SettingsGridField>
         </InputGrid>
       </div>
       {settings.useCards && (

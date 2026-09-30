@@ -6,7 +6,7 @@ import { useCallback, useContext } from "react";
 import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
-import { GridField } from "../../inputs/GridField";
+import { SettingsGridField } from "../SettingsGridField";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Translate } from "../../Translate";
 import { ModifyContext } from "../contexts";
@@ -62,10 +62,10 @@ export const PersonalDetailSettings = () => {
 
   return (
     <InputGrid>
-      <GridField label="Name">
+      <SettingsGridField label="Name">
         <AsyncTextInput value={detail?.name} onChange={handleNameChange} />
-      </GridField>
-      <GridField label="Type">
+      </SettingsGridField>
+      <SettingsGridField label="Type">
         <select value={detail?.type ?? "text"} onChange={handleTypeChange}>
           <option value="text">
             <Translate>Text</Translate>
@@ -74,12 +74,12 @@ export const PersonalDetailSettings = () => {
             <Translate>Item</Translate>
           </option>
         </select>
-      </GridField>
-      <GridField label="Delete">
+      </SettingsGridField>
+      <SettingsGridField label="Delete">
         <Button css={{ width: "auto" }} onClick={handleClickDelete}>
           <i className="fas fa-trash" /> <Translate>Delete</Translate>
         </Button>
-      </GridField>
+      </SettingsGridField>
     </InputGrid>
   );
 };

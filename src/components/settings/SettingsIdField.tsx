@@ -1,5 +1,5 @@
 import { Button } from "../inputs/Button";
-import { GridField } from "../inputs/GridField";
+import { SettingsGridField } from "./SettingsGridField";
 import { Translate } from "../Translate";
 
 type SettingsIdFieldProps = {
@@ -32,12 +32,12 @@ export const SettingsIdField = ({
   };
 
   return (
-    <GridField label="Unique Id">
+    <SettingsGridField label="Unique Id">
       <code>{id}</code>{" "}
       <Button css={{ width: "auto" }} onClick={handleClickEdit}>
         <Translate>Edit</Translate>
       </Button>
-    </GridField>
+    </SettingsGridField>
   );
 };
 

@@ -14,7 +14,6 @@ import { SettingsGridField } from "../SettingsGridField";
 import { store } from "../store";
 
 export const ImportExportSettings = () => {
-  let idx = 0;
   const dispatch = useContext(DispatchContext);
   const { settings: settingsState } = useContext(StateContext);
   const isDirty = useContext(DirtyContext);
@@ -57,14 +56,14 @@ export const ImportExportSettings = () => {
       <p css={{ gridColumn: "label / end", marginTop: 0 }}>
         BETA - please report bugs!
       </p>
-      <SettingsGridField label="Export settings to file" index={idx++}>
+      <SettingsGridField label="Export settings to file">
         <Translate>ItemName</Translate>
         <TextInput value={filename} onChange={setFilename} />
         <Button onClick={handleExport}>
           <Translate>Export</Translate>
         </Button>
       </SettingsGridField>
-      <SettingsGridField label="Import settings from file" index={idx}>
+      <SettingsGridField label="Import settings from file">
         <Button onClick={handleImport}>
           <Translate>Import</Translate>
         </Button>

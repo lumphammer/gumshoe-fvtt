@@ -4,7 +4,7 @@ import { useCallback, useContext } from "react";
 import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { assertUniqueIds } from "../../../functions/utilities";
 import { Button } from "../../inputs/Button";
-import { GridField } from "../../inputs/GridField";
+import { SettingsGridField } from "../SettingsGridField";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Translate } from "../../Translate";
 import { DispatchContext, StateContext } from "../contexts";
@@ -84,17 +84,17 @@ export const CategoryDangerZone = ({ id }: CategoryDangerZoneProps) => {
         <Translate>Danger Zone</Translate> ({category?.singleName})
       </h2>
       <InputGrid>
-        <GridField label="Unique Id">
+        <SettingsGridField label="Unique Id">
           <code>{id}</code>{" "}
           <Button onClick={handleClickEditId}>
             <Translate>Edit</Translate>
           </Button>
-        </GridField>
-        <GridField label="Delete">
+        </SettingsGridField>
+        <SettingsGridField label="Delete">
           <Button onClick={handleDelete}>
             <Translate>Delete</Translate>
           </Button>
-        </GridField>
+        </SettingsGridField>
       </InputGrid>
     </>
   );

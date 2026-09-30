@@ -36,9 +36,6 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
     },
     [dispatch, presets, setters],
   );
-
-  let idx = 0;
-
   return (
     <InputGrid
       css={{
@@ -46,7 +43,7 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
         overflow: "auto",
       }}
     >
-      <SettingsGridField label="System Preset" index={idx++}>
+      <SettingsGridField label="System Preset">
         <select value={settings.systemPreset} onChange={onSelectPreset}>
           {Object.keys(presets).map((presetId: string) => (
             <option key={presetId} value={presetId}>
@@ -58,7 +55,7 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
           )}
         </select>
       </SettingsGridField>
-      <SettingsGridField label="Visual Theme" index={idx}>
+      <SettingsGridField label="Visual Theme">
         <select
           value={settings.defaultThemeName}
           onChange={(e) => {

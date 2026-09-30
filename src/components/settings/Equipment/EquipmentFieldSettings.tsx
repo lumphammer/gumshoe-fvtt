@@ -6,7 +6,7 @@ import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { assertIsEquipmentFieldType } from "../../../typeAssertions";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
-import { GridField } from "../../inputs/GridField";
+import { SettingsGridField } from "../SettingsGridField";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Translate } from "../../Translate";
 import { DispatchContext } from "../contexts";
@@ -108,16 +108,16 @@ export const EquipmentFieldSettings = () => {
 
   return (
     <InputGrid>
-      <GridField label="Name">
+      <SettingsGridField label="Name">
         <AsyncTextInput value={field.name} onChange={handleChangeName} />
-      </GridField>
+      </SettingsGridField>
       <SettingsIdField
         id={fieldId}
         name={field.name}
         warning="This will remove field information from any equipment using the current ID."
         onChange={handleChangeId}
       />
-      <GridField label="Type">
+      <SettingsGridField label="Type">
         <select value={field.type} onChange={handleChangeType}>
           <option value="string">
             <Translate>Text</Translate>
@@ -129,7 +129,7 @@ export const EquipmentFieldSettings = () => {
             <Translate>Toggle</Translate>
           </option>
         </select>
-      </GridField>
+      </SettingsGridField>
       {field.type === "number" && (
         <NumberFieldSettings
           field={field}
@@ -151,11 +151,11 @@ export const EquipmentFieldSettings = () => {
           fieldId={fieldId}
         />
       )}
-      <GridField label="Delete">
+      <SettingsGridField label="Delete">
         <Button css={{ width: "auto" }} onClick={handleClickDelete}>
           <i className="fas fa-trash" /> <Translate>Delete</Translate>
         </Button>
-      </GridField>
+      </SettingsGridField>
     </InputGrid>
   );
 };
