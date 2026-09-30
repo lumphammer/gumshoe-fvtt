@@ -34,6 +34,12 @@ export const useSettingsState = () => {
     );
   }, [initialState, tempStateRef]);
 
+  // a reactive version of isDirty, for showing in the UI
+  const hasChanges = useMemo(
+    () => JSON.stringify(tempState) !== JSON.stringify(initialState),
+    [initialState, tempState],
+  );
+
   function modify(fn: (state: SettingsDict) => void) {
     const newState = produce(tempStateRef.current.settings, (draft) => {
       fn(draft);
@@ -47,6 +53,7 @@ export const useSettingsState = () => {
     setters,
     dispatch,
     isDirty,
+    hasChanges,
     modify,
   };
 };

@@ -10,6 +10,10 @@ import { useListHoverBg } from "./useListHoverBg";
 type SettingsMenuLinkProps = {
   to: AnyStep;
   label: string;
+  /** translation key for a line explaining what's on the page */
+  description?: string;
+  /** a glance at the current value(s), shown at the end of the row */
+  summary?: ReactNode;
   icon?: ReactNode;
 };
 
@@ -19,6 +23,8 @@ type SettingsMenuLinkProps = {
 export const SettingsMenuLink = ({
   to,
   label,
+  description,
+  summary,
   icon,
 }: SettingsMenuLinkProps) => {
   const theme = useContext(ThemeContext);
@@ -32,10 +38,8 @@ export const SettingsMenuLink = ({
         flexDirection: "row",
         alignItems: "center",
         gap: "0.75em",
-        padding: "0.75em 1em",
+        padding: "0.6em 1em",
         borderBottom: `1px solid ${theme.colors.controlBorder}`,
-        font: theme.displayFont,
-        fontSize: "1.2em",
         textShadow: "none",
         "&:hover, &:focus-visible": {
           backgroundColor: hoverBg,
@@ -47,20 +51,57 @@ export const SettingsMenuLink = ({
       }}
     >
       {icon && (
-        <span css={{ width: "1.2em", textAlign: "center", opacity: 0.8 }}>
+        <span
+          css={{
+            width: "1.2em",
+            textAlign: "center",
+            opacity: 0.8,
+            fontSize: "1.2em",
+          }}
+        >
           {icon}
         </span>
       )}
-      <span
-        css={{
-          flex: 1,
-          minWidth: 0,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        <Translate>{label}</Translate>
+      <span css={{ flex: 1, minWidth: 0 }}>
+        <span
+          css={{
+            display: "block",
+            font: theme.displayFont,
+            fontSize: "1.2em",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          <Translate>{label}</Translate>
+        </span>
+        {description && (
+          <span
+            css={{
+              display: "block",
+              fontSize: "0.9em",
+              color: theme.colors.text,
+              opacity: 0.75,
+            }}
+          >
+            <Translate>{description}</Translate>
+          </span>
+        )}
       </span>
+      {summary !== undefined && summary !== null && (
+        <span
+          css={{
+            flex: "0 1 auto",
+            maxWidth: "40%",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+            color: theme.colors.text,
+            opacity: 0.75,
+          }}
+        >
+          {summary}
+        </span>
+      )}
       <FaChevronRight
         className="chevron"
         css={{ opacity: 0.6, transition: "transform 100ms ease-out" }}

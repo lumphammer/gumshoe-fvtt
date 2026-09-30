@@ -2,6 +2,7 @@ import { Router } from "@lumphammer/minirouter";
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import { useCallback, useContext, useEffect } from "react";
 import {
+  FaCircle,
   FaEllipsis,
   FaLayerGroup,
   FaLightbulb,
@@ -20,7 +21,9 @@ import {
   saveSettings,
   SettingsSaveError,
 } from "../../settings/saveSettings";
+import type { SettingsDict } from "../../settings/settings";
 import { settings } from "../../settings/settings";
+import { runtimeConfig } from "../../runtime";
 import { absoluteCover } from "../absoluteCover";
 import { CSSReset } from "../CSSReset";
 import { Button } from "../inputs/Button";
@@ -58,7 +61,6 @@ import { getVisibleMiscPages, miscPages } from "./Misc/miscPages";
 import { MiscSettingsRoutes } from "./Misc/MiscSettingsRoutes";
 import { SettingsBreadcrumbs } from "./SettingsBreadcrumbs";
 import { SettingsMenu } from "./SettingsMenu";
-import { SettingsMenuLink } from "./SettingsMenuLink";
 
 export const Settings = () => {
   assertGame(game);
@@ -66,8 +68,15 @@ export const Settings = () => {
   if (foundryApplication === null) {
     throw new Error("Settings must be used within a FoundryAppContext");
   }
-  const { tempState, setters, tempStateRef, dispatch, isDirty, modify } =
-    useSettingsState();
+  const {
+    tempState,
+    setters,
+    tempStateRef,
+    dispatch,
+    isDirty,
+    hasChanges,
+    modify,
+  } = useSettingsState();
   const theme = useTheme(tempState.settings.defaultThemeName);
 
   const handleClose = useCallback(async () => {
@@ -108,12 +117,18 @@ export const Settings = () => {
     {
       direction: coreSettings,
       label: "Core",
+      description: "CoreDescription",
+      summary: (s: SettingsDict) =>
+        runtimeConfig.presets[s.systemPreset]?.displayName ?? (
+          <Translate>Custom</Translate>
+        ),
       icon: <FaSliders />,
       content: <CoreSettings setters={setters} />,
     },
     {
       direction: actorSettings,
       label: "Actors",
+      description: "ActorsDescription",
       icon: <FaUserGroup />,
       content: <SettingsMenu pages={actorPages} />,
       subPages: actorPages,
@@ -122,6 +137,7 @@ export const Settings = () => {
     {
       direction: abilitySettings,
       label: "Abilities",
+      description: "AbilitiesDescription",
       icon: <FaLightbulb />,
       content: <SettingsMenu pages={abilityPages} />,
       subPages: abilityPages,
@@ -130,6 +146,7 @@ export const Settings = () => {
     {
       direction: combatSettings,
       label: "Combat",
+      description: "CombatDescription",
       icon: <LuSwords />,
       content: <SettingsMenu pages={combatPages} />,
       subPages: combatPages,
@@ -138,6 +155,8 @@ export const Settings = () => {
     {
       direction: equipmentSettings,
       label: "Equipment categories",
+      description: "EquipmentCategoriesDescription",
+      summary: (s: SettingsDict) => Object.keys(s.equipmentCategories).length,
       icon: <FaToolbox />,
       content: <EquipmentSettings />,
       childRoutes: <EquipmentSettingsRoutes />,
@@ -145,6 +164,9 @@ export const Settings = () => {
     {
       direction: cardsSettings,
       label: "Cards",
+      description: "CardsDescription",
+      summary: (s: SettingsDict) =>
+        s.useCards ? s.cardCategories.length : <Translate>Off</Translate>,
       icon: <FaLayerGroup />,
       content: <CardsSettings setters={setters} />,
       childRoutes: <CardsSettingsRoutes />,
@@ -152,6 +174,7 @@ export const Settings = () => {
     {
       direction: miscSettings,
       label: "Miscellaneous",
+      description: "MiscellaneousDescription",
       icon: <FaEllipsis />,
       content: <SettingsMenu pages={getVisibleMiscPages()} />,
       subPages: miscPages,
@@ -185,27 +208,42 @@ export const Settings = () => {
             >
               <ShowBackLinkContext.Provider value={false}>
                 <Router>
-                  <SettingsBreadcrumbs pages={pages} />
+                  <div
+                    css={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "baseline",
+                      gap: "0.5em",
+                    }}
+                  >
+                    <SettingsBreadcrumbs css={{ flex: 1 }} pages={pages} />
+                    <div
+                      role="status"
+                      css={{
+                        padding: "0 0.5em",
+                        whiteSpace: "nowrap",
+                        color: theme.colors.accent,
+                        visibility: hasChanges ? "visible" : "hidden",
+                      }}
+                    >
+                      <FaCircle
+                        css={{ fontSize: "0.6em", verticalAlign: "middle" }}
+                      />{" "}
+                      <Translate>Unsaved changes</Translate>
+                    </div>
+                  </div>
                   <div
                     css={{ flex: 1, overflow: "hidden", position: "relative" }}
                   >
-                    <nav
+                    <SettingsMenu
                       data-testid="settings-menu"
+                      pages={pages}
                       css={{
                         ...absoluteCover,
                         overflow: "auto",
                         ...theme.panelStylePrimary,
                       }}
-                    >
-                      {pages.map(({ direction, label, icon }) => (
-                        <SettingsMenuLink
-                          key={label}
-                          to={direction()}
-                          label={label}
-                          icon={icon}
-                        />
-                      ))}
-                    </nav>
+                    />
                     {pages.map(({ direction, label, content, childRoutes }) => (
                       <SlideInNestedPanelRoute
                         key={label}

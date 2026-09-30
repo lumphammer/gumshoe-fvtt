@@ -24,7 +24,7 @@ export const DyingEarthSettings = ({ setters }: { setters: Setters }) => {
           onChange={setters.mwUseAlternativeItemTypes}
         />
       </SettingsGridField>
-      <SettingsGridField label="Hidden Short Notes Fields">
+      <SettingsGridField label="Hidden short notes fields">
         <SettingsStringList
           value={settings.mwHiddenShortNotes}
           onChange={setters.mwHiddenShortNotes}

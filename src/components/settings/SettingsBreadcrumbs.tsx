@@ -21,13 +21,17 @@ type PageWithLabel = { direction: AnyDirection; label: string };
 type SettingsBreadcrumbsProps = {
   /** directions with a fixed label, and their sub-pages, if any */
   pages: (PageWithLabel & { subPages?: PageWithLabel[] })[];
+  className?: string;
 };
 
 /**
  * Shows the path to the current settings panel, with a link to each step on
  * the way. Must be rendered at the root of the settings router.
  */
-export const SettingsBreadcrumbs = ({ pages }: SettingsBreadcrumbsProps) => {
+export const SettingsBreadcrumbs = ({
+  pages,
+  className,
+}: SettingsBreadcrumbsProps) => {
   const theme = useContext(ThemeContext);
   const { settings } = useContext(StateContext);
   const { currentStep, childSteps } = useNavigationContext();
@@ -80,6 +84,7 @@ export const SettingsBreadcrumbs = ({ pages }: SettingsBreadcrumbsProps) => {
 
   return (
     <nav
+      className={className}
       aria-label={getTranslated("Breadcrumbs")}
       css={{
         display: "flex",

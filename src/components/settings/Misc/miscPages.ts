@@ -1,5 +1,6 @@
 import { getDevMode } from "../../../functions/utilities";
 import { settings } from "../../../settings/settings";
+import type { SettingsPageDef } from "../SettingsMenu";
 import {
   customThemes,
   developerOptions,
@@ -11,12 +12,32 @@ import {
 /**
  * The pages under the miscellaneous settings menu, in menu order.
  */
-export const miscPages = [
-  { direction: customThemes, label: "Custom themes" },
-  { direction: dyingEarthOptions, label: "Options for Dying Earth" },
-  { direction: importExport, label: "Import/Export" },
-  { direction: developerOptions, label: "Developer options" },
-  { direction: migrationRecovery, label: "Migration recovery" },
+export const miscPages: SettingsPageDef[] = [
+  {
+    direction: customThemes,
+    label: "Custom themes",
+    description: "CustomThemesDescription",
+  },
+  {
+    direction: dyingEarthOptions,
+    label: "Options for Dying Earth",
+    description: "OptionsForDyingEarthDescription",
+  },
+  {
+    direction: importExport,
+    label: "Import/Export",
+    description: "ImportExportDescription",
+  },
+  {
+    direction: developerOptions,
+    label: "Developer options",
+    description: "DeveloperOptionsDescription",
+  },
+  {
+    direction: migrationRecovery,
+    label: "Migration recovery",
+    description: "MigrationRecoveryDescription",
+  },
 ];
 
 /**
