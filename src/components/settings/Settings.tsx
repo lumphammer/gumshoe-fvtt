@@ -4,6 +4,7 @@ import { useCallback, useContext, useEffect } from "react";
 import {
   FaEllipsis,
   FaLayerGroup,
+  FaLightbulb,
   FaSliders,
   FaUserGroup,
   FaToolbox,
@@ -26,6 +27,8 @@ import { Button } from "../inputs/Button";
 import { ShowBackLinkContext } from "../nestedPanels/ShowBackLinkContext";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
 import { Translate } from "../Translate";
+import { abilityPages } from "./Abilities/abilityPages";
+import { AbilitySettingsRoutes } from "./Abilities/AbilitySettingsRoutes";
 import { actorPages } from "./Actors/actorPages";
 import { ActorSettingsRoutes } from "./Actors/ActorSettingsRoutes";
 import { CardsSettings } from "./Cards/CardsSettings";
@@ -40,6 +43,7 @@ import {
 } from "./contexts";
 import { CoreSettings } from "./CoreSettings";
 import {
+  abilitySettings,
   actorSettings,
   cardsSettings,
   combatSettings,
@@ -111,6 +115,13 @@ export const Settings = () => {
       icon: <FaUserGroup />,
       content: <SettingsMenu pages={actorPages} />,
       childRoutes: <ActorSettingsRoutes setters={setters} />,
+    },
+    {
+      direction: abilitySettings,
+      label: "Abilities",
+      icon: <FaLightbulb />,
+      content: <SettingsMenu pages={abilityPages} />,
+      childRoutes: <AbilitySettingsRoutes setters={setters} />,
     },
     {
       direction: combatSettings,

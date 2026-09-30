@@ -1,19 +1,17 @@
 import { useContext } from "react";
 
 import { ListEdit } from "../../inputs/ListEdit";
+import { PersonalDetailsListEdit } from "../../inputs/PersonalDetailsListEdit";
 import { SlideInNestedPanelRoute } from "../../nestedPanels/SlideInNestedPanelRoute";
 import { StateContext } from "../contexts";
 import { StatsSettingsEditor } from "../Stats/StatsSettingsEditor";
 import type { Setters } from "../types";
-import { AbilityPacksSettings } from "./AbilityPacksSettings";
 import {
-  generalAbilityCategories,
-  investigativeAbilityCategories,
-  npcAbilityPacks,
+  notesFields,
   npcStats,
-  pcAbilityPacks,
   pcOptions,
   pcStats,
+  personalDetails,
 } from "./directions";
 import { PcOptionsSettings } from "./PcOptionsSettings";
 
@@ -30,31 +28,14 @@ export const ActorSettingsRoutes = ({ setters }: { setters: Setters }) => {
       <SlideInNestedPanelRoute direction={pcOptions} margin="0em">
         <PcOptionsSettings setters={setters} />
       </SlideInNestedPanelRoute>
-      <SlideInNestedPanelRoute
-        direction={investigativeAbilityCategories}
-        margin="0em"
-      >
-        <ListEdit
-          value={settings.investigativeAbilityCategories}
-          onChange={setters.investigativeAbilityCategories}
-          nonempty
+      <SlideInNestedPanelRoute direction={personalDetails} margin="0em">
+        <PersonalDetailsListEdit
+          personalDetails={settings.personalDetails}
+          onChange={setters.personalDetails}
         />
       </SlideInNestedPanelRoute>
-      <SlideInNestedPanelRoute
-        direction={generalAbilityCategories}
-        margin="0em"
-      >
-        <ListEdit
-          value={settings.generalAbilityCategories}
-          onChange={setters.generalAbilityCategories}
-          nonempty
-        />
-      </SlideInNestedPanelRoute>
-      <SlideInNestedPanelRoute direction={pcAbilityPacks} margin="0em">
-        <AbilityPacksSettings which="newPCPacks" setters={setters} />
-      </SlideInNestedPanelRoute>
-      <SlideInNestedPanelRoute direction={npcAbilityPacks} margin="0em">
-        <AbilityPacksSettings which="newNPCPacks" setters={setters} />
+      <SlideInNestedPanelRoute direction={notesFields} margin="0em">
+        <ListEdit value={settings.longNotes} onChange={setters.longNotes} />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={pcStats} margin="0em">
         <StatsSettingsEditor which="pcStats" />

@@ -4,8 +4,6 @@ import * as constants from "../../constants";
 import { assertGame } from "../../functions/isGame";
 import { runtimeConfig } from "../../runtime";
 import { InputGrid } from "../inputs/InputGrid";
-import { ListEdit } from "../inputs/ListEdit";
-import { PersonalDetailsListEdit } from "../inputs/PersonalDetailsListEdit";
 import { DispatchContext, StateContext } from "./contexts";
 import { SettingsGridField } from "./SettingsGridField";
 import { store } from "./store";
@@ -48,7 +46,7 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
         overflow: "auto",
       }}
     >
-      <SettingsGridField label="System Preset">
+      <SettingsGridField label="System Preset" index={idx++}>
         <select value={settings.systemPreset} onChange={onSelectPreset}>
           {Object.keys(presets).map((presetId: string) => (
             <option key={presetId} value={presetId}>
@@ -60,7 +58,7 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
           )}
         </select>
       </SettingsGridField>
-      <SettingsGridField label="Visual Theme" index={idx++}>
+      <SettingsGridField label="Visual Theme" index={idx}>
         <select
           value={settings.defaultThemeName}
           onChange={(e) => {
@@ -73,15 +71,6 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
             </option>
           ))}
         </select>
-      </SettingsGridField>
-      <SettingsGridField label="Personal details" index={idx++}>
-        <PersonalDetailsListEdit
-          personalDetails={settings.personalDetails}
-          onChange={setters.personalDetails}
-        />
-      </SettingsGridField>
-      <SettingsGridField label="Notes Fields" index={idx}>
-        <ListEdit value={settings.longNotes} onChange={setters.longNotes} />
       </SettingsGridField>
     </InputGrid>
   );

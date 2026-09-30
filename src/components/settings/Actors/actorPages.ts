@@ -1,11 +1,9 @@
 import {
-  generalAbilityCategories,
-  investigativeAbilityCategories,
-  npcAbilityPacks,
+  notesFields,
   npcStats,
-  pcAbilityPacks,
   pcOptions,
   pcStats,
+  personalDetails,
 } from "./directions";
 
 /**
@@ -13,13 +11,8 @@ import {
  */
 export const actorPages = [
   { direction: pcOptions, label: "PC Options" },
-  {
-    direction: investigativeAbilityCategories,
-    label: "Investigative ability categories",
-  },
-  { direction: generalAbilityCategories, label: "General ability categories" },
-  { direction: pcAbilityPacks, label: "PC Ability compendiums" },
-  { direction: npcAbilityPacks, label: "NPC Ability compendiums" },
+  { direction: personalDetails, label: "Personal details" },
+  { direction: notesFields, label: "Notes Fields" },
   { direction: pcStats, label: "PC Stats" },
   { direction: npcStats, label: "NPC Stats" },
 ];
