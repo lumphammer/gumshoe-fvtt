@@ -18,6 +18,9 @@ export const MigrationRecoverySettings = () => {
     setIsRetryingMigrations(true);
     try {
       await retryFailedMigrations();
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      ui.notifications?.error(`Migration retry failed: ${message}`);
     } finally {
       setLastMigrationError(systemSettings.migrationLastError.get());
       setIsRetryingMigrations(false);

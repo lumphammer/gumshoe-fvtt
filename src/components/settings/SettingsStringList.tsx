@@ -104,6 +104,7 @@ export const SettingsStringList = ({
             css={{ flex: 1, minWidth: 0 }}
             type="text"
             data-index={index}
+            aria-label={`Item ${index + 1}`}
             value={value[index]}
             onChange={handleChangeItem}
           />

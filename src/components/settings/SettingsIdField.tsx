@@ -26,9 +26,16 @@ export const SettingsIdField = ({
       `Change ID string for "${name}"\n\n⚠️ Careful! ${warning}`,
       id,
     );
-    if (newId && newId !== id) {
-      onChange(newId);
+    if (!newId || newId === id) {
+      return;
     }
+    // integer-like keys always sort first in JS objects, which would break
+    // ordering and the index-based routes into these lists
+    if (/^\d+$/.test(newId)) {
+      ui.notifications?.warn(`ID strings cannot be just a number: "${newId}"`);
+      return;
+    }
+    onChange(newId);
   };
 
   return (

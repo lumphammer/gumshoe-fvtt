@@ -49,6 +49,10 @@ export const AbilityPacksSettings = ({
   const packs = game.packs
     .filter((pack) => pack.metadata.type === "Item")
     .map((pack) => ({ pack, source: getPackSource(pack) }));
+  // don't count selected ids for packs which no longer exist
+  const selectedCount = packs.filter(({ pack }) =>
+    selectedPacks.includes(pack.collection),
+  ).length;
   const baseId = useId();
   const [search, setSearch] = useState("");
 
@@ -95,7 +99,7 @@ export const AbilityPacksSettings = ({
           aria-label={getTranslated("Search compendium packs")}
         />
         <span css={{ whiteSpace: "nowrap", opacity: 0.75 }}>
-          <Translate values={{ Count: selectedPacks.length.toString() }}>
+          <Translate values={{ Count: selectedCount.toString() }}>
             CountSelected
           </Translate>
         </span>
