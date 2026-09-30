@@ -14,6 +14,7 @@ import { cardCategory, categoryDangerZone } from "./Cards/directions";
 import { StateContext } from "./contexts";
 
 type SettingsBreadcrumbsProps = {
+  /** directions with a fixed label */
   pages: { direction: AnyDirection; label: string }[];
 };
 

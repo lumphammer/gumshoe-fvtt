@@ -26,7 +26,9 @@ import { Button } from "../inputs/Button";
 import { ShowBackLinkContext } from "../nestedPanels/ShowBackLinkContext";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
 import { Translate } from "../Translate";
-import { AbilitySettings } from "./AbilitySettings";
+import { abilityPages } from "./Abilities/abilityPages";
+import { AbilitySettings } from "./Abilities/AbilitySettings";
+import { AbilitySettingsRoutes } from "./Abilities/AbilitySettingsRoutes";
 import { CardsSettings } from "./Cards/CardsSettings";
 import { CardsSettingsRoutes } from "./Cards/CardsSettingsRoutes";
 import {
@@ -106,7 +108,8 @@ export const Settings = () => {
       direction: abilitySettings,
       label: "Abilities",
       icon: <FaLightbulb />,
-      content: <AbilitySettings setters={setters} />,
+      content: <AbilitySettings />,
+      childRoutes: <AbilitySettingsRoutes setters={setters} />,
     },
     {
       direction: equipmentSettings,
@@ -161,7 +164,7 @@ export const Settings = () => {
             >
               <ShowBackLinkContext.Provider value={false}>
                 <Router>
-                  <SettingsBreadcrumbs pages={pages} />
+                  <SettingsBreadcrumbs pages={[...pages, ...abilityPages]} />
                   <div
                     css={{ flex: 1, overflow: "hidden", position: "relative" }}
                   >

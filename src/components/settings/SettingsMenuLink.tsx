@@ -9,7 +9,7 @@ import { Translate } from "../Translate";
 type SettingsMenuLinkProps = {
   to: AnyStep;
   label: string;
-  icon: ReactNode;
+  icon?: ReactNode;
 };
 
 /**
@@ -41,9 +41,11 @@ export const SettingsMenuLink = ({
         },
       }}
     >
-      <span css={{ width: "1.2em", textAlign: "center", opacity: 0.8 }}>
-        {icon}
-      </span>
+      {icon && (
+        <span css={{ width: "1.2em", textAlign: "center", opacity: 0.8 }}>
+          {icon}
+        </span>
+      )}
       <span
         css={{
           flex: 1,

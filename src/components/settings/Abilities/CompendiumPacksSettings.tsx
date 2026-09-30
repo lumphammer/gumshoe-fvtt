@@ -1,26 +1,20 @@
 import { nanoid } from "nanoid";
 import { useContext } from "react";
 
-import { assertGame } from "../../functions/isGame";
-import { ThemeContext } from "../../themes/ThemeContext";
-import { IdContext } from "../IdContext";
-import { InputGrid } from "../inputs/InputGrid";
-import { ListEdit } from "../inputs/ListEdit";
-import { Toggle } from "../inputs/Toggle";
-import { Translate } from "../Translate";
-import { StateContext } from "./contexts";
-import {
-  SettingsGridField,
-  SettingsGridFieldStacked,
-} from "./SettingsGridField";
-import type { Setters } from "./types";
+import { assertGame } from "../../../functions/isGame";
+import { ThemeContext } from "../../../themes/ThemeContext";
+import { IdContext } from "../../IdContext";
+import { InputGrid } from "../../inputs/InputGrid";
+import { Toggle } from "../../inputs/Toggle";
+import { Translate } from "../../Translate";
+import { StateContext } from "../contexts";
+import { SettingsGridFieldStacked } from "../SettingsGridField";
+import type { Setters } from "../types";
 
-export const AbilitySettings = ({ setters }: { setters: Setters }) => {
+export const CompendiumPacksSettings = ({ setters }: { setters: Setters }) => {
   assertGame(game);
   const { settings } = useContext(StateContext);
   const theme = useContext(ThemeContext);
-
-  let idx = 0;
 
   return (
     <InputGrid
@@ -31,7 +25,6 @@ export const AbilitySettings = ({ setters }: { setters: Setters }) => {
     >
       <SettingsGridFieldStacked
         label="Compendium packs for new characters"
-        index={idx++}
         noLabel
       >
         <div
@@ -141,48 +134,8 @@ export const AbilitySettings = ({ setters }: { setters: Setters }) => {
             })}
         </div>
       </SettingsGridFieldStacked>
-      <SettingsGridField label="Investigative Ability Categories" index={idx++}>
-        <ListEdit
-          value={settings.investigativeAbilityCategories}
-          onChange={setters.investigativeAbilityCategories}
-          nonempty
-        />
-      </SettingsGridField>
-      <SettingsGridField label="General Ability Categories" index={idx++}>
-        <ListEdit
-          value={settings.generalAbilityCategories}
-          onChange={setters.generalAbilityCategories}
-          nonempty
-        />
-      </SettingsGridField>
-      <SettingsGridField label="Combat Abilities" index={idx++}>
-        <ListEdit
-          value={settings.combatAbilities}
-          onChange={setters.combatAbilities}
-          nonempty
-        />
-      </SettingsGridField>
-      <SettingsGridField label="Can Abilities be Boosted?" index={idx++}>
-        <Toggle checked={settings.useBoost} onChange={setters.useBoost} />
-      </SettingsGridField>
-      <SettingsGridField
-        label="Show empty Investigative categories?"
-        index={idx++}
-      >
-        <Toggle
-          checked={settings.showEmptyInvestigativeCategories}
-          onChange={setters.showEmptyInvestigativeCategories}
-        />
-      </SettingsGridField>
-      {/* eslint-disable-next-line no-useless-assignment */}
-      <SettingsGridField label="Use NPC Combat bonuses?" index={idx++}>
-        <Toggle
-          checked={settings.useNpcCombatBonuses}
-          onChange={setters.useNpcCombatBonuses}
-        />
-      </SettingsGridField>
     </InputGrid>
   );
 };
 
-AbilitySettings.displayName = "AbilitySettings";
+CompendiumPacksSettings.displayName = "CompendiumPacksSettings";

@@ -278,5 +278,7 @@
   "investigator.UnknownAbility": "Unknown ability",
   "investigator.SettingsHome": "Settings Home",
   "investigator.Breadcrumbs": "Breadcrumbs",
-  "investigator.CardCategory": "Card category"
+  "investigator.CardCategory": "Card category",
+  "investigator.CompendiumPacks": "Compendium Packs",
+  "investigator.OtherOptions": "Other options"
 }
