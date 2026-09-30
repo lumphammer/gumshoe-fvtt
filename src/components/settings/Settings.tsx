@@ -3,9 +3,9 @@ import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppCo
 import { useCallback, useContext, useEffect } from "react";
 import {
   FaChartSimple,
-  FaDiceD20,
   FaEllipsis,
   FaLayerGroup,
+  FaLightbulb,
   FaSliders,
   FaToolbox,
 } from "react-icons/fa6";
@@ -105,7 +105,7 @@ export const Settings = () => {
     {
       direction: abilitySettings,
       label: "Abilities",
-      icon: <FaDiceD20 />,
+      icon: <FaLightbulb />,
       content: <AbilitySettings setters={setters} />,
     },
     {
