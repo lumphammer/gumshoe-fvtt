@@ -350,5 +350,7 @@
   "investigator.SearchCompendiumPacks": "Search compendium packs",
   "investigator.CountSelected": "{Count} selected",
   "investigator.ThereAreNoItemCompendiumPacks": "There are no item compendium packs.",
-  "investigator.NoCompendiumPacksMatchYourSearch": "No compendium packs match your search."
+  "investigator.NoCompendiumPacksMatchYourSearch": "No compendium packs match your search.",
+  "investigator.BuiltIn": "Built in",
+  "investigator.World": "World"
 }

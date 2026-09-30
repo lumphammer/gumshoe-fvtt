@@ -10,6 +10,24 @@ import { StateContext } from "../contexts";
 import { SettingsEmptyState } from "../SettingsEmptyState";
 import type { Setters } from "../types";
 
+type Pack = ReturnType<NonNullable<typeof game.packs>["filter"]>[number];
+
+/**
+ * Where a pack comes from: the system itself, the world, or a module (by
+ * its title.)
+ */
+const getPackSource = (pack: Pack): string => {
+  assertGame(game);
+  const { packageType, packageName } = pack.metadata;
+  if (packageType === "system") {
+    return getTranslated("Built in");
+  }
+  if (packageType === "world") {
+    return getTranslated("World");
+  }
+  return game.modules.get(packageName)?.title ?? packageName;
+};
+
 type AbilityPacksSettingsProps = {
   which: "newPCPacks" | "newNPCPacks";
   setters: Setters;
@@ -28,20 +46,22 @@ export const AbilityPacksSettings = ({
   const selectedPacks = settings[which];
   const setSelectedPacks = setters[which];
 
-  const packs = game.packs.filter((pack) => pack.metadata.type === "Item");
+  const packs = game.packs
+    .filter((pack) => pack.metadata.type === "Item")
+    .map((pack) => ({ pack, source: getPackSource(pack) }));
   const baseId = useId();
   const [search, setSearch] = useState("");
 
-  // match on the label people see, and the collection id (which includes the
-  // package name, so you can find everything from one module)
+  // match on the label people see, where it comes from, and the collection id
+  // (which includes the package name)
   const needle = search.trim().toLocaleLowerCase();
   const visiblePacks =
     needle === ""
       ? packs
-      : packs.filter(
-          (pack) =>
-            pack.metadata.label.toLocaleLowerCase().includes(needle) ||
-            pack.collection.toLocaleLowerCase().includes(needle),
+      : packs.filter(({ pack, source }) =>
+          [pack.metadata.label, source, pack.collection].some((text) =>
+            text.toLocaleLowerCase().includes(needle),
+          ),
         );
 
   return (
@@ -92,11 +112,11 @@ export const AbilityPacksSettings = ({
       <div
         css={{
           display: "grid",
-          gridTemplateColumns: "max-content 1fr",
+          gridTemplateColumns: "max-content 1fr max-content",
           columnGap: "0.5em",
         }}
       >
-        {visiblePacks.map((pack, i) => {
+        {visiblePacks.map(({ pack, source }, i) => {
           const id = `${baseId}-${pack.collection}`;
           return (
             <IdContext.Provider value={id} key={pack.collection}>
@@ -124,6 +144,9 @@ export const AbilityPacksSettings = ({
                 <label htmlFor={id} title={pack.collection}>
                   {pack.metadata.label}
                 </label>
+                <span css={{ fontStyle: "italic", opacity: 0.75 }}>
+                  {source}
+                </span>
               </div>
             </IdContext.Provider>
           );
