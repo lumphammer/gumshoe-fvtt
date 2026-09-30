@@ -53,7 +53,8 @@ import {
 } from "./directions";
 import { EquipmentSettings } from "./Equipment/EquipmentSettings";
 import { useSettingsState } from "./hooks";
-import { MiscSettings } from "./MiscSettings";
+import { getVisibleMiscPages, miscPages } from "./Misc/miscPages";
+import { MiscSettingsRoutes } from "./Misc/MiscSettingsRoutes";
 import { SettingsBreadcrumbs } from "./SettingsBreadcrumbs";
 import { SettingsMenu } from "./SettingsMenu";
 import { SettingsMenuLink } from "./SettingsMenuLink";
@@ -114,6 +115,7 @@ export const Settings = () => {
       label: "Actors",
       icon: <FaUserGroup />,
       content: <SettingsMenu pages={actorPages} />,
+      subPages: actorPages,
       childRoutes: <ActorSettingsRoutes setters={setters} />,
     },
     {
@@ -121,6 +123,7 @@ export const Settings = () => {
       label: "Abilities",
       icon: <FaLightbulb />,
       content: <SettingsMenu pages={abilityPages} />,
+      subPages: abilityPages,
       childRoutes: <AbilitySettingsRoutes setters={setters} />,
     },
     {
@@ -128,11 +131,12 @@ export const Settings = () => {
       label: "Combat",
       icon: <LuSwords />,
       content: <SettingsMenu pages={combatPages} />,
+      subPages: combatPages,
       childRoutes: <CombatSettingsRoutes setters={setters} />,
     },
     {
       direction: equipmentSettings,
-      label: "Equipment",
+      label: "Equipment categories",
       icon: <FaToolbox />,
       content: <EquipmentSettings />,
     },
@@ -145,9 +149,11 @@ export const Settings = () => {
     },
     {
       direction: miscSettings,
-      label: "Misc",
+      label: "Miscellaneous",
       icon: <FaEllipsis />,
-      content: <MiscSettings setters={setters} />,
+      content: <SettingsMenu pages={getVisibleMiscPages()} />,
+      subPages: miscPages,
+      childRoutes: <MiscSettingsRoutes setters={setters} />,
     },
   ];
 
@@ -177,9 +183,7 @@ export const Settings = () => {
             >
               <ShowBackLinkContext.Provider value={false}>
                 <Router>
-                  <SettingsBreadcrumbs
-                    pages={[...pages, ...combatPages, ...actorPages]}
-                  />
+                  <SettingsBreadcrumbs pages={pages} />
                   <div
                     css={{ flex: 1, overflow: "hidden", position: "relative" }}
                   >

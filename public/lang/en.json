@@ -286,6 +286,12 @@
   "investigator.PCAbilityCompendiums": "PC Ability compendiums",
   "investigator.NPCAbilityCompendiums": "NPC Ability compendiums",
   "investigator.AbilityOptions": "Ability options",
+  "investigator.EquipmentCategories": "Equipment categories",
+  "investigator.Miscellaneous": "Miscellaneous",
+  "investigator.CustomThemes": "Custom themes",
+  "investigator.OptionsForDyingEarth": "Options for Dying Earth",
+  "investigator.DeveloperOptions": "Developer options",
+  "investigator.MigrationRecovery": "Migration recovery",
   "investigator.ItemsFromTheseCompendiumPacksAreAddedToEveryNewPC": "Items from these compendium packs are added to every new PC.",
   "investigator.ItemsFromTheseCompendiumPacksAreAddedToEveryNewNPC": "Items from these compendium packs are added to every new NPC."
 }

@@ -13,9 +13,11 @@ import { Translate } from "../Translate";
 import { cardCategory, categoryDangerZone } from "./Cards/directions";
 import { StateContext } from "./contexts";
 
+type PageWithLabel = { direction: AnyDirection; label: string };
+
 type SettingsBreadcrumbsProps = {
-  /** directions with a fixed label */
-  pages: { direction: AnyDirection; label: string }[];
+  /** directions with a fixed label, and their sub-pages, if any */
+  pages: (PageWithLabel & { subPages?: PageWithLabel[] })[];
 };
 
 /**
@@ -29,7 +31,9 @@ export const SettingsBreadcrumbs = ({ pages }: SettingsBreadcrumbsProps) => {
   const path = currentStep ? [currentStep, ...childSteps] : [];
 
   const getLabel = (step: AnyStep): ReactNode => {
-    const page = pages.find(({ direction }) => direction.match(step));
+    const page = pages
+      .flatMap((p) => [p, ...(p.subPages ?? [])])
+      .find(({ direction }) => direction.match(step));
     if (page) {
       return <Translate>{page.label}</Translate>;
     }
