@@ -10,9 +10,11 @@ import { FaChevronRight } from "react-icons/fa6";
 import { getTranslated } from "../../functions/getTranslated";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
-import { personalDetail } from "./Actors/directions";
+import { npcStats, personalDetail } from "./Actors/directions";
 import { cardCategory, categoryDangerZone } from "./Cards/directions";
 import { StateContext } from "./contexts";
+import { equipmentCategory, equipmentField } from "./Equipment/directions";
+import { stat } from "./Stats/directions";
 
 type PageWithLabel = { direction: AnyDirection; label: string };
 
@@ -31,7 +33,11 @@ export const SettingsBreadcrumbs = ({ pages }: SettingsBreadcrumbsProps) => {
   const { currentStep, childSteps } = useNavigationContext();
   const path = currentStep ? [currentStep, ...childSteps] : [];
 
-  const getLabel = (step: AnyStep): ReactNode => {
+  const unnamed = <Translate>Unnamed</Translate>;
+
+  // `parent` is the step before this one in the path, for things which are
+  // indexed within their parent
+  const getLabel = (step: AnyStep, parent: AnyStep | undefined): ReactNode => {
     const page = pages
       .flatMap((p) => [p, ...(p.subPages ?? [])])
       .find(({ direction }) => direction.match(step));
@@ -45,11 +51,23 @@ export const SettingsBreadcrumbs = ({ pages }: SettingsBreadcrumbsProps) => {
       return category?.singleName ?? <Translate>Card category</Translate>;
     }
     if (personalDetail.match(step)) {
-      return (
-        settings.personalDetails[step.params]?.name || (
-          <Translate>Unnamed</Translate>
-        )
-      );
+      return settings.personalDetails[step.params]?.name || unnamed;
+    }
+    if (stat.match(step)) {
+      const stats = settings[npcStats.match(parent) ? "npcStats" : "pcStats"];
+      const id = Object.keys(stats)[step.params];
+      return (id !== undefined && stats[id].name) || unnamed;
+    }
+    if (equipmentCategory.match(step)) {
+      const category = Object.values(settings.equipmentCategories)[step.params];
+      return category?.name || unnamed;
+    }
+    if (equipmentField.match(step) && equipmentCategory.match(parent)) {
+      const category = Object.values(settings.equipmentCategories)[
+        parent.params
+      ];
+      const field = category && Object.values(category.fields)[step.params];
+      return field?.name || unnamed;
     }
     if (categoryDangerZone.match(step)) {
       return <Translate>Danger Zone</Translate>;
@@ -62,7 +80,7 @@ export const SettingsBreadcrumbs = ({ pages }: SettingsBreadcrumbsProps) => {
     ...path.map((step, i) => ({
       key: step.id,
       to: path.slice(0, i + 1),
-      label: getLabel(step),
+      label: getLabel(step, path[i - 1]),
     })),
   ];
 

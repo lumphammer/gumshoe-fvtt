@@ -3,9 +3,9 @@ import { useCallback, useContext } from "react";
 
 import { useRefStash } from "../../../hooks/useRefStash";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
-import { Toggle } from "../../inputs/Toggle";
-import { Translate } from "../../Translate";
+import { GridField } from "../../inputs/GridField";
 import { DispatchContext } from "../contexts";
+import { OptionalNumberInput } from "../OptionalNumberInput";
 import { store } from "../store";
 
 interface NumberFieldSettingsProps {
@@ -94,58 +94,32 @@ export const NumberFieldSettings = ({
   );
 
   return (
-    <div
-      css={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr 1fr",
-        gridGap: "0.5rem",
-        gridTemplateAreas: `
-            "defaultLbl minLbl maxLbl"
-            "default    min    max"
-          `,
-      }}
-    >
-      <div css={{ gridArea: "defaultLbl" }}>
-        <Translate>Default</Translate>
-      </div>
-      <AsyncNumberInput
-        css={{ gridArea: "default" }}
-        value={field.default}
-        onChange={handleChangeDefault}
-      />
-      <div css={{ gridArea: "minLbl" }}>
-        <label>
-          <Translate>Min</Translate>{" "}
-          <Toggle
-            checked={field.min !== undefined}
-            onChange={handleToggleMin}
-          />
-        </label>
-      </div>
-      {field.min !== undefined && (
+    <>
+      <GridField label="Default">
         <AsyncNumberInput
-          css={{ gridArea: "min" }}
+          value={field.default}
+          onChange={handleChangeDefault}
+          min={field.min}
+          max={field.max}
+        />
+      </GridField>
+      <GridField label="Min">
+        <OptionalNumberInput
           value={field.min}
+          onToggle={handleToggleMin}
           onChange={handleChangeMin}
+          max={field.max}
         />
-      )}
-      <div css={{ gridArea: "maxLbl" }}>
-        <label>
-          <Translate>Max</Translate>{" "}
-          <Toggle
-            checked={field.max !== undefined}
-            onChange={handleToggleMax}
-          />
-        </label>
-      </div>
-      {field.max !== undefined && (
-        <AsyncNumberInput
-          css={{ gridArea: "max" }}
+      </GridField>
+      <GridField label="Max">
+        <OptionalNumberInput
           value={field.max}
+          onToggle={handleToggleMax}
           onChange={handleChangeMax}
+          min={field.min}
         />
-      )}
-    </div>
+      </GridField>
+    </>
   );
 };
 

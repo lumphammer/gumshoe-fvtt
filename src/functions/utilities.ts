@@ -247,6 +247,27 @@ export const mapObject =
     );
   };
 
+/**
+ * Return a copy of `obj` with its keys in the order given by `keys`, which must
+ * contain exactly the keys of `obj`.
+ */
+export function reorderKeys<V>(
+  obj: Record<string, V>,
+  keys: string[],
+): Record<string, V> {
+  const existing = Object.keys(obj);
+  if (
+    keys.length !== existing.length ||
+    new Set(keys).size !== keys.length ||
+    !keys.every((key) => Object.hasOwn(obj, key))
+  ) {
+    throw new Error(
+      `New key order (${keys.join(", ")}) does not match existing keys (${existing.join(", ")})`,
+    );
+  }
+  return Object.fromEntries(keys.map((key) => [key, obj[key]]));
+}
+
 export function moveKeyUp<V>(
   obj: Record<string, V>,
   key: string,

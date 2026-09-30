@@ -52,6 +52,7 @@ import {
   miscSettings,
 } from "./directions";
 import { EquipmentSettings } from "./Equipment/EquipmentSettings";
+import { EquipmentSettingsRoutes } from "./Equipment/EquipmentSettingsRoutes";
 import { useSettingsState } from "./hooks";
 import { getVisibleMiscPages, miscPages } from "./Misc/miscPages";
 import { MiscSettingsRoutes } from "./Misc/MiscSettingsRoutes";
@@ -139,6 +140,7 @@ export const Settings = () => {
       label: "Equipment categories",
       icon: <FaToolbox />,
       content: <EquipmentSettings />,
+      childRoutes: <EquipmentSettingsRoutes />,
     },
     {
       direction: cardsSettings,

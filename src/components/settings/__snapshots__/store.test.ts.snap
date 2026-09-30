@@ -395,6 +395,61 @@ exports[`reducer > should rename a field 1`] = `
             },"
 `;
 
+exports[`reducer > should reorder categories 1`] = `
+"@@ -20,6 +20,10 @@
+      "combatAbilities": Array [],
+      "customThemePath": "",
+      "equipmentCategories": Object {
++       "category1": Object {
++         "name": "initial category",
++         "fields": Object {},
++       },
+        "category0": Object {
+          "name": "initial category",
+          "fields": Object {
+@@ -34,12 +38,8 @@
+              "min": 0,
+              "max": 10,
+              "default": 1,
+-           },
+            },
+          },
+-       "category1": Object {
+-         "name": "initial category",
+-         "fields": Object {},
+        },
+      },
+      "debugTranslations": false,"
+`;
+
+exports[`reducer > should reorder fields 1`] = `
+"@@ -23,17 +23,17 @@
+        "category0": Object {
+          "name": "initial category",
+          "fields": Object {
+-           "field0": Object {
+-             "name": "Initial field",
+-             "type": "string",
+-             "default": "default value",
+-           },
+            "field1": Object {
+              "name": "Initial field",
+              "type": "number",
+              "min": 0,
+              "max": 10,
+              "default": 1,
++           },
++           "field0": Object {
++             "name": "Initial field",
++             "type": "string",
++             "default": "default value",
+            },
+          },
+        },"
+`;
+
+exports[`reducer > should reorder stats 1`] = `"Compared values have no visual difference."`;
+
 exports[`reducer > should set a field default 1`] = `
 "@@ -26,7 +26,7 @@
             "field0": Object {

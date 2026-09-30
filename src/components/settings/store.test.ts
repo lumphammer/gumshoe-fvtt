@@ -412,6 +412,26 @@ describe("reducer", () => {
       }),
     ],
     [
+      "reorder categories",
+      slice.creators.setCategoryOrder({
+        newOrder: ["category1", "category0"],
+      }),
+    ],
+    [
+      "reorder fields",
+      slice.creators.setFieldOrder({
+        categoryId: "category0",
+        newOrder: ["field1", "field0"],
+      }),
+    ],
+    [
+      "reorder stats",
+      slice.creators.setStatOrder({
+        which: "pcStats",
+        newOrder: ["pcStat0"],
+      }),
+    ],
+    [
       "set a stat default",
       slice.creators.setStatDefault({
         which: "pcStats",
@@ -480,6 +500,17 @@ describe("reducer", () => {
       slice.creators.moveFieldDown({
         categoryId: "category0",
         fieldId: "field1",
+      }),
+    ],
+    [
+      "reordering categories with a missing key",
+      slice.creators.setCategoryOrder({ newOrder: ["category1"] }),
+    ],
+    [
+      "reordering fields with an unknown key",
+      slice.creators.setFieldOrder({
+        categoryId: "category0",
+        newOrder: ["field1", "nope"],
       }),
     ],
     [

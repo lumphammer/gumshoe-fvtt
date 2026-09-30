@@ -298,6 +298,9 @@
   "investigator.Unnamed": "Unnamed",
   "investigator.AddPersonalDetail": "Add personal detail",
   "investigator.DeletePersonalDetailName": "Delete personal detail \"{Name}\"?",
+  "investigator.DeleteStatName": "Delete stat \"{Name}\"?",
+  "investigator.DeleteEquipmentCategoryName": "Delete equipment category \"{Name}\"?",
+  "investigator.DeleteFieldName": "Delete field \"{Name}\"?",
   "investigator.ItemsFromTheseCompendiumPacksAreAddedToEveryNewPC": "Items from these compendium packs are added to every new PC.",
   "investigator.ItemsFromTheseCompendiumPacksAreAddedToEveryNewNPC": "Items from these compendium packs are added to every new NPC."
 }

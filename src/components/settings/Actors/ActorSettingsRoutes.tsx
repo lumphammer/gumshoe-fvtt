@@ -3,7 +3,9 @@ import { useContext } from "react";
 import { ListEdit } from "../../inputs/ListEdit";
 import { SlideInNestedPanelRoute } from "../../nestedPanels/SlideInNestedPanelRoute";
 import { StateContext } from "../contexts";
-import { StatsSettingsEditor } from "../Stats/StatsSettingsEditor";
+import { stat } from "../Stats/directions";
+import { StatSettings } from "../Stats/StatSettings";
+import { StatsListSettings } from "../Stats/StatsListSettings";
 import type { Setters } from "../types";
 import {
   notesFields,
@@ -44,11 +46,27 @@ export const ActorSettingsRoutes = ({ setters }: { setters: Setters }) => {
       <SlideInNestedPanelRoute direction={notesFields} margin="0em">
         <ListEdit value={settings.longNotes} onChange={setters.longNotes} />
       </SlideInNestedPanelRoute>
-      <SlideInNestedPanelRoute direction={pcStats} margin="0em">
-        <StatsSettingsEditor which="pcStats" />
+      <SlideInNestedPanelRoute
+        direction={pcStats}
+        margin="0em"
+        childRoutes={
+          <SlideInNestedPanelRoute direction={stat} margin="0em">
+            <StatSettings which="pcStats" />
+          </SlideInNestedPanelRoute>
+        }
+      >
+        <StatsListSettings which="pcStats" />
       </SlideInNestedPanelRoute>
-      <SlideInNestedPanelRoute direction={npcStats} margin="0em">
-        <StatsSettingsEditor which="npcStats" />
+      <SlideInNestedPanelRoute
+        direction={npcStats}
+        margin="0em"
+        childRoutes={
+          <SlideInNestedPanelRoute direction={stat} margin="0em">
+            <StatSettings which="npcStats" />
+          </SlideInNestedPanelRoute>
+        }
+      >
+        <StatsListSettings which="npcStats" />
       </SlideInNestedPanelRoute>
     </>
   );
