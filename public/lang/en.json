@@ -346,5 +346,9 @@
   "investigator.NoNotesFieldsYet": "No notes fields yet.",
   "investigator.NoCombatAbilitiesYet": "No combat abilities yet.",
   "investigator.NoCategoriesYet": "No categories yet.",
-  "investigator.NoFieldsAreHidden": "No fields are hidden."
+  "investigator.NoFieldsAreHidden": "No fields are hidden.",
+  "investigator.SearchCompendiumPacks": "Search compendium packs",
+  "investigator.CountSelected": "{Count} selected",
+  "investigator.ThereAreNoItemCompendiumPacks": "There are no item compendium packs.",
+  "investigator.NoCompendiumPacksMatchYourSearch": "No compendium packs match your search."
 }
