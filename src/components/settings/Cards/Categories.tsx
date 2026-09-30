@@ -1,4 +1,4 @@
-import { Link, Route, useNavigationContext } from "@lumphammer/minirouter";
+import { Link, useNavigationContext } from "@lumphammer/minirouter";
 import { nanoid } from "nanoid";
 import { useCallback, useContext, useMemo } from "react";
 
@@ -6,12 +6,10 @@ import { irid } from "../../../irid/irid";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { absoluteCover } from "../../absoluteCover";
 import { Button } from "../../inputs/Button";
-import { NestedPanel } from "../../nestedPanels/NestedPanel";
 import { SortableTable } from "../../sortableTable";
 import { Translate } from "../../Translate";
 import { DispatchContext, StateContext } from "../contexts";
 import { store } from "../store";
-import { Category } from "./Category";
 import { cardCategory } from "./directions";
 
 export const Categories = () => {
@@ -161,12 +159,6 @@ export const Categories = () => {
           </p>
         }
       />
-
-      <Route direction={cardCategory}>
-        <NestedPanel margin="15em">
-          <Category />
-        </NestedPanel>
-      </Route>
     </div>
   );
 };

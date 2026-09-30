@@ -27,6 +27,7 @@ import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute
 import { Translate } from "../Translate";
 import { AbilitySettings } from "./AbilitySettings";
 import { CardsSettings } from "./Cards/CardsSettings";
+import { CardsSettingsRoutes } from "./Cards/CardsSettingsRoutes";
 import {
   DirtyContext,
   DispatchContext,
@@ -122,6 +123,7 @@ export const Settings = () => {
       label: "Cards",
       icon: <FaLayerGroup />,
       content: <CardsSettings setters={setters} />,
+      childRoutes: <CardsSettingsRoutes />,
     },
     {
       direction: miscSettings,
@@ -174,11 +176,12 @@ export const Settings = () => {
                       />
                     ))}
                   </nav>
-                  {pages.map(({ direction, label, content }) => (
+                  {pages.map(({ direction, label, content, childRoutes }) => (
                     <SlideInNestedPanelRoute
                       key={label}
                       direction={direction}
                       margin="0em"
+                      childRoutes={childRoutes}
                     >
                       <div
                         css={{
