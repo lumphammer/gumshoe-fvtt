@@ -27,7 +27,6 @@ import { ShowBackLinkContext } from "../nestedPanels/ShowBackLinkContext";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
 import { Translate } from "../Translate";
 import { abilityPages } from "./Abilities/abilityPages";
-import { AbilitySettings } from "./Abilities/AbilitySettings";
 import { AbilitySettingsRoutes } from "./Abilities/AbilitySettingsRoutes";
 import { CardsSettings } from "./Cards/CardsSettings";
 import { CardsSettingsRoutes } from "./Cards/CardsSettingsRoutes";
@@ -50,8 +49,10 @@ import { EquipmentSettings } from "./Equipment/EquipmentSettings";
 import { useSettingsState } from "./hooks";
 import { MiscSettings } from "./MiscSettings";
 import { SettingsBreadcrumbs } from "./SettingsBreadcrumbs";
+import { SettingsMenu } from "./SettingsMenu";
 import { SettingsMenuLink } from "./SettingsMenuLink";
-import { StatsSettings } from "./Stats/StatsSettings";
+import { statsPages } from "./Stats/statsPages";
+import { StatsSettingsRoutes } from "./Stats/StatsSettingsRoutes";
 
 export const Settings = () => {
   assertGame(game);
@@ -108,7 +109,7 @@ export const Settings = () => {
       direction: abilitySettings,
       label: "Abilities",
       icon: <FaLightbulb />,
-      content: <AbilitySettings />,
+      content: <SettingsMenu pages={abilityPages} />,
       childRoutes: <AbilitySettingsRoutes setters={setters} />,
     },
     {
@@ -121,7 +122,8 @@ export const Settings = () => {
       direction: statsSettings,
       label: "Stats",
       icon: <FaChartSimple />,
-      content: <StatsSettings />,
+      content: <SettingsMenu pages={statsPages} />,
+      childRoutes: <StatsSettingsRoutes />,
     },
     {
       direction: cardsSettings,
@@ -164,7 +166,9 @@ export const Settings = () => {
             >
               <ShowBackLinkContext.Provider value={false}>
                 <Router>
-                  <SettingsBreadcrumbs pages={[...pages, ...abilityPages]} />
+                  <SettingsBreadcrumbs
+                    pages={[...pages, ...abilityPages, ...statsPages]}
+                  />
                   <div
                     css={{ flex: 1, overflow: "hidden", position: "relative" }}
                   >
