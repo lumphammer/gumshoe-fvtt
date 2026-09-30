@@ -1,6 +1,5 @@
 import { createDirection } from "@lumphammer/minirouter";
 
-export const compendiumPacks = createDirection("compendiumPacks");
 export const investigativeAbilityCategories = createDirection(
   "investigativeAbilityCategories",
 );

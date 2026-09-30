@@ -4,9 +4,7 @@ import { ListEdit } from "../../inputs/ListEdit";
 import { SlideInNestedPanelRoute } from "../../nestedPanels/SlideInNestedPanelRoute";
 import { StateContext } from "../contexts";
 import type { Setters } from "../types";
-import { CompendiumPacksSettings } from "./CompendiumPacksSettings";
 import {
-  compendiumPacks,
   generalAbilityCategories,
   investigativeAbilityCategories,
   otherAbilityOptions,
@@ -23,9 +21,6 @@ export const AbilitySettingsRoutes = ({ setters }: { setters: Setters }) => {
 
   return (
     <>
-      <SlideInNestedPanelRoute direction={compendiumPacks} margin="0em">
-        <CompendiumPacksSettings setters={setters} />
-      </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute
         direction={investigativeAbilityCategories}
         margin="0em"

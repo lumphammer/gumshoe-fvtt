@@ -2,11 +2,11 @@ import { Router } from "@lumphammer/minirouter";
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import { useCallback, useContext, useEffect } from "react";
 import {
-  FaChartSimple,
   FaEllipsis,
   FaLayerGroup,
   FaLightbulb,
   FaSliders,
+  FaUserGroup,
   FaToolbox,
 } from "react-icons/fa6";
 import { LuSwords } from "react-icons/lu";
@@ -29,6 +29,8 @@ import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute
 import { Translate } from "../Translate";
 import { abilityPages } from "./Abilities/abilityPages";
 import { AbilitySettingsRoutes } from "./Abilities/AbilitySettingsRoutes";
+import { actorPages } from "./Actors/actorPages";
+import { ActorSettingsRoutes } from "./Actors/ActorSettingsRoutes";
 import { CardsSettings } from "./Cards/CardsSettings";
 import { CardsSettingsRoutes } from "./Cards/CardsSettingsRoutes";
 import { combatPages } from "./Combat/combatPages";
@@ -42,12 +44,12 @@ import {
 import { CoreSettings } from "./CoreSettings";
 import {
   abilitySettings,
+  actorSettings,
   cardsSettings,
   combatSettings,
   coreSettings,
   equipmentSettings,
   miscSettings,
-  statsSettings,
 } from "./directions";
 import { EquipmentSettings } from "./Equipment/EquipmentSettings";
 import { useSettingsState } from "./hooks";
@@ -55,8 +57,6 @@ import { MiscSettings } from "./MiscSettings";
 import { SettingsBreadcrumbs } from "./SettingsBreadcrumbs";
 import { SettingsMenu } from "./SettingsMenu";
 import { SettingsMenuLink } from "./SettingsMenuLink";
-import { statsPages } from "./Stats/statsPages";
-import { StatsSettingsRoutes } from "./Stats/StatsSettingsRoutes";
 
 export const Settings = () => {
   assertGame(game);
@@ -110,6 +110,13 @@ export const Settings = () => {
       content: <CoreSettings setters={setters} />,
     },
     {
+      direction: actorSettings,
+      label: "Actors",
+      icon: <FaUserGroup />,
+      content: <SettingsMenu pages={actorPages} />,
+      childRoutes: <ActorSettingsRoutes setters={setters} />,
+    },
+    {
       direction: abilitySettings,
       label: "Abilities",
       icon: <FaLightbulb />,
@@ -128,13 +135,6 @@ export const Settings = () => {
       label: "Equipment",
       icon: <FaToolbox />,
       content: <EquipmentSettings />,
-    },
-    {
-      direction: statsSettings,
-      label: "Stats",
-      icon: <FaChartSimple />,
-      content: <SettingsMenu pages={statsPages} />,
-      childRoutes: <StatsSettingsRoutes />,
     },
     {
       direction: cardsSettings,
@@ -182,7 +182,7 @@ export const Settings = () => {
                       ...pages,
                       ...abilityPages,
                       ...combatPages,
-                      ...statsPages,
+                      ...actorPages,
                     ]}
                   />
                   <div
