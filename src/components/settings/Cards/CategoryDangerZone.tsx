@@ -10,6 +10,7 @@ import { Translate } from "../../Translate";
 import { DispatchContext, StateContext } from "../contexts";
 import { useStateSelector } from "../hooks";
 import { store } from "../store";
+import { cardsSettings } from "../directions";
 import { cardCategory, categoryDangerZone } from "./directions";
 
 type CategoryDangerZoneProps = {
@@ -55,7 +56,7 @@ export const CategoryDangerZone = ({ id }: CategoryDangerZoneProps) => {
           newId,
         }),
       );
-      navigate("root", [cardCategory(newId), categoryDangerZone()]);
+      navigate(cardsSettings, [cardCategory(newId), categoryDangerZone()]);
     }
   }, [category, dispatch, freeze, navigate, settings.cardCategories]);
 
@@ -72,7 +73,7 @@ export const CategoryDangerZone = ({ id }: CategoryDangerZoneProps) => {
     });
     if (aye) {
       freeze();
-      navigate("root", []);
+      navigate(cardsSettings, []);
       dispatch(store.creators.deleteCardCategory({ id }));
     }
   }, [category?.singleName, dispatch, freeze, id, navigate]);

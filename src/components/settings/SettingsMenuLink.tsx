@@ -1,11 +1,11 @@
 import { type AnyStep, Link } from "@lumphammer/minirouter";
 import type { ReactNode } from "react";
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 
-import { irid } from "../../irid/irid";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
+import { useListHoverBg } from "./useListHoverBg";
 
 type SettingsMenuLinkProps = {
   to: AnyStep;
@@ -22,12 +22,7 @@ export const SettingsMenuLink = ({
   icon,
 }: SettingsMenuLinkProps) => {
   const theme = useContext(ThemeContext);
-  // translucent so it shows up against whatever is behind the menu, be it a
-  // textured backdrop or a flat panel
-  const hoverBg = useMemo(
-    () => irid(theme.colors.glow).opacity(0.25).toString(),
-    [theme.colors.glow],
-  );
+  const hoverBg = useListHoverBg();
 
   return (
     <Link

@@ -10,6 +10,7 @@ import { FaChevronRight } from "react-icons/fa6";
 import { getTranslated } from "../../functions/getTranslated";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
+import { personalDetail } from "./Actors/directions";
 import { cardCategory, categoryDangerZone } from "./Cards/directions";
 import { StateContext } from "./contexts";
 
@@ -42,6 +43,13 @@ export const SettingsBreadcrumbs = ({ pages }: SettingsBreadcrumbsProps) => {
         (c) => c.id === step.params,
       );
       return category?.singleName ?? <Translate>Card category</Translate>;
+    }
+    if (personalDetail.match(step)) {
+      return (
+        settings.personalDetails[step.params]?.name || (
+          <Translate>Unnamed</Translate>
+        )
+      );
     }
     if (categoryDangerZone.match(step)) {
       return <Translate>Danger Zone</Translate>;

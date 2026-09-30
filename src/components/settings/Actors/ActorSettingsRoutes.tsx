@@ -1,7 +1,6 @@
 import { useContext } from "react";
 
 import { ListEdit } from "../../inputs/ListEdit";
-import { PersonalDetailsListEdit } from "../../inputs/PersonalDetailsListEdit";
 import { SlideInNestedPanelRoute } from "../../nestedPanels/SlideInNestedPanelRoute";
 import { StateContext } from "../contexts";
 import { StatsSettingsEditor } from "../Stats/StatsSettingsEditor";
@@ -11,9 +10,12 @@ import {
   npcStats,
   pcOptions,
   pcStats,
+  personalDetail,
   personalDetails,
 } from "./directions";
 import { PcOptionsSettings } from "./PcOptionsSettings";
+import { PersonalDetailSettings } from "./PersonalDetailSettings";
+import { PersonalDetailsSettings } from "./PersonalDetailsSettings";
 
 /**
  * Routes below the actors settings menu. These are mounted alongside the
@@ -28,11 +30,16 @@ export const ActorSettingsRoutes = ({ setters }: { setters: Setters }) => {
       <SlideInNestedPanelRoute direction={pcOptions} margin="0em">
         <PcOptionsSettings setters={setters} />
       </SlideInNestedPanelRoute>
-      <SlideInNestedPanelRoute direction={personalDetails} margin="0em">
-        <PersonalDetailsListEdit
-          personalDetails={settings.personalDetails}
-          onChange={setters.personalDetails}
-        />
+      <SlideInNestedPanelRoute
+        direction={personalDetails}
+        margin="0em"
+        childRoutes={
+          <SlideInNestedPanelRoute direction={personalDetail} margin="0em">
+            <PersonalDetailSettings />
+          </SlideInNestedPanelRoute>
+        }
+      >
+        <PersonalDetailsSettings setters={setters} />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={notesFields} margin="0em">
         <ListEdit value={settings.longNotes} onChange={setters.longNotes} />

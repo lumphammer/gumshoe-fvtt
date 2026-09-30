@@ -292,6 +292,12 @@
   "investigator.OptionsForDyingEarth": "Options for Dying Earth",
   "investigator.DeveloperOptions": "Developer options",
   "investigator.MigrationRecovery": "Migration recovery",
+  "investigator.Name": "Name",
+  "investigator.Type": "Type",
+  "investigator.Item": "Item",
+  "investigator.Unnamed": "Unnamed",
+  "investigator.AddPersonalDetail": "Add personal detail",
+  "investigator.DeletePersonalDetailName": "Delete personal detail \"{Name}\"?",
   "investigator.ItemsFromTheseCompendiumPacksAreAddedToEveryNewPC": "Items from these compendium packs are added to every new PC.",
   "investigator.ItemsFromTheseCompendiumPacksAreAddedToEveryNewNPC": "Items from these compendium packs are added to every new NPC."
 }
