@@ -112,19 +112,21 @@ export const SortableTable = ({
                 gap: "0.5em",
               }}
             >
-              <div
-                css={{
-                  gridColumn: "1/-1",
-                  display: "grid",
-                  gridTemplateColumns: "subgrid",
-                  borderBottom: `1px solid ${controlBorder}`,
-                }}
-              >
-                <div />
-                {headers.map((header) => (
-                  <div key={header.label}>{header.label}</div>
-                ))}
-              </div>
+              {headers.length > 0 && (
+                <div
+                  css={{
+                    gridColumn: "1/-1",
+                    display: "grid",
+                    gridTemplateColumns: "subgrid",
+                    borderBottom: `1px solid ${controlBorder}`,
+                  }}
+                >
+                  <div />
+                  {headers.map((header) => (
+                    <div key={header.label}>{header.label}</div>
+                  ))}
+                </div>
+              )}
               {items.map((id) => (
                 <SortableRow key={id} id={id}>
                   {renderItem(id)}

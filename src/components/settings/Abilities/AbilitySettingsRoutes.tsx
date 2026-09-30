@@ -1,8 +1,10 @@
 import { useContext } from "react";
 
-import { ListEdit } from "../../inputs/ListEdit";
+import { Translate } from "../../Translate";
 import { SlideInNestedPanelRoute } from "../../nestedPanels/SlideInNestedPanelRoute";
 import { StateContext } from "../contexts";
+import { SettingsNote } from "../SettingsNote";
+import { SettingsStringList } from "../SettingsStringList";
 import type { Setters } from "../types";
 import { AbilityOptionsSettings } from "./AbilityOptionsSettings";
 import { AbilityPacksSettings } from "./AbilityPacksSettings";
@@ -28,20 +30,28 @@ export const AbilitySettingsRoutes = ({ setters }: { setters: Setters }) => {
         direction={investigativeAbilityCategories}
         margin="0em"
       >
-        <ListEdit
+        <SettingsNote>
+          <Translate>AbilityCategoriesNote</Translate>
+        </SettingsNote>
+        <SettingsStringList
           value={settings.investigativeAbilityCategories}
           onChange={setters.investigativeAbilityCategories}
           nonempty
+          addLabel="Add ability category"
         />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute
         direction={generalAbilityCategories}
         margin="0em"
       >
-        <ListEdit
+        <SettingsNote>
+          <Translate>AbilityCategoriesNote</Translate>
+        </SettingsNote>
+        <SettingsStringList
           value={settings.generalAbilityCategories}
           onChange={setters.generalAbilityCategories}
           nonempty
+          addLabel="Add ability category"
         />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={pcAbilityPacks} margin="0em">

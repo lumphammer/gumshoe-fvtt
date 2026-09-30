@@ -1,10 +1,11 @@
 import { useContext } from "react";
 
 import { InputGrid } from "../../inputs/InputGrid";
-import { ListEdit } from "../../inputs/ListEdit";
+
 import { Toggle } from "../../inputs/Toggle";
 import { StateContext } from "../contexts";
 import { SettingsGridField } from "../SettingsGridField";
+import { SettingsStringList } from "../SettingsStringList";
 import type { Setters } from "../types";
 
 export const DyingEarthSettings = ({ setters }: { setters: Setters }) => {
@@ -24,9 +25,10 @@ export const DyingEarthSettings = ({ setters }: { setters: Setters }) => {
         />
       </SettingsGridField>
       <SettingsGridField label="Hidden Short Notes Fields">
-        <ListEdit
+        <SettingsStringList
           value={settings.mwHiddenShortNotes}
           onChange={setters.mwHiddenShortNotes}
+          sortable={false}
         />
       </SettingsGridField>
       <SettingsGridField label="Use injury status">

@@ -301,6 +301,13 @@
   "investigator.DeleteEquipmentCategoryName": "Delete equipment category \"{Name}\"?",
   "investigator.DeleteCardCategoryName": "Delete card category \"{Name}\"?",
   "investigator.AddCardCategory": "Add card category",
+  "investigator.DeleteItemName": "Delete \"{Name}\"?",
+  "investigator.AddCombatAbility": "Add combat ability",
+  "investigator.AddNotesField": "Add notes field",
+  "investigator.AddAbilityCategory": "Add ability category",
+  "investigator.CombatAbilitiesNote": "Abilities are matched to these by name, so check the spelling matches your abilities exactly.",
+  "investigator.AbilityCategoriesNote": "Abilities refer to their category by name. If you rename or delete a category, abilities that were in it keep the old name (and still appear under it on character sheets) until you edit them.",
+  "investigator.PositionalFieldsNote": "Characters store these by position, not by name. If you reorder or delete entries, existing characters' text won't move with them: it will appear under whichever entry is now in that position.",
   "investigator.DeleteFieldName": "Delete field \"{Name}\"?",
   "investigator.ItemsFromTheseCompendiumPacksAreAddedToEveryNewPC": "Items from these compendium packs are added to every new PC.",
   "investigator.ItemsFromTheseCompendiumPacksAreAddedToEveryNewNPC": "Items from these compendium packs are added to every new NPC."

@@ -1,8 +1,10 @@
 import { useContext } from "react";
 
-import { ListEdit } from "../../inputs/ListEdit";
 import { SlideInNestedPanelRoute } from "../../nestedPanels/SlideInNestedPanelRoute";
+import { Translate } from "../../Translate";
 import { StateContext } from "../contexts";
+import { SettingsNote } from "../SettingsNote";
+import { SettingsStringList } from "../SettingsStringList";
 import type { Setters } from "../types";
 import { CombatOptionsSettings } from "./CombatOptionsSettings";
 import { combatAbilities, combatOptions } from "./directions";
@@ -18,10 +20,15 @@ export const CombatSettingsRoutes = ({ setters }: { setters: Setters }) => {
   return (
     <>
       <SlideInNestedPanelRoute direction={combatAbilities} margin="0em">
-        <ListEdit
+        <SettingsNote>
+          <Translate>CombatAbilitiesNote</Translate>
+        </SettingsNote>
+        <SettingsStringList
           value={settings.combatAbilities}
           onChange={setters.combatAbilities}
           nonempty
+          sortable={false}
+          addLabel="Add combat ability"
         />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={combatOptions} margin="0em">

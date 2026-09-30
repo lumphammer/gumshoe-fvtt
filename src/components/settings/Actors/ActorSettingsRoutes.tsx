@@ -1,8 +1,10 @@
 import { useContext } from "react";
 
-import { ListEdit } from "../../inputs/ListEdit";
+import { Translate } from "../../Translate";
 import { SlideInNestedPanelRoute } from "../../nestedPanels/SlideInNestedPanelRoute";
 import { StateContext } from "../contexts";
+import { SettingsNote } from "../SettingsNote";
+import { SettingsStringList } from "../SettingsStringList";
 import { stat } from "../Stats/directions";
 import { StatSettings } from "../Stats/StatSettings";
 import { StatsListSettings } from "../Stats/StatsListSettings";
@@ -44,7 +46,14 @@ export const ActorSettingsRoutes = ({ setters }: { setters: Setters }) => {
         <PersonalDetailsSettings setters={setters} />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={notesFields} margin="0em">
-        <ListEdit value={settings.longNotes} onChange={setters.longNotes} />
+        <SettingsNote>
+          <Translate>PositionalFieldsNote</Translate>
+        </SettingsNote>
+        <SettingsStringList
+          value={settings.longNotes}
+          onChange={setters.longNotes}
+          addLabel="Add notes field"
+        />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute
         direction={pcStats}

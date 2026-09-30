@@ -3,6 +3,7 @@ import { useCallback, useContext } from "react";
 
 import { Translate } from "../../Translate";
 import { ModifyContext, StateContext } from "../contexts";
+import { SettingsNote } from "../SettingsNote";
 import { SettingsSortableList } from "../SettingsSortableList";
 import type { Setters } from "../types";
 import { personalDetail } from "./directions";
@@ -28,18 +29,23 @@ export const PersonalDetailsSettings = ({ setters }: { setters: Setters }) => {
   );
 
   return (
-    <SettingsSortableList
-      css={{ height: "100%" }}
-      rows={settings.personalDetails.map(({ name, type }) => ({
-        name,
-        detail: <Translate>{type === "item" ? "Item" : "Text"}</Translate>,
-      }))}
-      linkTo={personalDetail}
-      onReorder={handleReorder}
-      onAdd={handleAdd}
-      addLabel="Add personal detail"
-      detailHeader="Type"
-    />
+    <div css={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <SettingsNote>
+        <Translate>PositionalFieldsNote</Translate>
+      </SettingsNote>
+      <SettingsSortableList
+        css={{ flex: 1 }}
+        rows={settings.personalDetails.map(({ name, type }) => ({
+          name,
+          detail: <Translate>{type === "item" ? "Item" : "Text"}</Translate>,
+        }))}
+        linkTo={personalDetail}
+        onReorder={handleReorder}
+        onAdd={handleAdd}
+        addLabel="Add personal detail"
+        detailHeader="Type"
+      />
+    </div>
   );
 };
 
