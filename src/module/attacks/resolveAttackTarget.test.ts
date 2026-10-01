@@ -227,15 +227,34 @@ describe("resolveAttackTarget", () => {
       expect(covered.bulletCount).toBe(1);
     });
 
-    it("never crits", () => {
+    it("crits the first bullet", () => {
+      // spend 6, roll 6: 12 against 3 is a margin of 9
+      const crit = { ...burst, hitTotal: 12, hitDie: 6 };
       const result = resolveAttackTarget(
-        { ...burst, hitTotal: 12, hitDie: 6 },
-        makeTarget(),
+        crit,
+        makeTarget({ damageRolls: [] }),
         guard,
         options,
       );
-      expect(result.isCritical).toBe(false);
+      expect(result.isCritical).toBe(true);
       expect(result.bulletCount).toBe(3);
+      expect(result.missingRollCount).toBe(4);
+
+      const resolved = resolveAttackTarget(
+        crit,
+        makeTarget({
+          damageRolls: [
+            { die: 2, total: 2 },
+            { die: 3, total: 3 },
+            { die: 1, total: 1 },
+            { die: 1, total: 1 },
+          ],
+        }),
+        { ...guard, health: 20 },
+        options,
+      );
+      expect(resolved.damage?.steps.map((s) => s.rolled)).toEqual([5, 1, 1]);
+      expect(resolved.damage?.finalHealth).toBe(13);
     });
   });
 });

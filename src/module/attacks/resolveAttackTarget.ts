@@ -58,10 +58,9 @@ export function resolveAttackTarget(
   });
   const isHit = attack.hitTotal >= hitThreshold;
   const isBurst = attack.fireMode === "burst";
-  // a burst already turns margin into extra bullets, so no crits on top
+  // on a burst, a critical hit applies to the first bullet
   const isCritical =
     useCriticalHits &&
-    !isBurst &&
     isHit &&
     isCriticalHit({
       hitDie: attack.hitDie,
