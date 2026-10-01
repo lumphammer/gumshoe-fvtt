@@ -132,11 +132,13 @@ suppressive fire, evasion, non-lethal attacks, rubber/special ammunition.
 
 ## Architecture
 
-1. **Structured attack data in message flags** (`flags.investigator.attack`):
-   weapon snapshot (damage, Lethality, gunfire, fire mode), hit roll, spends,
-   and a list of target entries `{ tokenUuid, cover, armorOverride,
-   damageRolls[], applied?: { previousHealth } }`. Existing `data-*` cards
-   keep rendering for old messages.
+1. **An `attack` chat message subtype** (`AttackMessageModel`), whose
+   `system` data holds the weapon (UUID plus name/image snapshots), range,
+   hit roll, damage formula, unused damage rolls, and the targets
+   `{ tokenUuid, cover, armorOverride, damageRolls[], applied }`. The rules
+   code works on a plain `AttackData` object; a type test keeps it in step
+   with the schema. Attack messages from before the subtype (with `data-*`
+   attributes) keep rendering as they always did, without targets.
 2. **Pure rules functions** with Vitest coverage, using the book examples as
    cases: effective Hit Threshold, instance count (burst / crit / shot dry),
    `resolveLethality`, gunfire adjustment, sequential application → final
@@ -205,7 +207,7 @@ Import tolerance (general rule: importing an older export must always work):
 
 ### Phase 1 — targeting and damage application (all presets)
 
-- Capture `game.user.targets` at attack time into message flags; fall back to
+- Capture `game.user.targets` at attack time into the message data; fall back to
   "apply to selected token(s)" if there were none.
 - New attack card: per-target rows with effective Hit Threshold (cover
   selector, Hurt modifier), hit/miss, armor (overridable), each damage

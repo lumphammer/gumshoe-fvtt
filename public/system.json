@@ -276,6 +276,9 @@
     "Combatant": {
       "turnPassing": {},
       "classic": {}
+    },
+    "ChatMessage": {
+      "attack": {}
     }
   }
 }

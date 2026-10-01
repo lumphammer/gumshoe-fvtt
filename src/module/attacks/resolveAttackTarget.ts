@@ -7,7 +7,7 @@ import {
   isCriticalHit,
   resolveDamage,
 } from "./rules";
-import type { AttackFlagData, AttackTargetData } from "./types";
+import type { AttackData, AttackTargetData } from "./types";
 
 /** Live information about the target, read from its actor */
 export type TargetActorInfo = {
@@ -38,7 +38,7 @@ export type ResolvedAttackTarget = {
  * apply logic agree, and so it can be tested.
  */
 export function resolveAttackTarget(
-  attack: AttackFlagData,
+  attack: AttackData,
   target: AttackTargetData,
   info: TargetActorInfo,
   { useCriticalHits, useGunfireOnHumans }: ResolveOptions,

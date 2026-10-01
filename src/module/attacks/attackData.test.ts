@@ -1,15 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  getUnusedDamageRolls,
   removeTarget,
   setSingleTarget,
   takeUnusedDamageRolls,
 } from "./attackData";
-import type { AttackFlagData, AttackTargetData } from "./types";
+import type { AttackData, AttackTargetData } from "./types";
 
-const attack: AttackFlagData = {
-  version: 1,
+const attack: AttackData = {
   hitTotal: 6,
   hitDie: 6,
   attackerIsHurt: false,
@@ -68,20 +66,6 @@ describe("takeUnusedDamageRolls", () => {
     );
     expect(result.target.damageRolls).toEqual([{ die: 6, total: 8 }]);
     expect(result.attack.unusedDamageRolls).toEqual([{ die: 2, total: 4 }]);
-  });
-
-  it("reads the single roll from older messages", () => {
-    const { unusedDamageRolls: _, ...rest } = attack;
-    const oldAttack = { ...rest, unusedDamageRoll: { die: 3, total: 5 } };
-    const result = takeUnusedDamageRolls(oldAttack, target, 1);
-    expect(result.target.damageRolls).toEqual([{ die: 3, total: 5 }]);
-    expect(getUnusedDamageRolls(result.attack)).toEqual([]);
-  });
-
-  it("copes with attacks from before any roll was stored", () => {
-    const { unusedDamageRolls: _, ...oldAttack } = attack;
-    const result = takeUnusedDamageRolls(oldAttack, target, 1);
-    expect(result.target.damageRolls).toEqual([]);
   });
 });
 

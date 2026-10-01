@@ -3,10 +3,10 @@ import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
 import { requestApplyAttackDamage } from "../../functions/utilities";
 import {
-  getAttackFlag,
+  getAttackData,
   getTargetActor,
   resolveTargetLive,
-  setAttackFlag,
+  setAttackData,
 } from "./attackTargets";
 import { getHealth, setHealth } from "./health";
 import type { AttackTargetData } from "./types";
@@ -27,7 +27,7 @@ async function applyAttackDamageNow(
   targetId: string,
   undo: boolean,
 ): Promise<void> {
-  const attack = getAttackFlag(message);
+  const attack = getAttackData(message);
   const target = attack?.targets.find((t) => t.id === targetId);
   if (!attack || !target) return;
   const actor = getTargetActor(target);
@@ -51,8 +51,8 @@ async function applyAttackDamageNow(
   }
 
   // re-read in case anything else changed while we were busy
-  const latest = getAttackFlag(message) ?? attack;
-  await setAttackFlag(message, {
+  const latest = getAttackData(message) ?? attack;
+  await setAttackData(message, {
     ...latest,
     targets: latest.targets.map((t) =>
       t.id === targetId ? { ...t, applied } : t,
