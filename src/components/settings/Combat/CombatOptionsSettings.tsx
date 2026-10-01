@@ -48,6 +48,12 @@ export const CombatOptionsSettings = ({ setters }: { setters: Setters }) => {
               onChange={setters.useLethality}
             />
           </SettingsGridField>
+          <SettingsGridField label="Use autofire?">
+            <Toggle
+              checked={settings.useAutofire}
+              onChange={setters.useAutofire}
+            />
+          </SettingsGridField>
         </>
       )}
     </InputGrid>

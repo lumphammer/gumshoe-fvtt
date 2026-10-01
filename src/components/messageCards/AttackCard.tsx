@@ -39,6 +39,8 @@ export const AttackCard = React.memo(
         ? msg.system.lethality
         : null;
 
+    const isBurst = isAttackMessage(msg) && msg.system.fireMode === "burst";
+
     // older attack messages don't have targets at all
     const showTargets =
       isAttackMessage(msg) &&
@@ -92,6 +94,12 @@ export const AttackCard = React.memo(
               )}
             </b>{" "}
             (<Translate>{rangeName || ""}</Translate>)
+            {isBurst && (
+              <>
+                {" · "}
+                <Translate>FireModeBurst</Translate>
+              </>
+            )}
             {lethality && ` · ${formatLethality(lethality)}`}
           </div>
           {/* HIT TERMS */}

@@ -8,6 +8,7 @@ import {
 import type { AttackData, AttackTargetData } from "./types";
 
 const attack: AttackData = {
+  fireMode: "single",
   hitTotal: 6,
   hitDie: 6,
   attackerIsHurt: false,

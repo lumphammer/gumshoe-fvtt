@@ -8,7 +8,7 @@ import {
   TypeDataModel,
 } from "../../fvtt-exports";
 import { createLethalityFields } from "../schemaFields";
-import { coverValues } from "./rules";
+import { coverValues, fireModeValues } from "./rules";
 
 const createDamageRollField = () =>
   new SchemaField({
@@ -59,6 +59,12 @@ const attackTargetSchema = {
  * rules code uses (see attackDataTypes.test-d.ts).
  */
 export const attackDataSchema = {
+  fireMode: new StringField({
+    nullable: false,
+    required: true,
+    choices: fireModeValues,
+    initial: "single",
+  }),
   hitTotal: new NumberField({ nullable: false, required: true, initial: 0 }),
   /** the unmodified die, for critical hits */
   hitDie: new NumberField({ nullable: false, required: true, initial: 0 }),

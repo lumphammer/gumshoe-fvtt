@@ -19,6 +19,10 @@ import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Translate } from "../Translate";
 import { performAttack } from "./performAttack";
+import type { FireMode } from "../../module/attacks/rules";
+import { burstMinimumSpend } from "../../module/attacks/rules";
+import { settings } from "../../settings/settings";
+import { hasAmmoFor } from "./consumeWeaponAmmo";
 
 const defaultSpendOptions = Array.from({ length: 8 })
   .fill(null)
@@ -27,12 +31,22 @@ const defaultSpendOptions = Array.from({ length: 8 })
     return { label, value: Number(label), enabled: true };
   });
 
+/** the fire modes on offer for selective-fire weapons, for now */
+const choosableFireModes: FireMode[] = ["single", "burst"];
+
+const fireModeText: Record<FireMode, string> = {
+  single: "FireModeSingle",
+  burst: "FireModeBurst",
+  fullAuto: "FireModeFullAuto",
+};
+
 export const WeaponMain = () => {
   const { item } = useItemSheetContext();
 
   assertWeaponItem(item);
   const [spend, setSpend] = useState(0);
   const [bonusPool, setBonusPool] = useState(0);
+  const [fireMode, setFireMode] = useState<FireMode>("single");
   const theme = useContext(ThemeContext);
 
   const abilityName = item.system.ability;
@@ -50,6 +64,17 @@ export const WeaponMain = () => {
     enabled: option.value <= pool + bonusPool,
   }));
 
+  // bursts are a choice for selective-fire weapons. ("alwaysAuto" weapons
+  // will fire full-auto once that exists; until then they fire single shots.)
+  const canChooseFireMode =
+    settings.useDamageApplication.get() &&
+    settings.useAutofire.get() &&
+    item.system.fireModes === "selective";
+  const effectiveFireMode: FireMode = canChooseFireMode ? fireMode : "single";
+  const ammoFail = !hasAmmoFor(item.system, effectiveFireMode);
+  const spendTooLow =
+    effectiveFireMode === "burst" && spend < burstMinimumSpend;
+
   const basePerformAttack = useMemo(() => {
     return performAttack({
       spend,
@@ -65,29 +90,33 @@ export const WeaponMain = () => {
     void basePerformAttack({
       rangeName: "point blank",
       rangeDamage: item.system.pointBlankDamage,
+      fireMode: effectiveFireMode,
     });
-  }, [basePerformAttack, item]);
+  }, [basePerformAttack, item, effectiveFireMode]);
 
   const onCloseRange = useCallback(() => {
     void basePerformAttack({
       rangeName: "close range",
       rangeDamage: item.system.closeRangeDamage,
+      fireMode: effectiveFireMode,
     });
-  }, [basePerformAttack, item]);
+  }, [basePerformAttack, item, effectiveFireMode]);
 
   const onNearRange = useCallback(() => {
     void basePerformAttack({
       rangeName: "near range",
       rangeDamage: item.system.nearRangeDamage,
+      fireMode: effectiveFireMode,
     });
-  }, [basePerformAttack, item]);
+  }, [basePerformAttack, item, effectiveFireMode]);
 
   const onLongRange = useCallback(() => {
     void basePerformAttack({
       rangeName: "long range",
       rangeDamage: item.system.longRangeDamage,
+      fireMode: effectiveFireMode,
     });
-  }, [basePerformAttack, item]);
+  }, [basePerformAttack, item, effectiveFireMode]);
 
   const weaponActor = item.actor;
 
@@ -123,11 +152,10 @@ export const WeaponMain = () => {
     });
   }, [abilityName, item.actor]);
 
-  const ammoFail = item.system.usesAmmo && item.system.ammo.value <= 0;
   // the configured ability can have been deleted or renamed, in which case
   // there's nothing to roll against - see the "NotFound!" indicator below.
   const attackDisabled = (rangeEnabled: boolean) =>
-    ability === undefined || ammoFail || !rangeEnabled;
+    ability === undefined || ammoFail || spendTooLow || !rangeEnabled;
 
   const sheet = item.sheet;
   assertApplicationV2(sheet);
@@ -142,12 +170,32 @@ export const WeaponMain = () => {
           ...theme.panelStyleSecondary,
         }}
       >
+        {canChooseFireMode && (
+          <GridField label="Fire mode">
+            <CheckButtons
+              onChange={(index) => setFireMode(choosableFireModes[index])}
+              selected={choosableFireModes.indexOf(fireMode)}
+              options={choosableFireModes.map((mode, index) => ({
+                label: getTranslated(fireModeText[mode]),
+                value: index,
+                enabled: hasAmmoFor(item.system, mode),
+              }))}
+            />
+          </GridField>
+        )}
         <GridField label="Spend">
           <CheckButtons
             onChange={setSpend}
             selected={spend}
             options={spendOptions}
           />
+          {spendTooLow && (
+            <div css={{ fontSize: "0.9em", opacity: 0.8 }}>
+              <Translate values={{ Min: String(burstMinimumSpend) }}>
+                BurstNeedsSpendOfMin
+              </Translate>
+            </div>
+          )}
         </GridField>
         <GridFieldStacked>
           <div
@@ -170,7 +218,11 @@ export const WeaponMain = () => {
                   padding: "0 1em",
                 }}
               >
-                <Translate>Out of ammo</Translate>
+                <Translate>
+                  {item.system.ammo.value > 0
+                    ? "Not enough ammo"
+                    : "Out of ammo"}
+                </Translate>
               </div>
             )}
             <Button

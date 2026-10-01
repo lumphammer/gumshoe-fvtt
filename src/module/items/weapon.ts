@@ -9,6 +9,8 @@ import {
   TypeDataModel,
 } from "../../fvtt-exports";
 import type { Lethality } from "../attacks/lethality";
+import type { WeaponFireModes } from "../attacks/rules";
+import { weaponFireModesValues } from "../attacks/rules";
 import { createLethalityFields } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
 
@@ -30,6 +32,16 @@ export const weaponSchema = {
     },
   ),
   ammoPerShot: new NumberField({ nullable: false, required: true, initial: 1 }),
+  ammoPerBurst: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 3,
+  }),
+  ammoPerFullAuto: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 10,
+  }),
   closeRangeDamage: new NumberField({
     nullable: false,
     required: true,
@@ -42,6 +54,13 @@ export const weaponSchema = {
     nullable: false,
     required: true,
     initial: false,
+  }),
+  /** single shots only, selective fire, or always full-auto */
+  fireModes: new StringField({
+    nullable: false,
+    required: true,
+    choices: weaponFireModesValues,
+    initial: "single",
   }),
   /** null for an ordinary weapon */
   lethality: new SchemaField(createLethalityFields(), {
@@ -186,6 +205,18 @@ export class WeaponModel extends TypeDataModel<
 
   setIsGunfire = async (isGunfire: boolean): Promise<void> => {
     await this.parent.update({ system: { isGunfire } });
+  };
+
+  setFireModes = async (fireModes: WeaponFireModes): Promise<void> => {
+    await this.parent.update({ system: { fireModes } });
+  };
+
+  setAmmoPerBurst = async (ammoPerBurst: number): Promise<void> => {
+    await this.parent.update({ system: { ammoPerBurst } });
+  };
+
+  setAmmoPerFullAuto = async (ammoPerFullAuto: number): Promise<void> => {
+    await this.parent.update({ system: { ammoPerFullAuto } });
   };
 
   setLethality = async (lethality: Lethality | null): Promise<void> => {
