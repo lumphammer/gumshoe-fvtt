@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
@@ -47,28 +47,18 @@ const coverText: Record<Cover, string> = {
 };
 
 /**
- * Chat messages get re-rendered from scratch without unmounting the old React
- * root, so rather than relying on cleanup, listeners unhook themselves once
- * their element has left the DOM.
+ * Re-render when actors, items, or tokens change, since the card shows live
+ * Health, Hit Thresholds etc.
  */
-function useRefreshOnDocumentChanges(ref: React.RefObject<HTMLElement | null>) {
+function useRefreshOnDocumentChanges() {
   const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
   useEffect(() => {
     const hookNames = ["updateActor", "updateItem", "updateToken"] as const;
-    const ids = hookNames.map((hookName) => {
-      const id = Hooks.on(hookName, () => {
-        if (ref.current && !ref.current.isConnected) {
-          hookNames.forEach((name, i) => Hooks.off(name, ids[i]));
-          return;
-        }
-        forceUpdate();
-      });
-      return id;
-    });
+    const ids = hookNames.map((hookName) => Hooks.on(hookName, forceUpdate));
     return () => {
       hookNames.forEach((name, i) => Hooks.off(name, ids[i]));
     };
-  }, [ref]);
+  }, []);
 }
 
 type AttackTargetRowProps = {
@@ -375,8 +365,7 @@ type AttackTargetsProps = {
 
 export const AttackTargets = ({ msg }: AttackTargetsProps) => {
   assertGame(game);
-  const ref = useRef<HTMLDivElement>(null);
-  useRefreshOnDocumentChanges(ref);
+  useRefreshOnDocumentChanges();
   const attack = getAttackFlag(msg);
   const canAct = canUserActOnAttack(game.user, msg) && msg.isOwner;
 
@@ -413,7 +402,7 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
   }
 
   return (
-    <div ref={ref} css={{ marginTop: "0.5em" }}>
+    <div css={{ marginTop: "0.5em" }}>
       {attack.targets.map((target) => (
         <AttackTargetRow
           key={target.id}

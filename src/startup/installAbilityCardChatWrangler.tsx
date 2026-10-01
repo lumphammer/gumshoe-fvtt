@@ -15,6 +15,11 @@ import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { isAbilityItem } from "../module/items/exports";
 import type { MWDifficulty } from "../types";
+import { createCardRootTracker } from "./createCardRootTracker";
+
+// a timeout is late enough for Foundry to have swapped a re-rendered message's
+// old element for its new one
+const cardRoots = createCardRootTracker((callback) => setTimeout(callback, 0));
 
 /**
  * Render a card synchronously. This hook runs before Foundry puts the message
@@ -28,9 +33,14 @@ function renderCardNow(el: HTMLElement, content: ReactNode) {
   flushSync(() => {
     root.render(content);
   });
+  cardRoots.track(el, root);
 }
 
 export const installAbilityCardChatWrangler = () => {
+  // deleting a message doesn't render anything new, so check then too. (If
+  // Foundry is still animating it out, it gets caught by the next check.)
+  Hooks.on("deleteChatMessage", () => cardRoots.scheduleSweep());
+
   Hooks.on(
     "renderChatMessageHTML",
     (chatMessage: ChatMessage, html: HTMLElement, options: any) => {
