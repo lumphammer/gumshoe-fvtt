@@ -6,6 +6,7 @@ import {
   defaultHitThreshold,
   getEffectiveHitThreshold,
   getRequiredDamageRollCount,
+  getBurstBulletCount,
   isCriticalHit,
 } from "./rules";
 import type { AttackData, AttackTargetData } from "./types";
@@ -29,6 +30,8 @@ export type ResolvedAttackTarget = {
   hitThreshold: number;
   isHit: boolean;
   isCritical: boolean;
+  /** how many bullets hit: 1, or up to 3 for a burst */
+  bulletCount: number;
   /** damage rolls still needed before this hit can be resolved */
   missingRollCount: number;
   armor: number;
@@ -54,15 +57,24 @@ export function resolveAttackTarget(
     attackerIsHurt: attack.attackerIsHurt,
   });
   const isHit = attack.hitTotal >= hitThreshold;
+  const isBurst = attack.fireMode === "burst";
+  // a burst already turns margin into extra bullets, so no crits on top
   const isCritical =
     useCriticalHits &&
+    !isBurst &&
     isHit &&
     isCriticalHit({
       hitDie: attack.hitDie,
       hitTotal: attack.hitTotal,
       hitThreshold,
     });
-  const requiredRollCount = getRequiredDamageRollCount({ isHit, isCritical });
+  const bulletCount =
+    isHit && isBurst ? getBurstBulletCount(attack.hitTotal - hitThreshold) : 1;
+  const requiredRollCount = getRequiredDamageRollCount({
+    isHit,
+    isCritical,
+    bulletCount,
+  });
   const missingRollCount = Math.max(
     0,
     requiredRollCount - target.damageRolls.length,
@@ -81,6 +93,7 @@ export function resolveAttackTarget(
           instances: getDamageInstances({
             rolls: target.damageRolls,
             isCritical,
+            bulletCount,
             lethality,
             immuneToLethality: info.immuneToLethality,
           }),
@@ -94,6 +107,7 @@ export function resolveAttackTarget(
     hitThreshold,
     isHit,
     isCritical,
+    bulletCount,
     missingRollCount,
     armor,
     lethality,

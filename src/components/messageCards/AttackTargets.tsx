@@ -353,16 +353,41 @@ const AttackTargetRow = ({
           </>
         )}
 
+        {resolved.isHit && attack.fireMode === "burst" && (
+          <>
+            <span className="label">
+              <Translate>Bullets</Translate>
+            </span>
+            <span>{resolved.bulletCount}</span>
+          </>
+        )}
+
         {resolved.isHit && target.damageRolls.length > 0 && (
           <>
             <span className="label">
               <Translate>Damage</Translate>
             </span>
             <span>
-              {resolved.lethality && damage ? (
+              {damage && (resolved.lethality || damage.steps.length > 1) ? (
                 damage.steps.map((step, i) => (
                   <span key={i} css={{ display: "block" }}>
-                    <LethalityStepText step={step} />
+                    {resolved.bulletCount > 1 && (
+                      <>
+                        <Translate values={{ N: String(i + 1) }}>
+                          BulletN
+                        </Translate>
+                        {": "}
+                      </>
+                    )}
+                    {step.instance.kind === "lethality" ? (
+                      <LethalityStepText step={step} />
+                    ) : (
+                      <>
+                        {step.rolled}
+                        {step.armorReduction > 0 && ` − ${step.armorReduction}`}
+                        <GunfireText step={step} />
+                      </>
+                    )}
                   </span>
                 ))
               ) : (

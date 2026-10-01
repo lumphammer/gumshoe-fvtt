@@ -60,6 +60,7 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
   useGunfireOnHumans: false,
   useCriticalHits: false,
   useLethality: false,
+  useAutofire: false,
   equipmentCategories: {
     general: {
       name: "General",

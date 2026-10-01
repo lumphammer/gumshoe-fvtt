@@ -10,7 +10,8 @@ import {
   rollToRecord,
 } from "../../module/attacks/attackTargets";
 import { getHealth } from "../../module/attacks/health";
-import { hurtHealth } from "../../module/attacks/rules";
+import type { FireMode } from "../../module/attacks/rules";
+import { burstMinimumSpend, hurtHealth } from "../../module/attacks/rules";
 import type { AttackData } from "../../module/attacks/types";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
@@ -31,6 +32,7 @@ type PerformAttackArgs1 = {
 type PerformAttackArgs2 = {
   rangeName: string;
   rangeDamage: number;
+  fireMode: FireMode;
 };
 
 /**
@@ -39,12 +41,14 @@ type PerformAttackArgs2 = {
  * anything else needed (e.g. for a critical hit) gets rolled here.
  */
 async function buildAttackData({
+  fireMode,
   hitRoll,
   damageRoll,
   damageFormula,
   damageParams,
   weapon,
 }: {
+  fireMode: FireMode;
   hitRoll: AnyRoll;
   damageRoll: AnyRoll;
   damageFormula: string;
@@ -54,6 +58,7 @@ async function buildAttackData({
   assertGame(game);
   const attackerHealth = weapon.actor ? getHealth(weapon.actor) : null;
   let attack: AttackData = {
+    fireMode,
     hitTotal: hitRoll.total ?? 0,
     hitDie: hitRoll.dice[0]?.total ?? 0,
     attackerIsHurt: attackerHealth !== null && attackerHealth <= hurtHealth,
@@ -91,10 +96,14 @@ export const performAttack =
     setSpend,
     setBonusPool,
   }: PerformAttackArgs1) =>
-  async ({ rangeName, rangeDamage }: PerformAttackArgs2) => {
+  async ({ rangeName, rangeDamage, fireMode }: PerformAttackArgs2) => {
     assertGame(game);
     assertAbilityItem(ability);
     if (weapon.actor === null) {
+      return;
+    }
+    // the attack panel shouldn't let these through, but just in case
+    if (fireMode === "burst" && spend < burstMinimumSpend) {
       return;
     }
     const damage = weapon.system.damage;
@@ -152,6 +161,7 @@ export const performAttack =
     damageRoll.dice[0].options.rollOrder = 2;
 
     const { attack, extraRolls } = await buildAttackData({
+      fireMode,
       hitRoll,
       damageRoll,
       damageFormula: damageTerm,
@@ -189,5 +199,5 @@ export const performAttack =
     await ability?.system.setPool(newPool);
     setBonusPool(newBonusPool);
     setSpend(0);
-    await consumeWeaponAmmo(weapon.system);
+    await consumeWeaponAmmo(weapon.system, fireMode);
   };

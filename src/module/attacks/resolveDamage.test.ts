@@ -50,6 +50,40 @@ describe("getDamageInstances", () => {
     ).toEqual([]);
   });
 
+  it("makes each bullet of a burst its own instance", () => {
+    expect(
+      getDamageInstances({
+        rolls: [roll(5, 5), roll(3, 3), roll(6, 6)],
+        isCritical: false,
+        bulletCount: 2,
+        ...plain,
+      }),
+    ).toEqual([damage(5), damage(3)]);
+  });
+
+  it("waits until every bullet has a roll", () => {
+    expect(
+      getDamageInstances({
+        rolls: [roll(5, 5)],
+        isCritical: false,
+        bulletCount: 2,
+        ...plain,
+      }),
+    ).toEqual([]);
+  });
+
+  it("gives each bullet its own Lethality roll", () => {
+    expect(
+      getDamageInstances({
+        rolls: [roll(1, 1), roll(4, 4)],
+        isCritical: false,
+        bulletCount: 2,
+        lethality: L1,
+        immuneToLethality: false,
+      }),
+    ).toEqual([lethal(1), lethal(4)]);
+  });
+
   it("uses the raw die for Lethality", () => {
     expect(
       getDamageInstances({

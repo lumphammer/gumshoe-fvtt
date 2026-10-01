@@ -21,33 +21,40 @@ export type DamageInstance =
  * Lethality rolls - two chances, as with Shot Dry's "extra chances for
  * Lethality" (p. 101).
  *
+ * Otherwise, each bullet is its own instance (a burst's bullets are applied
+ * one after another, p. 100).
+ *
  * Lethality uses the raw die, not the weapon's damage total.
  */
 export function getDamageInstances({
   rolls,
   isCritical,
+  bulletCount = 1,
   lethality,
   immuneToLethality,
 }: {
   rolls: DamageRollRecord[];
   isCritical: boolean;
+  bulletCount?: number;
   lethality: Lethality | null;
   immuneToLethality: boolean;
 }): DamageInstance[] {
-  const needed = isCritical ? 2 : 1;
+  const needed = isCritical ? 2 : bulletCount;
   if (rolls.length < needed) return [];
+  const used = rolls.slice(0, needed);
   if (lethality) {
-    return rolls.slice(0, needed).map((roll) => ({
+    return used.map((roll) => ({
       kind: "lethality",
       die: roll.die,
       lethality,
       immune: immuneToLethality,
     }));
   }
-  const amount = rolls
-    .slice(0, needed)
-    .reduce((sum, roll) => sum + roll.total, 0);
-  return [{ kind: "damage", amount }];
+  if (isCritical) {
+    const amount = used.reduce((sum, roll) => sum + roll.total, 0);
+    return [{ kind: "damage", amount }];
+  }
+  return used.map((roll) => ({ kind: "damage", amount: roll.total }));
 }
 
 export type DamageStep = {

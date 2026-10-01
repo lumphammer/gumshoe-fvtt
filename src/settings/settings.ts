@@ -170,6 +170,11 @@ export const settings = {
     name: "Use Lethality?",
     default: pathOfCthulhuPreset.useLethality,
   }),
+  useAutofire: createSettingBoolean({
+    key: "useAutofire",
+    name: "Use autofire?",
+    default: pathOfCthulhuPreset.useAutofire,
+  }),
 
   // ///////////////////////////////////////////////////////////////////////////
   // object settings

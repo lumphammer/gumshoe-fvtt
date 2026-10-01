@@ -5,6 +5,7 @@ import { resolveAttackTarget } from "./resolveAttackTarget";
 import type { AttackData, AttackTargetData } from "./types";
 
 const makeAttack = (overrides: Partial<AttackData> = {}): AttackData => ({
+  fireMode: "single",
   hitTotal: 4,
   hitDie: 4,
   attackerIsHurt: false,
@@ -168,5 +169,73 @@ describe("resolveAttackTarget", () => {
     );
     expect(result.isHit).toBe(true);
     expect(result.damage).toBeNull();
+  });
+
+  describe("three-round burst (p. 100)", () => {
+    // Sanchez spends 3 and rolls 5: 8 against the guard's Hit Threshold of 3.
+    // The guard has Health 6; the M16 does d+0.
+    const burst = makeAttack({ fireMode: "burst", hitTotal: 8, hitDie: 5 });
+    const guard = { ...human, health: 6 };
+
+    it("gets one extra bullet for a margin of 5", () => {
+      const result = resolveAttackTarget(burst, makeTarget(), guard, options);
+      expect(result.bulletCount).toBe(2);
+      expect(result.missingRollCount).toBe(1);
+    });
+
+    it("applies both bullets, then gunfire on humans", () => {
+      const result = resolveAttackTarget(
+        burst,
+        makeTarget({
+          damageRolls: [
+            { die: 5, total: 5 },
+            { die: 3, total: 3 },
+          ],
+        }),
+        guard,
+        options,
+      );
+      expect(result.damage?.steps.map((s) => s.healthAfter)).toEqual([1, -8]);
+      expect(result.damage?.woundState).toBe("seriouslyWounded");
+    });
+
+    it("would have got two extra bullets for a margin of 6", () => {
+      const result = resolveAttackTarget(
+        { ...burst, hitTotal: 9 },
+        makeTarget(),
+        guard,
+        options,
+      );
+      expect(result.bulletCount).toBe(3);
+    });
+
+    it("loses bullets when cover raises the Hit Threshold", () => {
+      // margin 4 against Hit Threshold 4
+      const result = resolveAttackTarget(
+        burst,
+        makeTarget({ cover: "full" }),
+        guard,
+        options,
+      );
+      expect(result.bulletCount).toBe(2);
+      const covered = resolveAttackTarget(
+        { ...burst, hitTotal: 6 },
+        makeTarget({ cover: "full" }),
+        guard,
+        options,
+      );
+      expect(covered.bulletCount).toBe(1);
+    });
+
+    it("never crits", () => {
+      const result = resolveAttackTarget(
+        { ...burst, hitTotal: 12, hitDie: 6 },
+        makeTarget(),
+        guard,
+        options,
+      );
+      expect(result.isCritical).toBe(false);
+      expect(result.bulletCount).toBe(3);
+    });
   });
 });

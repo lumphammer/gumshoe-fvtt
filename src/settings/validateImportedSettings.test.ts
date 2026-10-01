@@ -18,6 +18,7 @@ it("should accept an older export without the damage application settings", () =
   expect(validatedResult).not.toHaveProperty("useGunfireOnHumans");
   expect(validatedResult).not.toHaveProperty("useCriticalHits");
   expect(validatedResult).not.toHaveProperty("useLethality");
+  expect(validatedResult).not.toHaveProperty("useAutofire");
 });
 
 it("should preserve the damage application settings through a round trip", () => {
@@ -26,6 +27,7 @@ it("should preserve the damage application settings through a round trip", () =>
     useGunfireOnHumans: true,
     useCriticalHits: false,
     useLethality: true,
+    useAutofire: true,
   };
 
   expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(

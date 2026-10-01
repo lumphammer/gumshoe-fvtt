@@ -389,5 +389,20 @@
   "investigator.LethalityFormatHint": "Use the book's notation: L, a number, then any asterisks, then any Hs, e.g. L1, L2*, L1H, L1**HH.",
   "investigator.LethalityDies": "Killed outright",
   "investigator.LethalityDieDie": "die {Die}",
-  "investigator.ImmuneToLethality": "Immune to Lethality?"
+  "investigator.ImmuneToLethality": "Immune to Lethality?",
+  "investigator.UseAutofire": "Use autofire?",
+  "investigator.FireMode": "Fire mode",
+  "investigator.FireModeSingle": "Single",
+  "investigator.FireModeBurst": "Burst",
+  "investigator.FireModeFullAuto": "Full-auto",
+  "investigator.BurstNeedsSpendOfMin": "A three-round burst needs a spend of at least {Min}.",
+  "investigator.NotEnoughAmmo": "Not enough ammo",
+  "investigator.FireModes": "Fire modes",
+  "investigator.WeaponFireModesSingle": "Single shots",
+  "investigator.WeaponFireModesSelective": "Selective fire",
+  "investigator.WeaponFireModesAlwaysAuto": "Always full-auto",
+  "investigator.AmmoPerBurst": "Ammo per burst",
+  "investigator.AmmoPerFullAuto": "Ammo per full-auto",
+  "investigator.Bullets": "Bullets",
+  "investigator.BulletN": "Bullet {N}"
 }

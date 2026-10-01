@@ -4,6 +4,7 @@ import {
   getEffectiveHitThreshold,
   getRequiredDamageRollCount,
   getWoundState,
+  getBurstBulletCount,
   isCriticalHit,
 } from "./rules";
 
@@ -74,5 +75,31 @@ describe("getRequiredDamageRollCount", () => {
     expect(getRequiredDamageRollCount({ isHit: true, isCritical: true })).toBe(
       2,
     );
+  });
+});
+
+describe("getBurstBulletCount", () => {
+  it.each([
+    [-1, 1],
+    [0, 1],
+    [2, 1],
+    [3, 2],
+    // p. 100: margin of 5 means one extra bullet...
+    [5, 2],
+    // ...and a margin of 6 would have meant two
+    [6, 3],
+    [20, 3],
+  ])("a margin of %i gets %i bullets", (margin, bullets) => {
+    expect(getBurstBulletCount(margin)).toBe(bullets);
+  });
+
+  it("needs a roll per bullet", () => {
+    expect(
+      getRequiredDamageRollCount({
+        isHit: true,
+        isCritical: false,
+        bulletCount: 3,
+      }),
+    ).toBe(3);
   });
 });
