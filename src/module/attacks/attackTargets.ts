@@ -1,7 +1,12 @@
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
 import { settings } from "../../settings/settings";
-import { getHealth, getStat, isHumanActor } from "./health";
+import {
+  getHealth,
+  getStat,
+  isHumanActor,
+  isImmuneToLethality,
+} from "./health";
 import type {
   ResolvedAttackTarget,
   TargetActorInfo,
@@ -47,13 +52,20 @@ export function getTargetActor(target: AttackTargetData): Actor | null {
 
 export function getTargetActorInfo(actor: Actor | null): TargetActorInfo {
   if (actor === null) {
-    return { hitThreshold: null, armor: null, health: null, isHuman: false };
+    return {
+      hitThreshold: null,
+      armor: null,
+      health: null,
+      isHuman: false,
+      immuneToLethality: false,
+    };
   }
   return {
     hitThreshold: getStat(actor, "hitThreshold"),
     armor: getStat(actor, "armor"),
     health: getHealth(actor),
     isHuman: isHumanActor(actor),
+    immuneToLethality: isImmuneToLethality(actor),
   };
 }
 
@@ -61,6 +73,7 @@ export function getResolveOptions() {
   return {
     useCriticalHits: settings.useCriticalHits.get(),
     useGunfireOnHumans: settings.useGunfireOnHumans.get(),
+    useLethality: settings.useLethality.get(),
   };
 }
 

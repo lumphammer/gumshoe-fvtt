@@ -8,6 +8,8 @@ import {
   StringField,
   TypeDataModel,
 } from "../../fvtt-exports";
+import type { Lethality } from "../attacks/lethality";
+import { createLethalityFields } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
 
 export const weaponSchema = {
@@ -40,6 +42,12 @@ export const weaponSchema = {
     nullable: false,
     required: true,
     initial: false,
+  }),
+  /** null for an ordinary weapon */
+  lethality: new SchemaField(createLethalityFields(), {
+    nullable: true,
+    required: true,
+    initial: null,
   }),
   isLongRange: new BooleanField({ nullable: false, required: false }),
   isNearRange: new BooleanField({ nullable: false, required: true }),
@@ -178,6 +186,10 @@ export class WeaponModel extends TypeDataModel<
 
   setIsGunfire = async (isGunfire: boolean): Promise<void> => {
     await this.parent.update({ system: { isGunfire } });
+  };
+
+  setLethality = async (lethality: Lethality | null): Promise<void> => {
+    await this.parent.update({ system: { lethality } });
   };
 }
 

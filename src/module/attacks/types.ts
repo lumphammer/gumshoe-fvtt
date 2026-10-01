@@ -1,3 +1,4 @@
+import type { Lethality } from "./lethality";
 import type { Cover } from "./rules";
 
 /** One damage roll, keeping the raw die so later rules (Lethality) can use it */
@@ -38,6 +39,8 @@ export type AttackData = {
   /** snapshot of whether the attacker was Hurt when they attacked */
   attackerIsHurt: boolean;
   isGunfire: boolean;
+  /** snapshot of the weapon's Lethality, if it has one and the rule is on */
+  lethality: Lethality | null;
   /** so we can roll more damage later, e.g. for a crit or a new target */
   damageFormula: string;
   damageParams: Record<string, number>;

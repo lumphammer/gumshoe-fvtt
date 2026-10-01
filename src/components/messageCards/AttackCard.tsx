@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { isAttackMessage } from "../../module/attacks/attackTargets";
+import { formatLethality } from "../../module/attacks/lethality";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { settings } from "../../settings/settings";
 import { Translate } from "../Translate";
@@ -32,6 +33,11 @@ export const AttackCard = React.memo(
     const poolRolls = msg.rolls?.[0]?.terms[0]?.rolls;
     const hitRoll = poolRolls[0];
     const damageRoll = poolRolls[1];
+
+    const lethality =
+      isAttackMessage(msg) && settings.useLethality.get()
+        ? msg.system.lethality
+        : null;
 
     // older attack messages don't have targets at all
     const showTargets =
@@ -86,6 +92,7 @@ export const AttackCard = React.memo(
               )}
             </b>{" "}
             (<Translate>{rangeName || ""}</Translate>)
+            {lethality && ` · ${formatLethality(lethality)}`}
           </div>
           {/* HIT TERMS */}
 
