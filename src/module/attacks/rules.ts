@@ -109,8 +109,8 @@ export function getBurstBulletCount(margin: number): number {
 }
 
 /**
- * How many damage rolls are needed to resolve a hit: one per bullet, or two
- * for a critical hit.
+ * How many damage rolls are needed to resolve a hit: one per bullet, plus
+ * one for a critical hit (which applies to the first bullet).
  */
 export function getRequiredDamageRollCount({
   isHit,
@@ -122,5 +122,5 @@ export function getRequiredDamageRollCount({
   bulletCount?: number;
 }): number {
   if (!isHit) return 0;
-  return isCritical ? 2 : bulletCount;
+  return bulletCount + (isCritical ? 1 : 0);
 }

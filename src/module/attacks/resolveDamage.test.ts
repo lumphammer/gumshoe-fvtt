@@ -4,9 +4,10 @@ import type { Lethality } from "./lethality";
 import type { DamageInstance } from "./resolveDamage";
 import { getDamageInstances, resolveDamage } from "./resolveDamage";
 
-const damage = (amount: number): DamageInstance => ({
+const damage = (amount: number, bullet = 1): DamageInstance => ({
   kind: "damage",
   amount,
+  bullet,
 });
 
 const L1: Lethality = { rating: 1, asterisks: 0, hs: 0 };
@@ -16,7 +17,8 @@ const lethal = (
   die: number,
   lethality: Lethality = L1,
   immune = false,
-): DamageInstance => ({ kind: "lethality", die, lethality, immune });
+  bullet = 1,
+): DamageInstance => ({ kind: "lethality", die, lethality, immune, bullet });
 
 const roll = (die: number, total: number) => ({ die, total });
 
@@ -58,7 +60,7 @@ describe("getDamageInstances", () => {
         bulletCount: 2,
         ...plain,
       }),
-    ).toEqual([damage(5), damage(3)]);
+    ).toEqual([damage(5, 1), damage(3, 2)]);
   });
 
   it("waits until every bullet has a roll", () => {
@@ -81,7 +83,34 @@ describe("getDamageInstances", () => {
         lethality: L1,
         immuneToLethality: false,
       }),
-    ).toEqual([lethal(1), lethal(4)]);
+    ).toEqual([lethal(1, L1, false, 1), lethal(4, L1, false, 2)]);
+  });
+
+  it("crits the first bullet of a burst", () => {
+    expect(
+      getDamageInstances({
+        rolls: [roll(5, 5), roll(4, 4), roll(3, 3), roll(6, 6)],
+        isCritical: true,
+        bulletCount: 3,
+        ...plain,
+      }),
+    ).toEqual([damage(9, 1), damage(3, 2), damage(6, 3)]);
+  });
+
+  it("gives the first bullet of a crit burst two Lethality rolls", () => {
+    expect(
+      getDamageInstances({
+        rolls: [roll(5, 5), roll(4, 4), roll(3, 3)],
+        isCritical: true,
+        bulletCount: 2,
+        lethality: L1,
+        immuneToLethality: false,
+      }),
+    ).toEqual([
+      lethal(5, L1, false, 1),
+      lethal(4, L1, false, 1),
+      lethal(3, L1, false, 2),
+    ]);
   });
 
   it("uses the raw die for Lethality", () => {

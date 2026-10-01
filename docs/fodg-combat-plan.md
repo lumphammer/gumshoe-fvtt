@@ -279,8 +279,11 @@ Decisions made while implementing Phase 3:
   10+" is a balancing dial (p. 101). Weapons get "ammo per burst" (3) and
   "ammo per full-auto" (10); fire modes needing more rounds than are left
   are disabled.
-- Critical hits don't apply to bursts: a burst already turns margin into
-  extra bullets.
+- A critical hit on a burst applies to the **first bullet**: two dice added
+  together for plain damage, or two Lethality rolls, then the remaining
+  bullets as normal. (This makes crits fairly likely on bursts, since a
+  burst's minimum spend of 3 means any 6 totals 9+, but denying them seemed
+  against the spirit of the rules.)
 - Each bullet is its own instance of damage (armor and gunfire per bullet),
   or its own Lethality die.
 - Cover changes the margin, so it can change the bullet count after the

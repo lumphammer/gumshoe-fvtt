@@ -93,6 +93,16 @@ describe("getBurstBulletCount", () => {
     expect(getBurstBulletCount(margin)).toBe(bullets);
   });
 
+  it("needs an extra roll for a critical burst", () => {
+    expect(
+      getRequiredDamageRollCount({
+        isHit: true,
+        isCritical: true,
+        bulletCount: 3,
+      }),
+    ).toBe(4);
+  });
+
   it("needs a roll per bullet", () => {
     expect(
       getRequiredDamageRollCount({

@@ -8,9 +8,13 @@ import type { DamageRollRecord } from "./types";
  * One instance of damage: either plain damage, or a Lethality die which might
  * kill or wound outright.
  */
-export type DamageInstance =
+export type DamageInstance = (
   | { kind: "damage"; amount: number }
-  | { kind: "lethality"; die: number; lethality: Lethality; immune: boolean };
+  | { kind: "lethality"; die: number; lethality: Lethality; immune: boolean }
+) & {
+  /** which bullet this is (1-based); always 1 for a single shot */
+  bullet: number;
+};
 
 /**
  * Turn damage rolls into instances of damage.
@@ -21,8 +25,8 @@ export type DamageInstance =
  * Lethality rolls - two chances, as with Shot Dry's "extra chances for
  * Lethality" (p. 101).
  *
- * Otherwise, each bullet is its own instance (a burst's bullets are applied
- * one after another, p. 100).
+ * Each bullet of a burst is its own instance, applied one after another
+ * (p. 100). A critical hit on a burst applies to the first bullet.
  *
  * Lethality uses the raw die, not the weapon's damage total.
  */
@@ -39,22 +43,37 @@ export function getDamageInstances({
   lethality: Lethality | null;
   immuneToLethality: boolean;
 }): DamageInstance[] {
-  const needed = isCritical ? 2 : bulletCount;
+  const needed = bulletCount + (isCritical ? 1 : 0);
   if (rolls.length < needed) return [];
   const used = rolls.slice(0, needed);
+  // with a crit, the first bullet takes the first two rolls
+  const bulletOf = (rollIndex: number) =>
+    isCritical ? Math.max(1, rollIndex) : rollIndex + 1;
   if (lethality) {
-    return used.map((roll) => ({
+    return used.map((roll, i) => ({
       kind: "lethality",
       die: roll.die,
       lethality,
       immune: immuneToLethality,
+      bullet: bulletOf(i),
     }));
   }
   if (isCritical) {
-    const amount = used.reduce((sum, roll) => sum + roll.total, 0);
-    return [{ kind: "damage", amount }];
+    const [first, second, ...rest] = used;
+    return [
+      { kind: "damage", amount: first.total + second.total, bullet: 1 },
+      ...rest.map((roll, i) => ({
+        kind: "damage" as const,
+        amount: roll.total,
+        bullet: i + 2,
+      })),
+    ];
   }
-  return used.map((roll) => ({ kind: "damage", amount: roll.total }));
+  return used.map((roll, i) => ({
+    kind: "damage",
+    amount: roll.total,
+    bullet: i + 1,
+  }));
 }
 
 export type DamageStep = {

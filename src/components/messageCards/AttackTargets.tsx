@@ -373,7 +373,7 @@ const AttackTargetRow = ({
                   <span key={i} css={{ display: "block" }}>
                     {resolved.bulletCount > 1 && (
                       <>
-                        <Translate values={{ N: String(i + 1) }}>
+                        <Translate values={{ N: String(step.instance.bullet) }}>
                           BulletN
                         </Translate>
                         {": "}
