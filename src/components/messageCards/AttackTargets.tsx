@@ -30,6 +30,9 @@ import type {
 } from "../../module/attacks/types";
 import { Translate } from "../Translate";
 
+/** how long to wait for the GM to apply damage before re-enabling buttons */
+const gmRequestTimeoutMs = 5000;
+
 const woundStateText: Record<WoundState, string> = {
   ok: "WoundStateOk",
   hurt: "WoundStateHurt",
@@ -125,8 +128,24 @@ const AttackTargetRow = ({
     await setAttackFlag(msg, replaceTarget(filled.attack, filled.target));
   });
 
-  const onApply = withBusy(() => applyAttackDamage(msg, target, false));
-  const onUndo = withBusy(() => applyAttackDamage(msg, target, true));
+  // when the GM is doing it for us, the card will re-render (and so reset)
+  // once they have. Until then, stay busy so a double-click can't send a
+  // second request - but not forever, in case the GM never answers.
+  const applyOrUndo = (undo: boolean) => async () => {
+    setBusy(true);
+    let outcome: Awaited<ReturnType<typeof applyAttackDamage>> = "failed";
+    try {
+      outcome = await applyAttackDamage(msg, target, undo);
+    } finally {
+      if (outcome === "requested") {
+        setTimeout(() => setBusy(false), gmRequestTimeoutMs);
+      } else {
+        setBusy(false);
+      }
+    }
+  };
+  const onApply = applyOrUndo(false);
+  const onUndo = applyOrUndo(true);
 
   const onRemove = async () => {
     const latest = getAttackFlag(msg);
