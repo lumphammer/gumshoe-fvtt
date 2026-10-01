@@ -1,5 +1,5 @@
 import * as constants from "../constants";
-import type { SystemSocketAction } from "../types";
+import type { ApplyAttackDamageArgs, SystemSocketAction } from "../types";
 import { dispatchSystemSocketActionToHooks } from "./systemSocketActions";
 
 interface NameHaver {
@@ -189,6 +189,13 @@ function broadcastSystemSocketAction(action: SystemSocketAction) {
 export function requestTurnPass(combatantId: string | null | undefined) {
   if (!combatantId) return;
   broadcastSystemSocketAction({ type: "requestTurnPass", combatantId });
+}
+
+/**
+ * request the GM's client to apply (or undo) attack damage to a target
+ */
+export function requestApplyAttackDamage(args: ApplyAttackDamageArgs) {
+  broadcastSystemSocketAction({ type: "applyAttackDamage", ...args });
 }
 
 export function requestNextTurn() {

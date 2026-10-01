@@ -3,6 +3,7 @@ import React, { useCallback } from "react";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
+import { AttackTargets } from "./AttackTargets";
 import { DiceTerms } from "./DiceTerms";
 
 interface AttackCardProps {
@@ -29,94 +30,99 @@ export const AttackCard = React.memo(
     const hitRoll = poolRolls[0];
     const damageRoll = poolRolls[1];
 
+    const hasAttackFlag = msg.getFlag("investigator", "attack") !== undefined;
+
     return (
-      <div
-        className="dice-roll"
-        css={{
-          position: "relative",
-          display: "grid",
-          gridTemplateColumns: "max-content 1fr",
-          gridTemplateRows: "max-content minmax(0, max-content) max-content",
-          gridTemplateAreas:
-            '"image headline" ' +
-            '"image hit-terms" ' +
-            '"image hit-body" ' +
-            '"image damage-terms" ' +
-            '"image damage-body" ',
-          alignItems: "center",
-        }}
-      >
-        {/* IMAGE */}
+      <>
         <div
+          className="dice-roll"
           css={{
-            height: "4em",
-            width: "4em",
-            gridArea: "image",
-            backgroundImage: `url(${img})`,
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
-            transform: "scale(0.9) rotate(-5deg)",
-            boxShadow: "0 0 0.5em black",
-            marginRight: "1em",
-            alignSelf: "start",
-          }}
-        />
-        {/* HEADLINE */}
-        <div
-          css={{
-            gridArea: "headline",
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: "max-content 1fr",
+            gridTemplateRows: "max-content minmax(0, max-content) max-content",
+            gridTemplateAreas:
+              '"image headline" ' +
+              '"image hit-terms" ' +
+              '"image hit-body" ' +
+              '"image damage-terms" ' +
+              '"image damage-body" ',
+            alignItems: "center",
           }}
         >
-          <b>
-            <a onClick={onClickWeaponName}>{name ?? weapon?.name}</a>
-          </b>{" "}
-          (<Translate>{rangeName || ""}</Translate>)
-        </div>
-        {/* HIT TERMS */}
+          {/* IMAGE */}
+          <div
+            css={{
+              height: "4em",
+              width: "4em",
+              gridArea: "image",
+              backgroundImage: `url(${img})`,
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "center",
+              transform: "scale(0.9) rotate(-5deg)",
+              boxShadow: "0 0 0.5em black",
+              marginRight: "1em",
+              alignSelf: "start",
+            }}
+          />
+          {/* HEADLINE */}
+          <div
+            css={{
+              gridArea: "headline",
+            }}
+          >
+            <b>
+              <a onClick={onClickWeaponName}>{name ?? weapon?.name}</a>
+            </b>{" "}
+            (<Translate>{rangeName || ""}</Translate>)
+          </div>
+          {/* HIT TERMS */}
 
-        <div
-          css={{
-            gridArea: "hit-terms",
-          }}
-        >
-          <Translate>Hit roll</Translate>
-          {": "}
-          <DiceTerms terms={hitRoll.terms} />
-          {" ="}
-        </div>
-        {/* HIT RESULT */}
-        <a
-          className="dice-total"
-          css={{
-            gridArea: "hit-body",
-          }}
-        >
-          {hitRoll.total}
-        </a>
+          <div
+            css={{
+              gridArea: "hit-terms",
+            }}
+          >
+            <Translate>Hit roll</Translate>
+            {": "}
+            <DiceTerms terms={hitRoll.terms} />
+            {" ="}
+          </div>
+          {/* HIT RESULT */}
+          <a
+            className="dice-total"
+            css={{
+              gridArea: "hit-body",
+            }}
+          >
+            {hitRoll.total}
+          </a>
 
-        {/* DAMAGE TERMS */}
+          {/* DAMAGE TERMS */}
 
-        <div
-          css={{
-            gridArea: "damage-terms",
-          }}
-        >
-          <Translate>Damage</Translate>
-          {": "}
-          <DiceTerms terms={damageRoll.terms} />
-          {" ="}
+          <div
+            css={{
+              gridArea: "damage-terms",
+            }}
+          >
+            <Translate>Damage</Translate>
+            {": "}
+            <DiceTerms terms={damageRoll.terms} />
+            {" ="}
+          </div>
+          {/* DAMAGE RESULT */}
+          <a
+            className="dice-total"
+            css={{
+              gridArea: "damage-body",
+            }}
+          >
+            {damageRoll.total}
+          </a>
         </div>
-        {/* DAMAGE RESULT */}
-        <a
-          className="dice-total"
-          css={{
-            gridArea: "damage-body",
-          }}
-        >
-          {damageRoll.total}
-        </a>
-      </div>
+        {hasAttackFlag && <AttackTargets msg={msg} />}
+      </>
     );
   },
 );

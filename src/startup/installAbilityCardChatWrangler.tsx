@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { StrictMode } from "react";
+import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 
 import { AbilityNegateOrWallopMwCard } from "../components/messageCards/AbilityNegateOrWallopMwCard";
@@ -14,6 +15,20 @@ import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { isAbilityItem } from "../module/items/exports";
 import type { MWDifficulty } from "../types";
+
+/**
+ * Render a card synchronously. This hook runs before Foundry puts the message
+ * into the chat log, so if the card is already at full height by then, Foundry
+ * measures and scrolls correctly. With React's usual deferred rendering, the
+ * card grows after Foundry has scrolled to the bottom, leaving it partly out
+ * of view - and every update re-renders the message from empty.
+ */
+function renderCardNow(el: HTMLElement, content: ReactNode) {
+  const root = createRoot(el);
+  flushSync(() => {
+    root.render(content);
+  });
+}
 
 export const installAbilityCardChatWrangler = () => {
   Hooks.on(
@@ -42,7 +57,8 @@ export const installAbilityCardChatWrangler = () => {
       // chat message content is immutable, so anything we can't resolve here is
       // unfixable - render a static stand-in rather than leaving an empty div
       const renderBroken = (reason: string) => {
-        createRoot(el).render(
+        renderCardNow(
+          el,
           <BrokenCard name={name} imageUrl={imageUrl} reason={reason} />,
         );
       };
@@ -169,7 +185,7 @@ export const installAbilityCardChatWrangler = () => {
           </StrictMode>
         );
       }
-      createRoot(el).render(content);
+      renderCardNow(el, content);
     },
   );
 };

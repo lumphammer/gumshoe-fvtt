@@ -150,6 +150,21 @@ export const settings = {
     name: "Use turn-passing initiative?",
     default: pathOfCthulhuPreset.useTurnPassingInitiative,
   }),
+  useDamageApplication: createSettingBoolean({
+    key: "useDamageApplication",
+    name: "Use damage application?",
+    default: pathOfCthulhuPreset.useDamageApplication,
+  }),
+  useGunfireOnHumans: createSettingBoolean({
+    key: "useGunfireOnHumans",
+    name: "Use gunfire on humans?",
+    default: pathOfCthulhuPreset.useGunfireOnHumans,
+  }),
+  useCriticalHits: createSettingBoolean({
+    key: "useCriticalHits",
+    name: "Use critical hits?",
+    default: pathOfCthulhuPreset.useCriticalHits,
+  }),
 
   // ///////////////////////////////////////////////////////////////////////////
   // object settings

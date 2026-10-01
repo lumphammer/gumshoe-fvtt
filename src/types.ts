@@ -12,6 +12,16 @@ export type RequestTurnPassArgs = {
   combatantId: string;
 };
 
+/**
+ * args passed to the `applyAttackDamage` hook. Players send this to get the
+ * GM's client to apply (or undo) damage to a token they don't own.
+ */
+export type ApplyAttackDamageArgs = {
+  messageId: string;
+  targetId: string;
+  undo: boolean;
+};
+
 export type SystemSocketAction =
   | {
       type: "requestNextTurn";
@@ -19,7 +29,10 @@ export type SystemSocketAction =
   | {
       type: "requestTurnPass";
       combatantId: string;
-    };
+    }
+  | ({
+      type: "applyAttackDamage";
+    } & ApplyAttackDamageArgs);
 
 // FOUNDRY STUFF ---------------------------------------------------------------
 

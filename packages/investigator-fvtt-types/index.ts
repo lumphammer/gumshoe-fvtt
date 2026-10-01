@@ -387,6 +387,21 @@ export interface PresetV1 {
    */
   useTurnPassingInitiative?: boolean;
   /**
+   * Record targets on attack rolls, check hits against their Hit Thresholds,
+   * and let users apply damage to their Health from the chat card.
+   */
+  useDamageApplication?: boolean;
+  /**
+   * Fall of DELTA GREEN: gunfire damage which would leave a human Hurt does an
+   * extra 6 points. Only applies with damage application.
+   */
+  useGunfireOnHumans?: boolean;
+  /**
+   * A successful unmodified 6 with a margin of 5 or more rolls two instances
+   * of damage and adds them together. Only applies with damage application.
+   */
+  useCriticalHits?: boolean;
+  /**
    * What standard categories do we have for equipment?
    */
   equipmentCategories?: Record<string, EquipmentCategory>;

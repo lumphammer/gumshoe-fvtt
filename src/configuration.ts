@@ -11,6 +11,7 @@ import {
   JournalCollection,
 } from "./fvtt-exports";
 import { InvestigatorActor } from "./module/actors/InvestigatorActor";
+import type { AttackFlagData } from "./module/attacks/types";
 import { NPCModel } from "./module/actors/npc";
 import { NPCSheetClass } from "./module/actors/NPCSheetClass";
 import { PartyModel } from "./module/actors/party";
@@ -38,7 +39,7 @@ import { MwItemModel } from "./module/items/mwItem";
 import { PersonalDetailModel } from "./module/items/personalDetail";
 import { WeaponModel } from "./module/items/weapon";
 import { JournalEntryHTMLEditorSheetClass } from "./module/JournalEditorSheetClass";
-import type { RequestTurnPassArgs } from "./types";
+import type { ApplyAttackDamageArgs, RequestTurnPassArgs } from "./types";
 
 // types configuration
 declare module "fvtt-types/configuration" {
@@ -76,6 +77,10 @@ declare module "fvtt-types/configuration" {
       [constants.newNPCPacksUpdated]: (newPacks: string[]) => void;
       [constants.themeHMR]: (themeName: string) => void;
       [constants.nextTurn]: (requestingUserId: string) => void;
+      [constants.applyAttackDamage]: (
+        args: ApplyAttackDamageArgs,
+        requestingUserId: string,
+      ) => void;
 
       // third-party hooks
       devModeReady: () => void;
@@ -131,6 +136,12 @@ declare module "fvtt-types/configuration" {
   }
 
   interface FlagConfig {
+    ChatMessage: {
+      investigator: {
+        /** targets and damage for attack rolls, with damage application */
+        attack: AttackFlagData;
+      };
+    };
     Combat: {
       investigator: {
         /** the id of the pre-typed-combat combat this one replaces */

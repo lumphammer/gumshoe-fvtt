@@ -36,6 +36,11 @@ export const weaponSchema = {
   cost: new NumberField({ nullable: false, required: true, initial: 0 }),
   damage: new NumberField({ nullable: false, required: true, initial: 0 }),
   isCloseRange: new BooleanField({ nullable: false, required: true }),
+  isGunfire: new BooleanField({
+    nullable: false,
+    required: true,
+    initial: false,
+  }),
   isLongRange: new BooleanField({ nullable: false, required: false }),
   isNearRange: new BooleanField({ nullable: false, required: true }),
   isPointBlank: new BooleanField({ nullable: false, required: true }),
@@ -169,6 +174,10 @@ export class WeaponModel extends TypeDataModel<
 
   setIsLongRange = async (isLongRange: boolean): Promise<void> => {
     await this.parent.update({ system: { isLongRange } });
+  };
+
+  setIsGunfire = async (isGunfire: boolean): Promise<void> => {
+    await this.parent.update({ system: { isGunfire } });
   };
 }
 

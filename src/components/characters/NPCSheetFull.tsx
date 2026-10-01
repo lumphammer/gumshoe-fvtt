@@ -11,6 +11,7 @@ import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
+import { Toggle } from "../inputs/Toggle";
 import { NotesTypeContext } from "../NotesTypeContext";
 import { TabContainer } from "../TabContainer";
 import { Translate } from "../Translate";
@@ -28,6 +29,8 @@ const settingsUseMwInjuryStatus = settings.useMwInjuryStatus.get;
 const settingsUseNpcCombatBonuses = settings.useNpcCombatBonuses.get;
 const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
 const settingsNpcStats = settings.npcStats.get;
+const settingsShowIsHuman = () =>
+  settings.useDamageApplication.get() && settings.useGunfireOnHumans.get();
 
 export const NPCSheetFull = () => {
   const { actor } = useActorSheetContext();
@@ -122,6 +125,17 @@ export const NPCSheetFull = () => {
             <AsyncNumberInput
               value={actor.system.damageBonus}
               onChange={actor.system.setDamageBonus}
+            />
+          </>
+        )}
+        {settingsShowIsHuman() && (
+          <>
+            <h3 css={{ gridColumn: "start / end" }}>
+              <Translate>Human?</Translate>
+            </h3>
+            <Toggle
+              checked={actor.system.isHuman}
+              onChange={actor.system.setIsHuman}
             />
           </>
         )}

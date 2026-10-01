@@ -13,7 +13,7 @@ system:
   specialitiesMode: one
   specialities:
     - ""
-  min: 0
+  min: -12
   max: 15
   occupational: false
   categoryId: General

@@ -53,6 +53,8 @@ export const WeaponConfig = () => {
   }, [item]);
 
   const validCombatAbilities = settings.combatAbilities.get();
+  const showGunfire =
+    settings.useDamageApplication.get() && settings.useGunfireOnHumans.get();
 
   return (
     <InputGrid>
@@ -82,6 +84,14 @@ export const WeaponConfig = () => {
           onChange={item.system.setDamage}
         />
       </GridField>
+      {showGunfire && (
+        <GridField label="Gunfire?">
+          <Toggle
+            checked={item.system.isGunfire}
+            onChange={item.system.setIsGunfire}
+          />
+        </GridField>
+      )}
       <WeaponRange
         label="Point Blank"
         damage={item.system.pointBlankDamage ?? 0}
