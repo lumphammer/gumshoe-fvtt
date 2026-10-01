@@ -63,7 +63,7 @@ async function buildAttackFlag({
     isGunfire: weapon.system.isGunfire,
     damageFormula,
     damageParams,
-    unusedDamageRoll: rollToRecord(damageRoll),
+    unusedDamageRolls: [rollToRecord(damageRoll)],
     targets: [],
   };
   const extraRolls: AnyRoll[] = [];

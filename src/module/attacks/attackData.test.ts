@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { setSingleTarget, takeUnusedDamageRoll } from "./attackData";
+import {
+  getUnusedDamageRolls,
+  removeTarget,
+  setSingleTarget,
+  takeUnusedDamageRolls,
+} from "./attackData";
 import type { AttackFlagData, AttackTargetData } from "./types";
 
 const attack: AttackFlagData = {
@@ -11,7 +16,7 @@ const attack: AttackFlagData = {
   isGunfire: true,
   damageFormula: "1d6 + @damage",
   damageParams: { damage: 2 },
-  unusedDamageRoll: { die: 6, total: 8 },
+  unusedDamageRolls: [{ die: 6, total: 8 }],
   targets: [],
 };
 
@@ -26,22 +31,22 @@ const target: AttackTargetData = {
   applied: null,
 };
 
-describe("takeUnusedDamageRoll", () => {
+describe("takeUnusedDamageRolls", () => {
   it("gives the attack's damage roll to a target which needs one", () => {
-    const result = takeUnusedDamageRoll(attack, target, 1);
+    const result = takeUnusedDamageRolls(attack, target, 1);
     expect(result.target.damageRolls).toEqual([{ die: 6, total: 8 }]);
-    expect(result.attack.unusedDamageRoll).toBeNull();
+    expect(result.attack.unusedDamageRolls).toEqual([]);
   });
 
   it("leaves it alone for a target which doesn't need damage", () => {
-    const result = takeUnusedDamageRoll(attack, target, 0);
+    const result = takeUnusedDamageRolls(attack, target, 0);
     expect(result.target.damageRolls).toEqual([]);
-    expect(result.attack.unusedDamageRoll).toEqual({ die: 6, total: 8 });
+    expect(result.attack.unusedDamageRolls).toEqual([{ die: 6, total: 8 }]);
   });
 
   it("only gives it out once", () => {
-    const first = takeUnusedDamageRoll(attack, target, 1);
-    const second = takeUnusedDamageRoll(
+    const first = takeUnusedDamageRolls(attack, target, 1);
+    const second = takeUnusedDamageRolls(
       first.attack,
       { ...target, id: "t2" },
       1,
@@ -49,10 +54,72 @@ describe("takeUnusedDamageRoll", () => {
     expect(second.target.damageRolls).toEqual([]);
   });
 
-  it("copes with attacks from before the roll was stored", () => {
-    const { unusedDamageRoll: _, ...oldAttack } = attack;
-    const result = takeUnusedDamageRoll(oldAttack, target, 1);
+  it("only gives out as many as are needed", () => {
+    const result = takeUnusedDamageRolls(
+      {
+        ...attack,
+        unusedDamageRolls: [
+          { die: 6, total: 8 },
+          { die: 2, total: 4 },
+        ],
+      },
+      target,
+      1,
+    );
+    expect(result.target.damageRolls).toEqual([{ die: 6, total: 8 }]);
+    expect(result.attack.unusedDamageRolls).toEqual([{ die: 2, total: 4 }]);
+  });
+
+  it("reads the single roll from older messages", () => {
+    const { unusedDamageRolls: _, ...rest } = attack;
+    const oldAttack = { ...rest, unusedDamageRoll: { die: 3, total: 5 } };
+    const result = takeUnusedDamageRolls(oldAttack, target, 1);
+    expect(result.target.damageRolls).toEqual([{ die: 3, total: 5 }]);
+    expect(getUnusedDamageRolls(result.attack)).toEqual([]);
+  });
+
+  it("copes with attacks from before any roll was stored", () => {
+    const { unusedDamageRolls: _, ...oldAttack } = attack;
+    const result = takeUnusedDamageRolls(oldAttack, target, 1);
     expect(result.target.damageRolls).toEqual([]);
+  });
+});
+
+describe("removeTarget", () => {
+  it("returns the target's damage rolls to the attack", () => {
+    const withTarget = {
+      ...attack,
+      unusedDamageRolls: [],
+      targets: [
+        {
+          ...target,
+          damageRolls: [
+            { die: 6, total: 8 },
+            { die: 2, total: 4 },
+          ],
+        },
+      ],
+    };
+    const result = removeTarget(withTarget, "t1");
+    expect(result.targets).toEqual([]);
+    expect(result.unusedDamageRolls).toEqual([
+      { die: 6, total: 8 },
+      { die: 2, total: 4 },
+    ]);
+  });
+
+  it("gives the same damage back when the target is re-added", () => {
+    const added = takeUnusedDamageRolls(attack, target, 1);
+    const removed = removeTarget(
+      { ...added.attack, targets: [added.target] },
+      "t1",
+    );
+    const readded = takeUnusedDamageRolls(removed, { ...target, id: "t2" }, 1);
+    expect(readded.target.damageRolls).toEqual([{ die: 6, total: 8 }]);
+  });
+
+  it("does nothing for an unknown target", () => {
+    expect(removeTarget(attack, "nope")).toBe(attack);
   });
 });
 
@@ -69,7 +136,7 @@ describe("setSingleTarget", () => {
     };
     const replacement = { ...target, id: "t2", name: "Distracted Thuggo" };
     const result = setSingleTarget(
-      { ...attack, unusedDamageRoll: null, targets: [existing] },
+      { ...attack, unusedDamageRolls: [], targets: [existing] },
       replacement,
     );
     expect(result.targets).toHaveLength(1);

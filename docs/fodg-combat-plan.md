@@ -228,10 +228,11 @@ Decisions made while implementing Phase 1:
   "Add target" / "Change target" button replaces it. A replacement target
   inherits the old one's damage rolls, since they belong to the attack. The
   data stays a list so full-auto and walking fire can allow more.
-- The attack's own damage roll (shown on the card) is stored as
-  `unusedDamageRoll` and given to the first target that needs damage, however
-  and whenever that target was added. Only extra rolls (crit second die) are
-  rolled fresh.
+- Damage rolls belong to the attack, not the target. The attack's own damage
+  roll (shown on the card) starts in `unusedDamageRolls`, and targets take
+  from there before anything new is rolled. Removing a target puts its rolls
+  back, so removing and re-adding (or changing) a target never changes the
+  damage. Only rolls beyond those (e.g. a crit's second die) are fresh.
 - Players see the target's Hit Threshold and hit/miss, but only see Health
   numbers if they have Observer permission on the target. Everyone sees the
   resulting wound state.

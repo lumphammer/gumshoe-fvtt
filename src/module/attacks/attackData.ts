@@ -1,24 +1,58 @@
-import type { AttackFlagData, AttackTargetData } from "./types";
+import type {
+  AttackFlagData,
+  AttackTargetData,
+  DamageRollRecord,
+} from "./types";
 
 // pure helpers for manipulating attack data - no Foundry in here, so they can
 // be tested
 
+export function getUnusedDamageRolls(
+  attack: AttackFlagData,
+): DamageRollRecord[] {
+  if (attack.unusedDamageRolls) return attack.unusedDamageRolls;
+  return attack.unusedDamageRoll ? [attack.unusedDamageRoll] : [];
+}
+
 /**
- * Give a target the attack's own damage roll, if it needs damage and nobody
- * else has used that roll yet. Pure, so it can be tested.
+ * Give a target as many of the attack's unused damage rolls as it needs.
  */
-export function takeUnusedDamageRoll(
+export function takeUnusedDamageRolls(
   attack: AttackFlagData,
   target: AttackTargetData,
   missingRollCount: number,
 ): { attack: AttackFlagData; target: AttackTargetData } {
-  const unused = attack.unusedDamageRoll ?? null;
-  if (missingRollCount <= 0 || unused === null) {
+  const unused = getUnusedDamageRolls(attack);
+  const count = Math.max(0, Math.min(missingRollCount, unused.length));
+  if (count === 0) {
     return { attack, target };
   }
   return {
-    attack: { ...attack, unusedDamageRoll: null },
-    target: { ...target, damageRolls: [...target.damageRolls, unused] },
+    attack: { ...attack, unusedDamageRolls: unused.slice(count) },
+    target: {
+      ...target,
+      damageRolls: [...target.damageRolls, ...unused.slice(0, count)],
+    },
+  };
+}
+
+/**
+ * Remove a target, returning its damage rolls to the attack so the next
+ * target gets the same damage.
+ */
+export function removeTarget(
+  attack: AttackFlagData,
+  targetId: string,
+): AttackFlagData {
+  const removed = attack.targets.find((t) => t.id === targetId);
+  if (!removed) return attack;
+  return {
+    ...attack,
+    unusedDamageRolls: [
+      ...removed.damageRolls,
+      ...getUnusedDamageRolls(attack),
+    ],
+    targets: attack.targets.filter((t) => t.id !== targetId),
   };
 }
 

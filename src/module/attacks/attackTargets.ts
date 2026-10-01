@@ -7,7 +7,7 @@ import type {
   TargetActorInfo,
 } from "./resolveAttackTarget";
 import { resolveAttackTarget } from "./resolveAttackTarget";
-import { takeUnusedDamageRoll } from "./attackData";
+import { takeUnusedDamageRolls } from "./attackData";
 import type {
   AttackFlagData,
   AttackTargetData,
@@ -95,8 +95,8 @@ export function createAttackTarget(token: TokenDocument): AttackTargetData {
 
 /**
  * Give a target any damage rolls it still needs (e.g. after being added, or
- * becoming a critical hit), starting with the attack's own damage roll if it
- * hasn't been used. Returns the updated attack and target, plus any new rolls
+ * becoming a critical hit), starting with any of the attack's unused damage
+ * rolls. Returns the updated attack and target, plus any new rolls
  * so the caller can show them.
  */
 export async function fillMissingDamageRolls(
@@ -107,7 +107,7 @@ export async function fillMissingDamageRolls(
   target: AttackTargetData;
   rolls: AnyRoll[];
 }> {
-  const taken = takeUnusedDamageRoll(
+  const taken = takeUnusedDamageRolls(
     attack,
     target,
     resolveTargetLive(attack, target).missingRollCount,

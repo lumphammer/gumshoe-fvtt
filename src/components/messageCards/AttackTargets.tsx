@@ -7,6 +7,7 @@ import {
   canUserActOnAttack,
 } from "../../module/attacks/applyAttackDamage";
 import {
+  removeTarget,
   replaceTarget,
   setSingleTarget,
 } from "../../module/attacks/attackData";
@@ -130,10 +131,7 @@ const AttackTargetRow = ({
   const onRemove = async () => {
     const latest = getAttackFlag(msg);
     if (!latest) return;
-    await setAttackFlag(msg, {
-      ...latest,
-      targets: latest.targets.filter((t) => t.id !== target.id),
-    });
+    await setAttackFlag(msg, removeTarget(latest, target.id));
   };
 
   const damage = resolved.damage;

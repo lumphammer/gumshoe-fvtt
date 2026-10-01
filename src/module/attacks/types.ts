@@ -42,9 +42,15 @@ export type AttackFlagData = {
   damageFormula: string;
   damageParams: Record<string, number>;
   /**
-   * The damage roll shown on the attack card, until a target uses it. This
-   * keeps the first target's damage the same as what the card shows, however
-   * and whenever it gets added.
+   * Damage rolls which belong to the attack but no target is using: to start
+   * with, the one shown on the attack card, and later any rolls from a target
+   * which has been removed. Targets take these before anything new gets
+   * rolled, so damage doesn't change when you add, remove, or re-add a target.
+   */
+  unusedDamageRolls?: DamageRollRecord[];
+  /**
+   * Single-roll predecessor of `unusedDamageRolls`, only found on messages
+   * from before it existed. Ignored once `unusedDamageRolls` is set.
    */
   unusedDamageRoll?: DamageRollRecord | null;
   targets: AttackTargetData[];
