@@ -71,6 +71,31 @@ export const createStatsField = () =>
     },
   );
 
+/** A Lethality rating, e.g. L1**HH (see module/attacks/lethality.ts) */
+export const createLethalityFields = () => ({
+  rating: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
+    initial: 1,
+  }),
+  asterisks: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
+    initial: 0,
+  }),
+  hs: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
+    initial: 0,
+  }),
+});
+
 export const createRecordField = <T extends AnyObject>(
   options: DataField.Options<T>,
 ) => new ObjectField<DataField.Options<T>, T, T, T>(options);

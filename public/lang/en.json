@@ -382,5 +382,12 @@
   "investigator.AttackTargetNotFound": "Can't find the target's token or actor.",
   "investigator.NoGMToApplyDamage": "A GM needs to be logged in to apply damage to a token you don't own.",
   "investigator.TargetOrSelectATokenFirst": "Target or select a token first.",
-  "investigator.OnlyOneTargetUsingTokenName": "Attacks can only have one target, so using {TokenName}."
+  "investigator.OnlyOneTargetUsingTokenName": "Attacks can only have one target, so using {TokenName}.",
+  "investigator.UseLethality": "Use Lethality?",
+  "investigator.Lethality": "Lethality",
+  "investigator.LethalityPlaceholder": "None (e.g. L1*)",
+  "investigator.LethalityFormatHint": "Use the book's notation: L, a number, then any asterisks, then any Hs, e.g. L1, L2*, L1H, L1**HH.",
+  "investigator.LethalityDies": "Killed outright",
+  "investigator.LethalityDieDie": "die {Die}",
+  "investigator.ImmuneToLethality": "Immune to Lethality?"
 }

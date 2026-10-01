@@ -9,6 +9,7 @@ const makeAttack = (overrides: Partial<AttackData> = {}): AttackData => ({
   hitDie: 4,
   attackerIsHurt: false,
   isGunfire: true,
+  lethality: null,
   damageFormula: "1d6",
   damageParams: {},
   unusedDamageRolls: [],
@@ -35,9 +36,14 @@ const human: TargetActorInfo = {
   armor: null,
   health: 6,
   isHuman: true,
+  immuneToLethality: false,
 };
 
-const options = { useCriticalHits: true, useGunfireOnHumans: true };
+const options = {
+  useCriticalHits: true,
+  useGunfireOnHumans: true,
+  useLethality: true,
+};
 
 describe("resolveAttackTarget", () => {
   it("resolves a plain hit", () => {

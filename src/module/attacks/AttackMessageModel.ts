@@ -7,6 +7,7 @@ import {
   TypedObjectField,
   TypeDataModel,
 } from "../../fvtt-exports";
+import { createLethalityFields } from "../schemaFields";
 import { coverValues } from "./rules";
 
 const createDamageRollField = () =>
@@ -71,6 +72,12 @@ export const attackDataSchema = {
     nullable: false,
     required: true,
     initial: false,
+  }),
+  /** snapshot of the weapon's Lethality, if it has one and the rule is on */
+  lethality: new SchemaField(createLethalityFields(), {
+    nullable: true,
+    required: true,
+    initial: null,
   }),
   /** so we can roll more damage later, e.g. for a crit or a new target */
   damageFormula: new StringField({ nullable: false, required: true }),

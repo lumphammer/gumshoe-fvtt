@@ -67,6 +67,11 @@ export function getStat(actor: Actor, statId: string): number | null {
   return typeof value === "number" ? value : null;
 }
 
+/** Only NPCs can be immune (unnatural creatures, p. 093) */
+export function isImmuneToLethality(actor: Actor): boolean {
+  return isNPCActor(actor) && actor.system.immuneToLethality;
+}
+
 /** PCs are always human. NPCs have a flag (ghouls, dogs, etc. aren't). */
 export function isHumanActor(actor: Actor): boolean {
   if (isPCActor(actor)) return true;

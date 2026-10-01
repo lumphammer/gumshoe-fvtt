@@ -12,6 +12,7 @@ const attack: AttackData = {
   hitDie: 6,
   attackerIsHurt: false,
   isGunfire: true,
+  lethality: null,
   damageFormula: "1d6 + @damage",
   damageParams: { damage: 2 },
   unusedDamageRolls: [{ die: 6, total: 8 }],
