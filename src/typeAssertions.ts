@@ -16,6 +16,19 @@ export function isSystemSocketAction(x: unknown): x is SystemSocketAction {
       x["combatantId"].length > 0
     );
   }
+  if (x["type"] === "applyAttackDamage") {
+    return (
+      Object.keys(x).length === 4 &&
+      hasOwnProperty(x, "messageId") &&
+      typeof x["messageId"] === "string" &&
+      x["messageId"].length > 0 &&
+      hasOwnProperty(x, "targetId") &&
+      typeof x["targetId"] === "string" &&
+      x["targetId"].length > 0 &&
+      hasOwnProperty(x, "undo") &&
+      typeof x["undo"] === "boolean"
+    );
+  }
   return false;
 }
 

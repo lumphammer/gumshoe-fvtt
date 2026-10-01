@@ -22,6 +22,28 @@ export const CombatOptionsSettings = ({ setters }: { setters: Setters }) => {
           onChange={setters.useTurnPassingInitiative}
         />
       </SettingsGridField>
+      <SettingsGridField label="Use damage application?">
+        <Toggle
+          checked={settings.useDamageApplication}
+          onChange={setters.useDamageApplication}
+        />
+      </SettingsGridField>
+      {settings.useDamageApplication && (
+        <>
+          <SettingsGridField label="Use gunfire on humans?">
+            <Toggle
+              checked={settings.useGunfireOnHumans}
+              onChange={setters.useGunfireOnHumans}
+            />
+          </SettingsGridField>
+          <SettingsGridField label="Use critical hits?">
+            <Toggle
+              checked={settings.useCriticalHits}
+              onChange={setters.useCriticalHits}
+            />
+          </SettingsGridField>
+        </>
+      )}
     </InputGrid>
   );
 };

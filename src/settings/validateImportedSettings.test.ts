@@ -10,6 +10,27 @@ it("should validate valid settings", () => {
   expect(validatedResult).toEqual(ashenStarsExport);
 });
 
+it("should accept an older export without the damage application settings", () => {
+  const validatedResult = validateImportedSettings(
+    JSON.stringify(ashenStarsExport),
+  );
+  expect(validatedResult).not.toHaveProperty("useDamageApplication");
+  expect(validatedResult).not.toHaveProperty("useGunfireOnHumans");
+  expect(validatedResult).not.toHaveProperty("useCriticalHits");
+});
+
+it("should preserve the damage application settings through a round trip", () => {
+  const exportedSettings = {
+    useDamageApplication: true,
+    useGunfireOnHumans: true,
+    useCriticalHits: false,
+  };
+
+  expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
+    exportedSettings,
+  );
+});
+
 it("should validate an empty object", () => {
   const validatedResult = validateImportedSettings("{}");
   expect(validatedResult).toEqual({});

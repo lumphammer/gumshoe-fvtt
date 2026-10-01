@@ -65,6 +65,7 @@ export const socketScope = `system.${systemId}`;
 export const settingsCloseAttempted = `${systemId}.settingsCloseAttempted`;
 export const themeHMR = `${systemId}:themeHMR`;
 export const nextTurn = `${systemId}.nextTurn`;
+export const applyAttackDamage = `${systemId}.applyAttackDamage`;
 
 // css classes
 export const abilityChatMessageClassName = "investigator-ability-test";

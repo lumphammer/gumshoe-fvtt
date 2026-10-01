@@ -56,6 +56,9 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
   },
   useNpcCombatBonuses: false,
   useTurnPassingInitiative: false,
+  useDamageApplication: false,
+  useGunfireOnHumans: false,
+  useCriticalHits: false,
   equipmentCategories: {
     general: {
       name: "General",

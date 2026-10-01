@@ -214,6 +214,25 @@ Import tolerance (general rule: importing an older export must always work):
 - Gunfire-on-humans and critical hits (behind settings).
 - `NPC.isHuman` field; `Weapon.isGunfire` field.
 
+Decisions made while implementing Phase 1:
+
+- A critical hit's two rolls are added together into **one** instance of
+  damage, so armor applies to the total once.
+- Armor uses the magnitude of the stat, so "Armor -1" (statblock style) and
+  "Armor 1" both reduce damage by 1.
+- Applying damage doesn't clamp Health to the Health ability's `min` (NBA NPC
+  Health has `min: 0`, which would make wound states unreachable).
+- A target without a `hitThreshold` stat uses 3.
+- Damage is only rolled for targets that are hit. The attack's own damage
+  roll is reused for the first target that needs one, so a single-target
+  attack looks the same as before.
+- Players see the target's Hit Threshold and hit/miss, but only see Health
+  numbers if they have Observer permission on the target. Everyone sees the
+  resulting wound state.
+- Only the message author (or a GM) can edit targets or apply/undo damage.
+  If they don't own the target, the active GM's client does it via socket,
+  after checking the requester is the author or a GM.
+
 ### Phase 2 — Lethality
 
 - Weapon Lethality fields + sheet UI (with a `L1**HH`-style display).
