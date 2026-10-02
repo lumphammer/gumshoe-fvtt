@@ -27,11 +27,11 @@ export type AttackTargetData = {
 };
 
 /**
- * Stored at `flags.investigator.attack` on attack chat messages when damage
- * application is enabled.
+ * The combat rules' view of an attack: the system data of an `attack` chat
+ * message, minus the weapon details used for display. Must match
+ * `attackDataSchema` (see attackDataTypes.test-d.ts).
  */
-export type AttackFlagData = {
-  version: 1;
+export type AttackData = {
   hitTotal: number;
   /** the unmodified die, for critical hits */
   hitDie: number;
@@ -41,17 +41,7 @@ export type AttackFlagData = {
   /** so we can roll more damage later, e.g. for a crit or a new target */
   damageFormula: string;
   damageParams: Record<string, number>;
-  /**
-   * Damage rolls which belong to the attack but no target is using: to start
-   * with, the one shown on the attack card, and later any rolls from a target
-   * which has been removed. Targets take these before anything new gets
-   * rolled, so damage doesn't change when you add, remove, or re-add a target.
-   */
-  unusedDamageRolls?: DamageRollRecord[];
-  /**
-   * Single-roll predecessor of `unusedDamageRolls`, only found on messages
-   * from before it existed. Ignored once `unusedDamageRolls` is set.
-   */
-  unusedDamageRoll?: DamageRollRecord | null;
+  /** damage rolls which belong to the attack but no target is using */
+  unusedDamageRolls: DamageRollRecord[];
   targets: AttackTargetData[];
 };

@@ -2,18 +2,16 @@ import { describe, expect, it } from "vitest";
 
 import type { TargetActorInfo } from "./resolveAttackTarget";
 import { resolveAttackTarget } from "./resolveAttackTarget";
-import type { AttackFlagData, AttackTargetData } from "./types";
+import type { AttackData, AttackTargetData } from "./types";
 
-const makeAttack = (
-  overrides: Partial<AttackFlagData> = {},
-): AttackFlagData => ({
-  version: 1,
+const makeAttack = (overrides: Partial<AttackData> = {}): AttackData => ({
   hitTotal: 4,
   hitDie: 4,
   attackerIsHurt: false,
   isGunfire: true,
   damageFormula: "1d6",
   damageParams: {},
+  unusedDamageRolls: [],
   targets: [],
   ...overrides,
 });
@@ -127,7 +125,7 @@ describe("resolveAttackTarget", () => {
 
   it("applies gunfire only to humans, from guns, with the option on", () => {
     const shot = (
-      attack: Partial<AttackFlagData>,
+      attack: Partial<AttackData>,
       info: Partial<TargetActorInfo>,
       useGunfireOnHumans: boolean,
     ) =>

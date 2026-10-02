@@ -16,6 +16,8 @@ import { systemLogger } from "../functions/utilities";
 import { isAbilityItem } from "../module/items/exports";
 import type { MWDifficulty } from "../types";
 import { createCardRootTracker } from "./createCardRootTracker";
+import { isAttackMessage } from "../module/attacks/attackTargets";
+import { InvestigatorItem } from "../module/items/InvestigatorItem";
 
 // a timeout is late enough for Foundry to have swapped a re-rendered message's
 // old element for its new one
@@ -49,6 +51,25 @@ export const installAbilityCardChatWrangler = () => {
         `.${constants.abilityChatMessageClassName}`,
       );
       if (el === null) {
+        return;
+      }
+
+      // attack messages carry their data in `system`, so we don't need to
+      // dig anything out of the markup
+      if (isAttackMessage(chatMessage)) {
+        const { weaponUuid, weaponName, weaponImg, rangeName } =
+          chatMessage.system;
+        const weapon = fromUuidSync(weaponUuid);
+        renderCardNow(
+          el,
+          <AttackCard
+            msg={chatMessage}
+            weapon={weapon instanceof InvestigatorItem ? weapon : undefined}
+            rangeName={rangeName}
+            name={weaponName}
+            imageUrl={weaponImg}
+          />,
+        );
         return;
       }
       // this seems clunky but I can't see a way to pass arbitrary data through

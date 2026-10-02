@@ -14,20 +14,17 @@ import {
 import {
   createAttackTarget,
   fillMissingDamageRolls,
-  getAttackFlag,
+  getAttackData,
   getTargetActor,
   pickSingleTargetToken,
   resolveTargetLive,
-  setAttackFlag,
+  setAttackData,
   showRolls,
 } from "../../module/attacks/attackTargets";
 import { getHealth } from "../../module/attacks/health";
 import type { Cover, WoundState } from "../../module/attacks/rules";
 import { getWoundState } from "../../module/attacks/rules";
-import type {
-  AttackFlagData,
-  AttackTargetData,
-} from "../../module/attacks/types";
+import type { AttackData, AttackTargetData } from "../../module/attacks/types";
 import { Translate } from "../Translate";
 
 /** how long to wait for the GM to apply damage before re-enabling buttons */
@@ -63,7 +60,7 @@ function useRefreshOnDocumentChanges() {
 
 type AttackTargetRowProps = {
   msg: ChatMessage;
-  attack: AttackFlagData;
+  attack: AttackData;
   target: AttackTargetData;
   canAct: boolean;
   updateTarget: (
@@ -110,12 +107,12 @@ const AttackTargetRow = ({
   };
 
   const onRollDamage = withBusy(async () => {
-    const latest = getAttackFlag(msg);
+    const latest = getAttackData(msg);
     const latestTarget = latest?.targets.find((t) => t.id === target.id);
     if (!latest || !latestTarget) return;
     const filled = await fillMissingDamageRolls(latest, latestTarget);
     await showRolls(filled.rolls);
-    await setAttackFlag(msg, replaceTarget(filled.attack, filled.target));
+    await setAttackData(msg, replaceTarget(filled.attack, filled.target));
   });
 
   // when the GM is doing it for us, the card will re-render (and so reset)
@@ -138,9 +135,9 @@ const AttackTargetRow = ({
   const onUndo = applyOrUndo(true);
 
   const onRemove = async () => {
-    const latest = getAttackFlag(msg);
+    const latest = getAttackData(msg);
     if (!latest) return;
-    await setAttackFlag(msg, removeTarget(latest, target.id));
+    await setAttackData(msg, removeTarget(latest, target.id));
   };
 
   const damage = resolved.damage;
@@ -366,16 +363,16 @@ type AttackTargetsProps = {
 export const AttackTargets = ({ msg }: AttackTargetsProps) => {
   assertGame(game);
   useRefreshOnDocumentChanges();
-  const attack = getAttackFlag(msg);
+  const attack = getAttackData(msg);
   const canAct = canUserActOnAttack(game.user, msg) && msg.isOwner;
 
   const updateTarget = async (
     targetId: string,
     update: Partial<AttackTargetData>,
   ) => {
-    const latest = getAttackFlag(msg);
+    const latest = getAttackData(msg);
     if (!latest) return;
-    await setAttackFlag(msg, {
+    await setAttackData(msg, {
       ...latest,
       targets: latest.targets.map((t) =>
         t.id === targetId ? { ...t, ...update } : t,
@@ -384,7 +381,7 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
   };
 
   const onSetTarget = async () => {
-    const latest = getAttackFlag(msg);
+    const latest = getAttackData(msg);
     if (!latest) return;
     const token = pickSingleTargetToken();
     if (!token) return;
@@ -394,7 +391,7 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
       setSingleTarget(latest, createAttackTarget(token)).targets[0],
     );
     await showRolls(filled.rolls);
-    await setAttackFlag(msg, { ...filled.attack, targets: [filled.target] });
+    await setAttackData(msg, { ...filled.attack, targets: [filled.target] });
   };
 
   if (!attack) {

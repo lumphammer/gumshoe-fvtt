@@ -8,25 +8,33 @@ import type {
 } from "./resolveAttackTarget";
 import { resolveAttackTarget } from "./resolveAttackTarget";
 import { takeUnusedDamageRolls } from "./attackData";
-import type {
-  AttackFlagData,
-  AttackTargetData,
-  DamageRollRecord,
-} from "./types";
+import type { AttackData, AttackTargetData, DamageRollRecord } from "./types";
 
 /** our damage rolls carry data, which plain `Roll` doesn't allow for */
 export type AnyRoll = Roll<Record<string, number>>;
 
-export function getAttackFlag(message: ChatMessage): AttackFlagData | null {
-  const attack = message.getFlag("investigator", "attack");
-  return attack ?? null;
+export type AttackMessage = ChatMessage.OfType<"attack">;
+
+export function isAttackMessage(
+  message: ChatMessage,
+): message is AttackMessage {
+  return message.type === "attack";
 }
 
-export async function setAttackFlag(
+/**
+ * Get an attack message's data as a plain object, which the rules code can
+ * work with and hand back to `setAttackData`.
+ */
+export function getAttackData(message: ChatMessage): AttackData | null {
+  if (!isAttackMessage(message)) return null;
+  return message.system.toObject();
+}
+
+export async function setAttackData(
   message: ChatMessage,
-  attack: AttackFlagData,
+  attack: AttackData,
 ): Promise<void> {
-  await message.setFlag("investigator", "attack", attack);
+  await message.update({ system: attack });
 }
 
 export function getTargetActor(target: AttackTargetData): Actor | null {
@@ -57,7 +65,7 @@ export function getResolveOptions() {
 }
 
 export function resolveTargetLive(
-  attack: AttackFlagData,
+  attack: AttackData,
   target: AttackTargetData,
 ): ResolvedAttackTarget {
   return resolveAttackTarget(
@@ -73,7 +81,7 @@ export function rollToRecord(roll: AnyRoll): DamageRollRecord {
 }
 
 export async function rollDamage(
-  attack: Pick<AttackFlagData, "damageFormula" | "damageParams">,
+  attack: Pick<AttackData, "damageFormula" | "damageParams">,
 ): Promise<{ roll: AnyRoll; record: DamageRollRecord }> {
   const roll = new Roll(attack.damageFormula, attack.damageParams);
   await roll.evaluate();
@@ -100,10 +108,10 @@ export function createAttackTarget(token: TokenDocument): AttackTargetData {
  * so the caller can show them.
  */
 export async function fillMissingDamageRolls(
-  attack: AttackFlagData,
+  attack: AttackData,
   target: AttackTargetData,
 ): Promise<{
-  attack: AttackFlagData;
+  attack: AttackData;
   target: AttackTargetData;
   rolls: AnyRoll[];
 }> {

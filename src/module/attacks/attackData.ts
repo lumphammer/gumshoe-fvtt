@@ -1,28 +1,17 @@
-import type {
-  AttackFlagData,
-  AttackTargetData,
-  DamageRollRecord,
-} from "./types";
+import type { AttackData, AttackTargetData } from "./types";
 
 // pure helpers for manipulating attack data - no Foundry in here, so they can
 // be tested
-
-export function getUnusedDamageRolls(
-  attack: AttackFlagData,
-): DamageRollRecord[] {
-  if (attack.unusedDamageRolls) return attack.unusedDamageRolls;
-  return attack.unusedDamageRoll ? [attack.unusedDamageRoll] : [];
-}
 
 /**
  * Give a target as many of the attack's unused damage rolls as it needs.
  */
 export function takeUnusedDamageRolls(
-  attack: AttackFlagData,
+  attack: AttackData,
   target: AttackTargetData,
   missingRollCount: number,
-): { attack: AttackFlagData; target: AttackTargetData } {
-  const unused = getUnusedDamageRolls(attack);
+): { attack: AttackData; target: AttackTargetData } {
+  const unused = attack.unusedDamageRolls;
   const count = Math.max(0, Math.min(missingRollCount, unused.length));
   if (count === 0) {
     return { attack, target };
@@ -40,18 +29,12 @@ export function takeUnusedDamageRolls(
  * Remove a target, returning its damage rolls to the attack so the next
  * target gets the same damage.
  */
-export function removeTarget(
-  attack: AttackFlagData,
-  targetId: string,
-): AttackFlagData {
+export function removeTarget(attack: AttackData, targetId: string): AttackData {
   const removed = attack.targets.find((t) => t.id === targetId);
   if (!removed) return attack;
   return {
     ...attack,
-    unusedDamageRolls: [
-      ...removed.damageRolls,
-      ...getUnusedDamageRolls(attack),
-    ],
+    unusedDamageRolls: [...removed.damageRolls, ...attack.unusedDamageRolls],
     targets: attack.targets.filter((t) => t.id !== targetId),
   };
 }
@@ -60,9 +43,9 @@ export function removeTarget(
  * Put an updated target back into an attack
  */
 export function replaceTarget(
-  attack: AttackFlagData,
+  attack: AttackData,
   target: AttackTargetData,
-): AttackFlagData {
+): AttackData {
   return {
     ...attack,
     targets: attack.targets.map((t) => (t.id === target.id ? target : t)),
@@ -76,9 +59,9 @@ export function replaceTarget(
  * walking fire will want multiple targets.)
  */
 export function setSingleTarget(
-  attack: AttackFlagData,
+  attack: AttackData,
   target: AttackTargetData,
-): AttackFlagData {
+): AttackData {
   const inheritedRolls = attack.targets.flatMap((t) => t.damageRolls);
   return {
     ...attack,

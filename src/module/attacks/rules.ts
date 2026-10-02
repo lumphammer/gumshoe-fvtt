@@ -6,7 +6,9 @@
  * modifiers are standard GUMSHOE.
  */
 
-export type Cover = "exposed" | "partial" | "full";
+export const coverValues = ["exposed", "partial", "full"] as const;
+
+export type Cover = (typeof coverValues)[number];
 
 export type WoundState = "ok" | "hurt" | "seriouslyWounded" | "dead";
 

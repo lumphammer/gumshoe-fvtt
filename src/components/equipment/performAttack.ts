@@ -1,4 +1,3 @@
-import * as constants from "../../constants";
 import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
 import { assertGame } from "../../functions/isGame";
 import { PoolTerm } from "../../fvtt-exports";
@@ -12,7 +11,7 @@ import {
 } from "../../module/attacks/attackTargets";
 import { getHealth } from "../../module/attacks/health";
 import { hurtHealth } from "../../module/attacks/rules";
-import type { AttackFlagData } from "../../module/attacks/types";
+import type { AttackData } from "../../module/attacks/types";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
@@ -35,12 +34,11 @@ type PerformAttackArgs2 = {
 };
 
 /**
- * Build the attack data for damage application, using the user's current
- * targets. The attack's own damage roll is used for the first target which
- * needs one; anything else needed (more targets, critical hits) gets rolled
- * here.
+ * Build the attack data. With damage application on, this includes the user's
+ * current target: the attack's own damage roll goes to it if it needs one, and
+ * anything else needed (e.g. for a critical hit) gets rolled here.
  */
-async function buildAttackFlag({
+async function buildAttackData({
   hitRoll,
   damageRoll,
   damageFormula,
@@ -52,11 +50,10 @@ async function buildAttackFlag({
   damageFormula: string;
   damageParams: Record<string, number>;
   weapon: WeaponItem;
-}): Promise<{ flag: AttackFlagData; extraRolls: AnyRoll[] }> {
+}): Promise<{ attack: AttackData; extraRolls: AnyRoll[] }> {
   assertGame(game);
   const attackerHealth = weapon.actor ? getHealth(weapon.actor) : null;
-  let flag: AttackFlagData = {
-    version: 1,
+  let attack: AttackData = {
     hitTotal: hitRoll.total ?? 0,
     hitDie: hitRoll.dice[0]?.total ?? 0,
     attackerIsHurt: attackerHealth !== null && attackerHealth <= hurtHealth,
@@ -67,18 +64,21 @@ async function buildAttackFlag({
     targets: [],
   };
   const extraRolls: AnyRoll[] = [];
+  if (!settings.useDamageApplication.get()) {
+    return { attack, extraRolls };
+  }
   // only use targets here, not selection: your selected token is usually
   // the one doing the shooting
   const token = pickSingleTargetToken({ allowSelected: false });
   if (token) {
     const filled = await fillMissingDamageRolls(
-      flag,
+      attack,
       createAttackTarget(token),
     );
     extraRolls.push(...filled.rolls);
-    flag = { ...filled.attack, targets: [filled.target] };
+    attack = { ...filled.attack, targets: [filled.target] };
   }
-  return { flag, extraRolls };
+  return { attack, extraRolls };
 }
 
 export const performAttack =
@@ -150,40 +150,35 @@ export const performAttack =
     await damageRoll.evaluate();
     damageRoll.dice[0].options.rollOrder = 2;
 
-    const attack = settings.useDamageApplication.get()
-      ? await buildAttackFlag({
-          hitRoll,
-          damageRoll,
-          damageFormula: damageTerm,
-          damageParams,
-          weapon,
-        })
-      : null;
-    attack?.extraRolls.forEach((roll, i) => {
+    const { attack, extraRolls } = await buildAttackData({
+      hitRoll,
+      damageRoll,
+      damageFormula: damageTerm,
+      damageParams,
+      weapon,
+    });
+    extraRolls.forEach((roll, i) => {
       roll.dice[0].options.rollOrder = 3 + i;
     });
 
-    const rolls = [hitRoll, damageRoll, ...(attack?.extraRolls ?? [])];
+    const rolls = [hitRoll, damageRoll, ...extraRolls];
     // @ts-expect-error fvtt-types
     const pool = PoolTerm.fromRolls(rolls);
     const actualRoll = Roll.fromTerms([pool]);
 
-    const abilityId = ability?._id ?? "";
-    const actorId = weapon.actor?._id ?? "";
-    const weaponId = weapon._id;
-
     void actualRoll.toMessage({
+      type: "attack",
       speaker: ChatMessage.getSpeaker({ actor: weapon.actor as Actor.Stored }),
-      content: buildAbilityCardContent({
-        [constants.htmlDataItemId]: abilityId,
-        [constants.htmlDataActorId]: actorId,
-        [constants.htmlDataMode]: constants.htmlDataModeAttack,
-        [constants.htmlDataRange]: rangeName,
-        [constants.htmlDataWeaponId]: weaponId,
-        [constants.htmlDataName]: weapon.name,
-        [constants.htmlDataImageUrl]: weapon.img,
-      }),
-      ...(attack ? { flags: { investigator: { attack: attack.flag } } } : {}),
+      // a bare marker for the card to render into. Without some content,
+      // Foundry would fill the message with its own roll display.
+      content: buildAbilityCardContent({}),
+      system: {
+        ...attack,
+        weaponUuid: weapon.uuid,
+        weaponName: weapon.name,
+        weaponImg: weapon.img ?? "",
+        rangeName,
+      },
     });
 
     const currentPool = ability?.system.pool ?? 0;

@@ -11,7 +11,7 @@ import {
   JournalCollection,
 } from "./fvtt-exports";
 import { InvestigatorActor } from "./module/actors/InvestigatorActor";
-import type { AttackFlagData } from "./module/attacks/types";
+import { AttackMessageModel } from "./module/attacks/AttackMessageModel";
 import { NPCModel } from "./module/actors/npc";
 import { NPCSheetClass } from "./module/actors/NPCSheetClass";
 import { PartyModel } from "./module/actors/party";
@@ -110,6 +110,9 @@ declare module "fvtt-types/configuration" {
       personalDetail: typeof PersonalDetailModel;
       card: typeof CardModel;
     };
+    ChatMessage: {
+      attack: typeof AttackMessageModel;
+    };
     Combat: {
       classic: typeof ClassicCombatModel;
       turnPassing: typeof TurnPassingCombatModel;
@@ -136,12 +139,6 @@ declare module "fvtt-types/configuration" {
   }
 
   interface FlagConfig {
-    ChatMessage: {
-      investigator: {
-        /** targets and damage for attack rolls, with damage application */
-        attack: AttackFlagData;
-      };
-    };
     Combat: {
       investigator: {
         /** the id of the pre-typed-combat combat this one replaces */
@@ -206,6 +203,8 @@ Hooks.once("init", function () {
   CONFIG.Item.dataModels.mwItem = MwItemModel;
   CONFIG.Item.dataModels.personalDetail = PersonalDetailModel;
   CONFIG.Item.dataModels.card = CardModel;
+
+  CONFIG.ChatMessage.dataModels.attack = AttackMessageModel;
 
   CONFIG.Combat.dataModels.classic = ClassicCombatModel;
   CONFIG.Combat.dataModels.turnPassing = TurnPassingCombatModel;

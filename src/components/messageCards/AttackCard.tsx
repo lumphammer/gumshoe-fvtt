@@ -1,7 +1,9 @@
 import React, { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { isAttackMessage } from "../../module/attacks/attackTargets";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import { settings } from "../../settings/settings";
 import { Translate } from "../Translate";
 import { AttackTargets } from "./AttackTargets";
 import { DiceTerms } from "./DiceTerms";
@@ -17,9 +19,10 @@ interface AttackCardProps {
 export const AttackCard = React.memo(
   ({ msg, rangeName, weapon, name, imageUrl }: AttackCardProps) => {
     const sheet = weapon?.sheet;
-    assertApplicationV2(sheet);
 
     const onClickWeaponName = useCallback(() => {
+      if (!sheet) return;
+      assertApplicationV2(sheet);
       void sheet.render({ force: true });
     }, [sheet]);
 
@@ -30,7 +33,10 @@ export const AttackCard = React.memo(
     const hitRoll = poolRolls[0];
     const damageRoll = poolRolls[1];
 
-    const hasAttackFlag = msg.getFlag("investigator", "attack") !== undefined;
+    // older attack messages don't have targets at all
+    const showTargets =
+      isAttackMessage(msg) &&
+      (settings.useDamageApplication.get() || msg.system.targets.length > 0);
 
     return (
       <>
@@ -73,7 +79,11 @@ export const AttackCard = React.memo(
             }}
           >
             <b>
-              <a onClick={onClickWeaponName}>{name ?? weapon?.name}</a>
+              {sheet ? (
+                <a onClick={onClickWeaponName}>{name ?? weapon?.name}</a>
+              ) : (
+                name
+              )}
             </b>{" "}
             (<Translate>{rangeName || ""}</Translate>)
           </div>
@@ -121,7 +131,7 @@ export const AttackCard = React.memo(
             {damageRoll.total}
           </a>
         </div>
-        {hasAttackFlag && <AttackTargets msg={msg} />}
+        {showTargets && <AttackTargets msg={msg} />}
       </>
     );
   },
