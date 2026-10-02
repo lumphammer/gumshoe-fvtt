@@ -368,8 +368,22 @@ const AttackTargetRow = ({
               <Translate>Damage</Translate>
             </span>
             <span>
-              {!damage &&
-              (resolved.lethality || resolved.instances.length > 1) ? (
+              {resolved.missingRollCount > 0 ? (
+                // waiting on more rolls (e.g. cover changed and now more
+                // bullets hit), so show the ones we have so far
+                resolved.lethality ? (
+                  target.damageRolls.map((r, i) => (
+                    <span key={i} css={{ display: "block" }}>
+                      <Translate values={{ Die: String(r.die) }}>
+                        LethalityDieDie
+                      </Translate>
+                    </span>
+                  ))
+                ) : (
+                  target.damageRolls.map((r) => r.total).join(", ")
+                )
+              ) : !damage &&
+                (resolved.lethality || resolved.instances.length > 1) ? (
                 // no Health to resolve against, so just show what each
                 // bullet rolled
                 resolved.instances.map((instance, i) => (
