@@ -18,7 +18,7 @@ import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import type { WeaponItem } from "../../module/items/weapon";
 import { settings } from "../../settings/settings";
-import { consumeWeaponAmmo } from "./consumeWeaponAmmo";
+import { consumeWeaponAmmo, hasAmmoFor } from "./consumeWeaponAmmo";
 
 type PerformAttackArgs1 = {
   spend: number;
@@ -87,6 +87,9 @@ async function buildAttackData({
   return { attack, extraRolls };
 }
 
+/** weapons with an attack under way */
+const weaponsAttacking = new WeakSet<WeaponItem>();
+
 export const performAttack =
   ({
     spend,
@@ -106,98 +109,114 @@ export const performAttack =
     if (fireMode === "burst" && spend < burstMinimumSpend) {
       return;
     }
-    const damage = weapon.system.damage;
-
-    const useBoost = settings.useBoost.get();
-    const isBoosted = useBoost && ability !== undefined && ability.system.boost;
-    const boost = isBoosted ? 1 : 0;
-
-    let hitTerm = "1d6 + @spend";
-    const hitParams: { [name: string]: number } = { spend };
-    if (isBoosted) {
-      hitTerm += " + @boost";
-      hitParams["boost"] = boost;
+    // the panel only checks ammo and spend as of its last render, so a quick
+    // second click could fire again before this attack has used them up
+    if (weaponsAttacking.has(weapon)) {
+      return;
     }
+    if (!hasAmmoFor(weapon.system, fireMode)) {
+      return;
+    }
+    weaponsAttacking.add(weapon);
+    try {
+      const damage = weapon.system.damage;
 
-    const useNpcBonuses =
-      settings.useNpcCombatBonuses.get() &&
-      ability?.isOwned &&
-      ability.parent &&
-      isNPCActor(ability.parent) &&
-      isGeneralAbilityItem(ability);
+      const useBoost = settings.useBoost.get();
+      const isBoosted =
+        useBoost && ability !== undefined && ability.system.boost;
+      const boost = isBoosted ? 1 : 0;
 
-    const parent = ability.parent;
-    if (useNpcBonuses) {
-      hitTerm += " + @npcCombatBonus";
-      if (isNPCActor(parent)) {
-        hitParams["npcCombatBonus"] = parent.system.combatBonus;
+      let hitTerm = "1d6 + @spend";
+      const hitParams: { [name: string]: number } = { spend };
+      if (isBoosted) {
+        hitTerm += " + @boost";
+        hitParams["boost"] = boost;
       }
-      hitTerm += " + @abilityCombatBonus";
-      hitParams["abilityCombatBonus"] = ability.system.combatBonus;
-    }
-    const hitRoll = new Roll(hitTerm, hitParams);
 
-    await hitRoll.evaluate();
+      const useNpcBonuses =
+        settings.useNpcCombatBonuses.get() &&
+        ability?.isOwned &&
+        ability.parent &&
+        isNPCActor(ability.parent) &&
+        isGeneralAbilityItem(ability);
 
-    hitRoll.dice[0].options = {
-      rollOrder: 1,
-    };
-
-    hitRoll.dice[0].options.rollOrder = 1;
-
-    let damageTerm = "1d6 + @damage + @rangeDamage";
-    const damageParams: { [name: string]: number } = { damage, rangeDamage };
-    if (useNpcBonuses) {
-      damageTerm += " + @npcDamageBonus";
-      if (isNPCActor(parent)) {
-        damageParams["npcDamageBonus"] = parent.system.damageBonus;
+      const parent = ability.parent;
+      if (useNpcBonuses) {
+        hitTerm += " + @npcCombatBonus";
+        if (isNPCActor(parent)) {
+          hitParams["npcCombatBonus"] = parent.system.combatBonus;
+        }
+        hitTerm += " + @abilityCombatBonus";
+        hitParams["abilityCombatBonus"] = ability.system.combatBonus;
       }
-      damageTerm += " + @abilityDamageBonus";
-      damageParams["abilityDamageBonus"] = ability.system.damageBonus;
+      const hitRoll = new Roll(hitTerm, hitParams);
+
+      await hitRoll.evaluate();
+
+      hitRoll.dice[0].options = {
+        rollOrder: 1,
+      };
+
+      hitRoll.dice[0].options.rollOrder = 1;
+
+      let damageTerm = "1d6 + @damage + @rangeDamage";
+      const damageParams: { [name: string]: number } = { damage, rangeDamage };
+      if (useNpcBonuses) {
+        damageTerm += " + @npcDamageBonus";
+        if (isNPCActor(parent)) {
+          damageParams["npcDamageBonus"] = parent.system.damageBonus;
+        }
+        damageTerm += " + @abilityDamageBonus";
+        damageParams["abilityDamageBonus"] = ability.system.damageBonus;
+      }
+
+      const damageRoll = new Roll(damageTerm, damageParams);
+      await damageRoll.evaluate();
+      damageRoll.dice[0].options.rollOrder = 2;
+
+      const { attack, extraRolls } = await buildAttackData({
+        fireMode,
+        hitRoll,
+        damageRoll,
+        damageFormula: damageTerm,
+        damageParams,
+        weapon,
+      });
+      extraRolls.forEach((roll, i) => {
+        roll.dice[0].options.rollOrder = 3 + i;
+      });
+
+      const rolls = [hitRoll, damageRoll, ...extraRolls];
+      // @ts-expect-error fvtt-types
+      const pool = PoolTerm.fromRolls(rolls);
+      const actualRoll = Roll.fromTerms([pool]);
+
+      void actualRoll.toMessage({
+        type: "attack",
+        speaker: ChatMessage.getSpeaker({
+          actor: weapon.actor as Actor.Stored,
+        }),
+        // a bare marker for the card to render into. Without some content,
+        // Foundry would fill the message with its own roll display.
+        content: buildAbilityCardContent({}),
+        system: {
+          ...attack,
+          weaponUuid: weapon.uuid,
+          weaponName: weapon.name,
+          weaponImg: weapon.img ?? "",
+          rangeName,
+        },
+      });
+
+      const currentPool = ability?.system.pool ?? 0;
+      const poolHit = Math.max(0, Number(spend) - bonusPool);
+      const newPool = Math.max(0, currentPool - poolHit);
+      const newBonusPool = Math.max(0, bonusPool - Number(spend));
+      await ability?.system.setPool(newPool);
+      setBonusPool(newBonusPool);
+      setSpend(0);
+      await consumeWeaponAmmo(weapon.system, fireMode);
+    } finally {
+      weaponsAttacking.delete(weapon);
     }
-
-    const damageRoll = new Roll(damageTerm, damageParams);
-    await damageRoll.evaluate();
-    damageRoll.dice[0].options.rollOrder = 2;
-
-    const { attack, extraRolls } = await buildAttackData({
-      fireMode,
-      hitRoll,
-      damageRoll,
-      damageFormula: damageTerm,
-      damageParams,
-      weapon,
-    });
-    extraRolls.forEach((roll, i) => {
-      roll.dice[0].options.rollOrder = 3 + i;
-    });
-
-    const rolls = [hitRoll, damageRoll, ...extraRolls];
-    // @ts-expect-error fvtt-types
-    const pool = PoolTerm.fromRolls(rolls);
-    const actualRoll = Roll.fromTerms([pool]);
-
-    void actualRoll.toMessage({
-      type: "attack",
-      speaker: ChatMessage.getSpeaker({ actor: weapon.actor as Actor.Stored }),
-      // a bare marker for the card to render into. Without some content,
-      // Foundry would fill the message with its own roll display.
-      content: buildAbilityCardContent({}),
-      system: {
-        ...attack,
-        weaponUuid: weapon.uuid,
-        weaponName: weapon.name,
-        weaponImg: weapon.img ?? "",
-        rangeName,
-      },
-    });
-
-    const currentPool = ability?.system.pool ?? 0;
-    const poolHit = Math.max(0, Number(spend) - bonusPool);
-    const newPool = Math.max(0, currentPool - poolHit);
-    const newBonusPool = Math.max(0, bonusPool - Number(spend));
-    await ability?.system.setPool(newPool);
-    setBonusPool(newBonusPool);
-    setSpend(0);
-    await consumeWeaponAmmo(weapon.system, fireMode);
   };

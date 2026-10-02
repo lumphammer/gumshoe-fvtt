@@ -256,5 +256,33 @@ describe("resolveAttackTarget", () => {
       expect(resolved.damage?.steps.map((s) => s.rolled)).toEqual([5, 1, 1]);
       expect(resolved.damage?.finalHealth).toBe(13);
     });
+
+    it("still gives each bullet's damage for a target without Health", () => {
+      const crit = { ...burst, hitTotal: 12, hitDie: 6 };
+      const resolved = resolveAttackTarget(
+        crit,
+        makeTarget({
+          damageRolls: [
+            { die: 2, total: 2 },
+            { die: 3, total: 3 },
+            { die: 1, total: 1 },
+            { die: 4, total: 4 },
+          ],
+        }),
+        { ...guard, health: null },
+        options,
+      );
+      expect(resolved.damage).toBeNull();
+      expect(
+        resolved.instances.map((i) => [
+          i.bullet,
+          i.kind === "damage" ? i.amount : null,
+        ]),
+      ).toEqual([
+        [1, 5],
+        [2, 1],
+        [3, 4],
+      ]);
+    });
   });
 });

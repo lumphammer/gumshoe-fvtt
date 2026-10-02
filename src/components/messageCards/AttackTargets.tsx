@@ -26,10 +26,7 @@ import type { LethalityOutcome } from "../../module/attacks/lethality";
 import { formatLethality } from "../../module/attacks/lethality";
 import type { DamageStep } from "../../module/attacks/resolveDamage";
 import type { Cover, WoundState } from "../../module/attacks/rules";
-import {
-  getRequiredDamageRollCount,
-  getWoundState,
-} from "../../module/attacks/rules";
+import { getWoundState } from "../../module/attacks/rules";
 import type { AttackData, AttackTargetData } from "../../module/attacks/types";
 import { Translate } from "../Translate";
 
@@ -371,24 +368,29 @@ const AttackTargetRow = ({
               <Translate>Damage</Translate>
             </span>
             <span>
-              {resolved.lethality && !damage ? (
-                // no Health to resolve against, so just show the dice
-                target.damageRolls
-                  .slice(
-                    0,
-                    getRequiredDamageRollCount({
-                      isHit: true,
-                      isCritical: resolved.isCritical,
-                      bulletCount: resolved.bulletCount,
-                    }),
-                  )
-                  .map((r, i) => (
-                    <span key={i} css={{ display: "block" }}>
-                      <Translate values={{ Die: String(r.die) }}>
+              {!damage &&
+              (resolved.lethality || resolved.instances.length > 1) ? (
+                // no Health to resolve against, so just show what each
+                // bullet rolled
+                resolved.instances.map((instance, i) => (
+                  <span key={i} css={{ display: "block" }}>
+                    {resolved.bulletCount > 1 && (
+                      <>
+                        <Translate values={{ N: String(instance.bullet) }}>
+                          BulletN
+                        </Translate>
+                        {": "}
+                      </>
+                    )}
+                    {instance.kind === "lethality" ? (
+                      <Translate values={{ Die: String(instance.die) }}>
                         LethalityDieDie
                       </Translate>
-                    </span>
-                  ))
+                    ) : (
+                      instance.amount
+                    )}
+                  </span>
+                ))
               ) : damage && (resolved.lethality || damage.steps.length > 1) ? (
                 damage.steps.map((step, i) => (
                   <span key={i} css={{ display: "block" }}>

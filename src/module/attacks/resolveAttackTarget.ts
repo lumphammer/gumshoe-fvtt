@@ -1,6 +1,6 @@
 import type { Lethality } from "./lethality";
 import { applyCoverToLethality } from "./lethality";
-import type { DamageResult } from "./resolveDamage";
+import type { DamageInstance, DamageResult } from "./resolveDamage";
 import { getDamageInstances, resolveDamage } from "./resolveDamage";
 import {
   defaultHitThreshold,
@@ -37,6 +37,8 @@ export type ResolvedAttackTarget = {
   armor: number;
   /** the attack's Lethality after cover, or null if it has none */
   lethality: Lethality | null;
+  /** what each damage roll does; empty for a miss or missing rolls */
+  instances: DamageInstance[];
   /** null for a miss, missing rolls, or a target without Health */
   damage: DamageResult | null;
 };
@@ -84,18 +86,21 @@ export function resolveAttackTarget(
       ? applyCoverToLethality(attack.lethality, target.cover)
       : null;
 
-  const canResolve = isHit && missingRollCount === 0 && info.health !== null;
+  const instances =
+    isHit && missingRollCount === 0
+      ? getDamageInstances({
+          rolls: target.damageRolls,
+          isCritical,
+          bulletCount,
+          lethality,
+          immuneToLethality: info.immuneToLethality,
+        })
+      : [];
   const damage =
-    canResolve && info.health !== null
+    instances.length > 0 && info.health !== null
       ? resolveDamage({
           startingHealth: info.health,
-          instances: getDamageInstances({
-            rolls: target.damageRolls,
-            isCritical,
-            bulletCount,
-            lethality,
-            immuneToLethality: info.immuneToLethality,
-          }),
+          instances,
           armor,
           applyGunfireOnHumans:
             useGunfireOnHumans && attack.isGunfire && info.isHuman,
@@ -110,6 +115,7 @@ export function resolveAttackTarget(
     missingRollCount,
     armor,
     lethality,
+    instances,
     damage,
   };
 }
