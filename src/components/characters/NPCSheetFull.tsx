@@ -31,6 +31,8 @@ const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
 const settingsNpcStats = settings.npcStats.get;
 const settingsShowIsHuman = () =>
   settings.useDamageApplication.get() && settings.useGunfireOnHumans.get();
+const settingsShowImmuneToLethality = () =>
+  settings.useDamageApplication.get() && settings.useLethality.get();
 
 export const NPCSheetFull = () => {
   const { actor } = useActorSheetContext();
@@ -136,6 +138,17 @@ export const NPCSheetFull = () => {
             <Toggle
               checked={actor.system.isHuman}
               onChange={actor.system.setIsHuman}
+            />
+          </>
+        )}
+        {settingsShowImmuneToLethality() && (
+          <>
+            <h3 css={{ gridColumn: "start / end" }}>
+              <Translate>Immune to Lethality?</Translate>
+            </h3>
+            <Toggle
+              checked={actor.system.immuneToLethality}
+              onChange={actor.system.setImmuneToLethality}
             />
           </>
         )}

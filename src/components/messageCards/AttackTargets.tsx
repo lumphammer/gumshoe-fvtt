@@ -22,6 +22,9 @@ import {
   showRolls,
 } from "../../module/attacks/attackTargets";
 import { getHealth } from "../../module/attacks/health";
+import type { LethalityOutcome } from "../../module/attacks/lethality";
+import { formatLethality } from "../../module/attacks/lethality";
+import type { DamageStep } from "../../module/attacks/resolveDamage";
 import type { Cover, WoundState } from "../../module/attacks/rules";
 import { getWoundState } from "../../module/attacks/rules";
 import type { AttackData, AttackTargetData } from "../../module/attacks/types";
@@ -57,6 +60,45 @@ function useRefreshOnDocumentChanges() {
     };
   }, []);
 }
+
+const GunfireText = ({ step }: { step: DamageStep }) =>
+  step.gunfireExtra > 0 ? (
+    <>
+      {` + ${step.gunfireExtra} `}(<Translate>GunfireBonus</Translate>)
+    </>
+  ) : null;
+
+const lethalityOutcomeText: Record<LethalityOutcome, string> = {
+  dies: "LethalityDies",
+  seriouslyWounded: "WoundStateSeriouslyWounded",
+  hurt: "WoundStateHurt",
+  damage: "",
+};
+
+/** e.g. "die 2: Seriously Wounded", or "die 3: 8 − 1" */
+const LethalityStepText = ({ step }: { step: DamageStep }) => {
+  const result = step.lethality;
+  if (step.instance.kind !== "lethality" || !result) return null;
+  return (
+    <>
+      <Translate values={{ Die: String(step.instance.die) }}>
+        LethalityDieDie
+      </Translate>
+      {": "}
+      {result.outcome === "damage" ? (
+        <>
+          {result.rolledDamage}
+          {step.armorReduction > 0 && ` − ${step.armorReduction}`}
+        </>
+      ) : (
+        <b>
+          <Translate>{lethalityOutcomeText[result.outcome]}</Translate>
+        </b>
+      )}
+      <GunfireText step={step} />
+    </>
+  );
+};
 
 type AttackTargetRowProps = {
   msg: ChatMessage;
@@ -302,27 +344,54 @@ const AttackTargetRow = ({
           </>
         )}
 
+        {resolved.isHit && resolved.lethality && (
+          <>
+            <span className="label">
+              <Translate>Lethality</Translate>
+            </span>
+            <span>{formatLethality(resolved.lethality)}</span>
+          </>
+        )}
+
         {resolved.isHit && target.damageRolls.length > 0 && (
           <>
             <span className="label">
               <Translate>Damage</Translate>
             </span>
             <span>
-              {target.damageRolls
-                .slice(0, resolved.isCritical ? 2 : 1)
-                .map((r) => r.total)
-                .join(" + ")}
-              {damage?.steps.map((step, i) => (
-                <span key={i}>
-                  {step.armorReduction > 0 && ` − ${step.armorReduction}`}
-                  {step.gunfireExtra > 0 && (
-                    <>
-                      {` + ${step.gunfireExtra} `}(
-                      <Translate>GunfireBonus</Translate>)
-                    </>
-                  )}
-                </span>
-              ))}
+              {resolved.lethality ? (
+                damage ? (
+                  damage.steps.map((step, i) => (
+                    <span key={i} css={{ display: "block" }}>
+                      <LethalityStepText step={step} />
+                    </span>
+                  ))
+                ) : (
+                  // no Health to resolve against, so just show the dice
+                  target.damageRolls
+                    .slice(0, resolved.isCritical ? 2 : 1)
+                    .map((r, i) => (
+                      <span key={i} css={{ display: "block" }}>
+                        <Translate values={{ Die: String(r.die) }}>
+                          LethalityDieDie
+                        </Translate>
+                      </span>
+                    ))
+                )
+              ) : (
+                <>
+                  {target.damageRolls
+                    .slice(0, resolved.isCritical ? 2 : 1)
+                    .map((r) => r.total)
+                    .join(" + ")}
+                  {damage?.steps.map((step, i) => (
+                    <span key={i}>
+                      {step.armorReduction > 0 && ` − ${step.armorReduction}`}
+                      <GunfireText step={step} />
+                    </span>
+                  ))}
+                </>
+              )}
             </span>
           </>
         )}

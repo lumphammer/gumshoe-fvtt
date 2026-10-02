@@ -1,11 +1,12 @@
-import type { DamageResult } from "./rules";
+import type { Lethality } from "./lethality";
+import { applyCoverToLethality } from "./lethality";
+import type { DamageResult } from "./resolveDamage";
+import { getDamageInstances, resolveDamage } from "./resolveDamage";
 import {
   defaultHitThreshold,
-  getDamageInstances,
   getEffectiveHitThreshold,
   getRequiredDamageRollCount,
   isCriticalHit,
-  resolveDamage,
 } from "./rules";
 import type { AttackData, AttackTargetData } from "./types";
 
@@ -15,11 +16,13 @@ export type TargetActorInfo = {
   armor: number | null;
   health: number | null;
   isHuman: boolean;
+  immuneToLethality: boolean;
 };
 
 export type ResolveOptions = {
   useCriticalHits: boolean;
   useGunfireOnHumans: boolean;
+  useLethality: boolean;
 };
 
 export type ResolvedAttackTarget = {
@@ -29,6 +32,8 @@ export type ResolvedAttackTarget = {
   /** damage rolls still needed before this hit can be resolved */
   missingRollCount: number;
   armor: number;
+  /** the attack's Lethality after cover, or null if it has none */
+  lethality: Lethality | null;
   /** null for a miss, missing rolls, or a target without Health */
   damage: DamageResult | null;
 };
@@ -41,7 +46,7 @@ export function resolveAttackTarget(
   attack: AttackData,
   target: AttackTargetData,
   info: TargetActorInfo,
-  { useCriticalHits, useGunfireOnHumans }: ResolveOptions,
+  { useCriticalHits, useGunfireOnHumans, useLethality }: ResolveOptions,
 ): ResolvedAttackTarget {
   const hitThreshold = getEffectiveHitThreshold({
     baseHitThreshold: info.hitThreshold ?? defaultHitThreshold,
@@ -63,6 +68,10 @@ export function resolveAttackTarget(
     requiredRollCount - target.damageRolls.length,
   );
   const armor = target.armorOverride ?? info.armor ?? 0;
+  const lethality =
+    useLethality && attack.lethality
+      ? applyCoverToLethality(attack.lethality, target.cover)
+      : null;
 
   const canResolve = isHit && missingRollCount === 0 && info.health !== null;
   const damage =
@@ -70,8 +79,10 @@ export function resolveAttackTarget(
       ? resolveDamage({
           startingHealth: info.health,
           instances: getDamageInstances({
-            rolls: target.damageRolls.map((r) => r.total),
+            rolls: target.damageRolls,
             isCritical,
+            lethality,
+            immuneToLethality: info.immuneToLethality,
           }),
           armor,
           applyGunfireOnHumans:
@@ -79,5 +90,13 @@ export function resolveAttackTarget(
         })
       : null;
 
-  return { hitThreshold, isHit, isCritical, missingRollCount, armor, damage };
+  return {
+    hitThreshold,
+    isHit,
+    isCritical,
+    missingRollCount,
+    armor,
+    lethality,
+    damage,
+  };
 }

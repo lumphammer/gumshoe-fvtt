@@ -165,6 +165,11 @@ export const settings = {
     name: "Use critical hits?",
     default: pathOfCthulhuPreset.useCriticalHits,
   }),
+  useLethality: createSettingBoolean({
+    key: "useLethality",
+    name: "Use Lethality?",
+    default: pathOfCthulhuPreset.useLethality,
+  }),
 
   // ///////////////////////////////////////////////////////////////////////////
   // object settings

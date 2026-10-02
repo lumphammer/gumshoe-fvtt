@@ -42,6 +42,12 @@ export const CombatOptionsSettings = ({ setters }: { setters: Setters }) => {
               onChange={setters.useCriticalHits}
             />
           </SettingsGridField>
+          <SettingsGridField label="Use Lethality?">
+            <Toggle
+              checked={settings.useLethality}
+              onChange={setters.useLethality}
+            />
+          </SettingsGridField>
         </>
       )}
     </InputGrid>

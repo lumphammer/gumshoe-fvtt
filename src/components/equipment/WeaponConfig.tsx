@@ -15,6 +15,7 @@ import { OtherableDropDown } from "../inputs/OtherableDropDown";
 import { TextInput } from "../inputs/TextInput";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
+import { WeaponLethalityField } from "./WeaponLethalityField";
 import { WeaponRange } from "./WeaponRangeConfig";
 
 export const WeaponConfig = () => {
@@ -53,8 +54,9 @@ export const WeaponConfig = () => {
   }, [item]);
 
   const validCombatAbilities = settings.combatAbilities.get();
-  const showGunfire =
-    settings.useDamageApplication.get() && settings.useGunfireOnHumans.get();
+  const useDamageApplication = settings.useDamageApplication.get();
+  const showGunfire = useDamageApplication && settings.useGunfireOnHumans.get();
+  const showLethality = useDamageApplication && settings.useLethality.get();
 
   return (
     <InputGrid>
@@ -84,6 +86,12 @@ export const WeaponConfig = () => {
           onChange={item.system.setDamage}
         />
       </GridField>
+      {showLethality && (
+        <WeaponLethalityField
+          lethality={item.system.lethality}
+          setLethality={item.system.setLethality}
+        />
+      )}
       {showGunfire && (
         <GridField label="Gunfire?">
           <Toggle

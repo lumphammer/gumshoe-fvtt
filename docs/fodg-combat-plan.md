@@ -248,6 +248,24 @@ Decisions made while implementing Phase 1:
 - `resolveLethality` with full band logic, cover reduction, immunity.
 - `NPC.immuneToLethality`.
 
+Decisions made while implementing Phase 2:
+
+- Lethality uses the raw damage die, not the weapon's damage total. Weapon
+  damage and range modifiers don't apply to it.
+- Modifiers stack: the bands are `≤ R` kill, then one per asterisk
+  (Seriously Wounded, or dead if already Hurt+), then one per H (Hurt, one
+  step worse if already wounded), then `5 × R + die` damage. Wound results
+  never raise Health.
+- Under Lethality, a critical hit is **two separate Lethality rolls**,
+  applied in order (adding Lethality dice together means nothing; cf. Shot
+  Dry's "extra chances for Lethality").
+- Gunfire on humans applies after Lethality too, including to an H result.
+- Full cover reduces the rating by 1, so `L1` behind cover is `L0`: no kill
+  band, `0 + die` damage.
+- The weapon's Lethality is snapshotted onto the attack message when the
+  attack is made (if the setting is on). Weapons take the book's notation
+  in a single text field.
+
 ### Phase 3 — fire modes and three-round burst
 
 - Fire-mode selector in the weapon attack panel; minimum spend of 3.

@@ -58,6 +58,7 @@ async function buildAttackData({
     hitDie: hitRoll.dice[0]?.total ?? 0,
     attackerIsHurt: attackerHealth !== null && attackerHealth <= hurtHealth,
     isGunfire: weapon.system.isGunfire,
+    lethality: settings.useLethality.get() ? weapon.system.lethality : null,
     damageFormula,
     damageParams,
     unusedDamageRolls: [rollToRecord(damageRoll)],

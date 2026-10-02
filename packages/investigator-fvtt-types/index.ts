@@ -402,6 +402,11 @@ export interface PresetV1 {
    */
   useCriticalHits?: boolean;
   /**
+   * Fall of DELTA GREEN: weapons can have a Lethality rating (e.g. L1*), which
+   * can kill or wound outright. Only applies with damage application.
+   */
+  useLethality?: boolean;
+  /**
    * What standard categories do we have for equipment?
    */
   equipmentCategories?: Record<string, EquipmentCategory>;
