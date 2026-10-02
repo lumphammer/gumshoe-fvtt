@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useCallback } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
+import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import type { Lethality } from "../../module/attacks/lethality";
 import {
   formatLethality,
@@ -22,40 +23,37 @@ export const WeaponLethalityField = ({
   lethality,
   setLethality,
 }: WeaponLethalityFieldProps) => {
-  const formatted = lethality ? formatLethality(lethality) : "";
-  const [text, setText] = useState(formatted);
-  const [prevFormatted, setPrevFormatted] = useState(formatted);
-  const isBlank = text.trim() === "";
-  const parsed = isBlank ? null : parseLethality(text);
-  const isValid = isBlank || parsed !== null;
+  // stable, so useAsyncUpdate's throttle survives re-renders
+  const onChangeText = useCallback(
+    (newText: string) => {
+      if (newText.trim() === "") {
+        void setLethality(null);
+        return;
+      }
+      const newLethality = parseLethality(newText);
+      if (newLethality) {
+        void setLethality(newLethality);
+      }
+    },
+    [setLethality],
+  );
 
-  // if the rating changes underneath us (another user, a macro), show it,
-  // unless what's typed already means the same thing
-  if (formatted !== prevFormatted) {
-    setPrevFormatted(formatted);
-    const typed = isBlank ? "" : parsed ? formatLethality(parsed) : null;
-    if (typed !== formatted) {
-      setText(formatted);
-    }
-  }
+  // throttles saves, and ignores updates coming back while focused, so
+  // echoes of earlier saves can't overwrite what's being typed
+  const { display, onChange, onFocus, onBlur } = useAsyncUpdate(
+    lethality ? formatLethality(lethality) : "",
+    onChangeText,
+  );
 
-  const onChange = (newText: string) => {
-    setText(newText);
-    if (newText.trim() === "") {
-      void setLethality(null);
-      return;
-    }
-    const newLethality = parseLethality(newText);
-    if (newLethality) {
-      void setLethality(newLethality);
-    }
-  };
+  const isValid = display.trim() === "" || parseLethality(display) !== null;
 
   return (
     <GridField label="Lethality">
       <TextInput
-        value={text}
+        value={display}
         onChange={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
         placeholder={getTranslated("LethalityPlaceholder")}
         validation={
           isValid
