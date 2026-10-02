@@ -22,10 +22,22 @@ export const WeaponLethalityField = ({
   lethality,
   setLethality,
 }: WeaponLethalityFieldProps) => {
-  const [text, setText] = useState(lethality ? formatLethality(lethality) : "");
+  const formatted = lethality ? formatLethality(lethality) : "";
+  const [text, setText] = useState(formatted);
+  const [prevFormatted, setPrevFormatted] = useState(formatted);
   const isBlank = text.trim() === "";
   const parsed = isBlank ? null : parseLethality(text);
   const isValid = isBlank || parsed !== null;
+
+  // if the rating changes underneath us (another user, a macro), show it,
+  // unless what's typed already means the same thing
+  if (formatted !== prevFormatted) {
+    setPrevFormatted(formatted);
+    const typed = isBlank ? "" : parsed ? formatLethality(parsed) : null;
+    if (typed !== formatted) {
+      setText(formatted);
+    }
+  }
 
   const onChange = (newText: string) => {
     setText(newText);

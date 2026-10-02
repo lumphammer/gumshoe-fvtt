@@ -359,12 +359,25 @@ const AttackTargetRow = ({
               <Translate>Damage</Translate>
             </span>
             <span>
-              {resolved.lethality && damage ? (
-                damage.steps.map((step, i) => (
-                  <span key={i} css={{ display: "block" }}>
-                    <LethalityStepText step={step} />
-                  </span>
-                ))
+              {resolved.lethality ? (
+                damage ? (
+                  damage.steps.map((step, i) => (
+                    <span key={i} css={{ display: "block" }}>
+                      <LethalityStepText step={step} />
+                    </span>
+                  ))
+                ) : (
+                  // no Health to resolve against, so just show the dice
+                  target.damageRolls
+                    .slice(0, resolved.isCritical ? 2 : 1)
+                    .map((r, i) => (
+                      <span key={i} css={{ display: "block" }}>
+                        <Translate values={{ Die: String(r.die) }}>
+                          LethalityDieDie
+                        </Translate>
+                      </span>
+                    ))
+                )
               ) : (
                 <>
                   {target.damageRolls
