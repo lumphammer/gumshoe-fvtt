@@ -1,5 +1,5 @@
 import type { Lethality } from "./lethality";
-import type { Cover } from "./rules";
+import type { Cover, FireMode } from "./rules";
 
 /** One damage roll, keeping the raw die so later rules (Lethality) can use it */
 export type DamageRollRecord = {
@@ -33,6 +33,7 @@ export type AttackTargetData = {
  * `attackDataSchema` (see attackDataTypes.test-d.ts).
  */
 export type AttackData = {
+  fireMode: FireMode;
   hitTotal: number;
   /** the unmodified die, for critical hits */
   hitDie: number;

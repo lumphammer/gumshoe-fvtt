@@ -12,6 +12,26 @@ export type Cover = (typeof coverValues)[number];
 
 export type WoundState = "ok" | "hurt" | "seriouslyWounded" | "dead";
 
+/** How an attack was fired (p. 100) */
+export const fireModeValues = ["single", "burst", "fullAuto"] as const;
+
+export type FireMode = (typeof fireModeValues)[number];
+
+/**
+ * What a weapon can do: single shots only; selective fire (single, burst, or
+ * full-auto, declared before rolling); or always full-auto (machine guns).
+ */
+export const weaponFireModesValues = [
+  "single",
+  "selective",
+  "alwaysAuto",
+] as const;
+
+export type WeaponFireModes = (typeof weaponFireModesValues)[number];
+
+/** A three-round burst needs at least this many points spent (p. 100) */
+export const burstMinimumSpend = 3;
+
 /** Health at or below which you are Hurt (p. 094) */
 export const hurtHealth = 0;
 /** Health at or below which you are Seriously Wounded (p. 094) */
@@ -81,15 +101,26 @@ export function isCriticalHit({
 }
 
 /**
- * How many damage rolls are needed to resolve a hit.
+ * Three-round burst (p. 100): one extra bullet for each 3 points of margin
+ * over the target's Hit Threshold, to a maximum of three bullets.
+ */
+export function getBurstBulletCount(margin: number): number {
+  return 1 + Math.min(2, Math.floor(Math.max(0, margin) / 3));
+}
+
+/**
+ * How many damage rolls are needed to resolve a hit: one per bullet, plus
+ * one for a critical hit (which applies to the first bullet).
  */
 export function getRequiredDamageRollCount({
   isHit,
   isCritical,
+  bulletCount = 1,
 }: {
   isHit: boolean;
   isCritical: boolean;
+  bulletCount?: number;
 }): number {
   if (!isHit) return 0;
-  return isCritical ? 2 : 1;
+  return bulletCount + (isCritical ? 1 : 0);
 }

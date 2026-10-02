@@ -353,31 +353,80 @@ const AttackTargetRow = ({
           </>
         )}
 
+        {resolved.isHit && attack.fireMode === "burst" && (
+          <>
+            <span className="label">
+              <Translate>Bullets</Translate>
+            </span>
+            <span>{resolved.bulletCount}</span>
+          </>
+        )}
+
         {resolved.isHit && target.damageRolls.length > 0 && (
           <>
             <span className="label">
               <Translate>Damage</Translate>
             </span>
             <span>
-              {resolved.lethality ? (
-                damage ? (
-                  damage.steps.map((step, i) => (
+              {resolved.missingRollCount > 0 ? (
+                // waiting on more rolls (e.g. cover changed and now more
+                // bullets hit), so show the ones we have so far
+                resolved.lethality ? (
+                  target.damageRolls.map((r, i) => (
                     <span key={i} css={{ display: "block" }}>
-                      <LethalityStepText step={step} />
+                      <Translate values={{ Die: String(r.die) }}>
+                        LethalityDieDie
+                      </Translate>
                     </span>
                   ))
                 ) : (
-                  // no Health to resolve against, so just show the dice
-                  target.damageRolls
-                    .slice(0, resolved.isCritical ? 2 : 1)
-                    .map((r, i) => (
-                      <span key={i} css={{ display: "block" }}>
-                        <Translate values={{ Die: String(r.die) }}>
-                          LethalityDieDie
-                        </Translate>
-                      </span>
-                    ))
+                  target.damageRolls.map((r) => r.total).join(", ")
                 )
+              ) : !damage &&
+                (resolved.lethality || resolved.instances.length > 1) ? (
+                // no Health to resolve against, so just show what each
+                // bullet rolled
+                resolved.instances.map((instance, i) => (
+                  <span key={i} css={{ display: "block" }}>
+                    {resolved.bulletCount > 1 && (
+                      <>
+                        <Translate values={{ N: String(instance.bullet) }}>
+                          BulletN
+                        </Translate>
+                        {": "}
+                      </>
+                    )}
+                    {instance.kind === "lethality" ? (
+                      <Translate values={{ Die: String(instance.die) }}>
+                        LethalityDieDie
+                      </Translate>
+                    ) : (
+                      instance.amount
+                    )}
+                  </span>
+                ))
+              ) : damage && (resolved.lethality || damage.steps.length > 1) ? (
+                damage.steps.map((step, i) => (
+                  <span key={i} css={{ display: "block" }}>
+                    {resolved.bulletCount > 1 && (
+                      <>
+                        <Translate values={{ N: String(step.instance.bullet) }}>
+                          BulletN
+                        </Translate>
+                        {": "}
+                      </>
+                    )}
+                    {step.instance.kind === "lethality" ? (
+                      <LethalityStepText step={step} />
+                    ) : (
+                      <>
+                        {step.rolled}
+                        {step.armorReduction > 0 && ` − ${step.armorReduction}`}
+                        <GunfireText step={step} />
+                      </>
+                    )}
+                  </span>
+                ))
               ) : (
                 <>
                   {target.damageRolls

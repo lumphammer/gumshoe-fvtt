@@ -1,11 +1,12 @@
 import type { Lethality } from "./lethality";
 import { applyCoverToLethality } from "./lethality";
-import type { DamageResult } from "./resolveDamage";
+import type { DamageInstance, DamageResult } from "./resolveDamage";
 import { getDamageInstances, resolveDamage } from "./resolveDamage";
 import {
   defaultHitThreshold,
   getEffectiveHitThreshold,
   getRequiredDamageRollCount,
+  getBurstBulletCount,
   isCriticalHit,
 } from "./rules";
 import type { AttackData, AttackTargetData } from "./types";
@@ -29,11 +30,15 @@ export type ResolvedAttackTarget = {
   hitThreshold: number;
   isHit: boolean;
   isCritical: boolean;
+  /** how many bullets hit: 1, or up to 3 for a burst */
+  bulletCount: number;
   /** damage rolls still needed before this hit can be resolved */
   missingRollCount: number;
   armor: number;
   /** the attack's Lethality after cover, or null if it has none */
   lethality: Lethality | null;
+  /** what each damage roll does; empty for a miss or missing rolls */
+  instances: DamageInstance[];
   /** null for a miss, missing rolls, or a target without Health */
   damage: DamageResult | null;
 };
@@ -54,6 +59,8 @@ export function resolveAttackTarget(
     attackerIsHurt: attack.attackerIsHurt,
   });
   const isHit = attack.hitTotal >= hitThreshold;
+  const isBurst = attack.fireMode === "burst";
+  // on a burst, a critical hit applies to the first bullet
   const isCritical =
     useCriticalHits &&
     isHit &&
@@ -62,7 +69,13 @@ export function resolveAttackTarget(
       hitTotal: attack.hitTotal,
       hitThreshold,
     });
-  const requiredRollCount = getRequiredDamageRollCount({ isHit, isCritical });
+  const bulletCount =
+    isHit && isBurst ? getBurstBulletCount(attack.hitTotal - hitThreshold) : 1;
+  const requiredRollCount = getRequiredDamageRollCount({
+    isHit,
+    isCritical,
+    bulletCount,
+  });
   const missingRollCount = Math.max(
     0,
     requiredRollCount - target.damageRolls.length,
@@ -73,17 +86,21 @@ export function resolveAttackTarget(
       ? applyCoverToLethality(attack.lethality, target.cover)
       : null;
 
-  const canResolve = isHit && missingRollCount === 0 && info.health !== null;
+  const instances =
+    isHit && missingRollCount === 0
+      ? getDamageInstances({
+          rolls: target.damageRolls,
+          isCritical,
+          bulletCount,
+          lethality,
+          immuneToLethality: info.immuneToLethality,
+        })
+      : [];
   const damage =
-    canResolve && info.health !== null
+    instances.length > 0 && info.health !== null
       ? resolveDamage({
           startingHealth: info.health,
-          instances: getDamageInstances({
-            rolls: target.damageRolls,
-            isCritical,
-            lethality,
-            immuneToLethality: info.immuneToLethality,
-          }),
+          instances,
           armor,
           applyGunfireOnHumans:
             useGunfireOnHumans && attack.isGunfire && info.isHuman,
@@ -94,9 +111,11 @@ export function resolveAttackTarget(
     hitThreshold,
     isHit,
     isCritical,
+    bulletCount,
     missingRollCount,
     armor,
     lethality,
+    instances,
     damage,
   };
 }

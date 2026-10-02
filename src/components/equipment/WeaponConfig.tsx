@@ -17,6 +17,15 @@ import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 import { WeaponLethalityField } from "./WeaponLethalityField";
 import { WeaponRange } from "./WeaponRangeConfig";
+import { getTranslated } from "../../functions/getTranslated";
+import type { WeaponFireModes } from "../../module/attacks/rules";
+import { weaponFireModesValues } from "../../module/attacks/rules";
+
+const weaponFireModesText: Record<WeaponFireModes, string> = {
+  single: "WeaponFireModesSingle",
+  selective: "WeaponFireModesSelective",
+  alwaysAuto: "WeaponFireModesAlwaysAuto",
+};
 
 export const WeaponConfig = () => {
   assertGame(game);
@@ -57,6 +66,8 @@ export const WeaponConfig = () => {
   const useDamageApplication = settings.useDamageApplication.get();
   const showGunfire = useDamageApplication && settings.useGunfireOnHumans.get();
   const showLethality = useDamageApplication && settings.useLethality.get();
+  const showFireModes = useDamageApplication && settings.useAutofire.get();
+  const fireModes = item.system.fireModes;
 
   return (
     <InputGrid>
@@ -86,6 +97,25 @@ export const WeaponConfig = () => {
           onChange={item.system.setDamage}
         />
       </GridField>
+      {showFireModes && (
+        <GridField label="Fire modes">
+          <select
+            value={fireModes}
+            onChange={(e) => {
+              void item.system.setFireModes(
+                e.currentTarget.value as WeaponFireModes,
+              );
+            }}
+            css={{ width: "100%" }}
+          >
+            {weaponFireModesValues.map((value) => (
+              <option key={value} value={value}>
+                {getTranslated(weaponFireModesText[value])}
+              </option>
+            ))}
+          </select>
+        </GridField>
+      )}
       {showLethality && (
         <WeaponLethalityField
           lethality={item.system.lethality}
@@ -150,6 +180,24 @@ export const WeaponConfig = () => {
               onChange={item.system.setAmmoPerShot}
             />
           </GridField>
+          {showFireModes && fireModes === "selective" && (
+            <GridField label="Ammo per burst">
+              <AsyncNumberInput
+                min={0}
+                value={item.system.ammoPerBurst}
+                onChange={item.system.setAmmoPerBurst}
+              />
+            </GridField>
+          )}
+          {showFireModes && fireModes !== "single" && (
+            <GridField label="Ammo per full-auto">
+              <AsyncNumberInput
+                min={0}
+                value={item.system.ammoPerFullAuto}
+                onChange={item.system.setAmmoPerFullAuto}
+              />
+            </GridField>
+          )}
         </>
       )}
       <GridField label="Delete">

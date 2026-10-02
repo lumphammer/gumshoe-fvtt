@@ -118,6 +118,8 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
     void basePerformAttack({
       rangeName: rangeInfo[rangeSelected].hover,
       rangeDamage: rangeInfo[rangeSelected].rangeDamage,
+      // bursts get chosen from the weapon's own attack panel
+      fireMode: "single",
     });
   };
 

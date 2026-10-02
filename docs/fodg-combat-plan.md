@@ -272,6 +272,26 @@ Decisions made while implementing Phase 2:
 - Per-mode ammo consumption.
 - Instance count from margin; sequential application.
 
+Decisions made while implementing Phase 3:
+
+- Ammo counting stays opt-in per weapon ("Uses ammo?"). FoDG's default is
+  not to count (p. 096); the box-out's "count ammo, a burst of full-auto is
+  10+" is a balancing dial (p. 101). Weapons get "ammo per burst" (3) and
+  "ammo per full-auto" (10); fire modes needing more rounds than are left
+  are disabled.
+- A critical hit on a burst applies to the **first bullet**: two dice added
+  together for plain damage, or two Lethality rolls, then the remaining
+  bullets as normal. (This makes crits fairly likely on bursts, since a
+  burst's minimum spend of 3 means any 6 totals 9+, but denying them seemed
+  against the spirit of the rules.)
+- Each bullet is its own instance of damage (armor and gunfire per bullet),
+  or its own Lethality die.
+- Cover changes the margin, so it can change the bullet count after the
+  fact; the card asks for more rolls if needed.
+- Fire mode is chosen in the weapon's attack panel. The sheet's weapon rows
+  (quick attacks) always fire single shots.
+- "Always full-auto" weapons fire single shots until Phase 4.
+
 ### Phase 4 — full-auto
 
 - Multi-ability spend UI (Firearms/Heavy Weapons + Athletics + Stability,

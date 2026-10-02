@@ -407,6 +407,11 @@ export interface PresetV1 {
    */
   useLethality?: boolean;
   /**
+   * Fall of DELTA GREEN: selective-fire weapons can fire three-round bursts
+   * (and full-auto, which is coming). Only applies with damage application.
+   */
+  useAutofire?: boolean;
+  /**
    * What standard categories do we have for equipment?
    */
   equipmentCategories?: Record<string, EquipmentCategory>;
