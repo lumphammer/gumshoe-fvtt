@@ -352,6 +352,29 @@ Decisions made while implementing Phase 4a:
   be removed. Targets are added one at a time, so the first takes the
   attack's own damage roll and the rest roll their own.
 
+Decisions made while implementing Phase 4b:
+
+- One setting, "Use Shot Dry and jams?", shown under (and only working with)
+  "Use Lethality and autofire?".
+- Shot Dry is decided when the attack is made and stored on it
+  (`isShotDry`). The weapon's ammo goes to 0 if it counts ammo; either way
+  the card says it's empty and must be reloaded.
+- The extra dice are Lethality instances after the target's own (and after
+  a crit's), so they stack with crits. A lone target gets them
+  automatically; otherwise each target row has a "Shot dry" checkbox, with
+  at most two chosen (if somehow more are, only the first two count). The
+  choice locks once a chosen target has had damage applied. A target that's
+  missed gets nothing.
+- Targets for full-auto are all added before any damage is rolled, so a
+  first target doesn't roll a lone target's three dice only to lose them
+  when the next is added.
+- Jams: the weapon has `jammed` and `pendingJam` (`{ combatId }`, or null).
+  The fight is the active combat the attacker is a combatant in, else any
+  combat they're in, else the viewed scene's combat, else null. A jammed
+  weapon can't attack (panel, quick attack, and `performAttack` all check);
+  the panel shows the repair rules and a "Clear jam" button, since the fix
+  is an ordinary test. The card notes when an attack jams the weapon.
+
 ### Phase 5 — walking fire
 
 - "Walk fire" card action with the two payment options.

@@ -6,6 +6,7 @@ import { isNPCActor } from "../../module/actors/npc";
 import type { AnyRoll } from "../../module/attacks/attackTargets";
 import {
   addTargetsForTokens,
+  getCombatIdFor,
   createAttackTarget,
   fillMissingDamageRolls,
   pickSingleTargetToken,
@@ -17,7 +18,10 @@ import type { FireMode } from "../../module/attacks/rules";
 import { getFullAutoLethality } from "../../module/attacks/lethality";
 import {
   getAvailableFireModes,
+  getJamUpdate,
   getMinimumSpend,
+  isSamePendingJam,
+  isShotDry,
   hurtHealth,
   isMultiTargetFireMode,
 } from "../../module/attacks/rules";
@@ -85,6 +89,10 @@ async function buildAttackData({
     hitDie: hitRoll.dice[0]?.total ?? 0,
     attackerIsHurt: attackerHealth !== null && attackerHealth <= hurtHealth,
     isGunfire: weapon.system.isGunfire,
+    isShotDry:
+      settings.useLethalityAndAutofire.get() &&
+      settings.useShotDryAndJams.get() &&
+      isShotDry({ fireMode, hitDie: hitRoll.dice[0]?.total ?? 0 }),
     lethality:
       fireMode === "fullAuto"
         ? getFullAutoLethality({
@@ -175,6 +183,13 @@ export const performAttack =
     if (!hasAmmoFor(weapon.system, fireMode)) {
       return;
     }
+    const useJams =
+      settings.useLethalityAndAutofire.get() &&
+      settings.useShotDryAndJams.get();
+    if (useJams && weapon.system.jammed) {
+      ui.notifications?.warn(getTranslated("WeaponIsJammed"));
+      return;
+    }
     weaponsAttacking.add(weapon);
     try {
       // pools can change after the points were chosen, e.g. if they get
@@ -197,6 +212,8 @@ export const performAttack =
       // points back. They add back what was taken rather than restoring the
       // old value, so they don't undo anything else spent in the meantime.
       const refunds: (() => Promise<void>)[] = [];
+      let shotDry = false;
+      let jamUpdate: ReturnType<typeof getJamUpdate> | null = null;
       try {
         const poolHit = Math.max(0, Number(spend) - bonusPool);
         const newPool = Math.max(0, currentPool - poolHit);
@@ -295,6 +312,15 @@ export const performAttack =
         extraRolls.forEach((roll, i) => {
           roll.dice[0].options.rollOrder = 3 + i;
         });
+        shotDry = attack.isShotDry;
+        jamUpdate = useJams
+          ? getJamUpdate({
+              fireMode,
+              hitDie: attack.hitDie,
+              pendingJam: weapon.system.pendingJam,
+              combatId: getCombatIdFor(weapon.actor),
+            })
+          : null;
 
         const rolls = [hitRoll, damageRoll, ...extraRolls];
         // @ts-expect-error fvtt-types
@@ -311,6 +337,7 @@ export const performAttack =
           content: buildAbilityCardContent({}),
           system: {
             ...attack,
+            weaponJammed: jamUpdate?.jams ?? false,
             weaponUuid: weapon.uuid,
             weaponName: weapon.name,
             weaponImg: weapon.img ?? "",
@@ -325,6 +352,22 @@ export const performAttack =
       }
 
       await consumeWeaponAmmo(weapon.system, fireMode);
+      // Shot Dry empties the weapon (p. 101)
+      if (shotDry && weapon.system.usesAmmo) {
+        await weapon.system.setAmmo(0);
+      }
+      if (
+        jamUpdate &&
+        (jamUpdate.jams ||
+          !isSamePendingJam(jamUpdate.pendingJam, weapon.system.pendingJam))
+      ) {
+        await weapon.update({
+          system: {
+            jammed: weapon.system.jammed || jamUpdate.jams,
+            pendingJam: jamUpdate.pendingJam,
+          },
+        });
+      }
     } finally {
       weaponsAttacking.delete(weapon);
     }

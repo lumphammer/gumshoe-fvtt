@@ -242,3 +242,41 @@ describe("resolveDamage", () => {
     expect(result.steps).toEqual([]);
   });
 });
+
+describe("getDamageInstances with extra dice (Shot Dry)", () => {
+  it("adds Lethality instances after the bullet's own", () => {
+    expect(
+      getDamageInstances({
+        rolls: [roll(4, 4), roll(1, 1), roll(6, 6)],
+        isCritical: false,
+        extraDice: 2,
+        lethality: L1,
+        immuneToLethality: false,
+      }).map((i) => (i.kind === "lethality" ? i.die : null)),
+    ).toEqual([4, 1, 6]);
+  });
+
+  it("stacks with a crit", () => {
+    expect(
+      getDamageInstances({
+        rolls: [roll(4, 4), roll(5, 5), roll(6, 6)],
+        isCritical: true,
+        extraDice: 1,
+        lethality: L1,
+        immuneToLethality: false,
+      }),
+    ).toHaveLength(3);
+  });
+
+  it("needs all the rolls", () => {
+    expect(
+      getDamageInstances({
+        rolls: [roll(4, 4), roll(5, 5)],
+        isCritical: false,
+        extraDice: 2,
+        lethality: L1,
+        immuneToLethality: false,
+      }),
+    ).toEqual([]);
+  });
+});

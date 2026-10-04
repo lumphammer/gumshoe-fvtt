@@ -8,7 +8,11 @@ import {
   getRequiredDamageRollCount,
   getWoundState,
   getBurstBulletCount,
+  getJamUpdate,
+  getShotDryExtraDice,
   isCriticalHit,
+  isSamePendingJam,
+  isShotDry,
 } from "./rules";
 
 describe("getWoundState", () => {
@@ -165,5 +169,96 @@ describe("getWastedExtraSpend", () => {
     expect(getWastedExtraSpend({ spend, extraSpend, minimumSpend: 5 })).toBe(
       expected,
     );
+  });
+});
+
+describe("isShotDry", () => {
+  it("is an unmodified 6 on full-auto", () => {
+    expect(isShotDry({ fireMode: "fullAuto", hitDie: 6 })).toBe(true);
+    expect(isShotDry({ fireMode: "fullAuto", hitDie: 5 })).toBe(false);
+    expect(isShotDry({ fireMode: "burst", hitDie: 6 })).toBe(false);
+    expect(isShotDry({ fireMode: "single", hitDie: 6 })).toBe(false);
+  });
+});
+
+describe("getShotDryExtraDice", () => {
+  it("gives a lone chosen target two extra dice (three in all)", () => {
+    expect(getShotDryExtraDice(1)).toBe(2);
+  });
+
+  it("gives two chosen targets one extra die each", () => {
+    expect(getShotDryExtraDice(2)).toBe(1);
+  });
+
+  it("gives nothing with no targets chosen", () => {
+    expect(getShotDryExtraDice(0)).toBe(0);
+  });
+});
+
+describe("getJamUpdate", () => {
+  const fullAuto = { fireMode: "fullAuto" as const, combatId: "c1" };
+
+  it("notes a first 1 on full-auto", () => {
+    expect(getJamUpdate({ ...fullAuto, hitDie: 1, pendingJam: null })).toEqual({
+      jams: false,
+      pendingJam: { combatId: "c1" },
+    });
+  });
+
+  it("jams on a second 1 in the same fight", () => {
+    expect(
+      getJamUpdate({ ...fullAuto, hitDie: 1, pendingJam: { combatId: "c1" } }),
+    ).toEqual({ jams: true, pendingJam: null });
+  });
+
+  it("jams on two 1s in a row outside combat", () => {
+    expect(
+      getJamUpdate({
+        fireMode: "fullAuto",
+        hitDie: 1,
+        combatId: null,
+        pendingJam: { combatId: null },
+      }),
+    ).toEqual({ jams: true, pendingJam: null });
+  });
+
+  it("starts again in a new fight", () => {
+    expect(
+      getJamUpdate({ ...fullAuto, hitDie: 1, pendingJam: { combatId: "c0" } }),
+    ).toEqual({ jams: false, pendingJam: { combatId: "c1" } });
+    expect(
+      getJamUpdate({ ...fullAuto, hitDie: 1, pendingJam: { combatId: null } }),
+    ).toEqual({ jams: false, pendingJam: { combatId: "c1" } });
+  });
+
+  it("resets on any other roll", () => {
+    expect(
+      getJamUpdate({ ...fullAuto, hitDie: 2, pendingJam: { combatId: "c1" } }),
+    ).toEqual({ jams: false, pendingJam: null });
+  });
+
+  it("resets on a single shot or burst, even a 1", () => {
+    for (const fireMode of ["single", "burst"] as const) {
+      expect(
+        getJamUpdate({
+          fireMode,
+          hitDie: 1,
+          combatId: "c1",
+          pendingJam: { combatId: "c1" },
+        }),
+      ).toEqual({ jams: false, pendingJam: null });
+    }
+  });
+});
+
+describe("isSamePendingJam", () => {
+  it.each([
+    [null, null, true],
+    [null, { combatId: null }, false],
+    [{ combatId: null }, { combatId: null }, true],
+    [{ combatId: "a" }, { combatId: "a" }, true],
+    [{ combatId: "a" }, { combatId: "b" }, false],
+  ])("%j and %j: %s", (a, b, expected) => {
+    expect(isSamePendingJam(a, b)).toBe(expected);
   });
 });

@@ -109,6 +109,7 @@ export function createAttackTarget(token: TokenDocument): AttackTargetData {
     img: token.texture.src ?? "",
     cover: "partial",
     armorOverride: null,
+    shotDryBonus: false,
     damageRolls: [],
     applied: null,
   };
@@ -171,24 +172,47 @@ export function pickTargetTokens({
 }
 
 /**
- * Add targets for these tokens, one after another so each takes its share of
- * the attack's unused damage rolls, and rolls anything else it needs.
+ * Add targets for these tokens. They all get added before any damage is
+ * rolled (how many dice a target needs can depend on how many others there
+ * are, e.g. for Shot Dry), then each takes its share of the attack's unused
+ * damage rolls in turn, and rolls anything else it needs.
  */
 export async function addTargetsForTokens(
   attack: AttackData,
   tokens: TokenDocument[],
 ): Promise<{ attack: AttackData; rolls: AnyRoll[] }> {
   let result = attack;
-  const rolls: AnyRoll[] = [];
+  const newTargetIds: string[] = [];
   for (const token of tokens) {
-    const added = addTarget(result, createAttackTarget(token));
+    const target = createAttackTarget(token);
+    const added = addTarget(result, target);
     if (added === result) continue;
-    const target = added.targets[added.targets.length - 1];
-    const filled = await fillMissingDamageRolls(added, target);
+    newTargetIds.push(target.id);
+    result = added;
+  }
+  const rolls: AnyRoll[] = [];
+  for (const id of newTargetIds) {
+    const target = result.targets.find((t) => t.id === id);
+    if (!target) continue;
+    const filled = await fillMissingDamageRolls(result, target);
     rolls.push(...filled.rolls);
     result = replaceTarget(filled.attack, filled.target);
   }
   return { attack: result, rolls };
+}
+
+/**
+ * The id of the fight this actor is in: a combat they're a combatant in
+ * (preferring the active one), otherwise the viewed scene's combat, or null.
+ */
+export function getCombatIdFor(actor: Actor): string | null {
+  assertGame(game);
+  const combats = (game.combats?.contents ?? []).filter((combat) =>
+    combat.combatants.some((combatant) => combatant.actor === actor),
+  );
+  const combat =
+    combats.find((c) => c.active) ?? combats[0] ?? game.combat ?? null;
+  return combat?.id ?? null;
 }
 
 /**

@@ -170,6 +170,11 @@ export const settings = {
     name: "Use Lethality and autofire?",
     default: pathOfCthulhuPreset.useLethalityAndAutofire,
   }),
+  useShotDryAndJams: createSettingBoolean({
+    key: "useShotDryAndJams",
+    name: "Use Shot Dry and jams?",
+    default: pathOfCthulhuPreset.useShotDryAndJams,
+  }),
   fullAutoSpendAbilities: createSettingArrayOfString({
     key: "fullAutoSpendAbilities",
     name: "Full-auto spend abilities",

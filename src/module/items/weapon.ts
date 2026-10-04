@@ -68,6 +68,20 @@ export const weaponSchema = {
     required: true,
     initial: null,
   }),
+  /** jammed by two 1s in a row on full-auto (p. 101) */
+  jammed: new BooleanField({ nullable: false, required: true, initial: false }),
+  /** set when the last full-auto roll was a 1, so another one jams it */
+  pendingJam: new SchemaField(
+    {
+      /** the fight it happened in, or null outside combat */
+      combatId: new StringField({
+        nullable: true,
+        required: true,
+        initial: null,
+      }),
+    },
+    { nullable: true, required: true, initial: null },
+  ),
   isLongRange: new BooleanField({ nullable: false, required: false }),
   isNearRange: new BooleanField({ nullable: false, required: true }),
   isPointBlank: new BooleanField({ nullable: false, required: true }),
@@ -221,6 +235,10 @@ export class WeaponModel extends TypeDataModel<
 
   setLethality = async (lethality: Lethality | null): Promise<void> => {
     await this.parent.update({ system: { lethality } });
+  };
+
+  clearJam = async (): Promise<void> => {
+    await this.parent.update({ system: { jammed: false, pendingJam: null } });
   };
 }
 

@@ -416,6 +416,12 @@ export interface PresetV1 {
    */
   useLethalityAndAutofire?: boolean;
   /**
+   * Fall of DELTA GREEN: an unmodified 6 on full-auto shoots the weapon dry
+   * (with extra damage), and two 1s in a row jam it. Only applies with
+   * Lethality and autofire.
+   */
+  useShotDryAndJams?: boolean;
+  /**
    * Names of other abilities whose points count towards full-auto's minimum
    * spend, without adding to the roll. Defaults to Athletics and Stability.
    */

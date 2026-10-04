@@ -14,6 +14,7 @@ const attack: AttackData = {
   hitDie: 6,
   attackerIsHurt: false,
   isGunfire: true,
+  isShotDry: false,
   lethality: null,
   damageFormula: "1d6 + @damage",
   damageParams: { damage: 2 },
@@ -28,6 +29,7 @@ const target: AttackTargetData = {
   img: "",
   cover: "partial",
   armorOverride: null,
+  shotDryBonus: false,
   damageRolls: [],
   applied: null,
 };
