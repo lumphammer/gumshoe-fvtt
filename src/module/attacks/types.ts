@@ -23,6 +23,8 @@ export type AttackTargetData = {
   cover: Cover;
   /** when null, use the target's armor stat */
   armorOverride: number | null;
+  /** chosen to get Shot Dry's extra damage */
+  shotDryBonus: boolean;
   damageRolls: DamageRollRecord[];
   applied: AppliedDamageRecord | null;
 };
@@ -40,6 +42,8 @@ export type AttackData = {
   /** snapshot of whether the attacker was Hurt when they attacked */
   attackerIsHurt: boolean;
   isGunfire: boolean;
+  /** an unmodified 6 on full-auto, with the Shot Dry rule on */
+  isShotDry: boolean;
   /** snapshot of the weapon's Lethality, if it has one and the rule is on */
   lethality: Lethality | null;
   /** so we can roll more damage later, e.g. for a crit or a new target */

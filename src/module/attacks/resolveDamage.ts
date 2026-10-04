@@ -28,27 +28,37 @@ export type DamageInstance = (
  * Each bullet of a burst is its own instance, applied one after another
  * (p. 100). A critical hit on a burst applies to the first bullet.
  *
+ * Extra dice (from Shot Dry) are extra instances after all of that.
+ *
  * Lethality uses the raw die, not the weapon's damage total.
  */
 export function getDamageInstances({
   rolls,
   isCritical,
   bulletCount = 1,
+  extraDice = 0,
   lethality,
   immuneToLethality,
 }: {
   rolls: DamageRollRecord[];
   isCritical: boolean;
   bulletCount?: number;
+  extraDice?: number;
   lethality: Lethality | null;
   immuneToLethality: boolean;
 }): DamageInstance[] {
-  const needed = bulletCount + (isCritical ? 1 : 0);
+  const bulletRollCount = bulletCount + (isCritical ? 1 : 0);
+  const needed = bulletRollCount + extraDice;
   if (rolls.length < needed) return [];
   const used = rolls.slice(0, needed);
-  // with a crit, the first bullet takes the first two rolls
+  // with a crit, the first bullet takes the first two rolls. Extra dice
+  // don't belong to any particular bullet, so we count them as the first.
   const bulletOf = (rollIndex: number) =>
-    isCritical ? Math.max(1, rollIndex) : rollIndex + 1;
+    rollIndex >= bulletRollCount
+      ? 1
+      : isCritical
+        ? Math.max(1, rollIndex)
+        : rollIndex + 1;
   if (lethality) {
     return used.map((roll, i) => ({
       kind: "lethality",
@@ -65,14 +75,14 @@ export function getDamageInstances({
       ...rest.map((roll, i) => ({
         kind: "damage" as const,
         amount: roll.total,
-        bullet: i + 2,
+        bullet: bulletOf(i + 2),
       })),
     ];
   }
   return used.map((roll, i) => ({
     kind: "damage",
     amount: roll.total,
-    bullet: i + 1,
+    bullet: bulletOf(i),
   }));
 }
 

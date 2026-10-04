@@ -7,7 +7,9 @@ import {
   getEffectiveHitThreshold,
   getRequiredDamageRollCount,
   getBurstBulletCount,
+  getShotDryExtraDice,
   isCriticalHit,
+  shotDryMaxTargets,
 } from "./rules";
 import type { AttackData, AttackTargetData } from "./types";
 
@@ -32,6 +34,8 @@ export type ResolvedAttackTarget = {
   isCritical: boolean;
   /** how many bullets hit: 1, or up to 3 for a burst */
   bulletCount: number;
+  /** extra Lethality dice from Shot Dry */
+  shotDryExtraDice: number;
   /** damage rolls still needed before this hit can be resolved */
   missingRollCount: number;
   armor: number;
@@ -42,6 +46,18 @@ export type ResolvedAttackTarget = {
   /** null for a miss, missing rolls, or a target without Health */
   damage: DamageResult | null;
 };
+
+/**
+ * The targets getting Shot Dry's extra damage: a lone target automatically,
+ * otherwise the (first two) chosen ones.
+ */
+export function getShotDryTargets(attack: AttackData): AttackTargetData[] {
+  if (!attack.isShotDry) return [];
+  if (attack.targets.length === 1) return attack.targets;
+  return attack.targets
+    .filter((t) => t.shotDryBonus)
+    .slice(0, shotDryMaxTargets);
+}
 
 /**
  * Work out everything about one target of an attack. Pure, so the card and the
@@ -71,10 +87,16 @@ export function resolveAttackTarget(
     });
   const bulletCount =
     isHit && isBurst ? getBurstBulletCount(attack.hitTotal - hitThreshold) : 1;
+  const shotDryTargets = getShotDryTargets(attack);
+  const shotDryExtraDice =
+    isHit && shotDryTargets.some((t) => t.id === target.id)
+      ? getShotDryExtraDice(shotDryTargets.length)
+      : 0;
   const requiredRollCount = getRequiredDamageRollCount({
     isHit,
     isCritical,
     bulletCount,
+    extraDice: shotDryExtraDice,
   });
   const missingRollCount = Math.max(
     0,
@@ -92,6 +114,7 @@ export function resolveAttackTarget(
           rolls: target.damageRolls,
           isCritical,
           bulletCount,
+          extraDice: shotDryExtraDice,
           lethality,
           immuneToLethality: info.immuneToLethality,
         })
@@ -112,6 +135,7 @@ export function resolveAttackTarget(
     isHit,
     isCritical,
     bulletCount,
+    shotDryExtraDice,
     missingRollCount,
     armor,
     lethality,

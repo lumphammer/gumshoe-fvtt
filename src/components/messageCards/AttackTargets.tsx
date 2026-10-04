@@ -31,6 +31,7 @@ import type { Cover, WoundState } from "../../module/attacks/rules";
 import {
   getWoundState,
   isMultiTargetFireMode,
+  shotDryMaxTargets,
 } from "../../module/attacks/rules";
 import type { AttackData, AttackTargetData } from "../../module/attacks/types";
 import { Translate } from "../Translate";
@@ -180,6 +181,22 @@ const AttackTargetRow = ({
   };
   const onApply = applyOrUndo(false);
   const onUndo = applyOrUndo(true);
+
+  // Shot Dry's extra damage goes to a lone target automatically; with more,
+  // the attacker picks up to two. Once any of those has had damage applied,
+  // the choice is locked in.
+  const shotDryChosenCount = attack.targets.filter(
+    (t) => t.shotDryBonus,
+  ).length;
+  const shotDryLocked = attack.targets.some(
+    (t) => t.shotDryBonus && t.applied !== null,
+  );
+  const canChooseShotDry =
+    canEdit && attack.targets.length > 1 && !shotDryLocked;
+
+  const onChangeShotDry = (e: React.ChangeEvent<HTMLInputElement>) => {
+    void updateTarget(target.id, { shotDryBonus: e.currentTarget.checked });
+  };
 
   const onRemove = async () => {
     const latest = getAttackData(msg);
@@ -364,6 +381,40 @@ const AttackTargetRow = ({
               <Translate>Bullets</Translate>
             </span>
             <span>{resolved.bulletCount}</span>
+          </>
+        )}
+
+        {/* a chosen target which has become a miss stays here, so it can be
+            unchosen to free up its slot */}
+        {attack.isShotDry && (resolved.isHit || target.shotDryBonus) && (
+          <>
+            <span className="label">
+              <Translate>Shot dry</Translate>
+            </span>
+            <span>
+              {canChooseShotDry && (
+                <input
+                  type="checkbox"
+                  checked={target.shotDryBonus}
+                  disabled={
+                    !target.shotDryBonus &&
+                    shotDryChosenCount >= shotDryMaxTargets
+                  }
+                  onChange={onChangeShotDry}
+                  aria-label={getTranslated("ShotDryChooseTarget", {
+                    TokenName: actor?.name ?? target.name,
+                  })}
+                  css={{ margin: "0 0.4em 0 0", verticalAlign: "middle" }}
+                />
+              )}
+              {resolved.shotDryExtraDice > 0 ? (
+                <Translate values={{ N: String(resolved.shotDryExtraDice) }}>
+                  ShotDryExtraDiceN
+                </Translate>
+              ) : (
+                canChooseShotDry && <Translate>ShotDryChooseTargets</Translate>
+              )}
+            </span>
           </>
         )}
 

@@ -47,6 +47,8 @@ export const AttackCard = React.memo(
         : null;
 
     const fireMode = isAttackMessage(msg) ? msg.system.fireMode : "single";
+    const isShotDry = isAttackMessage(msg) && msg.system.isShotDry;
+    const weaponJammed = isAttackMessage(msg) && msg.system.weaponJammed;
 
     // older attack messages don't have targets at all
     const showTargets =
@@ -153,6 +155,24 @@ export const AttackCard = React.memo(
             {damageRoll.total}
           </a>
         </div>
+        {isShotDry && (
+          <div css={{ marginTop: "0.3em" }}>
+            <i className="fas fa-exclamation-circle" />{" "}
+            <b>
+              <Translate>Shot dry</Translate>!
+            </b>{" "}
+            <Translate>ShotDryNotice</Translate>
+          </div>
+        )}
+        {weaponJammed && (
+          <div css={{ marginTop: "0.3em" }}>
+            <i className="fas fa-exclamation-circle" />{" "}
+            <b>
+              <Translate>Jammed</Translate>!
+            </b>{" "}
+            <Translate>JammedNotice</Translate>
+          </div>
+        )}
         {showTargets && <AttackTargets msg={msg} />}
       </>
     );

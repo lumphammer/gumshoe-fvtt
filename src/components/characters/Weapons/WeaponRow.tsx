@@ -9,6 +9,7 @@ import React, {
 
 import { generalAbility } from "../../../constants";
 import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
+import { getTranslated } from "../../../functions/getTranslated";
 import { cleanAndEnrichHtml } from "../../../functions/textFunctions";
 import { isAbilityItem } from "../../../module/items/exports";
 import type { InvestigatorItem } from "../../../module/items/InvestigatorItem";
@@ -92,6 +93,10 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
   }).includes("single")
     ? "single"
     : "fullAuto";
+  const isJammed =
+    settings.useLethalityAndAutofire.get() &&
+    settings.useShotDryAndJams.get() &&
+    weapon.system.jammed;
   const ammoFail = !hasAmmoFor(weapon.system, fireMode);
 
   const abilityName = weapon.system.ability;
@@ -200,7 +205,8 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
         <Button
           css={{ gridColumn: 3, width: "4.1em" }}
           onClick={onAttack}
-          disabled={ammoFail}
+          disabled={ammoFail || isJammed}
+          title={isJammed ? getTranslated("Jammed") : undefined}
         >
           <i className="fa fa-dice" title="Test" />+{spend}
         </Button>

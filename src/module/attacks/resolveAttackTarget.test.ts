@@ -10,6 +10,7 @@ const makeAttack = (overrides: Partial<AttackData> = {}): AttackData => ({
   hitDie: 4,
   attackerIsHurt: false,
   isGunfire: true,
+  isShotDry: false,
   lethality: null,
   damageFormula: "1d6",
   damageParams: {},
@@ -27,6 +28,7 @@ const makeTarget = (
   img: "",
   cover: "partial",
   armorOverride: null,
+  shotDryBonus: false,
   damageRolls: [{ die: 5, total: 5 }],
   applied: null,
   ...overrides,
@@ -347,5 +349,101 @@ describe("full-auto", () => {
     expect(exposed.missingRollCount).toBe(2);
     expect(behindCover.isCritical).toBe(false);
     expect(behindCover.missingRollCount).toBe(1);
+  });
+});
+
+describe("Shot Dry", () => {
+  const shotDry = makeAttack({
+    fireMode: "fullAuto",
+    // spend 1, roll 6: a margin of 4 against Hit Threshold 3, so no crit
+    hitTotal: 7,
+    hitDie: 6,
+    isShotDry: true,
+    lethality: { rating: 1, asterisks: 0, hs: 0 },
+  });
+  const a = makeTarget({ id: "a", damageRolls: [] });
+  const b = makeTarget({
+    id: "b",
+    tokenUuid: "Scene.x.Token.b",
+    damageRolls: [],
+  });
+  const c = makeTarget({
+    id: "c",
+    tokenUuid: "Scene.x.Token.c",
+    damageRolls: [],
+  });
+
+  it("gives a lone target three dice", () => {
+    const result = resolveAttackTarget(
+      { ...shotDry, targets: [a] },
+      a,
+      human,
+      options,
+    );
+    expect(result.shotDryExtraDice).toBe(2);
+    expect(result.missingRollCount).toBe(3);
+  });
+
+  it("gives two chosen targets two dice each", () => {
+    const chosenA = { ...a, shotDryBonus: true };
+    const chosenB = { ...b, shotDryBonus: true };
+    const attack = { ...shotDry, targets: [chosenA, chosenB, c] };
+    expect(
+      resolveAttackTarget(attack, chosenA, human, options).missingRollCount,
+    ).toBe(2);
+    expect(
+      resolveAttackTarget(attack, chosenB, human, options).missingRollCount,
+    ).toBe(2);
+    expect(
+      resolveAttackTarget(attack, c, human, options).missingRollCount,
+    ).toBe(1);
+  });
+
+  it("gives one chosen target among several three dice", () => {
+    const chosenA = { ...a, shotDryBonus: true };
+    const attack = { ...shotDry, targets: [chosenA, b] };
+    expect(
+      resolveAttackTarget(attack, chosenA, human, options).missingRollCount,
+    ).toBe(3);
+    expect(
+      resolveAttackTarget(attack, b, human, options).missingRollCount,
+    ).toBe(1);
+  });
+
+  it("gives nothing with several targets and none chosen", () => {
+    const attack = { ...shotDry, targets: [a, b] };
+    expect(
+      resolveAttackTarget(attack, a, human, options).shotDryExtraDice,
+    ).toBe(0);
+  });
+
+  it("only honours the first two chosen", () => {
+    const targets = [a, b, c].map((t) => ({ ...t, shotDryBonus: true }));
+    const attack = { ...shotDry, targets };
+    expect(
+      targets.map(
+        (t) => resolveAttackTarget(attack, t, human, options).shotDryExtraDice,
+      ),
+    ).toEqual([1, 1, 0]);
+  });
+
+  it("gives nothing to a target it misses", () => {
+    const behindCover = { ...a, cover: "full" as const };
+    const result = resolveAttackTarget(
+      { ...shotDry, targets: [behindCover] },
+      behindCover,
+      { ...human, hitThreshold: 7 },
+      options,
+    );
+    expect(result.isHit).toBe(false);
+    expect(result.shotDryExtraDice).toBe(0);
+  });
+
+  it("stacks with a crit", () => {
+    // spend 5, roll 6: 11, a margin of 8
+    const crit = { ...shotDry, hitTotal: 11, targets: [a] };
+    const result = resolveAttackTarget(crit, a, human, options);
+    expect(result.isCritical).toBe(true);
+    expect(result.missingRollCount).toBe(4);
   });
 });

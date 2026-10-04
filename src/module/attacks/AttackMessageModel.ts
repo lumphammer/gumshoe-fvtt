@@ -42,6 +42,12 @@ const attackTargetSchema = {
     required: true,
     initial: null,
   }),
+  /** chosen to get Shot Dry's extra damage */
+  shotDryBonus: new BooleanField({
+    nullable: false,
+    required: true,
+    initial: false,
+  }),
   damageRolls: createDamageRollsField(),
   /** a record of damage having been applied, so it can be undone */
   applied: new SchemaField(
@@ -75,6 +81,12 @@ export const attackDataSchema = {
     initial: false,
   }),
   isGunfire: new BooleanField({
+    nullable: false,
+    required: true,
+    initial: false,
+  }),
+  /** an unmodified 6 on full-auto, with the Shot Dry rule on */
+  isShotDry: new BooleanField({
     nullable: false,
     required: true,
     initial: false,
@@ -113,6 +125,12 @@ export const attackMessageSchema = {
   weaponName: new StringField({ nullable: false, required: true }),
   weaponImg: new StringField({ nullable: false, required: true }),
   rangeName: new StringField({ nullable: false, required: true }),
+  /** whether this attack jammed the weapon */
+  weaponJammed: new BooleanField({
+    nullable: false,
+    required: true,
+    initial: false,
+  }),
 };
 
 /**

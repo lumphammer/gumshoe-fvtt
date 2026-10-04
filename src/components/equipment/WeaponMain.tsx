@@ -134,6 +134,10 @@ export const WeaponMain = () => {
   });
 
   const ammoFail = !hasAmmoFor(item.system, effectiveFireMode);
+  const isJammed =
+    settings.useLethalityAndAutofire.get() &&
+    settings.useShotDryAndJams.get() &&
+    item.system.jammed;
   const spendTooLow = totalSpend < minimumSpend;
 
   const attackAt = (rangeName: string, rangeDamage: number) => () => {
@@ -191,7 +195,11 @@ export const WeaponMain = () => {
   // the configured ability can have been deleted or renamed, in which case
   // there's nothing to roll against - see the "NotFound!" indicator below.
   const attackDisabled = (rangeEnabled: boolean) =>
-    ability === undefined || ammoFail || spendTooLow || !rangeEnabled;
+    ability === undefined ||
+    isJammed ||
+    ammoFail ||
+    spendTooLow ||
+    !rangeEnabled;
 
   // normal text on a solid backdrop, tinted with the warning/danger color
   const hintStyle = (color: string) => ({
@@ -216,6 +224,30 @@ export const WeaponMain = () => {
           ...theme.panelStyleSecondary,
         }}
       >
+        {isJammed && (
+          <GridFieldStacked>
+            <div
+              css={{
+                ...hintStyle(theme.colors.danger),
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: "0.5em",
+              }}
+            >
+              <span css={{ flex: 1 }}>
+                <i className="fas fa-exclamation-circle" />{" "}
+                <Translate>WeaponJammedHint</Translate>
+              </span>
+              <Button
+                css={{ flex: "0 0 auto", width: "auto", margin: 0 }}
+                onClick={item.system.clearJam}
+              >
+                <Translate>Clear jam</Translate>
+              </Button>
+            </div>
+          </GridFieldStacked>
+        )}
         {fireModes.length > 1 && (
           <GridField label="Fire mode">
             <CheckButtons
@@ -296,7 +328,7 @@ export const WeaponMain = () => {
               position: "relative",
             }}
           >
-            {ammoFail && (
+            {(isJammed || ammoFail) && (
               <div
                 css={{
                   position: "absolute",
@@ -310,9 +342,11 @@ export const WeaponMain = () => {
                 }}
               >
                 <Translate>
-                  {item.system.ammo.value > 0
-                    ? "Not enough ammo"
-                    : "Out of ammo"}
+                  {isJammed
+                    ? "Jammed"
+                    : item.system.ammo.value > 0
+                      ? "Not enough ammo"
+                      : "Out of ammo"}
                 </Translate>
               </div>
             )}

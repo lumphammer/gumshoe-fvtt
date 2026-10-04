@@ -184,17 +184,87 @@ export function getBurstBulletCount(margin: number): number {
 
 /**
  * How many damage rolls are needed to resolve a hit: one per bullet, plus
- * one for a critical hit (which applies to the first bullet).
+ * one for a critical hit (which applies to the first bullet), plus any extra
+ * dice (Shot Dry).
  */
 export function getRequiredDamageRollCount({
   isHit,
   isCritical,
   bulletCount = 1,
+  extraDice = 0,
 }: {
   isHit: boolean;
   isCritical: boolean;
   bulletCount?: number;
+  extraDice?: number;
 }): number {
   if (!isHit) return 0;
-  return bulletCount + (isCritical ? 1 : 0);
+  return bulletCount + (isCritical ? 1 : 0) + extraDice;
+}
+
+/**
+ * Shot Dry (p. 101): an unmodified 6 on full-auto empties the weapon, but
+ * grants extra damage.
+ */
+export function isShotDry({
+  fireMode,
+  hitDie,
+}: {
+  fireMode: FireMode;
+  hitDie: number;
+}): boolean {
+  return fireMode === "fullAuto" && hitDie === 6;
+}
+
+/** Shot Dry's extra damage goes to at most this many targets (p. 101) */
+export const shotDryMaxTargets = 2;
+
+/**
+ * Shot Dry gives "two instances of damage for any two targets (or three
+ * times for one target)" (p. 101): with one target chosen, it gets two extra
+ * dice; with two, they get one extra each.
+ */
+export function getShotDryExtraDice(chosenTargetCount: number): number {
+  if (chosenTargetCount === 1) return 2;
+  if (chosenTargetCount === shotDryMaxTargets) return 1;
+  return 0;
+}
+
+/**
+ * A weapon's record of having just rolled a 1 on full-auto, so a second one
+ * in a row can jam it. Only counts within the same fight, so we note which
+ * combat it was in (null outside combat).
+ */
+export type PendingJam = { combatId: string | null };
+
+export function isSamePendingJam(
+  a: PendingJam | null,
+  b: PendingJam | null,
+): boolean {
+  return a === null || b === null ? a === b : a.combatId === b.combatId;
+}
+
+/**
+ * Weapon Jams (p. 101): two unmodified 1s in a row on full-auto jam the
+ * weapon. Only successive full-auto rolls count (a single shot or burst
+ * resets the count), and only within one fight.
+ */
+export function getJamUpdate({
+  fireMode,
+  hitDie,
+  pendingJam,
+  combatId,
+}: {
+  fireMode: FireMode;
+  hitDie: number;
+  pendingJam: PendingJam | null;
+  combatId: string | null;
+}): { jams: boolean; pendingJam: PendingJam | null } {
+  if (fireMode !== "fullAuto" || hitDie !== 1) {
+    return { jams: false, pendingJam: null };
+  }
+  if (pendingJam !== null && pendingJam.combatId === combatId) {
+    return { jams: true, pendingJam: null };
+  }
+  return { jams: false, pendingJam: { combatId } };
 }
