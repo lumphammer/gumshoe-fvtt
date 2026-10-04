@@ -572,7 +572,8 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
       keepLoneShotDryTarget(latest),
       pickTargetTokens(),
     );
-    if (added.attack === latest) return;
+    // nothing new (e.g. no tokens targeted), so leave the attack alone
+    if (added.attack.targets.length === latest.targets.length) return;
     await showRolls(added.rolls);
     await setAttackData(msg, added.attack);
   };
@@ -626,10 +627,11 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
             </button>
           </div>
         )}
-      {/* once fire has been walked, the attack has more than one target */}
+      {/* once fire has been walked, the targets are what was paid for */}
       {canAct &&
         !isMultiTarget &&
         attack.targets.length <= 1 &&
+        !attack.targets.some((t) => t.walked) &&
         attack.targets.every((t) => t.applied === null) && (
           <div css={{ paddingTop: "0.4em", borderTop: "1px solid #0003" }}>
             <button type="button" onClick={onSetTarget}>
