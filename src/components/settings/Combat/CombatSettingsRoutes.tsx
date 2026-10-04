@@ -7,7 +7,11 @@ import { SettingsNote } from "../SettingsNote";
 import { SettingsStringList } from "../SettingsStringList";
 import type { Setters } from "../types";
 import { CombatOptionsSettings } from "./CombatOptionsSettings";
-import { combatAbilities, combatOptions } from "./directions";
+import {
+  combatAbilities,
+  combatOptions,
+  fullAutoSpendAbilities,
+} from "./directions";
 
 /**
  * Routes below the combat settings menu. These are mounted alongside the
@@ -34,6 +38,18 @@ export const CombatSettingsRoutes = ({ setters }: { setters: Setters }) => {
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={combatOptions} margin="0em">
         <CombatOptionsSettings setters={setters} />
+      </SlideInNestedPanelRoute>
+      <SlideInNestedPanelRoute direction={fullAutoSpendAbilities} margin="0em">
+        <SettingsNote>
+          <Translate>FullAutoSpendAbilitiesNote</Translate>
+        </SettingsNote>
+        <SettingsStringList
+          value={settings.fullAutoSpendAbilities}
+          onChange={setters.fullAutoSpendAbilities}
+          sortable={false}
+          addLabel="Add ability"
+          emptyMessage="No abilities yet."
+        />
       </SlideInNestedPanelRoute>
     </>
   );

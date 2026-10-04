@@ -13,6 +13,10 @@ import { cleanAndEnrichHtml } from "../../../functions/textFunctions";
 import { isAbilityItem } from "../../../module/items/exports";
 import type { InvestigatorItem } from "../../../module/items/InvestigatorItem";
 import type { WeaponItem } from "../../../module/items/weapon";
+import type { FireMode } from "../../../module/attacks/rules";
+import { getAvailableFireModes } from "../../../module/attacks/rules";
+import { settings } from "../../../settings/settings";
+import { hasAmmoFor } from "../../equipment/consumeWeaponAmmo";
 import { performAttack } from "../../equipment/performAttack";
 import { Button } from "../../inputs/Button";
 import { CheckButtons } from "../../inputs/CheckButtons";
@@ -77,7 +81,18 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
     ),
   ];
   const [rangeSelected, setRangeSelected] = useState(0);
-  const ammoFail = weapon.system.usesAmmo && weapon.system.ammo.value <= 0;
+  // quick attacks are single shots, except from machine guns, which only fire
+  // full-auto. Bursts and full-auto from selective-fire weapons get chosen in
+  // the weapon's own attack panel.
+  const fireMode: FireMode = getAvailableFireModes({
+    weaponFireModes: weapon.system.fireModes,
+    useAutofire:
+      settings.useDamageApplication.get() &&
+      settings.useLethalityAndAutofire.get(),
+  }).includes("single")
+    ? "single"
+    : "fullAuto";
+  const ammoFail = !hasAmmoFor(weapon.system, fireMode);
 
   const abilityName = weapon.system.ability;
   const ability: InvestigatorItem | undefined = weapon.actor?.items.find(
@@ -118,8 +133,7 @@ export const WeaponRow = ({ weapon }: WeaponRowProps) => {
     void basePerformAttack({
       rangeName: rangeInfo[rangeSelected].hover,
       rangeDamage: rangeInfo[rangeSelected].rangeDamage,
-      // bursts get chosen from the weapon's own attack panel
-      fireMode: "single",
+      fireMode,
     });
   };
 

@@ -4,21 +4,38 @@ import { PoolTerm } from "../../fvtt-exports";
 import { isNPCActor } from "../../module/actors/npc";
 import type { AnyRoll } from "../../module/attacks/attackTargets";
 import {
+  addTargetsForTokens,
   createAttackTarget,
   fillMissingDamageRolls,
   pickSingleTargetToken,
+  pickTargetTokens,
   rollToRecord,
 } from "../../module/attacks/attackTargets";
 import { getHealth } from "../../module/attacks/health";
 import type { FireMode } from "../../module/attacks/rules";
-import { burstMinimumSpend, hurtHealth } from "../../module/attacks/rules";
+import { getFullAutoLethality } from "../../module/attacks/lethality";
+import {
+  getAvailableFireModes,
+  getMinimumSpend,
+  hurtHealth,
+  isMultiTargetFireMode,
+} from "../../module/attacks/rules";
 import type { AttackData } from "../../module/attacks/types";
-import { assertAbilityItem } from "../../module/items/exports";
+import { assertAbilityItem, isAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import type { WeaponItem } from "../../module/items/weapon";
 import { settings } from "../../settings/settings";
 import { consumeWeaponAmmo, hasAmmoFor } from "./consumeWeaponAmmo";
+
+/**
+ * Points spent from another ability, which count towards a minimum spend but
+ * don't add to the roll (Athletics and Stability on full-auto, p. 100)
+ */
+export type ExtraSpend = {
+  ability: InvestigatorItem;
+  spend: number;
+};
 
 type PerformAttackArgs1 = {
   spend: number;
@@ -27,6 +44,9 @@ type PerformAttackArgs1 = {
   setBonusPool: (value: number) => void;
   weapon: WeaponItem;
   ability: InvestigatorItem | undefined;
+  /** only used for full-auto */
+  extraSpends?: ExtraSpend[];
+  resetExtraSpends?: () => void;
 };
 
 type PerformAttackArgs2 = {
@@ -37,8 +57,9 @@ type PerformAttackArgs2 = {
 
 /**
  * Build the attack data. With damage application on, this includes the user's
- * current target: the attack's own damage roll goes to it if it needs one, and
- * anything else needed (e.g. for a critical hit) gets rolled here.
+ * current target (or all of them, for full-auto): the attack's own damage
+ * roll goes to the first if it needs one, and anything else needed (e.g. for a
+ * critical hit) gets rolled here.
  */
 async function buildAttackData({
   fireMode,
@@ -63,7 +84,15 @@ async function buildAttackData({
     hitDie: hitRoll.dice[0]?.total ?? 0,
     attackerIsHurt: attackerHealth !== null && attackerHealth <= hurtHealth,
     isGunfire: weapon.system.isGunfire,
-    lethality: settings.useLethality.get() ? weapon.system.lethality : null,
+    lethality:
+      fireMode === "fullAuto"
+        ? getFullAutoLethality({
+            weaponFireModes: weapon.system.fireModes,
+            weaponLethality: weapon.system.lethality,
+          })
+        : settings.useLethalityAndAutofire.get()
+          ? weapon.system.lethality
+          : null,
     damageFormula,
     damageParams,
     unusedDamageRolls: [rollToRecord(damageRoll)],
@@ -75,6 +104,13 @@ async function buildAttackData({
   }
   // only use targets here, not selection: your selected token is usually
   // the one doing the shooting
+  if (isMultiTargetFireMode(fireMode)) {
+    const added = await addTargetsForTokens(
+      attack,
+      pickTargetTokens({ allowSelected: false }),
+    );
+    return { attack: added.attack, extraRolls: added.rolls };
+  }
   const token = pickSingleTargetToken({ allowSelected: false });
   if (token) {
     const filled = await fillMissingDamageRolls(
@@ -98,6 +134,8 @@ export const performAttack =
     bonusPool,
     setSpend,
     setBonusPool,
+    extraSpends = [],
+    resetExtraSpends,
   }: PerformAttackArgs1) =>
   async ({ rangeName, rangeDamage, fireMode }: PerformAttackArgs2) => {
     assertGame(game);
@@ -106,7 +144,26 @@ export const performAttack =
       return;
     }
     // the attack panel shouldn't let these through, but just in case
-    if (fireMode === "burst" && spend < burstMinimumSpend) {
+    const availableFireModes = getAvailableFireModes({
+      weaponFireModes: weapon.system.fireModes,
+      useAutofire:
+        settings.useDamageApplication.get() &&
+        settings.useLethalityAndAutofire.get(),
+    });
+    if (!availableFireModes.includes(fireMode)) {
+      return;
+    }
+    const minimumSpend = getMinimumSpend({
+      fireMode,
+      weaponFireModes: weapon.system.fireModes,
+    });
+    // other abilities only help towards full-auto's minimum spend
+    const usableExtraSpends =
+      fireMode === "fullAuto" && minimumSpend > 0 ? extraSpends : [];
+    const totalSpend =
+      spend +
+      usableExtraSpends.reduce((total, extra) => total + extra.spend, 0);
+    if (totalSpend < minimumSpend) {
       return;
     }
     // the panel only checks ammo and spend as of its last render, so a quick
@@ -215,6 +272,14 @@ export const performAttack =
       await ability?.system.setPool(newPool);
       setBonusPool(newBonusPool);
       setSpend(0);
+      for (const extra of usableExtraSpends) {
+        if (extra.spend > 0 && isAbilityItem(extra.ability)) {
+          await extra.ability.system.setPool(
+            Math.max(0, extra.ability.system.pool - extra.spend),
+          );
+        }
+      }
+      resetExtraSpends?.();
       await consumeWeaponAmmo(weapon.system, fireMode);
     } finally {
       weaponsAttacking.delete(weapon);

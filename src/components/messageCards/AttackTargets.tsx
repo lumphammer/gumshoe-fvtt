@@ -12,11 +12,13 @@ import {
   setSingleTarget,
 } from "../../module/attacks/attackData";
 import {
+  addTargetsForTokens,
   createAttackTarget,
   fillMissingDamageRolls,
   getAttackData,
   getTargetActor,
   pickSingleTargetToken,
+  pickTargetTokens,
   resolveTargetLive,
   setAttackData,
   showRolls,
@@ -26,7 +28,10 @@ import type { LethalityOutcome } from "../../module/attacks/lethality";
 import { formatLethality } from "../../module/attacks/lethality";
 import type { DamageStep } from "../../module/attacks/resolveDamage";
 import type { Cover, WoundState } from "../../module/attacks/rules";
-import { getWoundState } from "../../module/attacks/rules";
+import {
+  getWoundState,
+  isMultiTargetFireMode,
+} from "../../module/attacks/rules";
 import type { AttackData, AttackTargetData } from "../../module/attacks/types";
 import { Translate } from "../Translate";
 
@@ -498,6 +503,15 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
     });
   };
 
+  const onAddTargets = async () => {
+    const latest = getAttackData(msg);
+    if (!latest) return;
+    const added = await addTargetsForTokens(latest, pickTargetTokens());
+    if (added.attack === latest) return;
+    await showRolls(added.rolls);
+    await setAttackData(msg, added.attack);
+  };
+
   const onSetTarget = async () => {
     const latest = getAttackData(msg);
     if (!latest) return;
@@ -516,6 +530,8 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
     return null;
   }
 
+  const isMultiTarget = isMultiTargetFireMode(attack.fireMode);
+
   return (
     <div css={{ marginTop: "0.5em" }}>
       {attack.targets.map((target) => (
@@ -528,16 +544,26 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
           updateTarget={updateTarget}
         />
       ))}
-      {canAct && attack.targets.every((t) => t.applied === null) && (
+      {canAct && isMultiTarget && (
         <div css={{ paddingTop: "0.4em", borderTop: "1px solid #0003" }}>
-          <button type="button" onClick={onSetTarget}>
+          <button type="button" onClick={onAddTargets}>
             <i className="fas fa-crosshairs" />{" "}
-            <Translate>
-              {attack.targets.length === 0 ? "Add target" : "Change target"}
-            </Translate>
+            <Translate>Add targets</Translate>
           </button>
         </div>
       )}
+      {canAct &&
+        !isMultiTarget &&
+        attack.targets.every((t) => t.applied === null) && (
+          <div css={{ paddingTop: "0.4em", borderTop: "1px solid #0003" }}>
+            <button type="button" onClick={onSetTarget}>
+              <i className="fas fa-crosshairs" />{" "}
+              <Translate>
+                {attack.targets.length === 0 ? "Add target" : "Change target"}
+              </Translate>
+            </button>
+          </div>
+        )}
     </div>
   );
 };

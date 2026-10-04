@@ -17,8 +17,8 @@ it("should accept an older export without the damage application settings", () =
   expect(validatedResult).not.toHaveProperty("useDamageApplication");
   expect(validatedResult).not.toHaveProperty("useGunfireOnHumans");
   expect(validatedResult).not.toHaveProperty("useCriticalHits");
-  expect(validatedResult).not.toHaveProperty("useLethality");
-  expect(validatedResult).not.toHaveProperty("useAutofire");
+  expect(validatedResult).not.toHaveProperty("useLethalityAndAutofire");
+  expect(validatedResult).not.toHaveProperty("fullAutoSpendAbilities");
 });
 
 it("should preserve the damage application settings through a round trip", () => {
@@ -26,8 +26,8 @@ it("should preserve the damage application settings through a round trip", () =>
     useDamageApplication: true,
     useGunfireOnHumans: true,
     useCriticalHits: false,
-    useLethality: true,
-    useAutofire: true,
+    useLethalityAndAutofire: true,
+    fullAutoSpendAbilities: ["Athletics", "Sanity"],
   };
 
   expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(

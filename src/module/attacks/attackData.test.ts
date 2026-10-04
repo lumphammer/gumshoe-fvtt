@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  addTarget,
   removeTarget,
   setSingleTarget,
   takeUnusedDamageRolls,
@@ -128,5 +129,19 @@ describe("setSingleTarget", () => {
     expect(result.targets).toHaveLength(1);
     expect(result.targets[0].id).toBe("t2");
     expect(result.targets[0].damageRolls).toEqual([{ die: 6, total: 8 }]);
+  });
+});
+
+describe("addTarget", () => {
+  it("adds a target alongside the existing ones", () => {
+    const first = { ...target, damageRolls: [{ die: 6, total: 8 }] };
+    const second = { ...target, id: "t2", tokenUuid: "Scene.x.Token.z" };
+    const result = addTarget({ ...attack, targets: [first] }, second);
+    expect(result.targets).toEqual([first, second]);
+  });
+
+  it("doesn't add the same token twice", () => {
+    const withTarget = { ...attack, targets: [target] };
+    expect(addTarget(withTarget, { ...target, id: "t2" })).toBe(withTarget);
   });
 });

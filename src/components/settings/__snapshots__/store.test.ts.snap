@@ -130,13 +130,18 @@ exports[`reducer > should apply a preset 1`] = `
       "migrationFlags": Object {
         "actor": Object {},
         "item": Object {},
-@@ -68,15 +70,33 @@
+@@ -67,16 +69,37 @@
+      "useGunfireOnHumans": false,
       "useCriticalHits": false,
-      "useLethality": false,
-      "useAutofire": false,
+      "useLethalityAndAutofire": false,
+-     "fullAutoSpendAbilities": Array [],
 -     "genericOccupation": "",
 -     "investigativeAbilityCategories": Array [],
 -     "longNotes": Array [],
++     "fullAutoSpendAbilities": Array [
++       "Athletics",
++       "Stability",
++     ],
 +     "genericOccupation": "Investigator",
 +     "investigativeAbilityCategories": Array [
 +       "Academic",
@@ -171,7 +176,7 @@ exports[`reducer > should apply a preset 1`] = `
       "showEmptyInvestigativeCategories": false,
       "systemMigrationVersion": "",
       "shortNotes": Array [],
-@@ -85,5 +105,7 @@
+@@ -85,5 +108,7 @@
       "cardCategories": Array [],
       "useCards": false,
       "notifyItemAddedToActor": false,
@@ -563,8 +568,8 @@ exports[`reducer > should set a stat name 1`] = `
 exports[`reducer > should set a value using setSome 1`] = `
 "@@ -68,7 +68,7 @@
       "useCriticalHits": false,
-      "useLethality": false,
-      "useAutofire": false,
+      "useLethalityAndAutofire": false,
+      "fullAutoSpendAbilities": Array [],
 -     "genericOccupation": "",
 +     "genericOccupation": "foo",
       "investigativeAbilityCategories": Array [],

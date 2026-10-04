@@ -286,3 +286,66 @@ describe("resolveAttackTarget", () => {
     });
   });
 });
+
+describe("full-auto", () => {
+  // Sanchez sprays a cellar of cultists with L1 full-auto fire for a result of
+  // 3 (p. 100). Each cultist has Health 7. (The book's own tally of who ends
+  // up Seriously Wounded is a known erratum.)
+  const fullAuto = makeAttack({
+    fireMode: "fullAuto",
+    hitTotal: 3,
+    hitDie: 2,
+    lethality: { rating: 1, asterisks: 0, hs: 0 },
+  });
+  const cultist = { ...human, health: 7 };
+
+  it.each([
+    [1, -12],
+    // 5 + 2 = 7 damage leaves them at 0, Hurt, so gunfire adds 6
+    [2, -6],
+    [3, -7],
+    [5, -9],
+  ])("die %i leaves a cultist at %i", (die, finalHealth) => {
+    const result = resolveAttackTarget(
+      fullAuto,
+      makeTarget({ damageRolls: [{ die, total: die }] }),
+      cultist,
+      options,
+    );
+    expect(result.isHit).toBe(true);
+    expect(result.bulletCount).toBe(1);
+    expect(result.damage?.finalHealth).toBe(finalHealth);
+  });
+
+  it("checks each target's own Hit Threshold", () => {
+    const result = resolveAttackTarget(
+      fullAuto,
+      makeTarget({ cover: "full" }),
+      cultist,
+      options,
+    );
+    expect(result.isHit).toBe(false);
+  });
+
+  it("crits per target", () => {
+    // spend 5 from Firearms alone and roll a 6: 11
+    const crit = { ...fullAuto, hitTotal: 11, hitDie: 6 };
+    const exposed = resolveAttackTarget(
+      crit,
+      makeTarget({ damageRolls: [], cover: "exposed" }),
+      cultist,
+      options,
+    );
+    // Hit Threshold 6, or 7 behind full cover: a margin of only 4
+    const behindCover = resolveAttackTarget(
+      crit,
+      makeTarget({ damageRolls: [], cover: "full" }),
+      { ...cultist, hitThreshold: 6 },
+      options,
+    );
+    expect(exposed.isCritical).toBe(true);
+    expect(exposed.missingRollCount).toBe(2);
+    expect(behindCover.isCritical).toBe(false);
+    expect(behindCover.missingRollCount).toBe(1);
+  });
+});

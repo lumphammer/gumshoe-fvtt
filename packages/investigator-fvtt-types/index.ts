@@ -403,14 +403,16 @@ export interface PresetV1 {
   useCriticalHits?: boolean;
   /**
    * Fall of DELTA GREEN: weapons can have a Lethality rating (e.g. L1*), which
-   * can kill or wound outright. Only applies with damage application.
+   * can kill or wound outright, and automatic weapons can fire three-round
+   * bursts and full-auto (whose damage is Lethality). Only applies with damage
+   * application.
    */
-  useLethality?: boolean;
+  useLethalityAndAutofire?: boolean;
   /**
-   * Fall of DELTA GREEN: selective-fire weapons can fire three-round bursts
-   * (and full-auto, which is coming). Only applies with damage application.
+   * Names of other abilities whose points count towards full-auto's minimum
+   * spend, without adding to the roll. Defaults to Athletics and Stability.
    */
-  useAutofire?: boolean;
+  fullAutoSpendAbilities?: string[];
   /**
    * What standard categories do we have for equipment?
    */

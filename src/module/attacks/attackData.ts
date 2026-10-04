@@ -53,10 +53,24 @@ export function replaceTarget(
 }
 
 /**
+ * Add a target alongside any existing ones, for attacks which can have
+ * several (full-auto). A token already among the targets isn't added again.
+ */
+export function addTarget(
+  attack: AttackData,
+  target: AttackTargetData,
+): AttackData {
+  if (attack.targets.some((t) => t.tokenUuid === target.tokenUuid)) {
+    return attack;
+  }
+  return { ...attack, targets: [...attack.targets, target] };
+}
+
+/**
  * Single shots and bursts hit one target, so setting a target replaces any
  * existing one. The new target takes over the old one's damage rolls, because
- * they belong to the attack, not to whoever it was aimed at. (Full-auto and
- * walking fire will want multiple targets.)
+ * they belong to the attack, not to whoever it was aimed at. (Walking fire
+ * will add more.)
  */
 export function setSingleTarget(
   attack: AttackData,

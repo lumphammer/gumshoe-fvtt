@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getAvailableFireModes,
   getEffectiveHitThreshold,
+  getMinimumSpend,
   getRequiredDamageRollCount,
   getWoundState,
   getBurstBulletCount,
@@ -112,4 +114,36 @@ describe("getBurstBulletCount", () => {
       }),
     ).toBe(3);
   });
+});
+
+describe("getAvailableFireModes", () => {
+  it.each([
+    ["single", true, ["single"]],
+    ["selective", true, ["single", "burst", "fullAuto"]],
+    ["alwaysAuto", true, ["fullAuto"]],
+    ["selective", false, ["single"]],
+    ["alwaysAuto", false, ["single"]],
+  ] as const)(
+    "%s weapon, autofire %s: %j",
+    (weaponFireModes, useAutofire, expected) => {
+      expect(getAvailableFireModes({ weaponFireModes, useAutofire })).toEqual(
+        expected,
+      );
+    },
+  );
+});
+
+describe("getMinimumSpend", () => {
+  it.each([
+    ["single", "selective", 0],
+    ["burst", "selective", 3],
+    ["fullAuto", "selective", 5],
+    // machine guns don't need to spend to fire full-auto (p. 100)
+    ["fullAuto", "alwaysAuto", 0],
+  ] as const)(
+    "%s from a %s weapon: %i",
+    (fireMode, weaponFireModes, expected) => {
+      expect(getMinimumSpend({ fireMode, weaponFireModes })).toBe(expected);
+    },
+  );
 });

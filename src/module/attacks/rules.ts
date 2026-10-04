@@ -32,6 +32,60 @@ export type WeaponFireModes = (typeof weaponFireModesValues)[number];
 /** A three-round burst needs at least this many points spent (p. 100) */
 export const burstMinimumSpend = 3;
 
+/**
+ * Full-auto needs at least this many points spent, which can include Athletics
+ * and Stability (p. 100). Machine guns don't need any (p. 100).
+ */
+export const fullAutoMinimumSpend = 5;
+
+/**
+ * The fire modes a weapon can use. Without the autofire rules, everything
+ * fires single shots.
+ */
+export function getAvailableFireModes({
+  weaponFireModes,
+  useAutofire,
+}: {
+  weaponFireModes: WeaponFireModes;
+  useAutofire: boolean;
+}): FireMode[] {
+  if (!useAutofire) return ["single"];
+  switch (weaponFireModes) {
+    case "single":
+      return ["single"];
+    case "selective":
+      return ["single", "burst", "fullAuto"];
+    case "alwaysAuto":
+      return ["fullAuto"];
+  }
+}
+
+/**
+ * The least an attack in this fire mode needs spent. For full-auto, this is
+ * the total including Athletics and Stability.
+ */
+export function getMinimumSpend({
+  fireMode,
+  weaponFireModes,
+}: {
+  fireMode: FireMode;
+  weaponFireModes: WeaponFireModes;
+}): number {
+  switch (fireMode) {
+    case "single":
+      return 0;
+    case "burst":
+      return burstMinimumSpend;
+    case "fullAuto":
+      return weaponFireModes === "alwaysAuto" ? 0 : fullAutoMinimumSpend;
+  }
+}
+
+/** Full-auto fire hits everyone downrange; everything else hits one target */
+export function isMultiTargetFireMode(fireMode: FireMode): boolean {
+  return fireMode === "fullAuto";
+}
+
 /** Health at or below which you are Hurt (p. 094) */
 export const hurtHealth = 0;
 /** Health at or below which you are Seriously Wounded (p. 094) */

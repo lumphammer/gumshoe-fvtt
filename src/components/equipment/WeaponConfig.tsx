@@ -65,8 +65,10 @@ export const WeaponConfig = () => {
   const validCombatAbilities = settings.combatAbilities.get();
   const useDamageApplication = settings.useDamageApplication.get();
   const showGunfire = useDamageApplication && settings.useGunfireOnHumans.get();
-  const showLethality = useDamageApplication && settings.useLethality.get();
-  const showFireModes = useDamageApplication && settings.useAutofire.get();
+  const showLethality =
+    useDamageApplication && settings.useLethalityAndAutofire.get();
+  const showFireModes =
+    useDamageApplication && settings.useLethalityAndAutofire.get();
   const fireModes = item.system.fireModes;
 
   return (

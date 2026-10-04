@@ -165,15 +165,15 @@ export const settings = {
     name: "Use critical hits?",
     default: pathOfCthulhuPreset.useCriticalHits,
   }),
-  useLethality: createSettingBoolean({
-    key: "useLethality",
-    name: "Use Lethality?",
-    default: pathOfCthulhuPreset.useLethality,
+  useLethalityAndAutofire: createSettingBoolean({
+    key: "useLethalityAndAutofire",
+    name: "Use Lethality and autofire?",
+    default: pathOfCthulhuPreset.useLethalityAndAutofire,
   }),
-  useAutofire: createSettingBoolean({
-    key: "useAutofire",
-    name: "Use autofire?",
-    default: pathOfCthulhuPreset.useAutofire,
+  fullAutoSpendAbilities: createSettingArrayOfString({
+    key: "fullAutoSpendAbilities",
+    name: "Full-auto spend abilities",
+    default: pathOfCthulhuPreset.fullAutoSpendAbilities,
   }),
 
   // ///////////////////////////////////////////////////////////////////////////

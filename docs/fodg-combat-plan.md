@@ -167,12 +167,12 @@ suppressive fire, evasion, non-lethal attacks, rubber/special ammunition.
   - `useDamageApplication`
   - `useGunfireOnHumans`
   - `useCriticalHits`
-  - `useLethality`
-  - `useAutofire` (burst + full-auto)
+  - `useLethalityAndAutofire` (Lethality, burst, and full-auto; see Phase 4)
   - `useWalkingFire`
   - `useShotDryAndJams`
-  - `athleticsAbilityName`, `stabilityAbilityName` (for full-auto / walking
-    fire spends; names vary by preset and language)
+  - `fullAutoSpendAbilities`: a list of ability names (default Athletics and
+    Stability) for full-auto spends, edited on its own settings page; names
+    vary by preset and language. Walking fire may want its own list.
 
 ### Settings, presets, and import/export
 
@@ -298,6 +298,59 @@ Decisions made while implementing Phase 3:
   total ≥ 5; only the weapon ability adds; no minimum for always-auto weapons).
 - Full-auto Lethality per target.
 - Shot Dry and Jams.
+
+Decisions made while planning Phase 4:
+
+- Critical hits **do** apply to full-auto, alongside Shot Dry (they are not
+  replaced by it). Reasoning, from research and asking around:
+  - The minimum spend of 5 can be made up with Stability and Athletics, which
+    don't add to the roll, so a natural 6 on full-auto often won't reach a
+    margin of 5. Crits aren't the near-certainty they first look like.
+  - Machine guns (Heavy Weapons) have no minimum spend, and should be able to
+    crit when they do well.
+- Crits are decided **per target**, from the margin over that target's own
+  Hit Threshold. A crit gives that target one extra Lethality die, as for
+  single shots and bursts, and stacks with Shot Dry's extra dice.
+- **Shot Dry's extra dice** are handed out on the card: each target row gets a
+  "Shot Dry" toggle, and at most two rows can be marked. One marked row gets 3
+  dice; two marked rows get 2 each. With a single target, it's marked
+  automatically.
+- **One setting for Lethality and autofire:** "Use Lethality and autofire?"
+  replaces both "Use Lethality?" and "Use autofire?", since full-auto damage
+  *is* Lethality and the rules are too intertwined to split. (A three-way
+  setting was considered and felt like overkill.) Neither setting has been
+  released yet (last release v10.123), so no migration is needed.
+- **Jams count successive full-auto rolls only**, for any weapon fired on
+  full-auto, small arms included. Otherwise an M16 fired single-shot could
+  jam while an M1 Garand never could. A single shot or burst resets the
+  count, and so does a new fight: when a full-auto roll comes up 1, the
+  weapon records the current combat's id (or none, outside combat). The next
+  full-auto roll jams only if it's also a 1 *and* the recorded combat id
+  matches the current one.
+- **Undisciplined firers** (shooting dry on a 1) are left out for now; they'd
+  need an "undisciplined" flag on actors.
+- Phase 4 is split into **4a** (full-auto, the multi-ability spend, several
+  targets) and **4b** (Shot Dry and Jams).
+
+Decisions made while implementing Phase 4a:
+
+- Selective-fire weapons offer single, burst, and full-auto. Always-auto
+  weapons (machine guns) only fire full-auto, including quick attacks from the
+  sheet's weapon rows. Without the setting, everything fires single shots.
+- Full-auto's Lethality is snapshotted onto the attack like any other: L1 for
+  small arms, or a machine gun's own rating (L1 if it has none). It goes
+  through the same resolution as everything else, so cover, armor, gunfire,
+  immunity and per-target crits all just work.
+- Rather than one setting each for the Athletics and Stability names, there's
+  a list of "full-auto spend abilities" (default Athletics and Stability) on
+  its own settings page under Combat. The attack panel shows a spend row for
+  each listed ability the attacker has, only on full-auto. Their points come
+  off those abilities' pools after the attack.
+- Full-auto takes **all** the user's targeted tokens (never the selection,
+  which is usually the shooter). The card's "Add targets" button adds any
+  targeted (or else selected) tokens not already on the card; each row can
+  be removed. Targets are added one at a time, so the first takes the
+  attack's own damage roll and the rest roll their own.
 
 ### Phase 5 — walking fire
 
