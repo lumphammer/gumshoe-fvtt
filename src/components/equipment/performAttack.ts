@@ -215,7 +215,9 @@ export const performAttack =
             await extraAbility.system.setPool(
               Math.max(0, previous - extra.spend),
             );
-            refunds.push(() => extraAbility.system.setPool(previous));
+            refunds.push(async () => {
+              await extraAbility.system.setPool(previous);
+            });
           }
         }
         resetExtraSpends?.();
