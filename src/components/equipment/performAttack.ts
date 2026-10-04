@@ -213,7 +213,6 @@ export const performAttack =
       // old value, so they don't undo anything else spent in the meantime.
       const refunds: (() => Promise<void>)[] = [];
       let shotDry = false;
-      let jamUpdate: ReturnType<typeof getJamUpdate> | null = null;
       try {
         const poolHit = Math.max(0, Number(spend) - bonusPool);
         const newPool = Math.max(0, currentPool - poolHit);
@@ -313,14 +312,28 @@ export const performAttack =
           roll.dice[0].options.rollOrder = 3 + i;
         });
         shotDry = attack.isShotDry;
-        jamUpdate = useJams
-          ? getJamUpdate({
-              fireMode,
-              hitDie: attack.hitDie,
-              pendingJam: weapon.system.pendingJam,
-              combatId: getCombatIdFor(weapon.actor),
-            })
-          : null;
+        // keep the jam count going even with the rule off, so it stays a
+        // count of successive full-auto rolls if the rule gets turned on
+        const jamUpdate = getJamUpdate({
+          fireMode,
+          hitDie: attack.hitDie,
+          pendingJam: weapon.system.pendingJam,
+          combatId: getCombatIdFor(weapon.actor),
+        });
+        const jams = useJams && jamUpdate.jams;
+        // save the jam before announcing it, so the card can't claim a jam
+        // the weapon doesn't have
+        if (
+          jams ||
+          !isSamePendingJam(jamUpdate.pendingJam, weapon.system.pendingJam)
+        ) {
+          await weapon.update({
+            system: {
+              jammed: weapon.system.jammed || jams,
+              pendingJam: jamUpdate.pendingJam,
+            },
+          });
+        }
 
         const rolls = [hitRoll, damageRoll, ...extraRolls];
         // @ts-expect-error fvtt-types
@@ -337,7 +350,7 @@ export const performAttack =
           content: buildAbilityCardContent({}),
           system: {
             ...attack,
-            weaponJammed: jamUpdate?.jams ?? false,
+            weaponJammed: jams,
             weaponUuid: weapon.uuid,
             weaponName: weapon.name,
             weaponImg: weapon.img ?? "",
@@ -355,18 +368,6 @@ export const performAttack =
       // Shot Dry empties the weapon (p. 101)
       if (shotDry && weapon.system.usesAmmo) {
         await weapon.system.setAmmo(0);
-      }
-      if (
-        jamUpdate &&
-        (jamUpdate.jams ||
-          !isSamePendingJam(jamUpdate.pendingJam, weapon.system.pendingJam))
-      ) {
-        await weapon.update({
-          system: {
-            jammed: weapon.system.jammed || jamUpdate.jams,
-            pendingJam: jamUpdate.pendingJam,
-          },
-        });
       }
     } finally {
       weaponsAttacking.delete(weapon);

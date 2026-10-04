@@ -412,6 +412,7 @@
   "investigator.ShotDry": "Shot dry",
   "investigator.ShotDryExtraDiceN": "+{N} Lethality dice",
   "investigator.ShotDryChooseTargets": "Choose up to two targets",
+  "investigator.ShotDryChooseTarget": "Give {TokenName} Shot Dry's extra damage",
   "investigator.WastedExtraSpend": "{Wasted} of the points from other abilities will be wasted: they don't add to the roll, and only count towards the minimum spend of {Min}.",
   "investigator.NotEnoughPointsToSpend": "There aren't enough points left in the pool to spend that much.",
   "investigator.NotEnoughAmmo": "Not enough ammo",

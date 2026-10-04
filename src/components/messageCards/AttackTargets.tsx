@@ -384,7 +384,9 @@ const AttackTargetRow = ({
           </>
         )}
 
-        {resolved.isHit && attack.isShotDry && (
+        {/* a chosen target which has become a miss stays here, so it can be
+            unchosen to free up its slot */}
+        {attack.isShotDry && (resolved.isHit || target.shotDryBonus) && (
           <>
             <span className="label">
               <Translate>Shot dry</Translate>
@@ -399,6 +401,9 @@ const AttackTargetRow = ({
                     shotDryChosenCount >= shotDryMaxTargets
                   }
                   onChange={onChangeShotDry}
+                  aria-label={getTranslated("ShotDryChooseTarget", {
+                    TokenName: actor?.name ?? target.name,
+                  })}
                   css={{ margin: "0 0.4em 0 0", verticalAlign: "middle" }}
                 />
               )}
