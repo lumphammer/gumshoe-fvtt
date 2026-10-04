@@ -7,21 +7,19 @@
     - [Linting and formatting](#linting-and-formatting)
     - [pnpm](#pnpm)
   - [Migrations](#migrations)
-  - [Flagged migrations](#flagged-migrations)
-  - [Generating Compendium packs](#generating-compendium-packs)
+  - [Compendium packs](#compendium-packs)
   - [Translations](#translations)
     - [How to pull translations from Transifex](#how-to-pull-translations-from-transifex)
     - [When someone sends a PR with translation changes](#when-someone-sends-a-pr-with-translation-changes)
     - [Getting set up to pull translations from Transifex](#getting-set-up-to-pull-translations-from-transifex)
-  - [Adding Actor or Item data fields](#adding-actor-or-item-data-fields)
+  - [Adding document data fields](#adding-document-data-fields)
   - [Adding system settings](#adding-system-settings)
   - [Using the "Developer mode" module](#using-the-developer-mode-module)
   - [Development flow](#development-flow)
   - [Release process](#release-process)
     - [What happens if the CI pipeline fails?](#what-happens-if-the-ci-pipeline-fails)
   - [GitLab Legacy](#gitlab-legacy)
-  - [Patched packages](#patched-packages)
-  - [@league-of-foundry-developers/foundry-vtt-types](#league-of-foundry-developersfoundry-vtt-types)
+  - [fvtt-types](#fvtt-types)
 
 
 ## Contributing & general hacking
@@ -58,12 +56,16 @@ These docs were mostly written for my own benefit, so feel free to reach out to 
 5. Run `pnpm run link` to link it into your foundry data folder.
 6. Run `pnpm dev` to start a live dev server (so you don't need to keep running `pnpm run build` after every change.)
 
+Before committing, run `pnpm check`. It runs the typecheck, tests, linter, format check and build, which is what CI does.
+
+If you're working with an AI coding agent, see also [`AGENTS.md`](AGENTS.md), which collects the less obvious things about this codebase.
+
 
 ### Linting and formatting
 
-We use [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) for linting and formatting. You can run these tools with `pnpm run lint:check` and `pnpm run format:check` to check for errors and `pnpm run lint:fix` and `pnpm run format:fix` to fix them.
+We use [oxlint](https://oxc.rs/docs/guide/usage/linter) and [Prettier](https://prettier.io/) for linting and formatting. You can run these tools with `pnpm run lint:check` and `pnpm run format:check` to check for errors and `pnpm run lint:fix` and `pnpm run format:fix` to fix them.
 
-Even better (and more reliable) is to install a plugin for your editor that will run these tools automatically. For example, for VSCode, you can install the [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) extensions. Personally I have my IDE set uip to "format on save" so I don't have to think about it.
+Even better (and more reliable) is to install a plugin for your editor that will run these tools automatically. For example, for VSCode, you can install the [oxc](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) extensions. Personally I have my IDE set up to "format on save" so I don't have to think about it.
 
 
 ### pnpm
@@ -72,17 +74,15 @@ We use [pnpm](https://pnpm.io/) instead of npm because it's faster and more effi
 
 ## Migrations
 
-The migrations system is inspired by an earlier version of the one in the 5e system. It is triggered from `investigator.ts` based on version number.
+There are two kinds of migration.
 
-If you want to force migrations to run, try this:
+**Per-document data shape changes** go in the data model's `static migrateData(source)` (see `WeaponModel` in `src/module/items/weapon.ts` for an example using `migrateValue`). Foundry runs these whenever it loads a document, so they need no bookkeeping, but they don't save the migrated data back.
 
-```ts
-game.settings.set("investigator","systemMigrationVersion", "1.0.0")
-```
+**One-off migrations which update stored data** are "flagged migrations", in `src/migrations/flaggedMigrations.ts`, grouped by document type (`item`, `actor`, `world`, etc.). Each one runs once per world and is then flagged as complete in the `migrationFlags` setting, so it doesn't run again. Migrations must be idempotent: a retry re-runs every outstanding migration over every document.
 
-## Flagged migrations
+On startup, `src/startup/migrateWorldIfNeeded.ts` runs any unflagged migrations (GM only). A brand new world flags them all as done without running them. If a run fails, it's retried on the next startup, up to `maximumAutomaticMigrationAttempts` times, after which it stops nagging and a GM can retry by hand from GUMSHOE Settings > Miscellaneous > Migration recovery.
 
-We have a newer, better system for migrations, which runs each migration once, and then marks it as "complete" so it doesn't run again. This is the "flagged migrations" system. Unlike the old system, it doesn't rely on the version number. Also, the old system has the unpleasant habit of running all the migrations every time it detects a version change, which is not ideal.
+(The older migration system, which re-ran everything whenever `systemMigrationVersion` changed, is gone. That setting is still recorded, but nothing triggers off it.)
 
 To see the current state of flagged migrations, open the console and type
 
@@ -90,33 +90,46 @@ To see the current state of flagged migrations, open the console and type
 console.log(JSON.stringify(game.settings.get("investigator", "migrationFlags"), null,  "  "))
 ```
 
-There will be a flag in there for every migration that has been run. If you want to force a migration to run again, you can delete the flag for it. For example, if you want to force the migration to run again that adds the `investigator` field to all actors, you can do this:
+There will be a flag in there for every migration that has been run. To force a migration to run again, delete its flag and reload. For example, to re-run the `addIdtoUnlocks` item migration:
 
-## Generating Compendium packs
+```js
+const flags = game.settings.get("investigator", "migrationFlags");
+delete flags.item.addIdtoUnlocks;
+await game.settings.set("investigator", "migrationFlags", flags);
+```
 
-1. In your **Items** tab, delete the "Trail of Cthulhu Abilities" folder
-2. In the **Compendium Packs** tab, make sure the edit lock is toggled off for the pack (right click and `Toggle edit lock` if you see a padlock.)
-3. Open the browser console (F12) and type `generateTrailAbilitiesData()`
-4. Check the compendium packs if you like
-5. Copy the `packs/*.db` files back from `build/` into `public/`
+## Compendium packs
+
+The packs' source lives as YAML in [`src/packs/`](src/packs/), one file per document. The build compiles them into Foundry's database format in `build/packs`.
+
+To change a pack:
+
+1. Edit it in Foundry as normal (unlock the pack first: right-click it and `Toggle edit lock`).
+2. Shut down the world, so Foundry lets go of the pack databases.
+3. Run `pnpm run extract-packs`. This rewrites `src/packs/` from `build/packs`.
+4. Check the changes in git and commit them.
+
+You can also edit the YAML directly and rebuild.
 
 ## Translations
 
 There are two npm tasks pertaining to translations:
 
-* `npm run build-pack-translations` will:
-  * populate `src/lang/babele-sources` with template translation files based on the packs.
+* `pnpm run build-pack-translations` will:
+  * populate `public/lang/babele-sources` with template translation files based on the packs.
   * These should be picked up by Transifex automatically.
-* `npm run pull-translations` will:
+* `pnpm run pull-translations` will:
   * use the Transifex command line tool, [`tx`](https://github.com/transifex/cli), to pull in the latest translations and overwrite all the JSONs.
   * THIS WILL CLOBBER ANY JSON MODIFICATIONS WHICH HAVE NOT BEEN UPLOADED TO TRANSIFEX!
 
 To keep the translation imports running sweetly, you will need to update `.tx/config` to map everything to the right places.
 
+The core strings are in [`public/lang/en.json`](public/lang/en.json). In code, `<Translate>Some text</Translate>` and `getTranslated("Some text")` look up the key `investigator.` + the text in PascalCase (via `Case.pascal`), so "Hit threshold" is `investigator.HitThreshold`. Punctuation is dropped, so "Shot dry!" and "Shot dry" share a key. New strings only show up in a running Foundry after a restart.
+
 ### How to pull translations from Transifex
 
 ```sh
-pn pull-translations
+pnpm run pull-translations
 ```
 
 The command to pull translations has gone through a few iterations and never quite seemed right. Here's the current version (this is in `package.json`):
@@ -129,7 +142,7 @@ tx pull --all --force --workers 16
 * `--workers 16` - seems to make sense on a 16-core machine. I'm not sure if it's actually helping.
 * `--force` - overwrite "newer" files. This should only happen if there has been a PR or commit that changed the translations without also uploading those changes to Transifex.
 
-> ⚠️ After running `pn pullTranslations` (or the `tx pull` command above), you MUST look through the changes in git and confirm that they make sense. Look for languages with a lot of changes and double check that you are not accidentally overwriting changes that were added to git but not TX.
+> ⚠️ After running `pnpm run pull-translations` (or the `tx pull` command above), you MUST look through the changes in git and confirm that they make sense. Look for languages with a lot of changes and double check that you are not accidentally overwriting changes that were added to git but not TX.
 
 ### When someone sends a PR with translation changes
 
@@ -148,26 +161,29 @@ The first time you try to pull translations, it will ask you to log in with an A
 
 I have a manual download which I keep checked-in with my dotfiles, but the other installation methods listed may be preferable.
 
-## Adding Actor or Item data fields
+## Adding document data fields
 
-1. Add the field to [`src/template.json`](). This is what Foundry uses to generate initial data for new actors and items, and to do some kind of validation on entries when they get saved.
-2. Add the field to [`src/types.ts`](), in the appropriate `*SourceData` type.
-3. In  `src/module/InvestigatorActor.ts`, add `get*` and `set*` methods with the appropriate `assert*` call (see existing examples.)
+Document data is defined with Foundry's `TypeDataModel`s, one per subtype (e.g. `WeaponModel` in `src/module/items/weapon.ts`, `NPCModel` in `src/module/actors/npc.ts`).
 
+1. Add the field to the model's schema, with an `initial` value so existing documents get a sensible default.
+2. If you need to change the shape of existing data, add a `migrateData` step or a flagged migration (see [Migrations](#migrations)).
+3. Add a setter to the model if the UI needs one (see the existing `set*` methods).
+4. New document *subtypes* also need adding to `documentTypes` in [`public/system.json`](public/system.json), registering in `CONFIG.*.dataModels` and the `DataModelConfig` type in [`src/configuration.ts`](src/configuration.ts), and a `TYPES.*` label in `public/lang/en.json`.
 
 ## Adding system settings
 
-1. Add an entry to [`src/settings.ts`]().
-2. Add it to the `PresetV1` type in `@lumphammer/investigator-fvtt-type`, publish, and update the package version here. We haven't got as far as new `PresetV*` types yet, so make sure you add it as an optional property.
-3. Add a sensible default to `pathOfCthulhuPreset` in `src/settings.ts`, and add values to the other presets if they need them.
-4. In [`src/components/settings/`](), add it to the JSX somewhere - see the existing examples. `tempSettings` will contain the value and `setters` will have the setter.
-5. You will probably need to add a translation string to [`public/lang/en.json`]() or maybe [`public/lang/moribundWorld/en.json`]() for MW stuffs.
-6. If it's a setting that can be controlled by system presets, also add it to the `PresetV1` type in @lumphammer/investigator-fvtt-types and publish a new version.
+1. Add an entry to [`src/settings/settings.ts`](src/settings/settings.ts), using the `createSetting*` helpers. Settings are exportable (part of presets and settings import/export) unless you pass `exportable: false`.
+2. Add it to the `PresetV1` type in [`packages/investigator-fvtt-types`](packages/investigator-fvtt-types/index.ts), as an optional property with a doc comment. We haven't got as far as new `PresetV*` types yet. This is a workspace package, so the system picks it up straight away; publish a new version for anyone else using the types.
+3. Add a sensible default to `pathOfCthulhuPreset` in [`src/presets.ts`](src/presets.ts) (it's `Required<PresetV1>`, so TypeScript will insist), and add values to the other presets if they need them. `pathOfCthulhuPreset` is the base layer when applying any preset, so older presets without the new key get this default.
+4. In [`src/components/settings/`](src/components/settings/), add it to the JSX somewhere - see the existing examples. `settings` (from `StateContext`) has the unsaved value and `setters` has the setter.
+5. Add a translation string for its label to [`public/lang/en.json`](public/lang/en.json) (or maybe [`public/lang/moribundWorld/en.json`](public/lang/moribundWorld/en.json) for MW stuffs).
+6. Importing an export from an older version must keep working. Add the new key to `src/settings/validateImportedSettings.test.ts`, and to the fixture in `src/components/settings/store.test.ts` (then update its snapshots with `pnpm test --run -u`, after checking the diff).
 
+A setting which has never been in a release can be renamed or removed without a migration.
 
 ## Using the "Developer mode" module
 
-There's a fantastic Foundry VTT module called [🧙 Developer Mode](https://foundryvtt.com/packages/_dev-mode). I highly recommend installing it if you're doing any development work on Foundry. You can also use it to activate specific developer features for systems. To do this, click on the little wizard dude in the top left of the screen, go to "Package specific debugging", and "Enable Debug Mode" for "INVESTIGATOR System".
+There's a Foundry VTT module called [🧙 Developer Mode](https://foundryvtt.com/packages/_dev-mode). It may no longer be maintained, but the system still supports it. You can also use it to activate specific developer features for systems. To do this, click on the little wizard dude in the top left of the screen, go to "Package specific debugging", and "Enable Debug Mode" for "INVESTIGATOR System".
 
 What this enables (list subject to change):
 
@@ -192,7 +208,7 @@ What this enables (list subject to change):
     * The zip package
     * The manifest
   * If the tag is a release (i.e.there is no pre-release suffix), it also marks the release as "latest" on GitHub.
-  * You can always find the latest release at the URL https://github.com/n3dst4/gumshoe-fvtt/releases/latest
+  * You can always find the latest release at the URL https://github.com/lumphammer/gumshoe-fvtt/releases/latest
 
 
 ## Release process
@@ -253,7 +269,7 @@ To perform a release:
     ```
 
 2. Fix the problem, commit.
-3. Run `do-release.sh` again.
+3. Run `pnpm run do-prerelease` or `pnpm run do-full-release` again.
 
 
 ## GitLab Legacy
@@ -265,27 +281,17 @@ As of v7.0.0 we are moving off GitLab and going home to GitHub. The following li
 * [GitLab Generic Packages (docs)][gl-generic-packages]
 
 
-## Patched packages
+## fvtt-types
 
-We use a patched version of the following packages:
+We use the community [`fvtt-types`](https://github.com/League-of-Foundry-Developers/foundry-vtt-types) for Foundry's core types. The version is pinned in the `catalog` in [`pnpm-workspace.yaml`](pnpm-workspace.yaml), and shared by the workspace packages. To try a branch straight from GitHub, run `./scripts/install-fvtt-types.sh <branch>`.
 
-* [react-icons](https://github.com/react-icons/react-icons)
-  * Has some wonky setup that doesn't work with typescript's moduleResolution: 'bundler' setting. However, `bundler` is needed for Rollup 4, which is needed for Vite 5. So we have a patch which fixes the problem for the subdirectories of react-icons we use.
-  * See https://github.com/react-icons/react-icons/issues/509#issuecomment-1484863625
-  * See https://github.com/react-icons/react-icons/issues/717
-* tinymce
-  * This is a dependency of https://github.com/League-of-Foundry-Developers/foundry-vtt-types
-  * contains types that don't work in typescript 5+
-
-## @league-of-foundry-developers/foundry-vtt-types
-
-As of writing, this project has gone through a stagnant phase caused mainly by Foundry doing stuff that is very hard to represent in typescript. However it's just had a flurry of activity, and Foundry themselves have indicated willingness to provide decent core types. We have been using these types for the sake of the basic core declarations, but currently needs a lot of `@ts-expect-error` to make it work. Also we used to have some direct imports from it, but they no longer work with `moduleResolution: 'bundler'` so they have been replaced by alternatives.
+The types are good these days, but some corners of Foundry are hard to express in TypeScript, so you'll still see the occasional `@ts-expect-error fvtt-types`.
 
 
 [gl-generic-packages]: https://docs.gitlab.com/ee/user/packages/generic_packages/
 [gl-releases]: https://gitlab.com/n3dst4/investigator-fvtt/-/releases
 [gl-ci]: https://gitlab.com/n3dst4/investigator-fvtt/-/pipelines
-[gh-ci]: https://github.com/n3dst4/gumshoe-fvtt/actions/workflows/ci-cd.yml
+[gh-ci]: https://github.com/lumphammer/gumshoe-fvtt/actions/workflows/ci-cd.yml
 [pelgrane-discord]: https://discord.com/channels/692113540210753568/720741108937916518
 [fprd]: https://discord.com/channels/170995199584108546/64821535989524071
-[gh-releases]: https://github.com/n3dst4/gumshoe-fvtt/releases
+[gh-releases]: https://github.com/lumphammer/gumshoe-fvtt/releases
