@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import type { TargetActorInfo } from "./resolveAttackTarget";
-import { resolveAttackTarget } from "./resolveAttackTarget";
+import {
+  getBurstBulletsFired,
+  resolveAttackTarget,
+  resolveAttackTargetInAttack,
+} from "./resolveAttackTarget";
 import type { AttackData, AttackTargetData } from "./types";
 
 const makeAttack = (overrides: Partial<AttackData> = {}): AttackData => ({
@@ -29,6 +33,7 @@ const makeTarget = (
   cover: "partial",
   armorOverride: null,
   shotDryBonus: false,
+  walked: false,
   damageRolls: [{ die: 5, total: 5 }],
   applied: null,
   ...overrides,
@@ -445,5 +450,110 @@ describe("Shot Dry", () => {
     const result = resolveAttackTarget(crit, a, human, options);
     expect(result.isCritical).toBe(true);
     expect(result.missingRollCount).toBe(4);
+  });
+});
+
+describe("walking fire", () => {
+  // Sanchez's full-auto result of 3 hits Aquarius X (Hit Threshold 3), but
+  // not Virgo behind cover (Hit Threshold 4) (p. 100)
+  it("needs the original result to hit the new target", () => {
+    const attack = makeAttack({
+      fireMode: "fullAuto",
+      hitTotal: 3,
+      hitDie: 2,
+      lethality: { rating: 1, asterisks: 0, hs: 0 },
+    });
+    const aquarius = makeTarget({ id: "aquarius", walked: true });
+    const virgo = makeTarget({ id: "virgo", walked: true, cover: "full" });
+    expect(resolveAttackTarget(attack, aquarius, human, options).isHit).toBe(
+      true,
+    );
+    expect(resolveAttackTarget(attack, virgo, human, options).isHit).toBe(
+      false,
+    );
+  });
+
+  describe("a burst walked across targets", () => {
+    const first = makeTarget({ id: "first", damageRolls: [] });
+    const second = makeTarget({
+      id: "second",
+      tokenUuid: "Scene.x.Token.second",
+      walked: true,
+      damageRolls: [],
+    });
+    const third = makeTarget({
+      id: "third",
+      tokenUuid: "Scene.x.Token.third",
+      walked: true,
+      damageRolls: [],
+    });
+    const infoFor = () => human;
+
+    it("shares out no more than three bullets", () => {
+      // margin 4 against Hit Threshold 3: two bullets each, if they had them
+      const burst = makeAttack({
+        fireMode: "burst",
+        hitTotal: 7,
+        hitDie: 4,
+        targets: [first, second, third],
+      });
+      const counts = [first, second, third].map(
+        (t) =>
+          resolveAttackTargetInAttack(burst, t, infoFor, options).bulletCount,
+      );
+      expect(counts).toEqual([2, 1, 0]);
+      expect(getBurstBulletsFired(burst, infoFor, options)).toBe(3);
+    });
+
+    it("leaves a target with no bullets without damage", () => {
+      // margin 6: all three bullets hit the first target
+      const burst = makeAttack({
+        fireMode: "burst",
+        hitTotal: 9,
+        hitDie: 6,
+        targets: [first, second],
+      });
+      const result = resolveAttackTargetInAttack(
+        burst,
+        { ...second, damageRolls: [{ die: 4, total: 4 }] },
+        infoFor,
+        options,
+      );
+      expect(result.isHit).toBe(true);
+      expect(result.bulletCount).toBe(0);
+      expect(result.isCritical).toBe(false);
+      expect(result.missingRollCount).toBe(0);
+      expect(result.damage).toBeNull();
+    });
+
+    it("doesn't count bullets which missed", () => {
+      // 4 misses the first target (Hit Threshold 6) and hits the second
+      const burst = makeAttack({
+        fireMode: "burst",
+        hitTotal: 4,
+        hitDie: 1,
+        targets: [first, second],
+      });
+      const firstIsTough = (t: AttackTargetData) =>
+        t.id === "first" ? { ...human, hitThreshold: 6 } : human;
+      expect(
+        resolveAttackTargetInAttack(burst, second, firstIsTough, options)
+          .bulletCount,
+      ).toBe(1);
+      expect(getBurstBulletsFired(burst, firstIsTough, options)).toBe(1);
+    });
+
+    it("resolves a target not yet added as if it came last", () => {
+      const burst = makeAttack({
+        fireMode: "burst",
+        hitTotal: 7,
+        hitDie: 4,
+        targets: [first],
+      });
+      expect(
+        resolveAttackTargetInAttack(burst, second, infoFor, options)
+          .bulletCount,
+      ).toBe(1);
+    });
   });
 });

@@ -61,6 +61,8 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
   useCriticalHits: false,
   useLethalityAndAutofire: false,
   useShotDryAndJams: false,
+  useWalkingFire: false,
+  walkingFireSpendAbilities: ["Athletics"],
   fullAutoSpendAbilities: ["Athletics", "Stability"],
   equipmentCategories: {
     general: {

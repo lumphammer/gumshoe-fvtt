@@ -11,7 +11,10 @@ import type {
   ResolvedAttackTarget,
   TargetActorInfo,
 } from "./resolveAttackTarget";
-import { resolveAttackTarget } from "./resolveAttackTarget";
+import {
+  getBurstBulletsFired,
+  resolveAttackTargetInAttack,
+} from "./resolveAttackTarget";
 import { addTarget, replaceTarget, takeUnusedDamageRolls } from "./attackData";
 import type { AttackData, AttackTargetData, DamageRollRecord } from "./types";
 
@@ -77,14 +80,26 @@ export function getResolveOptions() {
   };
 }
 
+function getTargetActorInfoLive(target: AttackTargetData): TargetActorInfo {
+  return getTargetActorInfo(getTargetActor(target));
+}
+
 export function resolveTargetLive(
   attack: AttackData,
   target: AttackTargetData,
 ): ResolvedAttackTarget {
-  return resolveAttackTarget(
+  return resolveAttackTargetInAttack(
     attack,
     target,
-    getTargetActorInfo(getTargetActor(target)),
+    getTargetActorInfoLive,
+    getResolveOptions(),
+  );
+}
+
+export function getBurstBulletsFiredLive(attack: AttackData): number {
+  return getBurstBulletsFired(
+    attack,
+    getTargetActorInfoLive,
     getResolveOptions(),
   );
 }
@@ -110,6 +125,7 @@ export function createAttackTarget(token: TokenDocument): AttackTargetData {
     cover: "partial",
     armorOverride: null,
     shotDryBonus: false,
+    walked: false,
     damageRolls: [],
     applied: null,
   };

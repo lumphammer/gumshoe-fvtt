@@ -78,6 +78,8 @@ const initialState: State = {
     useCriticalHits: false,
     useLethalityAndAutofire: false,
     useShotDryAndJams: false,
+    useWalkingFire: false,
+    walkingFireSpendAbilities: [],
     fullAutoSpendAbilities: [],
     genericOccupation: "",
     investigativeAbilityCategories: [],

@@ -25,6 +25,8 @@ export type AttackTargetData = {
   armorOverride: number | null;
   /** chosen to get Shot Dry's extra damage */
   shotDryBonus: boolean;
+  /** added by walking fire, rather than aimed at */
+  walked: boolean;
   damageRolls: DamageRollRecord[];
   applied: AppliedDamageRecord | null;
 };

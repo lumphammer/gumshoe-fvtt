@@ -381,3 +381,30 @@ Decisions made while implementing Phase 4b:
 - Compare the original result against the new target's effective Hit
   Threshold.
 - Enforce the three-bullet cap for bursts.
+
+Decisions made while implementing Phase 5:
+
+- A "Use walking fire?" setting (under "Use Lethality and autofire?"), and a
+  separate "Walking fire spend abilities" list (default Athletics), on its
+  own settings page. The Combat settings menu now starts with Combat options.
+- The card offers one button per way of paying: 2 points of the weapon's
+  ability, or 1 point of it plus 2 of each listed ability the attacker has.
+  Buttons the attacker can't afford are disabled. Walking needs an existing
+  target to walk from; there's no range check (the 3 yards is up to the
+  table).
+- Clicking takes the user's target (or selection). If the original result
+  wouldn't hit it (with partial cover, the default), the walk is refused
+  without spending anything. Otherwise the points are taken (refunded if
+  anything fails), the target is added marked "walked fire", and its damage
+  is rolled. Removing a walked target doesn't refund the points.
+- A burst's three bullets are shared out in target order: each target gets
+  its own margin-based count, capped by what earlier targets left. A target
+  with none left takes no damage, and walking stops once all three have hit.
+  Cover changes on an earlier target can move bullets between targets.
+- Full-auto walking adds a target exactly like "Add targets" (one Lethality
+  die), just paid for; the difference is geometry, which we don't check.
+- "Change target" disappears once fire has been walked (it would merge the
+  walked targets' rolls into one).
+- A Shot Dry attack's lone target gets its extra dice automatically, so
+  walking (or adding targets) onto a second one first ticks the lone target
+  explicitly, so it keeps them.

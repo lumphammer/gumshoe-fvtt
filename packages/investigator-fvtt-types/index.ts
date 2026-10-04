@@ -422,6 +422,17 @@ export interface PresetV1 {
    */
   useShotDryAndJams?: boolean;
   /**
+   * Fall of DELTA GREEN: after a burst or full-auto attack, pay to "walk" the
+   * fire onto another target the original result would hit. Only applies
+   * with Lethality and autofire.
+   */
+  useWalkingFire?: boolean;
+  /**
+   * Names of other abilities which can pay part of the cost of walking fire.
+   * Defaults to Athletics.
+   */
+  walkingFireSpendAbilities?: string[];
+  /**
    * Names of other abilities whose points count towards full-auto's minimum
    * spend, without adding to the roll. Defaults to Athletics and Stability.
    */

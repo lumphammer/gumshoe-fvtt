@@ -11,6 +11,7 @@ import {
   combatAbilities,
   combatOptions,
   fullAutoSpendAbilities,
+  walkingFireSpendAbilities,
 } from "./directions";
 
 /**
@@ -46,6 +47,21 @@ export const CombatSettingsRoutes = ({ setters }: { setters: Setters }) => {
         <SettingsStringList
           value={settings.fullAutoSpendAbilities}
           onChange={setters.fullAutoSpendAbilities}
+          sortable={false}
+          addLabel="Add ability"
+          emptyMessage="No abilities yet."
+        />
+      </SlideInNestedPanelRoute>
+      <SlideInNestedPanelRoute
+        direction={walkingFireSpendAbilities}
+        margin="0em"
+      >
+        <SettingsNote>
+          <Translate>WalkingFireSpendAbilitiesNote</Translate>
+        </SettingsNote>
+        <SettingsStringList
+          value={settings.walkingFireSpendAbilities}
+          onChange={setters.walkingFireSpendAbilities}
           sortable={false}
           addLabel="Add ability"
           emptyMessage="No abilities yet."

@@ -7,6 +7,7 @@ import {
   canUserActOnAttack,
 } from "../../module/attacks/applyAttackDamage";
 import {
+  keepLoneShotDryTarget,
   removeTarget,
   replaceTarget,
   setSingleTarget,
@@ -17,6 +18,7 @@ import {
   fillMissingDamageRolls,
   getAttackData,
   getTargetActor,
+  isAttackMessage,
   pickSingleTargetToken,
   pickTargetTokens,
   resolveTargetLive,
@@ -29,12 +31,15 @@ import { formatLethality } from "../../module/attacks/lethality";
 import type { DamageStep } from "../../module/attacks/resolveDamage";
 import type { Cover, WoundState } from "../../module/attacks/rules";
 import {
+  canWalkFireFrom,
   getWoundState,
   isMultiTargetFireMode,
   shotDryMaxTargets,
 } from "../../module/attacks/rules";
 import type { AttackData, AttackTargetData } from "../../module/attacks/types";
+import { settings } from "../../settings/settings";
 import { Translate } from "../Translate";
+import { WalkingFireActions } from "./WalkingFireActions";
 
 /** how long to wait for the GM to apply damage before re-enabling buttons */
 const gmRequestTimeoutMs = 5000;
@@ -278,6 +283,12 @@ const AttackTargetRow = ({
             <>
               {" "}
               (<Translate>Missing</Translate>)
+            </>
+          )}
+          {target.walked && (
+            <>
+              {" "}
+              (<Translate>Walked fire</Translate>)
             </>
           )}
         </div>
@@ -557,7 +568,10 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
   const onAddTargets = async () => {
     const latest = getAttackData(msg);
     if (!latest) return;
-    const added = await addTargetsForTokens(latest, pickTargetTokens());
+    const added = await addTargetsForTokens(
+      keepLoneShotDryTarget(latest),
+      pickTargetTokens(),
+    );
     if (added.attack === latest) return;
     await showRolls(added.rolls);
     await setAttackData(msg, added.attack);
@@ -582,6 +596,12 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
   }
 
   const isMultiTarget = isMultiTargetFireMode(attack.fireMode);
+  const canWalkFire =
+    canAct &&
+    settings.useLethalityAndAutofire.get() &&
+    settings.useWalkingFire.get() &&
+    canWalkFireFrom(attack.fireMode) &&
+    attack.targets.length > 0;
 
   return (
     <div css={{ marginTop: "0.5em" }}>
@@ -606,8 +626,10 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
             </button>
           </div>
         )}
+      {/* once fire has been walked, the attack has more than one target */}
       {canAct &&
         !isMultiTarget &&
+        attack.targets.length <= 1 &&
         attack.targets.every((t) => t.applied === null) && (
           <div css={{ paddingTop: "0.4em", borderTop: "1px solid #0003" }}>
             <button type="button" onClick={onSetTarget}>
@@ -618,6 +640,9 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
             </button>
           </div>
         )}
+      {canWalkFire && isAttackMessage(msg) && (
+        <WalkingFireActions msg={msg} attack={attack} />
+      )}
     </div>
   );
 };
