@@ -312,15 +312,17 @@ export const performAttack =
           roll.dice[0].options.rollOrder = 3 + i;
         });
         shotDry = attack.isShotDry;
-        // keep the jam count going even with the rule off, so it stays a
-        // count of successive full-auto rolls if the rule gets turned on
-        const jamUpdate = getJamUpdate({
-          fireMode,
-          hitDie: attack.hitDie,
-          pendingJam: weapon.system.pendingJam,
-          combatId: getCombatIdFor(weapon.actor),
-        });
-        const jams = useJams && jamUpdate.jams;
+        // with the rule off, any count gets cleared, and nothing starts a new
+        // one, so turning the rule on never counts rolls made while it was off
+        const jamUpdate = useJams
+          ? getJamUpdate({
+              fireMode,
+              hitDie: attack.hitDie,
+              pendingJam: weapon.system.pendingJam,
+              combatId: getCombatIdFor(weapon.actor),
+            })
+          : { jams: false, pendingJam: null };
+        const jams = jamUpdate.jams;
         // save the jam before announcing it, so the card can't claim a jam
         // the weapon doesn't have
         if (
