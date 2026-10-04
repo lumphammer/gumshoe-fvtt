@@ -48,6 +48,12 @@ const attackTargetSchema = {
     required: true,
     initial: false,
   }),
+  /** added by walking fire, rather than aimed at */
+  walked: new BooleanField({
+    nullable: false,
+    required: true,
+    initial: false,
+  }),
   damageRolls: createDamageRollsField(),
   /** a record of damage having been applied, so it can be undone */
   applied: new SchemaField(

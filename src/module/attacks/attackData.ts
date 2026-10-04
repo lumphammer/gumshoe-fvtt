@@ -67,6 +67,20 @@ export function addTarget(
 }
 
 /**
+ * A lone target of a Shot Dry attack gets the extra damage automatically, but
+ * with more targets it has to be chosen. Before adding more targets to an
+ * attack which already has its one, choose it explicitly so it keeps its
+ * extra damage. (It can still be unchosen.)
+ */
+export function keepLoneShotDryTarget(attack: AttackData): AttackData {
+  const [lone] = attack.targets;
+  if (!attack.isShotDry || attack.targets.length !== 1 || lone.shotDryBonus) {
+    return attack;
+  }
+  return { ...attack, targets: [{ ...lone, shotDryBonus: true }] };
+}
+
+/**
  * Single shots and bursts hit one target, so setting a target replaces any
  * existing one. The new target takes over the old one's damage rolls, because
  * they belong to the attack, not to whoever it was aimed at. (Walking fire

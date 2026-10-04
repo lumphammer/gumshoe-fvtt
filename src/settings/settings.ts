@@ -175,6 +175,16 @@ export const settings = {
     name: "Use Shot Dry and jams?",
     default: pathOfCthulhuPreset.useShotDryAndJams,
   }),
+  useWalkingFire: createSettingBoolean({
+    key: "useWalkingFire",
+    name: "Use walking fire?",
+    default: pathOfCthulhuPreset.useWalkingFire,
+  }),
+  walkingFireSpendAbilities: createSettingArrayOfString({
+    key: "walkingFireSpendAbilities",
+    name: "Walking fire spend abilities",
+    default: pathOfCthulhuPreset.walkingFireSpendAbilities,
+  }),
   fullAutoSpendAbilities: createSettingArrayOfString({
     key: "fullAutoSpendAbilities",
     name: "Full-auto spend abilities",

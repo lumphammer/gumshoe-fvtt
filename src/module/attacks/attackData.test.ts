@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   addTarget,
+  keepLoneShotDryTarget,
   removeTarget,
   setSingleTarget,
   takeUnusedDamageRolls,
@@ -30,6 +31,7 @@ const target: AttackTargetData = {
   cover: "partial",
   armorOverride: null,
   shotDryBonus: false,
+  walked: false,
   damageRolls: [],
   applied: null,
 };
@@ -145,5 +147,29 @@ describe("addTarget", () => {
   it("doesn't add the same token twice", () => {
     const withTarget = { ...attack, targets: [target] };
     expect(addTarget(withTarget, { ...target, id: "t2" })).toBe(withTarget);
+  });
+});
+
+describe("keepLoneShotDryTarget", () => {
+  it("chooses a Shot Dry attack's lone target", () => {
+    const result = keepLoneShotDryTarget({
+      ...attack,
+      isShotDry: true,
+      targets: [target],
+    });
+    expect(result.targets[0].shotDryBonus).toBe(true);
+  });
+
+  it("leaves anything else alone", () => {
+    const notShotDry = { ...attack, targets: [target] };
+    expect(keepLoneShotDryTarget(notShotDry)).toBe(notShotDry);
+    const twoTargets = {
+      ...attack,
+      isShotDry: true,
+      targets: [target, { ...target, id: "t2" }],
+    };
+    expect(keepLoneShotDryTarget(twoTargets)).toBe(twoTargets);
+    const none = { ...attack, isShotDry: true };
+    expect(keepLoneShotDryTarget(none)).toBe(none);
   });
 });

@@ -6,6 +6,7 @@ import {
   defaultHitThreshold,
   getEffectiveHitThreshold,
   getRequiredDamageRollCount,
+  burstMaxBullets,
   getBurstBulletCount,
   getShotDryExtraDice,
   isCriticalHit,
@@ -68,6 +69,8 @@ export function resolveAttackTarget(
   target: AttackTargetData,
   info: TargetActorInfo,
   { useCriticalHits, useGunfireOnHumans, useLethality }: ResolveOptions,
+  /** for a burst walked across targets: bullets which hit earlier ones */
+  bulletsAlreadyFired = 0,
 ): ResolvedAttackTarget {
   const hitThreshold = getEffectiveHitThreshold({
     baseHitThreshold: info.hitThreshold ?? defaultHitThreshold,
@@ -76,17 +79,27 @@ export function resolveAttackTarget(
   });
   const isHit = attack.hitTotal >= hitThreshold;
   const isBurst = attack.fireMode === "burst";
+  // a burst is only three bullets, even walked across several targets
+  const bulletCount =
+    isHit && isBurst
+      ? Math.max(
+          0,
+          Math.min(
+            getBurstBulletCount(attack.hitTotal - hitThreshold),
+            burstMaxBullets - bulletsAlreadyFired,
+          ),
+        )
+      : 1;
   // on a burst, a critical hit applies to the first bullet
   const isCritical =
     useCriticalHits &&
     isHit &&
+    bulletCount > 0 &&
     isCriticalHit({
       hitDie: attack.hitDie,
       hitTotal: attack.hitTotal,
       hitThreshold,
     });
-  const bulletCount =
-    isHit && isBurst ? getBurstBulletCount(attack.hitTotal - hitThreshold) : 1;
   const shotDryTargets = getShotDryTargets(attack);
   const shotDryExtraDice =
     isHit && shotDryTargets.some((t) => t.id === target.id)
@@ -142,4 +155,59 @@ export function resolveAttackTarget(
     instances,
     damage,
   };
+}
+
+/**
+ * Resolve a target in the context of the whole attack. For a burst walked
+ * across several targets, earlier targets use up bullets first, so a later
+ * one may get fewer (or none). A target not yet in the attack is resolved as
+ * if it were added at the end.
+ */
+export function resolveAttackTargetInAttack(
+  attack: AttackData,
+  target: AttackTargetData,
+  infoFor: (target: AttackTargetData) => TargetActorInfo,
+  options: ResolveOptions,
+): ResolvedAttackTarget {
+  let bulletsFired = 0;
+  for (const other of attack.targets) {
+    if (other.id === target.id) break;
+    if (attack.fireMode === "burst") {
+      const resolved = resolveAttackTarget(
+        attack,
+        other,
+        infoFor(other),
+        options,
+        bulletsFired,
+      );
+      if (resolved.isHit) bulletsFired += resolved.bulletCount;
+    }
+  }
+  return resolveAttackTarget(
+    attack,
+    target,
+    infoFor(target),
+    options,
+    bulletsFired,
+  );
+}
+
+/** How many of a burst's bullets have hit someone */
+export function getBurstBulletsFired(
+  attack: AttackData,
+  infoFor: (target: AttackTargetData) => TargetActorInfo,
+  options: ResolveOptions,
+): number {
+  let bulletsFired = 0;
+  for (const target of attack.targets) {
+    const resolved = resolveAttackTarget(
+      attack,
+      target,
+      infoFor(target),
+      options,
+      bulletsFired,
+    );
+    if (resolved.isHit) bulletsFired += resolved.bulletCount;
+  }
+  return bulletsFired;
 }

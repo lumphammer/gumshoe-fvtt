@@ -174,12 +174,15 @@ export function isCriticalHit({
   return hitDie === 6 && hitTotal - hitThreshold >= 5;
 }
 
+/** A burst is three bullets, however they're shared out (p. 100) */
+export const burstMaxBullets = 3;
+
 /**
  * Three-round burst (p. 100): one extra bullet for each 3 points of margin
  * over the target's Hit Threshold, to a maximum of three bullets.
  */
 export function getBurstBulletCount(margin: number): number {
-  return 1 + Math.min(2, Math.floor(Math.max(0, margin) / 3));
+  return 1 + Math.min(burstMaxBullets - 1, Math.floor(Math.max(0, margin) / 3));
 }
 
 /**
@@ -267,4 +270,50 @@ export function getJamUpdate({
     return { jams: true, pendingJam: null };
   }
   return { jams: false, pendingJam: { combatId } };
+}
+
+/** Walking fire (p. 100) costs 2 points of the weapon's ability... */
+export const walkingFireWeaponCost = 2;
+/** ...or 1 point of it, plus 2 points of another ability (Athletics) */
+export const walkingFireSplitWeaponCost = 1;
+export const walkingFireSplitOtherCost = 2;
+
+export type WalkingFirePayment = {
+  /** points from the weapon's own ability */
+  weaponSpend: number;
+  /** points from another ability, if any */
+  other: { name: string; spend: number } | null;
+  affordable: boolean;
+};
+
+/**
+ * The ways to pay for walking fire, given the attacker's pools: all from the
+ * weapon's ability, or split with each of the other abilities they have.
+ */
+export function getWalkingFirePayments({
+  weaponPool,
+  otherAbilities,
+}: {
+  weaponPool: number;
+  otherAbilities: { name: string; pool: number }[];
+}): WalkingFirePayment[] {
+  return [
+    {
+      weaponSpend: walkingFireWeaponCost,
+      other: null,
+      affordable: weaponPool >= walkingFireWeaponCost,
+    },
+    ...otherAbilities.map(({ name, pool }) => ({
+      weaponSpend: walkingFireSplitWeaponCost,
+      other: { name, spend: walkingFireSplitOtherCost },
+      affordable:
+        weaponPool >= walkingFireSplitWeaponCost &&
+        pool >= walkingFireSplitOtherCost,
+    })),
+  ];
+}
+
+/** Walking fire carries on from a burst or full-auto (p. 100) */
+export function canWalkFireFrom(fireMode: FireMode): boolean {
+  return fireMode === "burst" || fireMode === "fullAuto";
 }

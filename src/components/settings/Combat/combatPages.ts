@@ -3,6 +3,7 @@ import {
   combatAbilities,
   combatOptions,
   fullAutoSpendAbilities,
+  walkingFireSpendAbilities,
 } from "./directions";
 
 /**
@@ -10,20 +11,26 @@ import {
  */
 export const combatPages: SettingsPageDef[] = [
   {
+    direction: combatOptions,
+    label: "Combat options",
+    description: "CombatOptionsDescription",
+  },
+  {
     direction: combatAbilities,
     label: "Combat abilities",
     description: "CombatAbilitiesDescription",
     summary: (s) => s.combatAbilities.length,
   },
   {
-    direction: combatOptions,
-    label: "Combat options",
-    description: "CombatOptionsDescription",
-  },
-  {
     direction: fullAutoSpendAbilities,
     label: "Full-auto spend abilities",
     description: "FullAutoSpendAbilitiesDescription",
     summary: (s) => s.fullAutoSpendAbilities.length,
+  },
+  {
+    direction: walkingFireSpendAbilities,
+    label: "Walking fire spend abilities",
+    description: "WalkingFireSpendAbilitiesDescription",
+    summary: (s) => s.walkingFireSpendAbilities.length,
   },
 ];

@@ -7,8 +7,10 @@ import {
   getWastedExtraSpend,
   getRequiredDamageRollCount,
   getWoundState,
+  canWalkFireFrom,
   getBurstBulletCount,
   getJamUpdate,
+  getWalkingFirePayments,
   getShotDryExtraDice,
   isCriticalHit,
   isSamePendingJam,
@@ -260,5 +262,43 @@ describe("isSamePendingJam", () => {
     [{ combatId: "a" }, { combatId: "b" }, false],
   ])("%j and %j: %s", (a, b, expected) => {
     expect(isSamePendingJam(a, b)).toBe(expected);
+  });
+});
+
+describe("getWalkingFirePayments", () => {
+  it("offers 2 of the weapon's ability, or 1 and 2 of each other", () => {
+    expect(
+      getWalkingFirePayments({
+        weaponPool: 3,
+        otherAbilities: [{ name: "Athletics", pool: 2 }],
+      }),
+    ).toEqual([
+      { weaponSpend: 2, other: null, affordable: true },
+      {
+        weaponSpend: 1,
+        other: { name: "Athletics", spend: 2 },
+        affordable: true,
+      },
+    ]);
+  });
+
+  it("marks what can't be afforded", () => {
+    // Sanchez, down to 1 Firearms, pays 1 Firearms and 2 Athletics (p. 100)
+    const payments = getWalkingFirePayments({
+      weaponPool: 1,
+      otherAbilities: [
+        { name: "Athletics", pool: 2 },
+        { name: "Stability", pool: 1 },
+      ],
+    });
+    expect(payments.map((p) => p.affordable)).toEqual([false, true, false]);
+  });
+});
+
+describe("canWalkFireFrom", () => {
+  it("is bursts and full-auto", () => {
+    expect(canWalkFireFrom("burst")).toBe(true);
+    expect(canWalkFireFrom("fullAuto")).toBe(true);
+    expect(canWalkFireFrom("single")).toBe(false);
   });
 });

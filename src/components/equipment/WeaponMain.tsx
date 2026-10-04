@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 
-import { generalAbility } from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated } from "../../functions/getTranslated";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
@@ -8,6 +7,7 @@ import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isPCActor } from "../../module/actors/pc";
 import { isAbilityItem } from "../../module/items/exports";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import { findGeneralAbility } from "../../module/items/findGeneralAbility";
 import { assertWeaponItem } from "../../module/items/weapon";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
@@ -42,16 +42,6 @@ const fireModeText: Record<FireMode, string> = {
   burst: "FireModeBurst",
   fullAuto: "FireModeFullAuto",
 };
-
-function findGeneralAbility(
-  actor: Actor | null,
-  name: string,
-): InvestigatorItem | undefined {
-  return actor?.items.find(
-    (item: InvestigatorItem) =>
-      item.type === generalAbility && item.name === name,
-  );
-}
 
 const getPool = (ability: InvestigatorItem | undefined) =>
   ability && isAbilityItem(ability) ? ability.system.pool : 0;

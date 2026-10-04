@@ -49,12 +49,20 @@ export const CombatOptionsSettings = ({ setters }: { setters: Setters }) => {
             />
           </SettingsGridField>
           {settings.useLethalityAndAutofire && (
-            <SettingsGridField label="Use Shot Dry and jams?">
-              <Toggle
-                checked={settings.useShotDryAndJams}
-                onChange={setters.useShotDryAndJams}
-              />
-            </SettingsGridField>
+            <>
+              <SettingsGridField label="Use Shot Dry and jams?">
+                <Toggle
+                  checked={settings.useShotDryAndJams}
+                  onChange={setters.useShotDryAndJams}
+                />
+              </SettingsGridField>
+              <SettingsGridField label="Use walking fire?">
+                <Toggle
+                  checked={settings.useWalkingFire}
+                  onChange={setters.useWalkingFire}
+                />
+              </SettingsGridField>
+            </>
           )}
         </>
       )}
