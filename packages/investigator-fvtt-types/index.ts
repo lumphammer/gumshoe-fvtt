@@ -26,6 +26,13 @@ export interface SeedColorsV1 {
    */
   danger?: string;
   /**
+   * color used to indicate a warning, i.e. something less serious than
+   * `danger`. Should be given as a bold, opaque color, but may be blended in
+   * use.
+   * @default amber
+   */
+  warning?: string;
+  /**
    * tinting color used to indicate success. Should be given as a bold, opaque
    * color, but may be blended in use.
    */

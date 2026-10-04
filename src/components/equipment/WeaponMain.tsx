@@ -193,6 +193,16 @@ export const WeaponMain = () => {
   const attackDisabled = (rangeEnabled: boolean) =>
     ability === undefined || ammoFail || spendTooLow || !rangeEnabled;
 
+  // normal text on a solid backdrop, tinted with the warning/danger color
+  const hintStyle = (color: string) => ({
+    //fontSize: "0.9em",
+    color: theme.colors.text,
+    backgroundColor: `color-mix(in srgb, ${color} 30%, ${theme.colors.bgOpaquePrimary})`,
+    borderLeft: `0.25em solid ${color}`,
+    padding: "0.2em 0.5em",
+    borderRadius: "0.2em",
+  });
+
   const sheet = item.sheet;
   assertApplicationV2(sheet);
 
@@ -253,7 +263,7 @@ export const WeaponMain = () => {
         ))}
         {wastedExtraSpend > 0 && (
           <GridFieldStacked>
-            <div css={{ fontSize: "0.9em", color: theme.colors.danger }}>
+            <div css={hintStyle(theme.colors.warning)}>
               <i className="fas fa-exclamation-triangle" />{" "}
               <Translate
                 values={{
@@ -268,7 +278,8 @@ export const WeaponMain = () => {
         )}
         {spendTooLow && (
           <GridFieldStacked>
-            <div css={{ fontSize: "0.9em", opacity: 0.8 }}>
+            <div css={hintStyle(theme.colors.danger)}>
+              <i className="fas fa-exclamation-circle" />{" "}
               <Translate values={{ Min: String(minimumSpend) }}>
                 {isFullAuto
                   ? "FullAutoNeedsSpendOfMin"
