@@ -167,20 +167,6 @@ export const performAttack =
     if (totalSpend < minimumSpend) {
       return;
     }
-    // pools can change after the points were chosen, e.g. if they get spent
-    // from the ability's own sheet
-    const pool = ability && isAbilityItem(ability) ? ability.system.pool : 0;
-    if (
-      spend > pool + bonusPool ||
-      usableExtraSpends.some(
-        (extra) =>
-          !isAbilityItem(extra.ability) ||
-          extra.spend > extra.ability.system.pool,
-      )
-    ) {
-      ui.notifications?.warn(getTranslated("NotEnoughPointsToSpend"));
-      return;
-    }
     // the panel only checks ammo and spend as of its last render, so a quick
     // second click could fire again before this attack has used them up
     if (weaponsAttacking.has(weapon)) {
@@ -191,6 +177,37 @@ export const performAttack =
     }
     weaponsAttacking.add(weapon);
     try {
+      // pools can change after the points were chosen, e.g. if they get
+      // spent from the ability's own sheet or another weapon. Check them and
+      // take the points straight away, before anything else can spend them.
+      const currentPool =
+        ability && isAbilityItem(ability) ? ability.system.pool : 0;
+      if (
+        spend > currentPool + bonusPool ||
+        usableExtraSpends.some(
+          (extra) =>
+            !isAbilityItem(extra.ability) ||
+            extra.spend > extra.ability.system.pool,
+        )
+      ) {
+        ui.notifications?.warn(getTranslated("NotEnoughPointsToSpend"));
+        return;
+      }
+      const poolHit = Math.max(0, Number(spend) - bonusPool);
+      const newPool = Math.max(0, currentPool - poolHit);
+      const newBonusPool = Math.max(0, bonusPool - Number(spend));
+      await ability?.system.setPool(newPool);
+      setBonusPool(newBonusPool);
+      setSpend(0);
+      for (const extra of usableExtraSpends) {
+        if (extra.spend > 0 && isAbilityItem(extra.ability)) {
+          await extra.ability.system.setPool(
+            Math.max(0, extra.ability.system.pool - extra.spend),
+          );
+        }
+      }
+      resetExtraSpends?.();
+
       const damage = weapon.system.damage;
 
       const useBoost = settings.useBoost.get();
@@ -280,21 +297,6 @@ export const performAttack =
         },
       });
 
-      const currentPool = ability?.system.pool ?? 0;
-      const poolHit = Math.max(0, Number(spend) - bonusPool);
-      const newPool = Math.max(0, currentPool - poolHit);
-      const newBonusPool = Math.max(0, bonusPool - Number(spend));
-      await ability?.system.setPool(newPool);
-      setBonusPool(newBonusPool);
-      setSpend(0);
-      for (const extra of usableExtraSpends) {
-        if (extra.spend > 0 && isAbilityItem(extra.ability)) {
-          await extra.ability.system.setPool(
-            Math.max(0, extra.ability.system.pool - extra.spend),
-          );
-        }
-      }
-      resetExtraSpends?.();
       await consumeWeaponAmmo(weapon.system, fireMode);
     } finally {
       weaponsAttacking.delete(weapon);

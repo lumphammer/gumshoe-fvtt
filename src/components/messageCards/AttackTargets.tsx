@@ -544,14 +544,17 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
           updateTarget={updateTarget}
         />
       ))}
-      {canAct && isMultiTarget && (
-        <div css={{ paddingTop: "0.4em", borderTop: "1px solid #0003" }}>
-          <button type="button" onClick={onAddTargets}>
-            <i className="fas fa-crosshairs" />{" "}
-            <Translate>Add targets</Translate>
-          </button>
-        </div>
-      )}
+      {/* once damage has been applied, the attack is done with */}
+      {canAct &&
+        isMultiTarget &&
+        attack.targets.every((t) => t.applied === null) && (
+          <div css={{ paddingTop: "0.4em", borderTop: "1px solid #0003" }}>
+            <button type="button" onClick={onAddTargets}>
+              <i className="fas fa-crosshairs" />{" "}
+              <Translate>Add targets</Translate>
+            </button>
+          </div>
+        )}
       {canAct &&
         !isMultiTarget &&
         attack.targets.every((t) => t.applied === null) && (
