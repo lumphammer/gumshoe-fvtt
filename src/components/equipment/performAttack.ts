@@ -193,109 +193,130 @@ export const performAttack =
         ui.notifications?.warn(getTranslated("NotEnoughPointsToSpend"));
         return;
       }
-      const poolHit = Math.max(0, Number(spend) - bonusPool);
-      const newPool = Math.max(0, currentPool - poolHit);
-      const newBonusPool = Math.max(0, bonusPool - Number(spend));
-      await ability?.system.setPool(newPool);
-      setBonusPool(newBonusPool);
-      setSpend(0);
-      for (const extra of usableExtraSpends) {
-        if (extra.spend > 0 && isAbilityItem(extra.ability)) {
-          await extra.ability.system.setPool(
-            Math.max(0, extra.ability.system.pool - extra.spend),
-          );
+      // if anything goes wrong before the attack is made, these give the
+      // points back
+      const refunds: (() => Promise<void>)[] = [];
+      try {
+        const poolHit = Math.max(0, Number(spend) - bonusPool);
+        const newPool = Math.max(0, currentPool - poolHit);
+        const newBonusPool = Math.max(0, bonusPool - Number(spend));
+        await ability?.system.setPool(newPool);
+        refunds.push(async () => {
+          await ability?.system.setPool(currentPool);
+          setBonusPool(bonusPool);
+          setSpend(spend);
+        });
+        setBonusPool(newBonusPool);
+        setSpend(0);
+        for (const extra of usableExtraSpends) {
+          const extraAbility = extra.ability;
+          if (extra.spend > 0 && isAbilityItem(extraAbility)) {
+            const previous = extraAbility.system.pool;
+            await extraAbility.system.setPool(
+              Math.max(0, previous - extra.spend),
+            );
+            refunds.push(() => extraAbility.system.setPool(previous));
+          }
         }
-      }
-      resetExtraSpends?.();
+        resetExtraSpends?.();
 
-      const damage = weapon.system.damage;
+        const damage = weapon.system.damage;
 
-      const useBoost = settings.useBoost.get();
-      const isBoosted =
-        useBoost && ability !== undefined && ability.system.boost;
-      const boost = isBoosted ? 1 : 0;
+        const useBoost = settings.useBoost.get();
+        const isBoosted =
+          useBoost && ability !== undefined && ability.system.boost;
+        const boost = isBoosted ? 1 : 0;
 
-      let hitTerm = "1d6 + @spend";
-      const hitParams: { [name: string]: number } = { spend };
-      if (isBoosted) {
-        hitTerm += " + @boost";
-        hitParams["boost"] = boost;
-      }
-
-      const useNpcBonuses =
-        settings.useNpcCombatBonuses.get() &&
-        ability?.isOwned &&
-        ability.parent &&
-        isNPCActor(ability.parent) &&
-        isGeneralAbilityItem(ability);
-
-      const parent = ability.parent;
-      if (useNpcBonuses) {
-        hitTerm += " + @npcCombatBonus";
-        if (isNPCActor(parent)) {
-          hitParams["npcCombatBonus"] = parent.system.combatBonus;
+        let hitTerm = "1d6 + @spend";
+        const hitParams: { [name: string]: number } = { spend };
+        if (isBoosted) {
+          hitTerm += " + @boost";
+          hitParams["boost"] = boost;
         }
-        hitTerm += " + @abilityCombatBonus";
-        hitParams["abilityCombatBonus"] = ability.system.combatBonus;
-      }
-      const hitRoll = new Roll(hitTerm, hitParams);
 
-      await hitRoll.evaluate();
+        const useNpcBonuses =
+          settings.useNpcCombatBonuses.get() &&
+          ability?.isOwned &&
+          ability.parent &&
+          isNPCActor(ability.parent) &&
+          isGeneralAbilityItem(ability);
 
-      hitRoll.dice[0].options = {
-        rollOrder: 1,
-      };
-
-      hitRoll.dice[0].options.rollOrder = 1;
-
-      let damageTerm = "1d6 + @damage + @rangeDamage";
-      const damageParams: { [name: string]: number } = { damage, rangeDamage };
-      if (useNpcBonuses) {
-        damageTerm += " + @npcDamageBonus";
-        if (isNPCActor(parent)) {
-          damageParams["npcDamageBonus"] = parent.system.damageBonus;
+        const parent = ability.parent;
+        if (useNpcBonuses) {
+          hitTerm += " + @npcCombatBonus";
+          if (isNPCActor(parent)) {
+            hitParams["npcCombatBonus"] = parent.system.combatBonus;
+          }
+          hitTerm += " + @abilityCombatBonus";
+          hitParams["abilityCombatBonus"] = ability.system.combatBonus;
         }
-        damageTerm += " + @abilityDamageBonus";
-        damageParams["abilityDamageBonus"] = ability.system.damageBonus;
+        const hitRoll = new Roll(hitTerm, hitParams);
+
+        await hitRoll.evaluate();
+
+        hitRoll.dice[0].options = {
+          rollOrder: 1,
+        };
+
+        hitRoll.dice[0].options.rollOrder = 1;
+
+        let damageTerm = "1d6 + @damage + @rangeDamage";
+        const damageParams: { [name: string]: number } = {
+          damage,
+          rangeDamage,
+        };
+        if (useNpcBonuses) {
+          damageTerm += " + @npcDamageBonus";
+          if (isNPCActor(parent)) {
+            damageParams["npcDamageBonus"] = parent.system.damageBonus;
+          }
+          damageTerm += " + @abilityDamageBonus";
+          damageParams["abilityDamageBonus"] = ability.system.damageBonus;
+        }
+
+        const damageRoll = new Roll(damageTerm, damageParams);
+        await damageRoll.evaluate();
+        damageRoll.dice[0].options.rollOrder = 2;
+
+        const { attack, extraRolls } = await buildAttackData({
+          fireMode,
+          hitRoll,
+          damageRoll,
+          damageFormula: damageTerm,
+          damageParams,
+          weapon,
+        });
+        extraRolls.forEach((roll, i) => {
+          roll.dice[0].options.rollOrder = 3 + i;
+        });
+
+        const rolls = [hitRoll, damageRoll, ...extraRolls];
+        // @ts-expect-error fvtt-types
+        const pool = PoolTerm.fromRolls(rolls);
+        const actualRoll = Roll.fromTerms([pool]);
+
+        void actualRoll.toMessage({
+          type: "attack",
+          speaker: ChatMessage.getSpeaker({
+            actor: weapon.actor as Actor.Stored,
+          }),
+          // a bare marker for the card to render into. Without some content,
+          // Foundry would fill the message with its own roll display.
+          content: buildAbilityCardContent({}),
+          system: {
+            ...attack,
+            weaponUuid: weapon.uuid,
+            weaponName: weapon.name,
+            weaponImg: weapon.img ?? "",
+            rangeName,
+          },
+        });
+      } catch (error) {
+        for (const refund of refunds.reverse()) {
+          await refund().catch(console.error);
+        }
+        throw error;
       }
-
-      const damageRoll = new Roll(damageTerm, damageParams);
-      await damageRoll.evaluate();
-      damageRoll.dice[0].options.rollOrder = 2;
-
-      const { attack, extraRolls } = await buildAttackData({
-        fireMode,
-        hitRoll,
-        damageRoll,
-        damageFormula: damageTerm,
-        damageParams,
-        weapon,
-      });
-      extraRolls.forEach((roll, i) => {
-        roll.dice[0].options.rollOrder = 3 + i;
-      });
-
-      const rolls = [hitRoll, damageRoll, ...extraRolls];
-      // @ts-expect-error fvtt-types
-      const pool = PoolTerm.fromRolls(rolls);
-      const actualRoll = Roll.fromTerms([pool]);
-
-      void actualRoll.toMessage({
-        type: "attack",
-        speaker: ChatMessage.getSpeaker({
-          actor: weapon.actor as Actor.Stored,
-        }),
-        // a bare marker for the card to render into. Without some content,
-        // Foundry would fill the message with its own roll display.
-        content: buildAbilityCardContent({}),
-        system: {
-          ...attack,
-          weaponUuid: weapon.uuid,
-          weaponName: weapon.name,
-          weaponImg: weapon.img ?? "",
-          rangeName,
-        },
-      });
 
       await consumeWeaponAmmo(weapon.system, fireMode);
     } finally {
