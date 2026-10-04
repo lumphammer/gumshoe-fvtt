@@ -194,7 +194,8 @@ export const performAttack =
         return;
       }
       // if anything goes wrong before the attack is made, these give the
-      // points back
+      // points back. They add back what was taken rather than restoring the
+      // old value, so they don't undo anything else spent in the meantime.
       const refunds: (() => Promise<void>)[] = [];
       try {
         const poolHit = Math.max(0, Number(spend) - bonusPool);
@@ -202,7 +203,9 @@ export const performAttack =
         const newBonusPool = Math.max(0, bonusPool - Number(spend));
         await ability?.system.setPool(newPool);
         refunds.push(async () => {
-          await ability?.system.setPool(currentPool);
+          await ability?.system.setPool(
+            ability.system.pool + (currentPool - newPool),
+          );
           setBonusPool(bonusPool);
           setSpend(spend);
         });
@@ -212,11 +215,12 @@ export const performAttack =
           const extraAbility = extra.ability;
           if (extra.spend > 0 && isAbilityItem(extraAbility)) {
             const previous = extraAbility.system.pool;
-            await extraAbility.system.setPool(
-              Math.max(0, previous - extra.spend),
-            );
+            const next = Math.max(0, previous - extra.spend);
+            await extraAbility.system.setPool(next);
             refunds.push(async () => {
-              await extraAbility.system.setPool(previous);
+              await extraAbility.system.setPool(
+                extraAbility.system.pool + (previous - next),
+              );
             });
           }
         }
