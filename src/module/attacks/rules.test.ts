@@ -4,6 +4,7 @@ import {
   getAvailableFireModes,
   getEffectiveHitThreshold,
   getMinimumSpend,
+  getWastedExtraSpend,
   getRequiredDamageRollCount,
   getWoundState,
   getBurstBulletCount,
@@ -146,4 +147,23 @@ describe("getMinimumSpend", () => {
       expect(getMinimumSpend({ fireMode, weaponFireModes })).toBe(expected);
     },
   );
+});
+
+describe("getWastedExtraSpend", () => {
+  it.each([
+    // 1 Firearms + 2 Stability + 2 Athletics: exactly 5 (Sanchez, p. 100)
+    [1, 4, 0],
+    // 4 Firearms + 3 Stability: only 1 was needed
+    [4, 3, 2],
+    // Firearms alone is enough, so any extra is wasted
+    [5, 2, 2],
+    [6, 1, 1],
+    // short of the minimum: nothing wasted (the attack can't be made anyway)
+    [1, 2, 0],
+    [0, 0, 0],
+  ])("spend %i and %i extra: %i wasted", (spend, extraSpend, expected) => {
+    expect(getWastedExtraSpend({ spend, extraSpend, minimumSpend: 5 })).toBe(
+      expected,
+    );
+  });
 });

@@ -402,6 +402,7 @@
   "investigator.BurstNeedsSpendOfMin": "A three-round burst needs a spend of at least {Min}.",
   "investigator.FullAutoNeedsSpendOfMin": "Full-auto needs a total spend of at least {Min}, from any of the abilities above.",
   "investigator.AddTargets": "Add targets",
+  "investigator.WastedExtraSpend": "{Wasted} of the points from other abilities will be wasted: they don't add to the roll, and only count towards the minimum spend of {Min}.",
   "investigator.NotEnoughPointsToSpend": "There aren't enough points left in the pool to spend that much.",
   "investigator.NotEnoughAmmo": "Not enough ammo",
   "investigator.FireModes": "Fire modes",

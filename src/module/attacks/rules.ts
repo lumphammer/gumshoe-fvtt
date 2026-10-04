@@ -81,6 +81,26 @@ export function getMinimumSpend({
   }
 }
 
+/**
+ * How many points spent from other abilities (Athletics and Stability) do
+ * nothing: they don't add to the roll, so anything beyond what's needed to
+ * reach the minimum spend is wasted.
+ */
+export function getWastedExtraSpend({
+  spend,
+  extraSpend,
+  minimumSpend,
+}: {
+  /** from the weapon's own ability, which adds to the roll */
+  spend: number;
+  /** from other abilities, which only count towards the minimum */
+  extraSpend: number;
+  minimumSpend: number;
+}): number {
+  const needed = Math.max(0, minimumSpend - spend);
+  return Math.max(0, extraSpend - needed);
+}
+
 /** Full-auto fire hits everyone downrange; everything else hits one target */
 export function isMultiTargetFireMode(fireMode: FireMode): boolean {
   return fireMode === "fullAuto";

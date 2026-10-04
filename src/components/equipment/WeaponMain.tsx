@@ -25,6 +25,7 @@ import type { FireMode } from "../../module/attacks/rules";
 import {
   getAvailableFireModes,
   getMinimumSpend,
+  getWastedExtraSpend,
 } from "../../module/attacks/rules";
 import { settings } from "../../settings/settings";
 import { hasAmmoFor } from "./consumeWeaponAmmo";
@@ -121,8 +122,16 @@ export const WeaponMain = () => {
     ability: extra,
     spend: Math.min(extraSpendsByName[extra.name] ?? 0, getPool(extra)),
   }));
-  const totalSpend =
-    spend + extraSpends.reduce((total, extra) => total + extra.spend, 0);
+  const extraSpendTotal = extraSpends.reduce(
+    (total, extra) => total + extra.spend,
+    0,
+  );
+  const totalSpend = spend + extraSpendTotal;
+  const wastedExtraSpend = getWastedExtraSpend({
+    spend,
+    extraSpend: extraSpendTotal,
+    minimumSpend,
+  });
 
   const ammoFail = !hasAmmoFor(item.system, effectiveFireMode);
   const spendTooLow = totalSpend < minimumSpend;
@@ -242,6 +251,21 @@ export const WeaponMain = () => {
             />
           </GridField>
         ))}
+        {wastedExtraSpend > 0 && (
+          <GridFieldStacked>
+            <div css={{ fontSize: "0.9em", color: theme.colors.danger }}>
+              <i className="fas fa-exclamation-triangle" />{" "}
+              <Translate
+                values={{
+                  Wasted: String(wastedExtraSpend),
+                  Min: String(minimumSpend),
+                }}
+              >
+                WastedExtraSpend
+              </Translate>
+            </div>
+          </GridFieldStacked>
+        )}
         {spendTooLow && (
           <GridFieldStacked>
             <div css={{ fontSize: "0.9em", opacity: 0.8 }}>
