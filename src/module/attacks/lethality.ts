@@ -1,4 +1,4 @@
-import type { Cover } from "./rules";
+import type { Cover, WeaponFireModes } from "./rules";
 import {
   deadHealth,
   getWoundState,
@@ -15,6 +15,25 @@ export type Lethality = {
   asterisks: number;
   hs: number;
 };
+
+/** Small arms on full-auto do L1 (p. 100) */
+export const fullAutoLethality: Lethality = { rating: 1, asterisks: 0, hs: 0 };
+
+/**
+ * The Lethality of a full-auto attack: L1 for small arms, or a machine gun's
+ * own rating (L1 if it doesn't have one).
+ */
+export function getFullAutoLethality({
+  weaponFireModes,
+  weaponLethality,
+}: {
+  weaponFireModes: WeaponFireModes;
+  weaponLethality: Lethality | null;
+}): Lethality {
+  return weaponFireModes === "alwaysAuto" && weaponLethality
+    ? weaponLethality
+    : fullAutoLethality;
+}
 
 /** e.g. { rating: 1, asterisks: 2, hs: 2 } -> "L1**HH" */
 export function formatLethality({ rating, asterisks, hs }: Lethality): string {

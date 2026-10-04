@@ -1,8 +1,9 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import { generalAbility } from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated } from "../../functions/getTranslated";
+import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isPCActor } from "../../module/actors/pc";
 import { isAbilityItem } from "../../module/items/exports";
@@ -18,9 +19,14 @@ import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Translate } from "../Translate";
+import type { ExtraSpend } from "./performAttack";
 import { performAttack } from "./performAttack";
 import type { FireMode } from "../../module/attacks/rules";
-import { burstMinimumSpend } from "../../module/attacks/rules";
+import {
+  getAvailableFireModes,
+  getMinimumSpend,
+  getWastedExtraSpend,
+} from "../../module/attacks/rules";
 import { settings } from "../../settings/settings";
 import { hasAmmoFor } from "./consumeWeaponAmmo";
 
@@ -31,14 +37,30 @@ const defaultSpendOptions = Array.from({ length: 8 })
     return { label, value: Number(label), enabled: true };
   });
 
-/** the fire modes on offer for selective-fire weapons, for now */
-const choosableFireModes: FireMode[] = ["single", "burst"];
-
 const fireModeText: Record<FireMode, string> = {
   single: "FireModeSingle",
   burst: "FireModeBurst",
   fullAuto: "FireModeFullAuto",
 };
+
+function findGeneralAbility(
+  actor: Actor | null,
+  name: string,
+): InvestigatorItem | undefined {
+  return actor?.items.find(
+    (item: InvestigatorItem) =>
+      item.type === generalAbility && item.name === name,
+  );
+}
+
+const getPool = (ability: InvestigatorItem | undefined) =>
+  ability && isAbilityItem(ability) ? ability.system.pool : 0;
+
+const getSpendOptions = (available: number) =>
+  defaultSpendOptions.map((option) => ({
+    ...option,
+    enabled: option.value <= available,
+  }));
 
 export const WeaponMain = () => {
   const { item } = useItemSheetContext();
@@ -47,76 +69,90 @@ export const WeaponMain = () => {
   const [spend, setSpend] = useState(0);
   const [bonusPool, setBonusPool] = useState(0);
   const [fireMode, setFireMode] = useState<FireMode>("single");
+  // spends from other abilities on full-auto, by ability name
+  const [extraSpendsByName, setExtraSpendsByName] = useState<
+    Record<string, number>
+  >({});
   const theme = useContext(ThemeContext);
 
   const abilityName = item.system.ability;
 
-  const ability: InvestigatorItem | undefined = item.actor?.items.find(
-    (item: InvestigatorItem) => {
-      return item.type === generalAbility && item.name === abilityName;
-    },
-  );
+  // pools can be spent elsewhere (e.g. the ability's own sheet)
+  useRefreshOnActorItemChanges(item.actor);
 
-  const pool = ability && isAbilityItem(ability) ? ability.system.pool : 0;
+  const ability = findGeneralAbility(item.actor, abilityName);
+  const available = getPool(ability) + bonusPool;
+  const spendOptions = getSpendOptions(available);
+  // if points get spent elsewhere, don't leave more selected than is left
+  if (spend > available) {
+    setSpend(available);
+  }
 
-  const spendOptions = defaultSpendOptions.map((option) => ({
-    ...option,
-    enabled: option.value <= pool + bonusPool,
+  const fireModes = getAvailableFireModes({
+    weaponFireModes: item.system.fireModes,
+    useAutofire:
+      settings.useDamageApplication.get() &&
+      settings.useLethalityAndAutofire.get(),
+  });
+  const effectiveFireMode: FireMode = fireModes.includes(fireMode)
+    ? fireMode
+    : fireModes[0];
+  const isFullAuto = effectiveFireMode === "fullAuto";
+  const minimumSpend = getMinimumSpend({
+    fireMode: effectiveFireMode,
+    weaponFireModes: item.system.fireModes,
+  });
+
+  // full-auto can also spend other abilities (Athletics and Stability in
+  // FoDG), which count towards the minimum but don't add to the roll (p. 100).
+  // Machine guns have no minimum, so there's no point.
+  const extraAbilities =
+    isFullAuto && minimumSpend > 0
+      ? settings.fullAutoSpendAbilities
+          .get()
+          .map((name) => findGeneralAbility(item.actor, name))
+          .filter(
+            (extra): extra is InvestigatorItem =>
+              extra !== undefined && extra !== ability,
+          )
+          // in case a name is listed twice
+          .filter((extra, i, all) => all.indexOf(extra) === i)
+      : [];
+  const extraSpends: ExtraSpend[] = extraAbilities.map((extra) => ({
+    ability: extra,
+    spend: Math.min(extraSpendsByName[extra.name] ?? 0, getPool(extra)),
   }));
+  const extraSpendTotal = extraSpends.reduce(
+    (total, extra) => total + extra.spend,
+    0,
+  );
+  const totalSpend = spend + extraSpendTotal;
+  const wastedExtraSpend = getWastedExtraSpend({
+    spend,
+    extraSpend: extraSpendTotal,
+    minimumSpend,
+  });
 
-  // bursts are a choice for selective-fire weapons. ("alwaysAuto" weapons
-  // will fire full-auto once that exists; until then they fire single shots.)
-  const canChooseFireMode =
-    settings.useDamageApplication.get() &&
-    settings.useAutofire.get() &&
-    item.system.fireModes === "selective";
-  const effectiveFireMode: FireMode = canChooseFireMode ? fireMode : "single";
   const ammoFail = !hasAmmoFor(item.system, effectiveFireMode);
-  const spendTooLow =
-    effectiveFireMode === "burst" && spend < burstMinimumSpend;
+  const spendTooLow = totalSpend < minimumSpend;
 
-  const basePerformAttack = useMemo(() => {
-    return performAttack({
+  const attackAt = (rangeName: string, rangeDamage: number) => () => {
+    void performAttack({
       spend,
       bonusPool,
       setSpend,
       setBonusPool,
       ability,
       weapon: item,
-    });
-  }, [ability, bonusPool, spend, item]);
+      extraSpends,
+      resetExtraSpends: () => setExtraSpendsByName({}),
+    })({ rangeName, rangeDamage, fireMode: effectiveFireMode });
+  };
 
-  const onPointBlank = useCallback(() => {
-    void basePerformAttack({
-      rangeName: "point blank",
-      rangeDamage: item.system.pointBlankDamage,
-      fireMode: effectiveFireMode,
-    });
-  }, [basePerformAttack, item, effectiveFireMode]);
-
-  const onCloseRange = useCallback(() => {
-    void basePerformAttack({
-      rangeName: "close range",
-      rangeDamage: item.system.closeRangeDamage,
-      fireMode: effectiveFireMode,
-    });
-  }, [basePerformAttack, item, effectiveFireMode]);
-
-  const onNearRange = useCallback(() => {
-    void basePerformAttack({
-      rangeName: "near range",
-      rangeDamage: item.system.nearRangeDamage,
-      fireMode: effectiveFireMode,
-    });
-  }, [basePerformAttack, item, effectiveFireMode]);
-
-  const onLongRange = useCallback(() => {
-    void basePerformAttack({
-      rangeName: "long range",
-      rangeDamage: item.system.longRangeDamage,
-      fireMode: effectiveFireMode,
-    });
-  }, [basePerformAttack, item, effectiveFireMode]);
+  const onPointBlank = attackAt("point blank", item.system.pointBlankDamage);
+  const onCloseRange = attackAt("close range", item.system.closeRangeDamage);
+  const onNearRange = attackAt("near range", item.system.nearRangeDamage);
+  const onLongRange = attackAt("long range", item.system.longRangeDamage);
 
   const weaponActor = item.actor;
 
@@ -157,6 +193,16 @@ export const WeaponMain = () => {
   const attackDisabled = (rangeEnabled: boolean) =>
     ability === undefined || ammoFail || spendTooLow || !rangeEnabled;
 
+  // normal text on a solid backdrop, tinted with the warning/danger color
+  const hintStyle = (color: string) => ({
+    //fontSize: "0.9em",
+    color: theme.colors.text,
+    backgroundColor: `color-mix(in srgb, ${color} 30%, ${theme.colors.bgOpaquePrimary})`,
+    borderLeft: `0.25em solid ${color}`,
+    padding: "0.2em 0.5em",
+    borderRadius: "0.2em",
+  });
+
   const sheet = item.sheet;
   assertApplicationV2(sheet);
 
@@ -170,17 +216,24 @@ export const WeaponMain = () => {
           ...theme.panelStyleSecondary,
         }}
       >
-        {canChooseFireMode && (
+        {fireModes.length > 1 && (
           <GridField label="Fire mode">
             <CheckButtons
-              onChange={(index) => setFireMode(choosableFireModes[index])}
-              selected={choosableFireModes.indexOf(fireMode)}
-              options={choosableFireModes.map((mode, index) => ({
+              onChange={(index) => setFireMode(fireModes[index])}
+              selected={fireModes.indexOf(effectiveFireMode)}
+              options={fireModes.map((mode, index) => ({
                 label: getTranslated(fireModeText[mode]),
                 value: index,
                 enabled: hasAmmoFor(item.system, mode),
               }))}
             />
+          </GridField>
+        )}
+        {fireModes.length === 1 && effectiveFireMode !== "single" && (
+          <GridField label="Fire mode">
+            <span css={{ display: "inline-block", paddingTop: "0.3em" }}>
+              <Translate>{fireModeText[effectiveFireMode]}</Translate>
+            </span>
           </GridField>
         )}
         <GridField label="Spend">
@@ -189,14 +242,52 @@ export const WeaponMain = () => {
             selected={spend}
             options={spendOptions}
           />
-          {spendTooLow && (
-            <div css={{ fontSize: "0.9em", opacity: 0.8 }}>
-              <Translate values={{ Min: String(burstMinimumSpend) }}>
-                BurstNeedsSpendOfMin
+        </GridField>
+        {extraSpends.map((extra) => (
+          <GridField
+            key={extra.ability.id}
+            label={extra.ability.name}
+            noTranslate
+          >
+            <CheckButtons
+              onChange={(value) =>
+                setExtraSpendsByName((spends) => ({
+                  ...spends,
+                  [extra.ability.name]: value,
+                }))
+              }
+              selected={extra.spend}
+              options={getSpendOptions(getPool(extra.ability))}
+            />
+          </GridField>
+        ))}
+        {wastedExtraSpend > 0 && (
+          <GridFieldStacked>
+            <div css={hintStyle(theme.colors.warning)}>
+              <i className="fas fa-exclamation-triangle" />{" "}
+              <Translate
+                values={{
+                  Wasted: String(wastedExtraSpend),
+                  Min: String(minimumSpend),
+                }}
+              >
+                WastedExtraSpend
               </Translate>
             </div>
-          )}
-        </GridField>
+          </GridFieldStacked>
+        )}
+        {spendTooLow && (
+          <GridFieldStacked>
+            <div css={hintStyle(theme.colors.danger)}>
+              <i className="fas fa-exclamation-circle" />{" "}
+              <Translate values={{ Min: String(minimumSpend) }}>
+                {isFullAuto
+                  ? "FullAutoNeedsSpendOfMin"
+                  : "BurstNeedsSpendOfMin"}
+              </Translate>
+            </div>
+          </GridFieldStacked>
+        )}
         <GridFieldStacked>
           <div
             css={{

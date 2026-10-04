@@ -10,6 +10,6 @@
     "declaration": true,
     "noEmit": false,
     "emitDeclarationOnly": true,
-    "lib": ["es2020", "dom"],
-  },
+    "lib": ["es2020", "dom"]
+  }
 }

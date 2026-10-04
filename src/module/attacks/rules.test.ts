@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getAvailableFireModes,
   getEffectiveHitThreshold,
+  getMinimumSpend,
+  getWastedExtraSpend,
   getRequiredDamageRollCount,
   getWoundState,
   getBurstBulletCount,
@@ -111,5 +114,56 @@ describe("getBurstBulletCount", () => {
         bulletCount: 3,
       }),
     ).toBe(3);
+  });
+});
+
+describe("getAvailableFireModes", () => {
+  it.each([
+    ["single", true, ["single"]],
+    ["selective", true, ["single", "burst", "fullAuto"]],
+    ["alwaysAuto", true, ["fullAuto"]],
+    ["selective", false, ["single"]],
+    ["alwaysAuto", false, ["single"]],
+  ] as const)(
+    "%s weapon, autofire %s: %j",
+    (weaponFireModes, useAutofire, expected) => {
+      expect(getAvailableFireModes({ weaponFireModes, useAutofire })).toEqual(
+        expected,
+      );
+    },
+  );
+});
+
+describe("getMinimumSpend", () => {
+  it.each([
+    ["single", "selective", 0],
+    ["burst", "selective", 3],
+    ["fullAuto", "selective", 5],
+    // machine guns don't need to spend to fire full-auto (p. 100)
+    ["fullAuto", "alwaysAuto", 0],
+  ] as const)(
+    "%s from a %s weapon: %i",
+    (fireMode, weaponFireModes, expected) => {
+      expect(getMinimumSpend({ fireMode, weaponFireModes })).toBe(expected);
+    },
+  );
+});
+
+describe("getWastedExtraSpend", () => {
+  it.each([
+    // 1 Firearms + 2 Stability + 2 Athletics: exactly 5 (Sanchez, p. 100)
+    [1, 4, 0],
+    // 4 Firearms + 3 Stability: only 1 was needed
+    [4, 3, 2],
+    // Firearms alone is enough, so any extra is wasted
+    [5, 2, 2],
+    [6, 1, 1],
+    // short of the minimum: nothing wasted (the attack can't be made anyway)
+    [1, 2, 0],
+    [0, 0, 0],
+  ])("spend %i and %i extra: %i wasted", (spend, extraSpend, expected) => {
+    expect(getWastedExtraSpend({ spend, extraSpend, minimumSpend: 5 })).toBe(
+      expected,
+    );
   });
 });

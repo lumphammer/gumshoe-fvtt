@@ -26,6 +26,13 @@ export interface SeedColorsV1 {
    */
   danger?: string;
   /**
+   * color used to indicate a warning, i.e. something less serious than
+   * `danger`. Should be given as a bold, opaque color, but may be blended in
+   * use.
+   * @default amber
+   */
+  warning?: string;
+  /**
    * tinting color used to indicate success. Should be given as a bold, opaque
    * color, but may be blended in use.
    */
@@ -403,14 +410,16 @@ export interface PresetV1 {
   useCriticalHits?: boolean;
   /**
    * Fall of DELTA GREEN: weapons can have a Lethality rating (e.g. L1*), which
-   * can kill or wound outright. Only applies with damage application.
+   * can kill or wound outright, and automatic weapons can fire three-round
+   * bursts and full-auto (whose damage is Lethality). Only applies with damage
+   * application.
    */
-  useLethality?: boolean;
+  useLethalityAndAutofire?: boolean;
   /**
-   * Fall of DELTA GREEN: selective-fire weapons can fire three-round bursts
-   * (and full-auto, which is coming). Only applies with damage application.
+   * Names of other abilities whose points count towards full-auto's minimum
+   * spend, without adding to the roll. Defaults to Athletics and Stability.
    */
-  useAutofire?: boolean;
+  fullAutoSpendAbilities?: string[];
   /**
    * What standard categories do we have for equipment?
    */

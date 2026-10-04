@@ -3,11 +3,18 @@ import React, { useCallback } from "react";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { isAttackMessage } from "../../module/attacks/attackTargets";
 import { formatLethality } from "../../module/attacks/lethality";
+import type { FireMode } from "../../module/attacks/rules";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { settings } from "../../settings/settings";
 import { Translate } from "../Translate";
 import { AttackTargets } from "./AttackTargets";
 import { DiceTerms } from "./DiceTerms";
+
+const fireModeText: Record<FireMode, string> = {
+  single: "FireModeSingle",
+  burst: "FireModeBurst",
+  fullAuto: "FireModeFullAuto",
+};
 
 interface AttackCardProps {
   msg: ChatMessage;
@@ -35,11 +42,11 @@ export const AttackCard = React.memo(
     const damageRoll = poolRolls[1];
 
     const lethality =
-      isAttackMessage(msg) && settings.useLethality.get()
+      isAttackMessage(msg) && settings.useLethalityAndAutofire.get()
         ? msg.system.lethality
         : null;
 
-    const isBurst = isAttackMessage(msg) && msg.system.fireMode === "burst";
+    const fireMode = isAttackMessage(msg) ? msg.system.fireMode : "single";
 
     // older attack messages don't have targets at all
     const showTargets =
@@ -94,10 +101,10 @@ export const AttackCard = React.memo(
               )}
             </b>{" "}
             (<Translate>{rangeName || ""}</Translate>)
-            {isBurst && (
+            {fireMode !== "single" && (
               <>
                 {" · "}
-                <Translate>FireModeBurst</Translate>
+                <Translate>{fireModeText[fireMode]}</Translate>
               </>
             )}
             {lethality && ` · ${formatLethality(lethality)}`}

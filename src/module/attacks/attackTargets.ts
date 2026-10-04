@@ -12,7 +12,7 @@ import type {
   TargetActorInfo,
 } from "./resolveAttackTarget";
 import { resolveAttackTarget } from "./resolveAttackTarget";
-import { takeUnusedDamageRolls } from "./attackData";
+import { addTarget, replaceTarget, takeUnusedDamageRolls } from "./attackData";
 import type { AttackData, AttackTargetData, DamageRollRecord } from "./types";
 
 /** our damage rolls carry data, which plain `Roll` doesn't allow for */
@@ -73,7 +73,7 @@ export function getResolveOptions() {
   return {
     useCriticalHits: settings.useCriticalHits.get(),
     useGunfireOnHumans: settings.useGunfireOnHumans.get(),
-    useLethality: settings.useLethality.get(),
+    useLethality: settings.useLethalityAndAutofire.get(),
   };
 }
 
@@ -152,33 +152,65 @@ export async function fillMissingDamageRolls(
 }
 
 /**
- * The token to use as an attack's target: the user's target if they have one,
- * otherwise their selected token. Attacks only have one target for now, so
- * warn if there's more than one to choose from.
+ * The tokens to use as an attack's targets: the user's targets if they have
+ * any, otherwise (if allowed) their selected tokens.
  */
-export function pickSingleTargetToken({
+export function pickTargetTokens({
   allowSelected = true,
-}: { allowSelected?: boolean } = {}): TokenDocument | null {
+}: { allowSelected?: boolean } = {}): TokenDocument[] {
   assertGame(game);
   const targeted = Array.from(game.user.targets);
   const tokens =
     targeted.length > 0 || !allowSelected
       ? targeted
       : (canvas?.tokens?.controlled ?? []);
+  if (tokens.length === 0 && allowSelected) {
+    ui.notifications?.warn(getTranslated("TargetOrSelectATokenFirst"));
+  }
+  return tokens.map((token) => token.document);
+}
+
+/**
+ * Add targets for these tokens, one after another so each takes its share of
+ * the attack's unused damage rolls, and rolls anything else it needs.
+ */
+export async function addTargetsForTokens(
+  attack: AttackData,
+  tokens: TokenDocument[],
+): Promise<{ attack: AttackData; rolls: AnyRoll[] }> {
+  let result = attack;
+  const rolls: AnyRoll[] = [];
+  for (const token of tokens) {
+    const added = addTarget(result, createAttackTarget(token));
+    if (added === result) continue;
+    const target = added.targets[added.targets.length - 1];
+    const filled = await fillMissingDamageRolls(added, target);
+    rolls.push(...filled.rolls);
+    result = replaceTarget(filled.attack, filled.target);
+  }
+  return { attack: result, rolls };
+}
+
+/**
+ * The token to use as a single-target attack's target: the user's target if
+ * they have one, otherwise their selected token. Warns if there's more than
+ * one to choose from.
+ */
+export function pickSingleTargetToken({
+  allowSelected = true,
+}: { allowSelected?: boolean } = {}): TokenDocument | null {
+  const tokens = pickTargetTokens({ allowSelected });
   if (tokens.length === 0) {
-    if (allowSelected) {
-      ui.notifications?.warn(getTranslated("TargetOrSelectATokenFirst"));
-    }
     return null;
   }
   if (tokens.length > 1) {
     ui.notifications?.warn(
       getTranslated("OnlyOneTargetUsingTokenName", {
-        TokenName: tokens[0].document.name ?? "",
+        TokenName: tokens[0].name ?? "",
       }),
     );
   }
-  return tokens[0].document;
+  return tokens[0];
 }
 
 /** Show rolls made after the message was created, if Dice So Nice is around */

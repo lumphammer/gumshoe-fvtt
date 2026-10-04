@@ -32,7 +32,7 @@ const settingsNpcStats = settings.npcStats.get;
 const settingsShowIsHuman = () =>
   settings.useDamageApplication.get() && settings.useGunfireOnHumans.get();
 const settingsShowImmuneToLethality = () =>
-  settings.useDamageApplication.get() && settings.useLethality.get();
+  settings.useDamageApplication.get() && settings.useLethalityAndAutofire.get();
 
 export const NPCSheetFull = () => {
   const { actor } = useActorSheetContext();

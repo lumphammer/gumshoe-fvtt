@@ -4,6 +4,8 @@ import type { Lethality } from "./lethality";
 import {
   applyCoverToLethality,
   formatLethality,
+  fullAutoLethality,
+  getFullAutoLethality,
   getLethalityBand,
   parseLethality,
   resolveLethality,
@@ -217,5 +219,34 @@ describe("applyCoverToLethality", () => {
     });
     expect(result.outcome).toBe("damage");
     expect(result.rolledDamage).toBe(1);
+  });
+});
+
+describe("getFullAutoLethality", () => {
+  it("is L1 for small arms, whatever their own rating", () => {
+    expect(
+      getFullAutoLethality({
+        weaponFireModes: "selective",
+        weaponLethality: L("L2*"),
+      }),
+    ).toEqual(fullAutoLethality);
+  });
+
+  it("is a machine gun's own rating", () => {
+    expect(
+      getFullAutoLethality({
+        weaponFireModes: "alwaysAuto",
+        weaponLethality: L("L2"),
+      }),
+    ).toEqual(L("L2"));
+  });
+
+  it("is L1 for a machine gun without a rating", () => {
+    expect(
+      getFullAutoLethality({
+        weaponFireModes: "alwaysAuto",
+        weaponLethality: null,
+      }),
+    ).toEqual(L("L1"));
   });
 });

@@ -59,6 +59,7 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
   const bgTransPrimary = irid(seed.colors.backgroundPrimary);
   const bgTransSecondary = irid(seed.colors.backgroundSecondary);
   const danger = irid(seed.colors.danger ?? "red");
+  const warning = irid(seed.colors.warning ?? "#d68a00");
   const success = irid(seed.colors.success ?? "green");
 
   const bgTransDangerPrimary = bgTransPrimary
@@ -136,6 +137,7 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
       bgOpaqueDangerSecondary,
       controlBorder,
       danger: danger.toString(),
+      warning: warning.toString(),
       success: success.toString(),
     },
     logo: {
