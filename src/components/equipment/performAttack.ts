@@ -1,4 +1,5 @@
 import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
+import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
 import { PoolTerm } from "../../fvtt-exports";
 import { isNPCActor } from "../../module/actors/npc";
@@ -164,6 +165,20 @@ export const performAttack =
       spend +
       usableExtraSpends.reduce((total, extra) => total + extra.spend, 0);
     if (totalSpend < minimumSpend) {
+      return;
+    }
+    // pools can change after the points were chosen, e.g. if they get spent
+    // from the ability's own sheet
+    const pool = ability && isAbilityItem(ability) ? ability.system.pool : 0;
+    if (
+      spend > pool + bonusPool ||
+      usableExtraSpends.some(
+        (extra) =>
+          !isAbilityItem(extra.ability) ||
+          extra.spend > extra.ability.system.pool,
+      )
+    ) {
+      ui.notifications?.warn(getTranslated("NotEnoughPointsToSpend"));
       return;
     }
     // the panel only checks ammo and spend as of its last render, so a quick

@@ -3,6 +3,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { generalAbility } from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated } from "../../functions/getTranslated";
+import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isPCActor } from "../../module/actors/pc";
 import { isAbilityItem } from "../../module/items/exports";
@@ -75,8 +76,16 @@ export const WeaponMain = () => {
 
   const abilityName = item.system.ability;
 
+  // pools can be spent elsewhere (e.g. the ability's own sheet)
+  useRefreshOnActorItemChanges(item.actor);
+
   const ability = findGeneralAbility(item.actor, abilityName);
-  const spendOptions = getSpendOptions(getPool(ability) + bonusPool);
+  const available = getPool(ability) + bonusPool;
+  const spendOptions = getSpendOptions(available);
+  // if points get spent elsewhere, don't leave more selected than is left
+  if (spend > available) {
+    setSpend(available);
+  }
 
   const fireModes = getAvailableFireModes({
     weaponFireModes: item.system.fireModes,
@@ -110,7 +119,7 @@ export const WeaponMain = () => {
       : [];
   const extraSpends: ExtraSpend[] = extraAbilities.map((extra) => ({
     ability: extra,
-    spend: extraSpendsByName[extra.name] ?? 0,
+    spend: Math.min(extraSpendsByName[extra.name] ?? 0, getPool(extra)),
   }));
   const totalSpend =
     spend + extraSpends.reduce((total, extra) => total + extra.spend, 0);
