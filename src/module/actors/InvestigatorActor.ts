@@ -5,6 +5,7 @@
 import { produce } from "immer";
 
 import type { SourceData } from "../../fvtt-exports";
+import { isCombatantEffectShown } from "./isCombatantEffectShown";
 
 export class InvestigatorActor<
   SubType extends Actor.SubType = Actor.SubType,
@@ -30,18 +31,14 @@ export class InvestigatorActor<
     (effects: SourceData<ActiveEffect.Schema>[]) => void
   > = new Set();
 
-  // calculate new data, choosing effects the way foundry's
-  // CombatTracker#_prepareTurnContext does (in v14, status effects have no
-  // duration, so they aren't "temporary"; they're shown because of showIcon)
+  // calculate new data
   protected _getCombatantEffectsData(): SourceData<ActiveEffect.Schema>[] {
-    const showIcon = CONST.ACTIVE_EFFECT_SHOW_ICON;
+    const constants = {
+      defeatedStatusId: CONFIG.specialStatusEffects.DEFEATED,
+      showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON,
+    };
     return this.appliedEffects
-      .filter(
-        (e) =>
-          !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED) &&
-          (e.showIcon === showIcon.ALWAYS ||
-            (e.showIcon === showIcon.CONDITIONAL && e.isTemporary)),
-      )
+      .filter((e) => isCombatantEffectShown(e, constants))
       .map((e) => e.toJSON());
   }
 
