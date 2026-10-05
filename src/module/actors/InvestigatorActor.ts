@@ -5,6 +5,7 @@
 import { produce } from "immer";
 
 import type { SourceData } from "../../fvtt-exports";
+import { getEditedBarValue } from "../tokenBars";
 import { isCombatantEffectShown } from "./isCombatantEffectShown";
 
 export class InvestigatorActor<
@@ -16,6 +17,52 @@ export class InvestigatorActor<
   setName = (name: string): Promise<this | undefined> => {
     return this.update({ name });
   };
+
+  /**
+   * Like foundry's, but bars are clamped to the resource's min, not 0, so the
+   * token HUD can take Health below 0.
+   */
+  override async modifyTokenAttribute(
+    attribute: string,
+    value: number,
+    isDelta = false,
+    isBar = true,
+  ): Promise<this | undefined> {
+    if (!isBar) {
+      return super.modifyTokenAttribute(attribute, value, isDelta, isBar);
+    }
+    const attr = foundry.utils.getProperty(this.system, attribute) as {
+      value: number;
+      max: number;
+      min?: number | null;
+    };
+    const current = attr.value;
+    const update = isDelta ? current + value : value;
+    if (update === current) return this;
+
+    const updates = {
+      [`system.${attribute}.value`]: getEditedBarValue(
+        current,
+        value,
+        isDelta,
+        attr.min,
+        attr.max,
+      ),
+    };
+
+    // Allow a hook to override these changes. (fvtt-types leaves out the
+    // actor, which foundry passes as a third argument.)
+    const hooks = Hooks as unknown as {
+      call(hook: string, ...args: unknown[]): boolean;
+    };
+    const allowed = hooks.call(
+      "modifyTokenAttribute",
+      { attribute, value, isDelta, isBar },
+      updates,
+      this,
+    );
+    return allowed !== false ? this.update(updates) : this;
+  }
 
   // ***************************************************************************
   // COMBATANT EFFECTS
