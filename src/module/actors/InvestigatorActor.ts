@@ -5,6 +5,7 @@
 import { produce } from "immer";
 
 import type { SourceData } from "../../fvtt-exports";
+import { isCombatantEffectShown } from "./isCombatantEffectShown";
 
 export class InvestigatorActor<
   SubType extends Actor.SubType = Actor.SubType,
@@ -32,8 +33,12 @@ export class InvestigatorActor<
 
   // calculate new data
   protected _getCombatantEffectsData(): SourceData<ActiveEffect.Schema>[] {
-    return this.temporaryEffects
-      .filter((e) => !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED))
+    const constants = {
+      defeatedStatusId: CONFIG.specialStatusEffects.DEFEATED,
+      showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON,
+    };
+    return this.appliedEffects
+      .filter((e) => isCombatantEffectShown(e, constants))
       .map((e) => e.toJSON());
   }
 
