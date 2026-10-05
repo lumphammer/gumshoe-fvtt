@@ -30,10 +30,18 @@ export class InvestigatorActor<
     (effects: SourceData<ActiveEffect.Schema>[]) => void
   > = new Set();
 
-  // calculate new data
+  // calculate new data, choosing effects the way foundry's
+  // CombatTracker#_prepareTurnContext does (in v14, status effects have no
+  // duration, so they aren't "temporary"; they're shown because of showIcon)
   protected _getCombatantEffectsData(): SourceData<ActiveEffect.Schema>[] {
-    return this.temporaryEffects
-      .filter((e) => !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED))
+    const showIcon = CONST.ACTIVE_EFFECT_SHOW_ICON;
+    return this.appliedEffects
+      .filter(
+        (e) =>
+          !e.statuses.has(CONFIG.specialStatusEffects.DEFEATED) &&
+          (e.showIcon === showIcon.ALWAYS ||
+            (e.showIcon === showIcon.CONDITIONAL && e.isTemporary)),
+      )
       .map((e) => e.toJSON());
   }
 
