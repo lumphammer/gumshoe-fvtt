@@ -66,6 +66,12 @@ export const CombatOptionsSettings = ({ setters }: { setters: Setters }) => {
           )}
         </>
       )}
+      <SettingsGridField label="Apply wound status effects?">
+        <Toggle
+          checked={settings.useWoundStatusEffects}
+          onChange={setters.useWoundStatusEffects}
+        />
+      </SettingsGridField>
     </InputGrid>
   );
 };

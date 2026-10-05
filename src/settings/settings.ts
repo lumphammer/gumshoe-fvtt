@@ -180,6 +180,11 @@ export const settings = {
     name: "Use walking fire?",
     default: pathOfCthulhuPreset.useWalkingFire,
   }),
+  useWoundStatusEffects: createSettingBoolean({
+    key: "useWoundStatusEffects",
+    name: "Apply wound status effects?",
+    default: pathOfCthulhuPreset.useWoundStatusEffects,
+  }),
   walkingFireSpendAbilities: createSettingArrayOfString({
     key: "walkingFireSpendAbilities",
     name: "Walking fire spend abilities",

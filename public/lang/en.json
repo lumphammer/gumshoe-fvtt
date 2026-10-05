@@ -341,6 +341,7 @@
   "investigator.WalkingFireSpendAbilitiesDescription": "Other abilities which can pay part of the cost of walking fire",
   "investigator.WalkingFireSpendAbilitiesNote": "With walking fire on, it costs 2 points of the weapon's ability, or 1 point of it plus 2 points of one of these (in Fall of DELTA GREEN, Athletics). Abilities are matched to these by name, so check the spelling matches your abilities exactly.",
   "investigator.UseWalkingFire": "Use walking fire?",
+  "investigator.ApplyWoundStatusEffects": "Apply wound status effects?",
   "investigator.WalkFireHint": "Walk fire: target the next token (within 3 yards of the last), then choose how to pay.",
   "investigator.WalkFireNoBulletsLeft": "All three bullets of the burst have hit, so there's none left to walk.",
   "investigator.WalkedFire": "walked fire",
