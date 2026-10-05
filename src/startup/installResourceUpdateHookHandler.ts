@@ -123,7 +123,14 @@ export function installResourceUpdateHookHandler() {
       abilities?.forEach((ability) => {
         assertGeneralAbilityItem(ability);
         const newValue = resource?.value;
-        if (newValue === undefined || newValue === null) {
+        if (
+          newValue === undefined ||
+          newValue === null ||
+          // this is the echo of the ability updating the resource, so the
+          // ability is already right (and clamping it to its minimum here
+          // would undo damage below 0, e.g. on NPCs with a minimum of 0)
+          newValue === ability.system.pool
+        ) {
           return;
         }
         const cappedValue = Math.max(

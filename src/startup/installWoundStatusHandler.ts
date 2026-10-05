@@ -1,6 +1,8 @@
 import { systemId } from "../constants";
 import { createKeyedQueue } from "../functions/createKeyedQueue";
+import { getTranslated } from "../functions/getTranslated";
 import { assertGame } from "../functions/isGame";
+import { systemLogger } from "../functions/utilities";
 import { findHealthAbility, getHealth } from "../module/attacks/health";
 import { getWoundState, type WoundState } from "../module/attacks/rules";
 import {
@@ -70,7 +72,7 @@ function updateWoundStatus(
   ];
   if (before === undefined) return;
   // the actor's uuid is unique even for unlinked tokens
-  void runExclusive(actor.uuid, async () => {
+  runExclusive(actor.uuid, async () => {
     const health = getHealth(actor);
     if (health === null) return;
     const transition = getWoundStatusTransition(before, getWoundState(health));
@@ -84,6 +86,11 @@ function updateWoundStatus(
         overlay: transition.add === "dead",
       });
     }
+  }).catch((error: unknown) => {
+    systemLogger.error("Failed to update wound status", error);
+    ui.notifications?.error(
+      getTranslated("WoundStatusUpdateFailed", { ActorName: actor.name }),
+    );
   });
 }
 
