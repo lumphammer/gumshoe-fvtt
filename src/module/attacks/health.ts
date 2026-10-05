@@ -11,7 +11,9 @@ const healthResourceId = "health";
  * explicitly linked to the "health" resource, but fall back to one called
  * "Health" for legacy compatibility, like the resource sync does.
  */
-function findHealthAbility(actor: Actor): GeneralAbilityItem | undefined {
+export function findHealthAbility(
+  actor: Actor,
+): GeneralAbilityItem | undefined {
   const generalAbilities = actor.items.filter(
     (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
       isGeneralAbilityItem(item),

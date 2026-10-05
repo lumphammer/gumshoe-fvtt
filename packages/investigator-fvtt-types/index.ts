@@ -428,6 +428,12 @@ export interface PresetV1 {
    */
   useWalkingFire?: boolean;
   /**
+   * Keep the Hurt, Seriously Wounded and Dead status effects in step with
+   * Health: when an actor's wound state changes, the old state's status is
+   * removed and the new one's applied.
+   */
+  useWoundStatusEffects?: boolean;
+  /**
    * Names of other abilities which can pay part of the cost of walking fire.
    * Defaults to Athletics.
    */

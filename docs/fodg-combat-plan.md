@@ -408,3 +408,47 @@ Decisions made while implementing Phase 5:
 - A Shot Dry attack's lone target gets its extra dice automatically, so
   walking (or adding targets) onto a second one first ticks the lone target
   explicitly, so it keeps them.
+
+### Phase 6 — wound status effects
+
+Show the wound state on tokens (and in the combat tracker) as Foundry status
+effects: Hurt, Seriously Wounded, and Foundry's own `dead`.
+
+- Two new statuses, `hurt` and `seriouslyWounded`, are always registered in
+  `CONFIG.statusEffects` (with fixed `_id`s), so they can be used by hand
+  even without the setting. Icons come from game-icons.net (CC BY 3.0), as a
+  placeholder. Dead is Foundry's `dead` (`CONFIG.specialStatusEffects.DEFEATED`),
+  applied as an overlay as the combat tracker does.
+- A setting, "Apply wound status effects?" (default off), on the Combat
+  options page. Not under damage application: Health changes from sheets,
+  token bars and refreshes too, and the thresholds are standard GUMSHOE, not
+  just FoDG.
+- Statuses follow Health, not the attack card. `preUpdateItem` /
+  `preUpdateActor` stash the wound state before a Health change in the update
+  options; `updateItem` / `updateActor`, on the client that made the change,
+  swap the old state's status for the new one. Serialised per actor with
+  `createKeyedQueue`, since the item ↔ resource sync fires both hooks.
+- Custom keys added to the options in `preUpdate*` hooks do reach the
+  `update*` hooks: the client backend copies them back onto the operation
+  before sending it, and the server echoes it. One options object is shared
+  by a whole batch update, so key the stash by document id. Check unlinked
+  tokens (where item updates become actor delta updates) still fire both.
+- Only on a **change** of wound state, so a status set by hand (e.g. the GM
+  marks an NPC dead at Health 4) survives Health changes within the same
+  state. The three statuses are exclusive; healing above 0 clears them all,
+  Dead included.
+- Only the status is set, not `combatant.defeated` (`isDefeated` reads the
+  status). If the GM marks a combatant defeated in the tracker and it's later
+  healed, the flag stays set; that's acceptable.
+- The transition logic is a pure function with unit tests; the Foundry glue
+  is a startup hook handler.
+
+Known wrinkles:
+
+- The `updateActor` → ability sync clamps the pool to the ability's `min`, so
+  editing an NPC token bar with a `min: 0` Health ability can't go below Hurt.
+  A Health ability matched only by its legacy name (not linked to the
+  resource) doesn't sync from the token bar at all, so the bar and the
+  statuses can disagree.
+- Turning the setting on doesn't backfill statuses for actors who are
+  already wounded; they catch up on their next change of wound state.

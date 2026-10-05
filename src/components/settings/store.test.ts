@@ -79,6 +79,7 @@ const initialState: State = {
     useLethalityAndAutofire: false,
     useShotDryAndJams: false,
     useWalkingFire: false,
+    useWoundStatusEffects: false,
     walkingFireSpendAbilities: [],
     fullAutoSpendAbilities: [],
     genericOccupation: "",
