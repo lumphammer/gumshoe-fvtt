@@ -48,6 +48,21 @@ export function getBelowZeroBarColor(value: number, max: number): number {
   return mixColors(barAmber, barRed, value / redAt);
 }
 
+/**
+ * The new value of a bar edited through the token HUD: like foundry's, but
+ * clamped to the bar's min rather than 0
+ */
+export function getEditedBarValue(
+  current: number,
+  value: number,
+  isDelta: boolean,
+  min: number | null | undefined,
+  max: number,
+): number {
+  const update = isDelta ? current + value : value;
+  return Math.min(max, Math.max(min ?? 0, update));
+}
+
 /** Where to draw threshold ticks, as fractions of the bar's width */
 export function getBarTickFractions(min: number, max: number): number[] {
   return barThresholds

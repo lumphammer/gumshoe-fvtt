@@ -7,6 +7,7 @@ import {
   getBarFillFraction,
   getBarTickFractions,
   getBelowZeroBarColor,
+  getEditedBarValue,
   mixColors,
 } from "./tokenBars";
 
@@ -73,5 +74,25 @@ describe("getBarTickFractions", () => {
   it("leaves out thresholds at or beyond the ends", () => {
     expect(getBarTickFractions(-5, 5)).toEqual([0.5]);
     expect(getBarTickFractions(0, 6)).toEqual([]);
+  });
+});
+
+describe("getEditedBarValue", () => {
+  it("lets a bar with a negative min be set below 0", () => {
+    expect(getEditedBarValue(6, -10, false, -12, 6)).toBe(-10);
+  });
+
+  it("applies relative changes", () => {
+    expect(getEditedBarValue(2, -5, true, -12, 6)).toBe(-3);
+  });
+
+  it("clamps to min and max", () => {
+    expect(getEditedBarValue(-10, -5, true, -12, 6)).toBe(-12);
+    expect(getEditedBarValue(-10, 20, true, -12, 6)).toBe(6);
+  });
+
+  it("clamps to 0 like foundry when there's no min", () => {
+    expect(getEditedBarValue(3, -10, false, null, 6)).toBe(0);
+    expect(getEditedBarValue(3, -10, false, undefined, 6)).toBe(0);
   });
 });

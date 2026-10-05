@@ -5,6 +5,7 @@
 import { produce } from "immer";
 
 import type { SourceData } from "../../fvtt-exports";
+import { getEditedBarValue } from "../tokenBars";
 import { isCombatantEffectShown } from "./isCombatantEffectShown";
 
 export class InvestigatorActor<
@@ -40,9 +41,11 @@ export class InvestigatorActor<
     if (update === current) return this;
 
     const updates = {
-      [`system.${attribute}.value`]: Math.clamp(
-        update,
-        attr.min ?? 0,
+      [`system.${attribute}.value`]: getEditedBarValue(
+        current,
+        value,
+        isDelta,
+        attr.min,
         attr.max,
       ),
     };
