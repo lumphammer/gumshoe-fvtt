@@ -452,3 +452,61 @@ Known wrinkles:
   statuses can disagree.
 - Turning the setting on doesn't backfill statuses for actors who are
   already wounded; they catch up on their next change of wound state.
+
+### Phase 7 — token bars below zero
+
+Not FoDG-specific, but part of the same push to make INVESTIGATOR work for
+combat-heavy games: token bars should show Health all the way down to −12, not
+stop at 0.
+
+How resources work (for reference):
+
+- Actors have `system.resources`, a free-form map of `{ min, max, value }`
+  (`createResourcesField`). Any general ability can link itself to one
+  (`linkToResource` + `resourceId`), and `installResourceUpdateHookHandler`
+  syncs pool/rating/min to the resource, and resource value back to linked
+  abilities (clamped to the ability's range).
+- Health, Stability, Sanity and Magic used to be hard-coded resources. The
+  `setResourceIdForAbilities` migration links abilities with those names, and
+  the sync still falls back to the names for unmigrated content (which only
+  syncs ability → resource).
+- `InvestigatorTokenDocument.getTrackedAttributes` offers every
+  `resources.*` as a bar.
+
+Why bars stop at 0: Foundry ignores `min` everywhere.
+`TokenDocument#getBarAttribute` returns only `{ value, max }`; `Token#_drawBar`
+fills `clamp(value, 0, max) / max`; and `Actor#modifyTokenAttribute` (token HUD
+edits) clamps to `[0, max]`. Linking Health to a custom resource doesn't help,
+since every resource goes through the same path.
+
+Plan:
+
+- **Every bar honours its `min`** (null counts as 0). Not just Health:
+  Stability in several presets uses the same 0 / −6 / −12 steps.
+- `InvestigatorTokenDocument.getBarAttribute` adds the resource's `min`.
+- A new `InvestigatorToken` (`CONFIG.Token.objectClass`) overrides `_drawBar`
+  to fill by `(value − min) / (max − min)`, clamped. Animation only copies
+  `{ value, max }`, so read `min` from the token document rather than the data
+  passed in.
+- Colour: a bar whose `min` is below 0 runs from Foundry's bar1 green
+  (`#7FFF00`) at max, to amber (`#FFBF00`) at 0, to Foundry's red (`#FF0000`)
+  at −6 and below, mixed linearly in RGB as Foundry does. The steps are the
+  GUMSHOE thresholds, so they're absolute, not proportions of the range. Bars
+  with `min` ≥ 0 keep Foundry's colours (including bar2's blues).
+- Faint tick marks at 0 and −6 (where they're inside the range), so a bar
+  that's 60% full at Health 0 still reads as Hurt.
+- `InvestigatorActor.modifyTokenAttribute` clamps bar edits to
+  `[min, max]`, so the token HUD can set negative values.
+- Always on, no setting.
+- Fill fraction and colour are a pure function with unit tests; the Foundry
+  overrides stay thin.
+
+Decisions made while implementing Phase 7:
+
+- Foundry animates bars by changing the token document's `bar1`/`bar2` in
+  place, so `min` survives animation (checked frame by frame), but the token
+  still reads it from the document to be safe.
+- Foundry's own green-to-red mix goes through a muddy `#BF7F00` at the
+  midpoint, hence a separate amber stop.
+- `modifyTokenAttribute` still calls the `modifyTokenAttribute` hook with the
+  actor as a third argument, as Foundry does (fvtt-types leaves it out).

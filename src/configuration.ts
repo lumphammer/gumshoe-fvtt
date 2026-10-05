@@ -28,6 +28,7 @@ import { TurnPassingCombatantModel } from "./module/combat/turnPassingCombatant"
 import { InvestigatorCompendiumDirectory } from "./module/InvestigatorCompendiumDirectory";
 import { InvestigatorGamePause } from "./module/InvestigatorGamePause";
 import { InvestigatorJournalSheet } from "./module/InvestigatorJournalSheet";
+import { InvestigatorToken } from "./module/InvestigatorToken";
 import { InvestigatorTokenDocument } from "./module/InvestigatorTokenDocument";
 import { CardModel } from "./module/items/card";
 import { EquipmentModel } from "./module/items/equipment";
@@ -188,6 +189,7 @@ Hooks.once("init", function () {
   CONFIG.Combat.documentClass = InvestigatorCombat;
   // CONFIG.ChatMessage.documentClass = InvestigatorChatMessage;
   CONFIG.Token.documentClass = InvestigatorTokenDocument;
+  CONFIG.Token.objectClass = InvestigatorToken;
   CONFIG.ui.combat = InvestigatorCombatTracker;
   CONFIG.ui.compendium = InvestigatorCompendiumDirectory;
   CONFIG.ui.pause = InvestigatorGamePause;

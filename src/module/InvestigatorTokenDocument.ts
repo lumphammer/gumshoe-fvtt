@@ -59,6 +59,19 @@ export class InvestigatorTokenDocument extends TokenDocument {
     if (result && !result.editable) {
       result.editable = true;
     }
+    // foundry drops the resource's min, which InvestigatorToken uses to draw
+    // bars below 0
+    if (result?.type === "bar" && this.actor) {
+      const resource: unknown = foundry.utils.getProperty(
+        this.actor.system,
+        result.attribute,
+      );
+      const min =
+        typeof resource === "object" && resource !== null && "min" in resource
+          ? resource.min
+          : null;
+      Object.assign(result, { min: typeof min === "number" ? min : 0 });
+    }
     return result;
   }
 }
