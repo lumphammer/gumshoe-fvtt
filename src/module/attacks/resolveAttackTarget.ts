@@ -132,10 +132,14 @@ export function resolveAttackTarget(
           immuneToLethality: info.immuneToLethality,
         })
       : [];
+  // once damage has been applied, the live Health already includes it, so
+  // resolve from the Health it was applied to - otherwise the breakdown
+  // changes (e.g. the gunfire bonus vanishes) as soon as it is applied
+  const startingHealth = target.applied?.previousHealth ?? info.health;
   const damage =
-    instances.length > 0 && info.health !== null
+    instances.length > 0 && startingHealth !== null
       ? resolveDamage({
-          startingHealth: info.health,
+          startingHealth,
           instances,
           armor,
           applyGunfireOnHumans:
