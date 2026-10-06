@@ -318,7 +318,10 @@ export const WeaponMain = () => {
           </GridField>
         )}
         {/* alongside other abilities' spends, name the ability being spent */}
-        <GridField label={spendLabel ?? getTranslated("Spend")} noTranslate>
+        <GridField
+          label={spendLabel ?? "Spend"}
+          noTranslate={spendLabel !== undefined}
+        >
           <CheckButtons
             size={1}
             onChange={setSpend}
