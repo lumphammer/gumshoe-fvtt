@@ -3,6 +3,10 @@ const observedLogs = new WeakSet<Element>();
 // allows for fractional scroll positions when the page is zoomed
 const bottomTolerancePx = 2;
 
+const isScrolledToBottom = (scroll: Element) =>
+  scroll.scrollHeight - scroll.clientHeight - scroll.scrollTop <=
+  bottomTolerancePx;
+
 /**
  * Foundry scrolls the chat log to the bottom when a message is posted, but not
  * when an existing message changes height - which our cards do all the time
@@ -26,13 +30,11 @@ export function installChatLogScrollKeeper() {
     if (!scroll || !log || observedLogs.has(log)) return;
     observedLogs.add(log);
 
-    let atBottom = true;
+    let atBottom = isScrolledToBottom(scroll);
     scroll.addEventListener(
       "scroll",
       () => {
-        atBottom =
-          scroll.scrollHeight - scroll.clientHeight - scroll.scrollTop <=
-          bottomTolerancePx;
+        atBottom = isScrolledToBottom(scroll);
       },
       { passive: true },
     );
