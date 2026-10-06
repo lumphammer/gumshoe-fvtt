@@ -1,7 +1,13 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { getTranslated } from "../../functions/getTranslated";
+import { getTranslated, getTranslatedOr } from "../../functions/getTranslated";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isPCActor } from "../../module/actors/pc";
@@ -29,6 +35,7 @@ import {
 } from "../../module/attacks/rules";
 import { settings } from "../../settings/settings";
 import { hasAmmoFor } from "./consumeWeaponAmmo";
+import { getWeaponHintColors, WeaponHint } from "./WeaponHint";
 
 const defaultSpendOptions = Array.from({ length: 8 })
   .fill(null)
@@ -59,6 +66,7 @@ export const WeaponMain = () => {
   const [spend, setSpend] = useState(0);
   const [bonusPool, setBonusPool] = useState(0);
   const [fireMode, setFireMode] = useState<FireMode>("single");
+  const [rangeIndex, setRangeIndex] = useState(0);
   // spends from other abilities on full-auto, by ability name
   const [extraSpendsByName, setExtraSpendsByName] = useState<
     Record<string, number>
@@ -130,7 +138,49 @@ export const WeaponMain = () => {
     item.system.jammed;
   const spendTooLow = totalSpend < minimumSpend;
 
-  const attackAt = (rangeName: string, rangeDamage: number) => () => {
+  const ranges = [
+    {
+      name: "point blank",
+      label: getTranslatedOr("PointBlankShort", "Point Blank"),
+      fullLabel: getTranslated("Point Blank"),
+      enabled: item.system.isPointBlank,
+      damage: item.system.pointBlankDamage,
+    },
+    {
+      name: "close range",
+      label: getTranslatedOr("CloseRangeShort", "Close Range"),
+      fullLabel: getTranslated("Close Range"),
+      enabled: item.system.isCloseRange,
+      damage: item.system.closeRangeDamage,
+    },
+    {
+      name: "near range",
+      label: getTranslatedOr("NearRangeShort", "Near Range"),
+      fullLabel: getTranslated("Near Range"),
+      enabled: item.system.isNearRange,
+      damage: item.system.nearRangeDamage,
+    },
+    {
+      name: "long range",
+      label: getTranslatedOr("LongRangeShort", "Long Range"),
+      fullLabel: getTranslated("Long Range"),
+      enabled: item.system.isLongRange,
+      damage: item.system.longRangeDamage,
+    },
+  ];
+  const enabledRanges = ranges.filter((range) => range.enabled);
+  // the picked range can be switched off in the config tab
+  const effectiveRange = ranges[rangeIndex]?.enabled
+    ? ranges[rangeIndex]
+    : enabledRanges[0];
+  // melee weapons only have point blank, so there's nothing to pick
+  const isMeleeOnly =
+    enabledRanges.length === 1 && enabledRanges[0] === ranges[0];
+
+  const onAttack = () => {
+    if (effectiveRange === undefined) {
+      return;
+    }
     void performAttack({
       spend,
       bonusPool,
@@ -140,13 +190,12 @@ export const WeaponMain = () => {
       weapon: item,
       extraSpends,
       resetExtraSpends: () => setExtraSpendsByName({}),
-    })({ rangeName, rangeDamage, fireMode: effectiveFireMode });
+    })({
+      rangeName: effectiveRange.name,
+      rangeDamage: effectiveRange.damage,
+      fireMode: effectiveFireMode,
+    });
   };
-
-  const onPointBlank = attackAt("point blank", item.system.pointBlankDamage);
-  const onCloseRange = attackAt("close range", item.system.closeRangeDamage);
-  const onNearRange = attackAt("near range", item.system.nearRangeDamage);
-  const onLongRange = attackAt("long range", item.system.longRangeDamage);
 
   const weaponActor = item.actor;
 
@@ -182,24 +231,56 @@ export const WeaponMain = () => {
     });
   }, [abilityName, item.actor]);
 
+  // everything which stops an attack, shown as hints below the attack button;
+  // the first one is also the disabled attack button's tooltip
+  const blockers: { key: string; message: string; action?: ReactNode }[] = [];
   // the configured ability can have been deleted or renamed, in which case
-  // there's nothing to roll against - see the "NotFound!" indicator below.
-  const attackDisabled = (rangeEnabled: boolean) =>
-    ability === undefined ||
-    isJammed ||
-    ammoFail ||
-    spendTooLow ||
-    !rangeEnabled;
+  // there's nothing to roll against
+  if (ability === undefined) {
+    blockers.push({
+      key: "ability",
+      message: item.actor
+        ? getTranslated("WeaponAbilityNotFound", { AbilityName: abilityName })
+        : getTranslated("WeaponHasNoOwner"),
+    });
+  }
+  if (isJammed) {
+    blockers.push({
+      key: "jammed",
+      message: getTranslated("WeaponJammedHint"),
+      action: (
+        <Button onClick={item.system.clearJam}>
+          <Translate>Clear jam</Translate>
+        </Button>
+      ),
+    });
+  }
+  if (ammoFail) {
+    blockers.push({
+      key: "ammo",
+      message: getTranslated(
+        item.system.ammo.value > 0 ? "Not enough ammo" : "Out of ammo",
+      ),
+    });
+  }
+  if (spendTooLow) {
+    blockers.push({
+      key: "spend",
+      message: getTranslated(
+        isFullAuto ? "FullAutoNeedsSpendOfMin" : "BurstNeedsSpendOfMin",
+        { Min: String(minimumSpend) },
+      ),
+    });
+  }
 
-  // normal text on a solid backdrop, tinted with the warning/danger color
-  const hintStyle = (color: string) => ({
-    //fontSize: "0.9em",
-    color: theme.colors.text,
-    backgroundColor: `color-mix(in srgb, ${color} 30%, ${theme.colors.bgOpaquePrimary})`,
-    borderLeft: `0.25em solid ${color}`,
-    padding: "0.2em 0.5em",
-    borderRadius: "0.2em",
-  });
+  if (effectiveRange === undefined) {
+    blockers.push({
+      key: "range",
+      message: getTranslated("WeaponHasNoRanges"),
+    });
+  }
+
+  const attackTitle = blockers[0]?.message;
 
   const sheet = item.sheet;
   assertApplicationV2(sheet);
@@ -214,33 +295,10 @@ export const WeaponMain = () => {
           ...theme.panelStyleSecondary,
         }}
       >
-        {isJammed && (
-          <GridFieldStacked>
-            <div
-              css={{
-                ...hintStyle(theme.colors.danger),
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "0.5em",
-              }}
-            >
-              <span css={{ flex: 1 }}>
-                <i className="fas fa-exclamation-circle" />{" "}
-                <Translate>WeaponJammedHint</Translate>
-              </span>
-              <Button
-                css={{ flex: "0 0 auto", width: "auto", margin: 0 }}
-                onClick={item.system.clearJam}
-              >
-                <Translate>Clear jam</Translate>
-              </Button>
-            </div>
-          </GridFieldStacked>
-        )}
         {fireModes.length > 1 && (
           <GridField label="Fire mode">
             <CheckButtons
+              size={1}
               onChange={(index) => setFireMode(fireModes[index])}
               selected={fireModes.indexOf(effectiveFireMode)}
               options={fireModes.map((mode, index) => ({
@@ -260,6 +318,7 @@ export const WeaponMain = () => {
         )}
         <GridField label="Spend">
           <CheckButtons
+            size={1}
             onChange={setSpend}
             selected={spend}
             options={spendOptions}
@@ -272,6 +331,7 @@ export const WeaponMain = () => {
             noTranslate
           >
             <CheckButtons
+              size={1}
               onChange={(value) =>
                 setExtraSpendsByName((spends) => ({
                   ...spends,
@@ -283,10 +343,46 @@ export const WeaponMain = () => {
             />
           </GridField>
         ))}
+        {!isMeleeOnly && (
+          <GridField label="Range">
+            <CheckButtons
+              size={1}
+              onChange={setRangeIndex}
+              selected={effectiveRange ? ranges.indexOf(effectiveRange) : -1}
+              options={ranges.map((range, index) => ({
+                label: range.label,
+                hover: range.fullLabel,
+                value: index,
+                enabled: range.enabled,
+              }))}
+            />
+          </GridField>
+        )}
+        <GridFieldStacked>
+          <Button
+            css={{ lineHeight: 1.5, margin: 0 }}
+            disabled={blockers.length > 0}
+            title={attackTitle}
+            onClick={onAttack}
+          >
+            {getTranslated(
+              isMeleeOnly ? "AttackWithWeaponName" : "FireWeaponName",
+              { WeaponName: item.name },
+            )}
+          </Button>
+        </GridFieldStacked>
+        {/* All the sheet's warnings render here, in one place, just below
+            the attack button so it doesn't move as hints come and go. */}
+        {blockers.map((blocker) => (
+          <GridFieldStacked key={blocker.key}>
+            <WeaponHint severity="danger" action={blocker.action}>
+              {blocker.message}
+            </WeaponHint>
+          </GridFieldStacked>
+        ))}
         {wastedExtraSpend > 0 && (
           <GridFieldStacked>
-            <div css={hintStyle(theme.colors.warning)}>
-              <i className="fas fa-exclamation-triangle" />{" "}
+            <WeaponHint severity="warning">
               <Translate
                 values={{
                   Wasted: String(wastedExtraSpend),
@@ -295,81 +391,9 @@ export const WeaponMain = () => {
               >
                 WastedExtraSpend
               </Translate>
-            </div>
+            </WeaponHint>
           </GridFieldStacked>
         )}
-        {spendTooLow && (
-          <GridFieldStacked>
-            <div css={hintStyle(theme.colors.danger)}>
-              <i className="fas fa-exclamation-circle" />{" "}
-              <Translate values={{ Min: String(minimumSpend) }}>
-                {isFullAuto
-                  ? "FullAutoNeedsSpendOfMin"
-                  : "BurstNeedsSpendOfMin"}
-              </Translate>
-            </div>
-          </GridFieldStacked>
-        )}
-        <GridFieldStacked>
-          <div
-            css={{
-              display: "flex",
-              flexDirection: "row",
-              position: "relative",
-            }}
-          >
-            {(isJammed || ammoFail) && (
-              <div
-                css={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  fontSize: "1.2em",
-                  backgroundColor: theme.colors.accentContrast,
-                  color: theme.colors.accent,
-                  padding: "0 1em",
-                }}
-              >
-                <Translate>
-                  {isJammed
-                    ? "Jammed"
-                    : item.system.ammo.value > 0
-                      ? "Not enough ammo"
-                      : "Out of ammo"}
-                </Translate>
-              </div>
-            )}
-            <Button
-              css={{ lineHeight: 1, flex: 1 }}
-              disabled={attackDisabled(item.system.isPointBlank)}
-              onClick={onPointBlank}
-            >
-              <Translate>Point Blank</Translate>
-            </Button>
-            <Button
-              css={{ lineHeight: 1, flex: 1 }}
-              disabled={attackDisabled(item.system.isCloseRange)}
-              onClick={onCloseRange}
-            >
-              <Translate>Close Range</Translate>
-            </Button>
-            <Button
-              css={{ lineHeight: 1, flex: 1 }}
-              disabled={attackDisabled(item.system.isNearRange)}
-              onClick={onNearRange}
-            >
-              <Translate>Near Range</Translate>
-            </Button>
-            <Button
-              css={{ lineHeight: 1, flex: 1 }}
-              disabled={attackDisabled(item.system.isLongRange)}
-              onClick={onLongRange}
-            >
-              <Translate>Long Range</Translate>
-            </Button>
-          </div>
-        </GridFieldStacked>
       </InputGrid>
       <InputGrid
         css={{
@@ -429,8 +453,7 @@ export const WeaponMain = () => {
                   {abilityName}
                   <span
                     css={{
-                      background: theme.colors.danger,
-                      color: theme.colors.accentContrast,
+                      ...getWeaponHintColors(theme, "danger"),
                       display: "inline-block",
                       padding: "0 0.2em",
                       margin: "0 0.2em",

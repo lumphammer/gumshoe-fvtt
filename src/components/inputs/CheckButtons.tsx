@@ -39,8 +39,16 @@ export const CheckButtons = ({
         flexDirection: "row",
         gap: "0.3em",
         lineHeight: size,
+        position: "relative",
         "input[type=radio]": {
-          display: "none",
+          // hidden visually, but still focusable, so the group works from the
+          // keyboard (tab in, arrow keys to change)
+          position: "absolute",
+          opacity: 0,
+          width: 1,
+          height: 1,
+          margin: 0,
+          pointerEvents: "none",
           "+label": {
             padding: "0",
             flex: 1,
@@ -54,6 +62,10 @@ export const CheckButtons = ({
             ":hover": {
               textShadow: `0 0 0.3em ${theme.colors.glow}`,
             },
+          },
+          "&:focus-visible+label": {
+            outline: `2px solid ${theme.colors.accent}`,
+            outlineOffset: "1px",
           },
           "&:checked+label": {
             border: "2px inset white",
@@ -83,7 +95,7 @@ export const CheckButtons = ({
               onChange={onChange}
               disabled={!enabled} //
             />
-            <label htmlFor={id} tabIndex={0} title={hover}>
+            <label htmlFor={id} title={hover}>
               {label}
             </label>
           </Fragment>
