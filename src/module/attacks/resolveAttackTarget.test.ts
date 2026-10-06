@@ -156,6 +156,22 @@ describe("resolveAttackTarget", () => {
     expect(shot({}, {}, false)).toBe(0);
   });
 
+  it("resolves applied damage from the Health it was applied to", () => {
+    // 6 damage leaves them at 0, Hurt, so gunfire adds 6; once that is
+    // applied, their live Health is -6
+    const result = resolveAttackTarget(
+      makeAttack(),
+      makeTarget({
+        damageRolls: [{ die: 6, total: 6 }],
+        applied: { previousHealth: 6, newHealth: -6 },
+      }),
+      { ...human, health: -6 },
+      options,
+    );
+    expect(result.damage?.steps[0].gunfireExtra).toBe(6);
+    expect(result.damage?.finalHealth).toBe(-6);
+  });
+
   it("prefers the armor override to the armor stat", () => {
     const result = resolveAttackTarget(
       makeAttack(),
