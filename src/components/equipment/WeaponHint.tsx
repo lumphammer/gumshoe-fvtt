@@ -38,7 +38,7 @@ export const getWeaponHintColors = (
  * The weapon sheet's one way of showing a problem: normal text on a solid
  * backdrop tinted with the theme's danger or warning colour, with a matching
  * bar on the left. Hints always appear in the same place in the sheet, just
- * below the range buttons, so the buttons don't move as hints come and go.
+ * below the attack button, so it doesn't move as hints come and go.
  */
 export const WeaponHint = ({ severity, children, action }: WeaponHintProps) => {
   const theme = useContext(ThemeContext);

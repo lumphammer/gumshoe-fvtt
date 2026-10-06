@@ -44,3 +44,22 @@ export function getTranslatedHtml(
     ),
   );
 }
+
+/**
+ * Like `getTranslated`, but when the current language has no translation for
+ * `text`, uses the translation of `fallback` instead of the English for
+ * `text`. For new variants of existing strings (e.g. short forms), so other
+ * languages keep their existing translation until a translator gets to it.
+ */
+export function getTranslatedOr(
+  text: string,
+  fallback: string,
+  values: Record<string, string> = {},
+) {
+  assertGame(game);
+  const prefixed = `${constants.systemId}.${Case.pascal(text)}`;
+  return getTranslated(
+    game.i18n.has(prefixed, false) ? text : fallback,
+    values,
+  );
+}

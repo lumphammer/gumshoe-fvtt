@@ -7,7 +7,7 @@ import {
 } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { getTranslated } from "../../functions/getTranslated";
+import { getTranslated, getTranslatedOr } from "../../functions/getTranslated";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isPCActor } from "../../module/actors/pc";
@@ -66,6 +66,7 @@ export const WeaponMain = () => {
   const [spend, setSpend] = useState(0);
   const [bonusPool, setBonusPool] = useState(0);
   const [fireMode, setFireMode] = useState<FireMode>("single");
+  const [rangeIndex, setRangeIndex] = useState(0);
   // spends from other abilities on full-auto, by ability name
   const [extraSpendsByName, setExtraSpendsByName] = useState<
     Record<string, number>
@@ -137,7 +138,49 @@ export const WeaponMain = () => {
     item.system.jammed;
   const spendTooLow = totalSpend < minimumSpend;
 
-  const attackAt = (rangeName: string, rangeDamage: number) => () => {
+  const ranges = [
+    {
+      name: "point blank",
+      label: getTranslatedOr("PointBlankShort", "Point Blank"),
+      fullLabel: getTranslated("Point Blank"),
+      enabled: item.system.isPointBlank,
+      damage: item.system.pointBlankDamage,
+    },
+    {
+      name: "close range",
+      label: getTranslatedOr("CloseRangeShort", "Close Range"),
+      fullLabel: getTranslated("Close Range"),
+      enabled: item.system.isCloseRange,
+      damage: item.system.closeRangeDamage,
+    },
+    {
+      name: "near range",
+      label: getTranslatedOr("NearRangeShort", "Near Range"),
+      fullLabel: getTranslated("Near Range"),
+      enabled: item.system.isNearRange,
+      damage: item.system.nearRangeDamage,
+    },
+    {
+      name: "long range",
+      label: getTranslatedOr("LongRangeShort", "Long Range"),
+      fullLabel: getTranslated("Long Range"),
+      enabled: item.system.isLongRange,
+      damage: item.system.longRangeDamage,
+    },
+  ];
+  const enabledRanges = ranges.filter((range) => range.enabled);
+  // the picked range can be switched off in the config tab
+  const effectiveRange = ranges[rangeIndex]?.enabled
+    ? ranges[rangeIndex]
+    : enabledRanges[0];
+  // melee weapons only have point blank, so there's nothing to pick
+  const isMeleeOnly =
+    enabledRanges.length === 1 && enabledRanges[0] === ranges[0];
+
+  const onAttack = () => {
+    if (effectiveRange === undefined) {
+      return;
+    }
     void performAttack({
       spend,
       bonusPool,
@@ -147,13 +190,12 @@ export const WeaponMain = () => {
       weapon: item,
       extraSpends,
       resetExtraSpends: () => setExtraSpendsByName({}),
-    })({ rangeName, rangeDamage, fireMode: effectiveFireMode });
+    })({
+      rangeName: effectiveRange.name,
+      rangeDamage: effectiveRange.damage,
+      fireMode: effectiveFireMode,
+    });
   };
-
-  const onPointBlank = attackAt("point blank", item.system.pointBlankDamage);
-  const onCloseRange = attackAt("close range", item.system.closeRangeDamage);
-  const onNearRange = attackAt("near range", item.system.nearRangeDamage);
-  const onLongRange = attackAt("long range", item.system.longRangeDamage);
 
   const weaponActor = item.actor;
 
@@ -189,8 +231,8 @@ export const WeaponMain = () => {
     });
   }, [abilityName, item.actor]);
 
-  // everything which stops an attack, shown as hints below the range buttons;
-  // the first one is also the disabled buttons' tooltip
+  // everything which stops an attack, shown as hints below the attack button;
+  // the first one is also the disabled attack button's tooltip
   const blockers: { key: string; message: string; action?: ReactNode }[] = [];
   // the configured ability can have been deleted or renamed, in which case
   // there's nothing to roll against
@@ -231,8 +273,13 @@ export const WeaponMain = () => {
     });
   }
 
-  const attackDisabled = (rangeEnabled: boolean) =>
-    blockers.length > 0 || !rangeEnabled;
+  if (effectiveRange === undefined) {
+    blockers.push({
+      key: "range",
+      message: getTranslated("WeaponHasNoRanges"),
+    });
+  }
+
   const attackTitle = blockers[0]?.message;
 
   const sheet = item.sheet;
@@ -251,6 +298,7 @@ export const WeaponMain = () => {
         {fireModes.length > 1 && (
           <GridField label="Fire mode">
             <CheckButtons
+              size={1}
               onChange={(index) => setFireMode(fireModes[index])}
               selected={fireModes.indexOf(effectiveFireMode)}
               options={fireModes.map((mode, index) => ({
@@ -270,6 +318,7 @@ export const WeaponMain = () => {
         )}
         <GridField label="Spend">
           <CheckButtons
+            size={1}
             onChange={setSpend}
             selected={spend}
             options={spendOptions}
@@ -282,6 +331,7 @@ export const WeaponMain = () => {
             noTranslate
           >
             <CheckButtons
+              size={1}
               onChange={(value) =>
                 setExtraSpendsByName((spends) => ({
                   ...spends,
@@ -293,49 +343,36 @@ export const WeaponMain = () => {
             />
           </GridField>
         ))}
+        {!isMeleeOnly && (
+          <GridField label="Range">
+            <CheckButtons
+              size={1}
+              onChange={setRangeIndex}
+              selected={effectiveRange ? ranges.indexOf(effectiveRange) : -1}
+              options={ranges.map((range, index) => ({
+                label: range.label,
+                hover: range.fullLabel,
+                value: index,
+                enabled: range.enabled,
+              }))}
+            />
+          </GridField>
+        )}
         <GridFieldStacked>
-          <div
-            css={{
-              display: "flex",
-              flexDirection: "row",
-            }}
+          <Button
+            css={{ lineHeight: 1.5, margin: 0 }}
+            disabled={blockers.length > 0}
+            title={attackTitle}
+            onClick={onAttack}
           >
-            <Button
-              css={{ lineHeight: 1, flex: 1 }}
-              disabled={attackDisabled(item.system.isPointBlank)}
-              title={attackTitle}
-              onClick={onPointBlank}
-            >
-              <Translate>Point Blank</Translate>
-            </Button>
-            <Button
-              css={{ lineHeight: 1, flex: 1 }}
-              disabled={attackDisabled(item.system.isCloseRange)}
-              title={attackTitle}
-              onClick={onCloseRange}
-            >
-              <Translate>Close Range</Translate>
-            </Button>
-            <Button
-              css={{ lineHeight: 1, flex: 1 }}
-              disabled={attackDisabled(item.system.isNearRange)}
-              title={attackTitle}
-              onClick={onNearRange}
-            >
-              <Translate>Near Range</Translate>
-            </Button>
-            <Button
-              css={{ lineHeight: 1, flex: 1 }}
-              disabled={attackDisabled(item.system.isLongRange)}
-              title={attackTitle}
-              onClick={onLongRange}
-            >
-              <Translate>Long Range</Translate>
-            </Button>
-          </div>
+            {getTranslated(
+              isMeleeOnly ? "AttackWithWeaponName" : "FireWeaponName",
+              { WeaponName: item.name },
+            )}
+          </Button>
         </GridFieldStacked>
         {/* All the sheet's warnings render here, in one place, just below
-            the range buttons so the buttons don't move as hints come and go. */}
+            the attack button so it doesn't move as hints come and go. */}
         {blockers.map((blocker) => (
           <GridFieldStacked key={blocker.key}>
             <WeaponHint severity="danger" action={blocker.action}>
