@@ -283,9 +283,6 @@ export const WeaponMain = () => {
 
   const attackTitle = blockers[0]?.message;
 
-  const sheet = item.sheet;
-  assertApplicationV2(sheet);
-
   return (
     <div css={{ ...absoluteCover, display: "flex", flexDirection: "column" }}>
       <InputGrid
@@ -448,8 +445,14 @@ export const WeaponMain = () => {
             <span css={{ display: "inline-block", paddingTop: "0.3em" }}>
               {/* Link to ability, if it exists */}
               {ability && (
-                <a onClick={() => sheet.render({ force: true })}>
-                  {ability?.name}{" "}
+                <a
+                  onClick={() => {
+                    const sheet = ability.sheet;
+                    assertApplicationV2(sheet);
+                    void sheet.render({ force: true });
+                  }}
+                >
+                  {ability.name}{" "}
                 </a>
               )}
               {/* Show "Not Found" if ability doesn't exist */}
