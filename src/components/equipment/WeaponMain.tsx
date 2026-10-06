@@ -137,6 +137,7 @@ export const WeaponMain = () => {
     settings.useShotDryAndJams.get() &&
     item.system.jammed;
   const spendTooLow = totalSpend < minimumSpend;
+  const spendLabel = extraSpends.length > 0 ? ability?.name : undefined;
 
   const ranges = [
     {
@@ -316,7 +317,8 @@ export const WeaponMain = () => {
             </span>
           </GridField>
         )}
-        <GridField label="Spend">
+        {/* alongside other abilities' spends, name the ability being spent */}
+        <GridField label={spendLabel ?? getTranslated("Spend")} noTranslate>
           <CheckButtons
             size={1}
             onChange={setSpend}
