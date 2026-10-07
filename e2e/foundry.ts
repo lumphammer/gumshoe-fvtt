@@ -333,7 +333,11 @@ export async function createSceneWithTokens(page: Page, actorIds: string[]) {
       }),
     );
     const created = await scene.createEmbeddedDocuments("Token", tokens);
-    return created.map((token) => token.id);
+    // match them up by actor: they don't always come back in the order they
+    // were asked for
+    return actorIds.map(
+      (actorId) => created.find((token) => token.actorId === actorId)!.id,
+    );
   }, actorIds);
 }
 
