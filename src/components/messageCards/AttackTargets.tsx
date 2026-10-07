@@ -323,6 +323,9 @@ const AttackTargetRow = ({
             <select
               value={target.cover}
               onChange={onChangeCover}
+              aria-label={getTranslated("CoverForTokenName", {
+                TokenName: actor?.name ?? target.name,
+              })}
               css={{ width: "100%" }}
             >
               {(Object.keys(coverText) as Cover[]).map((cover) => (

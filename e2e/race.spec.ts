@@ -43,32 +43,29 @@ test.fixme("two people editing one attack card at once", async ({
 
   const playerCard = lastChatMessage(player);
   const gmCard = lastChatMessage(page);
-  await expect(playerCard.locator("select")).toHaveCount(2);
-  await expect(gmCard.locator("select")).toHaveCount(2);
+  await expect(playerCard.getByLabel("Cover for Cultist 1")).toBeVisible();
+  await expect(gmCard.getByLabel("Cover for Cultist 2")).toBeVisible();
 
   // the player changes the first target's cover, and the GM the second's, at
   // the same moment (both pages wait for the same time, then change it)
   const at = Date.now() + 1000;
   const changeCoverAt = async (
     card: typeof gmCard,
-    index: number,
+    tokenName: string,
     cover: string,
   ) =>
-    card
-      .locator("select")
-      .nth(index)
-      .evaluate(
-        async (select: HTMLSelectElement, { at, cover }) => {
-          while (Date.now() < at) await new Promise((r) => setTimeout(r, 1));
-          // set it the way React notices: through the prototype's setter
-          Reflect.set(HTMLSelectElement.prototype, "value", cover, select);
-          select.dispatchEvent(new Event("change", { bubbles: true }));
-        },
-        { at, cover },
-      );
+    card.getByLabel(`Cover for ${tokenName}`).evaluate(
+      async (select: HTMLSelectElement, { at, cover }) => {
+        while (Date.now() < at) await new Promise((r) => setTimeout(r, 1));
+        // set it the way React notices: through the prototype's setter
+        Reflect.set(HTMLSelectElement.prototype, "value", cover, select);
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+      },
+      { at, cover },
+    );
   await Promise.all([
-    changeCoverAt(playerCard, 0, "exposed"),
-    changeCoverAt(gmCard, 1, "full"),
+    changeCoverAt(playerCard, "Cultist 1", "exposed"),
+    changeCoverAt(gmCard, "Cultist 2", "full"),
   ]);
   await expect
     .poll(() =>
