@@ -65,7 +65,7 @@ export const EquipmentConfig = () => {
                 gridArea: "cog",
               }}
               onClick={async () => {
-                await navigator.clipboard.writeText(item.system.categoryId);
+                await game.clipboard?.copyPlainText(item.system.categoryId);
                 ui.notifications?.info(
                   `Copied category ID "${item.system.categoryId}" to clipboard`,
                 );
