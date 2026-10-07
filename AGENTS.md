@@ -25,6 +25,14 @@ translations, adding fields and settings, releases).
 - To force dice in testing: `CONFIG.Dice.randomUniform = () => 0.01` (rolls
   6s), `0.99` (1s); `delete CONFIG.Dice.randomUniform` to undo.
 
+## Data models
+
+- A schema field's object or array `initial` must be a function
+  (`initial: () => ({})`, not `initial: {}`). Foundry uses a plain `initial`
+  as the new document's source value, uncloned, and `updateSource` merges into
+  it in place, so changes made to one document's source leak into every later
+  document of that type.
+
 ## Translations
 
 - `<Translate>Some text</Translate>` and `getTranslated("Some text")` look up

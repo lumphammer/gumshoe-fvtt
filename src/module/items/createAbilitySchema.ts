@@ -78,7 +78,7 @@ export const createAbilitySchema = () => ({
     {
       nullable: false,
       required: true,
-      initial: [],
+      initial: () => [],
     },
   ),
   specialities: new ArrayField(

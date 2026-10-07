@@ -60,7 +60,7 @@ export const pcSchema = {
   }),
   hiddenShortNotes: new ArrayField(new StringField(), {
     nullable: false,
-    initial: [],
+    initial: () => [],
     required: true,
   }),
 

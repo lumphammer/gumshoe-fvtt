@@ -62,9 +62,9 @@ export const createStatsField = () =>
     {
       nullable: false,
       required: true,
-      initial: {
+      initial: () => ({
         hitThreshold: 3,
-      },
+      }),
       validateKey: (key: unknown): key is string => {
         return typeof key === "string";
       },

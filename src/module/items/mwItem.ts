@@ -31,7 +31,7 @@ export const mwItemSchema = {
   ranges: new ArrayField(new NumberField({ nullable: false, required: true }), {
     nullable: false,
     required: true,
-    initial: [0, 0, 0, 0],
+    initial: () => [0, 0, 0, 0],
   }),
 };
 
