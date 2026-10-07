@@ -22,20 +22,14 @@ any page, so each one is also a smoke test of whatever it touches.
 - Typing into fields that save as you type; personal details; the party
   sheet; cards; the journal HTML editor; quick Health changes; PC tokens
   being linked.
+- What players can and can't do: what they see on attack cards (Health only
+  with Observer permission), not changing others' cards, the GM-only settings
+  menu and NPC GM notes, read-only sheets at Observer (every control on PC,
+  NPC and item sheets, poked), and the cut-down sheets at Limited.
 
 ## To do
 
 Roughly in order of value.
-
-### What players can and can't do
-
-- Players see a target's Hit Threshold and whether they hit, but Health
-  numbers only with Observer permission on the target. Everyone sees the
-  wound state.
-- Players can't edit (or apply damage from) someone else's attack card.
-- The system settings menu is GM-only.
-- Actor and item sheets at Limited and Observer permission: they render, and
-  can't be edited.
 
 ### Token bars and wound states
 
