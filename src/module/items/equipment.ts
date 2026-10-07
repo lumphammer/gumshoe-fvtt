@@ -51,13 +51,17 @@ export class EquipmentModel extends TypeDataModel<
     return equipmentSchema;
   }
 
-  static migrateData(source) {
+  static migrateData(source, options?: { partial?: boolean }) {
     migrateValue(source, "notes", maybeNotesObjectToString);
+    // update deltas come through here too (with `partial: true`), and one that
+    // doesn't mention the category mustn't be given the fallback
     migrateCategoryToCategoryId(
       source,
-      () => Object.keys(settings.equipmentCategories.get())[0] ?? "",
+      options?.partial
+        ? undefined
+        : () => Object.keys(settings.equipmentCategories.get())[0] ?? "",
     );
-    return super.migrateData(source);
+    return super.migrateData(source, options);
   }
 
   setCategoryId = async (categoryId: string): Promise<void> => {

@@ -69,4 +69,21 @@ describe("EquipmentModel.migrateData", () => {
     expect(source).toEqual({ categoryId: "custom" });
     expect(mocks.equipmentCategories.get).toHaveBeenCalledOnce();
   });
+
+  it("leaves the category alone in a partial update", () => {
+    const source: Record<string, unknown> = { fields: { nutrition: 3 } };
+
+    EquipmentModel.migrateData(source, { partial: true });
+
+    expect(source).toEqual({ fields: { nutrition: 3 } });
+    expect(mocks.equipmentCategories.get).not.toHaveBeenCalled();
+  });
+
+  it("still renames a legacy category in a partial update", () => {
+    const source: Record<string, unknown> = { category: "weapons" };
+
+    EquipmentModel.migrateData(source, { partial: true });
+
+    expect(source).toEqual({ categoryId: "weapons" });
+  });
 });
