@@ -36,7 +36,10 @@ const equipmentSchema = {
   fields: createRecordField<Record<string, string | number | boolean>>({
     nullable: false,
     required: true,
-    initial: {},
+    // a function, so each item gets its own object: Foundry uses a plain
+    // `initial` as the source value itself, and `updateSource` merges into it
+    // in place, so a shared `{}` would collect every new item's fields
+    initial: () => ({}),
   }),
 };
 

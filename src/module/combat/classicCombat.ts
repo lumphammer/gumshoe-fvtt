@@ -40,14 +40,14 @@ const turnInfoField = new SchemaField(
   {
     nullable: false,
     required: true,
-    initial: {},
+    initial: () => ({}),
   },
 );
 
 const turnArrayField = new ArrayField(turnInfoField, {
   nullable: false,
   required: true,
-  initial: [],
+  initial: () => [],
 });
 
 const roundInfoField = new SchemaField(
@@ -66,7 +66,7 @@ export const classicCombatSchema = {
   rounds: new ArrayField(roundInfoField, {
     nullable: false,
     required: true,
-    initial: [{ turns: [], turnIndex: null }],
+    initial: () => [{ turns: [], turnIndex: null }],
   }),
 };
 

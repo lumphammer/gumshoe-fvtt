@@ -26,9 +26,13 @@ export const turnPassingCombatantSchema = {
           initial: 0,
         }),
       },
-      { initial: { turnsRemaining: 0 }, nullable: true, required: false },
+      {
+        initial: () => ({ turnsRemaining: 0 }),
+        nullable: true,
+        required: false,
+      },
     ),
-    { initial: [], nullable: false, required: true },
+    { initial: () => [], nullable: false, required: true },
   ),
 };
 
