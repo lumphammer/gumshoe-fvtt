@@ -26,8 +26,9 @@ export default defineConfig({
   globalSetup: "./e2e/globalSetup.ts",
   // Foundry takes a few seconds to load a world
   timeout: 60_000,
-  // global setup has no timeout of its own
-  globalTimeout: 10 * 60_000,
+  // a backstop for hangs (global setup has no timeout of its own); the whole
+  // suite takes over ten minutes
+  globalTimeout: 30 * 60_000,
   use: {
     ...devices["Desktop Chrome"],
     baseURL: foundryUrl,
