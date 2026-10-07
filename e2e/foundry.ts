@@ -350,6 +350,18 @@ export async function targetTokens(page: Page, tokenIds: string[]) {
   await page.evaluate((tokenIds) => {
     canvas.tokens.setTargets(tokenIds);
   }, tokenIds);
+  // make sure they took, and stayed
+  const byId = (a: string, b: string) => a.localeCompare(b);
+  const wanted = [...tokenIds].sort(byId);
+  const getTargets = async () =>
+    (
+      await page.evaluate(() =>
+        Array.from(game.user.targets).map((token) => token.id ?? ""),
+      )
+    ).sort(byId);
+  await expect.poll(getTargets).toEqual(wanted);
+  await page.waitForTimeout(250);
+  expect(await getTargets(), "targets changed after being set").toEqual(wanted);
 }
 
 /**
