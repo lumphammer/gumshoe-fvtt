@@ -28,6 +28,26 @@ function getResourceName(item: GeneralAbilityItem): string | null {
 }
 
 /**
+ * An update option marking the updates these hooks make to keep abilities and
+ * resources in step, so the other hook doesn't treat them as new changes. On
+ * an actor update it's `true`; on an ability update, it's the resource value
+ * the ability was updated from.
+ *
+ * Without it, each side echoed the other's updates back, so after two quick
+ * changes (e.g. clicking minus twice on Health) the echo of the first, arriving
+ * late, put it back.
+ */
+const resourceSyncOption = "investigatorResourceSync";
+
+/**
+ * Update options carrying `resourceSyncOption`. Foundry passes unknown options
+ * through to the hooks, but fvtt-types doesn't let us declare them.
+ */
+function syncOptions(value: unknown): object {
+  return { [resourceSyncOption]: value };
+}
+
+/**
  * Install the hook handlers for resource update events.
  */
 export function installResourceUpdateHookHandler() {
@@ -53,7 +73,11 @@ export function installResourceUpdateHookHandler() {
         // Ensure the item is a general ability item
         !isGeneralAbilityItem(item) ||
         // Ensure either the pool or the rating has been updated
-        (diff.system?.pool === undefined && diff.system?.rating === undefined)
+        (diff.system?.pool === undefined &&
+          diff.system?.rating === undefined) ||
+        // this came from the resource, which already has this value (unless
+        // the pool had to be clamped)
+        options[resourceSyncOption] === item.system.pool
       ) {
         return;
       }
@@ -65,17 +89,20 @@ export function installResourceUpdateHookHandler() {
       }
 
       // All conditions met, update the actor's resource
-      void item.actor.update({
-        system: {
-          resources: {
-            [resourceName]: {
-              min: item.system.min,
-              value: item.system.pool,
-              max: item.system.rating,
+      void item.actor.update(
+        {
+          system: {
+            resources: {
+              [resourceName]: {
+                min: item.system.min,
+                value: item.system.pool,
+                max: item.system.rating,
+              },
             },
           },
         },
-      });
+        syncOptions(true),
+      );
     },
   );
 
@@ -95,8 +122,9 @@ export function installResourceUpdateHookHandler() {
       !isActiveCharacterActor(actor) ||
       // a resource update is present
       !diff.system ||
-      !("resources" in diff.system)
-      // !diff.system?.resources
+      !("resources" in diff.system) ||
+      // this came from an ability, which already has this value
+      (options as Record<string, unknown>)[resourceSyncOption] === true
     ) {
       return;
     }
@@ -137,11 +165,14 @@ export function installResourceUpdateHookHandler() {
           Math.min(newValue, ability.system.rating),
           ability.system.min,
         );
-        void ability.update({
-          system: {
-            pool: cappedValue,
+        void ability.update(
+          {
+            system: {
+              pool: cappedValue,
+            },
           },
-        });
+          syncOptions(newValue),
+        );
       });
     }
   });
