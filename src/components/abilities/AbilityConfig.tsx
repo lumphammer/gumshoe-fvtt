@@ -15,6 +15,7 @@ import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
+import { Select } from "../inputs/Select";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 import { SituationalModifiersEditor } from "./SituationalModifiersEditor";
@@ -156,7 +157,7 @@ export const AbilityConfig = () => {
       </GridField>
       {item.system.hasSpecialities && (
         <GridField label="Specialities Mode">
-          <select
+          <Select
             value={item.system.specialitiesMode}
             onChange={(t) => {
               void item.system.setSpecialitiesMode(
@@ -168,7 +169,7 @@ export const AbilityConfig = () => {
             <option value="twoThreeFour">
               {getTranslated("+2/+3/+4 per rank")}
             </option>
-          </select>
+          </Select>
         </GridField>
       )}
       <GridField label="Occupational?">
@@ -259,7 +260,7 @@ export const AbilityConfig = () => {
 
       {settingsUseMwStyleAbilities() && isGeneralAbilityItem(item) && (
         <GridField label="Refresh group">
-          <select
+          <Select
             value={item.system.mwRefreshGroup}
             onChange={(e) => {
               void item.system.setMwRefreshGroup(
@@ -270,7 +271,7 @@ export const AbilityConfig = () => {
             <option value="2">{getTranslated("XHours", { x: "2" })}</option>
             <option value="4">{getTranslated("XHours", { x: "4" })}</option>
             <option value="8">{getTranslated("XHours", { x: "8" })}</option>
-          </select>
+          </Select>
         </GridField>
       )}
       <GridField label="Unlocks">

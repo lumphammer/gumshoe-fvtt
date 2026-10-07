@@ -9,6 +9,7 @@ import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
+import { Select } from "../inputs/Select";
 
 export const PersonalDetailMain = () => {
   const { item } = useItemSheetContext();
@@ -38,7 +39,7 @@ export const PersonalDetailMain = () => {
         <AsyncTextInput value={name || ""} onChange={item.setName} />
       </GridField>
       <GridField label="Slot">
-        <select
+        <Select
           value={item.system.slotIndex}
           css={{
             width: "100%",
@@ -55,10 +56,10 @@ export const PersonalDetailMain = () => {
               {option}
             </option>
           ))}
-        </select>
+        </Select>
       </GridField>
       <GridField label="Compendium Pack">
-        <select
+        <Select
           value={item.system.compendiumPackId ?? ""}
           css={{
             width: "100%",
@@ -77,7 +78,7 @@ export const PersonalDetailMain = () => {
               {pack.metadata.label}
             </option>
           ))}
-        </select>
+        </Select>
       </GridField>
       <div
         css={{

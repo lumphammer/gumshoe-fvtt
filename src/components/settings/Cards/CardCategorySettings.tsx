@@ -7,6 +7,7 @@ import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
 import { InputGrid } from "../../inputs/InputGrid";
+import { Select } from "../../inputs/Select";
 import { Translate } from "../../Translate";
 import { DispatchContext, ModifyContext } from "../contexts";
 import { useStateSelector } from "../hooks";
@@ -125,7 +126,7 @@ export const CardCategorySettings = () => {
         />
       </SettingsGridField>
       <SettingsGridField label="GoalOrLimit">
-        <select value={thresholdType} onChange={handleThresholdTypeChange}>
+        <Select value={thresholdType} onChange={handleThresholdTypeChange}>
           <option value="none">
             <Translate>None</Translate>
           </option>
@@ -135,7 +136,7 @@ export const CardCategorySettings = () => {
           <option value="limit">
             <Translate>Limit</Translate>
           </option>
-        </select>
+        </Select>
       </SettingsGridField>
       {thresholdType !== "none" && (
         <SettingsGridField label={thresholdType === "goal" ? "Goal" : "Limit"}>

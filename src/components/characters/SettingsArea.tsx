@@ -12,6 +12,7 @@ import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
+import { Select } from "../inputs/Select";
 import { Translate } from "../Translate";
 
 const defaultThemeIdentifier = "PQkMK35MWjRI2";
@@ -38,7 +39,7 @@ export const SettingArea = () => {
     <>
       <InputGrid>
         <GridField label="Theme">
-          <select
+          <Select
             onChange={onSetTheme}
             value={actor.system.sheetTheme || defaultThemeIdentifier}
           >
@@ -50,7 +51,7 @@ export const SettingArea = () => {
             <option value={defaultThemeIdentifier}>
               {getTranslated("Default")} ({defaultThemeDisplayName})
             </option>
-          </select>
+          </Select>
         </GridField>
 
         {settingsUseTurnPassing() && (

@@ -5,6 +5,7 @@ import type { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
+import { Select } from "../inputs/Select";
 import { CategoryMembershipRow } from "./CategoryMembershipRow";
 
 interface EditCategoryMembershipsProps {
@@ -28,7 +29,7 @@ export const EditCategoryMemberships = ({
     <>
       <InputGrid>
         <GridField label="Appearance">
-          <select
+          <Select
             value={card.system.styleKeyCategoryId ?? ""}
             onChange={handleChangeStyleKeyCategoryId}
           >
@@ -44,7 +45,7 @@ export const EditCategoryMemberships = ({
                   {category.singleName}
                 </option>
               ))}
-          </select>
+          </Select>
         </GridField>
         {categories.map((category, index) => (
           <CategoryMembershipRow

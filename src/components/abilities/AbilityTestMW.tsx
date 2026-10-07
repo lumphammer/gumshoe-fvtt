@@ -8,6 +8,7 @@ import type { MWDifficulty } from "../../types";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
+import { Select } from "../inputs/Select";
 import { Translate } from "../Translate";
 
 export const AbilityTestMW = () => {
@@ -55,7 +56,7 @@ export const AbilityTestMW = () => {
     >
       <InputGrid>
         <GridField label="Difficulty">
-          <select
+          <Select
             css={{ display: "block", width: "100%" }}
             value={difficulty}
             onChange={onChangeDifficulty}
@@ -64,11 +65,11 @@ export const AbilityTestMW = () => {
             <option value={0}>Normal</option>
             <option value={-1}>Hard (-1)</option>
             <option value={-2}>Very Hard (-2)</option>
-          </select>
+          </Select>
         </GridField>
         <GridField label="Boon/levy">
           <div css={{ position: "relative" }}>
-            <select
+            <Select
               css={{ display: "block", width: "100%" }}
               value={boonLevy}
               onChange={onChangeBoonLevy}
@@ -78,7 +79,7 @@ export const AbilityTestMW = () => {
               <option value={0}>0</option>
               <option value={-1}>Levy (-1)</option>
               <option value={-2}>Levy (-2)</option>
-            </select>
+            </Select>
           </div>
         </GridField>
       </InputGrid>

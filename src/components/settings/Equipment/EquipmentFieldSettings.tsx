@@ -6,6 +6,7 @@ import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { assertIsEquipmentFieldType } from "../../../typeAssertions";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
+import { Select } from "../../inputs/Select";
 import { SettingsGridField } from "../SettingsGridField";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Translate } from "../../Translate";
@@ -118,7 +119,7 @@ export const EquipmentFieldSettings = () => {
         onChange={handleChangeId}
       />
       <SettingsGridField label="Type">
-        <select value={field.type} onChange={handleChangeType}>
+        <Select value={field.type} onChange={handleChangeType}>
           <option value="string">
             <Translate>Text</Translate>
           </option>
@@ -128,7 +129,7 @@ export const EquipmentFieldSettings = () => {
           <option value="checkbox">
             <Translate>Toggle</Translate>
           </option>
-        </select>
+        </Select>
       </SettingsGridField>
       {field.type === "number" && (
         <NumberFieldSettings

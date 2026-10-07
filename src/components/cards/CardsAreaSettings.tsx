@@ -1,5 +1,6 @@
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
+import { Select } from "../inputs/Select";
 import { Translate } from "../Translate";
 import type {
   CardsAreaSettings,
@@ -21,7 +22,7 @@ export const CardsAreaSettingsSheet = ({
   return (
     <InputGrid>
       <GridField label="Categories">
-        <select
+        <Select
           value={settings.category}
           onChange={(e) => {
             onChangeSettings({
@@ -35,10 +36,10 @@ export const CardsAreaSettingsSheet = ({
           <option value="categorized">
             <Translate>Separate</Translate>
           </option>
-        </select>
+        </Select>
       </GridField>
       <GridField label="Sort order">
-        <select
+        <Select
           value={settings.sortOrder}
           onChange={(e) => {
             onChangeSettings({
@@ -58,10 +59,10 @@ export const CardsAreaSettingsSheet = ({
           <option value="ztoa">
             <Translate>Z — A</Translate>
           </option>
-        </select>
+        </Select>
       </GridField>
       <GridField label="View mode">
-        <select
+        <Select
           value={settings.viewMode}
           onChange={(e) => {
             onChangeSettings({
@@ -75,10 +76,10 @@ export const CardsAreaSettingsSheet = ({
           <option value="full">
             <Translate>Full</Translate>
           </option>
-        </select>
+        </Select>
       </GridField>
       <GridField label="Column width">
-        <select
+        <Select
           value={settings.columnWidth}
           onChange={(e) => {
             onChangeSettings({
@@ -95,7 +96,7 @@ export const CardsAreaSettingsSheet = ({
           <option value="full">
             <Translate>Full</Translate> width
           </option>
-        </select>
+        </Select>
       </GridField>
     </InputGrid>
   );
