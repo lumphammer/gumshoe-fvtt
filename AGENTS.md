@@ -33,6 +33,8 @@ translations, adding fields and settings, releases).
   `pnpm build` before `pnpm e2e`.
 - Not part of `pnpm check`. Run `pnpm e2e` when a change touches something a
   test covers.
+- Only one run at a time per Foundry: if `pnpm e2e` says another run is using
+  it, the user may be running the tests too. Wait, rather than stopping it.
 
 ## Data models
 

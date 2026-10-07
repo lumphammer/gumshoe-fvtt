@@ -43,6 +43,9 @@ password. If the data folder isn't here, the system must already be installed.
 - The tests share that one world and run one at a time. Each test should
   create what it needs (with its own names) rather than relying on what
   earlier tests left behind.
+- Only one run can use a Foundry at a time ([`runLock.ts`](runLock.ts)): a
+  second run stops straight away rather than trampling the first (logging
+  its Gamemaster out, resetting its world, clearing its `test-results/`).
 - Import `test` and `expect` from [`foundry.ts`](foundry.ts): its `page`
   starts in the game, ready.
 - Set up data through Foundry's API in `page.evaluate` (e.g.

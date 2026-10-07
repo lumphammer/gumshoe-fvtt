@@ -1,6 +1,18 @@
 import { defineConfig, devices } from "@playwright/test";
 
-import { foundryUrl, gmStorageStatePath } from "./e2e/config.ts";
+import {
+  foundryDataPath,
+  foundryUrl,
+  gmStorageStatePath,
+} from "./e2e/config.ts";
+import { takeRunLock } from "./e2e/runLock.ts";
+
+// Only one run at a time per Foundry. Taken here, not in global setup,
+// because Playwright clears `test-results/` before that. (Workers load this
+// file too; they're part of the run that holds the lock.)
+if (process.env["TEST_WORKER_INDEX"] === undefined) {
+  takeRunLock(foundryUrl, foundryDataPath);
+}
 
 // Browser tests against a real Foundry server. See e2e/README.md.
 export default defineConfig({
