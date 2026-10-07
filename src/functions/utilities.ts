@@ -1,5 +1,5 @@
 import * as constants from "../constants";
-import type { ApplyAttackDamageArgs, SystemSocketAction } from "../types";
+import type { EditAttackArgs, SystemSocketAction } from "../types";
 import { dispatchSystemSocketActionToHooks } from "./systemSocketActions";
 
 interface NameHaver {
@@ -192,10 +192,10 @@ export function requestTurnPass(combatantId: string | null | undefined) {
 }
 
 /**
- * request the GM's client to apply (or undo) attack damage to a target
+ * request the GM's client to make a change to an attack card
  */
-export function requestApplyAttackDamage(args: ApplyAttackDamageArgs) {
-  broadcastSystemSocketAction({ type: "applyAttackDamage", ...args });
+export function requestEditAttack(args: EditAttackArgs) {
+  broadcastSystemSocketAction({ type: "editAttack", ...args });
 }
 
 export function requestNextTurn() {

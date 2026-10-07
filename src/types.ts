@@ -1,6 +1,7 @@
 import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 
 import type * as constants from "./constants";
+import type { AttackEdit } from "./module/attacks/attackEdits";
 // SOCKET STUFF ----------------------------------------------------------------
 
 /**
@@ -13,13 +14,13 @@ export type RequestTurnPassArgs = {
 };
 
 /**
- * args passed to the `applyAttackDamage` hook. Players send this to get the
- * GM's client to apply (or undo) damage to a token they don't own.
+ * args passed to the `editAttack` hook. Everyone but the active GM sends
+ * this to get the GM's client to make a change to an attack card (see
+ * `editAttack`).
  */
-export type ApplyAttackDamageArgs = {
+export type EditAttackArgs = {
   messageId: string;
-  targetId: string;
-  undo: boolean;
+  edit: AttackEdit;
 };
 
 export type SystemSocketAction =
@@ -31,8 +32,8 @@ export type SystemSocketAction =
       combatantId: string;
     }
   | ({
-      type: "applyAttackDamage";
-    } & ApplyAttackDamageArgs);
+      type: "editAttack";
+    } & EditAttackArgs);
 
 // FOUNDRY STUFF ---------------------------------------------------------------
 

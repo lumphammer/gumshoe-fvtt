@@ -240,7 +240,9 @@ Decisions made while implementing Phase 1:
   resulting wound state.
 - Only the message author (or a GM) can edit targets or apply/undo damage.
   If they don't own the target, the active GM's client does it via socket,
-  after checking the requester is the author or a GM.
+  after checking the requester is the author or a GM. (Later, every card
+  edit moved to the GM's client, one at a time per card, so two people
+  editing a card at once can't lose an edit: see `editAttack`.)
 
 ### Phase 2 — Lethality
 

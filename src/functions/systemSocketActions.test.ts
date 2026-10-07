@@ -14,15 +14,23 @@ it.each([
   { type: "requestTurnPass", combatantId: "" },
   { type: "requestTurnPass", combatantId: 42 },
   { type: "requestTurnPass", combatantId: "abc", extra: true },
-  { type: "applyAttackDamage", messageId: "m", targetId: "t" },
-  { type: "applyAttackDamage", messageId: "", targetId: "t", undo: false },
-  { type: "applyAttackDamage", messageId: "m", targetId: "", undo: false },
-  { type: "applyAttackDamage", messageId: "m", targetId: "t", undo: "no" },
+  // the old form, before every change went through editAttack
+  { type: "applyAttackDamage", messageId: "m", targetId: "t", undo: false },
+  { type: "editAttack", messageId: "m" },
   {
-    type: "applyAttackDamage",
+    type: "editAttack",
+    messageId: "",
+    edit: { kind: "removeTarget", targetId: "t" },
+  },
+  {
+    type: "editAttack",
     messageId: "m",
-    targetId: "t",
-    undo: false,
+    edit: { kind: "applyDamage", targetId: "t", undo: "no" },
+  },
+  {
+    type: "editAttack",
+    messageId: "m",
+    edit: { kind: "removeTarget", targetId: "t" },
     damage: 99,
   },
 ])("rejects an invalid system socket action: %j", (action) => {
@@ -32,7 +40,11 @@ it.each([
 it.each([
   { type: "requestNextTurn" },
   { type: "requestTurnPass", combatantId: "abc" },
-  { type: "applyAttackDamage", messageId: "m", targetId: "t", undo: true },
+  {
+    type: "editAttack",
+    messageId: "m",
+    edit: { kind: "applyDamage", targetId: "t", undo: true },
+  },
 ])("accepts the system socket action: %j", (action) => {
   expect(isSystemSocketAction(action)).toBe(true);
 });
@@ -41,7 +53,7 @@ it("dispatches only the requested command with the authenticated user ID", () =>
   const handlers = {
     requestNextTurn: vi.fn(),
     requestTurnPass: vi.fn(),
-    applyAttackDamage: vi.fn(),
+    editAttack: vi.fn(),
   };
 
   dispatchSystemSocketAction(
@@ -57,26 +69,26 @@ it("dispatches only the requested command with the authenticated user ID", () =>
   expect(handlers.requestNextTurn).not.toHaveBeenCalled();
 });
 
-it("dispatches an attack damage request without extra properties", () => {
+it("dispatches an attack edit without extra properties", () => {
   const handlers = {
     requestNextTurn: vi.fn(),
     requestTurnPass: vi.fn(),
-    applyAttackDamage: vi.fn(),
+    editAttack: vi.fn(),
+  };
+  const edit = {
+    kind: "applyDamage" as const,
+    targetId: "target-id",
+    undo: false,
   };
 
   dispatchSystemSocketAction(
-    {
-      type: "applyAttackDamage",
-      messageId: "message-id",
-      targetId: "target-id",
-      undo: false,
-    },
+    { type: "editAttack", messageId: "message-id", edit },
     "user-id",
     handlers,
   );
 
-  expect(handlers.applyAttackDamage).toHaveBeenCalledWith(
-    { messageId: "message-id", targetId: "target-id", undo: false },
+  expect(handlers.editAttack).toHaveBeenCalledWith(
+    { messageId: "message-id", edit },
     "user-id",
   );
   expect(handlers.requestTurnPass).not.toHaveBeenCalled();

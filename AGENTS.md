@@ -109,11 +109,14 @@ behind them (the book has errata; the rules summary wins).
   across targets).
 - Damage rolls belong to the attack, not the target (`unusedDamageRolls`), so
   removing and re-adding a target never changes the damage.
-- Applying damage to a token you don't own goes to the active GM over the
-  system socket; apply/undo are serialised per target with
-  `createKeyedQueue`.
-- Card edits are read-modify-write of the whole `system`, so two clients
-  editing one card at once can race. Known, not yet fixed card-wide.
+- Every change to an attack card (cover, targets, damage rolls, walking
+  fire, apply/undo) is an `AttackEdit` (`attackEdits.ts`) made through
+  `editAttack` (`editAttack.ts`). They all run on the active GM's client,
+  one at a time per card, because each is a read-modify-write of the whole
+  `system`; two clients writing at once would lose an edit. Work out
+  anything that depends on the requester (their targets, warnings) before
+  sending, and re-check on the GM's side. Don't write the card any other
+  way.
 - `performAttack` holds a per-weapon lock, re-checks pools and ammo, takes the
   points before rolling, and refunds (relatively) if anything throws.
 

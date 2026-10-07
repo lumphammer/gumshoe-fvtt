@@ -1,6 +1,6 @@
 import * as constants from "../constants";
 import type {
-  ApplyAttackDamageArgs,
+  EditAttackArgs,
   RequestTurnPassArgs,
   SystemSocketAction,
 } from "../types";
@@ -8,10 +8,7 @@ import type {
 export type SystemSocketActionHandlers = {
   requestNextTurn(requestingUserId: string): void;
   requestTurnPass(args: RequestTurnPassArgs, requestingUserId: string): void;
-  applyAttackDamage(
-    args: ApplyAttackDamageArgs,
-    requestingUserId: string,
-  ): void;
+  editAttack(args: EditAttackArgs, requestingUserId: string): void;
 };
 
 export function dispatchSystemSocketAction(
@@ -29,13 +26,9 @@ export function dispatchSystemSocketAction(
         requestingUserId,
       );
       break;
-    case "applyAttackDamage":
-      handlers.applyAttackDamage(
-        {
-          messageId: action.messageId,
-          targetId: action.targetId,
-          undo: action.undo,
-        },
+    case "editAttack":
+      handlers.editAttack(
+        { messageId: action.messageId, edit: action.edit },
         requestingUserId,
       );
       break;
@@ -50,7 +43,7 @@ export function dispatchSystemSocketActionToHooks(
     requestNextTurn: (userId) => Hooks.call(constants.nextTurn, userId),
     requestTurnPass: (args, userId) =>
       Hooks.call(constants.requestTurnPass, args, userId),
-    applyAttackDamage: (args, userId) =>
-      Hooks.call(constants.applyAttackDamage, args, userId),
+    editAttack: (args, userId) =>
+      Hooks.call(constants.editAttack, args, userId),
   });
 }

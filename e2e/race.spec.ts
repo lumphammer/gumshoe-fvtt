@@ -13,13 +13,11 @@ import {
 
 test.use({ canvas: true });
 
-// Known race (see AGENTS.md): card edits are read-modify-write of the whole
-// `system`, so when two clients edit one card at once, one edit can be lost.
-// This reproduces it about one run in three. Turn it on once that's fixed.
-test.fixme("two people editing one attack card at once", async ({
-  page,
-  joinAs,
-}) => {
+// Card edits are each a read-modify-write of the whole `system`, so when two
+// clients wrote a card at once, one edit could be lost (about one run in
+// three of this test). Now they all go through the GM's client, one at a
+// time.
+test("two people editing one attack card at once", async ({ page, joinAs }) => {
   await setSettings(page, { useLethalityAndAutofire: true });
   const {
     pcId,

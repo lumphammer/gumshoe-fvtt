@@ -40,7 +40,7 @@ import { MwItemModel } from "./module/items/mwItem";
 import { PersonalDetailModel } from "./module/items/personalDetail";
 import { WeaponModel } from "./module/items/weapon";
 import { JournalEntryHTMLEditorSheetClass } from "./module/JournalEditorSheetClass";
-import type { ApplyAttackDamageArgs, RequestTurnPassArgs } from "./types";
+import type { EditAttackArgs, RequestTurnPassArgs } from "./types";
 
 // types configuration
 declare module "fvtt-types/configuration" {
@@ -78,8 +78,8 @@ declare module "fvtt-types/configuration" {
       [constants.newNPCPacksUpdated]: (newPacks: string[]) => void;
       [constants.themeHMR]: (themeName: string) => void;
       [constants.nextTurn]: (requestingUserId: string) => void;
-      [constants.applyAttackDamage]: (
-        args: ApplyAttackDamageArgs,
+      [constants.editAttack]: (
+        args: EditAttackArgs,
         requestingUserId: string,
       ) => void;
 
