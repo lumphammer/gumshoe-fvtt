@@ -110,3 +110,68 @@ test("a player takes their turn in a turn-passing combat", async ({
   await expect.poll(() => getCombat(page)).toMatchObject({ current: "Hero" });
   await expect(heroRow).toContainText("0/1");
 });
+
+test("in turn-passing, everyone acts, then a new round gives turns back", async ({
+  page,
+}) => {
+  await setSettings(page, { useTurnPassingInitiative: true });
+  const heroId = await createActor(page, { name: "Hero", type: "pc" });
+  const villainId = await createActor(page, { name: "Villain", type: "npc" });
+  await page.evaluate(async () => {
+    const combat = await Combat.implementation.create({ type: "turnPassing" });
+    await combat!.activate();
+  });
+  await addCombatants(page, [heroId, villainId]);
+  const tracker = await openCombatTracker(page);
+  await tracker.getByRole("button", { name: "Start Combat" }).click();
+
+  const hero = tracker.locator("li", { hasText: "Hero" });
+  const villain = tracker.locator("li", { hasText: "Villain" });
+  await villain.getByTitle("Turn").click();
+  await expect
+    .poll(() => getCombat(page))
+    .toMatchObject({ current: "Villain" });
+  await hero.getByTitle("Turn").click();
+  await expect.poll(() => getCombat(page)).toMatchObject({ current: "Hero" });
+  await expect(hero).toContainText("0/1");
+  await expect(villain).toContainText("0/1");
+  // nobody has turns left, so taking another does nothing
+  await villain.getByTitle("Turn").click();
+  await expect.poll(() => getCombat(page)).toMatchObject({ current: "Hero" });
+
+  await tracker.getByRole("button", { name: "Next Round" }).first().click();
+  await expect.poll(() => getCombat(page)).toMatchObject({ round: 2 });
+  await expect(hero).toContainText("1/1");
+  await expect(villain).toContainText("1/1");
+});
+
+test("a player can't take a turn for a combatant they don't own", async ({
+  page,
+  joinAs,
+}) => {
+  await setSettings(page, { useTurnPassingInitiative: true });
+  const heroId = await createActor(page, { name: "Hero", type: "pc" });
+  const villainId = await createActor(page, { name: "Villain", type: "npc" });
+  const playerId = await createPlayer(page, "Player Three");
+  await giveOwnership(page, heroId, playerId);
+  await page.evaluate(async () => {
+    const combat = await Combat.implementation.create({ type: "turnPassing" });
+    await combat!.activate();
+  });
+  await addCombatants(page, [heroId, villainId]);
+  const tracker = await openCombatTracker(page);
+  await tracker.getByRole("button", { name: "Start Combat" }).click();
+
+  const player = await joinAs("Player Three");
+  const playerTracker = await openCombatTracker(player);
+  const villain = playerTracker.locator("li", { hasText: "Villain" });
+  if ((await villain.getByTitle("Turn").count()) > 0) {
+    await villain.getByTitle("Turn").click();
+  }
+  // give the GM's client time to (not) act on it
+  await page.waitForTimeout(2000);
+  expect(await getCombat(page)).toMatchObject({ current: null });
+  await expect(tracker.locator("li", { hasText: "Villain" })).toContainText(
+    "1/1",
+  );
+});

@@ -59,3 +59,12 @@ export async function goTo(app: Locator, ...labels: string[]) {
     ).toHaveText(label, { ignoreCase: true });
   }
 }
+
+/** Apply a preset in the system settings, and save. */
+export async function applyPreset(page: Page, preset: string) {
+  const app = await openSystemSettings(page);
+  await goTo(app, "Core");
+  await app.getByLabel("System Preset").selectOption({ label: preset });
+  await app.getByRole("button", { name: "Save changes" }).click();
+  await expect(app).toBeHidden();
+}

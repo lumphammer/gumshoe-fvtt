@@ -175,7 +175,12 @@ export async function forceDice(page: Page, face: 1 | 6) {
  */
 export async function createActor(
   page: Page,
-  data: { name: string; type: "pc" | "npc" | "party"; system?: object },
+  data: {
+    name: string;
+    type: "pc" | "npc" | "party";
+    system?: object;
+    prototypeToken?: object;
+  },
 ) {
   const id = await page.evaluate(async (data) => {
     const actor = await Actor.create(data);

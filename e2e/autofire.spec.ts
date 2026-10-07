@@ -193,3 +193,95 @@ test("walking a burst's fire onto another target", async ({ page }) => {
     )
     .toBe(1);
 });
+
+test("a critical hit adds two damage rolls together", async ({ page }) => {
+  await setSettings(page, { useCriticalHits: true });
+  const {
+    pcId,
+    weaponId,
+    npcTokenIds: [cultist],
+  } = await setUpFight(page, { weapon: { ...rifle, fireModes: "single" } });
+  await targetTokens(page, [cultist]);
+  await forceDice(page, 6);
+
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
+  // an unmodified 6, and 6 + 2 beats Hit Threshold 3 by 5
+  await choose(sheet, "Spend", "2");
+  await sheet.getByRole("button", { name: "Fire Weapon" }).click();
+
+  const card = lastChatMessage(page);
+  await expect(card).toContainText("Critical!");
+  await card.getByRole("button", { name: "Apply damage" }).click();
+  // 6 + 6 = 12 damage
+  await expect.poll(() => getTokenHealth(page, cultist)).toBe(-2);
+});
+
+test("Shot Dry empties the weapon and gives a lone target extra dice", async ({
+  page,
+}) => {
+  await setSettings(page, { useShotDryAndJams: true });
+  const {
+    pcId,
+    weaponId,
+    npcTokenIds: [cultist],
+  } = await setUpFight(page, { weapon: rifle });
+  await targetTokens(page, [cultist]);
+  await forceDice(page, 6);
+
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
+  await choose(sheet, "Fire mode", "Full-auto");
+  await choose(sheet, "Firearms", "5");
+  await sheet.getByRole("button", { name: "Fire Weapon" }).click();
+
+  const card = lastChatMessage(page);
+  await expect(card).toContainText("Shot dry");
+  await expect
+    .poll(() => getWeapon(page, pcId, weaponId))
+    .toMatchObject({
+      ammo: 0,
+    });
+  // a lone target gets both extra dice (with more, you choose who does)
+  await expect(card).toContainText("+2 Lethality dice");
+  await card.getByRole("button", { name: "Apply damage" }).click();
+  // three L1 dice of 6 are 11 damage each
+  await expect
+    .poll(() => getTokenHealth(page, cultist))
+    .toBeLessThanOrEqual(-12);
+  await expect(card).toContainText("Dead");
+});
+
+test("with two targets, the shooter chooses who gets Shot Dry's dice", async ({
+  page,
+}) => {
+  await setSettings(page, { useShotDryAndJams: true });
+  const {
+    pcId,
+    weaponId,
+    npcTokenIds: [first, second],
+  } = await setUpFight(page, { weapon: rifle, cultists: 2 });
+  await targetTokens(page, [first, second]);
+  await forceDice(page, 6);
+
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
+  await choose(sheet, "Fire mode", "Full-auto");
+  await choose(sheet, "Firearms", "5");
+  await sheet.getByRole("button", { name: "Fire Weapon" }).click();
+
+  const card = lastChatMessage(page);
+  const chooseFirst = card.getByRole("checkbox", {
+    name: "Give Cultist 1 Shot Dry's extra damage",
+  });
+  const chooseSecond = card.getByRole("checkbox", {
+    name: "Give Cultist 2 Shot Dry's extra damage",
+  });
+  // one chosen target gets both dice. (The boxes only change once the
+  // message has saved, so click and wait rather than `check`.)
+  await chooseFirst.click();
+  await expect(chooseFirst).toBeChecked();
+  await expect(card).toContainText("+2 Lethality dice");
+  // two get one each
+  await chooseSecond.click();
+  await expect(chooseSecond).toBeChecked();
+  await expect(chooseFirst).toBeChecked();
+  await expect(card.getByText("+1 Lethality dice")).toHaveCount(2);
+});

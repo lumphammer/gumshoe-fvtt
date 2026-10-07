@@ -1,0 +1,84 @@
+import { rifle, setUpFight } from "./fight.ts";
+import {
+  createPlayer,
+  expect,
+  forceDice,
+  giveOwnership,
+  lastChatMessage,
+  openSheet,
+  setSettings,
+  targetTokens,
+  test,
+} from "./foundry.ts";
+
+test.use({ canvas: true });
+
+// Known race (see AGENTS.md): card edits are read-modify-write of the whole
+// `system`, so when two clients edit one card at once, one edit can be lost.
+// This reproduces it about one run in three. Turn it on once that's fixed.
+test.fixme("two people editing one attack card at once", async ({
+  page,
+  joinAs,
+}) => {
+  await setSettings(page, { useLethalityAndAutofire: true });
+  const {
+    pcId,
+    weaponId,
+    npcTokenIds: [first, second],
+  } = await setUpFight(page, { weapon: rifle, cultists: 2 });
+  const playerId = await createPlayer(page, "Player Four");
+  await giveOwnership(page, pcId, playerId);
+
+  const player = await joinAs("Player Four");
+  await targetTokens(player, [first, second]);
+  await forceDice(player, 6);
+  const sheet = await openSheet(player, `Actor.${pcId}.Item.${weaponId}`);
+  await sheet.locator("label", { hasText: /^Full-auto$/ }).click();
+  await sheet
+    .locator("label", { hasText: /^Firearms$/ })
+    .locator("xpath=following-sibling::div[1]")
+    .locator("label", { hasText: /^5$/ })
+    .click();
+  await sheet.getByRole("button", { name: "Fire Weapon" }).click();
+
+  const playerCard = lastChatMessage(player);
+  const gmCard = lastChatMessage(page);
+  await expect(playerCard.locator("select")).toHaveCount(2);
+  await expect(gmCard.locator("select")).toHaveCount(2);
+
+  // the player changes the first target's cover, and the GM the second's, at
+  // the same moment (both pages wait for the same time, then change it)
+  const at = Date.now() + 1000;
+  const changeCoverAt = async (
+    card: typeof gmCard,
+    index: number,
+    cover: string,
+  ) =>
+    card
+      .locator("select")
+      .nth(index)
+      .evaluate(
+        async (select: HTMLSelectElement, { at, cover }) => {
+          while (Date.now() < at) await new Promise((r) => setTimeout(r, 1));
+          // set it the way React notices: through the prototype's setter
+          Reflect.set(HTMLSelectElement.prototype, "value", cover, select);
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+        },
+        { at, cover },
+      );
+  await Promise.all([
+    changeCoverAt(playerCard, 0, "exposed"),
+    changeCoverAt(gmCard, 1, "full"),
+  ]);
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        (
+          game.messages.contents.at(-1)!.system as unknown as {
+            targets: { cover: string }[];
+          }
+        ).targets.map((t) => t.cover),
+      ),
+    )
+    .toEqual(["exposed", "full"]);
+});
