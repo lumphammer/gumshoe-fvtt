@@ -158,4 +158,23 @@ export class InvestigatorActor<
     super._onUpdate(changed, options, userId);
     this._updateImmutableData(changed);
   }
+
+  /**
+   * Link new PCs' tokens to the actor, so damage and pool changes on a token
+   * show up on the character sheet. Leaves alone PCs which say otherwise
+   * (e.g. duplicates and imports of unlinked ones).
+   */
+  protected override async _preCreate(
+    data: Actor.CreateData,
+    options: Actor.Database.PreCreateOptions,
+    user: User.Stored,
+  ): Promise<boolean | void> {
+    if (
+      data.type === "pc" &&
+      foundry.utils.getProperty(data, "prototypeToken.actorLink") === undefined
+    ) {
+      this.updateSource({ prototypeToken: { actorLink: true } });
+    }
+    return super._preCreate(data, options, user);
+  }
 }

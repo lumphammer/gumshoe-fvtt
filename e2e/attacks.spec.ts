@@ -106,12 +106,7 @@ test("an NPC's combat and damage bonuses add to its attacks", async ({
     type: "weapon",
     system: knife,
   });
-  const pcId = await createActor(page, {
-    name: "Victim",
-    type: "pc",
-    // a linked token, so damage goes to the actor itself
-    prototypeToken: { actorLink: true },
-  });
+  const pcId = await createActor(page, { name: "Victim", type: "pc" });
   await updateAbility(page, pcId, "Health", { rating: 10, pool: 10 });
   const [, pcTokenId] = await createSceneWithTokens(page, [npcId, pcId]);
   await targetTokens(page, [pcTokenId]);
@@ -126,6 +121,7 @@ test("an NPC's combat and damage bonuses add to its attacks", async ({
   // 6 + damage 0 + range 0 + NPC's 2 + the ability's 0
   await expect(card).toContainText("Damage: 6+0+0+2+0 =8");
   await card.getByRole("button", { name: "Apply damage" }).click();
+  // PCs' tokens are linked, so the damage shows on the actor itself
   await expect
     .poll(() =>
       page.evaluate(
