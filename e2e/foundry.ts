@@ -1,4 +1,9 @@
-import { test as base, expect, type Page } from "@playwright/test";
+import {
+  test as base,
+  expect,
+  type Locator,
+  type Page,
+} from "@playwright/test";
 
 import { foundryUrl } from "./config.ts";
 
@@ -340,4 +345,28 @@ export async function targetTokens(page: Page, tokenIds: string[]) {
   await page.evaluate((tokenIds) => {
     canvas.tokens.setTargets(tokenIds);
   }, tokenIds);
+}
+
+/**
+ * Click every tab in a sheet, including tabs that only appear inside other
+ * tabs, so each one renders at least once.
+ */
+export async function visitEveryTab(sheet: Locator) {
+  const visited = new Set<string>();
+  for (let round = 0; round < 10; round++) {
+    const tabs = sheet.locator(".tab-strip > label");
+    const count = await tabs.count();
+    let clicked = false;
+    for (let i = 0; i < count; i++) {
+      const tab = tabs.nth(i);
+      if (!(await tab.isVisible())) continue;
+      // icon-only tabs have no text
+      const key = (await tab.innerText()) || (await tab.innerHTML());
+      if (visited.has(key)) continue;
+      visited.add(key);
+      await tab.click();
+      clicked = true;
+    }
+    if (!clicked) return;
+  }
 }

@@ -1,30 +1,10 @@
-import type { Locator } from "@playwright/test";
-
-import { createActor, createOwnedItem, openSheet, test } from "./foundry.ts";
-
-/**
- * Click every tab in a sheet, including tabs that only appear inside other
- * tabs, so each one renders at least once.
- */
-async function visitEveryTab(sheet: Locator) {
-  const visited = new Set<string>();
-  for (let round = 0; round < 10; round++) {
-    const tabs = sheet.locator(".tab-strip > label");
-    const count = await tabs.count();
-    let clicked = false;
-    for (let i = 0; i < count; i++) {
-      const tab = tabs.nth(i);
-      if (!(await tab.isVisible())) continue;
-      // icon-only tabs have no text
-      const key = (await tab.innerText()) || (await tab.innerHTML());
-      if (visited.has(key)) continue;
-      visited.add(key);
-      await tab.click();
-      clicked = true;
-    }
-    if (!clicked) return;
-  }
-}
+import {
+  createActor,
+  createOwnedItem,
+  openSheet,
+  test,
+  visitEveryTab,
+} from "./foundry.ts";
 
 for (const type of ["pc", "npc", "party"] as const) {
   test(`${type} sheet renders every tab`, async ({ page }) => {

@@ -1,64 +1,5 @@
-import type { Locator, Page } from "@playwright/test";
-
 import { expect, openSheet, setSettings, test } from "./foundry.ts";
-
-/** Open the system's settings app. Returns a locator for it. */
-async function openSystemSettings(page: Page) {
-  const id = await page.evaluate(async () => {
-    const menu = game.settings.menus.get(
-      "investigator.investigatorSettingsMenu",
-    )!;
-    const app = new menu.type() as foundry.applications.api.ApplicationV2;
-    await app.render({ force: true });
-    return app.id;
-  });
-  const app = page.locator(`[id="${id}"]`);
-  await expect(app.getByText("Settings Home")).toBeVisible();
-  return app;
-}
-
-/**
- * Mark the menu links in the settings page that's on top (pages slide in
- * over their parents, which stay underneath) with `data-e2e-link`, numbered
- * from 0. Returns how many there are.
- */
-async function markMenuLinks(app: Locator) {
-  // let any page finish sliding in
-  await app.page().waitForTimeout(400);
-  return app.evaluate((app) => {
-    const links = Array.from(
-      app.querySelectorAll<HTMLElement>(
-        'nav:not([aria-label="Breadcrumbs"]) a',
-      ),
-    ).filter((link) => {
-      link.removeAttribute("data-e2e-link");
-      const rect = link.getBoundingClientRect();
-      const top = document.elementFromPoint(
-        rect.left + rect.width / 2,
-        rect.top + rect.height / 2,
-      );
-      return top !== null && link.contains(top);
-    });
-    links.forEach((link, index) => {
-      link.dataset["e2eLink"] = String(index);
-    });
-    return links.length;
-  });
-}
-
-/** Follow the menu links with these labels, from the current page. */
-async function goTo(app: Locator, ...labels: string[]) {
-  for (const label of labels) {
-    await markMenuLinks(app);
-    await app
-      .locator("[data-e2e-link]")
-      .filter({ has: app.page().getByText(label, { exact: true }) })
-      .click();
-    await expect(
-      app.locator('nav[aria-label="Breadcrumbs"] [aria-current="page"]'),
-    ).toHaveText(label, { ignoreCase: true });
-  }
-}
+import { goTo, markMenuLinks, openSystemSettings } from "./systemSettings.ts";
 
 test("every settings page renders", async ({ page }) => {
   const app = await openSystemSettings(page);
@@ -147,4 +88,38 @@ test("an equipment category's fields show up on equipment", async ({
       ),
     )
     .toEqual([3]);
+});
+
+test("exported settings import again", async ({ page }) => {
+  await setSettings(page, { useDamageApplication: true });
+  let app = await openSystemSettings(page);
+  await goTo(app, "Miscellaneous", "Import/export");
+  const downloadPromise = page.waitForEvent("download");
+  await app.getByRole("button", { name: "Export" }).click();
+  const download = await downloadPromise;
+  const exportPath = test.info().outputPath("settings.json");
+  await download.saveAs(exportPath);
+  await app.getByRole("button", { name: "Cancel" }).click();
+  await expect(app).toBeHidden();
+
+  await setSettings(page, { useDamageApplication: false });
+  app = await openSystemSettings(page);
+  await goTo(app, "Miscellaneous", "Import/export");
+  const fileChooserPromise = page.waitForEvent("filechooser");
+  await app.getByRole("button", { name: "Import" }).click();
+  await (await fileChooserPromise).setFiles(exportPath);
+  await expect(page.locator("#notifications")).toContainText(
+    "Successfully imported settings",
+  );
+  await app.getByRole("button", { name: "Save changes" }).click();
+  await expect(app).toBeHidden();
+  expect(
+    await page.evaluate(
+      () =>
+        game.settings.get(
+          "investigator",
+          "useDamageApplication" as never,
+        ) as unknown,
+    ),
+  ).toBe(true);
 });
