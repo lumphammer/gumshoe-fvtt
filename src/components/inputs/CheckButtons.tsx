@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import React, { Fragment, useCallback, useContext, useMemo } from "react";
 
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { ThemeContext } from "../../themes/ThemeContext";
 
 type CheckButtonsProps = {
@@ -21,6 +22,7 @@ export const CheckButtons = ({
   size = 1.4,
   onChange: onChangeOrig,
 }: CheckButtonsProps) => {
+  const isEditable = useIsEditable();
   const theme = useContext(ThemeContext);
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +95,7 @@ export const CheckButtons = ({
               value={value}
               checked={value === selected}
               onChange={onChange}
-              disabled={!enabled} //
+              disabled={!enabled || !isEditable}
             />
             <label htmlFor={id} title={hover}>
               {label}

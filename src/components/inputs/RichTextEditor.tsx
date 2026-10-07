@@ -2,20 +2,12 @@ import { useContext, useEffect, useRef, useState } from "react";
 
 import { cleanAndEnrichHtml } from "../../functions/textFunctions";
 import { systemLogger } from "../../functions/utilities";
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
 import { ThemeContext } from "../../themes/ThemeContext";
+import { NotesDisplay } from "./NotesDisplay";
 
-/**
- * React wrapper around fvtt's HTMLProseMirrorElement
- * @param param0
- * @returns
- */
-export const RichTextEditor = ({
-  className = "",
-  html,
-  onSave,
-  name,
-}: {
+type RichTextEditorProps = {
   /** optional class */
   className?: string;
   /** html string */
@@ -29,7 +21,15 @@ export const RichTextEditor = ({
    * idea is to use the field name, i.e. "notes".
    */
   name: string;
-}) => {
+};
+
+/** React wrapper around fvtt's HTMLProseMirrorElement */
+const EditableRichTextEditor = ({
+  className = "",
+  html,
+  onSave,
+  name,
+}: RichTextEditorProps) => {
   const { doc } = useDocumentSheetContext();
 
   const divRef = useRef<HTMLDivElement>(null);
@@ -142,5 +142,15 @@ export const RichTextEditor = ({
       }}
       className={`${className} `}
     ></div>
+  );
+};
+
+/** A rich text editor. Where the user can't edit, it just shows the HTML. */
+export const RichTextEditor = (props: RichTextEditorProps) => {
+  const isEditable = useIsEditable();
+  return isEditable ? (
+    <EditableRichTextEditor {...props} />
+  ) : (
+    <NotesDisplay className={props.className} html={props.html} />
   );
 };

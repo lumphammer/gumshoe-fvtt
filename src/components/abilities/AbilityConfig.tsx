@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
@@ -26,6 +27,7 @@ const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
 
 export const AbilityConfig = () => {
   const { item } = useItemSheetContext();
+  const isEditable = useIsEditable();
   assertGame(game);
   assertAbilityItem(item);
   const isGeneral = isGeneralAbilityItem(item);
@@ -90,6 +92,7 @@ export const AbilityConfig = () => {
         >
           <div>
             <select
+              disabled={!isEditable}
               value={selectedCat}
               onChange={onChangeCategory}
               css={{

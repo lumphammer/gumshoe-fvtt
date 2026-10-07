@@ -2,6 +2,7 @@ import * as Switch from "@radix-ui/react-switch";
 import { memo, useContext } from "react";
 
 import { systemLogger } from "../../functions/utilities";
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { IdContext } from "../IdContext";
 
@@ -14,10 +15,12 @@ type ToggleProps = {
 export const Toggle = memo<ToggleProps>(
   ({ checked, onChange, className }: ToggleProps) => {
     const id = useContext(IdContext);
+    const isEditable = useIsEditable();
     const theme = useContext(ThemeContext);
     return (
       <Switch.Root
         id={id}
+        disabled={!isEditable}
         className={className}
         css={{
           fontSize: "0.9em",

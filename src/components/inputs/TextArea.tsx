@@ -2,6 +2,7 @@ import type { ChangeEvent } from "react";
 import React, { useCallback, useContext, useRef } from "react";
 
 import { TextEditor } from "../../fvtt-exports";
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { IdContext } from "../IdContext";
 import { parseFoundryDragData } from "./parseFoundryDragData";
 
@@ -56,6 +57,7 @@ export const TextArea = ({
   index,
 }: TextAreaProps) => {
   const id = useContext(IdContext);
+  const isEditable = useIsEditable();
 
   const onChangeCb = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -101,7 +103,7 @@ export const TextArea = ({
       onChange={onChangeCb}
       onFocus={onFocus}
       onBlur={onBlur}
-      disabled={disabled}
+      disabled={disabled || !isEditable}
       placeholder={placeholder}
       onDrop={(e) => onDropEditorData(e)}
     />

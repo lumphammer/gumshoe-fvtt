@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { IdContext } from "../IdContext";
 
@@ -18,6 +19,7 @@ type CheckboxProps = {
 export const Checkbox = React.memo<CheckboxProps>(
   ({ checked, onChange, className, title }) => {
     const id = useContext(IdContext);
+    const isEditable = useIsEditable();
     const theme = useContext(ThemeContext);
 
     return (
@@ -32,6 +34,7 @@ export const Checkbox = React.memo<CheckboxProps>(
           id={id}
           type="checkbox"
           checked={checked}
+          disabled={!isEditable}
           css={{
             position: "absolute",
             opacity: 0,

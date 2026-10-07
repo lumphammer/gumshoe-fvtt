@@ -1,6 +1,7 @@
 import { useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { useOtherable } from "../../hooks/useOtherable";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
@@ -35,13 +36,18 @@ export const OtherableDropDown = ({
     pickerValues,
     validValues,
   });
+  const isEditable = useIsEditable();
 
   return (
     <div
       css={{ display: "flex", flexDirection: "column", gap: "0.2em" }}
       className={className}
     >
-      <select value={effectiveValue} onChange={handleChange}>
+      <select
+        value={effectiveValue}
+        onChange={handleChange}
+        disabled={!isEditable}
+      >
         {pickerValues.map((value) => (
           <option key={value}>{value}</option>
         ))}

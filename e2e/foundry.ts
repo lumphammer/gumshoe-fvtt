@@ -382,7 +382,12 @@ export async function targetTokens(page: Page, tokenIds: string[]) {
  * Click every tab in a sheet, including tabs that only appear inside other
  * tabs, so each one renders at least once.
  */
-export async function visitEveryTab(sheet: Locator) {
+export async function visitEveryTab(
+  sheet: Locator,
+  /** something to do on each tab (and before clicking any) */
+  onEachTab?: () => Promise<void>,
+) {
+  await onEachTab?.();
   const visited = new Set<string>();
   for (let round = 0; round < 10; round++) {
     const tabs = sheet.locator(".tab-strip > label");
@@ -396,6 +401,7 @@ export async function visitEveryTab(sheet: Locator) {
       if (visited.has(key)) continue;
       visited.add(key);
       await tab.click();
+      await onEachTab?.();
       clicked = true;
     }
     if (!clicked) return;

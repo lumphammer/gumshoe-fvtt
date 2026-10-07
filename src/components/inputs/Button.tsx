@@ -1,6 +1,8 @@
 import type { ComponentProps, PropsWithChildren } from "react";
 import React from "react";
 
+import { useIsEditable } from "../../hooks/useIsEditable";
+
 type ButtonProps = ComponentProps<"button"> &
   PropsWithChildren<{
     onClick: () => void;
@@ -9,7 +11,8 @@ type ButtonProps = ComponentProps<"button"> &
 
 export const Button = React.memo<ButtonProps>(
   React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ children, onClick, className, ...rest }, ref) => {
+    ({ children, onClick, className, disabled, ...rest }, ref) => {
+      const isEditable = useIsEditable();
       const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         onClick();
@@ -19,6 +22,7 @@ export const Button = React.memo<ButtonProps>(
         <button
           ref={ref}
           {...rest}
+          disabled={(disabled ?? false) || !isEditable}
           className={className}
           onClick={handleClick}
           css={{

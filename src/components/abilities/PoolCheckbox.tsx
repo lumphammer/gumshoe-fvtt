@@ -1,5 +1,6 @@
 import { useCallback, useContext } from "react";
 
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { ThemeContext } from "../../themes/ThemeContext";
 
 type PoolCheckboxProps = {
@@ -18,11 +19,13 @@ export const PoolCheckbox = ({
   }, [onClickProp, value]);
 
   const theme = useContext(ThemeContext);
+  const isEditable = useIsEditable();
 
   return (
     <a
-      tabIndex={0}
-      onClick={onClick}
+      tabIndex={isEditable ? 0 : undefined}
+      onClick={isEditable ? onClick : undefined}
+      aria-disabled={!isEditable}
       css={{
         width: "auto",
         height: "1.2em",
