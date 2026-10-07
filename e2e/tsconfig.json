@@ -6,5 +6,12 @@
   },
   // the system's document types, so `page.evaluate` code knows about them
   "files": ["../src/configuration.ts", "../src/global.ts"],
-  "include": ["**/*"]
+  "include": ["**/*"],
+  // like the root project: these packages' types are built from source, so
+  // they need building first
+  "references": [
+    { "path": "../packages/shared-fvtt-bits" },
+    { "path": "../packages/investigator-fvtt-types" },
+    { "path": "../packages/minirouter" }
+  ]
 }
