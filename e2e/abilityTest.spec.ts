@@ -1,36 +1,24 @@
-import { expect, test } from "./foundry.ts";
+import {
+  createActor,
+  expect,
+  forceDice,
+  lastChatMessage,
+  openSheet,
+  test,
+  updateAbility,
+} from "./foundry.ts";
 
 test("testing a general ability spends from its pool and rolls", async ({
   page,
 }) => {
-  const actorId = await page.evaluate(async () => {
-    const actor = await Actor.create({ name: "Test Investigator", type: "pc" });
-    return actor!.id;
+  const actorId = await createActor(page, {
+    name: "Test Investigator",
+    type: "pc",
   });
-  // the system gives new investigators their abilities just after creation
-  await expect
-    .poll(() =>
-      page.evaluate(
-        (id) => !!game.actors.get(id)?.items.getName("Athletics"),
-        actorId,
-      ),
-    )
-    .toBe(true);
-  await page.evaluate(async (id) => {
-    const actor = game.actors.get(id)!;
-    await actor.items
-      .getName("Athletics")!
-      .update({ system: { rating: 4, pool: 4 } });
-    // every d6 rolls a 6
-    CONFIG.Dice.randomUniform = () => 0.01;
-    // our sheets are all ApplicationV2
-    const sheet = actor.sheet as foundry.applications.api.ApplicationV2;
-    await sheet.render({ force: true });
-  }, actorId);
+  await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
+  await forceDice(page, 6);
 
-  const actorSheet = page.locator(".application", {
-    hasText: "Player Character: Test Investigator",
-  });
+  const actorSheet = await openSheet(page, `Actor.${actorId}`);
   await actorSheet.locator("a", { hasText: /^Athletics$/ }).click();
 
   const abilitySheet = page.locator(".application", {
@@ -39,7 +27,7 @@ test("testing a general ability spends from its pool and rolls", async ({
   await abilitySheet.locator("label", { hasText: /^2$/ }).click();
   await abilitySheet.getByRole("button", { name: "Test" }).click();
 
-  const card = page.locator("#chat .chat-message").last();
+  const card = lastChatMessage(page);
   await expect(card).toContainText("Athletics");
   await expect(card.locator(".dice-total")).toHaveText("8");
   await expect(abilitySheet.getByLabel("Pool", { exact: true })).toHaveValue(
