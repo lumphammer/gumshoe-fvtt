@@ -162,6 +162,15 @@ export const test = base.extend<{
 
 export { expect };
 
+/**
+ * Reload the page, and wait until it's back in the game, set up like a new
+ * page from `test`. (For a fresh look at things which only render once.)
+ */
+export async function reloadGame(page: Page) {
+  await page.reload();
+  await waitForGameAndWatchNotifications(page);
+}
+
 /** Every d6 rolls `face` until the page reloads. */
 export async function forceDice(page: Page, face: 1 | 6) {
   await page.evaluate((face) => {
@@ -218,19 +227,20 @@ export async function createPlayer(page: Page, name: string) {
   }, name);
 }
 
-/** Give a user ownership of an actor. */
+/** Give a user a permission level on an actor (by default, ownership). */
 export async function giveOwnership(
   page: Page,
   actorId: string,
   userId: string,
+  level: "NONE" | "LIMITED" | "OBSERVER" | "OWNER" = "OWNER",
 ) {
   await page.evaluate(
-    async ({ actorId, userId }) => {
+    async ({ actorId, userId, level }) => {
       await game.actors.get(actorId)!.update({
-        ownership: { [userId]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER },
+        ownership: { [userId]: CONST.DOCUMENT_OWNERSHIP_LEVELS[level] },
       });
     },
-    { actorId, userId },
+    { actorId, userId, level },
   );
 }
 
