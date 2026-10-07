@@ -407,14 +407,28 @@ export function debounce<T extends (...args: any[]) => any>(
  * function is eventually called, it will be called with the most recent
  * arguments. This fits with a user input scenario where you don't care about
  * intermediate values, i.e. the "f", "fr", "fre" on the way to "fred" .
+ *
+ * `flush()` makes the waiting call, if there is one, straight away.
  */
 export function throttle<T extends (...args: any[]) => any>(
   fn: T,
   period: number,
-): (...args: Parameters<T>) => void {
+): ((...args: Parameters<T>) => void) & { flush: () => void } {
   let startAt = 0;
   let timeout: ReturnType<typeof setTimeout> | null = null;
-  return (...args: Parameters<T>) => {
+  let waitingArgs: Parameters<T> | null = null;
+  const run = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    if (waitingArgs === null) return;
+    const args = waitingArgs;
+    waitingArgs = null;
+    startAt = Date.now();
+    fn(...args);
+  };
+  const throttled = (...args: Parameters<T>) => {
     const now = Date.now();
     if (now - startAt > period) {
       startAt = now;
@@ -423,12 +437,10 @@ export function throttle<T extends (...args: any[]) => any>(
     if (timeout) {
       clearTimeout(timeout);
     }
-    timeout = setTimeout(() => {
-      fn(...args);
-      timeout = null;
-      startAt = Date.now();
-    }, delay);
+    waitingArgs = args;
+    timeout = setTimeout(run, delay);
   };
+  return Object.assign(throttled, { flush: run });
 }
 
 /**

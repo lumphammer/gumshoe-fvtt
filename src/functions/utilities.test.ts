@@ -300,6 +300,26 @@ describe("throttle", () => {
     expect(fn).toHaveBeenCalledTimes(2);
     expect(fn).toHaveBeenCalledWith(10);
   });
+  test("flush makes a waiting call straight away, and only once", () => {
+    const fn = vi.fn();
+    const throttled = throttle(fn, 100);
+    throttled(1);
+    throttled(2);
+    throttled.flush();
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(fn).toHaveBeenCalledWith(2);
+    vi.advanceTimersByTime(200);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+  test("flush does nothing when no call is waiting", () => {
+    const fn = vi.fn();
+    const throttled = throttle(fn, 100);
+    throttled.flush();
+    throttled(1);
+    vi.advanceTimersByTime(100);
+    throttled.flush();
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("debounce", () => {

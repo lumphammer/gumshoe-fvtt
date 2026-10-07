@@ -57,3 +57,28 @@ it("should follow a typical scenario", () => {
   expect(onChangeSpy).toHaveBeenCalledTimes(2);
   expect(onChangeSpy).toHaveBeenCalledWith("qux");
 });
+
+it("saves a waiting change straight away on blur", () => {
+  const onChangeSpy = vi.fn();
+  vi.useFakeTimers();
+  const { result } = renderHook(() => useAsyncUpdate("", onChangeSpy));
+  result.current.onFocus();
+  result.current.onChange("foo");
+  expect(onChangeSpy).not.toHaveBeenCalled();
+  // e.g. clicking a Save button straight after typing
+  result.current.onBlur();
+  expect(onChangeSpy).toHaveBeenCalledTimes(1);
+  expect(onChangeSpy).toHaveBeenCalledWith("foo");
+  vi.advanceTimersByTime(inputThrottleTime);
+  expect(onChangeSpy).toHaveBeenCalledTimes(1);
+});
+
+it("saves a waiting change straight away on unmount", () => {
+  const onChangeSpy = vi.fn();
+  vi.useFakeTimers();
+  const { result, unmount } = renderHook(() => useAsyncUpdate("", onChangeSpy));
+  result.current.onChange("foo");
+  unmount();
+  expect(onChangeSpy).toHaveBeenCalledTimes(1);
+  expect(onChangeSpy).toHaveBeenCalledWith("foo");
+});
