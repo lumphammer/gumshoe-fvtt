@@ -71,7 +71,8 @@ export const LogoEditable = ({
   } = useAsyncUpdate(mainText, onChangeMainText);
   const isEditable = useIsEditable();
 
-  const hasSubtext = onChangeSubText !== undefined;
+  // shown if there's anything to show; editable if there's a way to save it
+  const hasSubtext = subText !== undefined || onChangeSubText !== undefined;
 
   const {
     onInput: onInputSubtext,
@@ -186,7 +187,7 @@ export const LogoEditable = ({
                 ...subtextSyle,
                 ...theme.logo.frontTextElementStyle,
               }}
-              contentEditable={isEditable}
+              contentEditable={isEditable && onChangeSubText !== undefined}
               ref={contentEditableRefSubtext}
               onInput={onInputSubtext}
               onFocus={onFocusSubtext}

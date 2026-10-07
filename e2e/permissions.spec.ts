@@ -164,3 +164,47 @@ test("players don't see an NPC's GM notes", async ({ page, joinAs }) => {
   await expect(tabs).toHaveText(["Play", "Edit", "Notes"]);
   await expect(sheet).not.toContainText("Secretly a ghoul");
 });
+
+test("with Limited permission, players see a character's name and picture, not their details", async ({
+  page,
+  joinAs,
+}) => {
+  const pcId = await createActor(page, {
+    name: "Dr Ellery",
+    type: "pc",
+    system: { notes: "<p>Afraid of the dark</p>" },
+  });
+  // give them an occupation of their own
+  await page.evaluate(async (id) => {
+    const actor = game.actors.get(id)!;
+    const occupation = actor.items.find((i) => i.type === "personalDetail")!;
+    await occupation.update({ name: "Antiquarian" });
+  }, pcId);
+  const npcId = await createActor(page, {
+    name: "The Caretaker",
+    type: "npc",
+    system: {
+      notes: "<p>Knows more than he says</p>",
+      gmNotes: "<p>Secretly a ghoul</p>",
+    },
+  });
+  const playerId = await createPlayer(page, "Neighbour");
+  await giveOwnership(page, pcId, playerId, "LIMITED");
+  await giveOwnership(page, npcId, playerId, "LIMITED");
+
+  const player = await joinAs("Neighbour");
+  const pcSheet = await openSheet(player, `Actor.${pcId}`);
+  await expect(pcSheet).toContainText("Dr Ellery");
+  await expect(pcSheet).toContainText("Antiquarian");
+  // nothing else: no tabs, abilities or notes
+  await expect(pcSheet.locator(".tab-strip")).toHaveCount(0);
+  await expect(pcSheet).not.toContainText("Athletics");
+  await expect(pcSheet).not.toContainText("Afraid of the dark");
+  // and the name can't be edited
+  await expect(pcSheet.locator("[contenteditable=true]")).toHaveCount(0);
+
+  // NPCs show their (player-facing) notes, but not the GM's
+  const npcSheet = await openSheet(player, `Actor.${npcId}`);
+  await expect(npcSheet).toContainText("Knows more than he says");
+  await expect(npcSheet).not.toContainText("Secretly a ghoul");
+});
