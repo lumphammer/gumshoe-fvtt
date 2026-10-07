@@ -1,6 +1,8 @@
 {
   "extends": "./packages/shared-fvtt-bits/dotfiles/import/tsconfig.fvtt.json",
-  "exclude": ["packages"],
+  // e2e has its own project, because its `page.evaluate` code sees Foundry
+  // after the game is ready
+  "exclude": ["packages", "e2e"],
   "compilerOptions": {
     "lib": ["DOM", "ESNext"],
     // "noErrorTruncation": true

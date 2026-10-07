@@ -6,3 +6,6 @@ node_modules
 stats
 tsconfig.tsbuildinfo
 tsconfig.vitest-temp.json
+e2e/.auth
+test-results
+playwright-report

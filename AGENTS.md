@@ -25,6 +25,15 @@ translations, adding fields and settings, releases).
 - To force dice in testing: `CONFIG.Dice.randomUniform = () => 0.01` (rolls
   6s), `0.99` (1s); `delete CONFIG.Dice.randomUniform` to undo.
 
+## Browser tests
+
+- Playwright tests live in `e2e/` (see `e2e/README.md`). They run against
+  `build/` on a separate Foundry (`pnpm e2e:foundry up`, port 30099), never
+  the dev one: global setup deletes and recreates its world on every run.
+  `pnpm build` before `pnpm e2e`.
+- Not part of `pnpm check`. Run `pnpm e2e` when a change touches something a
+  test covers.
+
 ## Data models
 
 - A schema field's object or array `initial` must be a function
