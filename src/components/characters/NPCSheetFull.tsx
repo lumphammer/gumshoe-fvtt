@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { assertGame } from "../../functions/isGame";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
 import { assertNPCActor } from "../../module/actors/npc";
@@ -37,6 +38,7 @@ const settingsShowImmuneToLethality = () =>
 export const NPCSheetFull = () => {
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
+  assertGame(game);
   const themeName = actor.system.getSheetThemeName();
   const theme = useTheme(themeName);
   const stats = settingsNpcStats();
@@ -228,27 +230,33 @@ export const NPCSheetFull = () => {
                 </InputGrid>
               ),
             },
-            {
-              id: "gmNotes",
-              label: "GM Notes",
-              content: (
-                <InputGrid
-                  css={{
-                    ...absoluteCover,
-                    gridTemplateRows: "1fr",
-                    padding: "0.5em",
-                  }}
-                >
-                  <NotesTypeContext.Provider value="npcNote">
-                    <RichTextEditor
-                      name="gmNotes"
-                      html={actor.system.gmNotes}
-                      onSave={actor.system.setGMNotes}
-                    />
-                  </NotesTypeContext.Provider>
-                </InputGrid>
-              ),
-            },
+            // players who can see the NPC (with Observer permission) don't get
+            // to see the GM's notes
+            ...(game.user.isGM
+              ? [
+                  {
+                    id: "gmNotes",
+                    label: "GM Notes",
+                    content: (
+                      <InputGrid
+                        css={{
+                          ...absoluteCover,
+                          gridTemplateRows: "1fr",
+                          padding: "0.5em",
+                        }}
+                      >
+                        <NotesTypeContext.Provider value="npcNote">
+                          <RichTextEditor
+                            name="gmNotes"
+                            html={actor.system.gmNotes}
+                            onSave={actor.system.setGMNotes}
+                          />
+                        </NotesTypeContext.Provider>
+                      </InputGrid>
+                    ),
+                  },
+                ]
+              : []),
           ]}
         />
       </div>
