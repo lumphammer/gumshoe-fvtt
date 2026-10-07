@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   equipmentCategories: { get: vi.fn() },
   migrateValue: vi.fn(),
+  superMigrateData: vi.fn((source: object) => source),
 }));
 
 vi.mock("../../functions/maybeNotesObjectToString", () => ({
@@ -14,9 +15,7 @@ vi.mock("../../functions/migrateValue", () => ({
 vi.mock("../../fvtt-exports", () => {
   class MockField {}
   class MockTypeDataModel {
-    static migrateData(source: object) {
-      return source;
-    }
+    static migrateData = mocks.superMigrateData;
   }
   return {
     StringField: MockField,
@@ -36,6 +35,7 @@ describe("EquipmentModel.migrateData", () => {
     mocks.equipmentCategories.get.mockReset();
     mocks.equipmentCategories.get.mockReturnValue({ custom: {} });
     mocks.migrateValue.mockReset();
+    mocks.superMigrateData.mockClear();
   });
 
   it("renames a legacy category before schema cleaning", () => {
@@ -77,6 +77,9 @@ describe("EquipmentModel.migrateData", () => {
 
     expect(source).toEqual({ fields: { nutrition: 3 } });
     expect(mocks.equipmentCategories.get).not.toHaveBeenCalled();
+    expect(mocks.superMigrateData).toHaveBeenCalledWith(source, {
+      partial: true,
+    });
   });
 
   it("still renames a legacy category in a partial update", () => {
