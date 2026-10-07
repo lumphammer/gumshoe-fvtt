@@ -47,3 +47,31 @@ test("dragging investigators onto a party sheet adds them up", async ({
     )
     .toEqual([bobId]);
 });
+
+test("adding two members at once keeps both", async ({ page }) => {
+  const partyId = await createActor(page, {
+    name: "Busy Party",
+    type: "party",
+  });
+  const carolId = await createActor(page, { name: "Carol", type: "pc" });
+  const daveId = await createActor(page, { name: "Dave", type: "pc" });
+  await page.evaluate(
+    async ({ partyId, carolId, daveId }) => {
+      const party = game.actors.get(partyId)! as unknown as {
+        system: { addActorIds: (ids: string[]) => Promise<unknown> };
+      };
+      // like two quick drops
+      await Promise.all([
+        party.system.addActorIds([carolId]),
+        party.system.addActorIds([daveId]),
+      ]);
+    },
+    { partyId, carolId, daveId },
+  );
+  expect(
+    await page.evaluate(
+      (id) => game.actors.get(id)!.system.actorIds as string[],
+      partyId,
+    ),
+  ).toEqual([carolId, daveId]);
+});

@@ -1,4 +1,5 @@
 import * as c from "../../constants";
+import { createKeyedQueue } from "../../functions/createKeyedQueue";
 import { assertGame } from "../../functions/isGame";
 import { ArrayField, StringField, TypeDataModel } from "../../fvtt-exports";
 import { InvestigatorActor } from "./InvestigatorActor";
@@ -14,6 +15,13 @@ export const partySchema = {
     { nullable: false, required: true },
   ),
 };
+
+/**
+ * Changes to a party's members, one at a time per party. Each reads the
+ * members and writes them back, so two at once (e.g. two quick drops) would
+ * lose one.
+ */
+const runExclusive = createKeyedQueue();
 
 export class PartyModel extends TypeDataModel<
   typeof partySchema,
@@ -40,8 +48,17 @@ export class PartyModel extends TypeDataModel<
       .filter((actor) => actor !== undefined);
   };
 
-  addActorIds = async (newIds: string[]) => {
-    const currentIds = this.getActorIds();
+  /**
+   * The members as they are now. (After an update, the actor may have a new
+   * `system`, so read it from the actor, not `this`.)
+   */
+  private getCurrentActorIds = (): string[] => this.parent.system.actorIds;
+
+  addActorIds = (newIds: string[]) =>
+    runExclusive(this.parent.uuid ?? "", () => this.addActorIdsNow(newIds));
+
+  private addActorIdsNow = async (newIds: string[]) => {
+    const currentIds = this.getCurrentActorIds();
     const newActors = newIds.map((id) => {
       return game.actors?.get(id);
     }) as Actor[]; // cast prevents excessively deep etc etc.
@@ -58,9 +75,10 @@ export class PartyModel extends TypeDataModel<
     return this.setActorIds([...currentIds, ...effectiveIds]);
   };
 
-  removeActorId = async (id: string) => {
-    await this.setActorIds(this.getActorIds().filter((x) => x !== id));
-  };
+  removeActorId = (id: string) =>
+    runExclusive(this.parent.uuid ?? "", () =>
+      this.setActorIds(this.getCurrentActorIds().filter((x) => x !== id)),
+    );
 }
 
 export type PartyActor = InvestigatorActor<typeof c.party>;
