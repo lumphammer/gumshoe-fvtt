@@ -30,8 +30,6 @@ export const SortableRow = ({ children, id }: SortableRowProps) => {
         gridColumn: "1/-1",
         opacity: active ? 0.5 : 1,
       }}
-      {...attributes}
-      tabIndex={undefined}
       ref={setNodeRef}
       style={{
         transform: CSS.Transform.toString(transform),
@@ -41,6 +39,7 @@ export const SortableRow = ({ children, id }: SortableRowProps) => {
       <DragHandle
         setActivatorNodeRef={setActivatorNodeRef}
         listeners={listeners}
+        attributes={attributes}
       />
       <div
         css={{
