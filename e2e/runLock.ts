@@ -24,6 +24,15 @@ function readLock(lockPath: string): Lock | null {
   }
 }
 
+/** Whether the file was made in the last few seconds. */
+function isRecent(filePath: string): boolean {
+  try {
+    return Date.now() - fs.statSync(filePath).mtimeMs < 5000;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Stop two test runs using the same Foundry at once. They'd trample each
  * other: both log in as the Gamemaster (Foundry logs out the first), each
@@ -43,18 +52,37 @@ export function takeRunLock(foundryUrl: string, foundryDataPath: string) {
         os.tmpdir(),
         `investigator-e2e-${encodeURIComponent(foundryUrl)}.lock`,
       );
-  const holder = readLock(lockPath);
-  if (holder && holder.pid !== process.pid && isRunning(holder.pid)) {
-    throw new Error(
-      `Another test run (process ${holder.pid}, started ${holder.started}) ` +
-        `is using the Foundry at ${foundryUrl}. Wait for it to finish, or ` +
-        "stop it, then try again.",
-    );
+  const lock = JSON.stringify({
+    pid: process.pid,
+    started: new Date().toISOString(),
+  });
+  for (let attempt = 0; ; attempt++) {
+    try {
+      // create it exclusively, so two runs starting together can't both get it
+      fs.writeFileSync(lockPath, lock, { flag: "wx" });
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    }
+    const holder = readLock(lockPath);
+    // already ours (Playwright can load its config more than once)
+    if (holder?.pid === process.pid) return;
+    if (holder ? isRunning(holder.pid) : isRecent(lockPath)) {
+      throw new Error(
+        holder
+          ? `Another test run (process ${holder.pid}, started ` +
+              `${holder.started}) is using the Foundry at ${foundryUrl}. ` +
+              "Wait for it to finish, or stop it, then try again."
+          : `Another test run is starting on the Foundry at ${foundryUrl}.`,
+      );
+    }
+    // left by a run that died: clear it and try again. If another run clears
+    // it and gets in first, the next attempt finds theirs.
+    if (attempt >= 2) {
+      throw new Error(`Couldn't take the test run lock at ${lockPath}`);
+    }
+    fs.rmSync(lockPath, { force: true });
   }
-  fs.writeFileSync(
-    lockPath,
-    JSON.stringify({ pid: process.pid, started: new Date().toISOString() }),
-  );
   process.on("exit", () => {
     if (readLock(lockPath)?.pid === process.pid) fs.rmSync(lockPath);
   });
