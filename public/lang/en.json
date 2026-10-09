@@ -447,5 +447,6 @@
   "investigator.AmmoPerBurst": "Ammo per burst",
   "investigator.AmmoPerFullAuto": "Ammo per full-auto",
   "investigator.Bullets": "Bullets",
-  "investigator.BulletN": "Bullet {N}"
+  "investigator.BulletN": "Bullet {N}",
+  "investigator.DragToReorder": "Drag to reorder"
 }

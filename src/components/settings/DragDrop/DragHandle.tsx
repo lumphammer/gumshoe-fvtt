@@ -1,18 +1,23 @@
+import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { useContext, useMemo } from "react";
 import { FaGripLines } from "react-icons/fa6";
 
+import { getTranslated } from "../../../functions/getTranslated";
 import { irid } from "../../../irid/irid";
 import { ThemeContext } from "../../../themes/ThemeContext";
 
 type DragHandleProps = {
   setActivatorNodeRef?: (node: HTMLDivElement) => void;
   listeners?: SyntheticListenerMap | undefined;
+  /** dnd-kit's attributes (role, description etc.) for the handle */
+  attributes?: DraggableAttributes;
 };
 
 export const DragHandle = ({
   setActivatorNodeRef,
   listeners,
+  attributes,
 }: DragHandleProps) => {
   const theme = useContext(ThemeContext);
 
@@ -27,6 +32,8 @@ export const DragHandle = ({
   return (
     <div
       tabIndex={0}
+      {...attributes}
+      aria-label={getTranslated("Drag to reorder")}
       css={{
         height: "100%",
         width: "3em",

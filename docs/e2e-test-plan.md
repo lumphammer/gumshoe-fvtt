@@ -26,6 +26,12 @@ any page, so each one is also a smoke test of whatever it touches.
   with Observer permission), not changing others' cards, the GM-only settings
   menu and NPC GM notes, read-only sheets at Observer (every control on PC,
   NPC and item sheets, poked), and the cut-down sheets at Limited.
+- Drag and drop: world items, compendium weapons and abilities onto PC sheets
+  (by the GM, and by a player onto their own PC); a weapon from one PC's
+  sheet to another's; a folder of actors (with folders inside it) onto a
+  party sheet; drag-sorting a settings list, by mouse and by keyboard; items
+  dropped into a PC's notes (saved as a link which opens the item), a journal
+  page's HTML, and an image page's caption.
 
 ## To do
 
@@ -36,13 +42,6 @@ Roughly in order of value.
 - Editing Health below 0 from the token bar (`modifyTokenAttribute`), and
   quick edits.
 - Wound status effects on tokens (`useWoundStatusEffects`).
-
-### Drag and drop
-
-- Equipment and abilities dropped onto actor sheets, from the sidebar and
-  from compendiums.
-- A folder of actors dropped onto a party sheet.
-- Drag-sorting lists in the settings.
 
 ### Reloading
 

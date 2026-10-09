@@ -48,22 +48,29 @@ test("two people editing one attack card at once", async ({ page, joinAs }) => {
   // the same moment (both pages wait for the same time, then change it)
   const at = Date.now() + 1000;
   const changeCoverAt = async (
-    card: typeof gmCard,
+    who: typeof page,
     tokenName: string,
     cover: string,
   ) =>
-    card.getByLabel(`Cover for ${tokenName}`).evaluate(
-      async (select: HTMLSelectElement, { at, cover }) => {
+    who.evaluate(
+      async ({ at, label, cover }) => {
         while (Date.now() < at) await new Promise((r) => setTimeout(r, 1));
+        // find it now, not before waiting: if the other change got in first,
+        // the card has re-rendered, and the old select is gone
+        const select = Array.from(
+          document.querySelectorAll<HTMLSelectElement>(
+            `#chat select[aria-label="${label}"]`,
+          ),
+        ).at(-1)!;
         // set it the way React notices: through the prototype's setter
         Reflect.set(HTMLSelectElement.prototype, "value", cover, select);
         select.dispatchEvent(new Event("change", { bubbles: true }));
       },
-      { at, cover },
+      { at, label: `Cover for ${tokenName}`, cover },
     );
   await Promise.all([
-    changeCoverAt(playerCard, "Cultist 1", "exposed"),
-    changeCoverAt(gmCard, "Cultist 2", "full"),
+    changeCoverAt(player, "Cultist 1", "exposed"),
+    changeCoverAt(page, "Cultist 2", "full"),
   ]);
   await expect
     .poll(() =>
