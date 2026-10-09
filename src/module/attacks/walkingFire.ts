@@ -136,11 +136,14 @@ export function planWalkFire(
  * attack and roll their damage. Runs on the GM's client (see `editAttack`),
  * after the requester has already checked it with `planWalkFire`, so if it
  * can't be done now, it quietly doesn't happen.
+ *
+ * @param user who asked for it, to show the dice as theirs
  */
 export async function walkFireNow(
   message: AttackMessage,
   payment: WalkingFirePayment,
   token: TokenDocument,
+  user: User | null,
 ): Promise<void> {
   const plan = planWalkFire(message, payment, token);
   if ("warning" in plan) return;
@@ -156,7 +159,7 @@ export async function walkFireNow(
       });
     }
     const filled = await fillMissingDamageRolls(plan.attack, plan.target);
-    await showRolls(filled.rolls);
+    await showRolls(filled.rolls, user);
     await setAttackData(message, replaceTarget(filled.attack, filled.target));
   } catch (error) {
     for (const refund of refunds.reverse()) {

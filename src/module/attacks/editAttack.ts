@@ -92,7 +92,7 @@ async function performAttackEditNow(
     case "walkFire": {
       const token = getToken(edit.tokenUuid);
       if (!token) return;
-      await walkFireNow(message, edit.payment, token);
+      await walkFireNow(message, edit.payment, token, user);
       return;
     }
     case "applyDamage":
