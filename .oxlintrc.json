@@ -21,6 +21,13 @@
   ],
   "overrides": [
     {
+      // Playwright fixtures take a `use` callback, which isn't a React hook
+      "files": ["e2e/**"],
+      "rules": {
+        "react-hooks/rules-of-hooks": "off"
+      }
+    },
+    {
       "files": ["**/*.js"],
       "rules": {
         "typescript/no-var-requires": "off"

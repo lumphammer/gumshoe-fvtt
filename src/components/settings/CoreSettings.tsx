@@ -4,6 +4,7 @@ import * as constants from "../../constants";
 import { assertGame } from "../../functions/isGame";
 import { runtimeConfig } from "../../runtime";
 import { InputGrid } from "../inputs/InputGrid";
+import { Select } from "../inputs/Select";
 import { DispatchContext, StateContext } from "./contexts";
 import { SettingsGridField } from "./SettingsGridField";
 import { store } from "./store";
@@ -44,7 +45,7 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
       }}
     >
       <SettingsGridField label="System Preset">
-        <select value={settings.systemPreset} onChange={onSelectPreset}>
+        <Select value={settings.systemPreset} onChange={onSelectPreset}>
           {Object.keys(presets).map((presetId: string) => (
             <option key={presetId} value={presetId}>
               {presets[presetId].displayName}
@@ -53,10 +54,10 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
           {settings.systemPreset === constants.customSystem && (
             <option value={constants.customSystem}>Custom</option>
           )}
-        </select>
+        </Select>
       </SettingsGridField>
       <SettingsGridField label="Visual Theme">
-        <select
+        <Select
           value={settings.defaultThemeName}
           onChange={(e) => {
             setters.defaultThemeName(e.currentTarget.value);
@@ -67,7 +68,7 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
               {runtimeConfig.themes[themeName].displayName}
             </option>
           ))}
-        </select>
+        </Select>
       </SettingsGridField>
     </InputGrid>
   );

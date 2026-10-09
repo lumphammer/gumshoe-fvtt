@@ -13,6 +13,7 @@ import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
+import { Select } from "../inputs/Select";
 import { TextInput } from "../inputs/TextInput";
 import { Translate } from "../Translate";
 
@@ -124,7 +125,7 @@ export const MwItemSheet = () => {
           />
         </GridField>
         <GridField label="MwType">
-          <select
+          <Select
             value={item.system.mwType}
             onChange={onChangeType}
             css={{
@@ -140,7 +141,7 @@ export const MwItemSheet = () => {
             <option value="manse">Manse</option>
             <option value="sandestin">Sandestin</option>
             <option value="retainer">Retainer</option>
-          </select>
+          </Select>
         </GridField>
         <div
           css={{

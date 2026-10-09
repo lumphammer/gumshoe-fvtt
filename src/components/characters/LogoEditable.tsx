@@ -2,6 +2,7 @@ import type { CSSObject } from "@emotion/react";
 import { useContext } from "react";
 
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { ThemeContext } from "../../themes/ThemeContext";
 
 type LogoEditableProps = {
@@ -68,8 +69,10 @@ export const LogoEditable = ({
     contentEditableRef: contentEditableRefText,
     display: displayText,
   } = useAsyncUpdate(mainText, onChangeMainText);
+  const isEditable = useIsEditable();
 
-  const hasSubtext = onChangeSubText !== undefined;
+  // shown if there's anything to show; editable if there's a way to save it
+  const hasSubtext = subText !== undefined || onChangeSubText !== undefined;
 
   const {
     onInput: onInputSubtext,
@@ -172,7 +175,7 @@ export const LogoEditable = ({
               ...textStyle,
               ...theme.logo.frontTextElementStyle,
             }}
-            contentEditable
+            contentEditable={isEditable}
             ref={contentEditableRefText}
             onInput={onInputText}
             onFocus={onFocusText}
@@ -184,7 +187,7 @@ export const LogoEditable = ({
                 ...subtextSyle,
                 ...theme.logo.frontTextElementStyle,
               }}
-              contentEditable
+              contentEditable={isEditable && onChangeSubText !== undefined}
               ref={contentEditableRefSubtext}
               onInput={onInputSubtext}
               onFocus={onFocusSubtext}

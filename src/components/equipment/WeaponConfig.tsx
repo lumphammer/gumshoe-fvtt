@@ -12,6 +12,7 @@ import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { OtherableDropDown } from "../inputs/OtherableDropDown";
+import { Select } from "../inputs/Select";
 import { TextInput } from "../inputs/TextInput";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
@@ -101,7 +102,7 @@ export const WeaponConfig = () => {
       </GridField>
       {showFireModes && (
         <GridField label="Fire modes">
-          <select
+          <Select
             value={fireModes}
             onChange={(e) => {
               void item.system.setFireModes(
@@ -115,7 +116,7 @@ export const WeaponConfig = () => {
                 {getTranslated(weaponFireModesText[value])}
               </option>
             ))}
-          </select>
+          </Select>
         </GridField>
       )}
       {showLethality && (

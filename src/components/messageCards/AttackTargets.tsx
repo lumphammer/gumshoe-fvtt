@@ -2,29 +2,20 @@ import { useEffect, useReducer, useState } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
+import { canUserActOnAttack } from "../../module/attacks/applyAttackDamage";
+import type {
+  AttackEdit,
+  TargetUpdate,
+} from "../../module/attacks/attackEdits";
 import {
-  applyAttackDamage,
-  canUserActOnAttack,
-} from "../../module/attacks/applyAttackDamage";
-import {
-  keepLoneShotDryTarget,
-  removeTarget,
-  replaceTarget,
-  setSingleTarget,
-} from "../../module/attacks/attackData";
-import {
-  addTargetsForTokens,
-  createAttackTarget,
-  fillMissingDamageRolls,
   getAttackData,
   getTargetActor,
   isAttackMessage,
   pickSingleTargetToken,
   pickTargetTokens,
   resolveTargetLive,
-  setAttackData,
-  showRolls,
 } from "../../module/attacks/attackTargets";
+import { editAttack } from "../../module/attacks/editAttack";
 import { getHealth } from "../../module/attacks/health";
 import type { LethalityOutcome } from "../../module/attacks/lethality";
 import { formatLethality } from "../../module/attacks/lethality";
@@ -116,10 +107,6 @@ type AttackTargetRowProps = {
   attack: AttackData;
   target: AttackTargetData;
   canAct: boolean;
-  updateTarget: (
-    targetId: string,
-    update: Partial<AttackTargetData>,
-  ) => Promise<void>;
 };
 
 const AttackTargetRow = ({
@@ -127,7 +114,6 @@ const AttackTargetRow = ({
   attack,
   target,
   canAct,
-  updateTarget,
 }: AttackTargetRowProps) => {
   assertGame(game);
   const actor = getTargetActor(target);
@@ -138,44 +124,14 @@ const AttackTargetRow = ({
     actor?.testUserPermission(game.user, "OBSERVER") ?? false;
   const [busy, setBusy] = useState(false);
 
-  const withBusy = (fn: () => Promise<void>) => async () => {
-    setBusy(true);
-    try {
-      await fn();
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const onChangeCover = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    void updateTarget(target.id, { cover: e.currentTarget.value as Cover });
-  };
-
-  const onChangeArmor = (e: React.FocusEvent<HTMLInputElement>) => {
-    const text = e.currentTarget.value.trim();
-    const armorOverride = text === "" ? null : Number(text);
-    if (armorOverride !== null && Number.isNaN(armorOverride)) return;
-    if (armorOverride === resolved.armor) return;
-    void updateTarget(target.id, { armorOverride });
-  };
-
-  const onRollDamage = withBusy(async () => {
-    const latest = getAttackData(msg);
-    const latestTarget = latest?.targets.find((t) => t.id === target.id);
-    if (!latest || !latestTarget) return;
-    const filled = await fillMissingDamageRolls(latest, latestTarget);
-    await showRolls(filled.rolls);
-    await setAttackData(msg, replaceTarget(filled.attack, filled.target));
-  });
-
   // when the GM is doing it for us, the card will re-render (and so reset)
   // once they have. Until then, stay busy so a double-click can't send a
   // second request - but not forever, in case the GM never answers.
-  const applyOrUndo = (undo: boolean) => async () => {
+  const runEdit = async (edit: AttackEdit) => {
     setBusy(true);
-    let outcome: Awaited<ReturnType<typeof applyAttackDamage>> = "failed";
+    let outcome: Awaited<ReturnType<typeof editAttack>> = "failed";
     try {
-      outcome = await applyAttackDamage(msg, target, undo);
+      outcome = await editAttack(msg, edit);
     } finally {
       if (outcome === "requested") {
         setTimeout(() => setBusy(false), gmRequestTimeoutMs);
@@ -184,8 +140,28 @@ const AttackTargetRow = ({
       }
     }
   };
-  const onApply = applyOrUndo(false);
-  const onUndo = applyOrUndo(true);
+
+  const updateTarget = (update: TargetUpdate) =>
+    runEdit({ kind: "updateTarget", targetId: target.id, update });
+
+  const onChangeCover = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    void updateTarget({ cover: e.currentTarget.value as Cover });
+  };
+
+  const onChangeArmor = (e: React.FocusEvent<HTMLInputElement>) => {
+    const text = e.currentTarget.value.trim();
+    const armorOverride = text === "" ? null : Number(text);
+    if (armorOverride !== null && Number.isNaN(armorOverride)) return;
+    if (armorOverride === resolved.armor) return;
+    void updateTarget({ armorOverride });
+  };
+
+  const onRollDamage = () =>
+    runEdit({ kind: "rollDamage", targetId: target.id });
+  const onApply = () =>
+    runEdit({ kind: "applyDamage", targetId: target.id, undo: false });
+  const onUndo = () =>
+    runEdit({ kind: "applyDamage", targetId: target.id, undo: true });
 
   // Shot Dry's extra damage goes to a lone target automatically; with more,
   // the attacker picks up to two. Once any of those has had damage applied,
@@ -200,14 +176,10 @@ const AttackTargetRow = ({
     canEdit && attack.targets.length > 1 && !shotDryLocked;
 
   const onChangeShotDry = (e: React.ChangeEvent<HTMLInputElement>) => {
-    void updateTarget(target.id, { shotDryBonus: e.currentTarget.checked });
+    void updateTarget({ shotDryBonus: e.currentTarget.checked });
   };
 
-  const onRemove = async () => {
-    const latest = getAttackData(msg);
-    if (!latest) return;
-    await setAttackData(msg, removeTarget(latest, target.id));
-  };
+  const onRemove = () => runEdit({ kind: "removeTarget", targetId: target.id });
 
   const damage = resolved.damage;
   const shownHealth = isApplied
@@ -323,6 +295,9 @@ const AttackTargetRow = ({
             <select
               value={target.cover}
               onChange={onChangeCover}
+              aria-label={getTranslated("CoverForTokenName", {
+                TokenName: actor?.name ?? target.name,
+              })}
               css={{ width: "100%" }}
             >
               {(Object.keys(coverText) as Cover[]).map((cover) => (
@@ -551,45 +526,19 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
   const attack = getAttackData(msg);
   const canAct = canUserActOnAttack(game.user, msg) && msg.isOwner;
 
-  const updateTarget = async (
-    targetId: string,
-    update: Partial<AttackTargetData>,
-  ) => {
-    const latest = getAttackData(msg);
-    if (!latest) return;
-    await setAttackData(msg, {
-      ...latest,
-      targets: latest.targets.map((t) =>
-        t.id === targetId ? { ...t, ...update } : t,
-      ),
-    });
-  };
-
+  // which tokens are this user's targets, so work that out here
   const onAddTargets = async () => {
-    const latest = getAttackData(msg);
-    if (!latest) return;
-    const added = await addTargetsForTokens(
-      keepLoneShotDryTarget(latest),
-      pickTargetTokens(),
+    const tokenUuids = pickTargetTokens().flatMap((token) =>
+      token.uuid ? [token.uuid] : [],
     );
-    // nothing new (e.g. no tokens targeted), so leave the attack alone
-    if (added.attack.targets.length === latest.targets.length) return;
-    await showRolls(added.rolls);
-    await setAttackData(msg, added.attack);
+    if (tokenUuids.length === 0) return;
+    await editAttack(msg, { kind: "addTargets", tokenUuids });
   };
 
   const onSetTarget = async () => {
-    const latest = getAttackData(msg);
-    if (!latest) return;
-    const token = pickSingleTargetToken();
-    if (!token) return;
-    if (latest.targets.some((t) => t.tokenUuid === token.uuid)) return;
-    const filled = await fillMissingDamageRolls(
-      latest,
-      setSingleTarget(latest, createAttackTarget(token)).targets[0],
-    );
-    await showRolls(filled.rolls);
-    await setAttackData(msg, { ...filled.attack, targets: [filled.target] });
+    const tokenUuid = pickSingleTargetToken()?.uuid;
+    if (!tokenUuid) return;
+    await editAttack(msg, { kind: "setTarget", tokenUuid });
   };
 
   if (!attack) {
@@ -613,7 +562,6 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
           attack={attack}
           target={target}
           canAct={canAct}
-          updateTarget={updateTarget}
         />
       ))}
       {/* once damage has been applied, the attack is done with */}

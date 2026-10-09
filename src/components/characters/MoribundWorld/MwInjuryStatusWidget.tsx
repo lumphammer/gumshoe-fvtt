@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-
 import { getTranslated } from "../../../functions/getTranslated";
 import { assertGame } from "../../../functions/isGame";
+import { useIsEditable } from "../../../hooks/useIsEditable";
 import type { MwInjuryStatus } from "../../../types";
 
 interface MwInjuryStatusWidgetProps {
@@ -15,18 +14,14 @@ export const MwInjuryStatusWidget = ({
 }: MwInjuryStatusWidgetProps) => {
   assertGame(game);
 
-  const [display, setDisplay] = useState(status);
-
-  useEffect(() => {
-    void setStatus(display);
-  }, [display, setStatus]);
+  const isEditable = useIsEditable();
 
   const color =
-    display === "uninjured"
+    status === "uninjured"
       ? "#0f07"
-      : display === "hurt"
+      : status === "hurt"
         ? "#770f"
-        : display === "down" || display === "unconscious"
+        : status === "down" || status === "unconscious"
           ? "#950f"
           : // dead
             "#f00f";
@@ -49,9 +44,13 @@ export const MwInjuryStatusWidget = ({
         css={{
           width: "100%",
         }}
-        value={display}
+        // uncontrolled, so a new choice shows straight away; the key resets
+        // it when the saved status changes
+        key={status}
+        defaultValue={status}
+        disabled={!isEditable}
         onChange={(e) => {
-          setDisplay(e.currentTarget.value as MwInjuryStatus);
+          void setStatus(e.currentTarget.value as MwInjuryStatus);
         }}
       >
         <option value={"uninjured"}>{getTranslated("Uninjured")}</option>

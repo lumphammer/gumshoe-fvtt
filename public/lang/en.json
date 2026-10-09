@@ -384,6 +384,7 @@
   "investigator.CoverExposed": "Exposed",
   "investigator.CoverPartial": "Partial cover",
   "investigator.CoverFull": "Full cover",
+  "investigator.CoverForTokenName": "Cover for {TokenName}",
   "investigator.AddTarget": "Add target",
   "investigator.ChangeTarget": "Change target",
   "investigator.Missing": "missing",

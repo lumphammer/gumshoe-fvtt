@@ -9,6 +9,7 @@ import { absoluteCover } from "../absoluteCover";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
+import { Select } from "../inputs/Select";
 import { TextInput } from "../inputs/TextInput";
 import { EquipmentField } from "./EquipmentField";
 
@@ -56,7 +57,7 @@ export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
           }}
         >
           <div>
-            <select
+            <Select
               value={selectedCat}
               onChange={onChangeCategory}
               css={{
@@ -70,7 +71,7 @@ export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
                 </option>
               ))}
               <option value="">{getTranslated("Uncategorized")}</option>
-            </select>
+            </Select>
           </div>
         </div>
       </GridField>

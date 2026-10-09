@@ -58,6 +58,8 @@ These docs were mostly written for my own benefit, so feel free to reach out to 
 
 Before committing, run `pnpm check`. It runs the typecheck, tests, linter, format check and build, which is what CI does.
 
+There are also browser tests, which drive a real Foundry with Playwright: see [`e2e/README.md`](e2e/README.md).
+
 If you're working with an AI coding agent, see also [`AGENTS.md`](AGENTS.md), which collects the less obvious things about this codebase.
 
 

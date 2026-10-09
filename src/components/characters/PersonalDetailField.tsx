@@ -1,4 +1,5 @@
 import type { PCActor } from "../../module/actors/pc";
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { GridField } from "../inputs/GridField";
 import { PersonalDetailSlug } from "./PersonalDetailSlug";
 import { Slug } from "./Slug";
@@ -14,6 +15,7 @@ export const PersonalDetailField = ({
 }) => {
   const personalDetailItems =
     actor.system.getPersonalDetailsInSlotIndex(slotIndex);
+  const isEditable = useIsEditable();
 
   return (
     <GridField
@@ -31,7 +33,7 @@ export const PersonalDetailField = ({
       {personalDetailItems.map((item) => (
         <PersonalDetailSlug key={item.id} item={item} />
       ))}
-      {personalDetailItems.length === 0 && (
+      {personalDetailItems.length === 0 && isEditable && (
         <Slug
           onClick={() => {
             void actor.system.createPersonalDetail(slotIndex); //

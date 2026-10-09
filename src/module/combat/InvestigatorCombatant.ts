@@ -1,3 +1,12 @@
+type ResourceHandler = (resource: number | string | null) => void;
+
+/**
+ * Handlers registered with `registerResourceHandler`, per combatant. These
+ * can't live in a class field: Foundry prepares a document's data (which
+ * calls `updateResource`) in its constructor, before our fields are set up.
+ */
+const resourceHandlers = new WeakMap<object, Set<ResourceHandler>>();
+
 /**
  * Override base Combatant class to override the initiative formula.
  */
@@ -41,22 +50,21 @@ export class InvestigatorCombatant<
     return super._onUpdateOperation(documents, operation, user);
   }
 
-  // store of registered handlers
-  protected _resourceHandlers: Set<(resource: number | string | null) => void> =
-    new Set();
-
   // add a new handler
-  registerResourceHandler(
-    handler: (resource: number | string | null) => void,
-  ): () => void {
-    this._resourceHandlers.add(handler);
+  registerResourceHandler(handler: ResourceHandler): () => void {
+    let handlers = resourceHandlers.get(this);
+    if (handlers === undefined) {
+      handlers = new Set();
+      resourceHandlers.set(this, handlers);
+    }
+    handlers.add(handler);
     handler(this.resource);
-    return () => this._resourceHandlers.delete(handler);
+    return () => handlers.delete(handler);
   }
 
   override updateResource() {
     const resource = super.updateResource();
-    for (const handler of this._resourceHandlers.values()) {
+    for (const handler of resourceHandlers.get(this) ?? []) {
       handler(resource);
     }
     return resource;

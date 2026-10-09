@@ -1,13 +1,17 @@
 import { useState } from "react";
 
 import type { AttackMessage } from "../../module/attacks/attackTargets";
-import { getBurstBulletsFiredLive } from "../../module/attacks/attackTargets";
+import {
+  getBurstBulletsFiredLive,
+  pickSingleTargetToken,
+} from "../../module/attacks/attackTargets";
 import type { WalkingFirePayment } from "../../module/attacks/rules";
 import { burstMaxBullets } from "../../module/attacks/rules";
 import type { AttackData } from "../../module/attacks/types";
+import { editAttack } from "../../module/attacks/editAttack";
 import {
   getWalkingFirePaymentsLive,
-  walkFire,
+  planWalkFire,
 } from "../../module/attacks/walkingFire";
 import { Translate } from "../Translate";
 
@@ -32,10 +36,23 @@ export const WalkingFireActions = ({
     attack.fireMode === "burst" &&
     getBurstBulletsFiredLive(attack) >= burstMaxBullets;
 
+  // the target is whoever this user has targeted, and if it can't be done,
+  // they're the one who needs to know why, so check here before asking
   const onWalk = (payment: WalkingFirePayment) => async () => {
+    const token = pickSingleTargetToken();
+    if (!token?.uuid) return;
+    const plan = planWalkFire(msg, payment, token);
+    if ("warning" in plan) {
+      ui.notifications?.warn(plan.warning);
+      return;
+    }
     setBusy(true);
     try {
-      await walkFire(msg, payment);
+      await editAttack(msg, {
+        kind: "walkFire",
+        tokenUuid: token.uuid,
+        payment,
+      });
     } finally {
       setBusy(false);
     }

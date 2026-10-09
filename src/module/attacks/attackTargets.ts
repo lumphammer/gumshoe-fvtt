@@ -253,12 +253,18 @@ export function pickSingleTargetToken({
   return tokens[0];
 }
 
-/** Show rolls made after the message was created, if Dice So Nice is around */
-export async function showRolls(rolls: AnyRoll[]): Promise<void> {
+/**
+ * Show rolls made after the message was created, if Dice So Nice is around,
+ * as rolled by `user` (e.g. the player whose edit the GM's client is making).
+ */
+export async function showRolls(
+  rolls: AnyRoll[],
+  user?: User | null,
+): Promise<void> {
   assertGame(game);
   const dice3d = (game as any).dice3d;
   if (!dice3d) return;
   for (const roll of rolls) {
-    await dice3d.showForRoll(roll, game.user, true);
+    await dice3d.showForRoll(roll, user ?? game.user, true);
   }
 }

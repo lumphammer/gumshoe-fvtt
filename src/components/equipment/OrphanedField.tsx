@@ -46,7 +46,7 @@ export const OrphanedField = ({
           gridRow: index * gridRowsPerField + 1,
         }}
         onClick={async () => {
-          await navigator.clipboard.writeText(fieldId);
+          await game.clipboard?.copyPlainText(fieldId);
           ui.notifications?.info(`Copied field ID "${fieldId}" to clipboard`);
         }}
       >
@@ -78,7 +78,7 @@ export const OrphanedField = ({
           gridRow: index * gridRowsPerField + 2,
         }}
         onClick={async () => {
-          await navigator.clipboard.writeText(String(fieldValue));
+          await game.clipboard?.copyPlainText(String(fieldValue));
           ui.notifications?.info("Copied value to clipboard");
         }}
       >

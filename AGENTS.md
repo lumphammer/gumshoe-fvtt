@@ -25,6 +25,17 @@ translations, adding fields and settings, releases).
 - To force dice in testing: `CONFIG.Dice.randomUniform = () => 0.01` (rolls
   6s), `0.99` (1s); `delete CONFIG.Dice.randomUniform` to undo.
 
+## Browser tests
+
+- Playwright tests live in `e2e/` (see `e2e/README.md`). They run against
+  `build/` on a separate Foundry (`pnpm e2e:foundry up`, port 30099), never
+  the dev one: global setup deletes and recreates its world on every run.
+  `pnpm build` before `pnpm e2e`.
+- Not part of `pnpm check`. Run `pnpm e2e` when a change touches something a
+  test covers.
+- Only one run at a time per Foundry: if `pnpm e2e` says another run is using
+  it, the user may be running the tests too. Wait, rather than stopping it.
+
 ## Data models
 
 - A schema field's object or array `initial` must be a function
@@ -100,11 +111,14 @@ behind them (the book has errata; the rules summary wins).
   across targets).
 - Damage rolls belong to the attack, not the target (`unusedDamageRolls`), so
   removing and re-adding a target never changes the damage.
-- Applying damage to a token you don't own goes to the active GM over the
-  system socket; apply/undo are serialised per target with
-  `createKeyedQueue`.
-- Card edits are read-modify-write of the whole `system`, so two clients
-  editing one card at once can race. Known, not yet fixed card-wide.
+- Every change to an attack card (cover, targets, damage rolls, walking
+  fire, apply/undo) is an `AttackEdit` (`attackEdits.ts`) made through
+  `editAttack` (`editAttack.ts`). They all run on the active GM's client,
+  one at a time per card, because each is a read-modify-write of the whole
+  `system`; two clients writing at once would lose an edit. Work out
+  anything that depends on the requester (their targets, warnings) before
+  sending, and re-check on the GM's side. Don't write the card any other
+  way.
 - `performAttack` holds a per-weapon lock, re-checks pools and ammo, takes the
   points before rolling, and refunds (relatively) if anything throws.
 

@@ -1,4 +1,5 @@
 import { hasOwnProperty } from "./functions/utilities";
+import { isAttackEdit } from "./module/attacks/attackEdits";
 import type { EquipmentFieldType, SystemSocketAction } from "./types";
 
 export function isSystemSocketAction(x: unknown): x is SystemSocketAction {
@@ -16,17 +17,14 @@ export function isSystemSocketAction(x: unknown): x is SystemSocketAction {
       x["combatantId"].length > 0
     );
   }
-  if (x["type"] === "applyAttackDamage") {
+  if (x["type"] === "editAttack") {
     return (
-      Object.keys(x).length === 4 &&
+      Object.keys(x).length === 3 &&
       hasOwnProperty(x, "messageId") &&
       typeof x["messageId"] === "string" &&
       x["messageId"].length > 0 &&
-      hasOwnProperty(x, "targetId") &&
-      typeof x["targetId"] === "string" &&
-      x["targetId"].length > 0 &&
-      hasOwnProperty(x, "undo") &&
-      typeof x["undo"] === "boolean"
+      hasOwnProperty(x, "edit") &&
+      isAttackEdit(x["edit"])
     );
   }
   return false;

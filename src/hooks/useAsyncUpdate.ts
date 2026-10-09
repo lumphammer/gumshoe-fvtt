@@ -24,16 +24,22 @@ export const useAsyncUpdate = (
     focusedRef.current = true;
   }, []);
 
-  // callback for blur
-  const onBlur = useCallback(() => {
-    focusedRef.current = false;
-  }, []);
-
   // we only fire the update event every so often to avoid spamming the
   // network
   const onChangeThrottled = useMemo(() => {
     return throttle(onChangeOrig, inputThrottleTime);
   }, [onChangeOrig]);
+
+  // callback for blur. Save any change that's waiting, so it's in before
+  // whatever took the focus (e.g. a Save button) acts
+  const onBlur = useCallback(() => {
+    focusedRef.current = false;
+    onChangeThrottled.flush();
+  }, [onChangeThrottled]);
+
+  // and don't lose a waiting change when the input goes away, or stops using
+  // this callback
+  useEffect(() => () => onChangeThrottled.flush(), [onChangeThrottled]);
 
   const onChange = useCallback(
     (value: string) => {

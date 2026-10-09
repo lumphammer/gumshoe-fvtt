@@ -2,6 +2,7 @@ import { cx } from "@emotion/css";
 import type { ChangeEvent } from "react";
 import { useCallback, useContext } from "react";
 
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { IdContext } from "../IdContext";
 import type { ValidationResult } from "./types";
@@ -30,6 +31,7 @@ export const TextInput = ({
   validation,
 }: TextInputProps) => {
   const id = useContext(IdContext);
+  const isEditable = useIsEditable();
 
   const onChangeCb = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +68,7 @@ export const TextInput = ({
       onChange={onChangeCb}
       onFocus={onFocus}
       onBlur={onBlur}
-      disabled={disabled}
+      disabled={disabled || !isEditable}
       placeholder={placeholder}
     />
   );

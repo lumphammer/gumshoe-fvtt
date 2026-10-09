@@ -1,5 +1,5 @@
 import * as constants from "../constants";
-import type { ApplyAttackDamageArgs, SystemSocketAction } from "../types";
+import type { EditAttackArgs, SystemSocketAction } from "../types";
 import { dispatchSystemSocketActionToHooks } from "./systemSocketActions";
 
 interface NameHaver {
@@ -192,10 +192,10 @@ export function requestTurnPass(combatantId: string | null | undefined) {
 }
 
 /**
- * request the GM's client to apply (or undo) attack damage to a target
+ * request the GM's client to make a change to an attack card
  */
-export function requestApplyAttackDamage(args: ApplyAttackDamageArgs) {
-  broadcastSystemSocketAction({ type: "applyAttackDamage", ...args });
+export function requestEditAttack(args: EditAttackArgs) {
+  broadcastSystemSocketAction({ type: "editAttack", ...args });
 }
 
 export function requestNextTurn() {
@@ -407,14 +407,28 @@ export function debounce<T extends (...args: any[]) => any>(
  * function is eventually called, it will be called with the most recent
  * arguments. This fits with a user input scenario where you don't care about
  * intermediate values, i.e. the "f", "fr", "fre" on the way to "fred" .
+ *
+ * `flush()` makes the waiting call, if there is one, straight away.
  */
 export function throttle<T extends (...args: any[]) => any>(
   fn: T,
   period: number,
-): (...args: Parameters<T>) => void {
+): ((...args: Parameters<T>) => void) & { flush: () => void } {
   let startAt = 0;
   let timeout: ReturnType<typeof setTimeout> | null = null;
-  return (...args: Parameters<T>) => {
+  let waitingArgs: Parameters<T> | null = null;
+  const run = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    if (waitingArgs === null) return;
+    const args = waitingArgs;
+    waitingArgs = null;
+    startAt = Date.now();
+    fn(...args);
+  };
+  const throttled = (...args: Parameters<T>) => {
     const now = Date.now();
     if (now - startAt > period) {
       startAt = now;
@@ -423,12 +437,10 @@ export function throttle<T extends (...args: any[]) => any>(
     if (timeout) {
       clearTimeout(timeout);
     }
-    timeout = setTimeout(() => {
-      fn(...args);
-      timeout = null;
-      startAt = Date.now();
-    }, delay);
+    waitingArgs = args;
+    timeout = setTimeout(run, delay);
   };
+  return Object.assign(throttled, { flush: run });
 }
 
 /**
