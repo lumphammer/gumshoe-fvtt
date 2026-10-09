@@ -77,11 +77,6 @@ export const isNullOrEmptyString = (x: any) => {
   return x === null || x === undefined || x === "";
 };
 
-// Folder type is a bit fucky rn
-export const getFolderDescendants = <T extends Document>(folder: any): T[] => {
-  return [...folder.children.flatMap(getFolderDescendants), ...folder.content];
-};
-
 // version of Object.prototype.hasOwnProperty that's safe even when prototype
 // has been overridden
 export const hasOwnProperty = (x: any, y: string): x is { [y]: unknown } =>
