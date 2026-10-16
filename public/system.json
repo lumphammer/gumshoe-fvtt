@@ -29,7 +29,8 @@
             "esoterroristsAbilities",
             "moribundWorldAbilities",
             "mutantCityBluesAbilities",
-            "mutantCityBluesPowers"
+            "mutantCityBluesPowers",
+            "fallOfDeltaGreenAbilities"
           ]
         },
         {
@@ -167,6 +168,13 @@
       "label": "Mutant City Blues Genetic Risk Factors",
       "system": "investigator",
       "path": "./packs/mutantCityBluesGeneticRiskFactors",
+      "type": "Item"
+    },
+    {
+      "name": "fallOfDeltaGreenAbilities",
+      "label": "Fall of DELTA GREEN Abilities",
+      "system": "investigator",
+      "path": "./packs/fallOfDeltaGreenAbilities",
       "type": "Item"
     }
   ],

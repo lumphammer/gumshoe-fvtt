@@ -52,6 +52,7 @@ export const packNames = {
   mutantCityBluesAbilities: "mutantCityBluesAbilities",
   mutantCityBluesNPCAbilities: "mutantCityBluesNPCAbilities",
   mutantCityBluesPowers: "mutantCityBluesPowers",
+  fallOfDeltaGreenAbilities: "fallOfDeltaGreenAbilities",
 } as const;
 
 export const npcPackName = "opponentAbilities";

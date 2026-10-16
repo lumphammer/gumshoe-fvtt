@@ -1,0 +1,51 @@
+name: Stability
+type: generalAbility
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes: ""
+  allowPoolToExceedRating: false
+  boost: false
+  categoryId: General
+  excludeFromGeneralRefresh: true
+  hasSpecialities: false
+  max: 99
+  min: 0
+  occupational: false
+  pool: 4
+  rating: 4
+  refreshesDaily: false
+  showTracker: true
+  situationalModifiers: []
+  specialities: []
+  specialitiesMode: one
+  unlocks: []
+  canBeInvestigative: false
+  goesFirstInCombat: false
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  linkToResource: false
+  resourceId: ""
+  hideIfZeroRated: false
+flags: {}
+_id: aGz0GHsEXPXfZigD
+effects: []
+folder: null
+ownership:
+  default: 0
+  uGKGNvlghwYPLPsN: 3
+_stats:
+  coreVersion: "14.366"
+  systemId: investigator
+  systemVersion: "10.115"
+  createdTime: 1786986401611
+  modifiedTime: 1786986401612
+  lastModifiedBy: uGKGNvlghwYPLPsN
+  compendiumSource: null
+  duplicateSource: null
+  exportSource: null
+sort: 0
+_key: "!items!aGz0GHsEXPXfZigD"

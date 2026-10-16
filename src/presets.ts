@@ -364,6 +364,46 @@ export const mutantCityBluesPreset: PresetV1 = {
   ],
 };
 
+export const fallOfDeltaGreenPreset: PresetV1 = {
+  schemaVersion: "v1",
+  displayName: "Fall of DELTA GREEN (built-in)",
+  defaultThemeName: "deltaGroovyTheme",
+  investigativeAbilityCategories: ["Academic", "Interpersonal", "Technical"],
+  generalAbilityCategories: ["General"],
+  combatAbilities: [
+    "Unarmed Combat",
+    "Melee Weapons",
+    "Firearms",
+    "Heavy Weapons",
+  ],
+  occupationLabel: "Department",
+  personalDetails: [
+    { name: "Military Service", type: "item" },
+    { name: "Motivation", type: "text" },
+  ],
+  longNotes: ["Service Record/Bio", "Bonds", "Disorders", "Contacts", "Notes"],
+  newPCPacks: [`${systemId}.${packNames.fallOfDeltaGreenAbilities}`],
+  newNPCPacks: [`${systemId}.${npcPackName}`],
+  useBoost: false,
+  useMwStyleAbilities: false,
+  mwUseAlternativeItemTypes: false,
+  useMwInjuryStatus: false,
+  genericOccupation: "Agent",
+  showEmptyInvestigativeCategories: true,
+  pcStats: pathOfCthulhuPreset.pcStats,
+  npcStats: pathOfCthulhuPreset.npcStats,
+  useDamageApplication: true,
+  useGunfireOnHumans: true,
+  useCriticalHits: true,
+  useLethalityAndAutofire: true,
+  useShotDryAndJams: true,
+  useWalkingFire: true,
+  useWoundStatusEffects: true,
+  walkingFireSpendAbilities: ["Athletics"],
+  fullAutoSpendAbilities: ["Athletics", "Stability"],
+  equipmentCategories: { general: { name: "General", fields: {} } },
+};
+
 export const basePresets = {
   pathOfCthulhuPreset,
   niceBlackAgentsPreset,
@@ -373,4 +413,5 @@ export const basePresets = {
   moribundWorldPreset,
   esoterroristsPreset,
   mutantCityBluesPreset,
+  fallOfDeltaGreenPreset,
 };
