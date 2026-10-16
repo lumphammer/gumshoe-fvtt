@@ -97,6 +97,9 @@ translations, adding fields and settings, releases).
 
 `docs/fodg-combat-plan.md` holds the rules as implemented and the decisions
 behind them (the book has errata; the rules summary wins).
+`docs/fodg-preset.md` covers the preset and its packs, and the remaining
+gaps. We can ship ability names and game numbers from the book, but never its
+descriptive text.
 
 - Attacks are an `attack` chat message subtype (`AttackMessageModel`). The
   rules code uses a plain `AttackData` type, kept in step with the schema by
