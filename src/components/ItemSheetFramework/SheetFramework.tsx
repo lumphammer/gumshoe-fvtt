@@ -32,7 +32,9 @@ export const ItemSheetFramework = ({
 
   useEffect(() => {
     // XXX I'm sure we can do better but the types are weird right now
-    void app.render({ force: true });
+    // (not forced: that would bring the sheet to the front, and this can run
+    // a while after it opens, by when another window may have opened)
+    void app.render();
   }, [app, configMode]);
 
   return (

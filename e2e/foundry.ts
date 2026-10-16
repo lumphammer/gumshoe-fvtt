@@ -96,7 +96,7 @@ async function waitForGameAndWatchNotifications(page: Page) {
  *
  * The canvas is off unless a test file asks for it with
  * `test.use({ canvas: true })`. Settings changed with `setSettings` go back
- * to how they were after each test.
+ * to how they were after each test. The chat log starts empty.
  */
 export const test = base.extend<{
   pageErrors: string[];
@@ -115,6 +115,11 @@ export const test = base.extend<{
     await watchForErrors(page, pageErrors, "GM");
     await page.goto("/game");
     await waitForGameAndWatchNotifications(page);
+    // the tests share a world, so clear out earlier tests' chat: otherwise
+    // `lastChatMessage` can find one of their cards before this test's arrives
+    await page.evaluate(async () => {
+      await ChatMessage.deleteDocuments([], { deleteAll: true });
+    });
     await use(page);
     const settingsToRestore = changedSettings.get(page);
     if (settingsToRestore) {
