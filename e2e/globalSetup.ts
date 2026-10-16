@@ -139,7 +139,16 @@ async function resetWorld(browser: Browser) {
       // without an admin password, only a GM can shut the world down
       const page = await browser.newPage({ baseURL: foundryUrl });
       await joinAsGamemaster(page);
-      await page.evaluate(() => game.shutDown());
+      // what `game.shutDown()` sends, without its "other users are
+      // connected" dialog, which would wait for ever if an earlier run's
+      // browsers are still connected (e.g. after it was killed)
+      await page.evaluate(() =>
+        fetch(foundry.utils.getRoute("setup"), {
+          method: "POST",
+          body: new URLSearchParams({ action: "worldShutdown" }),
+          redirect: "manual",
+        }),
+      );
       await page.close();
       await waitForFoundryState(api, "setup");
     }

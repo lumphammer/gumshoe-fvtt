@@ -37,16 +37,23 @@ async function pokeEverything(
   const count = Math.min(await controls.count(), 300);
   for (let i = 0; i < count; i++) {
     const control = controls.nth(i);
-    // disabled controls are what we want, so skip them
+    // disabled controls are what we want, so skip them. Poking one can take
+    // others away (or the tab may still have been swapping in when we
+    // counted), and `evaluate` would wait for them for ever, hence the
+    // timeout.
     const state = await control
-      .evaluate((e) => ({
-        tag: e.tagName.toLowerCase(),
-        usable:
-          !(e as HTMLButtonElement).disabled &&
-          e.getAttribute("aria-disabled") !== "true" &&
-          e.getAttribute("contenteditable") !== "false" &&
-          e.checkVisibility(),
-      }))
+      .evaluate(
+        (e) => ({
+          tag: e.tagName.toLowerCase(),
+          usable:
+            !(e as HTMLButtonElement).disabled &&
+            e.getAttribute("aria-disabled") !== "true" &&
+            e.getAttribute("contenteditable") !== "false" &&
+            e.checkVisibility(),
+        }),
+        undefined,
+        { timeout: 1000 },
+      )
       .catch(() => ({ tag: "", usable: false }));
     if (!state.usable) continue;
     const { tag } = state;
@@ -74,7 +81,9 @@ async function pokeEverything(
       // say which control it was, to make it easier to find
       pageErrors.push(
         `  ...after poking: ${await control
-          .evaluate((e) => e.outerHTML.slice(0, 200))
+          .evaluate((e) => e.outerHTML.slice(0, 200), undefined, {
+            timeout: 1000,
+          })
           .catch(() => "(gone)")}`,
       );
     }

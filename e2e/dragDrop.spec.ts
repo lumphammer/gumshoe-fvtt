@@ -322,13 +322,17 @@ test("dragging equipment categories into a new order, by mouse and by keyboard",
   // (waiting for each step to take before the next: the handle shows as
   // pressed while it's picked up, and screen readers hear where it's over)
   const charlie = handles.nth(1);
+  const status = app.locator('[role="status"][aria-live]');
   await charlie.focus();
   await page.keyboard.press("Space");
   await expect(charlie).toHaveAttribute("aria-pressed", "true");
-  await page.keyboard.press("ArrowUp");
-  await expect(app.locator('[role="status"][aria-live]')).toContainText(
-    "over droppable area 0",
+  // it can't move until it has measured where it can go, and once it has,
+  // it says what it's over
+  await expect(status).toContainText(
+    "Draggable item 1 was moved over droppable area 1",
   );
+  await page.keyboard.press("ArrowUp");
+  await expect(status).toContainText("over droppable area 0");
   await page.keyboard.press("Space");
   await expect(charlie).not.toHaveAttribute("aria-pressed", "true");
   await expect(app.locator(".sortable-table a")).toHaveText([
