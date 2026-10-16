@@ -375,6 +375,7 @@ export const fallOfDeltaGreenPreset: PresetV1 = {
     "Melee Weapons",
     "Firearms",
     "Heavy Weapons",
+    "Fighting",
   ],
   occupationLabel: "Department",
   personalDetails: [

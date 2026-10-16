@@ -6,7 +6,7 @@ system:
   allowPoolToExceedRating: false
   boost: false
   categoryId: General
-  excludeFromGeneralRefresh: true
+  excludeFromGeneralRefresh: false
   hasSpecialities: true
   max: 99
   min: 0

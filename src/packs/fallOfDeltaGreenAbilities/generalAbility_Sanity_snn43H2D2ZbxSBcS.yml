@@ -27,8 +27,8 @@ system:
   combatBonus: 0
   damageBonus: 0
   isPushPool: false
-  linkToResource: false
-  resourceId: ""
+  linkToResource: true
+  resourceId: sanity
   hideIfZeroRated: false
 flags: {}
 _id: snn43H2D2ZbxSBcS

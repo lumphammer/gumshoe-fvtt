@@ -9,7 +9,7 @@ system:
   excludeFromGeneralRefresh: true
   hasSpecialities: false
   max: 99
-  min: 0
+  min: -12
   occupational: false
   pool: 4
   rating: 4
@@ -27,8 +27,8 @@ system:
   combatBonus: 0
   damageBonus: 0
   isPushPool: false
-  linkToResource: false
-  resourceId: ""
+  linkToResource: true
+  resourceId: health
   hideIfZeroRated: false
 flags: {}
 _id: 0hIxwLZG4wmBXHvj
