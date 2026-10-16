@@ -1,0 +1,50 @@
+_id: u0H9q8NKosgzKCPl
+name: Grenade launcher
+type: weapon
+img: systems/investigator/assets/icons/trench-knife.webp
+system:
+  notes: ""
+  ability: Firearms
+  damage: 0
+  pointBlankDamage: 0
+  closeRangeDamage: 0
+  nearRangeDamage: 0
+  longRangeDamage: 0
+  isPointBlank: false
+  isCloseRange: true
+  isNearRange: true
+  isLongRange: true
+  usesAmmo: true
+  ammo:
+    min: 0
+    max: 1
+    value: 1
+  ammoPerShot: 1
+  ammoPerBurst: 3
+  ammoPerFullAuto: 10
+  cost: 0
+  isGunfire: false
+  fireModes: single
+  lethality:
+    rating: 1
+    asterisks: 1
+    hs: 0
+  jammed: false
+  pendingJam: null
+effects: []
+flags: {}
+folder: null
+sort: 2700000
+ownership:
+  default: 0
+_stats:
+  coreVersion: "14.366"
+  systemId: investigator
+  systemVersion: "10.124"
+  createdTime: 1792175327401
+  modifiedTime: 1792175327401
+  lastModifiedBy: null
+  compendiumSource: null
+  duplicateSource: null
+  exportSource: null
+_key: "!items!u0H9q8NKosgzKCPl"

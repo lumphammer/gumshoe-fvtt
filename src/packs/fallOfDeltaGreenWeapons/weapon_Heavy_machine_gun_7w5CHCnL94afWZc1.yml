@@ -1,0 +1,50 @@
+_id: 7w5CHCnL94afWZc1
+name: Heavy machine gun
+type: weapon
+img: systems/investigator/assets/icons/bullets.webp
+system:
+  notes: ""
+  ability: Heavy Weapons
+  damage: 2
+  pointBlankDamage: 2
+  closeRangeDamage: 0
+  nearRangeDamage: 0
+  longRangeDamage: 0
+  isPointBlank: true
+  isCloseRange: true
+  isNearRange: true
+  isLongRange: true
+  usesAmmo: true
+  ammo:
+    min: 0
+    max: 100
+    value: 100
+  ammoPerShot: 1
+  ammoPerBurst: 3
+  ammoPerFullAuto: 10
+  cost: 0
+  isGunfire: true
+  fireModes: alwaysAuto
+  lethality:
+    rating: 2
+    asterisks: 0
+    hs: 0
+  jammed: false
+  pendingJam: null
+effects: []
+flags: {}
+folder: null
+sort: 2400000
+ownership:
+  default: 0
+_stats:
+  coreVersion: "14.366"
+  systemId: investigator
+  systemVersion: "10.124"
+  createdTime: 1792175327401
+  modifiedTime: 1792175327401
+  lastModifiedBy: null
+  compendiumSource: null
+  duplicateSource: null
+  exportSource: null
+_key: "!items!7w5CHCnL94afWZc1"

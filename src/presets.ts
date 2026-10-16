@@ -384,7 +384,7 @@ export const fallOfDeltaGreenPreset: PresetV1 = {
   ],
   longNotes: ["Service Record/Bio", "Bonds", "Disorders", "Contacts", "Notes"],
   newPCPacks: [`${systemId}.${packNames.fallOfDeltaGreenAbilities}`],
-  newNPCPacks: [`${systemId}.${npcPackName}`],
+  newNPCPacks: [`${systemId}.${packNames.fallOfDeltaGreenOpponentAbilities}`],
   useBoost: false,
   useMwStyleAbilities: false,
   mwUseAlternativeItemTypes: false,

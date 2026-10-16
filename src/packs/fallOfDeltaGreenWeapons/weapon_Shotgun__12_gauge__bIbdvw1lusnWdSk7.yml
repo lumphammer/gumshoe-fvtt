@@ -1,0 +1,47 @@
+_id: bIbdvw1lusnWdSk7
+name: Shotgun (12-gauge)
+type: weapon
+img: systems/investigator/assets/icons/bullets.webp
+system:
+  notes: ""
+  ability: Firearms
+  damage: 1
+  pointBlankDamage: 2
+  closeRangeDamage: 1
+  nearRangeDamage: -1
+  longRangeDamage: 0
+  isPointBlank: true
+  isCloseRange: true
+  isNearRange: true
+  isLongRange: false
+  usesAmmo: true
+  ammo:
+    min: 0
+    max: 5
+    value: 5
+  ammoPerShot: 1
+  ammoPerBurst: 3
+  ammoPerFullAuto: 10
+  cost: 0
+  isGunfire: true
+  fireModes: single
+  lethality: null
+  jammed: false
+  pendingJam: null
+effects: []
+flags: {}
+folder: null
+sort: 2100000
+ownership:
+  default: 0
+_stats:
+  coreVersion: "14.366"
+  systemId: investigator
+  systemVersion: "10.124"
+  createdTime: 1792175327401
+  modifiedTime: 1792175327401
+  lastModifiedBy: null
+  compendiumSource: null
+  duplicateSource: null
+  exportSource: null
+_key: "!items!bIbdvw1lusnWdSk7"

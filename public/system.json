@@ -37,13 +37,17 @@
           "name": "NPC Abilities",
           "color": "#460c06",
           "sorting": "a",
-          "packs": ["opponentAbilities", "niceBlackAgentsNPCAbilities"]
+          "packs": [
+            "opponentAbilities",
+            "niceBlackAgentsNPCAbilities",
+            "fallOfDeltaGreenOpponentAbilities"
+          ]
         },
         {
           "name": "Equipment",
           "color": "#460c06",
           "sorting": "a",
-          "packs": ["srdWeapons"]
+          "packs": ["srdWeapons", "fallOfDeltaGreenWeapons"]
         },
         {
           "name": "Cards",
@@ -175,6 +179,20 @@
       "label": "Fall of DELTA GREEN Abilities",
       "system": "investigator",
       "path": "./packs/fallOfDeltaGreenAbilities",
+      "type": "Item"
+    },
+    {
+      "name": "fallOfDeltaGreenOpponentAbilities",
+      "label": "Fall of DELTA GREEN Opponent Abilities",
+      "system": "investigator",
+      "path": "./packs/fallOfDeltaGreenOpponentAbilities",
+      "type": "Item"
+    },
+    {
+      "name": "fallOfDeltaGreenWeapons",
+      "label": "Fall of DELTA GREEN Weapons",
+      "system": "investigator",
+      "path": "./packs/fallOfDeltaGreenWeapons",
       "type": "Item"
     }
   ],
