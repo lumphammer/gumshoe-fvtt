@@ -77,9 +77,17 @@ are constants: FoDG-shaped, not configurable.
 ### Sheet
 
 A **Bonds** tab on the PC sheet, shown when `useBonds` is on (like Cards).
-Each row: name, points stepper, a "DELTA GREEN" badge, a "Broken" badge (not
-crossed out, for legibility), notes, and actions. An add button creates a
-Bond.
+A table: name, badges ("DELTA GREEN", and "Broken" rather than crossing it
+out, for legibility; no header), and the rating as plain text, under an
+underlined header row like the ability categories'. The name takes at least
+a third of the width, and a long one up to half, then it's cut off with an
+ellipsis (the full name is its tooltip). The badges and the (right-aligned)
+rating take what they need, and an empty last column takes the slack, so the
+rating doesn't end up stranded out on the right. Badges never wrap, so their
+column is always wide enough for both; in a narrow sheet the name gives way
+first. The whole row opens the Bond's sheet, which has the editing and the
+actions: changing the rating by hand and burning should both be rare. An add
+button creates a Bond.
 
 ### Rules code
 
@@ -96,7 +104,8 @@ Foundry glue lives elsewhere.
 - `useBonds` setting, with its own top-level settings page. The other three
   settings arrive with the phases that use them.
 - Bonds tab (`src/components/bonds/`): add, points stepper, badges; name,
-  DELTA GREEN toggle, notes and delete on the Bond's sheet.
+  DELTA GREEN toggle, notes and delete on the Bond's sheet. (Later the tab
+  became a plain table, with the stepper and Burn only on the sheet.)
 - On in the FoDG preset, which no longer has a "Bonds" long note.
 - Browser tests in `e2e/bonds.spec.ts`.
 - The icon is a placeholder (`dark-squad.webp`, also used for parties).
@@ -116,8 +125,8 @@ Foundry glue lives elsewhere.
   term, and records them on the card (`data-bond-spends`, see
   `bondSpends.ts`) by name, so the card survives a Bond being renamed or
   deleted. The card shows "Bonds: Mom 2".
-- **Burn** button (`BurnBondButton`) on each Bond row and on the Bond's
-  sheet: 2 Bond points (down to broken) for 1 Stability point, up to its
+- **Burn** button (`BurnBondButton`) on the Bond's sheet (at first on each
+  row of the Bonds tab too): 2 Bond points (down to broken) for 1 Stability point, up to its
   rating. A confirmation spells out the trade (points before and after, and
   a warning if it breaks the Bond), and a chat message records it. We don't
   track whether Stability was "just lost"; the player decides when it

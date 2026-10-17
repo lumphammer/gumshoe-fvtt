@@ -1,8 +1,10 @@
 import { Router } from "@lumphammer/minirouter";
+import { useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPCActor } from "../../module/actors/pc";
+import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
@@ -19,6 +21,7 @@ export const BondsArea = () => {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const bonds = actor.system.getBonds();
+  const theme = useContext(ThemeContext);
   const addBondTooltip = getTranslated("AddBondTooltip");
 
   return (
@@ -48,19 +51,51 @@ export const BondsArea = () => {
             <Translate>No Bonds yet!</Translate>
           </i>
         ) : (
-          <div
-            css={{
-              display: "grid",
-              gridTemplateColumns: "1fr max-content max-content",
-              gridAutoRows: "min-content",
-              alignItems: "center",
-              columnGap: "0.5em",
-              rowGap: "0.25em",
-            }}
-          >
-            {bonds.map((bond) => (
-              <BondRow key={bond.id} bond={bond} />
-            ))}
+          // a container, so the table can respond to its own width, and rows
+          // can size the name against it (cqw)
+          <div css={{ containerType: "inline-size", marginTop: "0.5em" }}>
+            <div
+              css={{
+                display: "grid",
+                // name (at least a third; a long one can take up to half: see
+                // `BondRow`, which caps it), badges, rating, and an empty
+                // column to take the slack, so the rating stays near the rest
+                // rather than out on the right
+                gridTemplateColumns:
+                  "minmax(33.33%, max-content) max-content max-content 1fr",
+                // when it's too narrow for a third plus both badges, the name
+                // gives way first (cut off), rather than the table overflowing
+                "@container (max-width: 28em)": {
+                  gridTemplateColumns:
+                    "minmax(0, max-content) max-content max-content 1fr",
+                },
+                gridAutoRows: "min-content",
+                columnGap: "0.5em",
+              }}
+            >
+              {/* the header row, underlined like the ability categories */}
+              <div
+                css={{
+                  gridColumn: "1/-1",
+                  display: "grid",
+                  gridTemplateColumns: "subgrid",
+                  fontWeight: "bold",
+                  borderBottom: `1px solid ${theme.colors.text}`,
+                  "& > *": { paddingInline: "0.25em" },
+                }}
+              >
+                <div>
+                  <Translate>Person Name</Translate>
+                </div>
+                <div />
+                <div css={{ textAlign: "end" }}>
+                  <Translate>Rating</Translate>
+                </div>
+              </div>
+              {bonds.map((bond) => (
+                <BondRow key={bond.id} bond={bond} />
+              ))}
+            </div>
           </div>
         )}
       </div>

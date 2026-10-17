@@ -87,19 +87,23 @@ test("adding, editing and breaking a Bond", async ({ page }) => {
     .poll(() => getBonds(page, actorId))
     .toContainEqual({ name: "Mom", points: 1, isDeltaGreen: false });
 
-  // ordinary Bonds come before DELTA GREEN ones
-  const rows = actorSheet.getByTestId("bonds-area").locator("a[data-item-id]");
-  await expect(rows).toHaveText(["Mom", "Bob"]);
+  // ordinary Bonds come before DELTA GREEN ones, with their ratings
+  const area = actorSheet.getByTestId("bonds-area");
+  await expect(area.getByTestId("bond-name")).toHaveText(["Mom", "Bob"]);
+  await expect(area.getByTestId("bond-rating")).toHaveText(["1", "2"]);
+  // just the table: editing and burning are on the Bond's sheet
+  await expect(area.getByRole("button", { name: "Burn" })).toHaveCount(0);
+  await expect(area.locator("input")).toHaveCount(0);
 
   // step Mom down to -1, where she's broken (and no further)
-  const momRow = rows.filter({ hasText: "Mom" }).locator("xpath=../..");
-  const minus = momRow.locator("button:has(.fa-minus)");
-  await expect(actorSheet.getByText("Broken")).toHaveCount(0);
+  const minus = bondSheet.locator("button:has(.fa-minus)");
+  await expect(area.getByText("Broken")).toHaveCount(0);
   for (let i = 0; i < 3; i++) await minus.click();
   await expect
     .poll(() => getBonds(page, actorId))
     .toContainEqual({ name: "Mom", points: -1, isDeltaGreen: false });
-  await expect(actorSheet.getByText("Broken")).toBeVisible();
+  await expect(area.getByText("Broken")).toBeVisible();
+  await expect(area.getByTestId("bond-rating")).toHaveText(["-1", "2"]);
 
   await visitEveryTab(bondSheet);
 });
@@ -197,11 +201,22 @@ test("burning a Bond for Stability", async ({ page }) => {
     system: { points: 3 },
   });
 
+  // clicking anywhere on the row opens the Bond's sheet
   const actorSheet = await openSheet(page, `Actor.${actorId}`);
   await actorSheet.locator(".tab-strip > label", { hasText: "Bonds" }).click();
+  await actorSheet
+    .getByTestId("bonds-area")
+    .getByTestId("bond-rating")
+    .filter({ hasText: "3" })
+    .click();
+  const bondSheet = page.locator(".application", {
+    has: page.locator(".window-title", { hasText: "Jerome" }),
+  });
+  await expect(bondSheet).toBeVisible();
+  const burnButton = bondSheet.getByRole("button", { name: "Burn" });
   await burn(
     page,
-    actorSheet.getByRole("button", { name: "Burn" }),
+    burnButton,
     "Burn 2 points of your Bond with Jerome (3 → 1) to restore 1 Stability (4 → 5)?",
   );
 
@@ -225,16 +240,12 @@ test("burning a Bond for Stability", async ({ page }) => {
   );
 
   // 1 point left can still be burned (down to broken)...
-  await burn(
-    page,
-    actorSheet.getByRole("button", { name: "Burn" }),
-    "This will break the Bond for good.",
-  );
+  await burn(page, burnButton, "This will break the Bond for good.");
   await expect
     .poll(() => getBonds(page, actorId))
     .toContainEqual({ name: "Jerome", points: -1, isDeltaGreen: false });
   // ...and then there's nothing left to burn
-  await expect(actorSheet.getByRole("button", { name: "Burn" })).toBeDisabled();
+  await expect(burnButton).toBeDisabled();
 });
 
 test("burning a Bond from its sheet", async ({ page }) => {

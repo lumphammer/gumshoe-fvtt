@@ -3,16 +3,13 @@ import type React from "react";
 import { useCallback, useContext } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { brokenBondPoints, maxBondPoints } from "../../module/bonds/rules";
 import type { BondItem } from "../../module/items/bond";
 import { ThemeContext } from "../../themes/ThemeContext";
-import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { BondBadges } from "./BondBadges";
-import { BurnBondButton } from "./BurnBondButton";
 
 /**
- * One Bond on the Bonds tab: name (click to open, drag to move), badges, and
- * Burn (2 points for 1 Stability, p. 120), and a points stepper.
+ * One Bond on the Bonds tab: name, badges and rating. The whole row opens
+ * the Bond's sheet (where it can be edited and burned), and drags the Bond.
  */
 export const BondRow = ({ bond }: { bond: BondItem }) => {
   const app = useContext(FoundryAppContext);
@@ -29,40 +26,58 @@ export const BondRow = ({ bond }: { bond: BondItem }) => {
   assertApplicationV2(sheet);
 
   return (
-    // `display: contents` keeps the cells in the parent grid
-    <div css={{ display: "contents" }}>
+    <a
+      // a subgrid, so the cells line up with the headers, and the row can
+      // still be one thing to hover, click and drag
+      css={{
+        gridColumn: "1/-1",
+        display: "grid",
+        gridTemplateColumns: "subgrid",
+        alignItems: "center",
+        padding: "0.2em 0",
+        cursor: "pointer",
+        // the highlight is enough; no link underline
+        "&&:hover": {
+          backgroundColor: theme.colors.backgroundButton,
+          textDecoration: "none",
+        },
+        "& > *": { paddingInline: "0.25em" },
+      }}
+      onClick={() => sheet.render({ force: true })}
+      data-item-id={bond.id}
+      onDragStart={onDragStart}
+      draggable="true"
+    >
+      <div
+        data-testid="bond-name"
+        title={bond.name ?? ""}
+        css={{
+          // up to half the table (cqw: the table is the container), then
+          // cut off
+          maxWidth: "50cqw",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+        }}
+      >
+        {bond.name}
+      </div>
       <div
         css={{
           display: "flex",
-          flexWrap: "wrap",
+          // its min-content width, so the column always fits both badges
+          flexWrap: "nowrap",
           alignItems: "center",
           gap: "0.5em",
-          minWidth: 0,
         }}
       >
-        <a
-          css={{
-            cursor: "pointer",
-            ":hover": { color: theme.colors.accent },
-          }}
-          onClick={() => sheet.render({ force: true })}
-          data-item-id={bond.id}
-          onDragStart={onDragStart}
-          draggable="true"
-        >
-          {bond.name}
-        </a>
         <BondBadges bond={bond} />
       </div>
-      <BurnBondButton bond={bond} />
-      <AsyncNumberInput
-        css={{ width: "7em" }}
-        value={bond.system.points}
-        onChange={bond.system.setPoints}
-        min={brokenBondPoints}
-        max={maxBondPoints}
-      />
-    </div>
+      {/* right-aligned, so the numbers line up under the header */}
+      <div data-testid="bond-rating" css={{ textAlign: "end" }}>
+        {bond.system.points}
+      </div>
+    </a>
   );
 };
 

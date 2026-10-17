@@ -27,7 +27,8 @@ export const BondBadges = ({ bond, className }: BondBadgesProps) => {
   return (
     <span
       className={className}
-      css={{ display: "inline-flex", flexWrap: "wrap", gap: "0.25em" }}
+      // never wrapped, so a column of badges is always wide enough for both
+      css={{ display: "inline-flex", flexWrap: "nowrap", gap: "0.25em" }}
     >
       {bond.system.isDeltaGreen && (
         <span
