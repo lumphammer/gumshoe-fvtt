@@ -176,10 +176,15 @@ export async function reloadGame(page: Page) {
   await waitForGameAndWatchNotifications(page);
 }
 
-/** Every d6 rolls `face` until the page reloads. */
-export async function forceDice(page: Page, face: 1 | 6) {
+/**
+ * Every d6 rolls `face` until the page reloads. (Foundry rolls
+ * `ceil((1 - u) * faces)`, so 1s and 6s come out the same on any die, but the
+ * faces in between only on a d6.)
+ */
+export async function forceDice(page: Page, face: 1 | 2 | 3 | 4 | 5 | 6) {
   await page.evaluate((face) => {
-    CONFIG.Dice.randomUniform = () => (face === 6 ? 0.01 : 0.99);
+    const u = face === 6 ? 0.01 : face === 1 ? 0.99 : (6.5 - face) / 6;
+    CONFIG.Dice.randomUniform = () => u;
   }, face);
 }
 

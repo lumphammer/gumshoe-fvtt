@@ -59,18 +59,19 @@ export const RebuildBondPanel = ({ bond }: { bond: BondItem }) => {
           RebuildingBondWithBondName
         </Translate>
       </h2>
+      {/* outside the grid: spanning it, its width would squash the labels */}
+      <p>
+        <Translate
+          values={{
+            AbilityName: stability?.name ?? "",
+            Difficulty: String(rebuildDifficulty),
+            Category: settings.bondRebuildSpendCategory.get(),
+          }}
+        >
+          RebuildBondHint
+        </Translate>
+      </p>
       <InputGrid>
-        <GridFieldStacked>
-          <Translate
-            values={{
-              AbilityName: stability?.name ?? "",
-              Difficulty: String(rebuildDifficulty),
-              Category: settings.bondRebuildSpendCategory.get(),
-            }}
-          >
-            RebuildBondHint
-          </Translate>
-        </GridFieldStacked>
         {/* noLabel: a label would pass clicks on the link to the buttons */}
         <GridField
           label={stability && <ItemSheetLink item={stability} />}

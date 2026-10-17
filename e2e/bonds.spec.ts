@@ -82,7 +82,7 @@ test("adding, editing and breaking a Bond", async ({ page }) => {
     actorId,
   );
   const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
-  await bondSheet.getByLabel("Bond", { exact: true }).fill("Mom");
+  await bondSheet.getByLabel("Name", { exact: true }).fill("Mom");
   await expect
     .poll(() => getBonds(page, actorId))
     .toContainEqual({ name: "Mom", points: 1, isDeltaGreen: false });
@@ -405,7 +405,191 @@ test("DELTA GREEN and broken Bonds can't be rebuilt", async ({ page }) => {
       system,
     });
     const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
-    await expect(bondSheet.getByText("Bond", { exact: true })).toBeVisible();
+    await expect(bondSheet.getByText("Name", { exact: true })).toBeVisible();
     await expect(bondSheet.getByTestId("open-rebuild-bond")).toHaveCount(0);
   }
+});
+
+/** Open the Bonds tab, and the panel to establish a new Bond */
+async function openEstablishPanel(page: Page, actorId: string) {
+  const actorSheet = await openSheet(page, `Actor.${actorId}`);
+  await actorSheet.locator(".tab-strip > label", { hasText: "Bonds" }).click();
+  const button = actorSheet.getByTestId("open-establish-bond");
+  // the tooltip shows wherever on the button you hover
+  for (const title of await button
+    .locator("[title]")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("title")))) {
+    expect(title).toBe("Roll to establish a new Bond between operations");
+  }
+  await button.click();
+  const panel = actorSheet.getByTestId("establish-bond-panel");
+  await expect(panel).toBeVisible();
+  return panel;
+}
+
+test("establishing a new Bond", async ({ page }) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Charmer", type: "pc" });
+  await updateAbility(page, actorId, "Reassurance", { rating: 2, pool: 2 });
+  await updateAbility(page, actorId, "Flattery", { rating: 1, pool: 0 });
+  await createOwnedItem(page, actorId, {
+    name: "Mom",
+    type: "bond",
+    system: { points: 3 },
+  });
+  await createOwnedItem(page, actorId, {
+    name: "Bob",
+    type: "bond",
+    system: { points: 2, isDeltaGreen: true },
+  });
+
+  const panel = await openEstablishPanel(page, actorId);
+  // no broken Bonds, so nobody to re-form
+  await expect(panel.getByLabel("Who")).toHaveCount(0);
+  await panel.getByLabel("Name", { exact: true }).fill("Ruth");
+  // an empty ability is listed, but can't be picked
+  const spend = panel.getByLabel("Spend");
+  await expect(spend.locator("option", { hasText: "Flattery" })).toBeDisabled();
+  await expect(spend).toHaveValue(
+    await page.evaluate(
+      (actorId) => game.actors.get(actorId)!.items.getName("Reassurance")!.id,
+      actorId,
+    ),
+  );
+  // only ordinary Bonds can be neglected
+  await expect(panel.getByLabel("Neglect").locator("option")).toHaveText([
+    "Mom (3 → 2)",
+  ]);
+
+  await forceDice(page, 4);
+  await panel.getByRole("button", { name: "Establish Bond" }).click();
+  await expect(panel).toHaveCount(0);
+
+  const card = lastChatMessage(page).getByTestId("establish-bond-card");
+  await expect(card).toContainText("Establishing a Bond with Ruth");
+  await expect(card.getByTestId("establish-outcome")).toHaveText("Bonded");
+  // the die minus 2
+  await expect(card.getByTestId("establish-bond-points")).toHaveText("Ruth: 2");
+  await expect(card.getByTestId("establish-spent")).toHaveText(
+    "Spent: Reassurance 1",
+  );
+  await expect(card.getByTestId("establish-neglected")).toHaveText(
+    "Neglected: Mom 3 → 2",
+  );
+  await expect
+    .poll(() => getBonds(page, actorId))
+    .toEqual(
+      expect.arrayContaining([
+        { name: "Ruth", points: 2, isDeltaGreen: false },
+        { name: "Mom", points: 2, isDeltaGreen: false },
+        { name: "Bob", points: 2, isDeltaGreen: true },
+      ]),
+    );
+  expect(await getPool(page, actorId, "Reassurance")).toBe(1);
+});
+
+test("a new Bond rejected, with no Bond to neglect", async ({ page }) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Loner", type: "pc" });
+  await updateAbility(page, actorId, "Stability", { rating: 6, pool: 5 });
+  await updateAbility(page, actorId, "Reassurance", { rating: 1, pool: 1 });
+
+  const panel = await openEstablishPanel(page, actorId);
+  await expect(panel).toContainText("No Bond to neglect");
+  const button = panel.getByRole("button", { name: "Establish Bond" });
+  // it needs a name
+  await expect(button).toBeDisabled();
+  await panel.getByLabel("Name", { exact: true }).fill("Ruth");
+
+  await forceDice(page, 1);
+  await button.click();
+
+  const card = lastChatMessage(page).getByTestId("establish-bond-card");
+  await expect(card.getByTestId("establish-outcome")).toHaveText("Rejected");
+  await expect(card.getByTestId("establish-bond-points")).toHaveCount(0);
+  await expect(card.getByTestId("establish-neglected")).toHaveCount(0);
+  await expect(card.getByTestId("establish-stability")).toHaveText(
+    "Stability: 5 → 4",
+  );
+  await expect.poll(() => getPool(page, actorId, "Stability")).toBe(4);
+  expect(await getPool(page, actorId, "Reassurance")).toBe(0);
+  expect(await getBonds(page, actorId)).toEqual([]);
+});
+
+test("re-forming a broken Bond on a 6, neglecting one to breaking", async ({
+  page,
+}) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Reformer", type: "pc" });
+  await updateAbility(page, actorId, "Reassurance", { rating: 1, pool: 1 });
+  await createOwnedItem(page, actorId, {
+    name: "Gone",
+    type: "bond",
+    system: { points: -1 },
+  });
+  await createOwnedItem(page, actorId, {
+    name: "Zero",
+    type: "bond",
+    system: { points: 0 },
+  });
+
+  const panel = await openEstablishPanel(page, actorId);
+  await panel.getByLabel("Who").selectOption({ label: "Gone (broken)" });
+  // the name comes from the broken Bond
+  await expect(panel.getByLabel("Name", { exact: true })).toHaveCount(0);
+
+  // neglecting Zero breaks it, so it asks first; cancelling does nothing
+  const messages = page.locator("#chat .chat-message");
+  const messageCount = await messages.count();
+  const dialog = page.locator(".application.dialog");
+  const button = panel.getByRole("button", { name: "Establish Bond" });
+  await button.click();
+  await expect(dialog).toContainText("Neglecting Zero will break that Bond");
+  await dialog.getByRole("button", { name: "Cancel" }).click();
+  await expect(dialog).toHaveCount(0);
+  expect(await messages.count()).toBe(messageCount);
+
+  await forceDice(page, 6);
+  await button.click();
+  await dialog.getByRole("button", { name: "Establish Bond" }).click();
+
+  const card = lastChatMessage(page).getByTestId("establish-bond-card");
+  await expect(card).toContainText("Re-forming the Bond with Gone");
+  await expect(card.getByTestId("establish-outcome")).toHaveText(
+    "Bonded on a 6!",
+  );
+  await expect(card.getByTestId("establish-bond-points")).toHaveText("Gone: 3");
+  await expect(card.getByTestId("establish-spent")).toHaveText(
+    "Spent: Reassurance 1 (refunded)",
+  );
+  await expect(card.getByTestId("establish-neglected")).toHaveText(
+    "Neglected: Zero 0 → -1 (Broken)",
+  );
+  await expect
+    .poll(() => getBonds(page, actorId))
+    .toEqual(
+      expect.arrayContaining([
+        { name: "Gone", points: 3, isDeltaGreen: false },
+        { name: "Zero", points: -1, isDeltaGreen: false },
+      ]),
+    );
+  // the same Bond, not a new one
+  expect(await getBonds(page, actorId)).toHaveLength(2);
+  // a 6 gives the point back
+  expect(await getPool(page, actorId, "Reassurance")).toBe(1);
+});
+
+test("no points to establish a new Bond", async ({ page }) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Spent", type: "pc" });
+  await updateAbility(page, actorId, "Reassurance", { rating: 2, pool: 0 });
+
+  const panel = await openEstablishPanel(page, actorId);
+  await panel.getByLabel("Name", { exact: true }).fill("Ruth");
+  await expect(
+    panel.getByRole("button", { name: "Establish Bond" }),
+  ).toBeDisabled();
+  await expect(panel.getByRole("status")).toHaveText(
+    "No Interpersonal points left to spend",
+  );
 });

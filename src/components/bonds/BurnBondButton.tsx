@@ -18,18 +18,20 @@ export const BurnBondButton = ({ bond, className }: BurnBondButtonProps) => {
   if (!isPCActor(actor)) {
     return null;
   }
+  const tooltip = getTranslated("BurnBondTooltip", {
+    AbilityName: actor.system.getBondStabilityAbility()?.name ?? "",
+  });
   return (
     <Button
       className={className}
       css={{ whiteSpace: "nowrap" }}
       disabled={!actor.system.canBurnBond(bond)}
       onClick={() => actor.system.confirmBurnBond(bond)}
-      title={getTranslated("BurnBondTooltip", {
-        AbilityName: actor.system.getBondStabilityAbility()?.name ?? "",
-      })}
+      title={tooltip}
     >
       <i className="fa fa-fire" />
-      <Translate>Burn</Translate>
+      {/* Translate titles its span, which would hide the button's title */}
+      <Translate title={tooltip}>Burn</Translate>
     </Button>
   );
 };

@@ -15,7 +15,7 @@ See also [`fodg-preset.md`](fodg-preset.md).
 - **Maximum** 4 (p. 045). At **−1** a Bond is **broken** (p. 046).
 - **Starting value** (p. 045): one more than the highest of Flattery,
   Inspiration, Negotiation and Reassurance (or 1 if none). Agents start with 3
-  Bonds.
+  Bonds. This only matters at character creation, so we don't help with it.
 - **Spending on Stability tests** (p. 120): Bond points can be spent on any
   Stability test as though they were Stability points, so they add to the
   roll, and can be combined with Stability points. Spending can take a Bond
@@ -32,6 +32,14 @@ See also [`fodg-preset.md`](fodg-preset.md).
   - Successful 6 (succeeds *and* the die shows 6, p. 080): Bond +2, refresh
     d+0 Stability.
   - Failure: nothing; failed 1 (fails *and* the die shows 1): Bond −1.
+- **Establishing a new Bond** (p. 129), between operations, is how Bonds are
+  made in play, and the only way back from a broken one (p. 046: "rebuild it
+  from scratch"):
+  - Spend 1 Interpersonal point (it doesn't refresh before the next mission),
+    and reduce one non-DELTA GREEN Bond by 1, whatever the roll.
+  - Roll a die (not a test: nothing can be spent on it). 1: rejected, lose 1
+    Stability pool point. 2–5: the new Bond's rating is the die − 2 (so it
+    can start at 0). 6: rating 3, and the Interpersonal point is refunded.
 - **DELTA GREEN Bonds** (p. 046) form with teammates after a team crisis
   (failed Difficulty 4 Stability test): new ones start at half your highest
   Bond (round up); existing ones go up by 1; each costs 1 point from a
@@ -61,8 +69,7 @@ All exportable, part of the preset format (optional on `PresetV1`, defaults in
 | -------------------------- | ---------------------------------------------- | ---------------------------------------------------------- |
 | `useBonds`                 | `false`                                        | Turns the feature on                                       |
 | `bondStabilityAbility`     | `"Stability"`                                  | Tests that can take Bond points; what burning restores     |
-| `bondRatingAbilities`      | Flattery, Inspiration, Negotiation, Reassurance | Starting value hint                                        |
-| `bondRebuildSpendCategory` | `"Interpersonal"`                              | Abilities in this category can be spent when rebuilding    |
+| `bondRebuildSpendCategory` | `"Interpersonal"`                              | Abilities in this category can be spent when rebuilding, and on establishing a new Bond |
 
 The numbers (maximum 4, broken at −1, rebuild Difficulty 4, burn rate 2:1)
 are constants: FoDG-shaped, not configurable.
@@ -77,8 +84,8 @@ Bond.
 ### Rules code
 
 Pure functions (no Foundry), unit tested: clamping points, broken state,
-burn cost, rebuild outcome from a roll and total, starting value hint. Foundry
-glue lives elsewhere.
+burn cost, rebuild outcome from a roll and total, establishing a new Bond.
+Foundry glue lives elsewhere.
 
 ## Phases
 
@@ -145,8 +152,34 @@ glue lives elsewhere.
 - The other Personal Life vignettes (p. 129) share the successful 6 / failed
   1 shape; `getRebuildOutcome` would serve a general vignette roller.
 
-### Phase 4: helpers (later, if wanted)
+### Phase 4: establishing new Bonds (done)
 
-- Starting value hint from `bondRatingAbilities`.
-- Automating DELTA GREEN Bonds (p. 046): decide after regular Bonds land.
+- The Bonds tab has a router, like the Cards tab, and an **Establish Bond →**
+  button opens a nested panel (`EstablishBondPanel`). It's next to **Add
+  Bond**, which stays for character creation (no roll); tooltips on both
+  spell out the difference.
+  - **Who**: someone new (a name), or one of the broken ordinary Bonds, which
+    is re-formed in place, so its notes carry over. Only shown when there are
+    broken Bonds.
+  - **Spend**: an ability in `bondRebuildSpendCategory` (abilities with a
+    rating are listed; empty ones are disabled). With no points anywhere, the
+    button is disabled and a hint below it says so, styled like the weapon
+    sheet's (`WeaponHint`).
+  - **Neglect**: an ordinary Bond that isn't broken. If there isn't one, the
+    panel says so and the neglect is skipped. If the neglect would break it,
+    a confirmation asks first.
+- Rules in `src/module/bonds/establish.ts`, glue in `establishBond.ts`, which
+  re-checks the choices, rolls, and applies everything (the point, the
+  neglect, Stability on a rejection, and the new or re-formed Bond).
+- One chat card (`EstablishBondCard`, mode `bond-establish`), settled when
+  rolled like the rebuild card (`data-bond-establish`).
+- `forceDice` in the browser tests now takes any d6 face.
+- The starting value hint was dropped: it only applies at character creation,
+  where the player can just type the number.
+
+### Later, if wanted
+
+- Automating DELTA GREEN Bonds (p. 046): a team-wide flow, so a bigger job.
 - Adapted to Violence cap: needs adaptation tracking first.
+- The other Personal Life vignettes (p. 129, e.g. One With Nature, Head
+  Games) share the shape, but are about Stability rather than Bonds.

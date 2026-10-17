@@ -43,7 +43,7 @@ export const BondMain = () => {
         gridTemplateRows: `repeat(${autoRows}, auto) 1fr`,
       }}
     >
-      <GridField label="Bond">
+      <GridField label="Person Name">
         <AsyncTextInput value={item.name ?? ""} onChange={item.setName} />
       </GridField>
       <GridField label="Points">

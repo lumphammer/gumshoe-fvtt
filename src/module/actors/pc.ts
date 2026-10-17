@@ -326,6 +326,26 @@ export class PCModel extends ActiveCharacterModel<
     );
   }
 
+  /**
+   * Bonds that can be neglected for a new one (p. 129): ordinary ones that
+   * aren't broken.
+   */
+  getNeglectableBonds(): BondItem[] {
+    return this.getBonds().filter(
+      (bond) => !bond.system.isDeltaGreen && !bond.system.isBroken,
+    );
+  }
+
+  /**
+   * Broken Bonds which a new Bond can re-form (p. 046: "rebuild it from
+   * scratch"). DELTA GREEN Bonds form their own way.
+   */
+  getReformableBonds(): BondItem[] {
+    return this.getBonds().filter(
+      (bond) => !bond.system.isDeltaGreen && bond.system.isBroken,
+    );
+  }
+
   /** Ask first: burning permanently damages the Bond */
   confirmBurnBond = async (bond: BondItem): Promise<void> => {
     const stability = this.getBondStabilityAbility();

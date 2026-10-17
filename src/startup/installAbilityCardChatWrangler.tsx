@@ -9,12 +9,14 @@ import { AbilityTestMwCard } from "../components/messageCards/AbilityTestMwCard"
 import { AttackCard } from "../components/messageCards/AttackCard";
 import { BrokenCard } from "../components/messageCards/BrokenCard";
 import { PushCard } from "../components/messageCards/PushCard";
+import { EstablishBondCard } from "../components/messageCards/EstablishBondCard";
 import { RebuildBondCard } from "../components/messageCards/RebuildBondCard";
 import { isAbilityCardMode } from "../components/messageCards/types";
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { parseBondSpends } from "../module/bonds/bondSpends";
+import { parseEstablishRecord } from "../module/bonds/establish";
 import { parseRebuildRecord } from "../module/bonds/rebuild";
 import { isAbilityItem } from "../module/items/exports";
 import type { MWDifficulty } from "../types";
@@ -120,6 +122,22 @@ export const installAbilityCardChatWrangler = () => {
           renderCardNow(
             el,
             <RebuildBondCard record={record} imageUrl={imageUrl} />,
+          );
+        }
+        return;
+      }
+
+      // likewise establishing a new Bond
+      if (mode === constants.htmlDataModeBondEstablish) {
+        const record = parseEstablishRecord(
+          el.getAttribute(constants.htmlDataBondEstablish),
+        );
+        if (record === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(
+            el,
+            <EstablishBondCard record={record} imageUrl={imageUrl} />,
           );
         }
         return;
