@@ -115,14 +115,29 @@ glue lives elsewhere.
 - The compact test buttons on the Abilities tab don't offer Bonds: open the
   Stability sheet to spend them.
 
-### Phase 3: rebuilding
+### Phase 3: rebuilding (done)
 
-- **Rebuild** action on non-DELTA GREEN Bonds: a Stability test at Difficulty
-  4, with optional spends from abilities in `bondRebuildSpendCategory`.
-- Apply the outcome automatically (Bond change, Stability refresh capped at
-  its rating), shown on one chat card.
+- `bondRebuildSpendCategory` setting (default Interpersonal).
+- A **Rebuild Bond** panel on the Bond's sheet, for ordinary Bonds that
+  aren't broken (`RebuildBondPanel`): spend rows for Stability and for each
+  ability in the category with points left, then a Stability test at
+  Difficulty 4.
+- Rules in `src/module/bonds/rebuild.ts` (outcome, Bond change, refresh,
+  Stability after), glue in `rebuildBond.ts`, which re-checks the spends,
+  rolls the test and (on a success) the refresh die, and applies everything
+  in one update:
+  - successful 6 (the die shows 6): Bond +2, refresh d+0;
+  - success: Bond +1, refresh d−2 (minimum 1);
+  - failure: nothing; failed 1 (the die shows 1): Bond −1.
+  - Bonds cap at 4. Stability's spend comes off first, and the refresh never
+    takes it above the rating.
+- One chat card (`RebuildBondCard`, mode `bond-rebuild`) shows the test,
+  spends, outcome and changes. It's settled when rolled, so the card carries
+  the whole record (`data-bond-rebuild`) and doesn't need the actor.
+- `SpendButtons` is the shared compact 0–7 spend row, used here and on ability
+  sheets.
 - The other Personal Life vignettes (p. 129) share the successful 6 / failed
-  1 shape; keep the rules pure so a general vignette roller is easy later.
+  1 shape; `getRebuildOutcome` would serve a general vignette roller.
 
 ### Phase 4: helpers (later, if wanted)
 

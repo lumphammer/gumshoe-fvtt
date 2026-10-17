@@ -301,6 +301,11 @@ export const settings = {
     name: "Ability Bonds can be spent on",
     default: pathOfCthulhuPreset.bondStabilityAbility,
   }),
+  bondRebuildSpendCategory: createSettingString({
+    key: "bondRebuildSpendCategory",
+    name: "Category spent when rebuilding Bonds",
+    default: pathOfCthulhuPreset.bondRebuildSpendCategory,
+  }),
 
   useCards: createSettingBoolean({
     key: "useCards",

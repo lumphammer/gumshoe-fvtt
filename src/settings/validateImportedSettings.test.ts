@@ -25,6 +25,7 @@ it("should accept an older export without the damage application settings", () =
   expect(validatedResult).not.toHaveProperty("useWoundStatusEffects");
   expect(validatedResult).not.toHaveProperty("useBonds");
   expect(validatedResult).not.toHaveProperty("bondStabilityAbility");
+  expect(validatedResult).not.toHaveProperty("bondRebuildSpendCategory");
 });
 
 it("should preserve the damage application settings through a round trip", () => {
@@ -49,6 +50,7 @@ it("should preserve the Bonds settings through a round trip", () => {
   const exportedSettings = {
     useBonds: true,
     bondStabilityAbility: "Composure",
+    bondRebuildSpendCategory: "Social",
   };
 
   expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(

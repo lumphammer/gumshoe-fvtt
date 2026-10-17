@@ -87,6 +87,7 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
   },
   useBonds: false,
   bondStabilityAbility: "Stability",
+  bondRebuildSpendCategory: "Interpersonal",
   useCards: false,
   cardCategories: [],
 };

@@ -31,6 +31,7 @@
   "investigator.BrokenCardInvalidMode": "This card was written with an unrecognised roll type and can no longer be displayed.",
   "investigator.BrokenCardMissingActor": "The character this card refers to can no longer be found.",
   "investigator.BrokenCardMissingActorId": "This card does not record which character it belongs to and can no longer be displayed.",
+  "investigator.BrokenCardDamaged": "This card's data is damaged and can no longer be displayed.",
   "investigator.BrokenCardMissingItem": "The item this card refers to can no longer be found.",
   "investigator.CanAbilitiesBeBoosted": "Can abilities be boosted?",
   "investigator.CanBeInvestigative": "Can be investigative?",
@@ -467,5 +468,17 @@
   "investigator.BurnBondTooltip": "Spend 2 points from this Bond to restore 1 {AbilityName}",
   "investigator.Burn": "Burn",
   "investigator.BurnBondConfirm": "Burn {Points} points of your Bond with {BondName} ({BondPoints} → {BondPointsAfter}) to restore 1 {AbilityName} ({Pool} → {PoolAfter})? The relationship will suffer for it.",
-  "investigator.BurnBondConfirmBreaks": "Burn {Points} points of your Bond with {BondName} ({BondPoints} → {BondPointsAfter}) to restore 1 {AbilityName} ({Pool} → {PoolAfter})? This will break the Bond for good."
+  "investigator.BurnBondConfirmBreaks": "Burn {Points} points of your Bond with {BondName} ({BondPoints} → {BondPointsAfter}) to restore 1 {AbilityName} ({Pool} → {PoolAfter})? This will break the Bond for good.",
+  "investigator.RebuildingBondWithBondName": "Rebuilding the Bond with {BondName}",
+  "investigator.AbilityNameTest": "{AbilityName} test",
+  "investigator.DifficultyN": "(Difficulty {Difficulty})",
+  "investigator.Spent": "Spent",
+  "investigator.Successful6": "Successful 6!",
+  "investigator.Success": "Success",
+  "investigator.Failure": "Failure",
+  "investigator.Failed1": "Failed 1",
+  "investigator.MinusTwoMinimumOne": " − 2, minimum 1",
+  "investigator.RebuildBondHint": "Between operations, spend time on this relationship: a {AbilityName} test at Difficulty {Difficulty}. {Category} points spent on it won’t refresh before the next operation.",
+  "investigator.RebuildBond": "Rebuild Bond",
+  "investigator.CantRebuildBondLikeThat": "Can’t rebuild that Bond with those points any more"
 }

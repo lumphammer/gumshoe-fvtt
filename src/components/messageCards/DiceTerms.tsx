@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useState } from "react";
 
 import type {
   DiceTerm,
@@ -13,6 +14,32 @@ type DiceTermsProps = {
   parp?: DiceTerm;
 };
 
+/** One die, drawn as a slightly askew white cube face */
+export const DieFace = ({ value }: { value: number }) => {
+  // tilt each die a little, once
+  const [tilt] = useState(() => Math.random() * 12 - 6);
+  return (
+    <span
+      css={{
+        width: "1.5em",
+        display: "inline-block",
+        height: "1.5em",
+        textAlign: "center",
+        background: "white",
+        borderWidth: "3px",
+        borderRadius: "0.2em",
+        boxShadow: "0.2em 0.2em 0.2em #0007",
+        borderStyle: "outset",
+        borderColor: "#bbb",
+        marginRight: "0.2em",
+        transform: `rotate(${tilt}deg)`,
+      }}
+    >
+      {value}
+    </span>
+  );
+};
+
 export const DiceTerms = ({ terms = [], className }: DiceTermsProps) => {
   return (
     <span
@@ -25,27 +52,7 @@ export const DiceTerms = ({ terms = [], className }: DiceTermsProps) => {
       {terms.map<ReactNode>((term, i) => {
         if ((term as DiceTerm).results) {
           const results = (term as DiceTerm).results.map((result, j) => {
-            return (
-              <span
-                key={j}
-                css={{
-                  width: "1.5em",
-                  display: "inline-block",
-                  height: "1.5em",
-                  textAlign: "center",
-                  background: "white",
-                  borderWidth: "3px",
-                  borderRadius: "0.2em",
-                  boxShadow: "0.2em 0.2em 0.2em #0007",
-                  borderStyle: "outset",
-                  borderColor: "#bbb",
-                  marginRight: "0.2em",
-                  transform: `rotate(${Math.random() * 12 - 6}deg)`,
-                }}
-              >
-                {result.result}
-              </span>
-            );
+            return <DieFace key={j} value={result.result} />;
           });
           return results;
         } else if ((term as OperatorTerm).operator) {

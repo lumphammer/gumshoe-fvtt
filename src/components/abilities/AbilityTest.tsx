@@ -9,16 +9,12 @@ import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Button } from "../inputs/Button";
-import { CheckButtons } from "../inputs/CheckButtons";
+
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
+import { SpendButtons } from "../inputs/SpendButtons";
 import { Translate } from "../Translate";
-
-const defaultSpendOptions = new Array(8).fill(null).map((_, i) => {
-  const label = i.toString();
-  return { label, value: Number(label), enabled: true };
-});
 
 export const AbilityTest = () => {
   const { item } = useItemSheetContext();
@@ -57,12 +53,6 @@ export const AbilityTest = () => {
     setSpend(0);
   }, [item, spend]);
 
-  const getSpendOptions = (available: number) =>
-    defaultSpendOptions.map((option) => ({
-      ...option,
-      enabled: option.value === 0 || option.value <= available,
-    }));
-
   // alongside Bonds, name the ability being spent (as the weapon sheet does)
   const spendLabel = bonds.length > 0 ? (item.name ?? undefined) : undefined;
 
@@ -79,11 +69,10 @@ export const AbilityTest = () => {
         label={spendLabel ?? "Spend"}
         noTranslate={spendLabel !== undefined}
       >
-        <CheckButtons
-          size={1}
+        <SpendButtons
+          value={spend}
           onChange={setSpend}
-          selected={spend}
-          options={getSpendOptions(item.system.pool)}
+          max={item.system.pool}
         />
       </GridField>
       {bonds.map((bond) => (
@@ -92,16 +81,15 @@ export const AbilityTest = () => {
           label={`${bond.name} (${bond.system.points})`}
           noTranslate
         >
-          <CheckButtons
-            size={1}
+          <SpendButtons
+            value={bondSpends[bond.id ?? ""] ?? 0}
             onChange={(bondSpend) =>
               setBondSpends((current) => ({
                 ...current,
                 [bond.id ?? ""]: bondSpend,
               }))
             }
-            selected={bondSpends[bond.id ?? ""] ?? 0}
-            options={getSpendOptions(getMaxBondSpend(bond.system.points))}
+            max={getMaxBondSpend(bond.system.points)}
           />
         </GridField>
       ))}

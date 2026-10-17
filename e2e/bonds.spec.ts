@@ -218,3 +218,106 @@ test("burning a Bond from its sheet", async ({ page }) => {
   // though Stability is a different item)
   await expect(burnButton).toBeDisabled();
 });
+
+async function getPool(page: Page, actorId: string, abilityName: string) {
+  return page.evaluate(
+    ({ actorId, abilityName }) =>
+      (
+        game.actors.get(actorId)!.items.getName(abilityName)!
+          .system as unknown as { pool: number }
+      ).pool,
+    { actorId, abilityName },
+  );
+}
+
+test("rebuilding a Bond: a successful 6", async ({ page }) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Rebuilder", type: "pc" });
+  await updateAbility(page, actorId, "Stability", { rating: 6, pool: 4 });
+  await updateAbility(page, actorId, "Reassurance", { rating: 2, pool: 2 });
+  const bondId = await createOwnedItem(page, actorId, {
+    name: "Jerome",
+    type: "bond",
+    system: { points: 2 },
+  });
+
+  const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
+  const panel = bondSheet.getByTestId("rebuild-bond-panel");
+  const row = (label: string) =>
+    panel
+      .locator("label", { hasText: new RegExp(`^${label}$`) })
+      .locator("xpath=following-sibling::div[1]");
+  await row("Stability").getByText("1", { exact: true }).click();
+  await row("Reassurance").getByText("1", { exact: true }).click();
+  // only up to what's in the pool
+  await expect(
+    row("Reassurance").getByRole("radio", { name: "3" }),
+  ).toBeDisabled();
+
+  await forceDice(page, 6);
+  await panel.getByRole("button", { name: "Rebuild Bond" }).click();
+
+  const card = lastChatMessage(page).getByTestId("rebuild-bond-card");
+  await expect(card.getByTestId("rebuild-outcome")).toHaveText("Successful 6!");
+  await expect(card).toContainText("Spent: Stability 1, Reassurance 1");
+  // +2, but no higher than 4
+  await expect(card.getByTestId("rebuild-bond-change")).toHaveText(
+    "Jerome: 2 → 4",
+  );
+  // 4 - 1 spent + 6 refreshed, but no higher than the rating
+  await expect(card.getByTestId("rebuild-stability-change")).toContainText(
+    "Stability: 4 → 6",
+  );
+  await expect
+    .poll(() => getBonds(page, actorId))
+    .toContainEqual({ name: "Jerome", points: 4, isDeltaGreen: false });
+  expect(await getPool(page, actorId, "Stability")).toBe(6);
+  expect(await getPool(page, actorId, "Reassurance")).toBe(1);
+});
+
+test("rebuilding a Bond: a failed 1", async ({ page }) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Neglecter", type: "pc" });
+  await updateAbility(page, actorId, "Stability", { rating: 6, pool: 6 });
+  const bondId = await createOwnedItem(page, actorId, {
+    name: "Zorah",
+    type: "bond",
+    system: { points: 3 },
+  });
+
+  const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
+  await forceDice(page, 1);
+  await bondSheet.getByRole("button", { name: "Rebuild Bond" }).click();
+
+  const card = lastChatMessage(page).getByTestId("rebuild-bond-card");
+  await expect(card.getByTestId("rebuild-outcome")).toHaveText("Failed 1");
+  await expect(card.getByTestId("rebuild-bond-change")).toHaveText(
+    "Zorah: 3 → 2",
+  );
+  // no refresh, and nothing spent, so no change to Stability
+  await expect(card.getByTestId("rebuild-stability-change")).toHaveCount(0);
+  await expect
+    .poll(() => getBonds(page, actorId))
+    .toContainEqual({ name: "Zorah", points: 2, isDeltaGreen: false });
+});
+
+test("DELTA GREEN and broken Bonds can't be rebuilt", async ({ page }) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, {
+    name: "Unrebuildable",
+    type: "pc",
+  });
+  for (const [name, system] of [
+    ["Bob", { points: 2, isDeltaGreen: true }],
+    ["Gone", { points: -1 }],
+  ] as const) {
+    const bondId = await createOwnedItem(page, actorId, {
+      name,
+      type: "bond",
+      system,
+    });
+    const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
+    await expect(bondSheet.getByText("Bond", { exact: true })).toBeVisible();
+    await expect(bondSheet.getByTestId("rebuild-bond-panel")).toHaveCount(0);
+  }
+});

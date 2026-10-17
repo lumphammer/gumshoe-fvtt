@@ -14,6 +14,7 @@ import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Toggle } from "../inputs/Toggle";
 import { BondBadges } from "./BondBadges";
 import { BurnBondButton } from "./BurnBondButton";
+import { RebuildBondPanel } from "./RebuildBondPanel";
 
 export const BondMain = () => {
   const { item } = useItemSheetContext();
@@ -23,14 +24,17 @@ export const BondMain = () => {
   const hasBadges = item.system.isDeltaGreen || item.system.isBroken;
   // only Bonds on a PC can be burned
   const canHaveBurn = isPCActor(item.actor);
-  const autoRows = 3 + (hasBadges ? 1 : 0) + (canHaveBurn ? 1 : 0);
+  const actor = item.actor;
+  const canRebuild = isPCActor(actor) && actor.system.canRebuildBond(item);
+  const autoRows =
+    3 + (hasBadges ? 1 : 0) + (canHaveBurn ? 1 : 0) + (canRebuild ? 1 : 0);
 
   return (
     <InputGrid
       css={{
         ...absoluteCover,
-        // name, points, DELTA GREEN toggle, (Burn,) (badges,) then notes fill
-        // the rest
+        // name, points, DELTA GREEN toggle, (Burn,) (badges,) (Rebuild,)
+        // then notes fill the rest
         gridTemplateRows: `repeat(${autoRows}, auto) 1fr`,
       }}
     >
@@ -63,6 +67,7 @@ export const BondMain = () => {
           <BondBadges bond={item} />
         </GridField>
       )}
+      {canRebuild && <RebuildBondPanel bond={item} />}
       <div
         css={{
           position: "relative",

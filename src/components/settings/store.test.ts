@@ -100,6 +100,7 @@ const initialState: State = {
     cardCategories: [],
     useBonds: false,
     bondStabilityAbility: "",
+    bondRebuildSpendCategory: "",
     useCards: false,
     notifyItemAddedToActor: false,
   },

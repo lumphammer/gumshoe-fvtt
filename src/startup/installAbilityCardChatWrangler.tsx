@@ -9,11 +9,13 @@ import { AbilityTestMwCard } from "../components/messageCards/AbilityTestMwCard"
 import { AttackCard } from "../components/messageCards/AttackCard";
 import { BrokenCard } from "../components/messageCards/BrokenCard";
 import { PushCard } from "../components/messageCards/PushCard";
+import { RebuildBondCard } from "../components/messageCards/RebuildBondCard";
 import { isAbilityCardMode } from "../components/messageCards/types";
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { parseBondSpends } from "../module/bonds/bondSpends";
+import { parseRebuildRecord } from "../module/bonds/rebuild";
 import { isAbilityItem } from "../module/items/exports";
 import type { MWDifficulty } from "../types";
 import { createCardRootTracker } from "./createCardRootTracker";
@@ -103,6 +105,23 @@ export const installAbilityCardChatWrangler = () => {
           el,
         );
         renderBroken("BrokenCardInvalidMode");
+        return;
+      }
+
+      // a Bond rebuild was settled when it was rolled, and its card carries
+      // the whole record, so it doesn't need the actor (which may be gone)
+      if (mode === constants.htmlDataModeBondRebuild) {
+        const record = parseRebuildRecord(
+          el.getAttribute(constants.htmlDataBondRebuild),
+        );
+        if (record === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(
+            el,
+            <RebuildBondCard record={record} imageUrl={imageUrl} />,
+          );
+        }
         return;
       }
 

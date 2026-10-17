@@ -458,6 +458,11 @@ export interface PresetV1 {
    */
   bondStabilityAbility?: string;
   /**
+   * The investigative ability category whose points can be spent when
+   * rebuilding a Bond between operations. Defaults to Interpersonal.
+   */
+  bondRebuildSpendCategory?: string;
+  /**
    * Should we use cards?
    */
   useCards?: boolean;

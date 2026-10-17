@@ -28,6 +28,8 @@ import type { AbilityItem } from "../items/exports";
 import { isAbilityItem } from "../items/exports";
 import type { GeneralAbilityItem } from "../items/generalAbility";
 import { isGeneralAbilityItem } from "../items/generalAbility";
+import type { InvestigativeAbilityItem } from "../items/investigativeAbility";
+import { isInvestigativeAbilityItem } from "../items/investigativeAbility";
 import { assertMwItem, isMwItem } from "../items/mwItem";
 import type { PersonalDetailItem } from "../items/personalDetail";
 import { isPersonalDetailItem } from "../items/personalDetail";
@@ -289,6 +291,37 @@ export class PCModel extends ActiveCharacterModel<
         stabilityPool: stability.system.pool,
         stabilityRating: stability.system.rating,
       })
+    );
+  }
+
+  /**
+   * Abilities whose points can go on the test to rebuild a Bond (p. 128):
+   * Interpersonal ones by default, with points left.
+   */
+  getRebuildSpendAbilities(): InvestigativeAbilityItem[] {
+    const category = settings.bondRebuildSpendCategory.get();
+    return this.parent.items
+      .filter(
+        (
+          item,
+        ): item is InvestigativeAbilityItem &
+          Item.Stored<"investigativeAbility"> =>
+          isInvestigativeAbilityItem(item) &&
+          item.system.categoryId === category &&
+          item.system.pool > 0,
+      )
+      .toSorted((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+  }
+
+  /**
+   * Only ordinary Bonds can be rebuilt this way (DELTA GREEN Bonds have their
+   * own rules, p. 046), and a broken Bond is gone for good.
+   */
+  canRebuildBond(bond: BondItem): boolean {
+    return (
+      !bond.system.isDeltaGreen &&
+      !bond.system.isBroken &&
+      this.getBondStabilityAbility() !== undefined
     );
   }
 

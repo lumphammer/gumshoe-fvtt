@@ -16,12 +16,20 @@ export const BondsSettings = ({ setters }: { setters: Setters }) => {
         <Toggle checked={settings.useBonds} onChange={setters.useBonds} />
       </SettingsGridField>
       {settings.useBonds && (
-        <SettingsGridField label="Ability Bonds can be spent on">
-          <AsyncTextInput
-            value={settings.bondStabilityAbility}
-            onChange={setters.bondStabilityAbility}
-          />
-        </SettingsGridField>
+        <>
+          <SettingsGridField label="Ability Bonds can be spent on">
+            <AsyncTextInput
+              value={settings.bondStabilityAbility}
+              onChange={setters.bondStabilityAbility}
+            />
+          </SettingsGridField>
+          <SettingsGridField label="Category spent when rebuilding Bonds">
+            <AsyncTextInput
+              value={settings.bondRebuildSpendCategory}
+              onChange={setters.bondRebuildSpendCategory}
+            />
+          </SettingsGridField>
+        </>
       )}
     </InputGrid>
   );
