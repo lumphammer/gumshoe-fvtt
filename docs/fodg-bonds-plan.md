@@ -164,7 +164,7 @@ Foundry glue lives elsewhere.
   - **Spend**: an ability in `bondRebuildSpendCategory` (abilities with a
     rating are listed; empty ones are disabled). With no points anywhere, the
     button is disabled and a hint below it says so, styled like the weapon
-    sheet's (`WeaponHint`).
+    sheet's (`Hint`, which they now share).
   - **Neglect**: an ordinary Bond that isn't broken. If there isn't one, the
     panel says so and the neglect is skipped. If the neglect would break it,
     a confirmation asks first.
