@@ -1,13 +1,13 @@
 import type { CSSObject } from "@lumphammer/investigator-fvtt-types";
 import { nanoid } from "nanoid";
-import type { DragEventHandler } from "react";
+import type { DragEventHandler, ReactNode } from "react";
 import { useMemo } from "react";
 
 import { IdContext } from "../IdContext";
 import { Translate } from "../Translate";
 
 type GridFieldProps = {
-  label?: string;
+  label?: ReactNode;
   className?: string;
   children?: any;
   noLabel?: boolean;

@@ -1,19 +1,22 @@
 import { useCallback, useContext, useState } from "react";
+import { FaHeartCrack } from "react-icons/fa6";
 
+import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
+import { getTranslated } from "../../functions/getTranslated";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { isPCActor } from "../../module/actors/pc";
-import { getMaxBondSpend } from "../../module/bonds/rules";
+import { doesSpendBreakBond, getMaxBondSpend } from "../../module/bonds/rules";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Button } from "../inputs/Button";
-
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { SpendButtons } from "../inputs/SpendButtons";
+import { ItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
 
 export const AbilityTest = () => {
@@ -34,16 +37,36 @@ export const AbilityTest = () => {
     settings.useBonds.get() &&
     item.name === settings.bondStabilityAbility.get() &&
     isPCActor(actor)
-      ? actor.system
-          .getBonds()
-          .filter((bond) => getMaxBondSpend(bond.system.points) > 0)
+      ? // broken ones too, so nobody goes looking for them
+        actor.system.getBonds()
       : [];
 
-  const handleClickTest = () => {
-    void item.system.testAbility(
-      spend,
-      bonds.map((bond) => ({ bond, spend: bondSpends[bond.id ?? ""] ?? 0 })),
+  const handleClickTest = async () => {
+    const spends = bonds.map((bond) => ({
+      bond,
+      spend: bondSpends[bond.id ?? ""] ?? 0,
+    }));
+    const breaking = spends.filter(({ bond, spend }) =>
+      doesSpendBreakBond(bond.system.points, spend),
     );
+    if (breaking.length > 0) {
+      const yes = await confirmADoodleDo({
+        message: "SpendBreaksBondsConfirm",
+        confirmText: "Test",
+        cancelText: "Cancel",
+        confirmIconClass: "fa-dice",
+        resolveFalseOnCancel: true,
+        values: {
+          BondNames: new Intl.ListFormat(game.i18n?.lang).format(
+            breaking.map(({ bond }) => bond.name ?? ""),
+          ),
+        },
+      });
+      if (!yes) {
+        return;
+      }
+    }
+    void item.system.testAbility(spend, spends);
     setSpend(0);
     setBondSpends({});
   };
@@ -78,8 +101,23 @@ export const AbilityTest = () => {
       {bonds.map((bond) => (
         <GridField
           key={bond.id}
-          label={`${bond.name} (${bond.system.points})`}
-          noTranslate
+          label={
+            <>
+              <ItemSheetLink item={bond} />
+              {/* no points: the enabled buttons say how many there are */}
+              {bond.system.isBroken && (
+                <>
+                  {" "}
+                  <FaHeartCrack
+                    title={getTranslated("Broken")}
+                    css={{ verticalAlign: "middle" }}
+                  />
+                </>
+              )}
+            </>
+          }
+          // a label would pass clicks on the link to the buttons
+          noLabel
         >
           <SpendButtons
             value={bondSpends[bond.id ?? ""] ?? 0}
@@ -90,6 +128,7 @@ export const AbilityTest = () => {
               }))
             }
             max={getMaxBondSpend(bond.system.points)}
+            disabled={bond.system.isBroken}
           />
         </GridField>
       ))}

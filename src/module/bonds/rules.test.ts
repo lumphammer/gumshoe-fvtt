@@ -4,6 +4,7 @@ import {
   canBurnBond,
   clampBondPoints,
   compareBonds,
+  doesSpendBreakBond,
   getMaxBondSpend,
   isBondBroken,
 } from "./rules";
@@ -56,6 +57,21 @@ describe("getMaxBondSpend", () => {
     [-1, 0],
   ])("a Bond with %i points can spend %i", (points, expected) => {
     expect(getMaxBondSpend(points)).toBe(expected);
+  });
+});
+
+describe("doesSpendBreakBond", () => {
+  it.each([
+    [2, 1, false],
+    [2, 2, false],
+    [2, 3, true],
+    [0, 1, true],
+    // nothing spent
+    [0, 0, false],
+    // already broken
+    [-1, 0, false],
+  ])("%i points, spending %i: %s", (points, spend, expected) => {
+    expect(doesSpendBreakBond(points, spend)).toBe(expected);
   });
 });
 

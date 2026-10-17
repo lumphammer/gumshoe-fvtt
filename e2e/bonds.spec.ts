@@ -124,28 +124,67 @@ test("spending Bond points on a Stability test", async ({ page }) => {
   );
 
   const sheet = await openSheet(page, `Actor.${actorId}.Item.${stabilityId}`);
-  // each Bond gets a row of spend buttons, labelled with its points
-  const momRow = sheet
-    .locator("label", { hasText: /^Mom \(1\)$/ })
-    .locator("xpath=following-sibling::div[1]");
-  // broken Bonds have nothing to spend
-  await expect(sheet.getByText("Broken Friend")).toHaveCount(0);
+  // each Bond gets a row of spend buttons; how many are enabled shows its points
+  const bondRow = (label: RegExp) =>
+    sheet
+      .locator("label", { hasText: label })
+      .locator("xpath=following-sibling::div[1]");
+  const momRow = bondRow(/^Mom$/);
+  // broken Bonds are listed, with a broken heart, but have nothing to spend
+  const brokenRow = bondRow(/^Broken Friend Broken$/);
+  await expect(
+    sheet.locator("label", { hasText: "Broken Friend" }).locator("svg title"),
+  ).toHaveText("Broken");
+  for (const name of ["0", "1"]) {
+    await expect(brokenRow.getByRole("radio", { name })).toBeDisabled();
+  }
+
+  // the name opens the Bond's sheet, without picking a spend
+  await sheet.getByText("Mom", { exact: true }).click();
+  const isMomsSheetOpen = () =>
+    page.evaluate(
+      (actorId) =>
+        game.actors.get(actorId)!.items.getName("Mom")!.sheet!.rendered,
+      actorId,
+    );
+  await expect.poll(isMomsSheetOpen).toBe(true);
+  await expect(momRow.getByRole("radio", { name: "0" })).toBeChecked();
+  await page.evaluate(
+    (actorId) => game.actors.get(actorId)!.items.getName("Mom")!.sheet!.close(),
+    actorId,
+  );
+  await expect.poll(isMomsSheetOpen).toBe(false);
 
   // Mom can go from 1 down to -1: two points, and no more
   await expect(momRow.getByRole("radio", { name: "2" })).toBeEnabled();
   await expect(momRow.getByRole("radio", { name: "3" })).toBeDisabled();
   await momRow.getByText("2", { exact: true }).click();
 
+  // taking her to -1 breaks the Bond, so it asks first; cancelling does nothing
+  const messages = page.locator("#chat .chat-message");
+  const messageCount = await messages.count();
+  const dialog = page.locator(".application.dialog");
+  await sheet.getByRole("button", { name: "Test" }).click();
+  await expect(dialog).toContainText("break your Bond with Mom");
+  await dialog.getByRole("button", { name: "Cancel" }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect(momRow.getByRole("radio", { name: "2" })).toBeChecked();
+  expect(await messages.count()).toBe(messageCount);
+
   await forceDice(page, 6);
   await sheet.getByRole("button", { name: "Test" }).click();
+  await dialog.getByRole("button", { name: "Test" }).click();
+  await expect(dialog).toHaveCount(0);
   const card = lastChatMessage(page);
   await expect(card.getByTestId("bond-spends")).toHaveText("Bonds: Mom 2");
   await expect(card.locator(".dice-total")).toHaveText("8");
   await expect
     .poll(() => getBonds(page, actorId))
     .toContainEqual({ name: "Mom", points: -1, isDeltaGreen: false });
-  // Mom is now broken, so her row goes
-  await expect(sheet.getByText(/^Mom/)).toHaveCount(0);
+  // Mom is now broken: still listed, but with nothing to spend
+  await expect(
+    bondRow(/^Mom Broken$/).getByRole("radio", { name: "0" }),
+  ).toBeDisabled();
 });
 
 test("burning a Bond for Stability", async ({ page }) => {
@@ -235,6 +274,7 @@ test("rebuilding a Bond: a successful 6", async ({ page }) => {
   const actorId = await createActor(page, { name: "Rebuilder", type: "pc" });
   await updateAbility(page, actorId, "Stability", { rating: 6, pool: 4 });
   await updateAbility(page, actorId, "Reassurance", { rating: 2, pool: 2 });
+  await updateAbility(page, actorId, "Flattery", { rating: 1, pool: 0 });
   const bondId = await createOwnedItem(page, actorId, {
     name: "Jerome",
     type: "bond",
@@ -242,6 +282,7 @@ test("rebuilding a Bond: a successful 6", async ({ page }) => {
   });
 
   const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
+  await bondSheet.getByTestId("open-rebuild-bond").click();
   const panel = bondSheet.getByTestId("rebuild-bond-panel");
   const row = (label: string) =>
     panel
@@ -253,9 +294,17 @@ test("rebuilding a Bond: a successful 6", async ({ page }) => {
   await expect(
     row("Reassurance").getByRole("radio", { name: "3" }),
   ).toBeDisabled();
+  // listed with a rating, even with nothing left to spend
+  await expect(
+    row("Flattery").getByRole("radio", { name: "0" }),
+  ).toBeDisabled();
+  // not listed without one
+  await expect(row("Cop Talk")).toHaveCount(0);
 
   await forceDice(page, 6);
   await panel.getByRole("button", { name: "Rebuild Bond" }).click();
+  // back to the Bond once it's rolled
+  await expect(panel).toHaveCount(0);
 
   const card = lastChatMessage(page).getByTestId("rebuild-bond-card");
   await expect(card.getByTestId("rebuild-outcome")).toHaveText("Successful 6!");
@@ -287,7 +336,11 @@ test("rebuilding a Bond: a failed 1", async ({ page }) => {
 
   const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
   await forceDice(page, 1);
-  await bondSheet.getByRole("button", { name: "Rebuild Bond" }).click();
+  await bondSheet.getByTestId("open-rebuild-bond").click();
+  await bondSheet
+    .getByTestId("rebuild-bond-panel")
+    .getByRole("button", { name: "Rebuild Bond" })
+    .click();
 
   const card = lastChatMessage(page).getByTestId("rebuild-bond-card");
   await expect(card.getByTestId("rebuild-outcome")).toHaveText("Failed 1");
@@ -299,6 +352,41 @@ test("rebuilding a Bond: a failed 1", async ({ page }) => {
   await expect
     .poll(() => getBonds(page, actorId))
     .toContainEqual({ name: "Zorah", points: 2, isDeltaGreen: false });
+});
+
+test("the names on the rebuild panel open their sheets", async ({ page }) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Linker", type: "pc" });
+  await updateAbility(page, actorId, "Reassurance", { rating: 1, pool: 0 });
+  const bondId = await createOwnedItem(page, actorId, {
+    name: "Ruth",
+    type: "bond",
+    system: { points: 2 },
+  });
+
+  const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
+  await bondSheet.getByTestId("open-rebuild-bond").click();
+  const panel = bondSheet.getByTestId("rebuild-bond-panel");
+  for (const name of ["Stability", "Reassurance"]) {
+    await panel.getByText(name, { exact: true }).click();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          ({ actorId, name }) =>
+            game.actors.get(actorId)!.items.getName(name)!.sheet!.rendered,
+          { actorId, name },
+        ),
+      )
+      .toBe(true);
+    // the spend buttons don't pick up the click
+    await expect(panel.getByRole("radio", { checked: true })).toHaveCount(2);
+    // out of the way of the next link
+    await page.evaluate(
+      ({ actorId, name }) =>
+        game.actors.get(actorId)!.items.getName(name)!.sheet!.close(),
+      { actorId, name },
+    );
+  }
 });
 
 test("DELTA GREEN and broken Bonds can't be rebuilt", async ({ page }) => {
@@ -318,6 +406,6 @@ test("DELTA GREEN and broken Bonds can't be rebuilt", async ({ page }) => {
     });
     const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
     await expect(bondSheet.getByText("Bond", { exact: true })).toBeVisible();
-    await expect(bondSheet.getByTestId("rebuild-bond-panel")).toHaveCount(0);
+    await expect(bondSheet.getByTestId("open-rebuild-bond")).toHaveCount(0);
   }
 });

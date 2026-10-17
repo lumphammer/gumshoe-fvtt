@@ -468,6 +468,7 @@
   "investigator.BurnBondTooltip": "Spend 2 points from this Bond to restore 1 {AbilityName}",
   "investigator.Burn": "Burn",
   "investigator.BurnBondConfirm": "Burn {Points} points of your Bond with {BondName} ({BondPoints} → {BondPointsAfter}) to restore 1 {AbilityName} ({Pool} → {PoolAfter})? The relationship will suffer for it.",
+  "investigator.SpendBreaksBondsConfirm": "This will break your Bond with {BondNames} for good. Make the test anyway?",
   "investigator.BurnBondConfirmBreaks": "Burn {Points} points of your Bond with {BondName} ({BondPoints} → {BondPointsAfter}) to restore 1 {AbilityName} ({Pool} → {PoolAfter})? This will break the Bond for good.",
   "investigator.RebuildingBondWithBondName": "Rebuilding the Bond with {BondName}",
   "investigator.AbilityNameTest": "{AbilityName} test",

@@ -296,7 +296,8 @@ export class PCModel extends ActiveCharacterModel<
 
   /**
    * Abilities whose points can go on the test to rebuild a Bond (p. 128):
-   * Interpersonal ones by default, with points left.
+   * Interpersonal ones by default, that the character has. Some may have no
+   * points left.
    */
   getRebuildSpendAbilities(): InvestigativeAbilityItem[] {
     const category = settings.bondRebuildSpendCategory.get();
@@ -308,7 +309,7 @@ export class PCModel extends ActiveCharacterModel<
           Item.Stored<"investigativeAbility"> =>
           isInvestigativeAbilityItem(item) &&
           item.system.categoryId === category &&
-          item.system.pool > 0,
+          item.system.rating >= 1,
       )
       .toSorted((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
   }

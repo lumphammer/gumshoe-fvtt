@@ -99,9 +99,12 @@ glue lives elsewhere.
 - `bondStabilityAbility` setting (default Stability).
 - The test panel on that ability's sheet has a row of spend buttons for each
   Bond, like the weapon sheet's extra spends (compact `CheckButtons`, and the
-  main row labelled with the ability's name). Each Bond can spend down to
-  broken; broken Bonds aren't offered. (All ability sheets now use the
-  compact spend buttons.)
+  main row labelled with the ability's name; Bond names open their sheets).
+  Rows are labelled with just the Bond's name: the enabled buttons show its
+  points. Each Bond can spend down to broken, after a confirmation naming
+  the Bonds it would break. Broken Bonds are still listed, so nobody goes
+  looking for them, but with a broken heart and every button disabled. (All
+  ability sheets now use the compact spend buttons.)
 - `testAbility` takes the Bond spends, re-checks them, adds their total as one
   term, and records them on the card (`data-bond-spends`, see
   `bondSpends.ts`) by name, so the card survives a Bond being renamed or
@@ -118,10 +121,13 @@ glue lives elsewhere.
 ### Phase 3: rebuilding (done)
 
 - `bondRebuildSpendCategory` setting (default Interpersonal).
-- A **Rebuild Bond** panel on the Bond's sheet, for ordinary Bonds that
-  aren't broken (`RebuildBondPanel`): spend rows for Stability and for each
-  ability in the category with points left, then a Stability test at
-  Difficulty 4.
+- A **Rebuild Bond →** button on the Bond's sheet, for ordinary Bonds that
+  aren't broken, opens a nested panel (`RebuildBondPanel`, routed with
+  minirouter like the Card sheet): spend rows for Stability and for each
+  ability in the category with a rating (names open their sheets; an empty
+  pool is listed, but its buttons are disabled), then a Stability test at
+  Difficulty 4. It slides back out once rolled. (It was inline at first, but
+  with five or more abilities in the category it squashed the notes away.)
 - Rules in `src/module/bonds/rebuild.ts` (outcome, Bond change, refresh,
   Stability after), glue in `rebuildBond.ts`, which re-checks the spends,
   rolls the test and (on a success) the refresh die, and applies everything

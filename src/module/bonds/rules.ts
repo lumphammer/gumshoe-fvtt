@@ -40,6 +40,11 @@ export function getMaxBondSpend(points: number): number {
   return Math.max(0, points - brokenBondPoints);
 }
 
+/** Would spending this many points break a Bond that isn't broken yet? */
+export function doesSpendBreakBond(points: number, spend: number): boolean {
+  return spend > 0 && !isBondBroken(points) && isBondBroken(points - spend);
+}
+
 /** Bond points per Stability point when burning a Bond (p. 120) */
 export const bondPointsPerBurnedStability = 2;
 

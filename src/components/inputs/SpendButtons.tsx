@@ -7,13 +7,20 @@ type SpendButtonsProps = {
   onChange: (value: number) => void;
   /** the most that can be spent; higher buttons are disabled */
   max: number;
+  /** disable every button, 0 included */
+  disabled?: boolean;
 };
 
 /**
  * A compact row of buttons for choosing how many points to spend, 0 to 7, as
  * on the weapon and ability sheets.
  */
-export const SpendButtons = ({ value, onChange, max }: SpendButtonsProps) => (
+export const SpendButtons = ({
+  value,
+  onChange,
+  max,
+  disabled = false,
+}: SpendButtonsProps) => (
   <CheckButtons
     size={1}
     onChange={onChange}
@@ -21,7 +28,7 @@ export const SpendButtons = ({ value, onChange, max }: SpendButtonsProps) => (
     options={spendValues.map((spend) => ({
       label: spend.toString(),
       value: spend,
-      enabled: spend === 0 || spend <= max,
+      enabled: !disabled && (spend === 0 || spend <= max),
     }))}
   />
 );

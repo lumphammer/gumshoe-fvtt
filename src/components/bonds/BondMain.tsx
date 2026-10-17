@@ -1,3 +1,5 @@
+import { useNavigationContext } from "@lumphammer/minirouter";
+
 import { getTranslated } from "../../functions/getTranslated";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
@@ -5,6 +7,7 @@ import { brokenBondPoints, maxBondPoints } from "../../module/bonds/rules";
 import { isPCActor } from "../../module/actors/pc";
 import { assertBondItem } from "../../module/items/bond";
 import { absoluteCover } from "../absoluteCover";
+import { Button } from "../inputs/Button";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
@@ -12,13 +15,15 @@ import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Toggle } from "../inputs/Toggle";
+import { Translate } from "../Translate";
 import { BondBadges } from "./BondBadges";
 import { BurnBondButton } from "./BurnBondButton";
-import { RebuildBondPanel } from "./RebuildBondPanel";
+import { rebuild } from "./directions";
 
 export const BondMain = () => {
   const { item } = useItemSheetContext();
   assertBondItem(item);
+  const { navigate } = useNavigationContext();
   // whether it can be burned depends on Stability, another item
   useRefreshOnActorItemChanges(item.actor);
   const hasBadges = item.system.isDeltaGreen || item.system.isBroken;
@@ -67,7 +72,17 @@ export const BondMain = () => {
           <BondBadges bond={item} />
         </GridField>
       )}
-      {canRebuild && <RebuildBondPanel bond={item} />}
+      {canRebuild && (
+        <GridFieldStacked>
+          <Button
+            data-testid="open-rebuild-bond"
+            onClick={() => navigate("here", rebuild())}
+          >
+            <Translate>Rebuild Bond</Translate>{" "}
+            <i className="fa fa-arrow-right" />
+          </Button>
+        </GridFieldStacked>
+      )}
       <div
         css={{
           position: "relative",
