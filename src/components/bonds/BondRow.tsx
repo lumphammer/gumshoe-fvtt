@@ -8,10 +8,11 @@ import type { BondItem } from "../../module/items/bond";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { BondBadges } from "./BondBadges";
+import { BurnBondButton } from "./BurnBondButton";
 
 /**
  * One Bond on the Bonds tab: name (click to open, drag to move), badges, and
- * a points stepper.
+ * Burn (2 points for 1 Stability, p. 120), and a points stepper.
  */
 export const BondRow = ({ bond }: { bond: BondItem }) => {
   const app = useContext(FoundryAppContext);
@@ -53,6 +54,7 @@ export const BondRow = ({ bond }: { bond: BondItem }) => {
         </a>
         <BondBadges bond={bond} />
       </div>
+      <BurnBondButton bond={bond} />
       <AsyncNumberInput
         css={{ width: "7em" }}
         value={bond.system.points}

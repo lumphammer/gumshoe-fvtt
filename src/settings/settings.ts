@@ -296,6 +296,11 @@ export const settings = {
     name: "Use Bonds?",
     default: pathOfCthulhuPreset.useBonds,
   }),
+  bondStabilityAbility: createSettingString({
+    key: "bondStabilityAbility",
+    name: "Ability Bonds can be spent on",
+    default: pathOfCthulhuPreset.bondStabilityAbility,
+  }),
 
   useCards: createSettingBoolean({
     key: "useCards",

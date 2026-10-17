@@ -1,6 +1,7 @@
 import type { CardsAreaSettings } from "../../components/cards/types";
 import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
+import { getTranslated } from "../../functions/getTranslated";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
 import type { SourceData } from "../../fvtt-exports";
@@ -12,13 +13,20 @@ import {
 } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import type { AbilityType, MwRefreshGroup, MwType } from "../../types";
-import { compareBonds } from "../bonds/rules";
+import {
+  bondPointsPerBurnedStability,
+  canBurnBond,
+  clampBondPoints,
+  compareBonds,
+  isBondBroken,
+} from "../bonds/rules";
 import type { BondItem } from "../items/bond";
 import { isBondItem } from "../items/bond";
 import type { CardItem } from "../items/card";
 import { isCardItem } from "../items/card";
 import type { AbilityItem } from "../items/exports";
 import { isAbilityItem } from "../items/exports";
+import type { GeneralAbilityItem } from "../items/generalAbility";
 import { isGeneralAbilityItem } from "../items/generalAbility";
 import { assertMwItem, isMwItem } from "../items/mwItem";
 import type { PersonalDetailItem } from "../items/personalDetail";
@@ -262,6 +270,96 @@ export class PCModel extends ActiveCharacterModel<
         ),
       );
   }
+
+  /** The ability Bonds can be spent on and burned for, usually Stability */
+  getBondStabilityAbility(): GeneralAbilityItem | undefined {
+    const name = settings.bondStabilityAbility.get();
+    return this.parent.items.find(
+      (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
+        isGeneralAbilityItem(item) && item.name === name,
+    );
+  }
+
+  canBurnBond(bond: BondItem): boolean {
+    const stability = this.getBondStabilityAbility();
+    return (
+      stability !== undefined &&
+      canBurnBond({
+        bondPoints: bond.system.points,
+        stabilityPool: stability.system.pool,
+        stabilityRating: stability.system.rating,
+      })
+    );
+  }
+
+  /** Ask first: burning permanently damages the Bond */
+  confirmBurnBond = async (bond: BondItem): Promise<void> => {
+    const stability = this.getBondStabilityAbility();
+    if (stability === undefined || !this.canBurnBond(bond)) {
+      // burnBond explains why not
+      await this.burnBond(bond);
+      return;
+    }
+    const bondPointsAfter = clampBondPoints(
+      bond.system.points - bondPointsPerBurnedStability,
+    );
+    const yes = await confirmADoodleDo({
+      message: isBondBroken(bondPointsAfter)
+        ? "BurnBondConfirmBreaks"
+        : "BurnBondConfirm",
+      confirmText: "Burn",
+      cancelText: "Cancel",
+      confirmIconClass: "fa-fire",
+      resolveFalseOnCancel: true,
+      values: {
+        BondName: bond.name ?? "",
+        Points: String(bondPointsPerBurnedStability),
+        BondPoints: String(bond.system.points),
+        BondPointsAfter: String(bondPointsAfter),
+        AbilityName: stability.name ?? "",
+        Pool: String(stability.system.pool),
+        PoolAfter: String(stability.system.pool + 1),
+      },
+    });
+    if (yes) {
+      await this.burnBond(bond);
+    }
+  };
+
+  /**
+   * Burn a Bond (Fall of DELTA GREEN, p. 120): spend 2 of its points to
+   * restore 1 Stability point.
+   */
+  burnBond = async (bond: BondItem): Promise<void> => {
+    const stability = this.getBondStabilityAbility();
+    if (stability === undefined) {
+      ui.notifications?.warn(
+        getTranslated("NoAbilityToBurnBondsFor", {
+          AbilityName: settings.bondStabilityAbility.get(),
+        }),
+      );
+      return;
+    }
+    if (!this.canBurnBond(bond)) {
+      return;
+    }
+    await this.parent.updateEmbeddedDocuments("Item", [
+      {
+        _id: bond.id,
+        system: {
+          points: clampBondPoints(
+            bond.system.points - bondPointsPerBurnedStability,
+          ),
+        },
+      },
+      { _id: stability.id, system: { pool: stability.system.pool + 1 } },
+    ]);
+    await this.broadcastUserMessage("ActorNameBurnedBondNameForAbilityName", {
+      BondName: bond.name ?? "",
+      AbilityName: stability.name ?? "",
+      Points: String(bondPointsPerBurnedStability),
+    });
+  };
 
   createBond = async (): Promise<void> => {
     await this.parent.createEmbeddedDocuments(

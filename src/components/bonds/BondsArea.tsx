@@ -35,7 +35,7 @@ export const BondsArea = () => {
         <div
           css={{
             display: "grid",
-            gridTemplateColumns: "1fr max-content",
+            gridTemplateColumns: "1fr max-content max-content",
             gridAutoRows: "min-content",
             alignItems: "center",
             columnGap: "0.5em",

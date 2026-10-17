@@ -99,6 +99,7 @@ const initialState: State = {
     journalMemories: {},
     cardCategories: [],
     useBonds: false,
+    bondStabilityAbility: "",
     useCards: false,
     notifyItemAddedToActor: false,
   },

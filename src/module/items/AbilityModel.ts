@@ -2,6 +2,7 @@ import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
 import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
+import { getTranslated } from "../../functions/getTranslated";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
 import { TypeDataModel } from "../../fvtt-exports";
@@ -12,6 +13,9 @@ import type {
   SpecialitiesMode,
   Unlock,
 } from "../../types";
+import { serializeBondSpends } from "../bonds/bondSpends";
+import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
+import type { BondItem } from "./bond";
 import type { AbilitySchema } from "./createAbilitySchema";
 import { migrateCategoryToCategoryId } from "./migrateCategoryToCategoryId";
 import { getSpecialitiesCount, resizeSpecialities } from "./resizeSpecialities";
@@ -36,12 +40,37 @@ export abstract class AbilityModel<
 
   /**
    * classic gumshoe test: spend a number of points from the pool, and add that
-   * to a d6
+   * to a d6. Points from Bonds (Fall of DELTA GREEN, p. 120) add to the roll
+   * too.
    */
-  async testAbility(spend: number): Promise<void> {
+  async testAbility(
+    spend: number,
+    bondSpends: { bond: BondItem; spend: number }[] = [],
+  ): Promise<void> {
     if (this.parent.parent === null) {
       return;
     }
+    const usedBondSpends = bondSpends.filter(
+      (bondSpend) => bondSpend.spend > 0,
+    );
+    // the sheet only offers what each Bond can spare, but it may be out of date
+    const overspent = usedBondSpends.find(
+      ({ bond, spend }) =>
+        bond.parent !== this.parent.parent ||
+        spend > getMaxBondSpend(bond.system.points),
+    );
+    if (overspent) {
+      ui.notifications?.warn(
+        getTranslated("BondCantSpareThatMany", {
+          BondName: overspent.bond.name ?? "",
+        }),
+      );
+      return;
+    }
+    const bondTotal = usedBondSpends.reduce(
+      (total, bondSpend) => total + bondSpend.spend,
+      0,
+    );
     const isBoosted = settings.useBoost.get() && this.boost;
     const boost = isBoosted ? 1 : 0;
     const situationalModifiers = this.activeSituationalModifiers.map((id) => {
@@ -53,6 +82,10 @@ export abstract class AbilityModel<
 
     let rollExpression = "1d6 + @spend";
     const rollValues: Record<string, number> = { spend };
+    if (bondTotal > 0) {
+      rollExpression += " + @bonds";
+      rollValues["bonds"] = bondTotal;
+    }
     if (isBoosted) {
       rollExpression += " + @boost";
       rollValues["boost"] = boost;
@@ -78,10 +111,25 @@ export abstract class AbilityModel<
         [constants.htmlDataName]: this.parent.name,
         [constants.htmlDataImageUrl]: this.parent.img,
         [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
+        [constants.htmlDataBondSpends]: serializeBondSpends(
+          usedBondSpends.map(({ bond, spend }) => ({
+            name: bond.name ?? "",
+            spend,
+          })),
+        ),
       }),
     });
     const pool = this.pool - (Number(spend) || 0);
     await this.parent.update({ system: { pool } });
+    if (usedBondSpends.length > 0) {
+      await this.parent.parent.updateEmbeddedDocuments(
+        "Item",
+        usedBondSpends.map(({ bond, spend }) => ({
+          _id: bond.id,
+          system: { points: clampBondPoints(bond.system.points - spend) },
+        })),
+      );
+    }
   }
 
   /**

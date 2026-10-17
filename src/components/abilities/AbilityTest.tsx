@@ -1,8 +1,12 @@
 import { useCallback, useContext, useState } from "react";
 
+import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { isPCActor } from "../../module/actors/pc";
+import { getMaxBondSpend } from "../../module/bonds/rules";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
+import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Button } from "../inputs/Button";
 import { CheckButtons } from "../inputs/CheckButtons";
@@ -21,26 +25,46 @@ export const AbilityTest = () => {
   assertAbilityItem(item);
   const theme = useContext(ThemeContext);
   const [spend, setSpend] = useState(0);
+  // points to spend from each Bond, by id
+  const [bondSpends, setBondSpends] = useState<Record<string, number>>({});
+  // Bonds live on the actor, not this item
+  useRefreshOnActorItemChanges(item.actor);
 
-  const handleClickTest = useCallback(() => {
-    void item.system.testAbility(spend);
+  const isGeneral = isGeneralAbilityItem(item);
+  const actor = item.actor;
+  // Fall of DELTA GREEN: Bond points can go on Stability tests (p. 120)
+  const bonds =
+    isGeneral &&
+    settings.useBonds.get() &&
+    item.name === settings.bondStabilityAbility.get() &&
+    isPCActor(actor)
+      ? actor.system
+          .getBonds()
+          .filter((bond) => getMaxBondSpend(bond.system.points) > 0)
+      : [];
+
+  const handleClickTest = () => {
+    void item.system.testAbility(
+      spend,
+      bonds.map((bond) => ({ bond, spend: bondSpends[bond.id ?? ""] ?? 0 })),
+    );
     setSpend(0);
-  }, [item, spend]);
+    setBondSpends({});
+  };
 
   const handleClickSpend = useCallback(() => {
     void item.system.spendAbility(spend);
     setSpend(0);
   }, [item, spend]);
 
-  const spendOptions = defaultSpendOptions.map((option) => {
-    assertAbilityItem(item);
-    return {
+  const getSpendOptions = (available: number) =>
+    defaultSpendOptions.map((option) => ({
       ...option,
-      enabled: option.value === 0 || option.value <= item.system.pool,
-    };
-  });
+      enabled: option.value === 0 || option.value <= available,
+    }));
 
-  const isGeneral = isGeneralAbilityItem(item);
+  // alongside Bonds, name the ability being spent (as the weapon sheet does)
+  const spendLabel = bonds.length > 0 ? (item.name ?? undefined) : undefined;
 
   return (
     <InputGrid
@@ -51,13 +75,36 @@ export const AbilityTest = () => {
         ...theme.panelStyleSecondary,
       }}
     >
-      <GridField label="Spend">
+      <GridField
+        label={spendLabel ?? "Spend"}
+        noTranslate={spendLabel !== undefined}
+      >
         <CheckButtons
+          size={1}
           onChange={setSpend}
           selected={spend}
-          options={spendOptions}
+          options={getSpendOptions(item.system.pool)}
         />
       </GridField>
+      {bonds.map((bond) => (
+        <GridField
+          key={bond.id}
+          label={`${bond.name} (${bond.system.points})`}
+          noTranslate
+        >
+          <CheckButtons
+            size={1}
+            onChange={(bondSpend) =>
+              setBondSpends((current) => ({
+                ...current,
+                [bond.id ?? ""]: bondSpend,
+              }))
+            }
+            selected={bondSpends[bond.id ?? ""] ?? 0}
+            options={getSpendOptions(getMaxBondSpend(bond.system.points))}
+          />
+        </GridField>
+      ))}
       <GridFieldStacked>
         <div
           css={{

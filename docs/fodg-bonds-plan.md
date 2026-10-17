@@ -94,14 +94,26 @@ glue lives elsewhere.
 - Browser tests in `e2e/bonds.spec.ts`.
 - The icon is a placeholder (`dark-squad.webp`, also used for parties).
 
-### Phase 2: spending Bonds
+### Phase 2: spending Bonds (done)
 
-- On a test of the `bondStabilityAbility`, let the player add points from any
-  Bonds, which add to the roll. Generalise the full-auto `ExtraSpend` UI
-  (`performAttack.ts`, `WeaponMain.tsx`) with an "adds to the roll" mode.
-- The chat card names each Bond spent.
-- **Burn** action on a Bond: 2 Bond points for 1 Stability point, with a chat
-  message.
+- `bondStabilityAbility` setting (default Stability).
+- The test panel on that ability's sheet has a row of spend buttons for each
+  Bond, like the weapon sheet's extra spends (compact `CheckButtons`, and the
+  main row labelled with the ability's name). Each Bond can spend down to
+  broken; broken Bonds aren't offered. (All ability sheets now use the
+  compact spend buttons.)
+- `testAbility` takes the Bond spends, re-checks them, adds their total as one
+  term, and records them on the card (`data-bond-spends`, see
+  `bondSpends.ts`) by name, so the card survives a Bond being renamed or
+  deleted. The card shows "Bonds: Mom 2".
+- **Burn** button (`BurnBondButton`) on each Bond row and on the Bond's
+  sheet: 2 Bond points (down to broken) for 1 Stability point, up to its
+  rating. A confirmation spells out the trade (points before and after, and
+  a warning if it breaks the Bond), and a chat message records it. We don't
+  track whether Stability was "just lost"; the player decides when it
+  applies.
+- The compact test buttons on the Abilities tab don't offer Bonds: open the
+  Stability sheet to spend them.
 
 ### Phase 3: rebuilding
 

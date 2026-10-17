@@ -31,3 +31,34 @@ export function compareBonds(a: SortableBond, b: SortableBond): number {
   }
   return a.name.localeCompare(b.name);
 }
+
+/**
+ * The most points that can be spent from a Bond with these points. Spending
+ * can take a Bond down to broken (p. 120): a desperate measure, but allowed.
+ */
+export function getMaxBondSpend(points: number): number {
+  return Math.max(0, points - brokenBondPoints);
+}
+
+/** Bond points per Stability point when burning a Bond (p. 120) */
+export const bondPointsPerBurnedStability = 2;
+
+/**
+ * Can this Bond be burned for a Stability point? It needs the points (down
+ * to broken), and burning only restores lost Stability, so not above the
+ * rating.
+ */
+export function canBurnBond({
+  bondPoints,
+  stabilityPool,
+  stabilityRating,
+}: {
+  bondPoints: number;
+  stabilityPool: number;
+  stabilityRating: number;
+}): boolean {
+  return (
+    getMaxBondSpend(bondPoints) >= bondPointsPerBurnedStability &&
+    stabilityPool < stabilityRating
+  );
+}

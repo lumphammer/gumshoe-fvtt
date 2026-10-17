@@ -85,6 +85,7 @@ export const htmlDataModeMwWallop = "mw-wallop";
 export const htmlDataModeMwNegate = "mw-negate";
 export const htmlDataModePush = "push";
 export const htmlDataRange = "data-range";
+export const htmlDataBondSpends = "data-bond-spends";
 export const htmlDataWeaponId = "data-weapon-id";
 export const htmlDataName = "data-name";
 export const htmlDataImageUrl = "data-image-url";

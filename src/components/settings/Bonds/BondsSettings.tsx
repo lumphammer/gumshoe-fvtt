@@ -1,5 +1,6 @@
 import { useContext } from "react";
 
+import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Toggle } from "../../inputs/Toggle";
 import { StateContext } from "../contexts";
@@ -14,6 +15,14 @@ export const BondsSettings = ({ setters }: { setters: Setters }) => {
       <SettingsGridField label="Use Bonds?">
         <Toggle checked={settings.useBonds} onChange={setters.useBonds} />
       </SettingsGridField>
+      {settings.useBonds && (
+        <SettingsGridField label="Ability Bonds can be spent on">
+          <AsyncTextInput
+            value={settings.bondStabilityAbility}
+            onChange={setters.bondStabilityAbility}
+          />
+        </SettingsGridField>
+      )}
     </InputGrid>
   );
 };

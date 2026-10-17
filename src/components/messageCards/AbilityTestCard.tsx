@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import type { BondSpendRecord } from "../../module/bonds/bondSpends";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
 import { DiceTerms } from "./DiceTerms";
@@ -12,10 +13,19 @@ interface AbilityTestCardProps {
   mode: AbilityCardMode;
   name: string | null;
   imageUrl: string | null;
+  /** points spent from Bonds on a Stability test (Fall of DELTA GREEN) */
+  bondSpends?: BondSpendRecord[];
 }
 
 export const AbilityTestCard = React.memo(
-  ({ msg, ability, mode, name, imageUrl }: AbilityTestCardProps) => {
+  ({
+    msg,
+    ability,
+    mode,
+    name,
+    imageUrl,
+    bondSpends = [],
+  }: AbilityTestCardProps) => {
     const sheet = ability?.sheet;
     assertApplicationV2(sheet);
 
@@ -77,6 +87,15 @@ export const AbilityTestCard = React.memo(
               {": "}
               <DiceTerms terms={msg.rolls?.[0]?.terms} />
               {" ="}
+              {bondSpends.length > 0 && (
+                <div data-testid="bond-spends">
+                  <Translate>Bonds</Translate>
+                  {": "}
+                  {bondSpends
+                    .map(({ name, spend }) => `${name} ${spend}`)
+                    .join(", ")}
+                </div>
+              )}
             </>
           )}
         </div>

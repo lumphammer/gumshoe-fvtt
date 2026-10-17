@@ -13,6 +13,7 @@ import { isAbilityCardMode } from "../components/messageCards/types";
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
+import { parseBondSpends } from "../module/bonds/bondSpends";
 import { isAbilityItem } from "../module/items/exports";
 import type { MWDifficulty } from "../types";
 import { createCardRootTracker } from "./createCardRootTracker";
@@ -212,6 +213,9 @@ export const installAbilityCardChatWrangler = () => {
               mode={mode}
               imageUrl={imageUrl}
               name={name}
+              bondSpends={parseBondSpends(
+                el.getAttribute(constants.htmlDataBondSpends),
+              )}
             />
           </StrictMode>
         );

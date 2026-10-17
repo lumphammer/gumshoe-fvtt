@@ -455,10 +455,17 @@
   "investigator.AddBond": "Add Bond",
   "investigator.NoBondsYet": "No Bonds yet!",
   "investigator.Points": "Points",
-  "investigator.DeltaGreenBond": "DELTA GREEN Bond?",
   "investigator.DeltaGreen": "DELTA GREEN",
   "investigator.Broken": "Broken",
   "investigator.UseBonds": "Use Bonds?",
   "investigator.BondsDescription": "Turn Bonds on or off",
-  "investigator.On": "On"
+  "investigator.On": "On",
+  "investigator.AbilityBondsCanBeSpentOn": "Ability Bonds can be spent on",
+  "investigator.BondCantSpareThatMany": "{BondName} can't spare that many points any more",
+  "investigator.NoAbilityToBurnBondsFor": "No {AbilityName} ability to burn Bonds for",
+  "investigator.ActorNameBurnedBondNameForAbilityName": "{ActorName} burned {Points} points of their Bond with {BondName} for 1 {AbilityName}",
+  "investigator.BurnBondTooltip": "Spend 2 points from this Bond to restore 1 {AbilityName}",
+  "investigator.Burn": "Burn",
+  "investigator.BurnBondConfirm": "Burn {Points} points of your Bond with {BondName} ({BondPoints} → {BondPointsAfter}) to restore 1 {AbilityName} ({Pool} → {PoolAfter})? The relationship will suffer for it.",
+  "investigator.BurnBondConfirmBreaks": "Burn {Points} points of your Bond with {BondName} ({BondPoints} → {BondPointsAfter}) to restore 1 {AbilityName} ({Pool} → {PoolAfter})? This will break the Bond for good."
 }

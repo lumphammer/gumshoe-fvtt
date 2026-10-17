@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { clampBondPoints, compareBonds, isBondBroken } from "./rules";
+import {
+  canBurnBond,
+  clampBondPoints,
+  compareBonds,
+  getMaxBondSpend,
+  isBondBroken,
+} from "./rules";
 
 describe("clampBondPoints", () => {
   it.each([
@@ -40,4 +46,36 @@ describe("compareBonds", () => {
       "Carlos",
     ]);
   });
+});
+
+describe("getMaxBondSpend", () => {
+  it.each([
+    [4, 5],
+    [1, 2],
+    [0, 1],
+    [-1, 0],
+  ])("a Bond with %i points can spend %i", (points, expected) => {
+    expect(getMaxBondSpend(points)).toBe(expected);
+  });
+});
+
+describe("canBurnBond", () => {
+  it.each([
+    // enough points, Stability below its rating
+    [2, 3, 6, true],
+    // 1 point can still go to -1
+    [1, 3, 6, true],
+    [0, 3, 6, false],
+    // Stability already full
+    [4, 6, 6, false],
+    // Stability negative (Shaken): can burn back up
+    [3, -2, 6, true],
+  ])(
+    "Bond %i, Stability %i/%i: %s",
+    (bondPoints, stabilityPool, stabilityRating, expected) => {
+      expect(canBurnBond({ bondPoints, stabilityPool, stabilityRating })).toBe(
+        expected,
+      );
+    },
+  );
 });

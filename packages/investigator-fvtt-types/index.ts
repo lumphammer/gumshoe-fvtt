@@ -453,6 +453,11 @@ export interface PresetV1 {
    */
   useBonds?: boolean;
   /**
+   * The name of the ability whose tests can take Bond points, and which
+   * burning a Bond restores. Defaults to Stability.
+   */
+  bondStabilityAbility?: string;
+  /**
    * Should we use cards?
    */
   useCards?: boolean;
