@@ -98,6 +98,7 @@ const initialState: State = {
     firstRun: true,
     journalMemories: {},
     cardCategories: [],
+    useBonds: false,
     useCards: false,
     notifyItemAddedToActor: false,
   },

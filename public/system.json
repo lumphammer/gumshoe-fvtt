@@ -293,7 +293,8 @@
       "weapon": {},
       "mwItem": {},
       "personalDetail": {},
-      "card": {}
+      "card": {},
+      "bond": {}
     },
     "Combat": {
       "turnPassing": {},

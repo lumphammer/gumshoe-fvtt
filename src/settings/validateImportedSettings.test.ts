@@ -23,6 +23,7 @@ it("should accept an older export without the damage application settings", () =
   expect(validatedResult).not.toHaveProperty("useWalkingFire");
   expect(validatedResult).not.toHaveProperty("walkingFireSpendAbilities");
   expect(validatedResult).not.toHaveProperty("useWoundStatusEffects");
+  expect(validatedResult).not.toHaveProperty("useBonds");
 });
 
 it("should preserve the damage application settings through a round trip", () => {
@@ -37,6 +38,14 @@ it("should preserve the damage application settings through a round trip", () =>
     walkingFireSpendAbilities: ["Athletics"],
     fullAutoSpendAbilities: ["Athletics", "Sanity"],
   };
+
+  expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
+    exportedSettings,
+  );
+});
+
+it("should preserve the Bonds settings through a round trip", () => {
+  const exportedSettings = { useBonds: true };
 
   expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
     exportedSettings,

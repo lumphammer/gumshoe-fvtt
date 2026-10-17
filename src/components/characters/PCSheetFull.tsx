@@ -17,6 +17,7 @@ import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { IndexedAsyncTextInput } from "../inputs/IndexedAsyncTextInput";
 import { InputGrid } from "../inputs/InputGrid";
+import { BondsArea } from "../bonds/BondsArea";
 import { TabContainer } from "../TabContainer";
 import { Translate } from "../Translate";
 import { AbilitiesAreaEdit } from "./AbilitiesAreaEdit";
@@ -264,6 +265,11 @@ export const PCSheetFull = () => {
               ) : (
                 <AbilitiesAreaPlay />
               ),
+            },
+            settings.useBonds.get() && {
+              id: "bonds",
+              label: "Bonds",
+              content: <BondsArea />,
             },
             settingsUseCards() && {
               id: "cards",

@@ -9,6 +9,7 @@
   "TYPES.Item.mwItem": "Moribund World Item",
   "TYPES.Item.personalDetail": "Personal Detail",
   "TYPES.Item.card": "Card",
+  "TYPES.Item.bond": "Bond",
   "investigator.24hRefresh": "24h Refresh",
   "investigator.Abilities": "Abilities",
   "investigator.Ability": "Ability",
@@ -448,5 +449,16 @@
   "investigator.AmmoPerFullAuto": "Ammo per full-auto",
   "investigator.Bullets": "Bullets",
   "investigator.BulletN": "Bullet {N}",
-  "investigator.DragToReorder": "Drag to reorder"
+  "investigator.DragToReorder": "Drag to reorder",
+  "investigator.Bonds": "Bonds",
+  "investigator.Bond": "Bond",
+  "investigator.AddBond": "Add Bond",
+  "investigator.NoBondsYet": "No Bonds yet!",
+  "investigator.Points": "Points",
+  "investigator.DeltaGreenBond": "DELTA GREEN Bond?",
+  "investigator.DeltaGreen": "DELTA GREEN",
+  "investigator.Broken": "Broken",
+  "investigator.UseBonds": "Use Bonds?",
+  "investigator.BondsDescription": "Turn Bonds on or off",
+  "investigator.On": "On"
 }

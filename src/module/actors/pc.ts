@@ -12,6 +12,9 @@ import {
 } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import type { AbilityType, MwRefreshGroup, MwType } from "../../types";
+import { compareBonds } from "../bonds/rules";
+import type { BondItem } from "../items/bond";
+import { isBondItem } from "../items/bond";
 import type { CardItem } from "../items/card";
 import { isCardItem } from "../items/card";
 import type { AbilityItem } from "../items/exports";
@@ -247,6 +250,26 @@ export class PCModel extends ActiveCharacterModel<
   //     .map((a) => a.name)
   //     .filter((n): n is string => n !== null);
   // }
+
+  /** Bonds in display order: ordinary first, then DELTA GREEN, by name */
+  getBonds(): BondItem[] {
+    return this.parent.items
+      .filter((item) => isBondItem(item))
+      .toSorted((a, b) =>
+        compareBonds(
+          { name: a.name ?? "", isDeltaGreen: a.system.isDeltaGreen },
+          { name: b.name ?? "", isDeltaGreen: b.system.isDeltaGreen },
+        ),
+      );
+  }
+
+  createBond = async (): Promise<void> => {
+    await this.parent.createEmbeddedDocuments(
+      "Item",
+      [{ type: c.bond, name: "New Bond" }],
+      { renderSheet: true },
+    );
+  };
 
   getPersonalDetails(): PersonalDetailItem[] {
     return this.parent.items.filter((item) => isPersonalDetailItem(item));

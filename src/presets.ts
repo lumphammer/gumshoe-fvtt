@@ -85,6 +85,7 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
     //   fields: {},
     // },
   },
+  useBonds: false,
   useCards: false,
   cardCategories: [],
 };
@@ -382,7 +383,7 @@ export const fallOfDeltaGreenPreset: PresetV1 = {
     { name: "Military Service", type: "item" },
     { name: "Motivation", type: "text" },
   ],
-  longNotes: ["Service Record/Bio", "Bonds", "Disorders", "Contacts", "Notes"],
+  longNotes: ["Service Record/Bio", "Disorders", "Contacts", "Notes"],
   newPCPacks: [`${systemId}.${packNames.fallOfDeltaGreenAbilities}`],
   newNPCPacks: [`${systemId}.${packNames.fallOfDeltaGreenOpponentAbilities}`],
   useBoost: false,
@@ -403,6 +404,7 @@ export const fallOfDeltaGreenPreset: PresetV1 = {
   walkingFireSpendAbilities: ["Athletics"],
   fullAutoSpendAbilities: ["Athletics", "Stability"],
   equipmentCategories: { general: { name: "General", fields: {} } },
+  useBonds: true,
 };
 
 export const basePresets = {

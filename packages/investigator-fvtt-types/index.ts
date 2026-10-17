@@ -448,6 +448,11 @@ export interface PresetV1 {
    */
   equipmentCategories?: Record<string, EquipmentCategory>;
   /**
+   * Fall of DELTA GREEN: give PCs Bonds (people they care about, with points
+   * they can spend on Stability), on their own tab.
+   */
+  useBonds?: boolean;
+  /**
    * Should we use cards?
    */
   useCards?: boolean;

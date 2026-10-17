@@ -180,8 +180,8 @@ exports[`reducer > should apply a preset 1`] = `
       "showEmptyInvestigativeCategories": false,
       "systemMigrationVersion": "",
       "shortNotes": Array [],
-@@ -89,5 +114,7 @@
-      "cardCategories": Array [],
+@@ -90,5 +115,7 @@
+      "useBonds": false,
       "useCards": false,
       "notifyItemAddedToActor": false,
 +     "schemaVersion": "v1",

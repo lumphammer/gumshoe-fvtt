@@ -50,7 +50,11 @@ translations, adding fields and settings, releases).
   `investigator.` + `Case.pascal(text)`. Punctuation is dropped and
   abbreviations get mangled: "Shot dry!" and "Shot dry" share `ShotDry`, and
   "HT" becomes `Ht`. Put punctuation outside `<Translate>`, and write words in
-  full.
+  full. All-caps runs stick together too: "DELTA GREEN Bond?" becomes
+  `DELTAGREENBond`, so write "Delta Green Bond?" and put the capitals in
+  `en.json`.
+- `<Translate>` sets an inline `background` (for its debug highlighting), so a
+  `background` passed in its `css` never shows. Style a wrapper instead.
 - `GridField` labels are translated unless you pass `noTranslate` (needed for
   labels that are ability names).
 
@@ -90,6 +94,10 @@ translations, adding fields and settings, releases).
   with `vitest -u` after checking them.
 - Settings that have never been released can be renamed or merged without a
   migration: check with `git tag` / `git merge-base --is-ancestor`.
+- `PresetV1` is read from the types package's built `dist`, which `pnpm check`
+  rebuilds. After changing it, vitest's typecheck can keep reporting the old
+  type from its incremental cache: delete
+  `node_modules/.pnpm/vitest@*/node_modules/vitest/dist/tsconfig.tmp.tsbuildinfo`.
 - Settings pages (e.g. under Combat) are `directions.ts` + `*Pages.ts` +
   `*SettingsRoutes.tsx`; `SettingsStringList` edits a list of names.
 

@@ -103,17 +103,10 @@ they're ordinary packs now, so edit them in Foundry and run `extract-packs`.
 
 ## Gaps
 
-Rough priority order. None of these are started.
+Rough priority order. Only Bonds is started.
 
-1. **Bonds** (pp. 045–046, 120, 128). Each has a rating (max 4) and a pool.
-   Bond points can be spent on Stability tests 1:1, or 2 per Stability point
-   straight after a loss (which can undo Shaken or Shattered). Bonds are
-   damaged, rebuilt, broken at −1, and DELTA GREEN Bonds are a separate kind.
-   Currently a long note.
-   - Stopgap: a "Bonds" general ability category, one ability per Bond. A
-     Bond test is mechanically a Stability test with a spend, but you can't
-     mix Stability and Bond points in one spend.
-   - Proper fix: a Bonds section on the sheet.
+1. **Bonds** (pp. 045–046, 120, 128): in progress, see
+   [`fodg-bonds-plan.md`](fodg-bonds-plan.md).
 2. **Stability states** (p. 113). Shaken (0 to −5): no investigative spends,
    +1 to general Difficulties. Shattered (−6 to −11): frenzy, flight or
    faint, a new disorder, and −1 Stability rating. Gone (−12 or less): the

@@ -4,6 +4,7 @@ import { useCallback, useContext, useEffect } from "react";
 import {
   FaCircle,
   FaEllipsis,
+  FaHeart,
   FaLayerGroup,
   FaLightbulb,
   FaSliders,
@@ -34,6 +35,7 @@ import { abilityPages } from "./Abilities/abilityPages";
 import { AbilitySettingsRoutes } from "./Abilities/AbilitySettingsRoutes";
 import { actorPages } from "./Actors/actorPages";
 import { ActorSettingsRoutes } from "./Actors/ActorSettingsRoutes";
+import { BondsSettings } from "./Bonds/BondsSettings";
 import { CardsSettings } from "./Cards/CardsSettings";
 import { CardsSettingsRoutes } from "./Cards/CardsSettingsRoutes";
 import { combatPages } from "./Combat/combatPages";
@@ -48,6 +50,7 @@ import { CoreSettings } from "./CoreSettings";
 import {
   abilitySettings,
   actorSettings,
+  bondsSettings,
   cardsSettings,
   combatSettings,
   coreSettings,
@@ -170,6 +173,16 @@ export const Settings = () => {
       icon: <FaLayerGroup />,
       content: <CardsSettings setters={setters} />,
       childRoutes: <CardsSettingsRoutes />,
+    },
+    {
+      direction: bondsSettings,
+      label: "Bonds",
+      description: "BondsDescription",
+      summary: (s: SettingsDict) => (
+        <Translate>{s.useBonds ? "On" : "Off"}</Translate>
+      ),
+      icon: <FaHeart />,
+      content: <BondsSettings setters={setters} />,
     },
     {
       direction: miscSettings,

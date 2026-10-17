@@ -291,6 +291,12 @@ export const settings = {
     managedBySettingsForm: false,
   }),
 
+  useBonds: createSettingBoolean({
+    key: "useBonds",
+    name: "Use Bonds?",
+    default: pathOfCthulhuPreset.useBonds,
+  }),
+
   useCards: createSettingBoolean({
     key: "useCards",
     name: "Use cards?",

@@ -24,6 +24,7 @@ export const party = "party";
 export const mwItem = "mwItem";
 export const personalDetail = "personalDetail";
 export const card = "card";
+export const bond = "bond";
 
 // assets
 // all generated through https://game-icons.net/
@@ -36,6 +37,7 @@ export const npcIcon = `/systems/${systemId}/assets/icons/cowled.webp`;
 export const partyIcon = `/systems/${systemId}/assets/icons/dark-squad.webp`;
 export const personalDetailIcon = `/systems/${systemId}/assets/icons/notebook.webp`;
 export const cardIcon = `/systems/${systemId}/assets/icons/card.webp`;
+export const bondIcon = `/systems/${systemId}/assets/icons/transfuse.webp`;
 
 // packs
 
