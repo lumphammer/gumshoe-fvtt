@@ -88,6 +88,7 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
   useBonds: false,
   bondStabilityAbility: "Stability",
   bondRebuildSpendCategory: "Interpersonal",
+  violenceCappedAbilities: [],
   useCards: false,
   cardCategories: [],
 };
@@ -407,6 +408,12 @@ export const fallOfDeltaGreenPreset: PresetV1 = {
   fullAutoSpendAbilities: ["Athletics", "Stability"],
   equipmentCategories: { general: { name: "General", fields: {} } },
   useBonds: true,
+  violenceCappedAbilities: [
+    "Flattery",
+    "Inspiration",
+    "Negotiation",
+    "Reassurance",
+  ],
 };
 
 export const basePresets = {

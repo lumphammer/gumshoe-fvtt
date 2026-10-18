@@ -463,6 +463,11 @@ export interface PresetV1 {
    */
   bondRebuildSpendCategory?: string;
   /**
+   * Abilities whose ratings are capped when an Agent is Adapted to Violence.
+   * Defaults to none.
+   */
+  violenceCappedAbilities?: string[];
+  /**
    * Should we use cards?
    */
   useCards?: boolean;

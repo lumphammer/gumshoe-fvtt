@@ -306,6 +306,11 @@ export const settings = {
     name: "Category spent when rebuilding Bonds",
     default: pathOfCthulhuPreset.bondRebuildSpendCategory,
   }),
+  violenceCappedAbilities: createSettingArrayOfString({
+    key: "violenceCappedAbilities",
+    name: "Abilities capped by Adapted to Violence",
+    default: pathOfCthulhuPreset.violenceCappedAbilities,
+  }),
 
   useCards: createSettingBoolean({
     key: "useCards",

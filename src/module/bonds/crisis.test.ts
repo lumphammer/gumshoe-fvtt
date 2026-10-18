@@ -119,6 +119,22 @@ describe("planCrisis", () => {
     expect(plan.lossesOwed).toBe(1);
   });
 
+  it("caps new and strengthened Bonds when Adapted to Violence", () => {
+    const bobBond = bond("Bob", 2, { isDeltaGreen: true, actorUuid: bob.uuid });
+    const plan = planCrisis([bond("Mom", 4), bobBond], [bob, carlos], 2);
+    expect(plan.newRating).toBe(2);
+    expect(plan.changes).toEqual([
+      { kind: "strengthen", teammate: bob, bond: bobBond, after: 2 },
+      { kind: "new", teammate: carlos, after: 2 },
+    ]);
+    // strengthening at the cap still costs, as at 4
+    expect(plan.lossesOwed).toBe(2);
+  });
+
+  it("starts new Bonds below the cap when the highest Bond is low", () => {
+    expect(planCrisis([bond("Mom", 1)], [bob], 2).newRating).toBe(1);
+  });
+
   it("doesn't take the cost from a Bond the crisis is about", () => {
     // Bob is also family: an ordinary Bond, strengthened
     const cousin = bond("Cousin Bob", 2, { actorUuid: bob.uuid });

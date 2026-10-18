@@ -126,13 +126,14 @@ Rough priority order. Only Bonds is started.
 7. Lower priority:
    - Special Training and Special Weapons Training (pp. 072–073).
    - Hypergeometry capped by Hypergeometric Potential (p. 197).
-   - Adaptation to Violence or Helplessness, after three losses in a row
-     (p. 120).
+   - Adaptation to Violence or Helplessness (p. 120): tracked by hand, with
+     the caps and refresh penalty (see `fodg-bonds-plan.md`, phase 6), but
+     not Difficulty 2, or ticking the boxes automatically.
    - Chargen checks: investigative build points by group size (p. 020);
      second-highest general ability at least half the highest (p. 024).
    - Personal Life vignettes and campaign modes (pp. 128–130).
    - Psychic powers (p. 198).
-   - More personal details from the paper sheet (p. 347), e.g. "Adapted to",
+   - More personal details from the paper sheet (p. 347), e.g.
      "Special Training", "Inciting Event".
 
 ## Open questions

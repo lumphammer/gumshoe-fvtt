@@ -22,6 +22,15 @@ describe("getEstablishOutcome and getEstablishedBondPoints", () => {
     expect(getEstablishOutcome(die)).toBe(outcome);
     expect(getEstablishedBondPoints(die)).toBe(points);
   });
+
+  it.each([
+    [1, null],
+    [3, 1],
+    [5, 2],
+    [6, 2],
+  ])("Adapted to Violence, a %i bonds at %s", (die, points) => {
+    expect(getEstablishedBondPoints(die, 2)).toBe(points);
+  });
 });
 
 describe("doesEstablishRefund", () => {

@@ -7,6 +7,7 @@ import { rebuildBond } from "../../module/bonds/rebuildBond";
 import type { BondItem } from "../../module/items/bond";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import { settings } from "../../settings/settings";
+import { BondCapNote } from "./BondCapNote";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -71,6 +72,7 @@ export const RebuildBondPanel = ({ bond }: { bond: BondItem }) => {
           RebuildBondHint
         </Translate>
       </p>
+      <BondCapNote actor={actor} />
       <InputGrid>
         {/* noLabel: a label would pass clicks on the link to the buttons */}
         <GridField

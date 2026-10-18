@@ -95,7 +95,10 @@ test("adding, editing and breaking a Bond", async ({ page }) => {
   await expect(area.getByTestId("bond-rating")).toHaveText(["1", "2"]);
   // just the table: editing and burning are on the Bond's sheet
   await expect(area.getByRole("button", { name: "Burn" })).toHaveCount(0);
-  await expect(area.locator("input")).toHaveCount(0);
+  // (the only inputs are the adaptation tracker's boxes)
+  await expect(
+    area.locator("input:not([data-testid^=adaptation] input)"),
+  ).toHaveCount(0);
 
   // step Mom down to -1, where she's broken (and no further)
   const minus = bondSheet.locator("button:has(.fa-minus)");
@@ -1100,4 +1103,218 @@ test("a player sees a button only for their own Agent on a crisis call", async (
       isDeltaGreen: true,
       actorUuid: `Actor.${teammateIds["Agent Fox"]}`,
     });
+});
+
+async function getAbility(page: Page, actorId: string, abilityName: string) {
+  return page.evaluate(
+    ({ actorId, abilityName }) => {
+      const system = game.actors.get(actorId)!.items.getName(abilityName)!
+        .system as unknown as { rating: number; pool: number };
+      return { rating: system.rating, pool: system.pool };
+    },
+    { actorId, abilityName },
+  );
+}
+
+async function getAdaptations(page: Page, actorId: string) {
+  return page.evaluate(
+    (actorId) =>
+      (
+        game.actors.get(actorId)!.system as unknown as {
+          adaptations: { violence: number; helplessness: number };
+        }
+      ).adaptations,
+    actorId,
+  );
+}
+
+/** A box on the Bonds tab's adaptation tracker (1-based) */
+function adaptationBox(sheet: Locator, adaptation: string, box: number) {
+  return sheet
+    .getByTestId(`adaptation-${adaptation}`)
+    .locator("label")
+    .nth(box - 1);
+}
+
+test("Adapted to Violence caps Interpersonal ratings and Bonds", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    useBonds: true,
+    violenceCappedAbilities: ["Flattery", "Reassurance"],
+  });
+  const actorId = await createActor(page, { name: "Hardened", type: "pc" });
+  await updateAbility(page, actorId, "Reassurance", { rating: 3, pool: 3 });
+  await updateAbility(page, actorId, "Flattery", { rating: 2, pool: 0 });
+  await updateAbility(page, actorId, "Cop Talk", { rating: 2, pool: 2 });
+  await createOwnedItem(page, actorId, {
+    name: "Mom",
+    type: "bond",
+    system: { points: 4 },
+  });
+
+  const actorSheet = await openSheet(page, `Actor.${actorId}`);
+  await actorSheet.locator(".tab-strip > label", { hasText: "Bonds" }).click();
+  // ticking the last box ticks them all, and asks first
+  await adaptationBox(actorSheet, "violence", 3).click();
+  const dialog = page.locator(".application.dialog");
+  await expect(dialog).toContainText(
+    "Make Hardened Adapted to Violence? Flattery and Reassurance ratings will drop to 1",
+  );
+  await dialog.getByRole("button", { name: "Adapted to Violence" }).click();
+  await expect(actorSheet.getByTestId("adapted-violence")).toBeVisible();
+  await expect
+    .poll(() => getAdaptations(page, actorId))
+    .toEqual({ violence: 3, helplessness: 0 });
+
+  // ratings drop to the cap, but the pools stay, to be spent
+  await expect
+    .poll(() => getAbility(page, actorId, "Reassurance"))
+    .toEqual({ rating: 1, pool: 3 });
+  expect(await getAbility(page, actorId, "Flattery")).toEqual({
+    rating: 1,
+    pool: 0,
+  });
+  // only the capped abilities
+  expect(await getAbility(page, actorId, "Cop Talk")).toEqual({
+    rating: 2,
+    pool: 2,
+  });
+  // and Bonds above the cap keep their points
+  expect(await getBonds(page, actorId)).toEqual([
+    { name: "Mom", points: 4, isDeltaGreen: false },
+  ]);
+
+  // a 6 would bond at 3, but the cap is 2
+  await actorSheet.getByTestId("open-establish-bond").click();
+  const panel = actorSheet.getByTestId("establish-bond-panel");
+  await expect(panel.getByTestId("bond-cap-note")).toContainText(
+    "no Bond can go above 2",
+  );
+  await panel.getByLabel("Name", { exact: true }).fill("Ruth");
+  await forceDice(page, 6);
+  await panel.getByRole("button", { name: "Establish Bond" }).click();
+  await expect(panel).toHaveCount(0);
+  await expect(
+    lastChatMessage(page).getByTestId("establish-bond-points"),
+  ).toHaveText("Ruth: 2");
+
+  // a refresh only goes up to the cap
+  await actorSheet.getByRole("button", { name: "Full Refresh" }).click();
+  await dialog.getByRole("button", { name: "Refresh" }).click();
+  await expect
+    .poll(() => getAbility(page, actorId, "Reassurance"))
+    .toEqual({ rating: 1, pool: 1 });
+
+  // the ability's sheet says why, and won't go above the cap
+  const reassuranceId = await page.evaluate(
+    (actorId) => game.actors.get(actorId)!.items.getName("Reassurance")!.id,
+    actorId,
+  );
+  const abilitySheet = await openSheet(
+    page,
+    `Actor.${actorId}.Item.${reassuranceId}`,
+  );
+  await expect(abilitySheet.getByTestId("rating-cap-badge")).toHaveText(
+    "Capped at 1",
+  );
+  await page.evaluate(async (actorId) => {
+    const item = game.actors.get(actorId)!.items.getName("Reassurance")!;
+    await (
+      item.system as unknown as { setRating: (n: number) => Promise<void> }
+    ).setRating(3);
+  }, actorId);
+  expect((await getAbility(page, actorId, "Reassurance")).rating).toBe(1);
+});
+
+test("Adapted to Helplessness: refreshes give a point fewer", async ({
+  page,
+}) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Resigned", type: "pc" });
+  await updateAbility(page, actorId, "Athletics", {
+    rating: 8,
+    pool: 2,
+    refreshesDaily: true,
+  });
+  await updateAbility(page, actorId, "Health", {
+    rating: 6,
+    pool: 5,
+    refreshesDaily: true,
+  });
+
+  const actorSheet = await openSheet(page, `Actor.${actorId}`);
+  await actorSheet.locator(".tab-strip > label", { hasText: "Bonds" }).click();
+  // boxes tick up to the one clicked, and clicking a ticked one clears it
+  await adaptationBox(actorSheet, "helplessness", 2).click();
+  await expect
+    .poll(() => getAdaptations(page, actorId))
+    .toEqual({ violence: 0, helplessness: 2 });
+  await adaptationBox(actorSheet, "helplessness", 1).click();
+  await expect
+    .poll(() => getAdaptations(page, actorId))
+    .toEqual({ violence: 0, helplessness: 0 });
+  await expect(actorSheet.getByTestId("adapted-helplessness")).toHaveCount(0);
+  // no confirmation: nothing changes until a refresh
+  await adaptationBox(actorSheet, "helplessness", 3).click();
+  await expect(actorSheet.getByTestId("adapted-helplessness")).toBeVisible();
+
+  const dialog = page.locator(".application.dialog");
+  await actorSheet.getByRole("button", { name: "24h Refresh" }).click();
+  await dialog.getByRole("button", { name: "Refresh" }).click();
+  // a point short; already within a point, nothing
+  await expect
+    .poll(() => getAbility(page, actorId, "Athletics"))
+    .toEqual({ rating: 8, pool: 7 });
+  expect(await getAbility(page, actorId, "Health")).toEqual({
+    rating: 6,
+    pool: 5,
+  });
+
+  // an ability's own refresh too
+  await updateAbility(page, actorId, "Athletics", { pool: 0 });
+  const athleticsId = await page.evaluate(
+    (actorId) => game.actors.get(actorId)!.items.getName("Athletics")!.id,
+    actorId,
+  );
+  const abilitySheet = await openSheet(
+    page,
+    `Actor.${actorId}.Item.${athleticsId}`,
+  );
+  await abilitySheet.getByRole("button", { name: "Refresh" }).click();
+  await expect
+    .poll(() => getAbility(page, actorId, "Athletics"))
+    .toEqual({ rating: 8, pool: 7 });
+
+  // but not a Full Refresh, at the end of an operation
+  await actorSheet.getByRole("button", { name: "Full Refresh" }).click();
+  await dialog.getByRole("button", { name: "Refresh" }).click();
+  await expect
+    .poll(() => getAbility(page, actorId, "Athletics"))
+    .toEqual({ rating: 8, pool: 8 });
+});
+
+test("Adapted to Violence with no abilities set to cap warns", async ({
+  page,
+}) => {
+  await setSettings(page, { useBonds: true, violenceCappedAbilities: [] });
+  const actorId = await createActor(page, { name: "Uncapped", type: "pc" });
+  await updateAbility(page, actorId, "Reassurance", { rating: 3, pool: 3 });
+
+  const actorSheet = await openSheet(page, `Actor.${actorId}`);
+  await actorSheet.locator(".tab-strip > label", { hasText: "Bonds" }).click();
+  await adaptationBox(actorSheet, "violence", 3).click();
+  const dialog = page.locator(".application.dialog");
+  await expect(dialog).toContainText("No abilities are set to be capped");
+  await dialog.getByRole("button", { name: "Adapted to Violence" }).click();
+
+  const adaptations = actorSheet.getByTestId("adaptations");
+  await expect(adaptations).toContainText("Bonds are capped at 2.");
+  await expect(adaptations).toContainText(
+    "No abilities are set to be capped by Adapted to Violence",
+  );
+  expect(await getAbility(page, actorId, "Reassurance")).toEqual({
+    rating: 3,
+    pool: 3,
+  });
 });

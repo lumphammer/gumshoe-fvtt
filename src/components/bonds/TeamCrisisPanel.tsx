@@ -18,6 +18,7 @@ import {
   planTeamCrisis,
   teamCrisis,
 } from "../../module/bonds/teamCrisis";
+import { BondCapNote } from "./BondCapNote";
 import { Button } from "../inputs/Button";
 import { Checkbox } from "../inputs/Checkbox";
 import { GridField } from "../inputs/GridField";
@@ -152,6 +153,7 @@ export const TeamCrisisPanel = ({
           TeamCrisisHint
         </Translate>
       </p>
+      <BondCapNote actor={actor} />
       <h3>
         <Translate>Teammates present</Translate>
       </h3>

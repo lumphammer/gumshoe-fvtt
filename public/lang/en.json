@@ -530,5 +530,21 @@
   "investigator.Bonded": "Bonded",
   "investigator.Bonded6": "Bonded on a 6!",
   "investigator.Refunded": "refunded",
-  "investigator.Neglected": "Neglected"
+  "investigator.Neglected": "Neglected",
+  "investigator.AbilitiesCappedByAdaptedToViolence": "Abilities capped by Adapted to Violence",
+  "investigator.ViolenceCappedAbilitiesNote": "When an Agent becomes Adapted to Violence, these abilities’ ratings are capped. Abilities are matched by name, so check the spelling matches your abilities exactly.",
+  "investigator.AdaptedTo": "Adapted to",
+  "investigator.Violence": "Violence",
+  "investigator.Helplessness": "Helplessness",
+  "investigator.Adapted": "Adapted",
+  "investigator.AdaptedToViolence": "Adapted to Violence",
+  "investigator.AdaptationHint": "Tick a box each time {AbilityName} is lost to this kind of trauma without becoming Shaken, and clear them on becoming Shaken. With all {Count} ticked, the Agent is adapted for good: {AbilityName} tests against that kind of trauma are at Difficulty 2.",
+  "investigator.AdaptedToViolenceEffect": "{AbilityNames} are capped at {RatingCap}, and Bonds at {BondCap}. Points already above the caps can still be spent, but won’t come back.",
+  "investigator.AdaptedToViolenceBondsOnlyEffect": "Bonds are capped at {BondCap}. Points already above the cap can still be spent, but won’t come back.",
+  "investigator.NoViolenceCappedAbilitiesWarning": "No abilities are set to be capped by Adapted to Violence, so none are. The GM can choose them in the system settings, under Bonds.",
+  "investigator.AdaptedToHelplessnessEffect": "Refreshes during an operation give {Penalty} point fewer (Full Refresh not included).",
+  "investigator.AdaptedToViolenceConfirm": "Make {ActorName} Adapted to Violence? {AbilityNames} ratings will drop to {RatingCap}, and no Bond can be raised above {BondCap}. Points already in those pools, and Bonds above {BondCap}, stay until they’re spent or lost. This can’t be undone.",
+  "investigator.AdaptedToViolenceBondsOnlyConfirm": "Make {ActorName} Adapted to Violence? No Bond can be raised above {BondCap}; Bonds already above it stay until they’re lost. No abilities are set to be capped, so none will be: the GM can choose them in the system settings, under Bonds. This can’t be undone.",
+  "investigator.CappedAtCap": "Capped at {Cap}",
+  "investigator.BondCapNote": "Adapted to Violence: no Bond can go above {BondCap}."
 }

@@ -1,7 +1,7 @@
 // Rebuilding a Bond between operations (Fall of DELTA GREEN, p. 128). Pure
 // functions: keep Foundry out of this file.
 
-import { clampBondPoints } from "./rules";
+import { addBondPoints, maxBondPoints } from "./rules";
 
 /** The Stability test to rebuild a Bond is at Difficulty 4 */
 export const rebuildDifficulty = 4;
@@ -83,11 +83,13 @@ export function getStabilityAfterRebuild({
   return Math.max(afterSpend, Math.min(rating, afterSpend + refresh));
 }
 
+/** The Bond after the test; gains stop at the cap (when Adapted to Violence) */
 export function getBondAfterRebuild(
   points: number,
   outcome: RebuildOutcome,
+  cap: number = maxBondPoints,
 ): number {
-  return clampBondPoints(points + getRebuildBondChange(outcome));
+  return addBondPoints(points, getRebuildBondChange(outcome), cap);
 }
 
 /**

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useContext } from "react";
 
+import { getTranslated } from "../../functions/getTranslated";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
@@ -17,6 +18,7 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
   assertAbilityItem(ability);
   const situationalModifiers = ability.system.getVisibleSituationalModifiers();
   const unlocks = ability.system.getActiveUnlocks();
+  const ratingCap = ability.system.getRatingCap();
   const theme = useContext(ThemeContext);
   return (
     <div
@@ -64,6 +66,31 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
         >
           Push Pool
         </Translate>
+      )}
+
+      {/* Adapted to Violence */}
+      {ratingCap !== null && (
+        // styled on a wrapper: Translate sets its own background
+        <span
+          data-testid="rating-cap-badge"
+          css={{
+            background: theme.colors.accentContrast,
+            color: theme.colors.accent,
+            outline: `1px solid ${theme.colors.accent}`,
+            fontSize: "0.9em",
+            lineHeight: "1",
+            borderRadius: "0.5em",
+            padding: "0 0.5em",
+            margin: "0 0.24em",
+          }}
+        >
+          <Translate
+            values={{ Cap: String(ratingCap) }}
+            title={getTranslated("Adapted to Violence")}
+          >
+            CappedAtCap
+          </Translate>
+        </span>
       )}
 
       {/* Unlocks */}

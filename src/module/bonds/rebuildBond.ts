@@ -77,7 +77,11 @@ export async function rebuildBond(
   // the update changes these in place, so note them first
   const bondBefore = bond.system.points;
   const stabilityBefore = stability.system.pool;
-  const bondAfter = getBondAfterRebuild(bondBefore, outcome);
+  const bondAfter = getBondAfterRebuild(
+    bondBefore,
+    outcome,
+    actor.system.getBondCap(),
+  );
   const stabilityAfter = getStabilityAfterRebuild({
     pool: stabilityBefore,
     rating: stability.system.rating,

@@ -143,6 +143,7 @@ export const AbilityMainBits = () => {
           <GridField label="Rating">
             <AsyncNumberInput
               min={0}
+              max={item.system.getRatingCap() ?? undefined}
               value={item.system.rating}
               onChange={item.system.setRating}
             />

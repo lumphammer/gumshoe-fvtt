@@ -9,6 +9,7 @@ import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
 import { Translate } from "../Translate";
+import { AdaptationTracker } from "./AdaptationTracker";
 import { BondRow } from "./BondRow";
 import { crisis, establish } from "./directions";
 import { EstablishBondPanel } from "./EstablishBondPanel";
@@ -110,6 +111,7 @@ export const BondsArea = () => {
             </div>
           </div>
         )}
+        <AdaptationTracker actor={actor} />
       </div>
       <SlideInNestedPanelRoute direction={establish}>
         <EstablishBondPanel actor={actor} />

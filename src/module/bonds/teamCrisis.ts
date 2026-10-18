@@ -27,7 +27,7 @@ import {
   planCrisis,
   serializeCrisisRecord,
 } from "./crisis";
-import { clampBondPoints, getMaxBondSpend, maxBondPoints } from "./rules";
+import { addBondPoints, clampBondPoints, getMaxBondSpend } from "./rules";
 
 export function toCrisisBond(bond: BondItem): CrisisBond {
   return {
@@ -70,6 +70,7 @@ export function planTeamCrisis(actor: PCActor, teammates: Actor[]): CrisisPlan {
   return planCrisis(
     actor.system.getBonds().map(toCrisisBond),
     teammates.map(toCrisisTeammate),
+    actor.system.getBondCap(),
   );
 }
 
@@ -185,7 +186,7 @@ export async function teamCrisis(
       const after =
         change.kind === "reform"
           ? change.after
-          : Math.min(maxBondPoints, current + 1);
+          : addBondPoints(current, 1, actor.system.getBondCap());
       if (change.kind === "reform") {
         reformed.add(bond);
       }

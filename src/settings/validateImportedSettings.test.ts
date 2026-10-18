@@ -26,6 +26,7 @@ it("should accept an older export without the damage application settings", () =
   expect(validatedResult).not.toHaveProperty("useBonds");
   expect(validatedResult).not.toHaveProperty("bondStabilityAbility");
   expect(validatedResult).not.toHaveProperty("bondRebuildSpendCategory");
+  expect(validatedResult).not.toHaveProperty("violenceCappedAbilities");
 });
 
 it("should preserve the damage application settings through a round trip", () => {
@@ -51,6 +52,7 @@ it("should preserve the Bonds settings through a round trip", () => {
     useBonds: true,
     bondStabilityAbility: "Composure",
     bondRebuildSpendCategory: "Social",
+    violenceCappedAbilities: ["Charm"],
   };
 
   expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(

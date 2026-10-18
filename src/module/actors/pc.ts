@@ -13,6 +13,14 @@ import {
 } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import type { AbilityType, MwRefreshGroup, MwType } from "../../types";
+import type { Adaptation } from "../bonds/adaptation";
+import {
+  adaptationThreshold,
+  adaptedToViolenceRatingCap,
+  getBondCap,
+  getRefreshedPool,
+  isAdapted,
+} from "../bonds/adaptation";
 import {
   bondPointsPerBurnedStability,
   canBurnBond,
@@ -33,12 +41,31 @@ import { isInvestigativeAbilityItem } from "../items/investigativeAbility";
 import { assertMwItem, isMwItem } from "../items/mwItem";
 import type { PersonalDetailItem } from "../items/personalDetail";
 import { isPersonalDetailItem } from "../items/personalDetail";
+import { resizeSpecialities } from "../items/resizeSpecialities";
 import { createActiveCharacterSchema } from "../schemaFields";
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
 import { InvestigatorActor } from "./InvestigatorActor";
 
+const adaptationProgressField = () =>
+  new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
+    max: adaptationThreshold,
+    initial: 0,
+  });
+
 export const pcSchema = {
   ...createActiveCharacterSchema(),
+  /**
+   * Progress towards adapting to each kind of trauma (Fall of DELTA GREEN,
+   * p. 120), as boxes ticked: all of them means adapted
+   */
+  adaptations: new SchemaField({
+    violence: adaptationProgressField(),
+    helplessness: adaptationProgressField(),
+  }),
   buildPoints: new NumberField({
     nullable: false,
     required: true,
@@ -189,23 +216,19 @@ export class PCModel extends ActiveCharacterModel<
   // if we end up with even more types of refresh it may be worth factoring out
   // the actual refresh code but until then - rule of three
   refresh24h = async (): Promise<void> => {
+    const adaptedToHelplessness = this.isAdaptedTo("helplessness");
     const updates = Array.from(this.parent.items).flatMap((item) => {
-      if (
-        isAbilityItem(item) &&
-        item.system.rating !== item.system.pool &&
-        item.system.refreshesDaily
-      ) {
-        return [
-          {
-            _id: item.id,
-            system: {
-              pool: item.system.rating,
-            },
-          },
-        ];
-      } else {
+      if (!isAbilityItem(item) || !item.system.refreshesDaily) {
         return [];
       }
+      const pool = getRefreshedPool({
+        pool: item.system.pool,
+        rating: item.system.rating,
+        adaptedToHelplessness,
+      });
+      return pool === item.system.pool
+        ? []
+        : [{ _id: item.id, system: { pool } }];
     });
     if (this.shouldBroadcastRefreshes()) {
       await this.broadcastUserMessage(
@@ -260,6 +283,94 @@ export class PCModel extends ActiveCharacterModel<
   //     .map((a) => a.name)
   //     .filter((n): n is string => n !== null);
   // }
+
+  isAdaptedTo(adaptation: Adaptation): boolean {
+    return isAdapted(this.adaptations[adaptation]);
+  }
+
+  /** The highest a Bond can be raised to: 2 when Adapted to Violence */
+  getBondCap(): number {
+    return getBondCap(this.isAdaptedTo("violence"));
+  }
+
+  /** The cap on an ability's rating from Adapted to Violence, if any */
+  getRatingCap(abilityName: string): number | null {
+    return this.isAdaptedTo("violence") &&
+      settings.violenceCappedAbilities.get().includes(abilityName)
+      ? adaptedToViolenceRatingCap
+      : null;
+  }
+
+  /**
+   * Tick or clear progress towards an adaptation. Becoming Adapted to
+   * Violence caps some ratings, which there's no undoing, so ask first.
+   */
+  setAdaptationProgress = async (
+    adaptation: Adaptation,
+    progress: number,
+  ): Promise<void> => {
+    const becomingAdaptedToViolence =
+      adaptation === "violence" &&
+      isAdapted(progress) &&
+      !this.isAdaptedTo("violence");
+    if (becomingAdaptedToViolence) {
+      const names = settings.violenceCappedAbilities.get();
+      const yes = await confirmADoodleDo({
+        // with no abilities to cap, only the Bonds change
+        message:
+          names.length === 0
+            ? "AdaptedToViolenceBondsOnlyConfirm"
+            : "AdaptedToViolenceConfirm",
+        confirmText: "Adapted to Violence",
+        cancelText: "Cancel",
+        confirmIconClass: "fa-check",
+        resolveFalseOnCancel: true,
+        values: {
+          ActorName: this.parent.name ?? "",
+          AbilityNames: new Intl.ListFormat(game.i18n?.lang).format(names),
+          RatingCap: String(adaptedToViolenceRatingCap),
+          BondCap: String(getBondCap(true)),
+        },
+      });
+      if (!yes) {
+        return;
+      }
+    }
+    await this.parent.update({
+      system: { adaptations: { [adaptation]: progress } },
+    });
+    if (becomingAdaptedToViolence) {
+      await this.capRatingsForViolence();
+    }
+  };
+
+  /**
+   * Bring capped abilities' ratings down to the cap. Their pools stay as they
+   * are, to be spent (p. 050); they just won't refresh above it.
+   */
+  private capRatingsForViolence = async (): Promise<void> => {
+    const names = settings.violenceCappedAbilities.get();
+    const cap = adaptedToViolenceRatingCap;
+    const updates = this.getAbilities().flatMap((ability) => {
+      if (!names.includes(ability.name ?? "") || ability.system.rating <= cap) {
+        return [];
+      }
+      return [
+        {
+          _id: ability.id,
+          system: {
+            rating: cap,
+            specialities: resizeSpecialities(ability.system.specialities, {
+              hasSpecialities: ability.system.hasSpecialities,
+              rating: cap,
+              specialitiesMode: ability.system.specialitiesMode,
+            }),
+          },
+        },
+      ];
+    });
+    await this.parent.updateEmbeddedDocuments("Item", updates);
+  };
 
   /** Bonds in display order: ordinary first, then DELTA GREEN, by name */
   getBonds(): BondItem[] {

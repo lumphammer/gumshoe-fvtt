@@ -58,7 +58,10 @@ export const AbilitySlugEdit = ({
       <div css={{ gridColumn: "rating", justifySelf: "center" }}>
         <AsyncNumberInput
           min={0}
-          max={ability.system.max}
+          max={Math.min(
+            ability.system.max,
+            ability.system.getRatingCap() ?? Infinity,
+          )}
           value={ability.system.rating}
           onChange={updateRating}
           smallButtons

@@ -54,7 +54,7 @@ export async function establishBond(
   await roll.evaluate();
   const die = roll.total ?? 0;
   const outcome = getEstablishOutcome(die);
-  const bondPoints = getEstablishedBondPoints(die);
+  const bondPoints = getEstablishedBondPoints(die, actor.system.getBondCap());
   const stability =
     outcome === "rejected" ? actor.system.getBondStabilityAbility() : undefined;
 

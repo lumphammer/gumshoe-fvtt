@@ -12,6 +12,7 @@ import {
 import { establishBond } from "../../module/bonds/establishBond";
 import { isBondBroken } from "../../module/bonds/rules";
 import { settings } from "../../settings/settings";
+import { BondCapNote } from "./BondCapNote";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -112,6 +113,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
           EstablishBondHint
         </Translate>
       </p>
+      <BondCapNote actor={actor} />
       <InputGrid>
         {reformable.length > 0 && (
           <GridField label="Who">

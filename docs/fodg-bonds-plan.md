@@ -45,7 +45,7 @@ See also [`fodg-preset.md`](fodg-preset.md).
   Bond (round up); existing ones go up by 1; each costs 1 point from a
   non-DELTA GREEN Bond. They can't be rebuilt the normal way.
 - **Adapted to Violence** (p. 120) caps the four interpersonal abilities at 1,
-  and so Bonds at 2. We don't track adaptation yet.
+  and so Bonds at 2. See phase 6.
 
 ## Design
 
@@ -274,8 +274,51 @@ Design (reviewed: a starting point):
 Not covered: spotting the trauma (the Handler calls it), and Bonds destroyed
 when the person dies or goes permanently insane.
 
+### Phase 6: adapting to trauma (done)
+
+The rules (p. 120): after losing Stability to Violence (or Helplessness)
+three times in a row without becoming Shaken, an Agent is adapted to it, and
+tests against it drop to Difficulty 2. Adapted to Violence caps Flattery,
+Inspiration, Reassurance and Negotiation at 1, so Bonds at 2. Adapted to
+Helplessness gains a point fewer from any refresh during the operation
+(not from burning Bonds). The Extreme Violence inciting event (p. 050) adds:
+leave pools and Bonds as they are, but refresh them only to the cap.
+
+- An **Adapted to** tracker at the foot of the Bonds tab: three boxes each for
+  Violence and Helplessness, ticked by hand (`adaptations` on the PC, 0–3).
+  Clicking a box ticks up to it; clicking a ticked one clears from there.
+- **Adapted to Violence:**
+  - Ticking the last box asks first, then lowers the capped abilities'
+    ratings to 1. Their pools stay, to be spent, and refresh only to 1. The
+    abilities are a setting (`violenceCappedAbilities`, a list of names; the
+    four above in the FoDG preset, none otherwise).
+  - The rating can't be set above the cap afterwards, and the ability shows
+    a "Capped at 1" badge.
+  - Bonds can't be raised above 2: rebuilding, establishing (a 6 makes 2),
+    a team crisis (new and strengthened Bonds), and the Bond sheet's points.
+    A Bond already above 2 keeps its points; it just can't go higher.
+  - The panels that raise Bonds say so.
+- **Adapted to Helplessness:** the 24h Refresh and an ability's own Refresh
+  give a point fewer (a pool already within a point of its rating gains
+  nothing). Full Refresh, which we treat as the end-of-operation refresh,
+  doesn't.
+- Rules in `src/module/bonds/adaptation.ts`, plus `addBondPoints` in
+  `rules.ts`.
+- Decisions:
+  - "Ratings capped at 1" means the rating itself: lowered, not just a cap
+    on refreshes.
+  - Adaptation is permanent: nothing in the book undoes it (therapy cures
+    disorders, p. 128, not adaptations). The boxes can still be cleared, to
+    fix a mistake, but lowered ratings stay lowered.
+  - Strengthening a DELTA GREEN Bond at the cap still costs a point, as at 4.
+  - "During the operation" for Helplessness: there's no notion of an
+    operation, so every refresh but Full Refresh counts.
+- Not covered (they need Stability tests by kind of trauma, and the Shaken
+  states): Difficulty 2 for adapted Agents, ticking boxes automatically, the
+  extra Stability lost to Stress Penalties (p. 047), and the MW refreshes.
+
 ### Later, if wanted
 
-- Adapted to Violence cap: needs adaptation tracking first.
+- Automatic adaptation (see phase 6), with Stability states.
 - The other Personal Life vignettes (p. 129, e.g. One With Nature, Head
   Games) share the shape, but are about Stability rather than Bonds.

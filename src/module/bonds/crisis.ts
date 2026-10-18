@@ -2,7 +2,12 @@
 // as we've ruled on it (see docs/fodg-bonds-plan.md). Pure functions: keep
 // Foundry out of this file.
 
-import { clampBondPoints, isBondBroken, maxBondPoints } from "./rules";
+import {
+  addBondPoints,
+  clampBondPoints,
+  isBondBroken,
+  maxBondPoints,
+} from "./rules";
 
 /** The Stability test after a crisis is at Difficulty 4 */
 export const crisisDifficulty = 4;
@@ -76,13 +81,15 @@ export function findBondWith(
 
 /**
  * Work out everything a failed test would do, before any of it happens: the
- * rating for new Bonds comes from the Bonds as they are now.
+ * rating for new Bonds comes from the Bonds as they are now. Nothing goes
+ * above the cap (2 when Adapted to Violence).
  */
 export function planCrisis(
   bonds: CrisisBond[],
   teammates: CrisisTeammate[],
+  cap: number = maxBondPoints,
 ): CrisisPlan {
-  const newRating = getNewDeltaGreenBondRating(bonds);
+  const newRating = Math.min(cap, getNewDeltaGreenBondRating(bonds));
   const changes = teammates.map((teammate): CrisisChange => {
     const bond = findBondWith(bonds, teammate);
     if (bond === undefined) {
@@ -95,7 +102,7 @@ export function planCrisis(
       kind: "strengthen",
       teammate,
       bond,
-      after: Math.min(maxBondPoints, bond.points + 1),
+      after: addBondPoints(bond.points, 1, cap),
     };
   });
   const isNew = changes.some(

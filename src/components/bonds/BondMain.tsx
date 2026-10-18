@@ -3,7 +3,7 @@ import { useNavigationContext } from "@lumphammer/minirouter";
 import { getTranslated } from "../../functions/getTranslated";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { brokenBondPoints, maxBondPoints } from "../../module/bonds/rules";
+import { brokenBondPoints } from "../../module/bonds/rules";
 import { isPCActor } from "../../module/actors/pc";
 import { assertBondItem } from "../../module/items/bond";
 import { absoluteCover } from "../absoluteCover";
@@ -53,7 +53,7 @@ export const BondMain = () => {
           value={item.system.points}
           onChange={item.system.setPoints}
           min={brokenBondPoints}
-          max={maxBondPoints}
+          max={item.system.getMaxPoints()}
         />
       </GridField>
       {/* "DELTA GREEN" shares the badge's translation; the "?" goes outside it */}

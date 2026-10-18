@@ -73,6 +73,19 @@ describe("getBondAfterRebuild", () => {
   ] as const)("%i after %s: %i", (points, outcome, expected) => {
     expect(getBondAfterRebuild(points, outcome)).toBe(expected);
   });
+
+  it.each([
+    [1, "successful6", 2],
+    [2, "success", 2],
+    // above the cap (from before adapting): no gain, but no loss either
+    [3, "success", 3],
+    [3, "failed1", 2],
+  ] as const)(
+    "Adapted to Violence, %i after %s: %i",
+    (points, outcome, expected) => {
+      expect(getBondAfterRebuild(points, outcome, 2)).toBe(expected);
+    },
+  );
 });
 
 describe("rebuild records", () => {

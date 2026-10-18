@@ -101,6 +101,7 @@ const initialState: State = {
     useBonds: false,
     bondStabilityAbility: "",
     bondRebuildSpendCategory: "",
+    violenceCappedAbilities: [],
     useCards: false,
     notifyItemAddedToActor: false,
   },

@@ -1,7 +1,7 @@
 // Establishing a new Bond between operations (Fall of DELTA GREEN, p. 129).
 // Pure functions: keep Foundry out of this file.
 
-import { clampBondPoints } from "./rules";
+import { clampBondPoints, maxBondPoints } from "./rules";
 
 /** Points from an Interpersonal ability that it costs to try */
 export const establishCost = 1;
@@ -25,15 +25,21 @@ export function getEstablishOutcome(die: number): EstablishOutcome {
   return die >= 6 ? "bonded6" : "bonded";
 }
 
-/** The new Bond's points, or null if it was rejected */
-export function getEstablishedBondPoints(die: number): number | null {
+/**
+ * The new Bond's points, or null if it was rejected. No more than the cap
+ * (when Adapted to Violence).
+ */
+export function getEstablishedBondPoints(
+  die: number,
+  cap: number = maxBondPoints,
+): number | null {
   switch (getEstablishOutcome(die)) {
     case "rejected":
       return null;
     case "bonded":
-      return die - 2;
+      return Math.min(cap, die - 2);
     case "bonded6":
-      return 3;
+      return Math.min(cap, 3);
   }
 }
 

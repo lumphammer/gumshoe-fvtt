@@ -67,3 +67,17 @@ export function canBurnBond({
     stabilityPool < stabilityRating
   );
 }
+
+/**
+ * A Bond's points after a change. Gains stop at the cap (2 when Adapted to
+ * Violence), but a Bond already above it keeps its points (p. 050: "leave
+ * your Bond strengths as they are now").
+ */
+export function addBondPoints(
+  points: number,
+  change: number,
+  cap: number = maxBondPoints,
+): number {
+  const after = clampBondPoints(points + change);
+  return change > 0 ? Math.max(points, Math.min(cap, after)) : after;
+}

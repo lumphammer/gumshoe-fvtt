@@ -13,6 +13,8 @@ import type {
   SpecialitiesMode,
   Unlock,
 } from "../../types";
+import type { PCModel } from "../actors/pc";
+import { getCappedRating, getRefreshedPool } from "../bonds/adaptation";
 import { serializeBondSpends } from "../bonds/bondSpends";
 import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
 import type { BondItem } from "./bond";
@@ -233,13 +235,31 @@ export abstract class AbilityModel<
     await this.parent.update({ system: { pool: newPool } });
   }
 
+  /** The owning PC's system, if there is one (adaptations are on PCs) */
+  private getPCSystem(): PCModel | null {
+    const actor = this.parent.actor;
+    // by type rather than isPCActor: pc.ts imports this file
+    return actor?.type === constants.pc ? (actor.system as PCModel) : null;
+  }
+
+  /** The cap on the rating (from Adapted to Violence), if there is one */
+  getRatingCap(): number | null {
+    return this.getPCSystem()?.getRatingCap(this.parent.name ?? "") ?? null;
+  }
+
   /**
-   * reset the pool to the rating
+   * reset the pool to the rating (a point short when Adapted to
+   * Helplessness)
    */
   async refreshPool(): Promise<void> {
     await this.parent.update({
       system: {
-        pool: this.rating ?? 0,
+        pool: getRefreshedPool({
+          pool: this.pool,
+          rating: this.rating ?? 0,
+          adaptedToHelplessness:
+            this.getPCSystem()?.isAdaptedTo("helplessness") ?? false,
+        }),
       },
     });
   }
@@ -306,7 +326,8 @@ export abstract class AbilityModel<
     });
   };
 
-  setRating = async (newRating: number): Promise<void> => {
+  setRating = async (rating: number): Promise<void> => {
+    const newRating = getCappedRating(rating, this.getRatingCap());
     await this.parent.update({
       system: {
         rating: newRating,
@@ -319,7 +340,8 @@ export abstract class AbilityModel<
     });
   };
 
-  setRatingAndRefreshPool = async (newRating: number): Promise<void> => {
+  setRatingAndRefreshPool = async (rating: number): Promise<void> => {
+    const newRating = getCappedRating(rating, this.getRatingCap());
     await this.parent.update({
       system: {
         rating: newRating,

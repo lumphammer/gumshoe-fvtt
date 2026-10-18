@@ -4,7 +4,9 @@ import {
   StringField,
   TypeDataModel,
 } from "../../fvtt-exports";
+import * as constants from "../../constants";
 import { isDefaultActorImage } from "../../functions/isDefaultActorImage";
+import type { PCModel } from "../actors/pc";
 import {
   brokenBondPoints,
   clampBondPoints,
@@ -57,9 +59,25 @@ export class BondModel extends TypeDataModel<typeof bondSchema, BondItem> {
     return isBondBroken(this.points);
   }
 
+  /**
+   * The most it can be set to: the owner's cap (2 when Adapted to Violence),
+   * or its points now, if they're above that
+   */
+  getMaxPoints(): number {
+    const actor = this.parent.actor;
+    // by type rather than isPCActor: pc.ts imports this file
+    const cap =
+      actor?.type === constants.pc
+        ? (actor.system as PCModel).getBondCap()
+        : maxBondPoints;
+    return Math.max(cap, this.points);
+  }
+
   setPoints = async (points: number): Promise<void> => {
     await this.parent.update({
-      system: { points: clampBondPoints(points) },
+      system: {
+        points: Math.min(this.getMaxPoints(), clampBondPoints(points)),
+      },
     });
   };
 

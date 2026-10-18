@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  addBondPoints,
   canBurnBond,
   clampBondPoints,
   compareBonds,
@@ -94,4 +95,22 @@ describe("canBurnBond", () => {
       );
     },
   );
+});
+
+describe("addBondPoints", () => {
+  it.each([
+    // [points, change, cap, after]
+    [1, 1, 4, 2],
+    [3, 2, 4, 4],
+    [1, 2, 2, 2],
+    [2, 1, 2, 2],
+    // above the cap, a gain does nothing, but doesn't take any away
+    [4, 1, 2, 4],
+    [3, 2, 2, 3],
+    // losses aren't capped
+    [4, -1, 2, 3],
+    [0, -3, 2, -1],
+  ])("%i %+i (cap %i) makes %i", (points, change, cap, expected) => {
+    expect(addBondPoints(points, change, cap)).toBe(expected);
+  });
 });
