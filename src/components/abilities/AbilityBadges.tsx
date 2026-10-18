@@ -2,13 +2,23 @@ import type { ReactNode } from "react";
 import { useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
+import { findHealthAbility } from "../../module/attacks/health";
+import type { WoundState } from "../../module/attacks/rules";
+import { getWoundState } from "../../module/attacks/rules";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { stabilityStateLabels } from "../../module/stability/states";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 import { SituationalModifierBadge } from "./SituationalModifierBadge";
+
+const woundStateLabels: Record<Exclude<WoundState, "ok">, string> = {
+  hurt: "WoundStateHurt",
+  seriouslyWounded: "WoundStateSeriouslyWounded",
+  dead: "WoundStateDead",
+};
 
 interface UnlockBadgesProps {
   ability: InvestigatorItem;
@@ -19,9 +29,28 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
   assertAbilityItem(ability);
   const situationalModifiers = ability.system.getVisibleSituationalModifiers();
   const unlocks = ability.system.getActiveUnlocks();
+  const theme = useContext(ThemeContext);
   const ratingCap = ability.system.getRatingCap();
   const stabilityState = ability.system.getStabilityState();
-  const theme = useContext(ThemeContext);
+  // the owner's wound state, if this is their Health and the statuses are in
+  // use. From the pool, so it's right even if a status is toggled by hand.
+  const actor = ability.actor;
+  const woundState =
+    settings.useWoundStatusEffects.get() &&
+    actor !== null &&
+    findHealthAbility(actor)?.id === ability.id
+      ? getWoundState(ability.system.pool)
+      : null;
+  // styled on a wrapper: Translate sets its own background
+  const stateBadgeStyle = {
+    background: theme.colors.danger,
+    color: theme.colors.accentContrast,
+    fontSize: "0.9em",
+    lineHeight: "1",
+    borderRadius: "0.5em",
+    padding: "0 0.5em",
+    margin: "0 0.24em",
+  };
   return (
     <div
       className={className}
@@ -70,21 +99,16 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
         </Translate>
       )}
 
+      {/* Hurt, Seriously Wounded or Dead */}
+      {woundState !== null && woundState !== "ok" && (
+        <span data-testid="wound-state-badge" css={stateBadgeStyle}>
+          <Translate>{woundStateLabels[woundState]}</Translate>
+        </span>
+      )}
+
       {/* Shaken, Shattered or Gone */}
       {stabilityState !== null && stabilityState !== "steady" && (
-        // styled on a wrapper: Translate sets its own background
-        <span
-          data-testid="stability-state-badge"
-          css={{
-            background: theme.colors.danger,
-            color: theme.colors.accentContrast,
-            fontSize: "0.9em",
-            lineHeight: "1",
-            borderRadius: "0.5em",
-            padding: "0 0.5em",
-            margin: "0 0.24em",
-          }}
-        >
+        <span data-testid="stability-state-badge" css={stateBadgeStyle}>
           <Translate>{stabilityStateLabels[stabilityState]}</Translate>
         </span>
       )}
