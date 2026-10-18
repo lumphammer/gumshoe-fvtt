@@ -79,13 +79,25 @@ test("Shaken, Shattered and Gone follow the Stability pool", async ({
   page,
 }) => {
   const actorId = await createActor(page, { name: "Wobbly", type: "pc" });
-  await updateAbility(page, actorId, "Stability", { rating: 6, pool: 6 });
+  await updateAbility(page, actorId, "Stability", {
+    rating: 6,
+    pool: 6,
+    showTracker: true,
+  });
+  const actorSheet = await openSheet(page, `Actor.${actorId}`);
   const sheet = await openAbilitySheet(page, actorId, "Stability");
   await expect(sheet.getByTestId("stability-state-badge")).toHaveCount(0);
 
   await updateAbility(page, actorId, "Stability", { pool: 0 });
   await expect.poll(() => getStatuses(page, actorId)).toEqual(["shaken"]);
   await expect(sheet.getByTestId("stability-state-badge")).toHaveText("Shaken");
+  // and under its tracker on the character sheet, where it's hard to miss
+  await expect(
+    actorSheet
+      .getByTestId("pool-tracker")
+      .filter({ hasText: "Stability" })
+      .getByTestId("stability-state-badge"),
+  ).toHaveText("Shaken");
 
   await updateAbility(page, actorId, "Stability", { pool: -6 });
   await expect.poll(() => getStatuses(page, actorId)).toEqual(["shattered"]);
