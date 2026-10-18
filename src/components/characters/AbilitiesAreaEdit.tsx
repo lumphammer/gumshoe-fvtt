@@ -103,6 +103,7 @@ export const AbilitiesAreaEdit = ({
                 css={{
                   gridColumn: "rating",
                   font: theme.displayFont,
+                  textTransform: theme.displayFontTextTransform,
                   fontSize: "smaller",
                 }}
               >
@@ -114,6 +115,7 @@ export const AbilitiesAreaEdit = ({
                 css={{
                   gridColumn: "isocc",
                   font: theme.displayFont,
+                  textTransform: theme.displayFontTextTransform,
                   fontSize: "smaller",
                 }}
                 title="Occupational Ability"
@@ -180,6 +182,7 @@ export const AbilitiesAreaEdit = ({
               css={{
                 gridColumn: "rating",
                 font: theme.displayFont,
+                textTransform: theme.displayFontTextTransform,
                 fontSize: "smaller",
               }}
             >
@@ -191,6 +194,7 @@ export const AbilitiesAreaEdit = ({
               css={{
                 gridColumn: "isocc",
                 font: theme.displayFont,
+                textTransform: theme.displayFontTextTransform,
                 fontSize: "smaller",
               }}
               title="Occupational Ability"

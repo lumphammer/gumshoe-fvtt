@@ -156,6 +156,11 @@ export interface ThemeSeedV1 {
    */
   displayFont?: string;
   /**
+   * Case for title or label text, e.g. "uppercase" (the `font` shorthand in
+   * `displayFont` can't set it). Defaults to none.
+   */
+  displayFontTextTransform?: CSSObject["textTransform"];
+  /**
    * Styles for the fancy character sheet logo. See the LogoEditable component
    * for details.
    */

@@ -67,6 +67,7 @@ export const SettingsMenuLink = ({
           css={{
             display: "block",
             font: theme.displayFont,
+            textTransform: theme.displayFontTextTransform,
             fontSize: "1.2em",
             overflow: "hidden",
             textOverflow: "ellipsis",

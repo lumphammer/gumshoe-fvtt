@@ -29,6 +29,7 @@ export const ImagePickerLink = ({
         padding: "0 0.5em",
         borderRadius: "0.5em",
         font: theme.displayFont,
+        textTransform: theme.displayFontTextTransform,
         transition: "background-color 0.2s",
         ":hover": {
           backgroundColor: theme.colors.backgroundPrimary,

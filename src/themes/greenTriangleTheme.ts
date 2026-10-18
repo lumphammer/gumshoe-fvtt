@@ -8,7 +8,7 @@ export const greenTriangleTheme: ThemeV1 = themeFactory({
   displayName: "Green triangle",
   global: `
     ${averiaLibre.importStatement}
-    @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@900&family=Big+Shoulders+Stencil+Text:wght@100;200;300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Protest+Guerrilla&display=swap');
   `,
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/annie-spratt-xTaOPMa6wAE-unsplash.webp)`,
@@ -17,8 +17,9 @@ export const greenTriangleTheme: ThemeV1 = themeFactory({
     backgroundImage: `linear-gradient( to right, #fff9,#fff9), url(systems/${systemId}/assets/wallpaper/annie-spratt-xTaOPMa6wAE-unsplash.webp)`,
   },
   bodyFont: averiaLibre.fontFamily,
-  displayFont:
-    "900 small-caps normal 1.1em 'Big Shoulders Stencil Text', serif",
+  // Protest Guerrilla only comes in one weight
+  displayFont: "normal normal normal 1em 'Protest Guerrilla', serif",
+  displayFontTextTransform: "uppercase",
   logo: {
     frontTextElementStyle: {
       color: "#fff",

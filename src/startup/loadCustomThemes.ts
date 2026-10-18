@@ -100,6 +100,7 @@ export function loadCustomThemes() {
           appWindowStyle: blob.appWindowStyle ?? {},
           bodyFont: blob.bodyFont ?? highContrastTheme.bodyFont,
           displayFont: blob.displayFont ?? highContrastTheme.displayFont,
+          displayFontTextTransform: blob.displayFontTextTransform,
           global: blob.global ?? highContrastTheme.global,
           smallSheetRootStyle: blob.smallSheetRootStyle ?? {},
         };

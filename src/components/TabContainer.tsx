@@ -102,6 +102,7 @@ export const TabContainer = ({
                   justifyContent: "center",
                   opacity: pending && id === optimistic ? 0.5 : 1,
                   font: theme.displayFont,
+                  textTransform: theme.displayFontTextTransform,
                 }}
               >
                 {typeof label === "string" ? (

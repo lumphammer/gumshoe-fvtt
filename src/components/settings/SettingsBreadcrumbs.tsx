@@ -94,6 +94,7 @@ export const SettingsBreadcrumbs = ({
         gap: "0.25em 0.5em",
         padding: "0.25em 0.5em 0.5em 0.5em",
         font: theme.displayFont,
+        textTransform: theme.displayFontTextTransform,
         fontSize: "1.2em",
       }}
     >
