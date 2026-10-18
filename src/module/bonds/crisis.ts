@@ -261,3 +261,39 @@ export function parseCrisisRecord(text: string | null): CrisisRecord | null {
     losses: losses as CrisisRecord["losses"],
   };
 }
+
+/**
+ * A GM's call for a team crisis: who was there. Each Agent among them makes
+ * their own test.
+ */
+export type CrisisCall = { members: CrisisTeammate[] };
+
+export function serializeCrisisCall(call: CrisisCall): string {
+  return JSON.stringify(call);
+}
+
+/** Read a call back from a chat card attribute, or null if it's malformed */
+export function parseCrisisCall(text: string | null): CrisisCall | null {
+  if (!text) {
+    return null;
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (
+    !isRecordObject(parsed) ||
+    !Array.isArray(parsed["members"]) ||
+    !parsed["members"].every(
+      (m) =>
+        isRecordObject(m) &&
+        typeof m["uuid"] === "string" &&
+        typeof m["name"] === "string",
+    )
+  ) {
+    return null;
+  }
+  return { members: parsed["members"] as CrisisTeammate[] };
+}

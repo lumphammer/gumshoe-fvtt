@@ -6,7 +6,9 @@ import {
   findBondWith,
   getBondAfterLoss,
   getNewDeltaGreenBondRating,
+  parseCrisisCall,
   parseCrisisRecord,
+  serializeCrisisCall,
   planCrisis,
   serializeCrisisRecord,
 } from "./crisis";
@@ -210,5 +212,21 @@ describe("parseCrisisRecord", () => {
     ["no outcome", JSON.stringify({ ...record, succeeded: undefined })],
   ])("rejects %s", (_, text) => {
     expect(parseCrisisRecord(text)).toBeNull();
+  });
+});
+
+describe("parseCrisisCall", () => {
+  it("round-trips", () => {
+    const call = { members: [bob, carlos] };
+    expect(parseCrisisCall(serializeCrisisCall(call))).toEqual(call);
+  });
+
+  it.each([
+    ["missing", null],
+    ["not JSON", "{"],
+    ["no members", "{}"],
+    ["a bad member", JSON.stringify({ members: [{ uuid: 1 }] })],
+  ])("rejects %s", (_, text) => {
+    expect(parseCrisisCall(text)).toBeNull();
   });
 });

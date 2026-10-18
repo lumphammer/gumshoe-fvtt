@@ -2,10 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import * as constants from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPartyActor } from "../../module/actors/party";
 import { isPCActor } from "../../module/actors/pc";
+import { callTeamCrisis } from "../../module/bonds/callTeamCrisis";
 import type { AbilityItem } from "../../module/items/exports";
 import { isAbilityItem } from "../../module/items/exports";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
@@ -14,6 +16,7 @@ import { settings } from "../../settings/settings";
 import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
+import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
@@ -32,6 +35,7 @@ export const PartySheet = () => {
   const [abilities, setAbilities] = useState<AbilityItem[]>([]);
   const [rowData, setRowData] = useState<RowData[]>([]);
   const actorIds = party.system.getActorIds();
+  const callTeamCrisisTooltip = getTranslated("CallTeamCrisisTooltip");
 
   const actors = useMemo(
     () =>
@@ -160,7 +164,26 @@ export const PartySheet = () => {
         }}
       >
         <GridField label="Party Name">
-          <AsyncTextInput value={party.name || ""} onChange={party.setName} />
+          <div css={{ display: "flex", gap: "0.5em" }}>
+            <AsyncTextInput
+              css={{ flex: 1 }}
+              value={party.name || ""}
+              onChange={party.setName}
+            />
+            {/* Fall of DELTA GREEN: the GM calls a crisis for those present */}
+            {settings.useBonds.get() && game.user?.isGM && (
+              <Button
+                data-testid="call-team-crisis"
+                css={{ width: "auto", margin: 0, whiteSpace: "nowrap" }}
+                title={callTeamCrisisTooltip}
+                onClick={() => callTeamCrisis(party)}
+              >
+                <i className="fas fa-bolt" />
+                {/* Translate titles its span, which would hide the button's title */}
+                <Translate title={callTeamCrisisTooltip}>Team Crisis</Translate>
+              </Button>
+            )}
+          </div>
         </GridField>
       </InputGrid>
 

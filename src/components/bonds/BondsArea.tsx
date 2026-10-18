@@ -14,7 +14,7 @@ import { crisis, establish } from "./directions";
 import { EstablishBondPanel } from "./EstablishBondPanel";
 import { EstablishBondButton } from "./EstablishBondButton";
 import { TeamCrisisButton } from "./TeamCrisisButton";
-import { TeamCrisisPanel } from "./TeamCrisisPanel";
+import { NestedTeamCrisisPanel } from "./NestedTeamCrisisPanel";
 
 /**
  * The Bonds tab on the PC sheet (Fall of DELTA GREEN, p. 045).
@@ -115,7 +115,7 @@ export const BondsArea = () => {
         <EstablishBondPanel actor={actor} />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={crisis}>
-        <TeamCrisisPanel actor={actor} />
+        <NestedTeamCrisisPanel actor={actor} />
       </SlideInNestedPanelRoute>
     </Router>
   );

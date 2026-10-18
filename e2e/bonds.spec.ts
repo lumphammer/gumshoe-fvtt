@@ -3,8 +3,10 @@ import type { Locator, Page } from "@playwright/test";
 import {
   createActor,
   createOwnedItem,
+  createPlayer,
   expect,
   forceDice,
+  giveOwnership,
   lastChatMessage,
   openSheet,
   setSettings,
@@ -979,4 +981,123 @@ test("a team crisis re-forms a broken Bond, and asks before breaking one", async
     );
   // re-formed in place, not a new Bond
   expect(await getBonds(page, actorId)).toHaveLength(3);
+});
+
+test("a GM calls a team crisis from the party sheet", async ({ page }) => {
+  await setSettings(page, { useBonds: true });
+  const { actorId, teammateIds } = await createTeam(page, "Agent Amanda", [
+    "Agent Bob",
+    "Agent Carlos",
+  ]);
+  await createOwnedItem(page, actorId, {
+    name: "Zorah",
+    type: "bond",
+    system: { points: 4 },
+  });
+  const partyId = await page.evaluate(
+    (name) => game.actors.getName(name)!.id,
+    "Agent Amanda's team",
+  );
+
+  // the GM says who was there: not Carlos
+  const partySheet = await openSheet(page, `Actor.${partyId}`);
+  await partySheet.getByTestId("call-team-crisis").click();
+  const dialog = page.locator(".application.dialog");
+  await dialog.getByLabel("Agent Carlos").uncheck();
+  await dialog.getByRole("button", { name: "Call Team Crisis" }).click();
+  await expect(dialog).toHaveCount(0);
+
+  // a card, with a button for each Agent there (the GM owns them all)
+  const call = lastChatMessage(page).getByTestId("crisis-call-card");
+  const members = call.getByTestId("crisis-call-member");
+  await expect(members).toHaveText([
+    /^Agent Amanda\s*Make the test\s*$/,
+    /^Agent Bob\s*Make the test\s*$/,
+  ]);
+
+  // Amanda's opens her test, with Bob ticked as her teammate
+  await members
+    .filter({ hasText: "Agent Amanda" })
+    .getByRole("button", { name: "Make the test" })
+    .click();
+  const crisisWindow = page.locator(
+    `[id="investigator-team-crisis-${actorId}"]`,
+  );
+  const panel = crisisWindow.getByTestId("team-crisis-panel");
+  await expect(panel.getByTestId("crisis-teammate")).toHaveText([
+    "New (2)",
+    "",
+  ]);
+  await panelRow(panel, "Zorah")
+    .first()
+    .getByText("1", { exact: true })
+    .click();
+  await forceDice(page, 1);
+  await panel.getByRole("button", { name: "Make the test" }).click();
+  // the window closes once it's done
+  await expect(crisisWindow).toHaveCount(0);
+
+  const card = lastChatMessage(page).getByTestId("team-crisis-card");
+  await expect(card.getByTestId("crisis-change")).toHaveText([
+    "New: Agent Bob 2",
+  ]);
+  await expect
+    .poll(() => getLinkedBonds(page, actorId))
+    .toContainEqual({
+      name: "Agent Bob",
+      points: 2,
+      isDeltaGreen: true,
+      actorUuid: `Actor.${teammateIds["Agent Bob"]}`,
+    });
+});
+
+test("a player sees a button only for their own Agent on a crisis call", async ({
+  page,
+  joinAs,
+}) => {
+  await setSettings(page, { useBonds: true });
+  const { actorId, teammateIds } = await createTeam(page, "Agent Erin", [
+    "Agent Fox",
+  ]);
+  const playerId = await createPlayer(page, "Erin's player");
+  await giveOwnership(page, actorId, playerId);
+  const partyId = await page.evaluate(
+    (name) => game.actors.getName(name)!.id,
+    "Agent Erin's team",
+  );
+
+  const player = await joinAs("Erin's player");
+  const partySheet = await openSheet(page, `Actor.${partyId}`);
+  await partySheet.getByTestId("call-team-crisis").click();
+  await page
+    .locator(".application.dialog")
+    .getByRole("button", { name: "Call Team Crisis" })
+    .click();
+
+  const members = lastChatMessage(player)
+    .getByTestId("crisis-call-card")
+    .getByTestId("crisis-call-member");
+  await expect(members).toHaveText([/^Agent Erin/, /^Agent Fox/]);
+  await expect(
+    members.filter({ hasText: "Agent Erin" }).getByRole("button"),
+  ).toHaveCount(1);
+  await expect(
+    members.filter({ hasText: "Agent Fox" }).getByRole("button"),
+  ).toHaveCount(0);
+
+  // and the player can make the test from it
+  await members.filter({ hasText: "Agent Erin" }).getByRole("button").click();
+  const panel = player
+    .locator(`[id="investigator-team-crisis-${actorId}"]`)
+    .getByTestId("team-crisis-panel");
+  await forceDice(player, 1);
+  await panel.getByRole("button", { name: "Make the test" }).click();
+  await expect
+    .poll(() => getLinkedBonds(page, actorId))
+    .toContainEqual({
+      name: "Agent Fox",
+      points: 0,
+      isDeltaGreen: true,
+      actorUuid: `Actor.${teammateIds["Agent Fox"]}`,
+    });
 });

@@ -186,7 +186,7 @@ Foundry glue lives elsewhere.
 - The starting value hint was dropped: it only applies at character creation,
   where the player can just type the number.
 
-### Phase 5: DELTA GREEN Bonds (done, bar the optional 5c)
+### Phase 5: DELTA GREEN Bonds (done)
 
 The rule (p. 046): after a team crisis, each Agent makes a Difficulty 4
 Stability test. On a failure, for each DELTA GREEN teammate present (up to
@@ -257,8 +257,19 @@ Design (reviewed: a starting point):
     broken). The new Bonds' rating is worked out from the Bonds before any
     of that.
   - A re-formed Bond becomes a DELTA GREEN Bond if it wasn't one.
-- **5c, optional:** a GM-run version from the party sheet that prompts each
-  member.
+- **5c (done):** a GM-run version, with no socket code:
+  - The party sheet has a **Team Crisis** button next to the party's name,
+    for GMs when Bonds are on. It asks who was there (all ticked to start
+    with; at least two), then posts a call card (mode `bond-crisis-call`,
+    `CrisisCallCard`) naming them.
+  - On the card, each Agent there has a **Make the test** button, shown
+    only to that Agent's owners (and the GM). It opens a window
+    (`TeamCrisisApp`, one per Agent) with the Team Crisis panel, the others
+    there already ticked as teammates. The test then goes as in 5b, and the
+    window closes when it's done.
+  - The panel takes an `onDone` callback, so it works in the window and in
+    the Bonds tab's nested route (`NestedTeamCrisisPanel`).
+  - The call card doesn't track who has tested yet.
 
 Not covered: spotting the trauma (the Handler calls it), and Bonds destroyed
 when the person dies or goes permanently insane.

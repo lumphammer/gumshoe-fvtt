@@ -9,6 +9,7 @@ import { AbilityTestMwCard } from "../components/messageCards/AbilityTestMwCard"
 import { AttackCard } from "../components/messageCards/AttackCard";
 import { BrokenCard } from "../components/messageCards/BrokenCard";
 import { PushCard } from "../components/messageCards/PushCard";
+import { CrisisCallCard } from "../components/messageCards/CrisisCallCard";
 import { EstablishBondCard } from "../components/messageCards/EstablishBondCard";
 import { RebuildBondCard } from "../components/messageCards/RebuildBondCard";
 import { TeamCrisisCard } from "../components/messageCards/TeamCrisisCard";
@@ -17,7 +18,7 @@ import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { parseBondSpends } from "../module/bonds/bondSpends";
-import { parseCrisisRecord } from "../module/bonds/crisis";
+import { parseCrisisCall, parseCrisisRecord } from "../module/bonds/crisis";
 import { parseEstablishRecord } from "../module/bonds/establish";
 import { parseRebuildRecord } from "../module/bonds/rebuild";
 import { isAbilityItem } from "../module/items/exports";
@@ -141,6 +142,19 @@ export const installAbilityCardChatWrangler = () => {
             el,
             <EstablishBondCard record={record} imageUrl={imageUrl} />,
           );
+        }
+        return;
+      }
+
+      // a GM's call for a team crisis, which isn't about one actor
+      if (mode === constants.htmlDataModeBondCrisisCall) {
+        const call = parseCrisisCall(
+          el.getAttribute(constants.htmlDataBondCrisisCall),
+        );
+        if (call === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(el, <CrisisCallCard call={call} imageUrl={imageUrl} />);
         }
         return;
       }

@@ -1,4 +1,3 @@
-import { useNavigationContext } from "@lumphammer/minirouter";
 import { useState } from "react";
 import { FaHeartCrack } from "react-icons/fa6";
 
@@ -35,16 +34,30 @@ const describeChange = (change: CrisisChange) =>
     ? `${change.bond.points} → ${change.after}`
     : `${getTranslated(change.kind === "new" ? "New" : "Reformed")} (${change.after})`;
 
+type TeamCrisisPanelProps = {
+  actor: PCActor;
+  /** teammates to start ticked, e.g. from a GM's call */
+  initialTeammateUuids?: string[];
+  /** after the test: close the panel */
+  onDone: () => void;
+};
+
 /**
  * The Stability test after a team crisis (Fall of DELTA GREEN, p. 046): pick
  * the teammates who were there, choose in advance which Bonds pay the cost
- * of a failure, then make the test. A nested panel on the Bonds tab.
+ * of a failure, then make the test. A nested panel on the Bonds tab, or a
+ * window opened from a GM's call in chat.
  */
-export const TeamCrisisPanel = ({ actor }: { actor: PCActor }) => {
-  const { navigate } = useNavigationContext();
+export const TeamCrisisPanel = ({
+  actor,
+  initialTeammateUuids = [],
+  onDone,
+}: TeamCrisisPanelProps) => {
   // the choices refer to other items and actors, which can change under us
   useRefreshOnActorItemChanges(actor);
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<string[]>(() =>
+    initialTeammateUuids.slice(0, maxCrisisTeammates),
+  );
   const [stabilitySpend, setStabilitySpend] = useState(0);
   // points by Bond id
   const [bondSpends, setBondSpends] = useState<Record<string, number>>({});
@@ -119,7 +132,7 @@ export const TeamCrisisPanel = ({ actor }: { actor: PCActor }) => {
       losses: currentLosses,
     });
     // the result is in chat, and on the Bonds tab
-    navigate("here", "up");
+    onDone();
   };
 
   return (
