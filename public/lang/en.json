@@ -462,6 +462,7 @@
   "investigator.BondsDescription": "Turn Bonds on or off",
   "investigator.On": "On",
   "investigator.AbilityBondsCanBeSpentOn": "Ability Bonds can be spent on",
+  "investigator.CategorySpentWhenRebuildingBonds": "Category spent when rebuilding Bonds",
   "investigator.BondCantSpareThatMany": "{BondName} can't spare that many points any more",
   "investigator.NoAbilityToBurnBondsFor": "No {AbilityName} ability to burn Bonds for",
   "investigator.ActorNameBurnedBondNameForAbilityName": "{ActorName} burned {Points} points of their Bond with {BondName} for 1 {AbilityName}",
