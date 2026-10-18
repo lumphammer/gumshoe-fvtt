@@ -11,11 +11,13 @@ import { BrokenCard } from "../components/messageCards/BrokenCard";
 import { PushCard } from "../components/messageCards/PushCard";
 import { EstablishBondCard } from "../components/messageCards/EstablishBondCard";
 import { RebuildBondCard } from "../components/messageCards/RebuildBondCard";
+import { TeamCrisisCard } from "../components/messageCards/TeamCrisisCard";
 import { isAbilityCardMode } from "../components/messageCards/types";
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { parseBondSpends } from "../module/bonds/bondSpends";
+import { parseCrisisRecord } from "../module/bonds/crisis";
 import { parseEstablishRecord } from "../module/bonds/establish";
 import { parseRebuildRecord } from "../module/bonds/rebuild";
 import { isAbilityItem } from "../module/items/exports";
@@ -138,6 +140,22 @@ export const installAbilityCardChatWrangler = () => {
           renderCardNow(
             el,
             <EstablishBondCard record={record} imageUrl={imageUrl} />,
+          );
+        }
+        return;
+      }
+
+      // and a team crisis
+      if (mode === constants.htmlDataModeBondCrisis) {
+        const record = parseCrisisRecord(
+          el.getAttribute(constants.htmlDataBondCrisis),
+        );
+        if (record === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(
+            el,
+            <TeamCrisisCard record={record} imageUrl={imageUrl} />,
           );
         }
         return;

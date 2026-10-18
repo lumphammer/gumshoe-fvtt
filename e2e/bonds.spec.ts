@@ -705,3 +705,278 @@ test("linking a Bond to an actor", async ({ page }) => {
     actorUuid: `Actor.${zorahId}`,
   });
 });
+
+/** An Agent in a party with some teammates, so only they're offered */
+async function createTeam(page: Page, agent: string, teammates: string[]) {
+  const actorId = await createActor(page, { name: agent, type: "pc" });
+  const teammateIds: Record<string, string> = {};
+  for (const name of teammates) {
+    teammateIds[name] = await createActor(page, { name, type: "pc" });
+  }
+  await createActor(page, {
+    name: `${agent}'s team`,
+    type: "party",
+    system: { actorIds: [actorId, ...Object.values(teammateIds)] },
+  });
+  return { actorId, teammateIds };
+}
+
+async function openTeamCrisisPanel(page: Page, actorId: string) {
+  const actorSheet = await openSheet(page, `Actor.${actorId}`);
+  await actorSheet.locator(".tab-strip > label", { hasText: "Bonds" }).click();
+  await actorSheet.getByTestId("open-team-crisis").click();
+  const panel = actorSheet.getByTestId("team-crisis-panel");
+  await expect(panel).toBeVisible();
+  return panel;
+}
+
+/**
+ * Tick a teammate who was there. (The teammates come first: a Bond with them
+ * may be further down, among the spends.)
+ */
+const pickTeammate = (panel: Locator, name: string) =>
+  panel
+    .locator("label", { hasText: new RegExp(`^${name}$`) })
+    .first()
+    .click();
+
+/**
+ * A row of spend buttons in the panel, by its label. A Bond can have two:
+ * paying for a failure (first), and spending on the test.
+ */
+const panelRow = (panel: Locator, label: string) =>
+  panel
+    .locator("label", { hasText: new RegExp(`^${label}$`) })
+    .locator("xpath=following-sibling::div[1]");
+
+async function getLinkedBonds(page: Page, actorId: string) {
+  return page.evaluate(
+    (actorId) =>
+      game.actors
+        .get(actorId)!
+        .items.filter((item) => item.type === "bond")
+        .map((item) => {
+          const system = item.system as unknown as {
+            points: number;
+            isDeltaGreen: boolean;
+            actorUuid: string | null;
+          };
+          return {
+            name: item.name,
+            points: system.points,
+            isDeltaGreen: system.isDeltaGreen,
+            actorUuid: system.actorUuid,
+          };
+        }),
+    actorId,
+  );
+}
+
+test("a team crisis: forming and strengthening DELTA GREEN Bonds", async ({
+  page,
+}) => {
+  await setSettings(page, { useBonds: true });
+  const { actorId, teammateIds } = await createTeam(page, "Amanda", [
+    "Bob",
+    "Carlos",
+    "Dana",
+  ]);
+  await updateAbility(page, actorId, "Stability", { rating: 6, pool: 6 });
+  // Carlos has a picture of his own, which his new Bond takes
+  await page.evaluate(async (carlosId) => {
+    await game.actors.get(carlosId)!.update({ img: "icons/svg/aura.svg" });
+  }, teammateIds["Carlos"]);
+  for (const name of ["Zorah", "Jerome"]) {
+    await createOwnedItem(page, actorId, {
+      name,
+      type: "bond",
+      system: { points: 4 },
+    });
+  }
+  await createOwnedItem(page, actorId, {
+    name: "Bob",
+    type: "bond",
+    system: {
+      points: 2,
+      isDeltaGreen: true,
+      actorUuid: `Actor.${teammateIds["Bob"]}`,
+    },
+  });
+
+  const panel = await openTeamCrisisPanel(page, actorId);
+  const teammates = panel.getByTestId("crisis-teammate");
+  await expect(teammates).toHaveCount(3);
+  const button = panel.getByRole("button", { name: "Make the test" });
+  await expect(panel.getByRole("status")).toHaveText(
+    "Choose the teammates who were there",
+  );
+  await expect(button).toBeDisabled();
+
+  await pickTeammate(panel, "Bob");
+  await pickTeammate(panel, "Carlos");
+  // what a failure would do: half the highest Bond (4) for the new one
+  await expect(teammates).toHaveText(["2 → 3", "New (2)", ""]);
+  // 1 for the new Bond, 1 for the one strengthened
+  await expect(panel).toContainText("If it fails, your other Bonds lose: 2");
+  await expect(panel.getByRole("status")).toHaveText(
+    "Choose which Bonds lose points (2 in all)",
+  );
+  await panelRow(panel, "Zorah")
+    .first()
+    .getByText("1", { exact: true })
+    .click();
+  // only as much as is still owed
+  await expect(
+    panelRow(panel, "Jerome").first().locator('input[value="2"]'),
+  ).toBeDisabled();
+  await panelRow(panel, "Jerome")
+    .first()
+    .getByText("1", { exact: true })
+    .click();
+  await expect(panel.getByRole("status")).toHaveCount(0);
+
+  await forceDice(page, 1);
+  await button.click();
+  await expect(panel).toHaveCount(0);
+
+  const card = lastChatMessage(page).getByTestId("team-crisis-card");
+  await expect(card.getByTestId("crisis-outcome")).toHaveText("Bonds form");
+  await expect(card.getByTestId("crisis-change")).toHaveText([
+    "Strengthened: Bob 2 → 3",
+    "New: Carlos 2",
+  ]);
+  await expect(card.getByTestId("crisis-loss")).toHaveText([
+    // in the Bonds' order
+    "Lost: Jerome 4 → 3",
+    "Lost: Zorah 4 → 3",
+  ]);
+  await expect
+    .poll(() => getLinkedBonds(page, actorId))
+    .toEqual(
+      expect.arrayContaining([
+        { name: "Zorah", points: 3, isDeltaGreen: false, actorUuid: null },
+        { name: "Jerome", points: 3, isDeltaGreen: false, actorUuid: null },
+        {
+          name: "Bob",
+          points: 3,
+          isDeltaGreen: true,
+          actorUuid: `Actor.${teammateIds["Bob"]}`,
+        },
+        {
+          name: "Carlos",
+          points: 2,
+          isDeltaGreen: true,
+          actorUuid: `Actor.${teammateIds["Carlos"]}`,
+        },
+      ]),
+    );
+  expect(
+    await page.evaluate(
+      (actorId) => game.actors.get(actorId)!.items.getName("Carlos")!.img,
+      actorId,
+    ),
+  ).toBe("icons/svg/aura.svg");
+});
+
+test("a team crisis that holds together", async ({ page }) => {
+  await setSettings(page, { useBonds: true });
+  const { actorId } = await createTeam(page, "Steady Eddie", ["Fran"]);
+  await updateAbility(page, actorId, "Stability", { rating: 6, pool: 6 });
+  await createOwnedItem(page, actorId, {
+    name: "Mom",
+    type: "bond",
+    system: { points: 3 },
+  });
+
+  const panel = await openTeamCrisisPanel(page, actorId);
+  await pickTeammate(panel, "Fran");
+  // Mom appears twice: paying for a failure, then spending on the test
+  const [momLoss, momSpend] = [
+    panelRow(panel, "Mom").first(),
+    panelRow(panel, "Mom").last(),
+  ];
+  await momLoss.getByText("1", { exact: true }).click();
+  // Stability and Bond points can be spent on the test
+  await panelRow(panel, "Stability").getByText("1", { exact: true }).click();
+  await momSpend.getByText("1", { exact: true }).click();
+
+  await forceDice(page, 6);
+  await panel.getByRole("button", { name: "Make the test" }).click();
+
+  const card = lastChatMessage(page).getByTestId("team-crisis-card");
+  await expect(card.getByTestId("crisis-outcome")).toHaveText("Holds together");
+  await expect(card).toContainText("Spent: Stability 1, Mom 1");
+  await expect(card.getByTestId("crisis-change")).toHaveCount(0);
+  // only the spends come off
+  await expect
+    .poll(() => getBonds(page, actorId))
+    .toEqual([{ name: "Mom", points: 2, isDeltaGreen: false }]);
+  expect(await getPool(page, actorId, "Stability")).toBe(5);
+});
+
+test("a team crisis re-forms a broken Bond, and asks before breaking one", async ({
+  page,
+}) => {
+  await setSettings(page, { useBonds: true });
+  const { actorId, teammateIds } = await createTeam(page, "Raina", [
+    "Bob",
+    "Jerome",
+  ]);
+  await createOwnedItem(page, actorId, {
+    name: "Mom",
+    type: "bond",
+    system: { points: 0 },
+  });
+  await createOwnedItem(page, actorId, {
+    name: "Jerome",
+    type: "bond",
+    system: {
+      points: 3,
+      isDeltaGreen: true,
+      actorUuid: `Actor.${teammateIds["Jerome"]}`,
+    },
+  });
+  await createOwnedItem(page, actorId, {
+    name: "Bob",
+    type: "bond",
+    system: {
+      points: -1,
+      isDeltaGreen: true,
+      actorUuid: `Actor.${teammateIds["Bob"]}`,
+    },
+  });
+
+  const panel = await openTeamCrisisPanel(page, actorId);
+  await pickTeammate(panel, "Bob");
+  // half of Jerome's 3, rounded up
+  await expect(panel.getByTestId("crisis-teammate").first()).toHaveText(
+    "Re-formed (2)",
+  );
+  // only Mom can pay: Jerome is a DELTA GREEN Bond
+  await panelRow(panel, "Mom").first().getByText("1", { exact: true }).click();
+
+  const dialog = page.locator(".application.dialog");
+  await forceDice(page, 1);
+  await panel.getByRole("button", { name: "Make the test" }).click();
+  await expect(dialog).toContainText("This could break your Bond with Mom");
+  await dialog.getByRole("button", { name: "Make the test" }).click();
+  await expect(dialog).toHaveCount(0);
+
+  const card = lastChatMessage(page).getByTestId("team-crisis-card");
+  await expect(card.getByTestId("crisis-change")).toHaveText([
+    "Re-formed: Bob -1 → 2",
+  ]);
+  await expect(card.getByTestId("crisis-loss")).toHaveText([
+    "Lost: Mom 0 → -1 (Broken)",
+  ]);
+  await expect
+    .poll(() => getBonds(page, actorId))
+    .toEqual(
+      expect.arrayContaining([
+        { name: "Bob", points: 2, isDeltaGreen: true },
+        { name: "Mom", points: -1, isDeltaGreen: false },
+      ]),
+    );
+  // re-formed in place, not a new Bond
+  expect(await getBonds(page, actorId)).toHaveLength(3);
+});

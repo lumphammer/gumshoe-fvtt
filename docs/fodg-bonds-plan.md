@@ -186,7 +186,7 @@ Foundry glue lives elsewhere.
 - The starting value hint was dropped: it only applies at character creation,
   where the player can just type the number.
 
-### Phase 5: DELTA GREEN Bonds (in progress)
+### Phase 5: DELTA GREEN Bonds (done, bar the optional 5c)
 
 The rule (p. 046): after a team crisis, each Agent makes a Difficulty 4
 Stability test. On a failure, for each DELTA GREEN teammate present (up to
@@ -224,13 +224,39 @@ Design (reviewed: a starting point):
   (Foundry's mystery man, or the system's PC and NPC icons:
   `isDefaultActorImage`); unlinking leaves the picture alone. A link to a
   deleted actor shows "Actor not found". The crisis flow will also set it.
-- **5b:** a per-Agent **Team Crisis →** panel on the Bonds tab (a nested route, like
-  Establish): pick the teammates present (from this PC's party, else all
-  other PCs; up to five), see a live preview of what a failure would mean,
-  allocate the losses across non-DELTA GREEN Bonds in advance (with a
-  confirmation if that would break one), then roll the test with Stability
-  and Bond spend rows. On a failure everything is applied at once, and one
-  card records it.
+- **5b (done):** a per-Agent **Team Crisis →** button on the Bonds tab
+  opens a nested panel (`TeamCrisisPanel`):
+  - **Teammates present:** checkboxes for the other members of the Agent's
+    parties, or every other PC if they're not in one; up to five. Each
+    ticked teammate shows what a failure would do: "New (2)", "Re-formed
+    (2)" or "2 → 3".
+  - **Losses:** "If it fails, your other Bonds lose: N", with a row of
+    buttons per ordinary, unbroken Bond (not one this crisis is about),
+    chosen before the roll. If the other Bonds can't pay it all, it says
+    so, and only what they can pay is required.
+  - **Spend:** Stability and every Bond (broken ones disabled), as on the
+    Stability sheet.
+  - **Make the test** is disabled, with a `Hint` saying why, until there's
+    a teammate and the losses add up. It asks first if a spend or a loss
+    could break a Bond.
+- Rules in `src/module/bonds/crisis.ts` (`planCrisis`, the losses, the card
+  record), glue in `teamCrisis.ts`, which re-checks the choices, rolls, and
+  applies everything in one update (plus creating new Bonds, linked to the
+  teammate, with their picture unless it's a default). One chat card
+  (`TeamCrisisCard`, mode `bond-crisis`), settled when rolled.
+- Decisions made while building it:
+  - A teammate already linked to an ordinary Bond (e.g. a cousin on the
+    team) has that Bond strengthened; it stays ordinary, and doesn't pay
+    for the crisis. If an Agent has several Bonds linked to a teammate, an
+    unbroken DELTA GREEN one is preferred, then any unbroken one, then a
+    broken one (re-formed).
+  - A DELTA GREEN Bond already at 4 can't go higher, but strengthening it
+    still costs a point, as written.
+  - Bond points spent on the test come off first; then, on a failure, a
+    strengthened Bond goes up by 1 from there, and losses come off (down to
+    broken). The new Bonds' rating is worked out from the Bonds before any
+    of that.
+  - A re-formed Bond becomes a DELTA GREEN Bond if it wasn't one.
 - **5c, optional:** a GM-run version from the party sheet that prompts each
   member.
 

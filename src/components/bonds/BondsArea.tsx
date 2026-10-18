@@ -10,9 +10,11 @@ import { Button } from "../inputs/Button";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
 import { Translate } from "../Translate";
 import { BondRow } from "./BondRow";
-import { establish } from "./directions";
+import { crisis, establish } from "./directions";
 import { EstablishBondPanel } from "./EstablishBondPanel";
 import { EstablishBondButton } from "./EstablishBondButton";
+import { TeamCrisisButton } from "./TeamCrisisButton";
+import { TeamCrisisPanel } from "./TeamCrisisPanel";
 
 /**
  * The Bonds tab on the PC sheet (Fall of DELTA GREEN, p. 045).
@@ -30,7 +32,16 @@ export const BondsArea = () => {
         data-testid="bonds-area"
         css={{ ...absoluteCover, overflow: "auto", padding: "0.5em" }}
       >
-        <div css={{ display: "flex", flexDirection: "row", gap: "0.5em" }}>
+        <div
+          css={{
+            display: "flex",
+            flexDirection: "row",
+            // three buttons: in a narrow sheet they go under the heading
+            flexWrap: "wrap",
+            justifyContent: "end",
+            gap: "0.5em",
+          }}
+        >
           <h2 css={{ flex: 1, "&&": { margin: 0 } }}>
             <Translate>Bonds</Translate>
           </h2>
@@ -44,6 +55,7 @@ export const BondsArea = () => {
             <Translate title={addBondTooltip}>Add Bond</Translate>
           </Button>
           <EstablishBondButton />
+          <TeamCrisisButton />
         </div>
 
         {bonds.length === 0 ? (
@@ -101,6 +113,9 @@ export const BondsArea = () => {
       </div>
       <SlideInNestedPanelRoute direction={establish}>
         <EstablishBondPanel actor={actor} />
+      </SlideInNestedPanelRoute>
+      <SlideInNestedPanelRoute direction={crisis}>
+        <TeamCrisisPanel actor={actor} />
       </SlideInNestedPanelRoute>
     </Router>
   );
