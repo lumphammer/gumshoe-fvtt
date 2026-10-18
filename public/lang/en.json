@@ -509,7 +509,7 @@
   "investigator.Lost": "Lost",
   "investigator.EstablishBondTooltip": "Roll to establish a new Bond between operations",
   "investigator.EstablishANewBond": "Establish a New Bond",
-  "investigator.EstablishBondHint": "Between operations, someone becomes important to you. It costs 1 {Category} point, which won’t refresh before the next operation, and another Bond drops by 1 as you neglect it. Then roll a die: on a 1 they reject you, and you lose 1 {AbilityName}; on a 2–5 the Bond starts at the die minus 2; on a 6 it starts at 3, and you get the point back.",
+  "investigator.EstablishBondHint": "You attempt to forge a new bond with someone. You lose 1 {Category} point, which you don't get back before the next operation, and another bond is weakened by 1 point, then roll a die. 1: They reject you and you lose 1 {AbilityName}; 2–5: the Bond starts at the die minus 2; 6: it starts at 3, and you get the {Category} point back.",
   "investigator.Who": "Who",
   "investigator.SomeoneNew": "Someone new",
   "investigator.BondNameBroken": "{BondName} (broken)",
