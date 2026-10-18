@@ -105,8 +105,11 @@ they're ordinary packs now, so edit them in Foundry and run `extract-packs`.
 
 Rough priority order.
 
-1. **Bonds** (pp. 045–046, 120, 128): in progress, see
-   [`fodg-bonds-plan.md`](fodg-bonds-plan.md).
+1. **Bonds** (pp. 045–046, 120, 128): done, see
+   [`fodg-bonds-plan.md`](fodg-bonds-plan.md). Spending, burning,
+   rebuilding, establishing, DELTA GREEN Bonds after a team crisis, and
+   adapting to trauma. Not covered: Bonds lost when the person dies or goes
+   permanently insane, and the other Personal Life vignettes.
 2. **Stability states** (p. 113): done, see
    [`fodg-stability-plan.md`](fodg-stability-plan.md). Shaken, Shattered and
    Gone as statuses, Shaken's effects (asking before Investigative spends, a
