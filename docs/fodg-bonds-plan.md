@@ -319,6 +319,7 @@ leave pools and Bonds as they are, but refresh them only to the cap.
 
 ### Later, if wanted
 
-- Automatic adaptation (see phase 6), with Stability states.
+- Automatic adaptation: done with Stability tests against trauma (see
+  [`fodg-stability-plan.md`](fodg-stability-plan.md)).
 - The other Personal Life vignettes (p. 129, e.g. One With Nature, Head
   Games) share the shape, but are about Stability rather than Bonds.

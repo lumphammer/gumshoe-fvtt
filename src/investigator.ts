@@ -29,6 +29,7 @@ import { installResourceUpdateHookHandler } from "./startup/installResourceUpdat
 import { installShowThemeFarmHack } from "./startup/installShowThemeFarmHack";
 import { installSocketActionHandler } from "./startup/installSocketActionHandler";
 import { installTurnPassingHandler } from "./startup/installTurnPassingHandler";
+import { installStabilityStatusHandler } from "./startup/installStabilityStatusHandler";
 import { installWoundStatusHandler } from "./startup/installWoundStatusHandler";
 import { loadCustomThemes } from "./startup/loadCustomThemes";
 import { migrateWorldIfNeeded } from "./startup/migrateWorldIfNeeded";
@@ -91,6 +92,7 @@ installItemCombatAbilityHandler();
 installActorCombatAbilityHandler();
 installNextTurnHandler();
 installWoundStatusHandler();
+installStabilityStatusHandler();
 
 /**
  * Recursively get all layer names from a CSSRule and its children.

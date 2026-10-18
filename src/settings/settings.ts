@@ -311,6 +311,16 @@ export const settings = {
     name: "Abilities capped by Adapted to Violence",
     default: pathOfCthulhuPreset.violenceCappedAbilities,
   }),
+  useStabilityStates: createSettingBoolean({
+    key: "useStabilityStates",
+    name: "Use Stability states?",
+    default: pathOfCthulhuPreset.useStabilityStates,
+  }),
+  sanityAbility: createSettingString({
+    key: "sanityAbility",
+    name: "Ability Unnatural shocks reduce",
+    default: pathOfCthulhuPreset.sanityAbility,
+  }),
 
   useCards: createSettingBoolean({
     key: "useCards",

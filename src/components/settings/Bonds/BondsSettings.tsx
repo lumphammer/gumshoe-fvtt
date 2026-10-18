@@ -33,6 +33,20 @@ export const BondsSettings = ({ setters }: { setters: Setters }) => {
                 onChange={setters.bondRebuildSpendCategory}
               />
             </SettingsGridField>
+            <SettingsGridField label="Use Stability states?">
+              <Toggle
+                checked={settings.useStabilityStates}
+                onChange={setters.useStabilityStates}
+              />
+            </SettingsGridField>
+            {settings.useStabilityStates && (
+              <SettingsGridField label="Ability Unnatural shocks reduce">
+                <AsyncTextInput
+                  value={settings.sanityAbility}
+                  onChange={setters.sanityAbility}
+                />
+              </SettingsGridField>
+            )}
           </>
         )}
       </InputGrid>

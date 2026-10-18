@@ -9,15 +9,25 @@ import { isPCActor } from "../../module/actors/pc";
 import { doesSpendBreakBond, getMaxBondSpend } from "../../module/bonds/rules";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
+import type { Trauma } from "../../module/stability/trauma";
+import { traumaLabels, traumas } from "../../module/stability/trauma";
+import {
+  getTraumaTestDifficulty,
+  traumaTest,
+} from "../../module/stability/traumaTest";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
+import { Select } from "../inputs/Select";
 import { SpendButtons } from "../inputs/SpendButtons";
 import { ItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
+
+/** the book's losses run from 1 to 8; a little room beyond */
+const potentialLosses = Array.from({ length: 12 }, (_, i) => i + 1);
 
 export const AbilityTest = () => {
   const { item } = useItemSheetContext();
@@ -26,6 +36,9 @@ export const AbilityTest = () => {
   const [spend, setSpend] = useState(0);
   // points to spend from each Bond, by id
   const [bondSpends, setBondSpends] = useState<Record<string, number>>({});
+  // a Stability test against trauma, or an ordinary test
+  const [trauma, setTrauma] = useState<Trauma | "">("");
+  const [potentialLoss, setPotentialLoss] = useState(1);
   // Bonds live on the actor, not this item
   useRefreshOnActorItemChanges(item.actor);
 
@@ -40,6 +53,17 @@ export const AbilityTest = () => {
       ? // broken ones too, so nobody goes looking for them
         actor.system.getBonds()
       : [];
+
+  // Fall of DELTA GREEN: Stability tests against trauma (pp. 115–121)
+  const canTestTrauma =
+    isGeneral &&
+    settings.useStabilityStates.get() &&
+    isPCActor(actor) &&
+    actor.system.getBondStabilityAbility()?.id === item.id;
+  const traumaDifficulty =
+    canTestTrauma && trauma !== ""
+      ? getTraumaTestDifficulty(actor, trauma)
+      : null;
 
   const handleClickTest = async () => {
     const spends = bonds.map((bond) => ({
@@ -66,13 +90,22 @@ export const AbilityTest = () => {
         return;
       }
     }
-    void item.system.testAbility(spend, spends);
+    if (canTestTrauma && trauma !== "") {
+      void traumaTest(actor, {
+        trauma,
+        potentialLoss,
+        spend,
+        bondSpends: spends,
+      });
+    } else {
+      void item.system.testAbility(spend, spends);
+    }
     setSpend(0);
     setBondSpends({});
   };
 
   const handleClickSpend = useCallback(() => {
-    void item.system.spendAbility(spend);
+    void item.system.confirmSpendAbility(spend);
     setSpend(0);
   }, [item, spend]);
 
@@ -88,6 +121,53 @@ export const AbilityTest = () => {
         ...theme.panelStyleSecondary,
       }}
     >
+      {canTestTrauma && (
+        <>
+          <GridField label="Trauma">
+            <Select
+              value={trauma}
+              onChange={(e) => setTrauma(e.currentTarget.value as Trauma | "")}
+              css={{ width: "100%" }}
+            >
+              <option value="">{getTranslated("None")}</option>
+              {traumas.map((t) => (
+                <option key={t} value={t}>
+                  {getTranslated(traumaLabels[t])}
+                </option>
+              ))}
+            </Select>
+          </GridField>
+          {trauma !== "" && (
+            <GridField label="Potential loss">
+              <div
+                css={{ display: "flex", gap: "0.5em", alignItems: "center" }}
+              >
+                <Select
+                  value={potentialLoss}
+                  onChange={(e) =>
+                    setPotentialLoss(Number(e.currentTarget.value))
+                  }
+                >
+                  {potentialLosses.map((loss) => (
+                    <option key={loss} value={loss}>
+                      {loss}
+                    </option>
+                  ))}
+                </Select>
+                {traumaDifficulty !== null && (
+                  <span data-testid="trauma-difficulty">
+                    <Translate
+                      values={{ Difficulty: String(traumaDifficulty) }}
+                    >
+                      DifficultyN
+                    </Translate>
+                  </span>
+                )}
+              </div>
+            </GridField>
+          )}
+        </>
+      )}
       <GridField
         label={spendLabel ?? "Spend"}
         noTranslate={spendLabel !== undefined}

@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { getTranslated } from "../../functions/getTranslated";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
+import { stabilityStateLabels } from "../../module/stability/states";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
@@ -19,6 +20,7 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
   const situationalModifiers = ability.system.getVisibleSituationalModifiers();
   const unlocks = ability.system.getActiveUnlocks();
   const ratingCap = ability.system.getRatingCap();
+  const stabilityState = ability.system.getStabilityState();
   const theme = useContext(ThemeContext);
   return (
     <div
@@ -66,6 +68,25 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
         >
           Push Pool
         </Translate>
+      )}
+
+      {/* Shaken, Shattered or Gone */}
+      {stabilityState !== null && stabilityState !== "steady" && (
+        // styled on a wrapper: Translate sets its own background
+        <span
+          data-testid="stability-state-badge"
+          css={{
+            background: theme.colors.danger,
+            color: theme.colors.accentContrast,
+            fontSize: "0.9em",
+            lineHeight: "1",
+            borderRadius: "0.5em",
+            padding: "0 0.5em",
+            margin: "0 0.24em",
+          }}
+        >
+          <Translate>{stabilityStateLabels[stabilityState]}</Translate>
+        </span>
       )}
 
       {/* Adapted to Violence */}

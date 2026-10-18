@@ -89,6 +89,8 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
   bondStabilityAbility: "Stability",
   bondRebuildSpendCategory: "Interpersonal",
   violenceCappedAbilities: [],
+  useStabilityStates: false,
+  sanityAbility: "Sanity",
   useCards: false,
   cardCategories: [],
 };
@@ -414,6 +416,7 @@ export const fallOfDeltaGreenPreset: PresetV1 = {
     "Negotiation",
     "Reassurance",
   ],
+  useStabilityStates: true,
 };
 
 export const basePresets = {

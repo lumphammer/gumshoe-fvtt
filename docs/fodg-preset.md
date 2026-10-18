@@ -103,16 +103,14 @@ they're ordinary packs now, so edit them in Foundry and run `extract-packs`.
 
 ## Gaps
 
-Rough priority order. Only Bonds is started.
+Rough priority order.
 
 1. **Bonds** (pp. 045–046, 120, 128): in progress, see
    [`fodg-bonds-plan.md`](fodg-bonds-plan.md).
-2. **Stability states** (p. 113). Shaken (0 to −5): no investigative spends,
-   +1 to general Difficulties. Shattered (−6 to −11): frenzy, flight or
-   faint, a new disorder, and −1 Stability rating. Gone (−12 or less): the
-   agent is lost. An Unnatural shock that leaves you Shaken or Shattered also
-   costs Sanity rating. This mirrors the wound states, so the wound status
-   effect machinery (combat plan, Phase 6) may be reusable.
+2. **Stability states** (p. 113): done, see
+   [`fodg-stability-plan.md`](fodg-stability-plan.md). Shaken, Shattered and
+   Gone as statuses, Shaken's effects (asking before Investigative spends, a
+   reminder of +1 Difficulty: #1428), and Stability tests against trauma.
 3. **Sanity** (pp. 070, 121–122). Never tested or spent; losses come off the
    rating. Capped at 10 minus The Unnatural. At 0 the agent becomes a GMC.
    Currently an ordinary rollable ability.
@@ -126,9 +124,9 @@ Rough priority order. Only Bonds is started.
 7. Lower priority:
    - Special Training and Special Weapons Training (pp. 072–073).
    - Hypergeometry capped by Hypergeometric Potential (p. 197).
-   - Adaptation to Violence or Helplessness (p. 120): tracked by hand, with
-     the caps and refresh penalty (see `fodg-bonds-plan.md`, phase 6), but
-     not Difficulty 2, or ticking the boxes automatically.
+   - Adaptation to Violence or Helplessness (p. 120): done (see
+     `fodg-bonds-plan.md`, phase 6, and `fodg-stability-plan.md`), except
+     the extra Stability lost to Stress Penalties.
    - Chargen checks: investigative build points by group size (p. 020);
      second-highest general ability at least half the highest (p. 024).
    - Personal Life vignettes and campaign modes (pp. 128–130).

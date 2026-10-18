@@ -468,6 +468,16 @@ export interface PresetV1 {
    */
   violenceCappedAbilities?: string[];
   /**
+   * Fall of DELTA GREEN: Shaken, Shattered and Gone follow the Stability pool
+   * (the ability Bonds are spent on), and Stability tests can be against
+   * trauma.
+   */
+  useStabilityStates?: boolean;
+  /**
+   * The ability whose rating Unnatural shocks reduce. Defaults to Sanity.
+   */
+  sanityAbility?: string;
+  /**
    * Should we use cards?
    */
   useCards?: boolean;

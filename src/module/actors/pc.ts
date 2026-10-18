@@ -40,6 +40,8 @@ import type { InvestigativeAbilityItem } from "../items/investigativeAbility";
 import { isInvestigativeAbilityItem } from "../items/investigativeAbility";
 import { assertMwItem, isMwItem } from "../items/mwItem";
 import type { PersonalDetailItem } from "../items/personalDetail";
+import type { StabilityState } from "../stability/states";
+import { getStabilityState } from "../stability/states";
 import { isPersonalDetailItem } from "../items/personalDetail";
 import { resizeSpecialities } from "../items/resizeSpecialities";
 import { createActiveCharacterSchema } from "../schemaFields";
@@ -65,6 +67,17 @@ export const pcSchema = {
   adaptations: new SchemaField({
     violence: adaptationProgressField(),
     helplessness: adaptationProgressField(),
+  }),
+  /**
+   * Sanity rating lost to Unnatural shocks this operation (Fall of DELTA
+   * GREEN, p. 121): only the worst counts. Full Refresh clears it.
+   */
+  unnaturalShockSanityLoss: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
+    initial: 0,
   }),
   buildPoints: new NumberField({
     nullable: false,
@@ -348,7 +361,7 @@ export class PCModel extends ActiveCharacterModel<
    * Bring capped abilities' ratings down to the cap. Their pools stay as they
    * are, to be spent (p. 050); they just won't refresh above it.
    */
-  private capRatingsForViolence = async (): Promise<void> => {
+  capRatingsForViolence = async (): Promise<void> => {
     const names = settings.violenceCappedAbilities.get();
     const cap = adaptedToViolenceRatingCap;
     const updates = this.getAbilities().flatMap((ability) => {
@@ -382,6 +395,34 @@ export class PCModel extends ActiveCharacterModel<
           { name: b.name ?? "", isDeltaGreen: b.system.isDeltaGreen },
         ),
       );
+  }
+
+  /**
+   * The Agent's Stability state (Fall of DELTA GREEN, p. 113), or null if
+   * states aren't in use, or there's no Stability ability
+   */
+  getStabilityState(): StabilityState | null {
+    if (!settings.useStabilityStates.get()) {
+      return null;
+    }
+    const stability = this.getBondStabilityAbility();
+    return stability ? getStabilityState(stability.system.pool) : null;
+  }
+
+  /** The ability Unnatural shocks reduce the rating of, usually Sanity */
+  getSanityAbility(): GeneralAbilityItem | undefined {
+    const name = settings.sanityAbility.get();
+    return this.parent.items.find(
+      (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
+        isGeneralAbilityItem(item) && item.name === name,
+    );
+  }
+
+  /** The end of an operation: Unnatural shocks can cost Sanity again */
+  protected override async afterFullRefresh(): Promise<void> {
+    if (this.unnaturalShockSanityLoss !== 0) {
+      await this.parent.update({ system: { unnaturalShockSanityLoss: 0 } });
+    }
   }
 
   /** The ability Bonds can be spent on and burned for, usually Stability */

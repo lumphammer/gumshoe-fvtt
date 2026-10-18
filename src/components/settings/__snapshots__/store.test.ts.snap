@@ -180,7 +180,7 @@ exports[`reducer > should apply a preset 1`] = `
       "showEmptyInvestigativeCategories": false,
       "systemMigrationVersion": "",
       "shortNotes": Array [],
-@@ -88,10 +113,12 @@
+@@ -88,12 +113,14 @@
       "journalMemories": Object {},
       "cardCategories": Array [],
       "useBonds": false,
@@ -189,6 +189,9 @@ exports[`reducer > should apply a preset 1`] = `
 +     "bondStabilityAbility": "Stability",
 +     "bondRebuildSpendCategory": "Interpersonal",
       "violenceCappedAbilities": Array [],
+      "useStabilityStates": false,
+-     "sanityAbility": "",
++     "sanityAbility": "Sanity",
       "useCards": false,
       "notifyItemAddedToActor": false,
 +     "schemaVersion": "v1",

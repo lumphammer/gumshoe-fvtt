@@ -35,7 +35,7 @@ export const AbilitySlugPlayNormal = ({
   }, [ability, spend]);
 
   const onSpend = useCallback(() => {
-    void ability.system.spendAbility(spend);
+    void ability.system.confirmSpendAbility(spend);
     setSpend(0);
   }, [ability, spend]);
 

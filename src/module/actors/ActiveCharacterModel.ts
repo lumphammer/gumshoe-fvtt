@@ -120,7 +120,13 @@ export class ActiveCharacterModel<
       await this.broadcastUserMessage("RefreshedAllOfActorNamesAbilities");
     }
     await this.parent.updateEmbeddedDocuments("Item", updates);
+    await this.afterFullRefresh();
   };
+
+  /** Anything else a full refresh resets */
+  protected async afterFullRefresh(): Promise<void> {
+    // nothing, unless a subclass has more to reset
+  }
 
   confirmRefresh = async (): Promise<void> => {
     const yes = await confirmADoodleDo({

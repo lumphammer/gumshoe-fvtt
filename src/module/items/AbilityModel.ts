@@ -2,6 +2,7 @@ import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
 import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
+import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
@@ -16,6 +17,8 @@ import type {
 import type { PCModel } from "../actors/pc";
 import { getCappedRating, getRefreshedPool } from "../bonds/adaptation";
 import { serializeBondSpends } from "../bonds/bondSpends";
+import type { StabilityState } from "../stability/states";
+import { isShakenOrWorse } from "../stability/states";
 import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
 import type { BondItem } from "./bond";
 import type { AbilitySchema } from "./createAbilitySchema";
@@ -73,6 +76,15 @@ export abstract class AbilityModel<
       (total, bondSpend) => total + bondSpend.spend,
       0,
     );
+    // Shaken (or worse): General tests are at +1 Difficulty (Fall of DELTA
+    // GREEN, p. 113). Tests don't have a Difficulty yet, so the card says so.
+    const stabilityState = this.getOwnerStabilityState();
+    const shakenState =
+      this.parent.type === constants.generalAbility &&
+      stabilityState !== null &&
+      isShakenOrWorse(stabilityState)
+        ? stabilityState
+        : null;
     const isBoosted = settings.useBoost.get() && this.boost;
     const boost = isBoosted ? 1 : 0;
     const situationalModifiers = this.activeSituationalModifiers.map((id) => {
@@ -113,6 +125,7 @@ export abstract class AbilityModel<
         [constants.htmlDataName]: this.parent.name,
         [constants.htmlDataImageUrl]: this.parent.img,
         [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
+        [constants.htmlDataStabilityState]: shakenState,
         [constants.htmlDataBondSpends]: serializeBondSpends(
           usedBondSpends.map(({ bond, spend }) => ({
             name: bond.name ?? "",
@@ -133,6 +146,37 @@ export abstract class AbilityModel<
       );
     }
   }
+
+  /**
+   * Spend, but ask first if it's an Investigative ability and the owner is
+   * Shaken (or worse): they can't spend Investigative points (Fall of DELTA
+   * GREEN, p. 113), though the GM may allow it.
+   */
+  confirmSpendAbility = async (spend: number): Promise<void> => {
+    const state = this.getOwnerStabilityState();
+    if (
+      spend > 0 &&
+      this.parent.type === constants.investigativeAbility &&
+      state !== null &&
+      isShakenOrWorse(state)
+    ) {
+      const yes = await confirmADoodleDo({
+        message: "SpendWhileShakenConfirm",
+        confirmText: "Spend",
+        cancelText: "Cancel",
+        confirmIconClass: "fa-check",
+        resolveFalseOnCancel: true,
+        values: {
+          ActorName: this.parent.actor?.name ?? "",
+          AbilityName: this.parent.name ?? "",
+        },
+      });
+      if (!yes) {
+        return;
+      }
+    }
+    await this.spendAbility(spend);
+  };
 
   /**
    * gumshoe spend - no dice, just spend a number of points in exchange for some
@@ -240,6 +284,22 @@ export abstract class AbilityModel<
     const actor = this.parent.actor;
     // by type rather than isPCActor: pc.ts imports this file
     return actor?.type === constants.pc ? (actor.system as PCModel) : null;
+  }
+
+  /**
+   * The owner's Stability state, if this is their Stability ability and
+   * states are in use
+   */
+  getStabilityState(): StabilityState | null {
+    const system = this.getPCSystem();
+    return system?.getBondStabilityAbility()?.id === this.parent.id
+      ? system.getStabilityState()
+      : null;
+  }
+
+  /** The owner's Stability state, if states are in use (for any ability) */
+  getOwnerStabilityState(): StabilityState | null {
+    return this.getPCSystem()?.getStabilityState() ?? null;
   }
 
   /** The cap on the rating (from Adapted to Violence), if there is one */

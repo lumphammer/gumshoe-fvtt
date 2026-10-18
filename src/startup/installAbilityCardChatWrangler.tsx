@@ -13,11 +13,14 @@ import { CrisisCallCard } from "../components/messageCards/CrisisCallCard";
 import { EstablishBondCard } from "../components/messageCards/EstablishBondCard";
 import { RebuildBondCard } from "../components/messageCards/RebuildBondCard";
 import { TeamCrisisCard } from "../components/messageCards/TeamCrisisCard";
+import { TraumaTestCard } from "../components/messageCards/TraumaTestCard";
 import { isAbilityCardMode } from "../components/messageCards/types";
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { parseBondSpends } from "../module/bonds/bondSpends";
+import { parseStabilityState } from "../module/stability/states";
+import { parseTraumaTestRecord } from "../module/stability/trauma";
 import { parseCrisisCall, parseCrisisRecord } from "../module/bonds/crisis";
 import { parseEstablishRecord } from "../module/bonds/establish";
 import { parseRebuildRecord } from "../module/bonds/rebuild";
@@ -175,6 +178,22 @@ export const installAbilityCardChatWrangler = () => {
         return;
       }
 
+      // a Stability test against trauma
+      if (mode === constants.htmlDataModeStabilityTest) {
+        const record = parseTraumaTestRecord(
+          el.getAttribute(constants.htmlDataStabilityTest),
+        );
+        if (record === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(
+            el,
+            <TraumaTestCard record={record} imageUrl={imageUrl} />,
+          );
+        }
+        return;
+      }
+
       // foundry doesn't seem to have a canonical way to just grab an item
       // regardless of where it is (world, actor, token, compendium etc.)
       // try the token first, so that unlinked tokens get their own actor's
@@ -284,6 +303,9 @@ export const installAbilityCardChatWrangler = () => {
               name={name}
               bondSpends={parseBondSpends(
                 el.getAttribute(constants.htmlDataBondSpends),
+              )}
+              stabilityState={parseStabilityState(
+                el.getAttribute(constants.htmlDataStabilityState),
               )}
             />
           </StrictMode>
