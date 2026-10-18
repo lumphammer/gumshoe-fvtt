@@ -906,7 +906,7 @@ test("a team crisis that holds together", async ({ page }) => {
   await panel.getByRole("button", { name: "Make the test" }).click();
 
   const card = lastChatMessage(page).getByTestId("team-crisis-card");
-  await expect(card.getByTestId("crisis-outcome")).toHaveText("Holds together");
+  await expect(card.getByTestId("crisis-outcome")).toHaveText("Unaffected");
   await expect(card).toContainText("Spent: Stability 1, Mom 1");
   await expect(card.getByTestId("crisis-change")).toHaveCount(0);
   // only the spends come off

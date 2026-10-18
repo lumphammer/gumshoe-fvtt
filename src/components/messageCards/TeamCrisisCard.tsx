@@ -86,7 +86,7 @@ export const TeamCrisisCard = ({ record, imageUrl }: TeamCrisisCardProps) => {
           }}
         >
           <Translate>
-            {record.succeeded ? "Holds together" : "Bonds form"}
+            {record.succeeded ? "Unaffected" : "Bonds form"}
           </Translate>
         </div>
         {record.changes.map((change) => (

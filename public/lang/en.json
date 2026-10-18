@@ -501,7 +501,7 @@
   "investigator.MakeTheTest": "Make the test",
   "investigator.CrisisMayBreakBondsConfirm": "This could break your Bond with {BondNames} for good. Make the test anyway?",
   "investigator.CantMakeCrisisTestLikeThat": "Can’t make that test with those choices any more",
-  "investigator.HoldsTogether": "Holds together",
+  "investigator.Unaffected": "Unaffected",
   "investigator.BondsForm": "Bonds form",
   "investigator.New": "New",
   "investigator.Reformed": "Re-formed",
