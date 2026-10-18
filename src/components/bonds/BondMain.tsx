@@ -17,6 +17,7 @@ import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 import { BondBadges } from "./BondBadges";
+import { BondActor } from "./BondActor";
 import { BurnBondButton } from "./BurnBondButton";
 import { rebuild } from "./directions";
 
@@ -32,13 +33,14 @@ export const BondMain = () => {
   const actor = item.actor;
   const canRebuild = isPCActor(actor) && actor.system.canRebuildBond(item);
   const autoRows =
-    3 + (hasBadges ? 1 : 0) + (canHaveBurn ? 1 : 0) + (canRebuild ? 1 : 0);
+    4 + (hasBadges ? 1 : 0) + (canHaveBurn ? 1 : 0) + (canRebuild ? 1 : 0);
 
   return (
     <InputGrid
       css={{
         ...absoluteCover,
-        // name, points, DELTA GREEN toggle, (Burn,) (badges,) (Rebuild,)
+        // name, points, DELTA GREEN toggle, actor, (Burn,) (badges,)
+        // (Rebuild,)
         // then notes fill the rest
         gridTemplateRows: `repeat(${autoRows}, auto) 1fr`,
       }}
@@ -60,6 +62,9 @@ export const BondMain = () => {
           checked={item.system.isDeltaGreen}
           onChange={item.system.setIsDeltaGreen}
         />
+      </GridField>
+      <GridField label="Actor">
+        <BondActor bond={item} />
       </GridField>
       {/* on its own row, so the points above don't read as "how many to burn" */}
       {canHaveBurn && (

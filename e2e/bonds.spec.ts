@@ -604,3 +604,104 @@ test("no points to establish a new Bond", async ({ page }) => {
     "No Interpersonal points left to spend",
   );
 });
+
+/** Drop a document onto an element, as dragging it from the sidebar would */
+async function dropDocument(
+  page: Page,
+  target: Locator,
+  data: { type: string; uuid: string },
+) {
+  const dataTransfer = await page.evaluateHandle((json) => {
+    const dt = new DataTransfer();
+    dt.setData("text/plain", json);
+    return dt;
+  }, JSON.stringify(data));
+  await target.dispatchEvent("dragover", { dataTransfer });
+  await target.dispatchEvent("drop", { dataTransfer });
+}
+
+test("linking a Bond to an actor", async ({ page }) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Amanda", type: "pc" });
+  const teammateId = await createActor(page, {
+    name: "Bob Tanner",
+    type: "pc",
+  });
+  // given a picture of her own
+  const zorahId = await createActor(page, { name: "Zorah", type: "npc" });
+  await page.evaluate(async (zorahId) => {
+    await game.actors.get(zorahId)!.update({ img: "icons/svg/aura.svg" });
+  }, zorahId);
+  const bondId = await createOwnedItem(page, actorId, {
+    name: "Bob",
+    type: "bond",
+    system: { points: 2 },
+  });
+  const getBond = () =>
+    page.evaluate(
+      ({ actorId, bondId }) => {
+        const bond = game.actors.get(actorId)!.items.get(bondId)!;
+        return {
+          img: bond.img,
+          actorUuid: (bond.system as unknown as { actorUuid: string | null })
+            .actorUuid,
+        };
+      },
+      { actorId, bondId },
+    );
+  const defaultImg = (await getBond()).img;
+
+  // any Bond can have one, DELTA GREEN or not
+  const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
+  const actorRow = bondSheet.getByTestId("bond-actor");
+  await expect(actorRow).toHaveText("Drag an actor here");
+
+  // not the Agent themself
+  await dropDocument(page, actorRow, {
+    type: "Actor",
+    uuid: `Actor.${actorId}`,
+  });
+  await expect(actorRow).toHaveText("Drag an actor here");
+  expect((await getBond()).actorUuid).toBeNull();
+
+  // a default picture isn't taken
+  await dropDocument(page, actorRow, {
+    type: "Actor",
+    uuid: `Actor.${teammateId}`,
+  });
+  await expect(actorRow).toHaveText("Bob Tanner");
+  expect(await getBond()).toEqual({
+    img: defaultImg,
+    actorUuid: `Actor.${teammateId}`,
+  });
+
+  // the name opens their sheet
+  await actorRow.getByText("Bob Tanner").click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (teammateId) => game.actors.get(teammateId)!.sheet!.rendered,
+        teammateId,
+      ),
+    )
+    .toBe(true);
+  await page.evaluate(
+    (teammateId) => game.actors.get(teammateId)!.sheet!.close(),
+    teammateId,
+  );
+
+  await actorRow.getByTitle("Unlink").click();
+  await expect(actorRow).toHaveText("Drag an actor here");
+  expect((await getBond()).actorUuid).toBeNull();
+
+  // a chosen picture is
+  await dropDocument(page, actorRow, {
+    type: "Actor",
+    uuid: `Actor.${zorahId}`,
+  });
+  await expect(actorRow).toHaveText("Zorah");
+  expect(await getBond()).toEqual({
+    img: "icons/svg/aura.svg",
+    actorUuid: `Actor.${zorahId}`,
+  });
+});

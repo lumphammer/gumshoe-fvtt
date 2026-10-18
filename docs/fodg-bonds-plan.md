@@ -186,9 +186,59 @@ Foundry glue lives elsewhere.
 - The starting value hint was dropped: it only applies at character creation,
   where the player can just type the number.
 
+### Phase 5: DELTA GREEN Bonds (in progress)
+
+The rule (p. 046): after a team crisis, each Agent makes a Difficulty 4
+Stability test. On a failure, for each DELTA GREEN teammate present (up to
+five), they form a new DELTA GREEN Bond or strengthen an existing one, at a
+cost to their other Bonds. The text and its worked example disagree on the
+cost, so we've ruled:
+
+- **New DELTA GREEN Bonds:** 1 point lost from one non-DELTA GREEN Bond *in
+  total*, however many new Bonds form (as in the book's example: two new
+  Bonds, one point lost).
+- **Strengthening existing ones:** +1 each, and 1 point lost from a
+  non-DELTA GREEN Bond *per Bond strengthened*. Several losses can come off
+  one Bond.
+- **The new Bond's rating:** half the Agent's highest current Bond, rounded
+  up, counting DELTA GREEN Bonds too (as the book says). It's worked out once,
+  before any of the crisis's changes (as the example reads).
+- **A teammate whose Bond is broken** counts as forming a new DELTA GREEN
+  Bond: it shares the one-point loss above, and takes the same rating. The
+  broken Bond is re-formed in place, keeping its item and notes, as
+  Establish a New Bond does.
+- **Spending:** Stability and Bond points can be spent on the test. The book
+  calls it a "Stability test (p. 080)", so it's an ordinary Stability test,
+  and p. 120 lets Bond points go on any of those.
+
+Design (reviewed: a starting point):
+
+- **5a (done):** an optional `actorUuid` on `bond`, linking a Bond to the
+  actor it's with. For a DELTA GREEN Bond that's the teammate, so the next
+  crisis strengthens it rather than creating a duplicate; an ordinary Bond
+  can be linked to an NPC. The Bond's sheet has an **Actor** row (on every
+  Bond: we don't police PC versus NPC, or DELTA GREEN versus not) that takes
+  a dropped PC or NPC (not a party, and not the Agent themself), shows their
+  name (which opens their sheet), and has an unlink button. Linking also
+  takes the actor's picture for the Bond, unless it's a default one
+  (Foundry's mystery man, or the system's PC and NPC icons:
+  `isDefaultActorImage`); unlinking leaves the picture alone. A link to a
+  deleted actor shows "Actor not found". The crisis flow will also set it.
+- **5b:** a per-Agent **Team Crisis →** panel on the Bonds tab (a nested route, like
+  Establish): pick the teammates present (from this PC's party, else all
+  other PCs; up to five), see a live preview of what a failure would mean,
+  allocate the losses across non-DELTA GREEN Bonds in advance (with a
+  confirmation if that would break one), then roll the test with Stability
+  and Bond spend rows. On a failure everything is applied at once, and one
+  card records it.
+- **5c, optional:** a GM-run version from the party sheet that prompts each
+  member.
+
+Not covered: spotting the trauma (the Handler calls it), and Bonds destroyed
+when the person dies or goes permanently insane.
+
 ### Later, if wanted
 
-- Automating DELTA GREEN Bonds (p. 046): a team-wide flow, so a bigger job.
 - Adapted to Violence cap: needs adaptation tracking first.
 - The other Personal Life vignettes (p. 129, e.g. One With Nature, Head
   Games) share the shape, but are about Stability rather than Bonds.
