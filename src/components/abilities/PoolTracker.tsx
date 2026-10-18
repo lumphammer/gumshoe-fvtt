@@ -62,6 +62,8 @@ export const PoolTracker = ({ ability }: PoolTrackerProps) => {
             gridColumn: "start / end",
             justifyContent: "start",
             rowGap: "0.25em",
+            // only when there are badges, to keep them off the boxes
+            "&:not(:empty)": { marginBottom: "0.5em" },
           }}
         />
       )}
