@@ -12,7 +12,7 @@ catalog:
   less: 4.4.1
   typescript: 7.0.2
   react-dom: ^19.3.1
-  happy-dom: ^20.14.6
+  happy-dom: ^21.0.3
 overrides:
   vite: "catalog:"
   vitest: "catalog:"
