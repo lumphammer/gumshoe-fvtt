@@ -64,7 +64,44 @@ The FoDG preset's trauma types keep the ids `violence`, `helplessness` and
 | Helplessness | 4 | 2 | no | yes | none | no | 1 |
 | The Unnatural | 5 | 5 | yes | no | | | |
 
-The base preset has no trauma types.
+The base layer (`defaultSettings`) has no trauma types, and everything off.
+
+## Trail of Cthulhu
+
+The Trail of Cthulhu preset turns on Stability rules, Sanity rules (capped at
+10 less Cthulhu Mythos) and Stability states, named as in the second edition:
+
+| State | Pool at most |
+| --- | --- |
+| Shaken | 0 |
+| Blasted | −6 |
+| Doomed | −12 |
+
+Its trauma types, neither with adaptation:
+
+| | Difficulty | Sanity loss |
+| --- | --- | --- |
+| Non-mythos | 4 | no |
+| Mythos | 5 | yes |
+
+Bonds stay off.
+
+Until now the Trail of Cthulhu preset was also the base layer and every
+setting's registered default. A world reads the registered default for any
+setting it has never stored, including every setting added since it last
+saved, so turning these rules on there would have turned them on in every
+existing world, whatever its preset. So:
+
+- `defaultSettings` is the base layer and the registered defaults, with
+  everything off. `pathOfCthulhuPreset` is an ordinary preset on top.
+- A new world says it uses Trail of Cthulhu, but has stored nothing, so on its
+  first run (`migrateWorldIfNeeded`) we write the preset's values.
+- An existing world whose preset is Trail of Cthulhu, with Stability rules
+  off, gets a one-time question for its GM: turn the new rules on now? We
+  don't do it unasked, because the campaign may be under way, and the world
+  may never have picked a preset at all. "Yes please" writes just the Sanity &
+  Stability settings, not the whole preset, which would overwrite the GM's
+  other changes.
 
 ## Labels
 

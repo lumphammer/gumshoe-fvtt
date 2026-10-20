@@ -593,5 +593,6 @@
   "investigator.ThisCantBeUndone": "This can’t be undone.",
   "investigator.AdaptationCapsAbilitiesEffect": "{AbilityNames} are capped at {RatingCap}. Points already above the cap can still be spent, but won’t come back.",
   "investigator.AdaptationCapsBondsEffect": "Bonds are capped at {BondCap}, and those above it stay until they’re lost.",
-  "investigator.AdaptationRefreshPenaltyEffect": "Refreshes during an operation give up to {Penalty} fewer points (Full Refresh not included)."
+  "investigator.AdaptationRefreshPenaltyEffect": "Refreshes during an operation give up to {Penalty} fewer points (Full Refresh not included).",
+  "investigator.TrailOfCthulhuRulesOffer": "Trail of Cthulhu now has optional Stability and Sanity rules. Enable them now? (You can change this later in {Settings}.)"
 }

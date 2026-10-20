@@ -13,7 +13,7 @@ import {
   reorderKeys,
   systemLogger,
 } from "../../functions/utilities";
-import { pathOfCthulhuPreset } from "../../presets";
+import { defaultSettings } from "../../presets";
 import type { SettingsDict } from "../../settings/settings";
 import type { EquipmentFieldType } from "../../types";
 import { assertNumericFieldOkayness } from "./functions";
@@ -257,7 +257,7 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
         // now we layer in a safe default. This is typed as Required<> so it
         // will always contain one of everything that can be controlled by a
         // preset.
-        ...pathOfCthulhuPreset,
+        ...defaultSettings,
         // now layer in the actual preset
         ...payload.preset,
         // and finally, set the actual preset id

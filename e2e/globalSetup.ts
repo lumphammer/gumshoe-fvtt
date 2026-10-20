@@ -177,6 +177,11 @@ export default async function globalSetup(_config: FullConfig) {
     // log in to the new world and save the session for the tests to reuse
     const page = await browser.newPage({ baseURL: foundryUrl });
     await joinAsGamemaster(page);
+    // the system sets up a new world (e.g. its preset's settings) after the
+    // game is ready, and closing the page would cut that short
+    await page.waitForFunction(
+      () => game.settings.get("investigator", "firstRun" as never) === false,
+    );
     await page.evaluate(async () => {
       // These are client settings, kept in localStorage, so they're saved in
       // the storage state with the session cookie.

@@ -2,9 +2,18 @@ import type { PresetV1 } from "@lumphammer/investigator-fvtt-types";
 
 import { npcPackName, packNames, systemId } from "./constants";
 
-export const pathOfCthulhuPreset: Required<PresetV1> = {
+/**
+ * The value of every preset-controlled setting before any preset is applied.
+ * It's each setting's registered default, so it's what a world reads for a
+ * setting it has never stored, including one added after the world last
+ * saved its settings. It's also the base layer under every preset.
+ *
+ * So changing a value here changes existing worlds. Settings added from now
+ * on default to off (or neutral), and presets turn them on.
+ */
+export const defaultSettings: Required<PresetV1> = {
   schemaVersion: "v1",
-  displayName: "Trail of Cthulhu (built-in)",
+  displayName: "Defaults",
   defaultThemeName: "tealTheme",
   investigativeAbilityCategories: ["Academic", "Interpersonal", "Technical"],
   generalAbilityCategories: ["General"],
@@ -103,6 +112,46 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
   traumaTypes: [],
   useCards: false,
   cardCategories: [],
+};
+
+export const pathOfCthulhuPreset: Required<PresetV1> = {
+  ...defaultSettings,
+  displayName: "Trail of Cthulhu (built-in)",
+  useStabilityRules: true,
+  useSanityRules: true,
+  sanityCapAbility: "Cthulhu Mythos",
+  sanityCapBase: 10,
+  useStabilityStates: true,
+  stabilityStates: {
+    shaken: { name: "Shaken", upTo: 0 },
+    shattered: { name: "Blasted", upTo: -6 },
+    gone: { name: "Doomed", upTo: -12 },
+  },
+  useTrauma: true,
+  traumaTypes: [
+    {
+      id: "nonMythos",
+      name: "Non-mythos",
+      difficulty: 4,
+      adaptedDifficulty: 4,
+      causesSanityLoss: false,
+      useAdaptation: false,
+      cappedAbilities: [],
+      capsBonds: false,
+      refreshPenalty: 0,
+    },
+    {
+      id: "mythos",
+      name: "Mythos",
+      difficulty: 5,
+      adaptedDifficulty: 5,
+      causesSanityLoss: true,
+      useAdaptation: false,
+      cappedAbilities: [],
+      capsBonds: false,
+      refreshPenalty: 0,
+    },
+  ],
 };
 
 export const niceBlackAgentsPreset: PresetV1 = {

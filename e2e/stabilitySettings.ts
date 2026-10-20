@@ -52,10 +52,21 @@ export function fodgTraumaTypes(violenceCapped: string[] = []): TraumaType[] {
   ];
 }
 
-/** Stability rules on, with trauma, but Bonds and states left to specs */
+/**
+ * Stability rules on, with trauma, but Bonds, states and Sanity off, for
+ * specs to turn on. (The test world starts with the Trail of Cthulhu preset,
+ * so specs mustn't rely on what that turns on.)
+ */
 export const stabilityRulesOn = {
   useStabilityRules: true,
   stabilityAbility: "Stability",
+  useSanityRules: false,
+  useStabilityStates: false,
+  stabilityStates: {
+    shaken: { name: "Shaken", upTo: 0 },
+    shattered: { name: "Shattered", upTo: -6 },
+    gone: { name: "Gone", upTo: -12 },
+  },
   useTrauma: true,
   traumaTypes: fodgTraumaTypes(),
 };

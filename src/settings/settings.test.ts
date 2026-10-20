@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import { pathOfCthulhuPreset } from "../presets";
+import { defaultSettings } from "../presets";
 import { createSetting } from "./createSettings";
 import { settings } from "./settings";
 
@@ -48,10 +48,10 @@ describe("createSetting", () => {
 });
 
 describe("settings", () => {
-  // `pathOfCthulhuPreset` is the built-in default preset, so a setting which
+  // `defaultSettings` is the base layer under every preset, so a setting which
   // shares its name must register the same default. Copying the wrong preset
   // property is otherwise invisible whenever the two values happen to match.
-  const presetBackedSettings = Object.keys(pathOfCthulhuPreset).filter(
+  const presetBackedSettings = Object.keys(defaultSettings).filter(
     (key) => key in settings,
   );
 
@@ -59,7 +59,7 @@ describe("settings", () => {
     "registers the matching preset default for %s",
     (key) => {
       expect(settings[key as keyof typeof settings].default).toEqual(
-        pathOfCthulhuPreset[key as keyof typeof pathOfCthulhuPreset],
+        defaultSettings[key as keyof typeof defaultSettings],
       );
     },
   );
@@ -77,7 +77,7 @@ describe("settings", () => {
     const definitions = source.split(/^ {4}key: "/m).slice(1);
     const presetBackedDefinitions = definitions.flatMap((definition) => {
       const key = definition.slice(0, definition.indexOf('"'));
-      const presetProperty = /^ {4}default: pathOfCthulhuPreset\.(\w+),$/m.exec(
+      const presetProperty = /^ {4}default: defaultSettings\.(\w+),$/m.exec(
         definition,
       )?.[1];
       return presetProperty === undefined ? [] : [[key, presetProperty]];

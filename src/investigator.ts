@@ -34,6 +34,7 @@ import { installSanityCapHandler } from "./startup/installSanityCapHandler";
 import { installWoundStatusHandler } from "./startup/installWoundStatusHandler";
 import { loadCustomThemes } from "./startup/loadCustomThemes";
 import { migrateWorldIfNeeded } from "./startup/migrateWorldIfNeeded";
+import { offerTrailOfCthulhuRules } from "./startup/offerTrailOfCthulhuRules";
 import { registerBabele } from "./startup/registerBabele";
 import { registerDevModeDebugFlag } from "./startup/registerDevModeDebugFlag";
 import { registerSettingsMenu } from "./startup/registerSettingsMenu";
@@ -60,6 +61,8 @@ Hooks.once("setup", function () {
 
 Hooks.once("ready", async () => {
   await migrateWorldIfNeeded();
+  // this waits for the GM to answer, so don't hold up the rest of startup
+  void offerTrailOfCthulhuRules();
   await installDSNFix();
 
   assertGame(game);

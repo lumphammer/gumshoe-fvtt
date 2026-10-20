@@ -63,7 +63,7 @@ Broken is derived (`points <= -1`), not stored.
 ### Settings
 
 All exportable, part of the preset format (optional on `PresetV1`, defaults in
-`pathOfCthulhuPreset`), off by default, on in `fallOfDeltaGreenPreset`:
+`defaultSettings`), off by default, on in `fallOfDeltaGreenPreset`:
 
 | Setting                    | Default                                        | Use                                                        |
 | -------------------------- | ---------------------------------------------- | ---------------------------------------------------------- |

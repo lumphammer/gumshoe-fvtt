@@ -96,6 +96,7 @@ const initialState: State = {
     // eslint-disable-next-line typescript/no-deprecated -- legacy migration fixture
     shortNotes: [],
     firstRun: true,
+    offeredTrailOfCthulhuRules: false,
     journalMemories: {},
     cardCategories: [],
     useStabilityRules: false,

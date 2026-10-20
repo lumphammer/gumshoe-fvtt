@@ -89,8 +89,14 @@ translations, adding fields and settings, releases).
 
 - Every exportable setting is part of the preset format: an **optional** field
   on `PresetV1` in `packages/investigator-fvtt-types`, plus a default in
-  `pathOfCthulhuPreset` (`src/presets.ts`, typed `Required<PresetV1>`, the base
+  `defaultSettings` (`src/presets.ts`, typed `Required<PresetV1>`, the base
   layer when applying presets).
+- `defaultSettings` is also each setting's registered default, which is what
+  any world reads for a setting it has never stored: so a new setting's
+  default reaches every existing world, whatever its preset. New settings
+  default to off; presets (including Trail of Cthulhu's) turn them on. New
+  worlds get the Trail of Cthulhu preset's values written on their first run
+  (`migrateWorldIfNeeded`).
 - Importing older exports must keep working (missing keys leave current
   values alone). Add the new keys to `validateImportedSettings.test.ts` and the
   fixture in `src/components/settings/store.test.ts`, then update snapshots
