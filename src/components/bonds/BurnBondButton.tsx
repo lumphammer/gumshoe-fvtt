@@ -19,7 +19,7 @@ export const BurnBondButton = ({ bond, className }: BurnBondButtonProps) => {
     return null;
   }
   const tooltip = getTranslated("BurnBondTooltip", {
-    AbilityName: actor.system.getBondStabilityAbility()?.name ?? "",
+    AbilityName: actor.system.getStabilityAbility()?.name ?? "",
   });
   return (
     <Button

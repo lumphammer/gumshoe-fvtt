@@ -74,6 +74,12 @@ All exportable, part of the preset format (optional on `PresetV1`, defaults in
 The numbers (maximum 4, broken at −1, rebuild Difficulty 4, burn rate 2:1)
 are constants: FoDG-shaped, not configurable.
 
+Since reworked into the Sanity & Stability settings: see
+[`stability-settings-plan.md`](stability-settings-plan.md). Bonds are now
+spent on the Stability ability (`stabilityAbility`), and need the Stability
+rules on. `violenceCappedAbilities` is now each trauma type's capped
+abilities, alongside "Caps Bonds?" and a refresh penalty.
+
 ### Sheet
 
 A **Bonds** tab on the PC sheet, shown when `useBonds` is on (like Cards).

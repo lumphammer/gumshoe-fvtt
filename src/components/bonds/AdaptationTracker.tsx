@@ -1,70 +1,52 @@
+import type { TraumaType } from "@lumphammer/investigator-fvtt-types";
 import { Fragment, useContext } from "react";
 
 import type { PCActor } from "../../module/actors/pc";
-import type { Adaptation } from "../../module/bonds/adaptation";
 import {
-  adaptations,
   adaptationThreshold,
-  adaptedToHelplessnessRefreshPenalty,
-  adaptedToViolenceRatingCap,
+  adaptedRatingCap,
   getBondCap,
   getProgressAfterClick,
 } from "../../module/bonds/adaptation";
-import { settings } from "../../settings/settings";
+import { getAdaptableTraumaTypes } from "../../module/stability/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Checkbox } from "../inputs/Checkbox";
-import { Hint } from "../inputs/Hint";
 import { Translate } from "../Translate";
 
-const labels: Record<Adaptation, string> = {
-  violence: "Violence",
-  helplessness: "Helplessness",
+/** What being adapted does, in our words: nothing, for some types */
+const getEffects = (type: TraumaType) => {
+  const names = type.cappedAbilities;
+  return [
+    names.length > 0 && (
+      <Translate
+        key="abilities"
+        values={{
+          AbilityNames: new Intl.ListFormat(game.i18n?.lang).format(names),
+          RatingCap: String(adaptedRatingCap),
+        }}
+      >
+        AdaptationCapsAbilitiesEffect
+      </Translate>
+    ),
+    type.capsBonds && (
+      <Translate key="bonds" values={{ BondCap: String(getBondCap(true)) }}>
+        AdaptationCapsBondsEffect
+      </Translate>
+    ),
+    type.refreshPenalty > 0 && (
+      <Translate
+        key="refresh"
+        values={{ Penalty: String(type.refreshPenalty) }}
+      >
+        AdaptationRefreshPenaltyEffect
+      </Translate>
+    ),
+  ].filter((effect) => effect !== false);
 };
-
-/** What Adapted to Violence does, and a warning if no abilities are set */
-const getViolenceEffect = () => {
-  const names = settings.violenceCappedAbilities.get();
-  if (names.length === 0) {
-    return (
-      <>
-        <Translate values={{ BondCap: String(getBondCap(true)) }}>
-          AdaptedToViolenceBondsOnlyEffect
-        </Translate>
-        <Hint severity="warning">
-          <Translate>NoViolenceCappedAbilitiesWarning</Translate>
-        </Hint>
-      </>
-    );
-  }
-  return (
-    <Translate
-      values={{
-        AbilityNames: new Intl.ListFormat(game.i18n?.lang).format(names),
-        RatingCap: String(adaptedToViolenceRatingCap),
-        BondCap: String(getBondCap(true)),
-      }}
-    >
-      AdaptedToViolenceEffect
-    </Translate>
-  );
-};
-
-/** What being adapted does, in our words */
-const getEffect = (adaptation: Adaptation) =>
-  adaptation === "violence" ? (
-    getViolenceEffect()
-  ) : (
-    <Translate
-      values={{ Penalty: String(adaptedToHelplessnessRefreshPenalty) }}
-    >
-      AdaptedToHelplessnessEffect
-    </Translate>
-  );
 
 /**
  * Progress towards adapting to trauma (Fall of DELTA GREEN, p. 120), boxes
- * ticked by hand as on the paper sheet: nothing here knows about Stability
- * tests by kind of trauma yet.
+ * ticked as on the paper sheet. Trauma tests tick them too.
  */
 export const AdaptationTracker = ({ actor }: { actor: PCActor }) => {
   const theme = useContext(ThemeContext);
@@ -78,7 +60,7 @@ export const AdaptationTracker = ({ actor }: { actor: PCActor }) => {
       <p css={{ fontSize: "0.9em" }}>
         <Translate
           values={{
-            AbilityName: actor.system.getBondStabilityAbility()?.name ?? "",
+            AbilityName: actor.system.getStabilityAbility()?.name ?? "",
             Count: String(adaptationThreshold),
           }}
         >
@@ -94,16 +76,15 @@ export const AdaptationTracker = ({ actor }: { actor: PCActor }) => {
           alignItems: "center",
         }}
       >
-        {adaptations.map((adaptation) => {
-          const progress = actor.system.adaptations[adaptation];
-          const adapted = actor.system.isAdaptedTo(adaptation);
+        {getAdaptableTraumaTypes().map((type) => {
+          const progress = actor.system.getAdaptationProgress(type.id);
+          const adapted = actor.system.isAdaptedTo(type.id);
+          const effects = getEffects(type);
           return (
-            <Fragment key={adaptation}>
-              <div>
-                <Translate>{labels[adaptation]}</Translate>
-              </div>
+            <Fragment key={type.id}>
+              <div>{type.name}</div>
               <div
-                data-testid={`adaptation-${adaptation}`}
+                data-testid={`adaptation-${type.id}`}
                 css={{ display: "flex", gap: "0.25em" }}
               >
                 {boxes.map((box) => (
@@ -112,7 +93,7 @@ export const AdaptationTracker = ({ actor }: { actor: PCActor }) => {
                     checked={progress >= box}
                     onChange={() =>
                       void actor.system.setAdaptationProgress(
-                        adaptation,
+                        type.id,
                         getProgressAfterClick(progress, box),
                       )
                     }
@@ -121,12 +102,12 @@ export const AdaptationTracker = ({ actor }: { actor: PCActor }) => {
               </div>
               <div>
                 {adapted && (
-                  <b data-testid={`adapted-${adaptation}`}>
+                  <b data-testid={`adapted-${type.id}`}>
                     <Translate>Adapted</Translate>
                   </b>
                 )}
               </div>
-              {adapted && (
+              {adapted && effects.length > 0 && (
                 <div
                   css={{
                     gridColumn: "1/-1",
@@ -134,7 +115,12 @@ export const AdaptationTracker = ({ actor }: { actor: PCActor }) => {
                     paddingLeft: "1em",
                   }}
                 >
-                  {getEffect(adaptation)}
+                  {effects.map((effect, i) => (
+                    <Fragment key={i}>
+                      {i > 0 && " "}
+                      {effect}
+                    </Fragment>
+                  ))}
                 </div>
               )}
             </Fragment>

@@ -1,36 +1,20 @@
 // Stability tests against trauma (Fall of DELTA GREEN, pp. 115–121), as
-// we've ruled on them (see docs/fodg-stability-plan.md). Pure functions:
-// keep Foundry out of this file.
+// we've ruled on them (see docs/fodg-stability-plan.md), for configurable
+// trauma types (see docs/stability-settings-plan.md). Pure functions: keep
+// Foundry out of this file.
 
 import { adaptationThreshold, isAdapted } from "../bonds/adaptation";
-import type { StabilityState } from "./states";
+import type { StabilityState, StabilityThresholds } from "./states";
 import { getStabilityState, isShakenOrWorse, isWorseState } from "./states";
 
-export type Trauma = "violence" | "helplessness" | "unnatural";
-
-export const traumas: Trauma[] = ["violence", "helplessness", "unnatural"];
-
-/** Translation keys for the traumas' names */
-export const traumaLabels: Record<Trauma, string> = {
-  violence: "Violence",
-  helplessness: "Helplessness",
-  unnatural: "The Unnatural",
-};
-
-/** Difficulty against Violence and Helplessness */
-export const traumaDifficulty = 4;
-/** ...when adapted to it */
-export const adaptedTraumaDifficulty = 2;
-/** ...against the Unnatural */
-export const unnaturalDifficulty = 5;
 /** Shaken (or worse) adds this to General tests */
 export const shakenDifficultyPenalty = 1;
 
 /** Stability rating lost on becoming Shattered */
 export const shatteredRatingLoss = 1;
 
-/** Sanity rating lost to an Unnatural shock, by the state it causes */
-export function getUnnaturalShockSanityLoss(state: StabilityState): number {
+/** Sanity rating lost to a shock, by the state it causes */
+export function getShockSanityLoss(state: StabilityState): number {
   switch (state) {
     case "shaken":
       return 1;
@@ -42,27 +26,42 @@ export function getUnnaturalShockSanityLoss(state: StabilityState): number {
 }
 
 export function getTraumaDifficulty({
-  trauma,
+  difficulty,
+  adaptedDifficulty,
   adapted,
   state,
 }: {
-  trauma: Trauma;
-  /** adapted to this trauma (never the Unnatural) */
+  difficulty: number;
+  adaptedDifficulty: number;
+  /** adapted to this trauma */
   adapted: boolean;
   /** the state before the test */
   state: StabilityState;
 }): number {
-  const base =
-    trauma === "unnatural"
-      ? unnaturalDifficulty
-      : adapted
-        ? adaptedTraumaDifficulty
-        : traumaDifficulty;
-  return base + (isShakenOrWorse(state) ? shakenDifficultyPenalty : 0);
+  return (
+    (adapted ? adaptedDifficulty : difficulty) +
+    (isShakenOrWorse(state) ? shakenDifficultyPenalty : 0)
+  );
+}
+
+/**
+ * The state for a pool, or steady if states are off (null thresholds):
+ * then nobody's ever Shaken, Shattered or Gone.
+ */
+export function getTraumaState(
+  pool: number,
+  thresholds: StabilityThresholds | null,
+): StabilityState {
+  return thresholds === null ? "steady" : getStabilityState(pool, thresholds);
 }
 
 export type TraumaTestInput = {
-  trauma: Trauma;
+  /** the trauma type can be adapted to */
+  adaptable: boolean;
+  /** the trauma type's shocks cost Sanity */
+  causesSanityLoss: boolean;
+  /** the Stability states' thresholds, or null if states are off */
+  thresholds: StabilityThresholds | null;
   /** Stability pool and rating before the test */
   pool: number;
   rating: number;
@@ -72,9 +71,9 @@ export type TraumaTestInput = {
   total: number;
   difficulty: number;
   potentialLoss: number;
-  /** progress towards adapting to this trauma (Violence, Helplessness) */
+  /** progress towards adapting to this trauma */
   adaptationProgress: number;
-  /** Sanity rating already lost to Unnatural shocks this operation */
+  /** Sanity rating already lost to shocks this operation */
   sanityLostThisOperation: number;
 };
 
@@ -92,7 +91,7 @@ export type TraumaTestResult = {
   ratingLoss: number;
   /** adaptation progress after, or null if this trauma doesn't count */
   adaptationProgressAfter: number | null;
-  /** Sanity rating lost to an Unnatural shock */
+  /** Sanity rating lost to a shock */
   sanityLoss: number;
   /** what this operation's shocks have cost after this one */
   sanityLostThisOperationAfter: number;
@@ -104,8 +103,8 @@ export function resolveTraumaTest(input: TraumaTestInput): TraumaTestResult {
   const afterSpend = input.pool - input.spend;
   const loss = succeeded ? 0 : Math.max(0, input.potentialLoss);
   const poolAfter = afterSpend - loss;
-  const stateBefore = getStabilityState(afterSpend);
-  const stateAfter = getStabilityState(poolAfter);
+  const stateBefore = getTraumaState(afterSpend, input.thresholds);
+  const stateAfter = getTraumaState(poolAfter, input.thresholds);
   const worsened = isWorseState(stateAfter, stateBefore);
 
   // Gone without passing through Shattered: the Agent's lost anyway
@@ -115,7 +114,7 @@ export function resolveTraumaTest(input: TraumaTestInput): TraumaTestResult {
   // three losses in a row without becoming Shaken; any loss that leaves the
   // Agent Shaken or worse starts again. Successes don't count either way.
   let adaptationProgressAfter: number | null = null;
-  if (input.trauma !== "unnatural" && !isAdapted(input.adaptationProgress)) {
+  if (input.adaptable && !isAdapted(input.adaptationProgress)) {
     adaptationProgressAfter =
       loss === 0
         ? input.adaptationProgress
@@ -126,9 +125,7 @@ export function resolveTraumaTest(input: TraumaTestInput): TraumaTestResult {
 
   // only the worst shock each operation costs Sanity
   const shock =
-    input.trauma === "unnatural" && worsened
-      ? getUnnaturalShockSanityLoss(stateAfter)
-      : 0;
+    input.causesSanityLoss && worsened ? getShockSanityLoss(stateAfter) : 0;
   const sanityLostThisOperationAfter = Math.max(
     input.sanityLostThisOperation,
     shock,
@@ -150,7 +147,7 @@ export function resolveTraumaTest(input: TraumaTestInput): TraumaTestResult {
   };
 }
 
-/** Whether a test just adapted the Agent (and to Violence: caps ratings) */
+/** Whether a test just adapted the Agent (which may cap ratings) */
 export function didAdapt(before: number, after: number | null): boolean {
   return after !== null && !isAdapted(before) && isAdapted(after);
 }
@@ -163,7 +160,8 @@ type Change = { name: string; before: number; after: number };
  * renamed or deleted.
  */
 export type TraumaTestRecord = {
-  trauma: Trauma;
+  /** the trauma type's name */
+  trauma: string;
   difficulty: number;
   /** what went into the Difficulty */
   adapted: boolean;
@@ -181,7 +179,7 @@ export type TraumaTestRecord = {
   worsened: boolean;
   /** the Stability rating, if it dropped (newly Shattered) */
   stabilityRating: Change | null;
-  /** the Sanity rating, if an Unnatural shock cost some */
+  /** the Sanity rating, if a shock cost some */
   sanity: Change | null;
   /** adaptation progress, if it changed */
   adaptation: { before: number; after: number } | null;
@@ -230,7 +228,7 @@ export function parseTraumaTestRecord(
   const booleans = ["adapted", "shaken", "succeeded", "worsened"] as const;
   const adaptation = record["adaptation"];
   if (
-    !traumas.includes(record["trauma"] as Trauma) ||
+    typeof record["trauma"] !== "string" ||
     !states.includes(record["stateAfter"] as StabilityState) ||
     numbers.some((key) => typeof record[key] !== "number") ||
     booleans.some((key) => typeof record[key] !== "boolean") ||
@@ -262,7 +260,7 @@ export function parseTraumaTestRecord(
       : [],
   );
   return {
-    trauma: record["trauma"] as Trauma,
+    trauma: record["trauma"],
     difficulty: record["difficulty"] as number,
     adapted: record["adapted"] as boolean,
     shaken: record["shaken"] as boolean,

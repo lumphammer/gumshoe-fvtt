@@ -12,6 +12,7 @@ import type { AbilityItem } from "../../module/items/exports";
 import { isAbilityItem } from "../../module/items/exports";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { runtimeConfig } from "../../runtime";
+import { areBondsOn } from "../../module/stability/settings";
 import { settings } from "../../settings/settings";
 import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
@@ -171,7 +172,7 @@ export const PartySheet = () => {
               onChange={party.setName}
             />
             {/* Fall of DELTA GREEN: the GM calls a crisis for those present */}
-            {settings.useBonds.get() && game.user?.isGM && (
+            {areBondsOn() && game.user?.isGM && (
               <Button
                 data-testid="call-team-crisis"
                 css={{ width: "auto", margin: 0, whiteSpace: "nowrap" }}

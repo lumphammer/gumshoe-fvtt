@@ -93,7 +93,7 @@ export async function teamCrisis(
   actor: PCActor,
   { teammates, stabilitySpend, bondSpends, losses }: TeamCrisisChoices,
 ): Promise<void> {
-  const stability = actor.system.getBondStabilityAbility();
+  const stability = actor.system.getStabilityAbility();
   const bonds = actor.system.getBonds();
   const candidates = new Set<Actor>(getCrisisTeammateCandidates(actor));
   const usedBondSpends = bondSpends.filter(({ spend }) => spend > 0);

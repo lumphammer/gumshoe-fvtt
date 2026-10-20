@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  defaultStabilityThresholds,
   getStabilityState,
   getStabilityStatusTransition,
   isWorseState,
@@ -17,7 +18,15 @@ describe("getStabilityState", () => {
     [-12, "gone"],
     [-20, "gone"],
   ] as const)("%i: %s", (pool, expected) => {
-    expect(getStabilityState(pool)).toBe(expected);
+    expect(getStabilityState(pool, defaultStabilityThresholds)).toBe(expected);
+  });
+
+  it("uses other thresholds", () => {
+    const thresholds = { shaken: 2, shattered: -1, gone: -5 };
+    expect(getStabilityState(3, thresholds)).toBe("steady");
+    expect(getStabilityState(2, thresholds)).toBe("shaken");
+    expect(getStabilityState(-1, thresholds)).toBe("shattered");
+    expect(getStabilityState(-5, thresholds)).toBe("gone");
   });
 });
 

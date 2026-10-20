@@ -32,6 +32,12 @@ the FoDG preset. The Stability ability is the one Bonds use
 (`bondStabilityAbility`); Sanity is a new setting (`sanityAbility`, default
 "Sanity").
 
+Since reworked into the Sanity & Stability settings: see
+[`stability-settings-plan.md`](stability-settings-plan.md). The Stability
+ability is now `stabilityAbility`, the states' names and thresholds are
+settings, the three traumas are configurable trauma types, and
+`unnaturalShockSanityLoss` is `shockSanityLoss`.
+
 Rules in `src/module/stability/` (pure, tested); Foundry glue alongside.
 
 ### Phase 1: states as statuses (done)

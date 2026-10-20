@@ -56,7 +56,7 @@ export async function establishBond(
   const outcome = getEstablishOutcome(die);
   const bondPoints = getEstablishedBondPoints(die, actor.system.getBondCap());
   const stability =
-    outcome === "rejected" ? actor.system.getBondStabilityAbility() : undefined;
+    outcome === "rejected" ? actor.system.getStabilityAbility() : undefined;
 
   // the updates change these in place, so note them first
   const record: EstablishRecord = {

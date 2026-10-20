@@ -18,6 +18,10 @@ import {
 import { cardCategoriesValidator } from "./validators/cardCategoriesValidator";
 import { equipmentCategoriesValidator } from "./validators/equipmentCategoriesValidator";
 import { personalDetailsValidator } from "./validators/personalDetailsValidator";
+import {
+  stabilityStatesValidator,
+  traumaTypesValidator,
+} from "./validators/stabilityValidators";
 import { statsValidator } from "./validators/statsValidator";
 
 export const settings = {
@@ -291,35 +295,71 @@ export const settings = {
     managedBySettingsForm: false,
   }),
 
-  useBonds: createSettingBoolean({
-    key: "useBonds",
-    name: "Use Bonds?",
-    default: pathOfCthulhuPreset.useBonds,
+  useStabilityRules: createSettingBoolean({
+    key: "useStabilityRules",
+    name: "Use Stability rules?",
+    default: pathOfCthulhuPreset.useStabilityRules,
   }),
-  bondStabilityAbility: createSettingString({
-    key: "bondStabilityAbility",
-    name: "Ability Bonds can be spent on",
-    default: pathOfCthulhuPreset.bondStabilityAbility,
+  stabilityAbility: createSettingString({
+    key: "stabilityAbility",
+    name: "Name of Stability ability",
+    default: pathOfCthulhuPreset.stabilityAbility,
   }),
-  bondRebuildSpendCategory: createSettingString({
-    key: "bondRebuildSpendCategory",
-    name: "Category spent when rebuilding Bonds",
-    default: pathOfCthulhuPreset.bondRebuildSpendCategory,
+  useSanityRules: createSettingBoolean({
+    key: "useSanityRules",
+    name: "Use Sanity rules?",
+    default: pathOfCthulhuPreset.useSanityRules,
   }),
-  violenceCappedAbilities: createSettingArrayOfString({
-    key: "violenceCappedAbilities",
-    name: "Abilities capped by Adapted to Violence",
-    default: pathOfCthulhuPreset.violenceCappedAbilities,
+  sanityAbility: createSettingString({
+    key: "sanityAbility",
+    name: "Name of Sanity ability",
+    default: pathOfCthulhuPreset.sanityAbility,
+  }),
+  sanityCapAbility: createSettingString({
+    key: "sanityCapAbility",
+    name: "Sanity rating capped by",
+    default: pathOfCthulhuPreset.sanityCapAbility,
+  }),
+  sanityCapBase: createSetting<number>()(Number, z.number())({
+    key: "sanityCapBase",
+    name: "Sanity cap before that",
+    default: pathOfCthulhuPreset.sanityCapBase,
   }),
   useStabilityStates: createSettingBoolean({
     key: "useStabilityStates",
     name: "Use Stability states?",
     default: pathOfCthulhuPreset.useStabilityStates,
   }),
-  sanityAbility: createSettingString({
-    key: "sanityAbility",
-    name: "Ability Unnatural shocks reduce",
-    default: pathOfCthulhuPreset.sanityAbility,
+  stabilityStates: createSetting<Mandatory<PresetV1["stabilityStates"]>>()(
+    Object,
+    stabilityStatesValidator,
+  )({
+    key: "stabilityStates",
+    name: "Stability states",
+    default: pathOfCthulhuPreset.stabilityStates,
+  }),
+  useBonds: createSettingBoolean({
+    key: "useBonds",
+    name: "Use Bonds?",
+    default: pathOfCthulhuPreset.useBonds,
+  }),
+  bondRebuildSpendCategory: createSettingString({
+    key: "bondRebuildSpendCategory",
+    name: "Category spent when rebuilding Bonds",
+    default: pathOfCthulhuPreset.bondRebuildSpendCategory,
+  }),
+  useTrauma: createSettingBoolean({
+    key: "useTrauma",
+    name: "Use trauma?",
+    default: pathOfCthulhuPreset.useTrauma,
+  }),
+  traumaTypes: createSetting<Mandatory<PresetV1["traumaTypes"]>>()(
+    Array,
+    traumaTypesValidator,
+  )({
+    key: "traumaTypes",
+    name: "Trauma types",
+    default: pathOfCthulhuPreset.traumaTypes,
   }),
 
   useCards: createSettingBoolean({

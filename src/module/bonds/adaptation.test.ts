@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
+import type { TraumaType } from "@lumphammer/investigator-fvtt-types";
+
 import {
+  getAdaptationEffects,
   getBondCap,
   getCappedRating,
   getProgressAfterClick,
@@ -33,7 +36,7 @@ describe("getProgressAfterClick", () => {
 });
 
 describe("getBondCap", () => {
-  it("is 4 normally, and 2 when Adapted to Violence", () => {
+  it("is 4 normally, and 2 when capped", () => {
     expect(getBondCap(false)).toBe(4);
     expect(getBondCap(true)).toBe(2);
   });
@@ -58,9 +61,9 @@ describe("getRefreshedPool", () => {
     [3, 1, 1],
     [-2, 8, 8],
   ])("normally, %i of %i refreshes to %i", (pool, rating, expected) => {
-    expect(
-      getRefreshedPool({ pool, rating, adaptedToHelplessness: false }),
-    ).toBe(expected);
+    expect(getRefreshedPool({ pool, rating, refreshPenalty: 0 })).toBe(
+      expected,
+    );
   });
 
   it.each([
@@ -75,9 +78,47 @@ describe("getRefreshedPool", () => {
   ])(
     "Adapted to Helplessness, %i of %i refreshes to %i",
     (pool, rating, expected) => {
-      expect(
-        getRefreshedPool({ pool, rating, adaptedToHelplessness: true }),
-      ).toBe(expected);
+      expect(getRefreshedPool({ pool, rating, refreshPenalty: 1 })).toBe(
+        expected,
+      );
     },
   );
+});
+
+describe("getAdaptationEffects", () => {
+  const type = (extra: Partial<TraumaType>): TraumaType => ({
+    id: "x",
+    name: "X",
+    difficulty: 4,
+    adaptedDifficulty: 2,
+    causesSanityLoss: false,
+    useAdaptation: true,
+    cappedAbilities: [],
+    capsBonds: false,
+    refreshPenalty: 0,
+    ...extra,
+  });
+  const types = [
+    type({ id: "a", cappedAbilities: ["Flattery", "Charm"], capsBonds: true }),
+    type({ id: "b", cappedAbilities: ["Charm"], refreshPenalty: 1 }),
+    type({ id: "c", refreshPenalty: 2 }),
+    // can't be adapted to, whatever the progress says
+    type({ id: "d", useAdaptation: false, refreshPenalty: 5 }),
+  ];
+
+  it("does nothing until adapted", () => {
+    expect(getAdaptationEffects(types, { a: 2, d: 3 })).toEqual({
+      cappedAbilities: [],
+      capsBonds: false,
+      refreshPenalty: 0,
+    });
+  });
+
+  it("combines what each adaptation does", () => {
+    expect(getAdaptationEffects(types, { a: 3, b: 3, c: 3, d: 3 })).toEqual({
+      cappedAbilities: ["Flattery", "Charm"],
+      capsBonds: true,
+      refreshPenalty: 3,
+    });
+  });
 });

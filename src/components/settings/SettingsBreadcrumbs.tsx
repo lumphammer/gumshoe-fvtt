@@ -14,6 +14,7 @@ import { npcStats, personalDetail } from "./Actors/directions";
 import { cardCategory } from "./Cards/directions";
 import { StateContext } from "./contexts";
 import { equipmentCategory, equipmentField } from "./Equipment/directions";
+import { traumaType } from "./Stability/directions";
 import { stat } from "./Stats/directions";
 
 type PageWithLabel = { direction: AnyDirection; label: string };
@@ -50,6 +51,9 @@ export const SettingsBreadcrumbs = ({
     }
     if (cardCategory.match(step)) {
       return settings.cardCategories[step.params]?.singleName || unnamed;
+    }
+    if (traumaType.match(step)) {
+      return settings.traumaTypes[step.params]?.name || unnamed;
     }
     if (personalDetail.match(step)) {
       return settings.personalDetails[step.params]?.name || unnamed;

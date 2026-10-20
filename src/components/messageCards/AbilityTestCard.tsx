@@ -1,11 +1,10 @@
 import React, { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { getTranslated } from "../../functions/getTranslated";
 import type { BondSpendRecord } from "../../module/bonds/bondSpends";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import type { StabilityState } from "../../module/stability/states";
-import { stabilityStateLabels } from "../../module/stability/states";
+import { getStabilityStateName } from "../../module/stability/settings";
 import { shakenDifficultyPenalty } from "../../module/stability/trauma";
 import { Translate } from "../Translate";
 import { DiceTerms } from "./DiceTerms";
@@ -107,9 +106,7 @@ export const AbilityTestCard = React.memo(
                 <div data-testid="shaken-reminder">
                   <Translate
                     values={{
-                      State: getTranslated(
-                        stabilityStateLabels[stabilityState],
-                      ),
+                      State: getStabilityStateName(stabilityState),
                       Penalty: String(shakenDifficultyPenalty),
                     }}
                   >

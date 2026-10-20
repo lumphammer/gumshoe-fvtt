@@ -2,16 +2,24 @@ import type { PCActor } from "../../module/actors/pc";
 import { Translate } from "../Translate";
 
 /**
- * A reminder, when an Agent is Adapted to Violence, that their Bonds won't
- * go above the cap.
+ * A reminder, when an Agent is adapted to something which caps Bonds (e.g.
+ * Violence), that their Bonds won't go above the cap.
  */
 export const BondCapNote = ({ actor }: { actor: PCActor }) => {
-  if (!actor.system.isAdaptedTo("violence")) {
+  const adaptedTo = actor.system.getAdaptedTraumaNames(
+    (type) => type.capsBonds,
+  );
+  if (adaptedTo.length === 0) {
     return null;
   }
   return (
     <p data-testid="bond-cap-note">
-      <Translate values={{ BondCap: String(actor.system.getBondCap()) }}>
+      <Translate
+        values={{
+          BondCap: String(actor.system.getBondCap()),
+          Trauma: new Intl.ListFormat(game.i18n?.lang).format(adaptedTo),
+        }}
+      >
         BondCapNote
       </Translate>
     </p>

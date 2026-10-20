@@ -107,7 +107,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
         <Translate
           values={{
             Category: settings.bondRebuildSpendCategory.get(),
-            AbilityName: actor.system.getBondStabilityAbility()?.name ?? "",
+            AbilityName: actor.system.getStabilityAbility()?.name ?? "",
           }}
         >
           EstablishBondHint

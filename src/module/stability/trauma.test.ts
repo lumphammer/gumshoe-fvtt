@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { defaultStabilityThresholds } from "./states";
 import type { TraumaTestInput, TraumaTestRecord } from "./trauma";
 import {
   didAdapt,
@@ -11,19 +12,34 @@ import {
 
 describe("getTraumaDifficulty", () => {
   it.each([
-    ["violence", false, "steady", 4],
-    ["helplessness", true, "steady", 2],
-    ["unnatural", false, "steady", 5],
-    ["violence", false, "shaken", 5],
-    ["violence", true, "shattered", 3],
-    ["unnatural", false, "shaken", 6],
-  ] as const)("%s, adapted %s, %s: %i", (trauma, adapted, state, expected) => {
-    expect(getTraumaDifficulty({ trauma, adapted, state })).toBe(expected);
-  });
+    [4, false, "steady", 4],
+    [4, true, "steady", 2],
+    [5, false, "steady", 5],
+    [4, false, "shaken", 5],
+    [4, true, "shattered", 3],
+    [5, false, "shaken", 6],
+  ] as const)(
+    "Difficulty %i, adapted %s, %s: %i",
+    (difficulty, adapted, state, expected) => {
+      expect(
+        getTraumaDifficulty({
+          difficulty,
+          adaptedDifficulty: 2,
+          adapted,
+          state,
+        }),
+      ).toBe(expected);
+    },
+  );
 });
 
+// Violence and the Unnatural, as in the Fall of DELTA GREEN preset
+const violence = { adaptable: true, causesSanityLoss: false };
+const unnatural = { adaptable: false, causesSanityLoss: true };
+
 const input = (extra: Partial<TraumaTestInput>): TraumaTestInput => ({
-  trauma: "violence",
+  ...violence,
+  thresholds: defaultStabilityThresholds,
   pool: 8,
   rating: 8,
   spend: 0,
@@ -39,7 +55,7 @@ describe("resolveTraumaTest", () => {
   it("follows the book's example (p. 119)", () => {
     // Seabring: pool 8, spends 2, rolls a 1 against 5, loses 3
     const result = resolveTraumaTest(
-      input({ trauma: "unnatural", spend: 2, total: 3, difficulty: 5 }),
+      input({ ...unnatural, spend: 2, total: 3, difficulty: 5 }),
     );
     expect(result).toMatchObject({
       succeeded: false,
@@ -115,7 +131,7 @@ describe("resolveTraumaTest", () => {
 
   it("costs Sanity for an Unnatural shock, the worst once an operation", () => {
     const shaken = resolveTraumaTest(
-      input({ trauma: "unnatural", pool: 2, potentialLoss: 3 }),
+      input({ ...unnatural, pool: 2, potentialLoss: 3 }),
     );
     expect(shaken).toMatchObject({
       stateAfter: "shaken",
@@ -125,7 +141,7 @@ describe("resolveTraumaTest", () => {
     // then Shattered: only the difference
     const shattered = resolveTraumaTest(
       input({
-        trauma: "unnatural",
+        ...unnatural,
         pool: -1,
         potentialLoss: 6,
         sanityLostThisOperation: 1,
@@ -140,13 +156,34 @@ describe("resolveTraumaTest", () => {
     expect(
       resolveTraumaTest(
         input({
-          trauma: "unnatural",
+          ...unnatural,
           pool: 2,
           potentialLoss: 3,
           sanityLostThisOperation: 1,
         }),
       ).sanityLoss,
     ).toBe(0);
+  });
+
+  it("treats everyone as steady with states off", () => {
+    const result = resolveTraumaTest(
+      input({
+        ...unnatural,
+        thresholds: null,
+        pool: -2,
+        potentialLoss: 8,
+        adaptable: true,
+        adaptationProgress: 2,
+      }),
+    );
+    expect(result).toMatchObject({
+      poolAfter: -10,
+      stateAfter: "steady",
+      worsened: false,
+      ratingLoss: 0,
+      sanityLoss: 0,
+      adaptationProgressAfter: 3,
+    });
   });
 
   it("costs no Sanity for Violence", () => {
@@ -158,7 +195,7 @@ describe("resolveTraumaTest", () => {
 
 describe("trauma test records", () => {
   const record: TraumaTestRecord = {
-    trauma: "unnatural",
+    trauma: "The Unnatural",
     difficulty: 6,
     adapted: false,
     shaken: true,
@@ -190,7 +227,7 @@ describe("trauma test records", () => {
     "",
     "not json",
     "[]",
-    JSON.stringify({ ...record, trauma: "boredom" }),
+    JSON.stringify({ ...record, trauma: 3 }),
     JSON.stringify({ ...record, stateAfter: "fine" }),
     JSON.stringify({ ...record, sanity: { name: "Sanity" } }),
     JSON.stringify({ ...record, adaptation: { before: 1 } }),

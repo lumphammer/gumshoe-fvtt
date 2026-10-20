@@ -1,3 +1,5 @@
+import type { TraumaType } from "@lumphammer/investigator-fvtt-types";
+
 import type { CardsAreaSettings } from "../../components/cards/types";
 import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
@@ -10,13 +12,16 @@ import {
   NumberField,
   SchemaField,
   StringField,
+  TypedObjectField,
 } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import type { AbilityType, MwRefreshGroup, MwType } from "../../types";
-import type { Adaptation } from "../bonds/adaptation";
+import type { AdaptationEffects } from "../bonds/adaptation";
 import {
   adaptationThreshold,
-  adaptedToViolenceRatingCap,
+  adaptedRatingCap,
+  getAdaptationEffects,
+  getAdaptedTypes,
   getBondCap,
   getRefreshedPool,
   isAdapted,
@@ -40,6 +45,12 @@ import type { InvestigativeAbilityItem } from "../items/investigativeAbility";
 import { isInvestigativeAbilityItem } from "../items/investigativeAbility";
 import { assertMwItem, isMwItem } from "../items/mwItem";
 import type { PersonalDetailItem } from "../items/personalDetail";
+import { getSanityCap } from "../sanity/rules";
+import {
+  getAdaptableTraumaTypes,
+  getStabilityThresholds,
+  isSanityOn,
+} from "../stability/settings";
 import type { StabilityState } from "../stability/states";
 import { getStabilityState } from "../stability/states";
 import { isPersonalDetailItem } from "../items/personalDetail";
@@ -47,6 +58,32 @@ import { resizeSpecialities } from "../items/resizeSpecialities";
 import { createActiveCharacterSchema } from "../schemaFields";
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
 import { InvestigatorActor } from "./InvestigatorActor";
+
+/** Ask before adapting: say what it caps */
+function getAdaptationConfirmMessage(
+  actorName: string,
+  type: TraumaType,
+): string {
+  const names = type.cappedAbilities;
+  return [
+    getTranslated("MakeActorNameAdaptedToTrauma", {
+      ActorName: actorName,
+      Trauma: type.name,
+    }),
+    names.length > 0 &&
+      getTranslated("AdaptationCapsAbilitiesConfirm", {
+        AbilityNames: new Intl.ListFormat(game.i18n?.lang).format(names),
+        RatingCap: String(adaptedRatingCap),
+      }),
+    type.capsBonds &&
+      getTranslated("AdaptationCapsBondsConfirm", {
+        BondCap: String(getBondCap(true)),
+      }),
+    getTranslated("ThisCantBeUndone"),
+  ]
+    .filter((part) => typeof part === "string")
+    .join(" ");
+}
 
 const adaptationProgressField = () =>
   new NumberField({
@@ -61,18 +98,17 @@ const adaptationProgressField = () =>
 export const pcSchema = {
   ...createActiveCharacterSchema(),
   /**
-   * Progress towards adapting to each kind of trauma (Fall of DELTA GREEN,
-   * p. 120), as boxes ticked: all of them means adapted
+   * Progress towards adapting to each trauma type, by its id (Fall of DELTA
+   * GREEN, p. 120), as boxes ticked: all of them means adapted. Missing is 0.
    */
-  adaptations: new SchemaField({
-    violence: adaptationProgressField(),
-    helplessness: adaptationProgressField(),
+  adaptations: new TypedObjectField(adaptationProgressField(), {
+    initial: () => ({}),
   }),
   /**
-   * Sanity rating lost to Unnatural shocks this operation (Fall of DELTA
-   * GREEN, p. 121): only the worst counts. Full Refresh clears it.
+   * Sanity rating lost to shocks this operation (Fall of DELTA GREEN,
+   * p. 121): only the worst counts. Full Refresh clears it.
    */
-  unnaturalShockSanityLoss: new NumberField({
+  shockSanityLoss: new NumberField({
     nullable: false,
     required: true,
     integer: true,
@@ -229,7 +265,7 @@ export class PCModel extends ActiveCharacterModel<
   // if we end up with even more types of refresh it may be worth factoring out
   // the actual refresh code but until then - rule of three
   refresh24h = async (): Promise<void> => {
-    const adaptedToHelplessness = this.isAdaptedTo("helplessness");
+    const { refreshPenalty } = this.getAdaptationEffects();
     const updates = Array.from(this.parent.items).flatMap((item) => {
       if (!isAbilityItem(item) || !item.system.refreshesDaily) {
         return [];
@@ -237,7 +273,7 @@ export class PCModel extends ActiveCharacterModel<
       const pool = getRefreshedPool({
         pool: item.system.pool,
         rating: item.system.rating,
-        adaptedToHelplessness,
+        refreshPenalty,
       });
       return pool === item.system.pool
         ? []
@@ -297,63 +333,131 @@ export class PCModel extends ActiveCharacterModel<
   //     .filter((n): n is string => n !== null);
   // }
 
-  isAdaptedTo(adaptation: Adaptation): boolean {
-    return isAdapted(this.adaptations[adaptation]);
+  /** Progress towards adapting to a trauma type */
+  getAdaptationProgress(traumaTypeId: string): number {
+    return this.adaptations[traumaTypeId] ?? 0;
   }
 
-  /** The highest a Bond can be raised to: 2 when Adapted to Violence */
+  /** Adapted to this trauma type? (Never, if it can't be adapted to.) */
+  isAdaptedTo(traumaTypeId: string): boolean {
+    return getAdaptableTraumaTypes().some(
+      (type) =>
+        type.id === traumaTypeId &&
+        isAdapted(this.getAdaptationProgress(traumaTypeId)),
+    );
+  }
+
+  /** The names of the trauma types the character has adapted to */
+  getAdaptedTraumaNames(
+    filter: (type: TraumaType) => boolean = () => true,
+  ): string[] {
+    return getAdaptedTypes(getAdaptableTraumaTypes(), this.adaptations)
+      .filter(filter)
+      .map((type) => type.name);
+  }
+
+  /** What everything the character has adapted to does, together */
+  getAdaptationEffects(): AdaptationEffects {
+    return getAdaptationEffects(getAdaptableTraumaTypes(), this.adaptations);
+  }
+
+  /** The highest a Bond can be raised to: 2 when adapted to something */
   getBondCap(): number {
-    return getBondCap(this.isAdaptedTo("violence"));
-  }
-
-  /** The cap on an ability's rating from Adapted to Violence, if any */
-  getRatingCap(abilityName: string): number | null {
-    return this.isAdaptedTo("violence") &&
-      settings.violenceCappedAbilities.get().includes(abilityName)
-      ? adaptedToViolenceRatingCap
-      : null;
+    return getBondCap(this.getAdaptationEffects().capsBonds);
   }
 
   /**
-   * Tick or clear progress towards an adaptation. Becoming Adapted to
-   * Violence caps some ratings, which there's no undoing, so ask first.
+   * The caps on an ability's rating, with what each comes from (to say so):
+   * adaptations, and Sanity's cap
+   */
+  getRatingCaps(abilityName: string): { cap: number; reason: string }[] {
+    const caps: { cap: number; reason: string }[] = [];
+    const adaptedTo = this.getAdaptedTraumaNames(({ cappedAbilities }) =>
+      cappedAbilities.includes(abilityName),
+    );
+    if (adaptedTo.length > 0) {
+      caps.push({
+        cap: adaptedRatingCap,
+        reason: getTranslated("AdaptedToTrauma", {
+          Trauma: new Intl.ListFormat(game.i18n?.lang).format(adaptedTo),
+        }),
+      });
+    }
+    const sanityCap =
+      abilityName === settings.sanityAbility.get() ? this.getSanityCap() : null;
+    if (sanityCap !== null) {
+      caps.push({
+        cap: sanityCap,
+        reason: getTranslated("SanityCapReason", {
+          Base: String(settings.sanityCapBase.get()),
+          AbilityName: settings.sanityCapAbility.get(),
+        }),
+      });
+    }
+    return caps;
+  }
+
+  /** The cap on an ability's rating, if any: the lowest of its caps */
+  getRatingCap(abilityName: string): number | null {
+    const caps = this.getRatingCaps(abilityName).map(({ cap }) => cap);
+    return caps.length > 0 ? Math.min(...caps) : null;
+  }
+
+  /** The ability whose rating comes off Sanity's cap, e.g. Cthulhu Mythos */
+  getSanityCapAbility(): AbilityItem | undefined {
+    const name = settings.sanityCapAbility.get();
+    return this.parent.items.find(
+      (item): item is AbilityItem & Item.Stored =>
+        isAbilityItem(item) && item.name === name,
+    );
+  }
+
+  /** The highest Sanity's rating can go, or null if Sanity rules are off */
+  getSanityCap(): number | null {
+    if (!isSanityOn()) {
+      return null;
+    }
+    return getSanityCap({
+      base: settings.sanityCapBase.get(),
+      capAbilityRating: this.getSanityCapAbility()?.system.rating ?? 0,
+    });
+  }
+
+  /**
+   * Tick or clear progress towards an adaptation. Becoming adapted can cap
+   * ratings and Bonds, which there's no undoing, so ask first.
    */
   setAdaptationProgress = async (
-    adaptation: Adaptation,
+    traumaTypeId: string,
     progress: number,
   ): Promise<void> => {
-    const becomingAdaptedToViolence =
-      adaptation === "violence" &&
+    const type = getAdaptableTraumaTypes().find(
+      ({ id }) => id === traumaTypeId,
+    );
+    const becomingAdapted =
+      type !== undefined &&
       isAdapted(progress) &&
-      !this.isAdaptedTo("violence");
-    if (becomingAdaptedToViolence) {
-      const names = settings.violenceCappedAbilities.get();
+      !this.isAdaptedTo(traumaTypeId);
+    const capsSomething =
+      type !== undefined && (type.cappedAbilities.length > 0 || type.capsBonds);
+    if (becomingAdapted && capsSomething) {
       const yes = await confirmADoodleDo({
-        // with no abilities to cap, only the Bonds change
-        message:
-          names.length === 0
-            ? "AdaptedToViolenceBondsOnlyConfirm"
-            : "AdaptedToViolenceConfirm",
-        confirmText: "Adapted to Violence",
+        message: getAdaptationConfirmMessage(this.parent.name ?? "", type),
+        confirmText: "Confirm",
         cancelText: "Cancel",
         confirmIconClass: "fa-check",
         resolveFalseOnCancel: true,
-        values: {
-          ActorName: this.parent.name ?? "",
-          AbilityNames: new Intl.ListFormat(game.i18n?.lang).format(names),
-          RatingCap: String(adaptedToViolenceRatingCap),
-          BondCap: String(getBondCap(true)),
-        },
+        translate: false,
       });
       if (!yes) {
         return;
       }
     }
     await this.parent.update({
-      system: { adaptations: { [adaptation]: progress } },
+      system: { adaptations: { [traumaTypeId]: progress } },
     });
-    if (becomingAdaptedToViolence) {
-      await this.capRatingsForViolence();
+    if (becomingAdapted) {
+      await this.capRatingsForAdaptation(type.cappedAbilities);
     }
   };
 
@@ -361,9 +465,8 @@ export class PCModel extends ActiveCharacterModel<
    * Bring capped abilities' ratings down to the cap. Their pools stay as they
    * are, to be spent (p. 050); they just won't refresh above it.
    */
-  capRatingsForViolence = async (): Promise<void> => {
-    const names = settings.violenceCappedAbilities.get();
-    const cap = adaptedToViolenceRatingCap;
+  capRatingsForAdaptation = async (names: string[]): Promise<void> => {
+    const cap = adaptedRatingCap;
     const updates = this.getAbilities().flatMap((ability) => {
       if (!names.includes(ability.name ?? "") || ability.system.rating <= cap) {
         return [];
@@ -402,14 +505,14 @@ export class PCModel extends ActiveCharacterModel<
    * states aren't in use, or there's no Stability ability
    */
   getStabilityState(): StabilityState | null {
-    if (!settings.useStabilityStates.get()) {
-      return null;
-    }
-    const stability = this.getBondStabilityAbility();
-    return stability ? getStabilityState(stability.system.pool) : null;
+    const thresholds = getStabilityThresholds();
+    const stability = this.getStabilityAbility();
+    return thresholds && stability
+      ? getStabilityState(stability.system.pool, thresholds)
+      : null;
   }
 
-  /** The ability Unnatural shocks reduce the rating of, usually Sanity */
+  /** The Sanity ability: shocks reduce its rating, which is capped */
   getSanityAbility(): GeneralAbilityItem | undefined {
     const name = settings.sanityAbility.get();
     return this.parent.items.find(
@@ -418,16 +521,19 @@ export class PCModel extends ActiveCharacterModel<
     );
   }
 
-  /** The end of an operation: Unnatural shocks can cost Sanity again */
+  /** The end of an operation: shocks can cost Sanity again */
   protected override async afterFullRefresh(): Promise<void> {
-    if (this.unnaturalShockSanityLoss !== 0) {
-      await this.parent.update({ system: { unnaturalShockSanityLoss: 0 } });
+    if (this.shockSanityLoss !== 0) {
+      await this.parent.update({ system: { shockSanityLoss: 0 } });
     }
   }
 
-  /** The ability Bonds can be spent on and burned for, usually Stability */
-  getBondStabilityAbility(): GeneralAbilityItem | undefined {
-    const name = settings.bondStabilityAbility.get();
+  /**
+   * The Stability ability: Bonds are spent on it and burned for it, and
+   * trauma tests are made with it
+   */
+  getStabilityAbility(): GeneralAbilityItem | undefined {
+    const name = settings.stabilityAbility.get();
     return this.parent.items.find(
       (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
         isGeneralAbilityItem(item) && item.name === name,
@@ -435,7 +541,7 @@ export class PCModel extends ActiveCharacterModel<
   }
 
   canBurnBond(bond: BondItem): boolean {
-    const stability = this.getBondStabilityAbility();
+    const stability = this.getStabilityAbility();
     return (
       stability !== undefined &&
       canBurnBond({
@@ -474,7 +580,7 @@ export class PCModel extends ActiveCharacterModel<
     return (
       !bond.system.isDeltaGreen &&
       !bond.system.isBroken &&
-      this.getBondStabilityAbility() !== undefined
+      this.getStabilityAbility() !== undefined
     );
   }
 
@@ -500,7 +606,7 @@ export class PCModel extends ActiveCharacterModel<
 
   /** Ask first: burning permanently damages the Bond */
   confirmBurnBond = async (bond: BondItem): Promise<void> => {
-    const stability = this.getBondStabilityAbility();
+    const stability = this.getStabilityAbility();
     if (stability === undefined || !this.canBurnBond(bond)) {
       // burnBond explains why not
       await this.burnBond(bond);
@@ -537,11 +643,11 @@ export class PCModel extends ActiveCharacterModel<
    * restore 1 Stability point.
    */
   burnBond = async (bond: BondItem): Promise<void> => {
-    const stability = this.getBondStabilityAbility();
+    const stability = this.getStabilityAbility();
     if (stability === undefined) {
       ui.notifications?.warn(
         getTranslated("NoAbilityToBurnBondsFor", {
-          AbilityName: settings.bondStabilityAbility.get(),
+          AbilityName: settings.stabilityAbility.get(),
         }),
       );
       return;

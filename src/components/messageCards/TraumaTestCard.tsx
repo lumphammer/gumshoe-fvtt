@@ -1,11 +1,9 @@
 import { useContext } from "react";
 
-import { getTranslated } from "../../functions/getTranslated";
 import { isAdapted } from "../../module/bonds/adaptation";
+import { getStabilityStateName } from "../../module/stability/settings";
 import type { StabilityState } from "../../module/stability/states";
-import { stabilityStateLabels } from "../../module/stability/states";
 import type { TraumaTestRecord } from "../../module/stability/trauma";
-import { traumaLabels } from "../../module/stability/trauma";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
@@ -61,8 +59,9 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
       <b css={{ gridArea: "headline" }}>
         <Translate
           values={{
-            Trauma: getTranslated(traumaLabels[record.trauma]),
+            Trauma: record.trauma,
             Loss: String(record.potentialLoss),
+            Stability: record.stability.name,
           }}
         >
           StabilityTestAgainstTrauma
@@ -88,7 +87,7 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
           {record.shaken && (
             <>
               {" ("}
-              <Translate>StabilityStateShaken</Translate>
+              {getStabilityStateName("shaken")}
               {" +1)"}
             </>
           )}
@@ -130,7 +129,7 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
             css={{ color: theme.colors.danger, margin: "0.25em 0" }}
           >
             <b>
-              <Translate>{stabilityStateLabels[stateAfter]}</Translate>
+              {getStabilityStateName(stateAfter)}
               {"! "}
             </b>
             <Translate>{reminders[stateAfter]}</Translate>
@@ -152,13 +151,9 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
             {`: ${record.sanity.before} → ${record.sanity.after}`}
           </div>
         )}
-        {record.adaptation && record.trauma !== "unnatural" && (
+        {record.adaptation && (
           <div data-testid="trauma-adaptation">
-            <Translate
-              values={{
-                Trauma: getTranslated(traumaLabels[record.trauma]),
-              }}
-            >
+            <Translate values={{ Trauma: record.trauma }}>
               AdaptingToTrauma
             </Translate>
             {`: ${record.adaptation.before} → ${record.adaptation.after}`}

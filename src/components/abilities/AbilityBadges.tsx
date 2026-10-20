@@ -1,13 +1,12 @@
 import type { ReactNode } from "react";
 import { useContext } from "react";
 
-import { getTranslated } from "../../functions/getTranslated";
 import { findHealthAbility } from "../../module/attacks/health";
 import type { WoundState } from "../../module/attacks/rules";
 import { getWoundState } from "../../module/attacks/rules";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
-import { stabilityStateLabels } from "../../module/stability/states";
+import { getStabilityStateName } from "../../module/stability/settings";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
@@ -109,11 +108,11 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
       {/* Shaken, Shattered or Gone */}
       {stabilityState !== null && stabilityState !== "steady" && (
         <span data-testid="stability-state-badge" css={stateBadgeStyle}>
-          <Translate>{stabilityStateLabels[stabilityState]}</Translate>
+          {getStabilityStateName(stabilityState)}
         </span>
       )}
 
-      {/* Adapted to Violence */}
+      {/* Adapted to Violence, or Sanity's cap */}
       {ratingCap !== null && (
         // styled on a wrapper: Translate sets its own background
         <span
@@ -131,7 +130,7 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
         >
           <Translate
             values={{ Cap: String(ratingCap) }}
-            title={getTranslated("Adapted to Violence")}
+            title={ability.system.getRatingCapReasons().join("; ")}
           >
             CappedAtCap
           </Translate>

@@ -453,35 +453,60 @@ export interface PresetV1 {
    */
   equipmentCategories?: Record<string, EquipmentCategory>;
   /**
-   * Fall of DELTA GREEN: give PCs Bonds (people they care about, with points
+   * Stability rules (Fall of DELTA GREEN and others): turns on the Sanity &
+   * Stability settings below. Nothing below does anything without it.
+   */
+  useStabilityRules?: boolean;
+  /**
+   * The name of the Stability ability: Bonds are spent on it, its pool sets
+   * the Stability state, and trauma tests are made with it. Defaults to
+   * Stability.
+   */
+  stabilityAbility?: string;
+  /**
+   * Sanity rules: the Sanity ability's rating is capped, and trauma types can
+   * cost Sanity.
+   */
+  useSanityRules?: boolean;
+  /**
+   * The name of the Sanity ability. Defaults to Sanity.
+   */
+  sanityAbility?: string;
+  /**
+   * The ability whose rating comes off the Sanity cap, e.g. Cthulhu Mythos.
+   */
+  sanityCapAbility?: string;
+  /**
+   * The Sanity cap before the cap ability's rating comes off it. Defaults to
+   * 10.
+   */
+  sanityCapBase?: number;
+  /**
+   * Shaken, Shattered and Gone follow the Stability pool.
+   */
+  useStabilityStates?: boolean;
+  /**
+   * The names of the Stability states, and the highest pool in each.
+   */
+  stabilityStates?: StabilityStatesSettings;
+  /**
+   * Should PCs have Bonds (Fall of DELTA GREEN)? If so, they appear (and
    * they can spend on Stability), on their own tab.
    */
   useBonds?: boolean;
-  /**
-   * The name of the ability whose tests can take Bond points, and which
-   * burning a Bond restores. Defaults to Stability.
-   */
-  bondStabilityAbility?: string;
   /**
    * The investigative ability category whose points can be spent when
    * rebuilding a Bond between operations. Defaults to Interpersonal.
    */
   bondRebuildSpendCategory?: string;
   /**
-   * Abilities whose ratings are capped when an Agent is Adapted to Violence.
-   * Defaults to none.
+   * Stability tests against trauma.
    */
-  violenceCappedAbilities?: string[];
+  useTrauma?: boolean;
   /**
-   * Fall of DELTA GREEN: Shaken, Shattered and Gone follow the Stability pool
-   * (the ability Bonds are spent on), and Stability tests can be against
-   * trauma.
+   * The kinds of trauma Stability can be tested against.
    */
-  useStabilityStates?: boolean;
-  /**
-   * The ability whose rating Unnatural shocks reduce. Defaults to Sanity.
-   */
-  sanityAbility?: string;
+  traumaTypes?: TraumaType[];
   /**
    * Should we use cards?
    */
@@ -508,6 +533,35 @@ interface InvestigatorConfig {
 
 export interface HasId {
   id: string;
+}
+
+export interface StabilityStateSettings {
+  name: string;
+  /** the highest Stability pool in this state */
+  upTo: number;
+}
+
+export interface StabilityStatesSettings {
+  shaken: StabilityStateSettings;
+  shattered: StabilityStateSettings;
+  gone: StabilityStateSettings;
+}
+
+export interface TraumaType extends HasId {
+  name: string;
+  difficulty: number;
+  /** the Difficulty once adapted */
+  adaptedDifficulty: number;
+  /** shocks (getting worse) cost Sanity */
+  causesSanityLoss: boolean;
+  /** can be adapted to */
+  useAdaptation: boolean;
+  /** abilities whose ratings are capped once adapted */
+  cappedAbilities: string[];
+  /** Bonds are capped once adapted */
+  capsBonds: boolean;
+  /** what comes off each refresh once adapted */
+  refreshPenalty: number;
 }
 
 export interface CardCategory extends HasId {

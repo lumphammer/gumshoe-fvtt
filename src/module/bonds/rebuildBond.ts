@@ -35,7 +35,7 @@ export async function rebuildBond(
   bond: BondItem,
   spends: RebuildSpends,
 ): Promise<void> {
-  const stability = actor.system.getBondStabilityAbility();
+  const stability = actor.system.getStabilityAbility();
   // the sheet only offers what's allowed, but it may be out of date
   const spendable = new Set(actor.system.getRebuildSpendAbilities());
   const abilitySpends = spends.abilities.filter(({ spend }) => spend > 0);

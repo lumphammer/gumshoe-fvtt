@@ -114,9 +114,12 @@ Rough priority order.
    [`fodg-stability-plan.md`](fodg-stability-plan.md). Shaken, Shattered and
    Gone as statuses, Shaken's effects (asking before Investigative spends, a
    reminder of +1 Difficulty: #1428), and Stability tests against trauma.
-3. **Sanity** (pp. 070, 121–122). Never tested or spent; losses come off the
-   rating. Capped at 10 minus The Unnatural. At 0 the agent becomes a GMC.
-   Currently an ordinary rollable ability.
+3. **Sanity** (pp. 070, 121–122): the cap (10 minus The Unnatural) is done,
+   see [`stability-settings-plan.md`](stability-settings-plan.md). The rest
+   is left to the table: the book's rules are vague enough that tables will
+   house-rule them. So Sanity can still be tested and spent, the GM turns an
+   Agent at 0 into a GMC by hand, and the revelation table (p. 121) is a
+   guideline rather than options on the sheet.
 4. **Network contacts** (p. 068). Each contact gets a pool carved out of
    Network, and those points never refresh.
 5. **Initiative** (p. 090). The book orders ready weapons first, then guns

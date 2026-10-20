@@ -3,8 +3,8 @@ import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppCo
 import { useCallback, useContext, useEffect } from "react";
 import {
   FaCircle,
+  FaBrain,
   FaEllipsis,
-  FaHeart,
   FaLayerGroup,
   FaLightbulb,
   FaSliders,
@@ -35,7 +35,6 @@ import { abilityPages } from "./Abilities/abilityPages";
 import { AbilitySettingsRoutes } from "./Abilities/AbilitySettingsRoutes";
 import { actorPages } from "./Actors/actorPages";
 import { ActorSettingsRoutes } from "./Actors/ActorSettingsRoutes";
-import { BondsSettings } from "./Bonds/BondsSettings";
 import { CardsSettings } from "./Cards/CardsSettings";
 import { CardsSettingsRoutes } from "./Cards/CardsSettingsRoutes";
 import { combatPages } from "./Combat/combatPages";
@@ -50,12 +49,12 @@ import { CoreSettings } from "./CoreSettings";
 import {
   abilitySettings,
   actorSettings,
-  bondsSettings,
   cardsSettings,
   combatSettings,
   coreSettings,
   equipmentSettings,
   miscSettings,
+  stabilitySettings,
 } from "./directions";
 import { EquipmentSettings } from "./Equipment/EquipmentSettings";
 import { EquipmentSettingsRoutes } from "./Equipment/EquipmentSettingsRoutes";
@@ -64,6 +63,9 @@ import { getVisibleMiscPages, miscPages } from "./Misc/miscPages";
 import { MiscSettingsRoutes } from "./Misc/MiscSettingsRoutes";
 import { SettingsBreadcrumbs } from "./SettingsBreadcrumbs";
 import { SettingsMenu } from "./SettingsMenu";
+import { stabilityPages } from "./Stability/stabilityPages";
+import { StabilitySettings } from "./Stability/StabilitySettings";
+import { StabilitySettingsRoutes } from "./Stability/StabilitySettingsRoutes";
 
 export const Settings = () => {
   assertGame(game);
@@ -175,14 +177,16 @@ export const Settings = () => {
       childRoutes: <CardsSettingsRoutes />,
     },
     {
-      direction: bondsSettings,
-      label: "Bonds",
-      description: "BondsDescription",
+      direction: stabilitySettings,
+      label: "Sanity & Stability",
+      description: "SanityAndStabilityDescription",
       summary: (s: SettingsDict) => (
-        <Translate>{s.useBonds ? "On" : "Off"}</Translate>
+        <Translate>{s.useStabilityRules ? "On" : "Off"}</Translate>
       ),
-      icon: <FaHeart />,
-      content: <BondsSettings setters={setters} />,
+      icon: <FaBrain />,
+      content: <StabilitySettings setters={setters} />,
+      subPages: stabilityPages,
+      childRoutes: <StabilitySettingsRoutes setters={setters} />,
     },
     {
       direction: miscSettings,

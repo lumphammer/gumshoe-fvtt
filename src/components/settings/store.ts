@@ -48,6 +48,18 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
       }
       Object.assign(draft.settings, payload.newSettings);
     },
+    /**
+     * Change the settings with a function. It's applied to the state as it
+     * is when the action's reduced, so several in a row (e.g. a text box
+     * saving on blur, then a toggle) don't overwrite each other.
+     */
+    modify: (draft, { fn }: { fn: (settings: SettingsDict) => void }) => {
+      fn(draft.settings);
+      assertUniqueIds(
+        draft.settings.cardCategories.map(({ id }) => id),
+        "card category ID",
+      );
+    },
     addCategory: (draft: State) => {
       draft.settings.equipmentCategories[nanoid()] = {
         name: "New category",

@@ -14,6 +14,7 @@ import {
   updateAbility,
   visitEveryTab,
 } from "./foundry.ts";
+import { fodgTraumaTypes, stabilityRulesOn } from "./stabilitySettings.ts";
 
 async function getBonds(page: Page, actorId: string) {
   return page.evaluate(
@@ -44,6 +45,10 @@ async function burn(page: Page, button: Locator, expectedText: string) {
   await dialog.getByRole("button", { name: "Burn" }).click();
   await expect(dialog).toHaveCount(0);
 }
+
+test.beforeEach(async ({ page }) => {
+  await setSettings(page, stabilityRulesOn);
+});
 
 test("the Bonds tab only shows when Bonds are on", async ({ page }) => {
   await setSettings(page, { useBonds: false });
@@ -1121,7 +1126,7 @@ async function getAdaptations(page: Page, actorId: string) {
     (actorId) =>
       (
         game.actors.get(actorId)!.system as unknown as {
-          adaptations: { violence: number; helplessness: number };
+          adaptations: Record<string, number>;
         }
       ).adaptations,
     actorId,
@@ -1141,7 +1146,7 @@ test("Adapted to Violence caps Interpersonal ratings and Bonds", async ({
 }) => {
   await setSettings(page, {
     useBonds: true,
-    violenceCappedAbilities: ["Flattery", "Reassurance"],
+    traumaTypes: fodgTraumaTypes(["Flattery", "Reassurance"]),
   });
   const actorId = await createActor(page, { name: "Hardened", type: "pc" });
   await updateAbility(page, actorId, "Reassurance", { rating: 3, pool: 3 });
@@ -1159,13 +1164,13 @@ test("Adapted to Violence caps Interpersonal ratings and Bonds", async ({
   await adaptationBox(actorSheet, "violence", 3).click();
   const dialog = page.locator(".application.dialog");
   await expect(dialog).toContainText(
-    "Make Hardened Adapted to Violence? Flattery and Reassurance ratings will drop to 1",
+    "Make Hardened adapted to Violence? Flattery and Reassurance ratings will drop to 1",
   );
-  await dialog.getByRole("button", { name: "Adapted to Violence" }).click();
+  await dialog.getByRole("button", { name: "Confirm" }).click();
   await expect(actorSheet.getByTestId("adapted-violence")).toBeVisible();
   await expect
     .poll(() => getAdaptations(page, actorId))
-    .toEqual({ violence: 3, helplessness: 0 });
+    .toEqual({ violence: 3 });
 
   // ratings drop to the cap, but the pools stay, to be spent
   await expect
@@ -1218,6 +1223,9 @@ test("Adapted to Violence caps Interpersonal ratings and Bonds", async ({
   await expect(abilitySheet.getByTestId("rating-cap-badge")).toHaveText(
     "Capped at 1",
   );
+  await expect(
+    abilitySheet.getByTestId("rating-cap-badge").locator("[title]"),
+  ).toHaveAttribute("title", "Adapted to Violence");
   await page.evaluate(async (actorId) => {
     const item = game.actors.get(actorId)!.items.getName("Reassurance")!;
     await (
@@ -1249,11 +1257,11 @@ test("Adapted to Helplessness: refreshes give a point fewer", async ({
   await adaptationBox(actorSheet, "helplessness", 2).click();
   await expect
     .poll(() => getAdaptations(page, actorId))
-    .toEqual({ violence: 0, helplessness: 2 });
+    .toEqual({ helplessness: 2 });
   await adaptationBox(actorSheet, "helplessness", 1).click();
   await expect
     .poll(() => getAdaptations(page, actorId))
-    .toEqual({ violence: 0, helplessness: 0 });
+    .toEqual({ helplessness: 0 });
   await expect(actorSheet.getByTestId("adapted-helplessness")).toHaveCount(0);
   // no confirmation: nothing changes until a refresh
   await adaptationBox(actorSheet, "helplessness", 3).click();
@@ -1294,10 +1302,8 @@ test("Adapted to Helplessness: refreshes give a point fewer", async ({
     .toEqual({ rating: 8, pool: 8 });
 });
 
-test("Adapted to Violence with no abilities set to cap warns", async ({
-  page,
-}) => {
-  await setSettings(page, { useBonds: true, violenceCappedAbilities: [] });
+test("adapting to a trauma type which caps only Bonds", async ({ page }) => {
+  await setSettings(page, { useBonds: true });
   const actorId = await createActor(page, { name: "Uncapped", type: "pc" });
   await updateAbility(page, actorId, "Reassurance", { rating: 3, pool: 3 });
 
@@ -1305,16 +1311,27 @@ test("Adapted to Violence with no abilities set to cap warns", async ({
   await actorSheet.locator(".tab-strip > label", { hasText: "Bonds" }).click();
   await adaptationBox(actorSheet, "violence", 3).click();
   const dialog = page.locator(".application.dialog");
-  await expect(dialog).toContainText("No abilities are set to be capped");
-  await dialog.getByRole("button", { name: "Adapted to Violence" }).click();
+  await expect(dialog).toContainText("No Bond can be raised above 2");
+  await expect(dialog).not.toContainText("ratings will drop");
+  await dialog.getByRole("button", { name: "Confirm" }).click();
 
   const adaptations = actorSheet.getByTestId("adaptations");
-  await expect(adaptations).toContainText("Bonds are capped at 2.");
-  await expect(adaptations).toContainText(
-    "No abilities are set to be capped by Adapted to Violence",
-  );
+  await expect(adaptations).toContainText("Bonds are capped at 2");
   expect(await getAbility(page, actorId, "Reassurance")).toEqual({
     rating: 3,
     pool: 3,
   });
+});
+
+test("adaptation shows without Bonds, on its own tab", async ({ page }) => {
+  await setSettings(page, { useBonds: false });
+  const actorId = await createActor(page, { name: "Loner", type: "pc" });
+  const actorSheet = await openSheet(page, `Actor.${actorId}`);
+  await actorSheet
+    .locator(".tab-strip > label", { hasText: "Adapted to" })
+    .click();
+  await expect(actorSheet.getByTestId("adaptation-violence")).toBeVisible();
+  await expect(
+    actorSheet.getByRole("button", { name: "Add Bond" }),
+  ).toHaveCount(0);
 });

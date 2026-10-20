@@ -36,7 +36,7 @@ export const RebuildBondPanel = ({ bond }: { bond: BondItem }) => {
   if (!isPCActor(actor) || !actor.system.canRebuildBond(bond)) {
     return null;
   }
-  const stability = actor.system.getBondStabilityAbility();
+  const stability = actor.system.getStabilityAbility();
   const abilities = actor.system.getRebuildSpendAbilities();
 
   const onRebuild = async () => {

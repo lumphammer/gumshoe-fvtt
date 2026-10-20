@@ -4,11 +4,15 @@ import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { isPCActor } from "../module/actors/pc";
 import {
+  getStabilityStateName,
+  getStabilityThresholds,
+} from "../module/stability/settings";
+import {
   getStabilityState,
   getStabilityStatusTransition,
   type StabilityState,
+  stabilityStatusStates,
 } from "../module/stability/states";
-import { settings } from "../settings/settings";
 
 /**
  * Our Stability statuses (Fall of DELTA GREEN, p. 113). They're always
@@ -60,14 +64,25 @@ export function installStabilityStatusHandler(): void {
     CONFIG.statusEffects.push(...stabilityStatusEffects);
   });
 
+  // the states can be renamed in settings, which aren't ready at init
+  Hooks.once("ready", () => {
+    for (const state of stabilityStatusStates) {
+      const effect = CONFIG.statusEffects.find(({ id }) => id === state);
+      if (effect !== undefined) {
+        effect.name = getStabilityStateName(state);
+      }
+    }
+  });
+
   Hooks.on("preUpdateItem", (item, changes, options) => {
     const actor = item.actor;
+    const thresholds = getStabilityThresholds();
     if (
-      !settings.useStabilityStates.get() ||
+      thresholds === null ||
       !isPCActor(actor) ||
       item.uuid === null ||
       (changes as { system?: { pool?: unknown } }).system?.pool === undefined ||
-      actor.system.getBondStabilityAbility()?.id !== item.id
+      actor.system.getStabilityAbility()?.id !== item.id
     ) {
       return;
     }
@@ -75,6 +90,7 @@ export function installStabilityStatusHandler(): void {
     stashOptions[statesBeforeKey] ??= {};
     stashOptions[statesBeforeKey][item.uuid] = getStabilityState(
       (item.system as { pool: number }).pool,
+      thresholds,
     );
   });
 
@@ -88,12 +104,9 @@ export function installStabilityStatusHandler(): void {
     if (before === undefined || actor.uuid === null) return;
     // the actor's uuid is unique even for unlinked tokens
     runExclusive(actor.uuid, async () => {
-      const stability = actor.system.getBondStabilityAbility();
-      if (stability === undefined) return;
-      const transition = getStabilityStatusTransition(
-        before,
-        getStabilityState(stability.system.pool),
-      );
+      const after = actor.system.getStabilityState();
+      if (after === null) return;
+      const transition = getStabilityStatusTransition(before, after);
       if (transition === null) return;
       for (const state of transition.remove) {
         await actor.toggleStatusEffect(state, { active: false });

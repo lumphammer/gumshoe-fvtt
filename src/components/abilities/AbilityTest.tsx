@@ -9,13 +9,11 @@ import { isPCActor } from "../../module/actors/pc";
 import { doesSpendBreakBond, getMaxBondSpend } from "../../module/bonds/rules";
 import { assertAbilityItem } from "../../module/items/exports";
 import { isGeneralAbilityItem } from "../../module/items/generalAbility";
-import type { Trauma } from "../../module/stability/trauma";
-import { traumaLabels, traumas } from "../../module/stability/trauma";
+import { areBondsOn, getTraumaTypes } from "../../module/stability/settings";
 import {
   getTraumaTestDifficulty,
   traumaTest,
 } from "../../module/stability/traumaTest";
-import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -37,31 +35,33 @@ export const AbilityTest = () => {
   // points to spend from each Bond, by id
   const [bondSpends, setBondSpends] = useState<Record<string, number>>({});
   // a Stability test against trauma, or an ordinary test
-  const [trauma, setTrauma] = useState<Trauma | "">("");
+  // by trauma type id
+  const [traumaId, setTraumaId] = useState("");
   const [potentialLoss, setPotentialLoss] = useState(1);
   // Bonds live on the actor, not this item
   useRefreshOnActorItemChanges(item.actor);
 
   const isGeneral = isGeneralAbilityItem(item);
   const actor = item.actor;
+  const isStability =
+    isGeneral &&
+    isPCActor(actor) &&
+    actor.system.getStabilityAbility()?.id === item.id;
   // Fall of DELTA GREEN: Bond points can go on Stability tests (p. 120)
   const bonds =
-    isGeneral &&
-    settings.useBonds.get() &&
-    item.name === settings.bondStabilityAbility.get() &&
-    isPCActor(actor)
+    isStability && areBondsOn() && isPCActor(actor)
       ? // broken ones too, so nobody goes looking for them
         actor.system.getBonds()
       : [];
 
   // Fall of DELTA GREEN: Stability tests against trauma (pp. 115–121)
+  const traumaTypes = isStability ? getTraumaTypes() : [];
   const canTestTrauma =
-    isGeneral &&
-    settings.useStabilityStates.get() &&
-    isPCActor(actor) &&
-    actor.system.getBondStabilityAbility()?.id === item.id;
+    isStability && isPCActor(actor) && traumaTypes.length > 0;
+  // the type may have gone from settings since it was picked
+  const trauma = traumaTypes.find(({ id }) => id === traumaId);
   const traumaDifficulty =
-    canTestTrauma && trauma !== ""
+    canTestTrauma && trauma !== undefined
       ? getTraumaTestDifficulty(actor, trauma)
       : null;
 
@@ -90,7 +90,7 @@ export const AbilityTest = () => {
         return;
       }
     }
-    if (canTestTrauma && trauma !== "") {
+    if (canTestTrauma && trauma !== undefined) {
       void traumaTest(actor, {
         trauma,
         potentialLoss,
@@ -125,19 +125,19 @@ export const AbilityTest = () => {
         <>
           <GridField label="Trauma">
             <Select
-              value={trauma}
-              onChange={(e) => setTrauma(e.currentTarget.value as Trauma | "")}
+              value={trauma?.id ?? ""}
+              onChange={(e) => setTraumaId(e.currentTarget.value)}
               css={{ width: "100%" }}
             >
               <option value="">{getTranslated("None")}</option>
-              {traumas.map((t) => (
-                <option key={t} value={t}>
-                  {getTranslated(traumaLabels[t])}
+              {traumaTypes.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
                 </option>
               ))}
             </Select>
           </GridField>
-          {trauma !== "" && (
+          {trauma !== undefined && (
             <GridField label="Potential loss">
               <div
                 css={{ display: "flex", gap: "0.5em", alignItems: "center" }}

@@ -30,6 +30,7 @@ import { installShowThemeFarmHack } from "./startup/installShowThemeFarmHack";
 import { installSocketActionHandler } from "./startup/installSocketActionHandler";
 import { installTurnPassingHandler } from "./startup/installTurnPassingHandler";
 import { installStabilityStatusHandler } from "./startup/installStabilityStatusHandler";
+import { installSanityCapHandler } from "./startup/installSanityCapHandler";
 import { installWoundStatusHandler } from "./startup/installWoundStatusHandler";
 import { loadCustomThemes } from "./startup/loadCustomThemes";
 import { migrateWorldIfNeeded } from "./startup/migrateWorldIfNeeded";
@@ -93,6 +94,7 @@ installActorCombatAbilityHandler();
 installNextTurnHandler();
 installWoundStatusHandler();
 installStabilityStatusHandler();
+installSanityCapHandler();
 
 /**
  * Recursively get all layer names from a CSSRule and its children.

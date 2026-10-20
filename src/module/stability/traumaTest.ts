@@ -1,25 +1,23 @@
 // Foundry glue for Stability tests against trauma (Fall of DELTA GREEN,
 // pp. 115–121). The rules are in `trauma.ts`.
 
+import type { TraumaType } from "@lumphammer/investigator-fvtt-types";
+
 import * as constants from "../../constants";
 import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
 import { getTranslated } from "../../functions/getTranslated";
 import type { PCActor } from "../actors/pc";
 import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
 import type { BondItem } from "../items/bond";
-import { getStabilityState } from "./states";
-import type { Trauma, TraumaTestRecord } from "./trauma";
+import { getStabilityThresholds, isSanityOn } from "./settings";
+import type { TraumaTestRecord } from "./trauma";
 import {
   didAdapt,
   getTraumaDifficulty,
+  getTraumaState,
   resolveTraumaTest,
   serializeTraumaTestRecord,
 } from "./trauma";
-
-/** Adapted to this trauma? (Never the Unnatural.) */
-function isAdaptedTo(actor: PCActor, trauma: Trauma): boolean {
-  return trauma !== "unnatural" && actor.system.isAdaptedTo(trauma);
-}
 
 /**
  * The Difficulty of a test against this trauma now: from the state before
@@ -27,21 +25,21 @@ function isAdaptedTo(actor: PCActor, trauma: Trauma): boolean {
  */
 export function getTraumaTestDifficulty(
   actor: PCActor,
-  trauma: Trauma,
+  trauma: TraumaType,
 ): number | null {
-  const stability = actor.system.getBondStabilityAbility();
+  const stability = actor.system.getStabilityAbility();
   if (stability === undefined) {
     return null;
   }
   return getTraumaDifficulty({
-    trauma,
-    adapted: isAdaptedTo(actor, trauma),
-    state: getStabilityState(stability.system.pool),
+    ...trauma,
+    adapted: actor.system.isAdaptedTo(trauma.id),
+    state: getTraumaState(stability.system.pool, getStabilityThresholds()),
   });
 }
 
 export type TraumaTestChoices = {
-  trauma: Trauma;
+  trauma: TraumaType;
   potentialLoss: number;
   /** points from the Stability ability */
   spend: number;
@@ -51,14 +49,14 @@ export type TraumaTestChoices = {
 
 /**
  * Make a Stability test against trauma, and apply what it does: the loss,
- * a rating point on becoming Shattered, Sanity for an Unnatural shock, and
- * progress towards adapting. One chat card shows the lot.
+ * a rating point on becoming Shattered, Sanity for a shock, and progress
+ * towards adapting. One chat card shows the lot.
  */
 export async function traumaTest(
   actor: PCActor,
   { trauma, potentialLoss, spend, bondSpends }: TraumaTestChoices,
 ): Promise<void> {
-  const stability = actor.system.getBondStabilityAbility();
+  const stability = actor.system.getStabilityAbility();
   const bonds = actor.system.getBonds();
   const usedBondSpends = bondSpends.filter((bondSpend) => bondSpend.spend > 0);
   // the sheet only offers what's allowed, but it may be out of date
@@ -77,13 +75,11 @@ export async function traumaTest(
     return;
   }
 
-  const adapted = isAdaptedTo(actor, trauma);
-  const shaken = getStabilityState(stability.system.pool) !== "steady";
-  const difficulty = getTraumaDifficulty({
-    trauma,
-    adapted,
-    state: getStabilityState(stability.system.pool),
-  });
+  const thresholds = getStabilityThresholds();
+  const adapted = actor.system.isAdaptedTo(trauma.id);
+  const state = getTraumaState(stability.system.pool, thresholds);
+  const shaken = state !== "steady";
+  const difficulty = getTraumaDifficulty({ ...trauma, adapted, state });
   const bondTotal = usedBondSpends.reduce((sum, { spend }) => sum + spend, 0);
   const roll = new Roll("1d6 + @spend + @bonds", {
     spend,
@@ -93,10 +89,11 @@ export async function traumaTest(
   const die = roll.dice[0]?.total ?? 0;
   const total = roll.total ?? 0;
 
-  const adaptationBefore =
-    trauma === "unnatural" ? 0 : actor.system.adaptations[trauma];
+  const adaptationBefore = actor.system.getAdaptationProgress(trauma.id);
   const result = resolveTraumaTest({
-    trauma,
+    adaptable: trauma.useAdaptation,
+    causesSanityLoss: trauma.causesSanityLoss && isSanityOn(),
+    thresholds,
     pool: stability.system.pool,
     rating: stability.system.rating,
     spend,
@@ -104,7 +101,7 @@ export async function traumaTest(
     difficulty,
     potentialLoss,
     adaptationProgress: adaptationBefore,
-    sanityLostThisOperation: actor.system.unnaturalShockSanityLoss,
+    sanityLostThisOperation: actor.system.shockSanityLoss,
   });
 
   // the updates change these in place, so note them first
@@ -115,7 +112,7 @@ export async function traumaTest(
     ? Math.max(0, sanityAbility.system.rating - result.sanityLoss)
     : 0;
   const record: TraumaTestRecord = {
-    trauma,
+    trauma: trauma.name,
     difficulty,
     adapted,
     shaken,
@@ -181,23 +178,19 @@ export async function traumaTest(
       : []),
   ]);
   const actorChanges = {
-    ...(record.adaptation && trauma !== "unnatural"
-      ? { adaptations: { [trauma]: record.adaptation.after } }
+    ...(record.adaptation
+      ? { adaptations: { [trauma.id]: record.adaptation.after } }
       : {}),
-    ...(result.sanityLostThisOperationAfter !==
-    actor.system.unnaturalShockSanityLoss
-      ? { unnaturalShockSanityLoss: result.sanityLostThisOperationAfter }
+    ...(result.sanityLostThisOperationAfter !== actor.system.shockSanityLoss
+      ? { shockSanityLoss: result.sanityLostThisOperationAfter }
       : {}),
   };
   if (Object.keys(actorChanges).length > 0) {
     await actor.update({ system: actorChanges });
   }
   // the rules, not a choice, so no asking this time
-  if (
-    trauma === "violence" &&
-    didAdapt(adaptationBefore, result.adaptationProgressAfter)
-  ) {
-    await actor.system.capRatingsForViolence();
+  if (didAdapt(adaptationBefore, result.adaptationProgressAfter)) {
+    await actor.system.capRatingsForAdaptation(trauma.cappedAbilities);
   }
 
   await roll.toMessage({

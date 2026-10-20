@@ -292,7 +292,7 @@ export abstract class AbilityModel<
    */
   getStabilityState(): StabilityState | null {
     const system = this.getPCSystem();
-    return system?.getBondStabilityAbility()?.id === this.parent.id
+    return system?.getStabilityAbility()?.id === this.parent.id
       ? system.getStabilityState()
       : null;
   }
@@ -302,14 +302,26 @@ export abstract class AbilityModel<
     return this.getPCSystem()?.getStabilityState() ?? null;
   }
 
-  /** The cap on the rating (from Adapted to Violence), if there is one */
+  /**
+   * The cap on the rating (from adaptations, or Sanity's cap), if there is
+   * one
+   */
   getRatingCap(): number | null {
     return this.getPCSystem()?.getRatingCap(this.parent.name ?? "") ?? null;
   }
 
+  /** What caps the rating, to say so */
+  getRatingCapReasons(): string[] {
+    return (
+      this.getPCSystem()
+        ?.getRatingCaps(this.parent.name ?? "")
+        .map(({ reason }) => reason) ?? []
+    );
+  }
+
   /**
-   * reset the pool to the rating (a point short when Adapted to
-   * Helplessness)
+   * reset the pool to the rating (short by any refresh penalty, e.g. when
+   * Adapted to Helplessness)
    */
   async refreshPool(): Promise<void> {
     await this.parent.update({
@@ -317,8 +329,8 @@ export abstract class AbilityModel<
         pool: getRefreshedPool({
           pool: this.pool,
           rating: this.rating ?? 0,
-          adaptedToHelplessness:
-            this.getPCSystem()?.isAdaptedTo("helplessness") ?? false,
+          refreshPenalty:
+            this.getPCSystem()?.getAdaptationEffects().refreshPenalty ?? 0,
         }),
       },
     });

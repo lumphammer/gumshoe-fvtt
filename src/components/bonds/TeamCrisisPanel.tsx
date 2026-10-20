@@ -64,7 +64,7 @@ export const TeamCrisisPanel = ({
   const [bondSpends, setBondSpends] = useState<Record<string, number>>({});
   const [losses, setLosses] = useState<Record<string, number>>({});
 
-  const stability = actor.system.getBondStabilityAbility();
+  const stability = actor.system.getStabilityAbility();
   const bonds = actor.system.getBonds();
   const candidates = getCrisisTeammateCandidates(actor);
   const teammates = candidates.filter((c) => selected.includes(c.uuid ?? ""));

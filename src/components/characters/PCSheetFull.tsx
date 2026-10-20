@@ -8,6 +8,10 @@ import { useTheme } from "../../hooks/useTheme";
 import { assertPCActor } from "../../module/actors/pc";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import type { PersonalDetailItem } from "../../module/items/personalDetail";
+import {
+  areBondsOn,
+  getAdaptableTraumaTypes,
+} from "../../module/stability/settings";
 import { settings } from "../../settings/settings";
 import { CardsArea } from "../cards/CardsArea";
 import { CSSReset } from "../CSSReset";
@@ -266,9 +270,10 @@ export const PCSheetFull = () => {
                 <AbilitiesAreaPlay />
               ),
             },
-            settings.useBonds.get() && {
+            (areBondsOn() || getAdaptableTraumaTypes().length > 0) && {
               id: "bonds",
-              label: "Bonds",
+              // adaptations without Bonds
+              label: areBondsOn() ? "Bonds" : "Adapted to",
               content: <BondsArea />,
             },
             settingsUseCards() && {

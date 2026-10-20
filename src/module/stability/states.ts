@@ -1,5 +1,5 @@
-// Stability states (Fall of DELTA GREEN, p. 113). Pure functions: keep
-// Foundry out of this file.
+// Stability states (Fall of DELTA GREEN, p. 113), with configurable
+// thresholds. Pure functions: keep Foundry out of this file.
 
 export type StabilityState = "steady" | "shaken" | "shattered" | "gone";
 
@@ -12,12 +12,15 @@ export const stabilityStatusStates: StabilityStatusState[] = [
   "gone",
 ];
 
-/** The highest pool at which an Agent is Shaken */
-export const shakenAt = 0;
-/** ...Shattered */
-export const shatteredAt = -6;
-/** ...Gone */
-export const goneAt = -12;
+/** The highest pool in each state but steady */
+export type StabilityThresholds = Record<StabilityStatusState, number>;
+
+/** The book's: Shaken at 0, Shattered at -6, Gone at -12 */
+export const defaultStabilityThresholds: StabilityThresholds = {
+  shaken: 0,
+  shattered: -6,
+  gone: -12,
+};
 
 /** Read a state back from a chat card attribute */
 export function parseStabilityState(
@@ -39,11 +42,18 @@ export const stabilityStateLabels: Record<StabilityState, string> = {
   gone: "StabilityStateGone",
 };
 
-export function getStabilityState(pool: number): StabilityState {
-  if (pool > shakenAt) return "steady";
-  if (pool > shatteredAt) return "shaken";
-  if (pool > goneAt) return "shattered";
-  return "gone";
+/**
+ * The state for a pool. Thresholds are checked from the worst up, so if
+ * they're out of order, the worse state wins.
+ */
+export function getStabilityState(
+  pool: number,
+  thresholds: StabilityThresholds,
+): StabilityState {
+  if (pool <= thresholds.gone) return "gone";
+  if (pool <= thresholds.shattered) return "shattered";
+  if (pool <= thresholds.shaken) return "shaken";
+  return "steady";
 }
 
 const severity: Record<StabilityState, number> = {

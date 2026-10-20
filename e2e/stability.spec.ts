@@ -10,6 +10,7 @@ import {
   test,
   updateAbility,
 } from "./foundry.ts";
+import { fodgTraumaTypes, stabilityRulesOn } from "./stabilitySettings.ts";
 
 async function getAbility(page: Page, actorId: string, abilityName: string) {
   return page.evaluate(
@@ -36,8 +37,8 @@ async function getActorSystem(page: Page, actorId: string) {
   return page.evaluate(
     (actorId) =>
       game.actors.get(actorId)!.system as unknown as {
-        adaptations: { violence: number; helplessness: number };
-        unnaturalShockSanityLoss: number;
+        adaptations: Record<string, number>;
+        shockSanityLoss: number;
       },
     actorId,
   );
@@ -62,11 +63,12 @@ async function pickSpend(sheet: Locator, label: string, points: number) {
 
 test.beforeEach(async ({ page }) => {
   await setSettings(page, {
+    ...stabilityRulesOn,
     useBonds: true,
     useStabilityStates: true,
-    bondStabilityAbility: "Stability",
+    useSanityRules: true,
     sanityAbility: "Sanity",
-    violenceCappedAbilities: ["Reassurance"],
+    traumaTypes: fodgTraumaTypes(["Reassurance"]),
   });
 });
 
@@ -180,7 +182,7 @@ test("a Stability test against Violence leaves the Agent Shaken", async ({
     .poll(() => getAbility(page, actorId, "Stability"))
     .toEqual({ rating: 6, pool: -1 });
   await expect.poll(() => getStatuses(page, actorId)).toEqual(["shaken"]);
-  expect((await getActorSystem(page, actorId)).adaptations.violence).toBe(0);
+  expect((await getActorSystem(page, actorId)).adaptations["violence"]).toBe(0);
 
   // Shaken now: the next test is at +1
   await expect(sheet.getByTestId("trauma-difficulty")).toHaveText(
@@ -215,7 +217,7 @@ test("a third loss to Violence adapts the Agent", async ({ page }) => {
   );
   await expect
     .poll(async () => (await getActorSystem(page, actorId)).adaptations)
-    .toEqual({ violence: 3, helplessness: 0 });
+    .toEqual({ violence: 3 });
   // adapting caps the ratings, without asking
   await expect
     .poll(() => getAbility(page, actorId, "Reassurance"))
@@ -262,9 +264,7 @@ test("an Unnatural shock that Shatters costs Stability and Sanity", async ({
     rating: 3,
     pool: 3,
   });
-  expect((await getActorSystem(page, actorId)).unnaturalShockSanityLoss).toBe(
-    2,
-  );
+  expect((await getActorSystem(page, actorId)).shockSanityLoss).toBe(2);
 
   // the worst shock of the operation is already paid for; a Full Refresh
   // ends the operation
@@ -275,9 +275,6 @@ test("an Unnatural shock that Shatters costs Stability and Sanity", async ({
     .getByRole("button", { name: "Refresh" })
     .click();
   await expect
-    .poll(
-      async () =>
-        (await getActorSystem(page, actorId)).unnaturalShockSanityLoss,
-    )
+    .poll(async () => (await getActorSystem(page, actorId)).shockSanityLoss)
     .toBe(0);
 });
