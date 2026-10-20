@@ -1,6 +1,7 @@
 import {
   createActor,
   createOwnedItem,
+  expect,
   openSheet,
   test,
   visitEveryTab,
@@ -13,6 +14,30 @@ for (const type of ["pc", "npc", "party"] as const) {
     await visitEveryTab(sheet);
   });
 }
+
+test("a PC's abilities switch between play and edit mode", async ({ page }) => {
+  const id = await createActor(page, { name: "Switcher", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${id}`);
+  await expect(sheet.locator(".tab-strip > label")).toHaveText([
+    "Abilities",
+    "Combat",
+    "Equipment",
+    "Notes",
+    "",
+  ]);
+  // the occupational checkboxes are only for editing
+  const occupational = sheet.getByTitle("Occupational Ability?");
+  await expect(occupational).toHaveCount(0);
+  await sheet.getByLabel("Edit mode").click();
+  await expect(occupational.first()).toBeVisible();
+
+  // it stays in edit mode while you look at another tab
+  await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
+  await sheet.locator(".tab-strip > label", { hasText: "Abilities" }).click();
+  await expect(occupational.first()).toBeVisible();
+  await sheet.getByLabel("Edit mode").click();
+  await expect(occupational).toHaveCount(0);
+});
 
 const itemTypes = [
   "investigativeAbility",

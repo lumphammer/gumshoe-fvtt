@@ -28,6 +28,7 @@ import { Translate } from "../Translate";
 import { AbilitiesAreaEdit } from "./AbilitiesAreaEdit";
 import { AbilitiesAreaPlay } from "./AbilitiesAreaPlay";
 import { CharacterCombatAbilityPicker } from "./CharacterCombatAbilityPicker";
+import { EditModeToggle } from "./EditModeToggle";
 import { EquipmentArea } from "./Equipment/EquipmentArea";
 import { LogoEditable } from "./LogoEditable";
 import { AbilitiesAreaMW } from "./MoribundWorld/AbilitiesAreaMW";
@@ -46,6 +47,8 @@ const settingsUseCards = settings.useCards.get;
 
 export const PCSheetFull = () => {
   const { actor } = useActorSheetContext();
+  // kept here, not in the tab, so it lasts while you look at other tabs
+  const [editMode, setEditMode] = useState(false);
 
   assertGame(game);
   assertPCActor(actor);
@@ -265,11 +268,27 @@ export const PCSheetFull = () => {
             {
               id: "abilities",
               label: "Abilities",
-              content: settingsUseMwStyleAbilities() ? (
-                <AbilitiesAreaMW />
-              ) : (
-                <AbilitiesAreaPlay />
+              content: (
+                <>
+                  <EditModeToggle
+                    editMode={editMode}
+                    setEditMode={setEditMode}
+                  />
+                  {editMode ? (
+                    <AbilitiesAreaEdit />
+                  ) : settingsUseMwStyleAbilities() ? (
+                    <AbilitiesAreaMW />
+                  ) : (
+                    <AbilitiesAreaPlay />
+                  )}
+                </>
               ),
+            },
+            // Moribund World's alternative item types have no weapons
+            !settings.mwUseAlternativeItemTypes.get() && {
+              id: "combat",
+              label: "Combat",
+              content: <WeaponsArea />,
             },
             (areBondsOn() || getAdaptableTraumaTypes().length > 0) && {
               id: "bonds",
@@ -296,23 +315,12 @@ export const PCSheetFull = () => {
               : {
                   id: "equipment",
                   label: "Equipment",
-                  content: (
-                    <>
-                      <WeaponsArea />
-                      <div css={{ height: "1em" }} />
-                      <EquipmentArea />
-                    </>
-                  ),
+                  content: <EquipmentArea />,
                 },
             {
               id: "notes",
               label: "Notes",
               content: <NotesArea />,
-            },
-            {
-              id: "abilities-edit",
-              label: "Edit",
-              content: <AbilitiesAreaEdit />,
             },
             {
               id: "settings",

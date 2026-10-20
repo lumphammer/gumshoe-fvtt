@@ -130,7 +130,7 @@ test("dropping a weapon from a compendium onto a PC sheet", async ({
   await expect
     .poll(() => getItemNames(page, pcId, "weapon"))
     .toEqual([weaponName]);
-  await sheet.locator(".tab-strip > label", { hasText: "Equipment" }).click();
+  await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
   await expect(sheet).toContainText(weaponName);
 });
 
@@ -191,7 +191,7 @@ test("dragging a weapon from one PC's sheet to another's copies it", async ({
     },
     { giverId, takerId },
   );
-  await giver.locator(".tab-strip > label", { hasText: "Equipment" }).click();
+  await giver.locator(".tab-strip > label", { hasText: "Combat" }).click();
   await giver
     .getByText("Old Revolver", { exact: true })
     .dragTo(taker.locator(".window-content"));
