@@ -22,7 +22,15 @@ See also [`fodg-preset.md`](fodg-preset.md).
   down to −1, breaking it: a desperate measure, but available.
 - **Burning after a loss** (p. 120): immediately after losing Stability, spend
   2 Bond points per Stability point restored. This can undo becoming Shaken or
-  Shattered.
+  Shattered. The trauma test keeps what it did (`lastTraumaTest` on the PC);
+  while Stability is just as it (and any burns since) left it, a burn works
+  the consequences out again for the higher pool, and gives back the rating
+  point for Shattering and the shock's Sanity it no longer costs. Anything
+  else changing Stability, or a Full Refresh, ends that. Adaptation progress
+  isn't recalculated.
+- Shaken (or worse) adds 1 to the Difficulty of the Stability tests here too
+  (rebuilding, and after a team crisis), from the state before spending
+  (p. 113).
 - Each use damages the relationship (p. 120): the player notes the damage and
   plays it out next time the Agent sees that person.
 - **Rebuilding** (p. 128), between operations, non-DELTA GREEN Bonds only:
@@ -239,7 +247,9 @@ Design (reviewed: a starting point):
   - **Losses:** "If it fails, your other Bonds lose: N", with a row of
     buttons per ordinary, unbroken Bond (not one this crisis is about),
     chosen before the roll. If the other Bonds can't pay it all, it says
-    so, and only what they can pay is required.
+    so, and only what they can pay is required. Points spent on the test
+    come off first, so what a Bond can pay is what it has left after its
+    spend: the same point can't pay twice.
   - **Spend:** Stability and every Bond (broken ones disabled), as on the
     Stability sheet.
   - **Make the test** is disabled, with a `Hint` saying why, until there's

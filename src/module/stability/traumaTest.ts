@@ -10,7 +10,7 @@ import type { PCActor } from "../actors/pc";
 import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
 import type { BondItem } from "../items/bond";
 import { getStabilityThresholds, isSanityOn } from "./settings";
-import type { TraumaTestRecord } from "./trauma";
+import type { LastTraumaTest, TraumaTestRecord } from "./trauma";
 import {
   didAdapt,
   getTraumaDifficulty,
@@ -156,6 +156,20 @@ export async function traumaTest(
         : null,
   };
 
+  // for burning a Bond straight after, which can undo some of it
+  const lastTraumaTest: LastTraumaTest = {
+    stateBefore: result.stateBefore,
+    causesSanityLoss: trauma.causesSanityLoss && isSanityOn(),
+    sanityLostThisOperation: actor.system.shockSanityLoss,
+    poolAfter: result.poolAfter,
+    ratingAfter,
+    ratingLoss: result.ratingLoss,
+    sanityLoss: sanityAbility ? result.sanityLoss : 0,
+    sanityPoolLoss: sanityAbility
+      ? sanityAbility.system.pool -
+        Math.min(sanityAbility.system.pool, sanityRatingAfter)
+      : 0,
+  };
   await actor.updateEmbeddedDocuments("Item", [
     {
       _id: stability.id,
@@ -178,6 +192,7 @@ export async function traumaTest(
       : []),
   ]);
   const actorChanges = {
+    lastTraumaTest,
     ...(record.adaptation
       ? { adaptations: { [trauma.id]: record.adaptation.after } }
       : {}),
@@ -185,9 +200,7 @@ export async function traumaTest(
       ? { shockSanityLoss: result.sanityLostThisOperationAfter }
       : {}),
   };
-  if (Object.keys(actorChanges).length > 0) {
-    await actor.update({ system: actorChanges });
-  }
+  await actor.update({ system: actorChanges });
   // the rules, not a choice, so no asking this time
   if (didAdapt(adaptationBefore, result.adaptationProgressAfter)) {
     await actor.system.capRatingsForAdaptation(trauma.cappedAbilities);

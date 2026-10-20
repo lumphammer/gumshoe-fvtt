@@ -82,12 +82,15 @@ export function findBondWith(
 /**
  * Work out everything a failed test would do, before any of it happens: the
  * rating for new Bonds comes from the Bonds as they are now. Nothing goes
- * above the cap (2 when Adapted to Violence).
+ * above the cap (2 when Adapted to Violence). What each Bond can pay comes
+ * from what it'll have left after the points spent on the test (by Bond id),
+ * which come off first: the same point can't pay twice.
  */
 export function planCrisis(
   bonds: CrisisBond[],
   teammates: CrisisTeammate[],
   cap: number = maxBondPoints,
+  spends: Record<string, number> = {},
 ): CrisisPlan {
   const newRating = Math.min(cap, getNewDeltaGreenBondRating(bonds));
   const changes = teammates.map((teammate): CrisisChange => {
@@ -119,13 +122,15 @@ export function planCrisis(
     changes.flatMap((change) => ("bond" in change ? [change.bond.id] : [])),
   );
   const candidates = bonds
+    .map((bond) => ({
+      bond,
+      left: clampBondPoints(bond.points - Math.max(0, spends[bond.id] ?? 0)),
+    }))
     .filter(
-      (bond) =>
-        !bond.isDeltaGreen &&
-        !isBondBroken(bond.points) &&
-        !involved.has(bond.id),
+      ({ bond, left }) =>
+        !bond.isDeltaGreen && !isBondBroken(left) && !involved.has(bond.id),
     )
-    .map((bond) => ({ bond, maxLoss: bond.points + 1 }));
+    .map(({ bond, left }) => ({ bond, maxLoss: left + 1 }));
   const available = candidates.reduce((sum, c) => sum + c.maxLoss, 0);
 
   return {

@@ -66,6 +66,27 @@ describe("findBondWith", () => {
 });
 
 describe("planCrisis", () => {
+  it("takes what's spent on the test off what a Bond can pay", () => {
+    // A at 0 spends 1 on the test, which leaves it broken: it can't pay
+    // the failure's cost too, so B has to
+    const a = bond("A", 0);
+    const b = bond("B", 4);
+    const plan = planCrisis([a, b], [bob], undefined, { [a.id]: 1 });
+    expect(plan.candidates.map((c) => [c.bond.name, c.maxLoss])).toEqual([
+      ["B", 5],
+    ]);
+    expect(areCrisisLossesValid(plan, { [a.id]: 1 })).toBe(false);
+    expect(areCrisisLossesValid(plan, { [b.id]: 1 })).toBe(true);
+    // the new Bond's rating still comes from before the spends
+    expect(plan.newRating).toBe(2);
+  });
+
+  it("lowers what a Bond can pay by its spend", () => {
+    const a = bond("A", 3);
+    const plan = planCrisis([a], [bob], undefined, { [a.id]: 2 });
+    expect(plan.candidates.map((c) => c.maxLoss)).toEqual([2]);
+  });
+
   it("follows the book's first example: two new Bonds cost one point", () => {
     const plan = planCrisis(
       [bond("Zorah", 4), bond("Jerome", 4)],

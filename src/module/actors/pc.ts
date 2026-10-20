@@ -9,6 +9,7 @@ import { migrateValue } from "../../functions/migrateValue";
 import type { SourceData } from "../../fvtt-exports";
 import {
   ArrayField,
+  BooleanField,
   NumberField,
   SchemaField,
   StringField,
@@ -55,7 +56,9 @@ import {
   isSanityOn,
 } from "../stability/settings";
 import type { StabilityState } from "../stability/states";
-import { getStabilityState } from "../stability/states";
+import { getStabilityState, isShakenOrWorse } from "../stability/states";
+import type { LastTraumaTest } from "../stability/trauma";
+import { getBurnRefund, shakenDifficultyPenalty } from "../stability/trauma";
 import { isPersonalDetailItem } from "../items/personalDetail";
 import { resizeSpecialities } from "../items/resizeSpecialities";
 import { createActiveCharacterSchema } from "../schemaFields";
@@ -118,6 +121,53 @@ export const pcSchema = {
     min: 0,
     initial: 0,
   }),
+  /**
+   * What the latest Stability test against trauma did, so that burning a
+   * Bond straight after can undo becoming Shaken or Shattered (Fall of DELTA
+   * GREEN, p. 120). See `LastTraumaTest`.
+   */
+  lastTraumaTest: new SchemaField(
+    {
+      stateBefore: new StringField({
+        nullable: false,
+        required: true,
+        initial: "steady",
+        choices: ["steady", "shaken", "shattered", "gone"],
+      }),
+      causesSanityLoss: new BooleanField({ nullable: false, initial: false }),
+      sanityLostThisOperation: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+      poolAfter: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+      ratingAfter: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+      ratingLoss: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+      sanityLoss: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+      sanityPoolLoss: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+    },
+    { nullable: true, required: false, initial: null },
+  ),
   buildPoints: new NumberField({
     nullable: false,
     required: true,
@@ -524,11 +574,47 @@ export class PCModel extends ActiveCharacterModel<
     );
   }
 
-  /** The end of an operation: shocks can cost Sanity again */
+  /**
+   * The end of an operation: shocks can cost Sanity again, and it's too late
+   * for burning a Bond to undo the last loss
+   */
   protected override async afterFullRefresh(): Promise<void> {
-    if (this.shockSanityLoss !== 0) {
-      await this.parent.update({ system: { shockSanityLoss: 0 } });
+    if (this.shockSanityLoss !== 0 || this.lastTraumaTest !== null) {
+      await this.parent.update({
+        system: { shockSanityLoss: 0, lastTraumaTest: null },
+      });
     }
+  }
+
+  /**
+   * The Difficulty of a Stability test for this Agent: +1 while Shaken or
+   * worse, like any General test (Fall of DELTA GREEN, p. 113)
+   */
+  getStabilityTestDifficulty(base: number): number {
+    const state = this.getStabilityState();
+    return (
+      base +
+      (state !== null && isShakenOrWorse(state) ? shakenDifficultyPenalty : 0)
+    );
+  }
+
+  /**
+   * The latest trauma test, if Stability is still just as it (and any burns
+   * since) left it: then burning a Bond is "immediately after" the loss
+   */
+  getUndoableTraumaTest(): LastTraumaTest | null {
+    const last = this.lastTraumaTest;
+    const stability = this.getStabilityAbility();
+    if (
+      last === null ||
+      last === undefined ||
+      stability === undefined ||
+      stability.system.pool !== last.poolAfter ||
+      stability.system.rating !== last.ratingAfter
+    ) {
+      return null;
+    }
+    return { ...last, stateBefore: last.stateBefore as StabilityState };
   }
 
   /**
@@ -658,6 +744,28 @@ export class PCModel extends ActiveCharacterModel<
     if (!this.canBurnBond(bond)) {
       return;
     }
+    const poolAfter = stability.system.pool + 1;
+    // straight after a trauma test, burning can undo becoming Shaken or
+    // Shattered, and with it the rating point and Sanity they cost
+    const last = this.getUndoableTraumaTest();
+    const refund = last
+      ? getBurnRefund({
+          last,
+          poolAfterBurn: poolAfter,
+          thresholds: getStabilityThresholds(),
+        })
+      : null;
+    const ratingBefore = stability.system.rating;
+    const ratingAfter = ratingBefore + (refund?.ratingRefund ?? 0);
+    const sanity =
+      refund && refund.sanityRefund > 0 ? this.getSanityAbility() : undefined;
+    const sanityBefore = sanity?.system.rating ?? 0;
+    const sanityAfter = sanityBefore + (refund?.sanityRefund ?? 0);
+    // the pool only comes back as far as the shock took it down
+    const sanityPoolRefund = Math.min(
+      refund?.sanityRefund ?? 0,
+      last?.sanityPoolLoss ?? 0,
+    );
     await this.parent.updateEmbeddedDocuments("Item", [
       {
         _id: bond.id,
@@ -667,13 +775,55 @@ export class PCModel extends ActiveCharacterModel<
           ),
         },
       },
-      { _id: stability.id, system: { pool: stability.system.pool + 1 } },
+      {
+        _id: stability.id,
+        system: { pool: poolAfter, rating: ratingAfter },
+      },
+      ...(sanity
+        ? [
+            {
+              _id: sanity.id,
+              system: {
+                rating: sanityAfter,
+                pool: sanity.system.pool + sanityPoolRefund,
+              },
+            },
+          ]
+        : []),
     ]);
+    if (last && refund) {
+      await this.parent.update({
+        system: {
+          shockSanityLoss: refund.consequences.sanityLostThisOperationAfter,
+          lastTraumaTest: {
+            ...last,
+            poolAfter,
+            ratingAfter,
+            ratingLoss: refund.consequences.ratingLoss,
+            sanityLoss: refund.consequences.sanityLoss,
+            sanityPoolLoss: last.sanityPoolLoss - sanityPoolRefund,
+          },
+        },
+      });
+    }
     await this.broadcastUserMessage("ActorNameBurnedBondNameForAbilityName", {
       BondName: bond.name ?? "",
       AbilityName: stability.name ?? "",
       Points: String(bondPointsPerBurnedStability),
     });
+    const restored = [
+      ...(ratingAfter !== ratingBefore
+        ? [`${stability.name ?? ""} ${ratingBefore} → ${ratingAfter}`]
+        : []),
+      ...(sanity
+        ? [`${sanity.name ?? ""} ${sanityBefore} → ${sanityAfter}`]
+        : []),
+    ];
+    if (restored.length > 0) {
+      await this.broadcastUserMessage("BurningStraightAfterTheLossRestored", {
+        Ratings: restored.join(", "),
+      });
+    }
   };
 
   createBond = async (): Promise<void> => {

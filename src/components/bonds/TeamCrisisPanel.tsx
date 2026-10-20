@@ -68,11 +68,16 @@ export const TeamCrisisPanel = ({
   const bonds = actor.system.getBonds();
   const candidates = getCrisisTeammateCandidates(actor);
   const teammates = candidates.filter((c) => selected.includes(c.uuid ?? ""));
-  const plan = planTeamCrisis(actor, teammates);
+  // what each Bond can lose depends on what's spent from it first
+  const plan = planTeamCrisis(actor, teammates, bondSpends);
   const changesByUuid = new Map(plan.changes.map((c) => [c.teammate.uuid, c]));
-  // only losses from Bonds which can still pay
+  // only losses from Bonds which can still pay, and no more than they can
+  // (which a spend can lower)
   const currentLosses = Object.fromEntries(
-    plan.candidates.map(({ bond }) => [bond.id, losses[bond.id] ?? 0]),
+    plan.candidates.map(({ bond, maxLoss }) => [
+      bond.id,
+      Math.min(maxLoss, losses[bond.id] ?? 0),
+    ]),
   );
   const allocated = getTotalLosses(currentLosses);
 
@@ -146,7 +151,9 @@ export const TeamCrisisPanel = ({
         <Translate
           values={{
             AbilityName: stability?.name ?? "",
-            Difficulty: String(crisisDifficulty),
+            Difficulty: String(
+              actor.system.getStabilityTestDifficulty(crisisDifficulty),
+            ),
             Max: String(maxCrisisTeammates),
           }}
         >

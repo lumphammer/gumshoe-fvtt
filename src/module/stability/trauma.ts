@@ -97,6 +97,56 @@ export type TraumaTestResult = {
   sanityLostThisOperationAfter: number;
 };
 
+export type TraumaConsequences = {
+  stateAfter: StabilityState;
+  /** whether the loss made things worse */
+  worsened: boolean;
+  /** Stability rating lost (newly Shattered) */
+  ratingLoss: number;
+  /** Sanity rating lost to a shock */
+  sanityLoss: number;
+  /** what this operation's shocks have cost after this one */
+  sanityLostThisOperationAfter: number;
+};
+
+/**
+ * What a loss leaving the pool at `poolAfter` does, from the state before
+ * it: a rating point on becoming Shattered, and Sanity for a shock. Separate
+ * from the test, so that burning a Bond straight after can work it out again
+ * for a higher pool (Fall of DELTA GREEN, p. 120).
+ */
+export function getTraumaConsequences({
+  stateBefore,
+  poolAfter,
+  thresholds,
+  causesSanityLoss,
+  sanityLostThisOperation,
+}: {
+  stateBefore: StabilityState;
+  poolAfter: number;
+  thresholds: StabilityThresholds | null;
+  causesSanityLoss: boolean;
+  /** Sanity rating already lost to shocks this operation, before the test */
+  sanityLostThisOperation: number;
+}): TraumaConsequences {
+  const stateAfter = getTraumaState(poolAfter, thresholds);
+  const worsened = isWorseState(stateAfter, stateBefore);
+  // Gone without passing through Shattered: the Agent's lost anyway
+  const ratingLoss =
+    worsened && stateAfter === "shattered" ? shatteredRatingLoss : 0;
+  // only the worst shock each operation costs Sanity
+  const shock =
+    causesSanityLoss && worsened ? getShockSanityLoss(stateAfter) : 0;
+  const sanityLostThisOperationAfter = Math.max(sanityLostThisOperation, shock);
+  return {
+    stateAfter,
+    worsened,
+    ratingLoss,
+    sanityLoss: sanityLostThisOperationAfter - sanityLostThisOperation,
+    sanityLostThisOperationAfter,
+  };
+}
+
 /** Work out everything a Stability test against trauma does */
 export function resolveTraumaTest(input: TraumaTestInput): TraumaTestResult {
   const succeeded = input.total >= input.difficulty;
@@ -104,12 +154,19 @@ export function resolveTraumaTest(input: TraumaTestInput): TraumaTestResult {
   const loss = succeeded ? 0 : Math.max(0, input.potentialLoss);
   const poolAfter = afterSpend - loss;
   const stateBefore = getTraumaState(afterSpend, input.thresholds);
-  const stateAfter = getTraumaState(poolAfter, input.thresholds);
-  const worsened = isWorseState(stateAfter, stateBefore);
-
-  // Gone without passing through Shattered: the Agent's lost anyway
-  const ratingLoss =
-    worsened && stateAfter === "shattered" ? shatteredRatingLoss : 0;
+  const {
+    stateAfter,
+    worsened,
+    ratingLoss,
+    sanityLoss,
+    sanityLostThisOperationAfter,
+  } = getTraumaConsequences({
+    stateBefore,
+    poolAfter,
+    thresholds: input.thresholds,
+    causesSanityLoss: input.causesSanityLoss,
+    sanityLostThisOperation: input.sanityLostThisOperation,
+  });
 
   // three losses in a row without becoming Shaken; any loss that leaves the
   // Agent Shaken or worse starts again. Successes don't count either way.
@@ -122,16 +179,6 @@ export function resolveTraumaTest(input: TraumaTestInput): TraumaTestResult {
           ? 0
           : Math.min(adaptationThreshold, input.adaptationProgress + 1);
   }
-
-  // only the worst shock each operation costs Sanity
-  const shock =
-    input.causesSanityLoss && worsened ? getShockSanityLoss(stateAfter) : 0;
-  const sanityLostThisOperationAfter = Math.max(
-    input.sanityLostThisOperation,
-    shock,
-  );
-  const sanityLoss =
-    sanityLostThisOperationAfter - input.sanityLostThisOperation;
 
   return {
     succeeded,
@@ -275,5 +322,57 @@ export function parseTraumaTestRecord(
     stabilityRating: record["stabilityRating"],
     sanity: record["sanity"],
     adaptation: adaptation as { before: number; after: number } | null,
+  };
+}
+
+/**
+ * What the latest Stability test against trauma did, kept on the actor so
+ * that burning a Bond straight after can undo becoming Shaken or Shattered
+ * (Fall of DELTA GREEN, p. 120). Burns update it as they go.
+ */
+export type LastTraumaTest = {
+  /** the state after spending, before the loss */
+  stateBefore: StabilityState;
+  causesSanityLoss: boolean;
+  /** Sanity lost to shocks this operation before the test */
+  sanityLostThisOperation: number;
+  /** Stability as the test (and any burns since) left it */
+  poolAfter: number;
+  ratingAfter: number;
+  /** what's been taken for it, as things stand */
+  ratingLoss: number;
+  sanityLoss: number;
+  /** Sanity pool lost with the rating (when the pool was above the new rating) */
+  sanityPoolLoss: number;
+};
+
+/**
+ * What burning a Bond gives back, on top of the Stability point, when it's
+ * straight after a trauma test: the loss now stops at a higher pool, so it
+ * may not have Shattered the Agent (a rating point), or shocked them as hard
+ * (Sanity).
+ */
+export function getBurnRefund({
+  last,
+  poolAfterBurn,
+  thresholds,
+}: {
+  last: LastTraumaTest;
+  poolAfterBurn: number;
+  thresholds: StabilityThresholds | null;
+}): {
+  ratingRefund: number;
+  sanityRefund: number;
+  consequences: TraumaConsequences;
+} {
+  const consequences = getTraumaConsequences({
+    ...last,
+    poolAfter: poolAfterBurn,
+    thresholds,
+  });
+  return {
+    ratingRefund: Math.max(0, last.ratingLoss - consequences.ratingLoss),
+    sanityRefund: Math.max(0, last.sanityLoss - consequences.sanityLoss),
+    consequences,
   };
 }

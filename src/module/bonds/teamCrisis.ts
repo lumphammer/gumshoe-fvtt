@@ -66,11 +66,17 @@ export function getCrisisTeammateCandidates(
     .toSorted((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
 }
 
-export function planTeamCrisis(actor: PCActor, teammates: Actor[]): CrisisPlan {
+/** `spends`: Bond points to be spent on the test, by Bond id */
+export function planTeamCrisis(
+  actor: PCActor,
+  teammates: Actor[],
+  spends: Record<string, number> = {},
+): CrisisPlan {
   return planCrisis(
     actor.system.getBonds().map(toCrisisBond),
     teammates.map(toCrisisTeammate),
     actor.system.getBondCap(),
+    spends,
   );
 }
 
@@ -98,7 +104,13 @@ export async function teamCrisis(
   const candidates = new Set<Actor>(getCrisisTeammateCandidates(actor));
   const usedBondSpends = bondSpends.filter(({ spend }) => spend > 0);
   // the panel only offers what's allowed, but it may be out of date
-  const plan = planTeamCrisis(actor, teammates);
+  const plan = planTeamCrisis(
+    actor,
+    teammates,
+    Object.fromEntries(
+      usedBondSpends.map(({ bond, spend }) => [bond.id ?? "", spend]),
+    ),
+  );
   if (
     stability === undefined ||
     teammates.length === 0 ||
@@ -116,6 +128,8 @@ export async function teamCrisis(
     return;
   }
 
+  // from the state before anything's spent: +1 while Shaken (p. 113)
+  const difficulty = actor.system.getStabilityTestDifficulty(crisisDifficulty);
   const bondTotal = usedBondSpends.reduce((sum, { spend }) => sum + spend, 0);
   const roll = new Roll("1d6 + @stability + @bonds", {
     stability: stabilitySpend,
@@ -124,7 +138,7 @@ export async function teamCrisis(
   await roll.evaluate();
   const die = roll.dice[0]?.total ?? 0;
   const total = roll.total ?? 0;
-  const succeeded = total >= crisisDifficulty;
+  const succeeded = total >= difficulty;
 
   // every Bond's points, as they go: spends come off first (they're part of
   // the test), then on a failure the changes and the losses
@@ -135,7 +149,7 @@ export async function teamCrisis(
   }
   const reformed = new Set<BondItem>();
   const record: CrisisRecord = {
-    difficulty: crisisDifficulty,
+    difficulty,
     die,
     total,
     succeeded,

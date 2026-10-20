@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import { defaultStabilityThresholds } from "./states";
-import type { TraumaTestInput, TraumaTestRecord } from "./trauma";
+import type {
+  LastTraumaTest,
+  TraumaTestInput,
+  TraumaTestRecord,
+} from "./trauma";
 import {
   didAdapt,
+  getBurnRefund,
   getTraumaDifficulty,
   parseTraumaTestRecord,
   resolveTraumaTest,
@@ -233,5 +238,89 @@ describe("trauma test records", () => {
     JSON.stringify({ ...record, adaptation: { before: 1 } }),
   ])("rejects %s", (text) => {
     expect(parseTraumaTestRecord(text)).toBeNull();
+  });
+});
+
+describe("getBurnRefund", () => {
+  const thresholds = defaultStabilityThresholds;
+  // an Unnatural loss from -5 to -6: Shattered, so a rating point, and a
+  // 2-point shock
+  const shattered: LastTraumaTest = {
+    stateBefore: "shaken",
+    causesSanityLoss: true,
+    sanityLostThisOperation: 0,
+    poolAfter: -6,
+    ratingAfter: 7,
+    ratingLoss: 1,
+    sanityLoss: 2,
+    sanityPoolLoss: 0,
+  };
+
+  it("undoes becoming Shattered, back to Shaken", () => {
+    const { ratingRefund, sanityRefund, consequences } = getBurnRefund({
+      last: shattered,
+      poolAfterBurn: -5,
+      thresholds,
+    });
+    expect(ratingRefund).toBe(1);
+    // Shaken was where they started, so no shock at all
+    expect(sanityRefund).toBe(2);
+    expect(consequences.sanityLostThisOperationAfter).toBe(0);
+  });
+
+  it("undoes becoming Shaken, and its shock", () => {
+    const { ratingRefund, sanityRefund } = getBurnRefund({
+      last: {
+        ...shattered,
+        stateBefore: "steady",
+        poolAfter: 0,
+        ratingLoss: 0,
+        sanityLoss: 1,
+      },
+      poolAfterBurn: 1,
+      thresholds,
+    });
+    expect(ratingRefund).toBe(0);
+    expect(sanityRefund).toBe(1);
+  });
+
+  it("gives back only the difference, from Shattered to Shaken", () => {
+    // steady to Shattered: 2 Sanity; burned back only as far as Shaken, which
+    // still costs 1
+    const { ratingRefund, sanityRefund, consequences } = getBurnRefund({
+      last: { ...shattered, stateBefore: "steady" },
+      poolAfterBurn: -5,
+      thresholds,
+    });
+    expect(ratingRefund).toBe(1);
+    expect(sanityRefund).toBe(1);
+    expect(consequences.sanityLostThisOperationAfter).toBe(1);
+  });
+
+  it("gives nothing back while the Agent's still Shattered", () => {
+    const { ratingRefund, sanityRefund } = getBurnRefund({
+      last: { ...shattered, poolAfter: -8 },
+      poolAfterBurn: -7,
+      thresholds,
+    });
+    expect(ratingRefund).toBe(0);
+    expect(sanityRefund).toBe(0);
+  });
+
+  it("keeps an earlier, worse shock this operation", () => {
+    const { sanityRefund, consequences } = getBurnRefund({
+      last: {
+        ...shattered,
+        stateBefore: "steady",
+        poolAfter: 0,
+        sanityLostThisOperation: 2,
+        ratingLoss: 0,
+        sanityLoss: 0,
+      },
+      poolAfterBurn: 1,
+      thresholds,
+    });
+    expect(sanityRefund).toBe(0);
+    expect(consequences.sanityLostThisOperationAfter).toBe(2);
   });
 });

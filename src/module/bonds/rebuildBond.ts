@@ -58,6 +58,8 @@ export async function rebuildBond(
     (total, { spend }) => total + spend,
     0,
   );
+  // from the state before anything's spent: +1 while Shaken (p. 113)
+  const difficulty = actor.system.getStabilityTestDifficulty(rebuildDifficulty);
   const testRoll = new Roll("1d6 + @stability + @abilities", {
     stability: spends.stability,
     abilities: abilityTotal,
@@ -65,7 +67,7 @@ export async function rebuildBond(
   await testRoll.evaluate();
   const die = testRoll.dice[0]?.total ?? 0;
   const total = testRoll.total ?? 0;
-  const outcome = getRebuildOutcome({ die, total });
+  const outcome = getRebuildOutcome({ die, total, difficulty });
 
   let refreshRoll: Roll | null = null;
   if (doesRebuildRefreshStability(outcome)) {
@@ -112,7 +114,7 @@ export async function rebuildBond(
       [constants.htmlDataImageUrl]: bond.img,
       [constants.htmlDataBondRebuild]: serializeRebuildRecord({
         bondName: bond.name ?? "",
-        difficulty: rebuildDifficulty,
+        difficulty,
         die,
         total,
         outcome,

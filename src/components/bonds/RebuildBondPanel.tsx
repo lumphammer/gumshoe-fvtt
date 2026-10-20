@@ -65,7 +65,9 @@ export const RebuildBondPanel = ({ bond }: { bond: BondItem }) => {
         <Translate
           values={{
             AbilityName: stability?.name ?? "",
-            Difficulty: String(rebuildDifficulty),
+            Difficulty: String(
+              actor.system.getStabilityTestDifficulty(rebuildDifficulty),
+            ),
             Category: settings.bondRebuildSpendCategory.get(),
           }}
         >

@@ -2,6 +2,7 @@ import type { Locator, Page } from "@playwright/test";
 
 import {
   createActor,
+  createOwnedItem,
   expect,
   forceDice,
   lastChatMessage,
@@ -277,4 +278,109 @@ test("an Unnatural shock that Shatters costs Stability and Sanity", async ({
   await expect
     .poll(async () => (await getActorSystem(page, actorId)).shockSanityLoss)
     .toBe(0);
+});
+
+test("burning a Bond straight after a loss undoes becoming Shattered", async ({
+  page,
+}) => {
+  const actorId = await createActor(page, { name: "Clinger", type: "pc" });
+  await updateAbility(page, actorId, "Stability", { rating: 6, pool: -4 });
+  await updateAbility(page, actorId, "Sanity", { rating: 5, pool: 5 });
+  await createOwnedItem(page, actorId, {
+    name: "Jerome",
+    type: "bond",
+    system: { points: 4 },
+  });
+
+  // Shaken to Shattered by the Unnatural: a rating point, and 2 Sanity, which
+  // takes the pool down with it
+  const sheet = await openAbilitySheet(page, actorId, "Stability");
+  await sheet.getByLabel("Trauma").selectOption("unnatural");
+  await sheet.getByLabel("Potential loss").selectOption("2");
+  await forceDice(page, 1);
+  await sheet.getByRole("button", { name: "Test" }).click();
+  // the card comes once everything's recorded
+  await expect(
+    lastChatMessage(page).getByTestId("trauma-test-card"),
+  ).toBeVisible();
+  await expect
+    .poll(() => getAbility(page, actorId, "Stability"))
+    .toEqual({ rating: 5, pool: -6 });
+  expect(await getAbility(page, actorId, "Sanity")).toEqual({
+    rating: 3,
+    pool: 3,
+  });
+
+  const burn = () =>
+    page.evaluate(async (actorId) => {
+      const actor = game.actors.get(actorId)!;
+      const system = actor.system as unknown as {
+        burnBond: (bond: Item) => Promise<void>;
+      };
+      await system.burnBond(actor.items.getName("Jerome")!);
+    }, actorId);
+
+  // straight after, burning takes them back to Shaken, which undoes the lot
+  await burn();
+  await expect
+    .poll(() => getAbility(page, actorId, "Stability"))
+    .toEqual({ rating: 6, pool: -5 });
+  expect(await getAbility(page, actorId, "Sanity")).toEqual({
+    rating: 5,
+    pool: 5,
+  });
+  expect((await getActorSystem(page, actorId)).shockSanityLoss).toBe(0);
+  await expect(lastChatMessage(page)).toContainText(
+    "That was straight after the loss, so Clinger gets back Stability 5 → 6, Sanity 3 → 5",
+  );
+
+  // burning again just restores a point
+  await burn();
+  await expect
+    .poll(() => getAbility(page, actorId, "Stability"))
+    .toEqual({ rating: 6, pool: -4 });
+  expect(await getAbility(page, actorId, "Sanity")).toEqual({
+    rating: 5,
+    pool: 5,
+  });
+});
+
+test("a later burn doesn't undo an earlier loss", async ({ page }) => {
+  const actorId = await createActor(page, { name: "Too Late", type: "pc" });
+  await updateAbility(page, actorId, "Stability", { rating: 6, pool: -4 });
+  await updateAbility(page, actorId, "Sanity", { rating: 5, pool: 5 });
+  await createOwnedItem(page, actorId, {
+    name: "Jerome",
+    type: "bond",
+    system: { points: 4 },
+  });
+  const sheet = await openAbilitySheet(page, actorId, "Stability");
+  await sheet.getByLabel("Trauma").selectOption("unnatural");
+  await sheet.getByLabel("Potential loss").selectOption("2");
+  await forceDice(page, 1);
+  await sheet.getByRole("button", { name: "Test" }).click();
+  // the card comes once everything's recorded
+  await expect(
+    lastChatMessage(page).getByTestId("trauma-test-card"),
+  ).toBeVisible();
+  await expect
+    .poll(() => getAbility(page, actorId, "Stability"))
+    .toEqual({ rating: 5, pool: -6 });
+
+  // something else happens to Stability first
+  await updateAbility(page, actorId, "Stability", { pool: -7 });
+  await page.evaluate(async (actorId) => {
+    const actor = game.actors.get(actorId)!;
+    const system = actor.system as unknown as {
+      burnBond: (bond: Item) => Promise<void>;
+    };
+    await system.burnBond(actor.items.getName("Jerome")!);
+  }, actorId);
+  await expect
+    .poll(() => getAbility(page, actorId, "Stability"))
+    .toEqual({ rating: 5, pool: -6 });
+  expect(await getAbility(page, actorId, "Sanity")).toEqual({
+    rating: 3,
+    pool: 3,
+  });
 });
