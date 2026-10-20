@@ -110,6 +110,8 @@ export const defaultSettings: Required<PresetV1> = {
   bondRebuildSpendCategory: "Interpersonal",
   useTrauma: false,
   traumaTypes: [],
+  useNetworkContacts: false,
+  networkAbility: "Network",
   useCards: false,
   cardCategories: [],
 };
@@ -447,7 +449,7 @@ export const fallOfDeltaGreenPreset: PresetV1 = {
     { name: "Military Service", type: "item" },
     { name: "Motivation", type: "text" },
   ],
-  longNotes: ["Service Record/Bio", "Disorders", "Contacts", "Notes"],
+  longNotes: ["Service Record/Bio", "Disorders", "Notes"],
   newPCPacks: [`${systemId}.${packNames.fallOfDeltaGreenAbilities}`],
   newNPCPacks: [`${systemId}.${packNames.fallOfDeltaGreenOpponentAbilities}`],
   useBoost: false,
@@ -473,6 +475,7 @@ export const fallOfDeltaGreenPreset: PresetV1 = {
   sanityCapAbility: "The Unnatural",
   useStabilityStates: true,
   useBonds: true,
+  useNetworkContacts: true,
   useTrauma: true,
   traumaTypes: [
     {

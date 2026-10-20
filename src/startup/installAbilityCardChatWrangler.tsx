@@ -11,6 +11,7 @@ import { BrokenCard } from "../components/messageCards/BrokenCard";
 import { PushCard } from "../components/messageCards/PushCard";
 import { CrisisCallCard } from "../components/messageCards/CrisisCallCard";
 import { EstablishBondCard } from "../components/messageCards/EstablishBondCard";
+import { NetworkContactCard } from "../components/messageCards/NetworkContactCard";
 import { RebuildBondCard } from "../components/messageCards/RebuildBondCard";
 import { TeamCrisisCard } from "../components/messageCards/TeamCrisisCard";
 import { TraumaTestCard } from "../components/messageCards/TraumaTestCard";
@@ -24,6 +25,7 @@ import { parseTraumaTestRecord } from "../module/stability/trauma";
 import { parseCrisisCall, parseCrisisRecord } from "../module/bonds/crisis";
 import { parseEstablishRecord } from "../module/bonds/establish";
 import { parseRebuildRecord } from "../module/bonds/rebuild";
+import { parseContactRecord } from "../module/contacts/rules";
 import { isAbilityItem } from "../module/items/exports";
 import type { MWDifficulty } from "../types";
 import { createCardRootTracker } from "./createCardRootTracker";
@@ -189,6 +191,22 @@ export const installAbilityCardChatWrangler = () => {
           renderCardNow(
             el,
             <TraumaTestCard record={record} imageUrl={imageUrl} />,
+          );
+        }
+        return;
+      }
+
+      // a Network contact's card carries its whole record too
+      if (mode === constants.htmlDataModeNetworkContact) {
+        const record = parseContactRecord(
+          el.getAttribute(constants.htmlDataNetworkContact),
+        );
+        if (record === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(
+            el,
+            <NetworkContactCard record={record} imageUrl={imageUrl} />,
           );
         }
         return;

@@ -101,14 +101,14 @@ export class ActiveCharacterModel<
     const updates = Array.from(this.parent.items).flatMap((item) => {
       if (
         isAbilityItem(item) &&
-        item.system.rating !== item.system.pool &&
+        item.system.getRefreshTarget() !== item.system.pool &&
         !item.system.excludeFromGeneralRefresh
       ) {
         return [
           {
             _id: item.id,
             system: {
-              pool: item.system.rating,
+              pool: item.system.getRefreshTarget(),
             },
           },
         ];

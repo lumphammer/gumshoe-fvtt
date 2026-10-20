@@ -25,6 +25,7 @@ export const mwItem = "mwItem";
 export const personalDetail = "personalDetail";
 export const card = "card";
 export const bond = "bond";
+export const networkContact = "networkContact";
 
 // assets
 // all generated through https://game-icons.net/
@@ -38,6 +39,8 @@ export const partyIcon = `/systems/${systemId}/assets/icons/dark-squad.webp`;
 export const personalDetailIcon = `/systems/${systemId}/assets/icons/notebook.webp`;
 export const cardIcon = `/systems/${systemId}/assets/icons/card.webp`;
 export const bondIcon = `/systems/${systemId}/assets/icons/transfuse.webp`;
+// a stand-in from Foundry's own icons
+export const networkContactIcon = "icons/svg/mystery-man.svg";
 
 // packs
 
@@ -89,12 +92,14 @@ export const htmlDataModeBondEstablish = "bond-establish";
 export const htmlDataModeBondCrisis = "bond-crisis";
 export const htmlDataModeBondCrisisCall = "bond-crisis-call";
 export const htmlDataModeStabilityTest = "stability-test";
+export const htmlDataModeNetworkContact = "network-contact";
 export const htmlDataRange = "data-range";
 export const htmlDataBondSpends = "data-bond-spends";
 export const htmlDataBondRebuild = "data-bond-rebuild";
 export const htmlDataBondEstablish = "data-bond-establish";
 export const htmlDataBondCrisis = "data-bond-crisis";
 export const htmlDataBondCrisisCall = "data-bond-crisis-call";
+export const htmlDataNetworkContact = "data-network-contact";
 export const htmlDataStabilityState = "data-stability-state";
 export const htmlDataStabilityTest = "data-stability-test";
 export const htmlDataWeaponId = "data-weapon-id";

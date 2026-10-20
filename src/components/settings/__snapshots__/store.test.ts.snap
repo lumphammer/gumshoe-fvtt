@@ -180,7 +180,7 @@ exports[`reducer > should apply a preset 1`] = `
       "showEmptyInvestigativeCategories": false,
       "systemMigrationVersion": "",
       "shortNotes": Array [],
-@@ -88,32 +113,57 @@
+@@ -88,34 +113,59 @@
       "offeredTrailOfCthulhuRules": false,
       "journalMemories": Object {},
       "cardCategories": Array [],
@@ -244,6 +244,9 @@ exports[`reducer > should apply a preset 1`] = `
 +         "refreshPenalty": 0,
 +       },
 +     ],
+      "useNetworkContacts": false,
+-     "networkAbility": "",
++     "networkAbility": "Network",
       "useCards": false,
       "notifyItemAddedToActor": false,
 +     "schemaVersion": "v1",

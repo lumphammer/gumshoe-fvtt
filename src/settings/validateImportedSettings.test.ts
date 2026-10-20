@@ -36,6 +36,8 @@ it("should accept an older export without the damage application settings", () =
     "bondRebuildSpendCategory",
     "useTrauma",
     "traumaTypes",
+    "useNetworkContacts",
+    "networkAbility",
   ]) {
     expect(validatedResult).not.toHaveProperty(key);
   }
@@ -90,6 +92,14 @@ it("should preserve the Sanity & Stability settings through a round trip", () =>
       },
     ],
   };
+
+  expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
+    exportedSettings,
+  );
+});
+
+it("should preserve the Network contacts settings through a round trip", () => {
+  const exportedSettings = { useNetworkContacts: true, networkAbility: "Pals" };
 
   expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
     exportedSettings,

@@ -23,7 +23,8 @@ PRs.
   Fighting (animals and monsters use Fighting, p. 089).
 - Occupation label "Department"; generic occupation "Agent".
 - Personal details: Military Service (item), Motivation (text).
-- Long notes: Service Record/Bio, Bonds, Disorders, Contacts, Notes.
+- Long notes: Service Record/Bio, Disorders, Notes. (Bonds and Network
+  contacts have their own tabs.)
 - PC and NPC stats: the same as Trail of Cthulhu (Hit Threshold; plus Armor,
   Alertness, Stealth and Stability Loss for NPCs), which match the book's stat
   blocks.
@@ -120,8 +121,10 @@ Rough priority order.
    house-rule them. So Sanity can still be tested and spent, the GM turns an
    Agent at 0 into a GMC by hand, and the revelation table (p. 121) is a
    guideline rather than options on the sheet.
-4. **Network contacts** (p. 068). Each contact gets a pool carved out of
-   Network, and those points never refresh.
+4. **Network contacts** (p. 068): done, see
+   [`fodg-network-plan.md`](fodg-network-plan.md). Contacts get pools from
+   Network, act with tests of their pool and give information for 1 or 2
+   points; Network refreshes to its rating less what contacts hold.
 5. **Initiative** (p. 090). The book orders ready weapons first, then guns
    before melee, then by rating, with ties broken by pool. The system ranks
    by one ability's rating, and the GM reorders by hand.

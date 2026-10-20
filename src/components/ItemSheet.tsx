@@ -3,6 +3,7 @@ import type { CSSObject } from "@emotion/react";
 import { useItemSheetContext } from "../hooks/useSheetContexts";
 import { useTheme } from "../hooks/useTheme";
 import { isBondItem } from "../module/items/bond";
+import { isNetworkContactItem } from "../module/items/networkContact";
 import { isCardItem } from "../module/items/card";
 import { isEquipmentItem } from "../module/items/equipment";
 import { isAbilityItem } from "../module/items/exports";
@@ -11,6 +12,7 @@ import { isPersonalDetailItem } from "../module/items/personalDetail";
 import { isWeaponItem } from "../module/items/weapon";
 import { AbilitySheet } from "./abilities/AbilitySheet";
 import { BondSheet } from "./bonds/BondSheet";
+import { NetworkContactSheet } from "./contacts/NetworkContactSheet";
 import { CardSheet } from "./cards/CardSheet";
 import { CSSReset } from "./CSSReset";
 import { EquipmentSheet } from "./equipment/EquipmentSheet";
@@ -60,6 +62,8 @@ export const ItemSheet = () => {
           <CardSheet />
         ) : isBondItem(item) ? (
           <BondSheet />
+        ) : isNetworkContactItem(item) ? (
+          <NetworkContactSheet />
         ) : (
           <ThrowError message={`No sheet defined for item type ${item.type}`} />
         )}

@@ -294,7 +294,8 @@
       "mwItem": {},
       "personalDetail": {},
       "card": {},
-      "bond": {}
+      "bond": {},
+      "networkContact": {}
     },
     "Combat": {
       "turnPassing": {},

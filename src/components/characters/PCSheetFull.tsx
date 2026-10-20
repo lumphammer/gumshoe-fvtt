@@ -22,6 +22,7 @@ import { GridField } from "../inputs/GridField";
 import { IndexedAsyncTextInput } from "../inputs/IndexedAsyncTextInput";
 import { InputGrid } from "../inputs/InputGrid";
 import { BondsArea } from "../bonds/BondsArea";
+import { NetworkContactsArea } from "../contacts/NetworkContactsArea";
 import { TabContainer } from "../TabContainer";
 import { Translate } from "../Translate";
 import { AbilitiesAreaEdit } from "./AbilitiesAreaEdit";
@@ -275,6 +276,11 @@ export const PCSheetFull = () => {
               // adaptations without Bonds
               label: areBondsOn() ? "Bonds" : "Adapted to",
               content: <BondsArea />,
+            },
+            settings.useNetworkContacts.get() && {
+              id: "contacts",
+              label: "Contacts",
+              content: <NetworkContactsArea />,
             },
             settingsUseCards() && {
               id: "cards",

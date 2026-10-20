@@ -44,6 +44,9 @@ import { isGeneralAbilityItem } from "../items/generalAbility";
 import type { InvestigativeAbilityItem } from "../items/investigativeAbility";
 import { isInvestigativeAbilityItem } from "../items/investigativeAbility";
 import { assertMwItem, isMwItem } from "../items/mwItem";
+import type { NetworkContactItem } from "../items/networkContact";
+import { isNetworkContactItem } from "../items/networkContact";
+import { getNetworkRefreshPool } from "../contacts/rules";
 import type { PersonalDetailItem } from "../items/personalDetail";
 import { getSanityCap } from "../sanity/rules";
 import {
@@ -272,7 +275,7 @@ export class PCModel extends ActiveCharacterModel<
       }
       const pool = getRefreshedPool({
         pool: item.system.pool,
-        rating: item.system.rating,
+        rating: item.system.getRefreshTarget(),
         refreshPenalty,
       });
       return pool === item.system.pool
@@ -677,6 +680,58 @@ export class PCModel extends ActiveCharacterModel<
     await this.parent.createEmbeddedDocuments(
       "Item",
       [{ type: c.bond, name: "New Bond" }],
+      { renderSheet: true },
+    );
+  };
+
+  /** The Network ability, which contacts' points come from */
+  getNetworkAbility(): GeneralAbilityItem | undefined {
+    const name = settings.networkAbility.get();
+    return this.parent.items.find(
+      (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
+        isGeneralAbilityItem(item) && item.name === name,
+    );
+  }
+
+  /** Network contacts (Fall of DELTA GREEN, p. 068), by name */
+  getNetworkContacts(): NetworkContactItem[] {
+    return this.parent.items
+      .filter((item) => isNetworkContactItem(item))
+      .toSorted((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+  }
+
+  /** The Network points contacts still hold */
+  getContactPoints(): number {
+    return this.getNetworkContacts().reduce(
+      (total, contact) => total + contact.system.pool,
+      0,
+    );
+  }
+
+  /**
+   * What an ability refreshes to: its rating, except that Network leaves out
+   * what contacts still hold, so its pool and theirs add up to its rating
+   */
+  getRefreshTarget(ability: AbilityItem): number {
+    const rating = ability.system.rating;
+    if (
+      !settings.useNetworkContacts.get() ||
+      ability.id !== this.getNetworkAbility()?.id
+    ) {
+      return rating;
+    }
+    return getNetworkRefreshPool({
+      rating,
+      contactPools: this.getNetworkContacts().map(
+        (contact) => contact.system.pool,
+      ),
+    });
+  }
+
+  createNetworkContact = async (): Promise<void> => {
+    await this.parent.createEmbeddedDocuments(
+      "Item",
+      [{ type: c.networkContact, name: getTranslated("New contact") }],
       { renderSheet: true },
     );
   };

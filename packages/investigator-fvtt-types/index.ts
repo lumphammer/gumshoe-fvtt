@@ -508,6 +508,15 @@ export interface PresetV1 {
    */
   traumaTypes?: TraumaType[];
   /**
+   * Network contacts (Fall of DELTA GREEN, Night's Black Agents): PCs reveal
+   * contacts, each with a pool of points taken from the Network ability.
+   */
+  useNetworkContacts?: boolean;
+  /**
+   * The name of the ability contacts' points come from. Defaults to Network.
+   */
+  networkAbility?: string;
+  /**
    * Should we use cards?
    */
   useCards?: boolean;

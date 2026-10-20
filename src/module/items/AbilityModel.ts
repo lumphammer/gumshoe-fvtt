@@ -22,6 +22,7 @@ import { isShakenOrWorse } from "../stability/states";
 import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
 import type { BondItem } from "./bond";
 import type { AbilitySchema } from "./createAbilitySchema";
+import type { AbilityItem } from "./exports";
 import { migrateCategoryToCategoryId } from "./migrateCategoryToCategoryId";
 import { getSpecialitiesCount, resizeSpecialities } from "./resizeSpecialities";
 
@@ -280,6 +281,18 @@ export abstract class AbilityModel<
   }
 
   /** The owning PC's system, if there is one (adaptations are on PCs) */
+  /**
+   * What a refresh brings the pool to: the rating, except for a PC's Network
+   * ability, which leaves out what their contacts hold
+   */
+  getRefreshTarget(): number {
+    return (
+      this.getPCSystem()?.getRefreshTarget(this.parent as AbilityItem) ??
+      this.rating ??
+      0
+    );
+  }
+
   private getPCSystem(): PCModel | null {
     const actor = this.parent.actor;
     // by type rather than isPCActor: pc.ts imports this file
@@ -328,7 +341,7 @@ export abstract class AbilityModel<
       system: {
         pool: getRefreshedPool({
           pool: this.pool,
-          rating: this.rating ?? 0,
+          rating: this.getRefreshTarget(),
           refreshPenalty:
             this.getPCSystem()?.getAdaptationEffects().refreshPenalty ?? 0,
         }),

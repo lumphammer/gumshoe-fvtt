@@ -115,6 +115,8 @@ const initialState: State = {
     bondRebuildSpendCategory: "",
     useTrauma: false,
     traumaTypes: [],
+    useNetworkContacts: false,
+    networkAbility: "",
     useCards: false,
     notifyItemAddedToActor: false,
   },

@@ -373,6 +373,16 @@ export const settings = {
     name: "Trauma types",
     default: defaultSettings.traumaTypes,
   }),
+  useNetworkContacts: createSettingBoolean({
+    key: "useNetworkContacts",
+    name: "Use Network contacts?",
+    default: defaultSettings.useNetworkContacts,
+  }),
+  networkAbility: createSettingString({
+    key: "networkAbility",
+    name: "Name of Network ability",
+    default: defaultSettings.networkAbility,
+  }),
 
   useCards: createSettingBoolean({
     key: "useCards",
