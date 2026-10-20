@@ -8,10 +8,12 @@ import { SettingsStringList } from "../SettingsStringList";
 import type { Setters } from "../types";
 import { AbilityOptionsSettings } from "./AbilityOptionsSettings";
 import { AbilityPacksSettings } from "./AbilityPacksSettings";
+import { NetworkContactsSettings } from "./NetworkContactsSettings";
 import {
   abilityOptions,
   generalAbilityCategories,
   investigativeAbilityCategories,
+  networkContacts,
   npcAbilityPacks,
   pcAbilityPacks,
 } from "./directions";
@@ -64,6 +66,9 @@ export const AbilitySettingsRoutes = ({ setters }: { setters: Setters }) => {
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={abilityOptions} margin="0em">
         <AbilityOptionsSettings setters={setters} />
+      </SlideInNestedPanelRoute>
+      <SlideInNestedPanelRoute direction={networkContacts} margin="0em">
+        <NetworkContactsSettings setters={setters} />
       </SlideInNestedPanelRoute>
     </>
   );

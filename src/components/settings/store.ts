@@ -13,7 +13,7 @@ import {
   reorderKeys,
   systemLogger,
 } from "../../functions/utilities";
-import { pathOfCthulhuPreset } from "../../presets";
+import { defaultSettings } from "../../presets";
 import type { SettingsDict } from "../../settings/settings";
 import type { EquipmentFieldType } from "../../types";
 import { assertNumericFieldOkayness } from "./functions";
@@ -47,6 +47,18 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
         );
       }
       Object.assign(draft.settings, payload.newSettings);
+    },
+    /**
+     * Change the settings with a function. It's applied to the state as it
+     * is when the action's reduced, so several in a row (e.g. a text box
+     * saving on blur, then a toggle) don't overwrite each other.
+     */
+    modify: (draft, { fn }: { fn: (settings: SettingsDict) => void }) => {
+      fn(draft.settings);
+      assertUniqueIds(
+        draft.settings.cardCategories.map(({ id }) => id),
+        "card category ID",
+      );
     },
     addCategory: (draft: State) => {
       draft.settings.equipmentCategories[nanoid()] = {
@@ -245,7 +257,7 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
         // now we layer in a safe default. This is typed as Required<> so it
         // will always contain one of everything that can be controlled by a
         // preset.
-        ...pathOfCthulhuPreset,
+        ...defaultSettings,
         // now layer in the actual preset
         ...payload.preset,
         // and finally, set the actual preset id

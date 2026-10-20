@@ -1,0 +1,51 @@
+name: Heavy Weapons
+type: generalAbility
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes: ""
+  allowPoolToExceedRating: false
+  boost: false
+  categoryId: General
+  excludeFromGeneralRefresh: false
+  hasSpecialities: false
+  max: 99
+  min: 0
+  occupational: false
+  pool: 0
+  rating: 0
+  refreshesDaily: true
+  showTracker: false
+  situationalModifiers: []
+  specialities: []
+  specialitiesMode: one
+  unlocks: []
+  canBeInvestigative: true
+  goesFirstInCombat: false
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  linkToResource: false
+  resourceId: ""
+  hideIfZeroRated: false
+flags: {}
+_id: crLXV6WxNv3Ldq7x
+effects: []
+folder: null
+ownership:
+  default: 0
+  uGKGNvlghwYPLPsN: 3
+_stats:
+  coreVersion: "14.366"
+  systemId: investigator
+  systemVersion: "10.115"
+  createdTime: 1786986401387
+  modifiedTime: 1786986401387
+  lastModifiedBy: uGKGNvlghwYPLPsN
+  compendiumSource: null
+  duplicateSource: null
+  exportSource: null
+sort: 0
+_key: "!items!crLXV6WxNv3Ldq7x"

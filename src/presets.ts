@@ -2,9 +2,18 @@ import type { PresetV1 } from "@lumphammer/investigator-fvtt-types";
 
 import { npcPackName, packNames, systemId } from "./constants";
 
-export const pathOfCthulhuPreset: Required<PresetV1> = {
+/**
+ * The value of every preset-controlled setting before any preset is applied.
+ * It's each setting's registered default, so it's what a world reads for a
+ * setting it has never stored, including one added after the world last
+ * saved its settings. It's also the base layer under every preset.
+ *
+ * So changing a value here changes existing worlds. Settings added from now
+ * on default to off (or neutral), and presets turn them on.
+ */
+export const defaultSettings: Required<PresetV1> = {
   schemaVersion: "v1",
-  displayName: "Trail of Cthulhu (built-in)",
+  displayName: "Defaults",
   defaultThemeName: "tealTheme",
   investigativeAbilityCategories: ["Academic", "Interpersonal", "Technical"],
   generalAbilityCategories: ["General"],
@@ -85,8 +94,66 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
     //   fields: {},
     // },
   },
+  useStabilityRules: false,
+  stabilityAbility: "Stability",
+  useSanityRules: false,
+  sanityAbility: "Sanity",
+  sanityCapAbility: "Cthulhu Mythos",
+  sanityCapBase: 10,
+  useStabilityStates: false,
+  stabilityStates: {
+    shaken: { name: "Shaken", upTo: 0 },
+    shattered: { name: "Shattered", upTo: -6 },
+    gone: { name: "Gone", upTo: -12 },
+  },
+  useBonds: false,
+  bondRebuildSpendCategory: "Interpersonal",
+  useTrauma: false,
+  traumaTypes: [],
+  useNetworkContacts: false,
+  networkAbility: "Network",
   useCards: false,
   cardCategories: [],
+};
+
+export const pathOfCthulhuPreset: Required<PresetV1> = {
+  ...defaultSettings,
+  displayName: "Trail of Cthulhu (built-in)",
+  useStabilityRules: true,
+  useSanityRules: true,
+  sanityCapAbility: "Cthulhu Mythos",
+  sanityCapBase: 10,
+  useStabilityStates: true,
+  stabilityStates: {
+    shaken: { name: "Shaken", upTo: 0 },
+    shattered: { name: "Blasted", upTo: -6 },
+    gone: { name: "Doomed", upTo: -12 },
+  },
+  useTrauma: true,
+  traumaTypes: [
+    {
+      id: "nonMythos",
+      name: "Non-mythos",
+      difficulty: 4,
+      adaptedDifficulty: 4,
+      causesSanityLoss: false,
+      useAdaptation: false,
+      cappedAbilities: [],
+      capsBonds: false,
+      refreshPenalty: 0,
+    },
+    {
+      id: "mythos",
+      name: "Mythos",
+      difficulty: 5,
+      adaptedDifficulty: 5,
+      causesSanityLoss: true,
+      useAdaptation: false,
+      cappedAbilities: [],
+      capsBonds: false,
+      refreshPenalty: 0,
+    },
+  ],
 };
 
 export const niceBlackAgentsPreset: PresetV1 = {
@@ -364,6 +431,95 @@ export const mutantCityBluesPreset: PresetV1 = {
   ],
 };
 
+export const fallOfDeltaGreenPreset: PresetV1 = {
+  schemaVersion: "v1",
+  displayName: "Fall of DELTA GREEN (built-in)",
+  defaultThemeName: "deltaGroovyTheme",
+  investigativeAbilityCategories: ["Academic", "Interpersonal", "Technical"],
+  generalAbilityCategories: ["General"],
+  combatAbilities: [
+    "Unarmed Combat",
+    "Melee Weapons",
+    "Firearms",
+    "Heavy Weapons",
+    "Fighting",
+  ],
+  occupationLabel: "Department",
+  personalDetails: [
+    { name: "Military Service", type: "item" },
+    { name: "Motivation", type: "text" },
+  ],
+  longNotes: ["Service Record/Bio", "Disorders", "Notes"],
+  newPCPacks: [`${systemId}.${packNames.fallOfDeltaGreenAbilities}`],
+  newNPCPacks: [`${systemId}.${packNames.fallOfDeltaGreenOpponentAbilities}`],
+  useBoost: false,
+  useMwStyleAbilities: false,
+  mwUseAlternativeItemTypes: false,
+  useMwInjuryStatus: false,
+  genericOccupation: "Agent",
+  showEmptyInvestigativeCategories: true,
+  pcStats: pathOfCthulhuPreset.pcStats,
+  npcStats: pathOfCthulhuPreset.npcStats,
+  useDamageApplication: true,
+  useGunfireOnHumans: true,
+  useCriticalHits: true,
+  useLethalityAndAutofire: true,
+  useShotDryAndJams: true,
+  useWalkingFire: true,
+  useWoundStatusEffects: true,
+  walkingFireSpendAbilities: ["Athletics"],
+  fullAutoSpendAbilities: ["Athletics", "Stability"],
+  equipmentCategories: { general: { name: "General", fields: {} } },
+  useStabilityRules: true,
+  useSanityRules: true,
+  sanityCapAbility: "The Unnatural",
+  useStabilityStates: true,
+  useBonds: true,
+  useNetworkContacts: true,
+  useTrauma: true,
+  traumaTypes: [
+    {
+      // ids match actors' adaptation progress from before trauma types
+      id: "violence",
+      name: "Violence",
+      difficulty: 4,
+      adaptedDifficulty: 2,
+      causesSanityLoss: false,
+      useAdaptation: true,
+      cappedAbilities: [
+        "Flattery",
+        "Inspiration",
+        "Negotiation",
+        "Reassurance",
+      ],
+      capsBonds: true,
+      refreshPenalty: 0,
+    },
+    {
+      id: "helplessness",
+      name: "Helplessness",
+      difficulty: 4,
+      adaptedDifficulty: 2,
+      causesSanityLoss: false,
+      useAdaptation: true,
+      cappedAbilities: [],
+      capsBonds: false,
+      refreshPenalty: 1,
+    },
+    {
+      id: "unnatural",
+      name: "The Unnatural",
+      difficulty: 5,
+      adaptedDifficulty: 5,
+      causesSanityLoss: true,
+      useAdaptation: false,
+      cappedAbilities: [],
+      capsBonds: false,
+      refreshPenalty: 0,
+    },
+  ],
+};
+
 export const basePresets = {
   pathOfCthulhuPreset,
   niceBlackAgentsPreset,
@@ -373,4 +529,5 @@ export const basePresets = {
   moribundWorldPreset,
   esoterroristsPreset,
   mutantCityBluesPreset,
+  fallOfDeltaGreenPreset,
 };

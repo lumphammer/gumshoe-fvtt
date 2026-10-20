@@ -32,7 +32,7 @@ export function createBasicTabStyle(colors: ThemeSeedV1["colors"]): CSSObject {
     padding: "0.3em",
     display: "inline-block",
     textAlign: "center",
-    fontSize: "1.4em",
+    fontSize: "1.2em",
     background: colors.backgroundSecondary,
     borderRadius: "0.2em 0.2em 0 0",
     color: colors.accent,

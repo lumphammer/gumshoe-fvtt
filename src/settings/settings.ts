@@ -5,7 +5,7 @@ import type { DocumentMemoryCollection } from "../components/journalEditorSheet/
 import * as c from "../constants";
 import { mapValues } from "../functions/utilities";
 import type { MigrationFlags } from "../migrations/types";
-import { pathOfCthulhuPreset } from "../presets";
+import { defaultSettings } from "../presets";
 import { runtimeConfig } from "../runtime";
 import type { ThemeV1 } from "../themes/types";
 import type { Mandatory } from "../types";
@@ -18,13 +18,17 @@ import {
 import { cardCategoriesValidator } from "./validators/cardCategoriesValidator";
 import { equipmentCategoriesValidator } from "./validators/equipmentCategoriesValidator";
 import { personalDetailsValidator } from "./validators/personalDetailsValidator";
+import {
+  stabilityStatesValidator,
+  traumaTypesValidator,
+} from "./validators/stabilityValidators";
 import { statsValidator } from "./validators/statsValidator";
 
 export const settings = {
   combatAbilities: createSettingArrayOfString({
     key: "combatAbilities",
     name: "Combat abilities",
-    default: pathOfCthulhuPreset.combatAbilities,
+    default: defaultSettings.combatAbilities,
   }),
   customThemePath: createSettingString({
     key: "customThemePath",
@@ -41,7 +45,7 @@ export const settings = {
   defaultThemeName: createSettingString({
     key: "defaultThemeName",
     name: "Default sheet theme",
-    default: pathOfCthulhuPreset.defaultThemeName,
+    default: defaultSettings.defaultThemeName,
     choices: mapValues(
       (theme: ThemeV1) => theme.displayName,
       runtimeConfig.themes,
@@ -50,22 +54,22 @@ export const settings = {
   generalAbilityCategories: createSettingArrayOfString({
     key: "generalAbilityCategories",
     name: "General ability categories",
-    default: pathOfCthulhuPreset.generalAbilityCategories,
+    default: defaultSettings.generalAbilityCategories,
   }),
   genericOccupation: createSettingString({
     key: "genericOccupation",
     name: "Generic occupation",
-    default: pathOfCthulhuPreset.genericOccupation,
+    default: defaultSettings.genericOccupation,
   }),
   investigativeAbilityCategories: createSettingArrayOfString({
     key: "investigativeAbilityCategories",
     name: "Investigative ability categories",
-    default: pathOfCthulhuPreset.investigativeAbilityCategories,
+    default: defaultSettings.investigativeAbilityCategories,
   }),
   longNotes: createSettingArrayOfString({
     key: "longNotes",
     name: "Long Notes",
-    default: pathOfCthulhuPreset.longNotes,
+    default: defaultSettings.longNotes,
   }),
   mwHiddenShortNotes: createSettingArrayOfString({
     key: "mwHiddenShortNotes",
@@ -80,7 +84,7 @@ export const settings = {
   newNPCPacks: createSettingArrayOfString({
     key: "newNPCPacks",
     name: "Compendium packs for new NPCs",
-    default: pathOfCthulhuPreset.newNPCPacks,
+    default: defaultSettings.newNPCPacks,
     onChange: (newPacks: string[]) => {
       Hooks.call(c.newNPCPacksUpdated, newPacks);
     },
@@ -88,7 +92,7 @@ export const settings = {
   newPCPacks: createSettingArrayOfString({
     key: "newPCPacks",
     name: "Compendium packs for new PCs",
-    default: pathOfCthulhuPreset.newPCPacks,
+    default: defaultSettings.newPCPacks,
     onChange: (newPacks: string[]) => {
       Hooks.call(c.newPCPacksUpdated, newPacks);
     },
@@ -96,7 +100,7 @@ export const settings = {
   occupationLabel: createSettingString({
     key: "occupationLabel",
     name: 'What do we call "Occupation"?',
-    default: pathOfCthulhuPreset.occupationLabel,
+    default: defaultSettings.occupationLabel,
   }),
   /**
    * @deprecated
@@ -111,7 +115,7 @@ export const settings = {
   showEmptyInvestigativeCategories: createSettingBoolean({
     key: "showEmptyInvestigativeCategories",
     name: "Show empty investigative categories?",
-    default: pathOfCthulhuPreset.showEmptyInvestigativeCategories,
+    default: defaultSettings.showEmptyInvestigativeCategories,
   }),
   systemMigrationVersion: createSettingString({
     key: "systemMigrationVersion",
@@ -128,7 +132,7 @@ export const settings = {
   useBoost: createSettingBoolean({
     key: "useBoost",
     name: "Use Boost",
-    default: pathOfCthulhuPreset.useBoost,
+    default: defaultSettings.useBoost,
   }),
   useMwInjuryStatus: createSettingBoolean({
     key: "useMwInjuryStatus",
@@ -143,57 +147,57 @@ export const settings = {
   useNpcCombatBonuses: createSettingBoolean({
     key: "useNpcCombatBonuses",
     name: "Use NPC Combat Bonuses?",
-    default: pathOfCthulhuPreset.useNpcCombatBonuses,
+    default: defaultSettings.useNpcCombatBonuses,
   }),
   useTurnPassingInitiative: createSettingBoolean({
     key: "useTurnPassingInitiative",
     name: "Use turn-passing initiative?",
-    default: pathOfCthulhuPreset.useTurnPassingInitiative,
+    default: defaultSettings.useTurnPassingInitiative,
   }),
   useDamageApplication: createSettingBoolean({
     key: "useDamageApplication",
     name: "Use damage application?",
-    default: pathOfCthulhuPreset.useDamageApplication,
+    default: defaultSettings.useDamageApplication,
   }),
   useGunfireOnHumans: createSettingBoolean({
     key: "useGunfireOnHumans",
     name: "Use gunfire on humans?",
-    default: pathOfCthulhuPreset.useGunfireOnHumans,
+    default: defaultSettings.useGunfireOnHumans,
   }),
   useCriticalHits: createSettingBoolean({
     key: "useCriticalHits",
     name: "Use critical hits?",
-    default: pathOfCthulhuPreset.useCriticalHits,
+    default: defaultSettings.useCriticalHits,
   }),
   useLethalityAndAutofire: createSettingBoolean({
     key: "useLethalityAndAutofire",
     name: "Use Lethality and autofire?",
-    default: pathOfCthulhuPreset.useLethalityAndAutofire,
+    default: defaultSettings.useLethalityAndAutofire,
   }),
   useShotDryAndJams: createSettingBoolean({
     key: "useShotDryAndJams",
     name: "Use Shot Dry and jams?",
-    default: pathOfCthulhuPreset.useShotDryAndJams,
+    default: defaultSettings.useShotDryAndJams,
   }),
   useWalkingFire: createSettingBoolean({
     key: "useWalkingFire",
     name: "Use walking fire?",
-    default: pathOfCthulhuPreset.useWalkingFire,
+    default: defaultSettings.useWalkingFire,
   }),
   useWoundStatusEffects: createSettingBoolean({
     key: "useWoundStatusEffects",
     name: "Apply wound status effects?",
-    default: pathOfCthulhuPreset.useWoundStatusEffects,
+    default: defaultSettings.useWoundStatusEffects,
   }),
   walkingFireSpendAbilities: createSettingArrayOfString({
     key: "walkingFireSpendAbilities",
     name: "Walking fire spend abilities",
-    default: pathOfCthulhuPreset.walkingFireSpendAbilities,
+    default: defaultSettings.walkingFireSpendAbilities,
   }),
   fullAutoSpendAbilities: createSettingArrayOfString({
     key: "fullAutoSpendAbilities",
     name: "Full-auto spend abilities",
-    default: pathOfCthulhuPreset.fullAutoSpendAbilities,
+    default: defaultSettings.fullAutoSpendAbilities,
   }),
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -204,19 +208,19 @@ export const settings = {
   )({
     key: "personalDetails",
     name: "Personal details",
-    default: pathOfCthulhuPreset.personalDetails,
+    default: defaultSettings.personalDetails,
   }),
 
   pcStats: createSetting<PresetV1["pcStats"]>()(Object, statsValidator)({
     key: "pcStats",
     name: "What stats should PCs have?",
-    default: pathOfCthulhuPreset.pcStats,
+    default: defaultSettings.pcStats,
   }),
 
   npcStats: createSetting<PresetV1["npcStats"]>()(Object, statsValidator)({
     key: "npcStats",
     name: "What stats should NPCs have?",
-    default: pathOfCthulhuPreset.npcStats,
+    default: defaultSettings.npcStats,
   }),
 
   equipmentCategories: createSetting<
@@ -227,7 +231,7 @@ export const settings = {
   )({
     key: "equipmentCategories",
     name: "Equipment categories",
-    default: pathOfCthulhuPreset.equipmentCategories,
+    default: defaultSettings.equipmentCategories,
   }),
 
   migrationFlags: createSetting<MigrationFlags>()(Object)({
@@ -283,12 +287,101 @@ export const settings = {
     managedBySettingsForm: false,
   }),
 
+  /**
+   * Whether we've asked the GM of a Trail of Cthulhu world from before the
+   * preset had Stability and Sanity rules whether to turn them on.
+   */
+  offeredTrailOfCthulhuRules: createSettingBoolean({
+    key: "offeredTrailOfCthulhuRules",
+    name: "Offered Trail of Cthulhu rules?",
+    default: false,
+    exportable: false,
+    managedBySettingsForm: false,
+  }),
+
   journalMemories: createSetting<DocumentMemoryCollection>()(Object)({
     key: c.journalMemories,
     name: "Journal memories",
     default: {},
     exportable: false,
     managedBySettingsForm: false,
+  }),
+
+  useStabilityRules: createSettingBoolean({
+    key: "useStabilityRules",
+    name: "Use Stability rules?",
+    default: defaultSettings.useStabilityRules,
+  }),
+  stabilityAbility: createSettingString({
+    key: "stabilityAbility",
+    name: "Name of Stability ability",
+    default: defaultSettings.stabilityAbility,
+  }),
+  useSanityRules: createSettingBoolean({
+    key: "useSanityRules",
+    name: "Use Sanity rules?",
+    default: defaultSettings.useSanityRules,
+  }),
+  sanityAbility: createSettingString({
+    key: "sanityAbility",
+    name: "Name of Sanity ability",
+    default: defaultSettings.sanityAbility,
+  }),
+  sanityCapAbility: createSettingString({
+    key: "sanityCapAbility",
+    name: "Sanity rating capped by",
+    default: defaultSettings.sanityCapAbility,
+  }),
+  sanityCapBase: createSetting<number>()(Number, z.number())({
+    key: "sanityCapBase",
+    name: "Sanity cap before that",
+    default: defaultSettings.sanityCapBase,
+  }),
+  useStabilityStates: createSettingBoolean({
+    key: "useStabilityStates",
+    name: "Use Stability states?",
+    default: defaultSettings.useStabilityStates,
+  }),
+  stabilityStates: createSetting<Mandatory<PresetV1["stabilityStates"]>>()(
+    Object,
+    stabilityStatesValidator,
+  )({
+    key: "stabilityStates",
+    name: "Stability states",
+    default: defaultSettings.stabilityStates,
+  }),
+  useBonds: createSettingBoolean({
+    key: "useBonds",
+    name: "Use Bonds?",
+    default: defaultSettings.useBonds,
+  }),
+  bondRebuildSpendCategory: createSettingString({
+    key: "bondRebuildSpendCategory",
+    name: "Category spent when rebuilding Bonds",
+    default: defaultSettings.bondRebuildSpendCategory,
+  }),
+  useTrauma: createSettingBoolean({
+    key: "useTrauma",
+    name: "Use trauma?",
+    default: defaultSettings.useTrauma,
+  }),
+  traumaTypes: createSetting<Mandatory<PresetV1["traumaTypes"]>>()(
+    Array,
+    traumaTypesValidator,
+  )({
+    key: "traumaTypes",
+    name: "Trauma types",
+    default: defaultSettings.traumaTypes,
+  }),
+  useNetworkContacts: createSettingBoolean({
+    key: "useNetworkContacts",
+    name: "Use Network contacts?",
+    default: defaultSettings.useNetworkContacts,
+  }),
+  networkAbility: createSettingString({
+    key: "networkAbility",
+    name: "Name of Network ability",
+    default: defaultSettings.networkAbility,
   }),
 
   useCards: createSettingBoolean({
@@ -303,7 +396,7 @@ export const settings = {
   )({
     key: "cardCategories",
     name: "What stats should PCs have?",
-    default: pathOfCthulhuPreset.cardCategories,
+    default: defaultSettings.cardCategories,
   }),
 
   notifyItemAddedToActor: createSettingBoolean({

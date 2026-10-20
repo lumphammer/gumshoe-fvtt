@@ -23,6 +23,24 @@ it("should accept an older export without the damage application settings", () =
   expect(validatedResult).not.toHaveProperty("useWalkingFire");
   expect(validatedResult).not.toHaveProperty("walkingFireSpendAbilities");
   expect(validatedResult).not.toHaveProperty("useWoundStatusEffects");
+  for (const key of [
+    "useStabilityRules",
+    "stabilityAbility",
+    "useSanityRules",
+    "sanityAbility",
+    "sanityCapAbility",
+    "sanityCapBase",
+    "useStabilityStates",
+    "stabilityStates",
+    "useBonds",
+    "bondRebuildSpendCategory",
+    "useTrauma",
+    "traumaTypes",
+    "useNetworkContacts",
+    "networkAbility",
+  ]) {
+    expect(validatedResult).not.toHaveProperty(key);
+  }
 });
 
 it("should preserve the damage application settings through a round trip", () => {
@@ -41,6 +59,68 @@ it("should preserve the damage application settings through a round trip", () =>
   expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
     exportedSettings,
   );
+});
+
+it("should preserve the Sanity & Stability settings through a round trip", () => {
+  const exportedSettings = {
+    useStabilityRules: true,
+    stabilityAbility: "Composure",
+    useSanityRules: true,
+    sanityAbility: "Humanity",
+    sanityCapAbility: "Corruption",
+    sanityCapBase: 8,
+    useStabilityStates: true,
+    stabilityStates: {
+      shaken: { name: "Rattled", upTo: 1 },
+      shattered: { name: "Broken", upTo: -4 },
+      gone: { name: "Lost", upTo: -10 },
+    },
+    useBonds: true,
+    bondRebuildSpendCategory: "Social",
+    useTrauma: true,
+    traumaTypes: [
+      {
+        id: "gore",
+        name: "Gore",
+        difficulty: 3,
+        adaptedDifficulty: 2,
+        causesSanityLoss: false,
+        useAdaptation: true,
+        cappedAbilities: ["Charm"],
+        capsBonds: true,
+        refreshPenalty: 1,
+      },
+    ],
+  };
+
+  expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
+    exportedSettings,
+  );
+});
+
+it("should preserve the Network contacts settings through a round trip", () => {
+  const exportedSettings = { useNetworkContacts: true, networkAbility: "Pals" };
+
+  expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
+    exportedSettings,
+  );
+});
+
+it("should reject duplicate trauma type ids", () => {
+  const type = {
+    id: "gore",
+    name: "Gore",
+    difficulty: 3,
+    adaptedDifficulty: 2,
+    causesSanityLoss: false,
+    useAdaptation: false,
+    cappedAbilities: [],
+    capsBonds: false,
+    refreshPenalty: 0,
+  };
+  expect(() =>
+    validateImportedSettings(JSON.stringify({ traumaTypes: [type, type] })),
+  ).toThrow();
 });
 
 it("should validate an empty object", () => {

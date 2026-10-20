@@ -35,7 +35,7 @@ import {
 } from "../../module/attacks/rules";
 import { settings } from "../../settings/settings";
 import { hasAmmoFor } from "./consumeWeaponAmmo";
-import { getWeaponHintColors, WeaponHint } from "./WeaponHint";
+import { getHintColors, Hint } from "../inputs/Hint";
 
 const defaultSpendOptions = Array.from({ length: 8 })
   .fill(null)
@@ -377,14 +377,14 @@ export const WeaponMain = () => {
             the attack button so it doesn't move as hints come and go. */}
         {blockers.map((blocker) => (
           <GridFieldStacked key={blocker.key}>
-            <WeaponHint severity="danger" action={blocker.action}>
+            <Hint severity="danger" action={blocker.action}>
               {blocker.message}
-            </WeaponHint>
+            </Hint>
           </GridFieldStacked>
         ))}
         {wastedExtraSpend > 0 && (
           <GridFieldStacked>
-            <WeaponHint severity="warning">
+            <Hint severity="warning">
               <Translate
                 values={{
                   Wasted: String(wastedExtraSpend),
@@ -393,7 +393,7 @@ export const WeaponMain = () => {
               >
                 WastedExtraSpend
               </Translate>
-            </WeaponHint>
+            </Hint>
           </GridFieldStacked>
         )}
       </InputGrid>
@@ -461,7 +461,7 @@ export const WeaponMain = () => {
                   {abilityName}
                   <span
                     css={{
-                      ...getWeaponHintColors(theme, "danger"),
+                      ...getHintColors(theme, "danger"),
                       display: "inline-block",
                       padding: "0 0.2em",
                       margin: "0 0.2em",

@@ -9,3 +9,4 @@ export const generalAbilityCategories = createDirection(
 export const pcAbilityPacks = createDirection("pcAbilityPacks");
 export const npcAbilityPacks = createDirection("npcAbilityPacks");
 export const abilityOptions = createDirection("abilityOptions");
+export const networkContacts = createDirection("networkContacts");

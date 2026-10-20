@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
     world: {},
   },
   migrateWorld: vi.fn(),
+  applyPresetSettings: vi.fn(),
   settings: {
     firstRun: { get: vi.fn(), set: vi.fn() },
     migrationAttempts: { get: vi.fn(), set: vi.fn() },
@@ -29,6 +30,9 @@ vi.mock("../migrations/migrateWorld", () => ({
   migrateWorld: mocks.migrateWorld,
 }));
 vi.mock("../settings/settings", () => ({ settings: mocks.settings }));
+vi.mock("./applyPresetSettings", () => ({
+  applyPresetSettings: mocks.applyPresetSettings,
+}));
 
 import {
   maximumAutomaticMigrationAttempts,
@@ -67,6 +71,26 @@ describe("migrateWorldIfNeeded", () => {
     for (const setting of Object.values(mocks.settings)) {
       setting.set.mockResolvedValue(undefined);
     }
+  });
+
+  it("gives a new world the default preset's settings", async () => {
+    mocks.settings.firstRun.get.mockReturnValue(true);
+    Object.assign(game, { actors: { size: 0 } });
+
+    await migrateWorldIfNeeded();
+
+    expect(mocks.applyPresetSettings).toHaveBeenCalledWith(
+      expect.objectContaining({ displayName: "Trail of Cthulhu (built-in)" }),
+    );
+  });
+
+  it("leaves an existing world's settings alone", async () => {
+    mocks.settings.firstRun.get.mockReturnValue(true);
+
+    await migrateWorldIfNeeded();
+
+    expect(mocks.applyPresetSettings).not.toHaveBeenCalled();
+    expect(mocks.settings.firstRun.set).toHaveBeenCalledWith(false);
   });
 
   it("flags the migrations and clears the failure state on success", async () => {

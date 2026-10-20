@@ -5,5 +5,6 @@ export const combatSettings = createDirection("combatSettings");
 export const equipmentSettings = createDirection("equipmentSettings");
 export const actorSettings = createDirection("actorSettings");
 export const abilitySettings = createDirection("abilitySettings");
+export const stabilitySettings = createDirection("stabilitySettings");
 export const cardsSettings = createDirection("cardsSettings");
 export const miscSettings = createDirection("miscSettings");

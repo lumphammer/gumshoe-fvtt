@@ -161,6 +161,7 @@ export const CSSReset = ({
           padding: 0,
           fontWeight: "inherit",
           font: theme.displayFont,
+          textTransform: theme.displayFontTextTransform,
         },
         h1: {
           fontSize: "1.5em",
@@ -176,6 +177,7 @@ export const CSSReset = ({
         },
         "button, input[type=button]": {
           font: theme.displayFont,
+          textTransform: theme.displayFontTextTransform,
           color: theme.colors.accent,
           borderRadius: "5px",
           // 100% was causing scrollbars in some places

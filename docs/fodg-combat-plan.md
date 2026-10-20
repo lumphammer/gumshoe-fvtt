@@ -180,7 +180,7 @@ All new settings are part of the preset format and are exportable:
 
 - Add each as an **optional** field on `PresetV1`
   (`packages/investigator-fvtt-types/index.ts`), with doc comments.
-- Add each to `pathOfCthulhuPreset` in `src/presets.ts`. It is typed
+- Add each to `defaultSettings` in `src/presets.ts`. It is typed
   `Required<PresetV1>` and is the base layer in `applyPreset`
   (`src/components/settings/store.ts`), so applying an older preset that lacks
   the new keys falls back to these defaults (all FoDG options off; the ability

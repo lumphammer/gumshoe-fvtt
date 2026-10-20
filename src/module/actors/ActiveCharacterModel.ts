@@ -101,14 +101,14 @@ export class ActiveCharacterModel<
     const updates = Array.from(this.parent.items).flatMap((item) => {
       if (
         isAbilityItem(item) &&
-        item.system.rating !== item.system.pool &&
+        item.system.getRefreshTarget() !== item.system.pool &&
         !item.system.excludeFromGeneralRefresh
       ) {
         return [
           {
             _id: item.id,
             system: {
-              pool: item.system.rating,
+              pool: item.system.getRefreshTarget(),
             },
           },
         ];
@@ -120,7 +120,13 @@ export class ActiveCharacterModel<
       await this.broadcastUserMessage("RefreshedAllOfActorNamesAbilities");
     }
     await this.parent.updateEmbeddedDocuments("Item", updates);
+    await this.afterFullRefresh();
   };
+
+  /** Anything else a full refresh resets */
+  protected async afterFullRefresh(): Promise<void> {
+    // nothing, unless a subclass has more to reset
+  }
 
   confirmRefresh = async (): Promise<void> => {
     const yes = await confirmADoodleDo({

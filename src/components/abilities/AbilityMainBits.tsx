@@ -143,6 +143,7 @@ export const AbilityMainBits = () => {
           <GridField label="Rating">
             <AsyncNumberInput
               min={0}
+              max={item.system.getRatingCap() ?? undefined}
               value={item.system.rating}
               onChange={item.system.setRating}
             />
@@ -150,8 +151,9 @@ export const AbilityMainBits = () => {
               css={{
                 gridColumn: "1 / 4",
                 justifyContent: "start",
-                marginBottom: "0",
                 marginTop: "0.2em",
+                // only when there are badges, to keep them off what's below
+                "&:not(:empty)": { marginBottom: "0.5em" },
               }}
               ability={item}
             />

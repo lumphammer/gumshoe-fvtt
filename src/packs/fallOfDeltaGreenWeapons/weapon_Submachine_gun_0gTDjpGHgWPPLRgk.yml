@@ -1,0 +1,47 @@
+_id: 0gTDjpGHgWPPLRgk
+name: Submachine gun
+type: weapon
+img: systems/investigator/assets/icons/bullets.webp
+system:
+  notes: ""
+  ability: Firearms
+  damage: 1
+  pointBlankDamage: 2
+  closeRangeDamage: 0
+  nearRangeDamage: 0
+  longRangeDamage: 0
+  isPointBlank: true
+  isCloseRange: true
+  isNearRange: true
+  isLongRange: true
+  usesAmmo: true
+  ammo:
+    min: 0
+    max: 30
+    value: 30
+  ammoPerShot: 1
+  ammoPerBurst: 3
+  ammoPerFullAuto: 10
+  cost: 0
+  isGunfire: true
+  fireModes: selective
+  lethality: null
+  jammed: false
+  pendingJam: null
+effects: []
+flags: {}
+folder: null
+sort: 2000000
+ownership:
+  default: 0
+_stats:
+  coreVersion: "14.366"
+  systemId: investigator
+  systemVersion: "10.124"
+  createdTime: 1792175327401
+  modifiedTime: 1792175327401
+  lastModifiedBy: null
+  compendiumSource: null
+  duplicateSource: null
+  exportSource: null
+_key: "!items!0gTDjpGHgWPPLRgk"

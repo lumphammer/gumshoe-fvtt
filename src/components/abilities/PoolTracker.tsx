@@ -9,6 +9,7 @@ import {
 } from "../../module/items/generalAbility";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
+import { AbilityBadges } from "./AbilityBadges";
 import { PoolCheckbox } from "./PoolCheckbox";
 
 const range = (from: number, to: number): number[] => {
@@ -41,6 +42,7 @@ export const PoolTracker = ({ ability }: PoolTrackerProps) => {
 
   return (
     <div
+      data-testid="pool-tracker"
       style={{
         width: "8em",
         height: "auto",
@@ -52,6 +54,19 @@ export const PoolTracker = ({ ability }: PoolTrackerProps) => {
       <h2 css={{ gridColumn: "start / end" }}>
         <a onClick={() => sheet.render({ force: true })}>{ability.name}</a>
       </h2>
+      {/* e.g. Shaken, under Stability: hard to miss on the sheet */}
+      {isGeneralAbilityItem(ability) && (
+        <AbilityBadges
+          ability={ability}
+          css={{
+            gridColumn: "start / end",
+            justifyContent: "start",
+            rowGap: "0.25em",
+            // only when there are badges, to keep them off the boxes
+            "&:not(:empty)": { marginBottom: "0.5em" },
+          }}
+        />
+      )}
 
       {vals.map((value) => (
         <PoolCheckbox

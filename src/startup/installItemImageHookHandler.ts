@@ -1,4 +1,6 @@
 import {
+  bondIcon,
+  networkContactIcon,
   cardIcon,
   equipmentIcon,
   generalAbilityIcon,
@@ -8,6 +10,8 @@ import {
 } from "../constants";
 import { assertGame } from "../functions/isGame";
 import { isNullOrEmptyString } from "../functions/utilities";
+import { isBondItem } from "../module/items/bond";
+import { isNetworkContactItem } from "../module/items/networkContact";
 import { isCardItem } from "../module/items/card";
 import { isEquipmentItem } from "../module/items/equipment";
 import { isGeneralAbilityItem } from "../module/items/generalAbility";
@@ -37,7 +41,11 @@ export const installItemImageHookHandler = () => {
                   ? personalDetailIcon
                   : isCardItem(item)
                     ? cardIcon
-                    : investigativeAbilityIcon,
+                    : isBondItem(item)
+                      ? bondIcon
+                      : isNetworkContactItem(item)
+                        ? networkContactIcon
+                        : investigativeAbilityIcon,
         });
       }
     },

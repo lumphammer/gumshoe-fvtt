@@ -1,31 +1,173 @@
+import type { TraumaType } from "@lumphammer/investigator-fvtt-types";
+
 import type { CardsAreaSettings } from "../../components/cards/types";
 import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
+import { getTranslated } from "../../functions/getTranslated";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
 import type { SourceData } from "../../fvtt-exports";
 import {
   ArrayField,
+  BooleanField,
   NumberField,
   SchemaField,
   StringField,
+  TypedObjectField,
 } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import type { AbilityType, MwRefreshGroup, MwType } from "../../types";
+import type { AdaptationEffects } from "../bonds/adaptation";
+import {
+  adaptationThreshold,
+  adaptedRatingCap,
+  getAdaptationEffects,
+  getAdaptedTypes,
+  getBondCap,
+  getRefreshedPool,
+  isAdapted,
+} from "../bonds/adaptation";
+import {
+  bondPointsPerBurnedStability,
+  canBurnBond,
+  clampBondPoints,
+  compareBonds,
+  isBondBroken,
+} from "../bonds/rules";
+import type { BondItem } from "../items/bond";
+import { isBondItem } from "../items/bond";
 import type { CardItem } from "../items/card";
 import { isCardItem } from "../items/card";
 import type { AbilityItem } from "../items/exports";
 import { isAbilityItem } from "../items/exports";
+import type { GeneralAbilityItem } from "../items/generalAbility";
 import { isGeneralAbilityItem } from "../items/generalAbility";
+import type { InvestigativeAbilityItem } from "../items/investigativeAbility";
+import { isInvestigativeAbilityItem } from "../items/investigativeAbility";
 import { assertMwItem, isMwItem } from "../items/mwItem";
+import type { NetworkContactItem } from "../items/networkContact";
+import { isNetworkContactItem } from "../items/networkContact";
+import { getNetworkRefreshPool } from "../contacts/rules";
 import type { PersonalDetailItem } from "../items/personalDetail";
+import { getSanityCap } from "../sanity/rules";
+import {
+  getAdaptableTraumaTypes,
+  getStabilityThresholds,
+  isSanityOn,
+} from "../stability/settings";
+import type { StabilityState } from "../stability/states";
+import { getStabilityState, isShakenOrWorse } from "../stability/states";
+import type { LastTraumaTest } from "../stability/trauma";
+import { getBurnRefund, shakenDifficultyPenalty } from "../stability/trauma";
 import { isPersonalDetailItem } from "../items/personalDetail";
+import { resizeSpecialities } from "../items/resizeSpecialities";
 import { createActiveCharacterSchema } from "../schemaFields";
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
 import { InvestigatorActor } from "./InvestigatorActor";
 
+/** Ask before adapting: say what it caps */
+function getAdaptationConfirmMessage(
+  actorName: string,
+  type: TraumaType,
+): string {
+  const names = type.cappedAbilities;
+  return [
+    getTranslated("MakeActorNameAdaptedToTrauma", {
+      ActorName: actorName,
+      Trauma: type.name,
+    }),
+    names.length > 0 &&
+      getTranslated("AdaptationCapsAbilitiesConfirm", {
+        AbilityNames: new Intl.ListFormat(game.i18n?.lang).format(names),
+        RatingCap: String(adaptedRatingCap),
+      }),
+    type.capsBonds &&
+      getTranslated("AdaptationCapsBondsConfirm", {
+        BondCap: String(getBondCap(true)),
+      }),
+    getTranslated("ThisCantBeUndone"),
+  ]
+    .filter((part) => typeof part === "string")
+    .join(" ");
+}
+
+const adaptationProgressField = () =>
+  new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
+    max: adaptationThreshold,
+    initial: 0,
+  });
+
 export const pcSchema = {
   ...createActiveCharacterSchema(),
+  /**
+   * Progress towards adapting to each trauma type, by its id (Fall of DELTA
+   * GREEN, p. 120), as boxes ticked: all of them means adapted. Missing is 0.
+   */
+  adaptations: new TypedObjectField(adaptationProgressField(), {
+    initial: () => ({}),
+  }),
+  /**
+   * Sanity rating lost to shocks this operation (Fall of DELTA GREEN,
+   * p. 121): only the worst counts. Full Refresh clears it.
+   */
+  shockSanityLoss: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
+    initial: 0,
+  }),
+  /**
+   * What the latest Stability test against trauma did, so that burning a
+   * Bond straight after can undo becoming Shaken or Shattered (Fall of DELTA
+   * GREEN, p. 120). See `LastTraumaTest`.
+   */
+  lastTraumaTest: new SchemaField(
+    {
+      stateBefore: new StringField({
+        nullable: false,
+        required: true,
+        initial: "steady",
+        choices: ["steady", "shaken", "shattered", "gone"],
+      }),
+      causesSanityLoss: new BooleanField({ nullable: false, initial: false }),
+      sanityLostThisOperation: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+      poolAfter: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+      ratingAfter: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+      ratingLoss: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+      sanityLoss: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+      sanityPoolLoss: new NumberField({
+        nullable: false,
+        integer: true,
+        initial: 0,
+      }),
+    },
+    { nullable: true, required: false, initial: null },
+  ),
   buildPoints: new NumberField({
     nullable: false,
     required: true,
@@ -176,23 +318,19 @@ export class PCModel extends ActiveCharacterModel<
   // if we end up with even more types of refresh it may be worth factoring out
   // the actual refresh code but until then - rule of three
   refresh24h = async (): Promise<void> => {
+    const { refreshPenalty } = this.getAdaptationEffects();
     const updates = Array.from(this.parent.items).flatMap((item) => {
-      if (
-        isAbilityItem(item) &&
-        item.system.rating !== item.system.pool &&
-        item.system.refreshesDaily
-      ) {
-        return [
-          {
-            _id: item.id,
-            system: {
-              pool: item.system.rating,
-            },
-          },
-        ];
-      } else {
+      if (!isAbilityItem(item) || !item.system.refreshesDaily) {
         return [];
       }
+      const pool = getRefreshedPool({
+        pool: item.system.pool,
+        rating: item.system.getRefreshTarget(),
+        refreshPenalty,
+      });
+      return pool === item.system.pool
+        ? []
+        : [{ _id: item.id, system: { pool } }];
     });
     if (this.shouldBroadcastRefreshes()) {
       await this.broadcastUserMessage(
@@ -247,6 +385,506 @@ export class PCModel extends ActiveCharacterModel<
   //     .map((a) => a.name)
   //     .filter((n): n is string => n !== null);
   // }
+
+  /** Progress towards adapting to a trauma type */
+  getAdaptationProgress(traumaTypeId: string): number {
+    return this.adaptations[traumaTypeId] ?? 0;
+  }
+
+  /** Adapted to this trauma type? (Never, if it can't be adapted to.) */
+  isAdaptedTo(traumaTypeId: string): boolean {
+    return getAdaptableTraumaTypes().some(
+      (type) =>
+        type.id === traumaTypeId &&
+        isAdapted(this.getAdaptationProgress(traumaTypeId)),
+    );
+  }
+
+  /** The names of the trauma types the character has adapted to */
+  getAdaptedTraumaNames(
+    filter: (type: TraumaType) => boolean = () => true,
+  ): string[] {
+    return getAdaptedTypes(getAdaptableTraumaTypes(), this.adaptations)
+      .filter(filter)
+      .map((type) => type.name);
+  }
+
+  /** What everything the character has adapted to does, together */
+  getAdaptationEffects(): AdaptationEffects {
+    return getAdaptationEffects(getAdaptableTraumaTypes(), this.adaptations);
+  }
+
+  /** The highest a Bond can be raised to: 2 when adapted to something */
+  getBondCap(): number {
+    return getBondCap(this.getAdaptationEffects().capsBonds);
+  }
+
+  /**
+   * The caps on an ability's rating, with what each comes from (to say so):
+   * adaptations, and Sanity's cap
+   */
+  getRatingCaps(abilityName: string): { cap: number; reason: string }[] {
+    const caps: { cap: number; reason: string }[] = [];
+    const adaptedTo = this.getAdaptedTraumaNames(({ cappedAbilities }) =>
+      cappedAbilities.includes(abilityName),
+    );
+    if (adaptedTo.length > 0) {
+      caps.push({
+        cap: adaptedRatingCap,
+        reason: getTranslated("AdaptedToTrauma", {
+          Trauma: new Intl.ListFormat(game.i18n?.lang).format(adaptedTo),
+        }),
+      });
+    }
+    const sanityCap =
+      abilityName === settings.sanityAbility.get() ? this.getSanityCap() : null;
+    if (sanityCap !== null) {
+      caps.push({
+        cap: sanityCap,
+        reason: getTranslated("SanityCapReason", {
+          Base: String(settings.sanityCapBase.get()),
+          AbilityName: settings.sanityCapAbility.get(),
+        }),
+      });
+    }
+    return caps;
+  }
+
+  /** The cap on an ability's rating, if any: the lowest of its caps */
+  getRatingCap(abilityName: string): number | null {
+    const caps = this.getRatingCaps(abilityName).map(({ cap }) => cap);
+    return caps.length > 0 ? Math.min(...caps) : null;
+  }
+
+  /** The ability whose rating comes off Sanity's cap, e.g. Cthulhu Mythos */
+  getSanityCapAbility(): AbilityItem | undefined {
+    const name = settings.sanityCapAbility.get();
+    return this.parent.items.find(
+      (item): item is AbilityItem & Item.Stored =>
+        isAbilityItem(item) && item.name === name,
+    );
+  }
+
+  /** The highest Sanity's rating can go, or null if Sanity rules are off */
+  getSanityCap(): number | null {
+    if (!isSanityOn()) {
+      return null;
+    }
+    return getSanityCap({
+      base: settings.sanityCapBase.get(),
+      capAbilityRating: this.getSanityCapAbility()?.system.rating ?? 0,
+    });
+  }
+
+  /**
+   * Tick or clear progress towards an adaptation. Becoming adapted can cap
+   * ratings and Bonds, which there's no undoing, so ask first.
+   */
+  setAdaptationProgress = async (
+    traumaTypeId: string,
+    progress: number,
+  ): Promise<void> => {
+    const type = getAdaptableTraumaTypes().find(
+      ({ id }) => id === traumaTypeId,
+    );
+    const becomingAdapted =
+      type !== undefined &&
+      isAdapted(progress) &&
+      !this.isAdaptedTo(traumaTypeId);
+    const capsSomething =
+      type !== undefined && (type.cappedAbilities.length > 0 || type.capsBonds);
+    if (becomingAdapted && capsSomething) {
+      const yes = await confirmADoodleDo({
+        message: getAdaptationConfirmMessage(this.parent.name ?? "", type),
+        confirmText: "Confirm",
+        cancelText: "Cancel",
+        confirmIconClass: "fa-check",
+        resolveFalseOnCancel: true,
+        translate: false,
+      });
+      if (!yes) {
+        return;
+      }
+    }
+    await this.parent.update({
+      system: { adaptations: { [traumaTypeId]: progress } },
+    });
+    if (becomingAdapted) {
+      await this.capRatingsForAdaptation(type.cappedAbilities);
+    }
+  };
+
+  /**
+   * Bring capped abilities' ratings down to the cap. Their pools stay as they
+   * are, to be spent (p. 050); they just won't refresh above it.
+   */
+  capRatingsForAdaptation = async (names: string[]): Promise<void> => {
+    const cap = adaptedRatingCap;
+    const updates = this.getAbilities().flatMap((ability) => {
+      if (!names.includes(ability.name ?? "") || ability.system.rating <= cap) {
+        return [];
+      }
+      return [
+        {
+          _id: ability.id,
+          system: {
+            rating: cap,
+            specialities: resizeSpecialities(ability.system.specialities, {
+              hasSpecialities: ability.system.hasSpecialities,
+              rating: cap,
+              specialitiesMode: ability.system.specialitiesMode,
+            }),
+          },
+        },
+      ];
+    });
+    await this.parent.updateEmbeddedDocuments("Item", updates);
+  };
+
+  /** Bonds in display order: ordinary first, then DELTA GREEN, by name */
+  getBonds(): BondItem[] {
+    return this.parent.items
+      .filter((item) => isBondItem(item))
+      .toSorted((a, b) =>
+        compareBonds(
+          { name: a.name ?? "", isDeltaGreen: a.system.isDeltaGreen },
+          { name: b.name ?? "", isDeltaGreen: b.system.isDeltaGreen },
+        ),
+      );
+  }
+
+  /**
+   * The Agent's Stability state (Fall of DELTA GREEN, p. 113), or null if
+   * states aren't in use, or there's no Stability ability
+   */
+  getStabilityState(): StabilityState | null {
+    const thresholds = getStabilityThresholds();
+    const stability = this.getStabilityAbility();
+    return thresholds && stability
+      ? getStabilityState(stability.system.pool, thresholds)
+      : null;
+  }
+
+  /** The Sanity ability: shocks reduce its rating, which is capped */
+  getSanityAbility(): GeneralAbilityItem | undefined {
+    const name = settings.sanityAbility.get();
+    return this.parent.items.find(
+      (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
+        isGeneralAbilityItem(item) && item.name === name,
+    );
+  }
+
+  /**
+   * The end of an operation: shocks can cost Sanity again, and it's too late
+   * for burning a Bond to undo the last loss
+   */
+  protected override async afterFullRefresh(): Promise<void> {
+    if (this.shockSanityLoss !== 0 || this.lastTraumaTest !== null) {
+      await this.parent.update({
+        system: { shockSanityLoss: 0, lastTraumaTest: null },
+      });
+    }
+  }
+
+  /**
+   * The Difficulty of a Stability test for this Agent: +1 while Shaken or
+   * worse, like any General test (Fall of DELTA GREEN, p. 113)
+   */
+  getStabilityTestDifficulty(base: number): number {
+    const state = this.getStabilityState();
+    return (
+      base +
+      (state !== null && isShakenOrWorse(state) ? shakenDifficultyPenalty : 0)
+    );
+  }
+
+  /**
+   * The latest trauma test, if Stability is still just as it (and any burns
+   * since) left it: then burning a Bond is "immediately after" the loss
+   */
+  getUndoableTraumaTest(): LastTraumaTest | null {
+    const last = this.lastTraumaTest;
+    const stability = this.getStabilityAbility();
+    if (
+      last === null ||
+      last === undefined ||
+      stability === undefined ||
+      stability.system.pool !== last.poolAfter ||
+      stability.system.rating !== last.ratingAfter
+    ) {
+      return null;
+    }
+    return { ...last, stateBefore: last.stateBefore as StabilityState };
+  }
+
+  /**
+   * The Stability ability: Bonds are spent on it and burned for it, and
+   * trauma tests are made with it
+   */
+  getStabilityAbility(): GeneralAbilityItem | undefined {
+    const name = settings.stabilityAbility.get();
+    return this.parent.items.find(
+      (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
+        isGeneralAbilityItem(item) && item.name === name,
+    );
+  }
+
+  canBurnBond(bond: BondItem): boolean {
+    const stability = this.getStabilityAbility();
+    return (
+      stability !== undefined &&
+      canBurnBond({
+        bondPoints: bond.system.points,
+        stabilityPool: stability.system.pool,
+        stabilityRating: stability.system.rating,
+      })
+    );
+  }
+
+  /**
+   * Abilities whose points can go on the test to rebuild a Bond (p. 128):
+   * Interpersonal ones by default, that the character has. Some may have no
+   * points left.
+   */
+  getRebuildSpendAbilities(): InvestigativeAbilityItem[] {
+    const category = settings.bondRebuildSpendCategory.get();
+    return this.parent.items
+      .filter(
+        (
+          item,
+        ): item is InvestigativeAbilityItem &
+          Item.Stored<"investigativeAbility"> =>
+          isInvestigativeAbilityItem(item) &&
+          item.system.categoryId === category &&
+          item.system.rating >= 1,
+      )
+      .toSorted((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+  }
+
+  /**
+   * Only ordinary Bonds can be rebuilt this way (DELTA GREEN Bonds have their
+   * own rules, p. 046), and a broken Bond is gone for good.
+   */
+  canRebuildBond(bond: BondItem): boolean {
+    return (
+      !bond.system.isDeltaGreen &&
+      !bond.system.isBroken &&
+      this.getStabilityAbility() !== undefined
+    );
+  }
+
+  /**
+   * Bonds that can be neglected for a new one (p. 129): ordinary ones that
+   * aren't broken.
+   */
+  getNeglectableBonds(): BondItem[] {
+    return this.getBonds().filter(
+      (bond) => !bond.system.isDeltaGreen && !bond.system.isBroken,
+    );
+  }
+
+  /**
+   * Broken Bonds which a new Bond can re-form (p. 046: "rebuild it from
+   * scratch"). DELTA GREEN Bonds form their own way.
+   */
+  getReformableBonds(): BondItem[] {
+    return this.getBonds().filter(
+      (bond) => !bond.system.isDeltaGreen && bond.system.isBroken,
+    );
+  }
+
+  /** Ask first: burning permanently damages the Bond */
+  confirmBurnBond = async (bond: BondItem): Promise<void> => {
+    const stability = this.getStabilityAbility();
+    if (stability === undefined || !this.canBurnBond(bond)) {
+      // burnBond explains why not
+      await this.burnBond(bond);
+      return;
+    }
+    const bondPointsAfter = clampBondPoints(
+      bond.system.points - bondPointsPerBurnedStability,
+    );
+    const yes = await confirmADoodleDo({
+      message: isBondBroken(bondPointsAfter)
+        ? "BurnBondConfirmBreaks"
+        : "BurnBondConfirm",
+      confirmText: "Burn",
+      cancelText: "Cancel",
+      confirmIconClass: "fa-fire",
+      resolveFalseOnCancel: true,
+      values: {
+        BondName: bond.name ?? "",
+        Points: String(bondPointsPerBurnedStability),
+        BondPoints: String(bond.system.points),
+        BondPointsAfter: String(bondPointsAfter),
+        AbilityName: stability.name ?? "",
+        Pool: String(stability.system.pool),
+        PoolAfter: String(stability.system.pool + 1),
+      },
+    });
+    if (yes) {
+      await this.burnBond(bond);
+    }
+  };
+
+  /**
+   * Burn a Bond (Fall of DELTA GREEN, p. 120): spend 2 of its points to
+   * restore 1 Stability point.
+   */
+  burnBond = async (bond: BondItem): Promise<void> => {
+    const stability = this.getStabilityAbility();
+    if (stability === undefined) {
+      ui.notifications?.warn(
+        getTranslated("NoAbilityToBurnBondsFor", {
+          AbilityName: settings.stabilityAbility.get(),
+        }),
+      );
+      return;
+    }
+    if (!this.canBurnBond(bond)) {
+      return;
+    }
+    const poolAfter = stability.system.pool + 1;
+    // straight after a trauma test, burning can undo becoming Shaken or
+    // Shattered, and with it the rating point and Sanity they cost
+    const last = this.getUndoableTraumaTest();
+    const refund = last
+      ? getBurnRefund({
+          last,
+          poolAfterBurn: poolAfter,
+          thresholds: getStabilityThresholds(),
+        })
+      : null;
+    const ratingBefore = stability.system.rating;
+    const ratingAfter = ratingBefore + (refund?.ratingRefund ?? 0);
+    const sanity =
+      refund && refund.sanityRefund > 0 ? this.getSanityAbility() : undefined;
+    const sanityBefore = sanity?.system.rating ?? 0;
+    const sanityAfter = sanityBefore + (refund?.sanityRefund ?? 0);
+    // the pool only comes back as far as the shock took it down
+    const sanityPoolRefund = Math.min(
+      refund?.sanityRefund ?? 0,
+      last?.sanityPoolLoss ?? 0,
+    );
+    await this.parent.updateEmbeddedDocuments("Item", [
+      {
+        _id: bond.id,
+        system: {
+          points: clampBondPoints(
+            bond.system.points - bondPointsPerBurnedStability,
+          ),
+        },
+      },
+      {
+        _id: stability.id,
+        system: { pool: poolAfter, rating: ratingAfter },
+      },
+      ...(sanity
+        ? [
+            {
+              _id: sanity.id,
+              system: {
+                rating: sanityAfter,
+                pool: sanity.system.pool + sanityPoolRefund,
+              },
+            },
+          ]
+        : []),
+    ]);
+    if (last && refund) {
+      await this.parent.update({
+        system: {
+          shockSanityLoss: refund.consequences.sanityLostThisOperationAfter,
+          lastTraumaTest: {
+            ...last,
+            poolAfter,
+            ratingAfter,
+            ratingLoss: refund.consequences.ratingLoss,
+            sanityLoss: refund.consequences.sanityLoss,
+            sanityPoolLoss: last.sanityPoolLoss - sanityPoolRefund,
+          },
+        },
+      });
+    }
+    await this.broadcastUserMessage("ActorNameBurnedBondNameForAbilityName", {
+      BondName: bond.name ?? "",
+      AbilityName: stability.name ?? "",
+      Points: String(bondPointsPerBurnedStability),
+    });
+    const restored = [
+      ...(ratingAfter !== ratingBefore
+        ? [`${stability.name ?? ""} ${ratingBefore} → ${ratingAfter}`]
+        : []),
+      ...(sanity
+        ? [`${sanity.name ?? ""} ${sanityBefore} → ${sanityAfter}`]
+        : []),
+    ];
+    if (restored.length > 0) {
+      await this.broadcastUserMessage("BurningStraightAfterTheLossRestored", {
+        Ratings: restored.join(", "),
+      });
+    }
+  };
+
+  createBond = async (): Promise<void> => {
+    await this.parent.createEmbeddedDocuments(
+      "Item",
+      [{ type: c.bond, name: "New Bond" }],
+      { renderSheet: true },
+    );
+  };
+
+  /** The Network ability, which contacts' points come from */
+  getNetworkAbility(): GeneralAbilityItem | undefined {
+    const name = settings.networkAbility.get();
+    return this.parent.items.find(
+      (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
+        isGeneralAbilityItem(item) && item.name === name,
+    );
+  }
+
+  /** Network contacts (Fall of DELTA GREEN, p. 068), by name */
+  getNetworkContacts(): NetworkContactItem[] {
+    return this.parent.items
+      .filter((item) => isNetworkContactItem(item))
+      .toSorted((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+  }
+
+  /** The Network points contacts still hold */
+  getContactPoints(): number {
+    return this.getNetworkContacts().reduce(
+      (total, contact) => total + contact.system.pool,
+      0,
+    );
+  }
+
+  /**
+   * What an ability refreshes to: its rating, except that Network leaves out
+   * what contacts still hold, so its pool and theirs add up to its rating
+   */
+  getRefreshTarget(ability: AbilityItem): number {
+    const rating = ability.system.rating;
+    if (
+      !settings.useNetworkContacts.get() ||
+      ability.id !== this.getNetworkAbility()?.id
+    ) {
+      return rating;
+    }
+    return getNetworkRefreshPool({
+      rating,
+      contactPools: this.getNetworkContacts().map(
+        (contact) => contact.system.pool,
+      ),
+    });
+  }
+
+  createNetworkContact = async (): Promise<void> => {
+    await this.parent.createEmbeddedDocuments(
+      "Item",
+      [{ type: c.networkContact, name: getTranslated("New contact") }],
+      { renderSheet: true },
+    );
+  };
 
   getPersonalDetails(): PersonalDetailItem[] {
     return this.parent.items.filter((item) => isPersonalDetailItem(item));

@@ -1,0 +1,51 @@
+name: Sanity
+type: generalAbility
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes: ""
+  allowPoolToExceedRating: false
+  boost: false
+  categoryId: General
+  excludeFromGeneralRefresh: true
+  hasSpecialities: false
+  max: 99
+  min: 0
+  occupational: false
+  pool: 5
+  rating: 5
+  refreshesDaily: false
+  showTracker: true
+  situationalModifiers: []
+  specialities: []
+  specialitiesMode: one
+  unlocks: []
+  canBeInvestigative: false
+  goesFirstInCombat: false
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  linkToResource: true
+  resourceId: sanity
+  hideIfZeroRated: false
+flags: {}
+_id: snn43H2D2ZbxSBcS
+effects: []
+folder: null
+ownership:
+  default: 0
+  uGKGNvlghwYPLPsN: 3
+_stats:
+  coreVersion: "14.366"
+  systemId: investigator
+  systemVersion: "10.115"
+  createdTime: 1786986401550
+  modifiedTime: 1786986401551
+  lastModifiedBy: uGKGNvlghwYPLPsN
+  compendiumSource: null
+  duplicateSource: null
+  exportSource: null
+sort: 0
+_key: "!items!snn43H2D2ZbxSBcS"

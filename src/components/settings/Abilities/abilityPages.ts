@@ -1,8 +1,10 @@
+import { getTranslated } from "../../../functions/getTranslated";
 import type { SettingsPageDef } from "../SettingsMenu";
 import {
   abilityOptions,
   generalAbilityCategories,
   investigativeAbilityCategories,
+  networkContacts,
   npcAbilityPacks,
   pcAbilityPacks,
 } from "./directions";
@@ -39,5 +41,11 @@ export const abilityPages: SettingsPageDef[] = [
     direction: abilityOptions,
     label: "Ability options",
     description: "AbilityOptionsDescription",
+  },
+  {
+    direction: networkContacts,
+    label: "Network contacts",
+    description: "NetworkContactsDescription",
+    summary: (s) => getTranslated(s.useNetworkContacts ? "On" : "Off"),
   },
 ];

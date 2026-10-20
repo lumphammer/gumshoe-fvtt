@@ -9,10 +9,23 @@ import { AbilityTestMwCard } from "../components/messageCards/AbilityTestMwCard"
 import { AttackCard } from "../components/messageCards/AttackCard";
 import { BrokenCard } from "../components/messageCards/BrokenCard";
 import { PushCard } from "../components/messageCards/PushCard";
+import { CrisisCallCard } from "../components/messageCards/CrisisCallCard";
+import { EstablishBondCard } from "../components/messageCards/EstablishBondCard";
+import { NetworkContactCard } from "../components/messageCards/NetworkContactCard";
+import { RebuildBondCard } from "../components/messageCards/RebuildBondCard";
+import { TeamCrisisCard } from "../components/messageCards/TeamCrisisCard";
+import { TraumaTestCard } from "../components/messageCards/TraumaTestCard";
 import { isAbilityCardMode } from "../components/messageCards/types";
 import * as constants from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
+import { parseBondSpends } from "../module/bonds/bondSpends";
+import { parseStabilityState } from "../module/stability/states";
+import { parseTraumaTestRecord } from "../module/stability/trauma";
+import { parseCrisisCall, parseCrisisRecord } from "../module/bonds/crisis";
+import { parseEstablishRecord } from "../module/bonds/establish";
+import { parseRebuildRecord } from "../module/bonds/rebuild";
+import { parseContactRecord } from "../module/contacts/rules";
 import { isAbilityItem } from "../module/items/exports";
 import type { MWDifficulty } from "../types";
 import { createCardRootTracker } from "./createCardRootTracker";
@@ -102,6 +115,100 @@ export const installAbilityCardChatWrangler = () => {
           el,
         );
         renderBroken("BrokenCardInvalidMode");
+        return;
+      }
+
+      // a Bond rebuild was settled when it was rolled, and its card carries
+      // the whole record, so it doesn't need the actor (which may be gone)
+      if (mode === constants.htmlDataModeBondRebuild) {
+        const record = parseRebuildRecord(
+          el.getAttribute(constants.htmlDataBondRebuild),
+        );
+        if (record === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(
+            el,
+            <RebuildBondCard record={record} imageUrl={imageUrl} />,
+          );
+        }
+        return;
+      }
+
+      // likewise establishing a new Bond
+      if (mode === constants.htmlDataModeBondEstablish) {
+        const record = parseEstablishRecord(
+          el.getAttribute(constants.htmlDataBondEstablish),
+        );
+        if (record === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(
+            el,
+            <EstablishBondCard record={record} imageUrl={imageUrl} />,
+          );
+        }
+        return;
+      }
+
+      // a GM's call for a team crisis, which isn't about one actor
+      if (mode === constants.htmlDataModeBondCrisisCall) {
+        const call = parseCrisisCall(
+          el.getAttribute(constants.htmlDataBondCrisisCall),
+        );
+        if (call === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(el, <CrisisCallCard call={call} imageUrl={imageUrl} />);
+        }
+        return;
+      }
+
+      // and a team crisis
+      if (mode === constants.htmlDataModeBondCrisis) {
+        const record = parseCrisisRecord(
+          el.getAttribute(constants.htmlDataBondCrisis),
+        );
+        if (record === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(
+            el,
+            <TeamCrisisCard record={record} imageUrl={imageUrl} />,
+          );
+        }
+        return;
+      }
+
+      // a Stability test against trauma
+      if (mode === constants.htmlDataModeStabilityTest) {
+        const record = parseTraumaTestRecord(
+          el.getAttribute(constants.htmlDataStabilityTest),
+        );
+        if (record === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(
+            el,
+            <TraumaTestCard record={record} imageUrl={imageUrl} />,
+          );
+        }
+        return;
+      }
+
+      // a Network contact's card carries its whole record too
+      if (mode === constants.htmlDataModeNetworkContact) {
+        const record = parseContactRecord(
+          el.getAttribute(constants.htmlDataNetworkContact),
+        );
+        if (record === null) {
+          renderBroken("BrokenCardDamaged");
+        } else {
+          renderCardNow(
+            el,
+            <NetworkContactCard record={record} imageUrl={imageUrl} />,
+          );
+        }
         return;
       }
 
@@ -212,6 +319,12 @@ export const installAbilityCardChatWrangler = () => {
               mode={mode}
               imageUrl={imageUrl}
               name={name}
+              bondSpends={parseBondSpends(
+                el.getAttribute(constants.htmlDataBondSpends),
+              )}
+              stabilityState={parseStabilityState(
+                el.getAttribute(constants.htmlDataStabilityState),
+              )}
             />
           </StrictMode>
         );

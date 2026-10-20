@@ -27,6 +27,7 @@ const BuildPointsCounter = ({ label, total }: BuildPointsCounterProps) => {
       <i
         css={{
           font: theme.displayFont,
+          textTransform: theme.displayFontTextTransform,
           fontSize: "smaller",
         }}
       >
@@ -35,6 +36,7 @@ const BuildPointsCounter = ({ label, total }: BuildPointsCounterProps) => {
       <span
         css={{
           font: theme.displayFont,
+          textTransform: theme.displayFontTextTransform,
           fontSize: "larger",
           lineHeight: 1,
         }}

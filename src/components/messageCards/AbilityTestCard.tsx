@@ -1,7 +1,11 @@
 import React, { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import type { BondSpendRecord } from "../../module/bonds/bondSpends";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { StabilityState } from "../../module/stability/states";
+import { getStabilityStateName } from "../../module/stability/settings";
+import { shakenDifficultyPenalty } from "../../module/stability/trauma";
 import { Translate } from "../Translate";
 import { DiceTerms } from "./DiceTerms";
 import type { AbilityCardMode } from "./types";
@@ -12,10 +16,22 @@ interface AbilityTestCardProps {
   mode: AbilityCardMode;
   name: string | null;
   imageUrl: string | null;
+  /** points spent from Bonds on a Stability test (Fall of DELTA GREEN) */
+  bondSpends?: BondSpendRecord[];
+  /** Shaken or worse when tested: a reminder of the +1 Difficulty */
+  stabilityState?: StabilityState | null;
 }
 
 export const AbilityTestCard = React.memo(
-  ({ msg, ability, mode, name, imageUrl }: AbilityTestCardProps) => {
+  ({
+    msg,
+    ability,
+    mode,
+    name,
+    imageUrl,
+    bondSpends = [],
+    stabilityState = null,
+  }: AbilityTestCardProps) => {
     const sheet = ability?.sheet;
     assertApplicationV2(sheet);
 
@@ -77,6 +93,27 @@ export const AbilityTestCard = React.memo(
               {": "}
               <DiceTerms terms={msg.rolls?.[0]?.terms} />
               {" ="}
+              {bondSpends.length > 0 && (
+                <div data-testid="bond-spends">
+                  <Translate>Bonds</Translate>
+                  {": "}
+                  {bondSpends
+                    .map(({ name, spend }) => `${name} ${spend}`)
+                    .join(", ")}
+                </div>
+              )}
+              {stabilityState !== null && (
+                <div data-testid="shaken-reminder">
+                  <Translate
+                    values={{
+                      State: getStabilityStateName(stabilityState),
+                      Penalty: String(shakenDifficultyPenalty),
+                    }}
+                  >
+                    StateDifficultyReminder
+                  </Translate>
+                </div>
+              )}
             </>
           )}
         </div>

@@ -96,8 +96,27 @@ const initialState: State = {
     // eslint-disable-next-line typescript/no-deprecated -- legacy migration fixture
     shortNotes: [],
     firstRun: true,
+    offeredTrailOfCthulhuRules: false,
     journalMemories: {},
     cardCategories: [],
+    useStabilityRules: false,
+    stabilityAbility: "",
+    useSanityRules: false,
+    sanityAbility: "",
+    sanityCapAbility: "",
+    sanityCapBase: 10,
+    useStabilityStates: false,
+    stabilityStates: {
+      shaken: { name: "", upTo: 0 },
+      shattered: { name: "", upTo: -6 },
+      gone: { name: "", upTo: -12 },
+    },
+    useBonds: false,
+    bondRebuildSpendCategory: "",
+    useTrauma: false,
+    traumaTypes: [],
+    useNetworkContacts: false,
+    networkAbility: "",
     useCards: false,
     notifyItemAddedToActor: false,
   },
@@ -177,6 +196,30 @@ describe("reducer", () => {
     const result = slice.reducer(initialState, { type: "FOOEY" });
     // no point snapshotting this
     expect(result).toEqual(initialState);
+  });
+
+  it("applies modifications in a row to the latest state", () => {
+    // e.g. a text box saving on blur, then a toggle, before a re-render
+    const first = slice.reducer(
+      initialState,
+      slice.creators.modify({
+        fn: (settings) => {
+          settings.stabilityAbility = "Composure";
+        },
+      }),
+    );
+    const second = slice.reducer(
+      first,
+      slice.creators.modify({
+        fn: (settings) => {
+          settings.useTrauma = true;
+        },
+      }),
+    );
+    expect(second.settings.stabilityAbility).toBe("Composure");
+    expect(second.settings.useTrauma).toBe(true);
+    // without changing the state it started from
+    expect(initialState.settings.stabilityAbility).toBe("");
   });
 
   it("preserves sibling equipment fields when changing a field id", () => {

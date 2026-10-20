@@ -1,4 +1,3 @@
-import { produce } from "immer";
 import { useCallback, useMemo, useReducer } from "react";
 
 import { useRefStash } from "../../hooks/useRefStash";
@@ -41,10 +40,7 @@ export const useSettingsState = () => {
   );
 
   function modify(fn: (state: SettingsDict) => void) {
-    const newState = produce(tempStateRef.current.settings, (draft) => {
-      fn(draft);
-    });
-    dispatch(store.creators.setSome({ newSettings: newState }));
+    dispatch(store.creators.modify({ fn }));
   }
 
   return {

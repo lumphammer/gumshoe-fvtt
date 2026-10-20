@@ -2,6 +2,8 @@ import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
 import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
+import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
+import { getTranslated } from "../../functions/getTranslated";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
 import { TypeDataModel } from "../../fvtt-exports";
@@ -12,7 +14,15 @@ import type {
   SpecialitiesMode,
   Unlock,
 } from "../../types";
+import type { PCModel } from "../actors/pc";
+import { getCappedRating, getRefreshedPool } from "../bonds/adaptation";
+import { serializeBondSpends } from "../bonds/bondSpends";
+import type { StabilityState } from "../stability/states";
+import { isShakenOrWorse } from "../stability/states";
+import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
+import type { BondItem } from "./bond";
 import type { AbilitySchema } from "./createAbilitySchema";
+import type { AbilityItem } from "./exports";
 import { migrateCategoryToCategoryId } from "./migrateCategoryToCategoryId";
 import { getSpecialitiesCount, resizeSpecialities } from "./resizeSpecialities";
 
@@ -36,12 +46,46 @@ export abstract class AbilityModel<
 
   /**
    * classic gumshoe test: spend a number of points from the pool, and add that
-   * to a d6
+   * to a d6. Points from Bonds (Fall of DELTA GREEN, p. 120) add to the roll
+   * too.
    */
-  async testAbility(spend: number): Promise<void> {
+  async testAbility(
+    spend: number,
+    bondSpends: { bond: BondItem; spend: number }[] = [],
+  ): Promise<void> {
     if (this.parent.parent === null) {
       return;
     }
+    const usedBondSpends = bondSpends.filter(
+      (bondSpend) => bondSpend.spend > 0,
+    );
+    // the sheet only offers what each Bond can spare, but it may be out of date
+    const overspent = usedBondSpends.find(
+      ({ bond, spend }) =>
+        bond.parent !== this.parent.parent ||
+        spend > getMaxBondSpend(bond.system.points),
+    );
+    if (overspent) {
+      ui.notifications?.warn(
+        getTranslated("BondCantSpareThatMany", {
+          BondName: overspent.bond.name ?? "",
+        }),
+      );
+      return;
+    }
+    const bondTotal = usedBondSpends.reduce(
+      (total, bondSpend) => total + bondSpend.spend,
+      0,
+    );
+    // Shaken (or worse): General tests are at +1 Difficulty (Fall of DELTA
+    // GREEN, p. 113). Tests don't have a Difficulty yet, so the card says so.
+    const stabilityState = this.getOwnerStabilityState();
+    const shakenState =
+      this.parent.type === constants.generalAbility &&
+      stabilityState !== null &&
+      isShakenOrWorse(stabilityState)
+        ? stabilityState
+        : null;
     const isBoosted = settings.useBoost.get() && this.boost;
     const boost = isBoosted ? 1 : 0;
     const situationalModifiers = this.activeSituationalModifiers.map((id) => {
@@ -53,6 +97,10 @@ export abstract class AbilityModel<
 
     let rollExpression = "1d6 + @spend";
     const rollValues: Record<string, number> = { spend };
+    if (bondTotal > 0) {
+      rollExpression += " + @bonds";
+      rollValues["bonds"] = bondTotal;
+    }
     if (isBoosted) {
       rollExpression += " + @boost";
       rollValues["boost"] = boost;
@@ -78,11 +126,58 @@ export abstract class AbilityModel<
         [constants.htmlDataName]: this.parent.name,
         [constants.htmlDataImageUrl]: this.parent.img,
         [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
+        [constants.htmlDataStabilityState]: shakenState,
+        [constants.htmlDataBondSpends]: serializeBondSpends(
+          usedBondSpends.map(({ bond, spend }) => ({
+            name: bond.name ?? "",
+            spend,
+          })),
+        ),
       }),
     });
     const pool = this.pool - (Number(spend) || 0);
     await this.parent.update({ system: { pool } });
+    if (usedBondSpends.length > 0) {
+      await this.parent.parent.updateEmbeddedDocuments(
+        "Item",
+        usedBondSpends.map(({ bond, spend }) => ({
+          _id: bond.id,
+          system: { points: clampBondPoints(bond.system.points - spend) },
+        })),
+      );
+    }
   }
+
+  /**
+   * Spend, but ask first if it's an Investigative ability and the owner is
+   * Shaken (or worse): they can't spend Investigative points (Fall of DELTA
+   * GREEN, p. 113), though the GM may allow it.
+   */
+  confirmSpendAbility = async (spend: number): Promise<void> => {
+    const state = this.getOwnerStabilityState();
+    if (
+      spend > 0 &&
+      this.parent.type === constants.investigativeAbility &&
+      state !== null &&
+      isShakenOrWorse(state)
+    ) {
+      const yes = await confirmADoodleDo({
+        message: "SpendWhileShakenConfirm",
+        confirmText: "Spend",
+        cancelText: "Cancel",
+        confirmIconClass: "fa-check",
+        resolveFalseOnCancel: true,
+        values: {
+          ActorName: this.parent.actor?.name ?? "",
+          AbilityName: this.parent.name ?? "",
+        },
+      });
+      if (!yes) {
+        return;
+      }
+    }
+    await this.spendAbility(spend);
+  };
 
   /**
    * gumshoe spend - no dice, just spend a number of points in exchange for some
@@ -185,13 +280,71 @@ export abstract class AbilityModel<
     await this.parent.update({ system: { pool: newPool } });
   }
 
+  /** The owning PC's system, if there is one (adaptations are on PCs) */
   /**
-   * reset the pool to the rating
+   * What a refresh brings the pool to: the rating, except for a PC's Network
+   * ability, which leaves out what their contacts hold
+   */
+  getRefreshTarget(): number {
+    return (
+      this.getPCSystem()?.getRefreshTarget(this.parent as AbilityItem) ??
+      this.rating ??
+      0
+    );
+  }
+
+  private getPCSystem(): PCModel | null {
+    const actor = this.parent.actor;
+    // by type rather than isPCActor: pc.ts imports this file
+    return actor?.type === constants.pc ? (actor.system as PCModel) : null;
+  }
+
+  /**
+   * The owner's Stability state, if this is their Stability ability and
+   * states are in use
+   */
+  getStabilityState(): StabilityState | null {
+    const system = this.getPCSystem();
+    return system?.getStabilityAbility()?.id === this.parent.id
+      ? system.getStabilityState()
+      : null;
+  }
+
+  /** The owner's Stability state, if states are in use (for any ability) */
+  getOwnerStabilityState(): StabilityState | null {
+    return this.getPCSystem()?.getStabilityState() ?? null;
+  }
+
+  /**
+   * The cap on the rating (from adaptations, or Sanity's cap), if there is
+   * one
+   */
+  getRatingCap(): number | null {
+    return this.getPCSystem()?.getRatingCap(this.parent.name ?? "") ?? null;
+  }
+
+  /** What caps the rating, to say so */
+  getRatingCapReasons(): string[] {
+    return (
+      this.getPCSystem()
+        ?.getRatingCaps(this.parent.name ?? "")
+        .map(({ reason }) => reason) ?? []
+    );
+  }
+
+  /**
+   * reset the pool to the rating (short by any refresh penalty, e.g. when
+   * Adapted to Helplessness)
    */
   async refreshPool(): Promise<void> {
     await this.parent.update({
       system: {
-        pool: this.rating ?? 0,
+        pool: getRefreshedPool({
+          pool: this.pool,
+          rating: this.getRefreshTarget(),
+          refreshPenalty:
+            this.getPCSystem()?.getAdaptationEffects().refreshPenalty ?? 0,
+        }),
       },
     });
   }
@@ -258,7 +411,8 @@ export abstract class AbilityModel<
     });
   };
 
-  setRating = async (newRating: number): Promise<void> => {
+  setRating = async (rating: number): Promise<void> => {
+    const newRating = getCappedRating(rating, this.getRatingCap());
     await this.parent.update({
       system: {
         rating: newRating,
@@ -271,7 +425,8 @@ export abstract class AbilityModel<
     });
   };
 
-  setRatingAndRefreshPool = async (newRating: number): Promise<void> => {
+  setRatingAndRefreshPool = async (rating: number): Promise<void> => {
+    const newRating = getCappedRating(rating, this.getRatingCap());
     await this.parent.update({
       system: {
         rating: newRating,

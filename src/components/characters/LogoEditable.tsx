@@ -123,6 +123,7 @@ export const LogoEditable = ({
           bottom: 0,
           left: 0,
           font: theme.displayFont,
+          textTransform: theme.displayFontTextTransform,
           fontSize: "4em",
           whiteSpace: "nowrap",
           caretColor: "black",

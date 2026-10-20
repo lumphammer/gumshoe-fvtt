@@ -7,7 +7,13 @@ export type AbilityCardMode =
   | typeof constants.htmlDataModeMwTest
   | typeof constants.htmlDataModeMwNegate
   | typeof constants.htmlDataModeMwWallop
-  | typeof constants.htmlDataModePush;
+  | typeof constants.htmlDataModePush
+  | typeof constants.htmlDataModeBondRebuild
+  | typeof constants.htmlDataModeBondEstablish
+  | typeof constants.htmlDataModeBondCrisis
+  | typeof constants.htmlDataModeBondCrisisCall
+  | typeof constants.htmlDataModeStabilityTest
+  | typeof constants.htmlDataModeNetworkContact;
 
 export const isAbilityCardMode = (
   candidate: string,
@@ -19,7 +25,13 @@ export const isAbilityCardMode = (
     candidate === constants.htmlDataModeMwTest ||
     candidate === constants.htmlDataModeMwNegate ||
     candidate === constants.htmlDataModeMwWallop ||
-    candidate === constants.htmlDataModePush
+    candidate === constants.htmlDataModePush ||
+    candidate === constants.htmlDataModeBondRebuild ||
+    candidate === constants.htmlDataModeBondEstablish ||
+    candidate === constants.htmlDataModeBondCrisis ||
+    candidate === constants.htmlDataModeBondCrisisCall ||
+    candidate === constants.htmlDataModeStabilityTest ||
+    candidate === constants.htmlDataModeNetworkContact
   );
 };
 

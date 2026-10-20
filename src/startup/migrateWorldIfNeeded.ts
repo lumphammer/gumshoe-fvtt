@@ -1,4 +1,5 @@
 import system from "../../public/system.json";
+import { defaultSystemPreset } from "../constants";
 import { assertGame } from "../functions/isGame";
 import { mapObject, systemLogger } from "../functions/utilities";
 import { errorMessage } from "../migrations/failures";
@@ -10,7 +11,9 @@ import type {
   MigrationFunction,
   MigrationFunctionsForType,
 } from "../migrations/types";
+import { runtimeConfig } from "../runtime";
 import { settings } from "../settings/settings";
+import { applyPresetSettings } from "./applyPresetSettings";
 
 /**
  * How many times we let a migration fail on startup before we give up and
@@ -52,6 +55,11 @@ export const migrateWorldIfNeeded = async ({ force = false } = {}) => {
   // so we avoid running them all on the first run
   if (firstRun) {
     systemLogger.log("Detected a first run - pre-flagging all migrations");
+    // a new world says it uses the default preset, but it has stored no
+    // settings, so it reads the base defaults: give it the preset's values.
+    // (Before clearing `firstRun`, so that if we're interrupted, we do it
+    // again next time.)
+    await applyPresetSettings(runtimeConfig.presets[defaultSystemPreset]);
     // map flaggedMigrations to booleans
     const newMigrationFlags = mapObject<
       MigrationFunctionsForType,

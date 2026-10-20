@@ -50,7 +50,14 @@ translations, adding fields and settings, releases).
   `investigator.` + `Case.pascal(text)`. Punctuation is dropped and
   abbreviations get mangled: "Shot dry!" and "Shot dry" share `ShotDry`, and
   "HT" becomes `Ht`. Put punctuation outside `<Translate>`, and write words in
-  full.
+  full. All-caps runs stick together too: "DELTA GREEN Bond?" becomes
+  `DELTAGREENBond`, so write "Delta Green Bond?" and put the capitals in
+  `en.json`.
+- `<Translate>` sets an inline `background` (for its debug highlighting), so a
+  `background` passed in its `css` never shows. Style a wrapper instead.
+- `<Translate>` also gives its span a `title` (the translated text), which
+  hides a `title` on anything around it, e.g. a button's tooltip. Pass the
+  tooltip to `<Translate title={...}>` as well.
 - `GridField` labels are translated unless you pass `noTranslate` (needed for
   labels that are ability names).
 
@@ -82,14 +89,24 @@ translations, adding fields and settings, releases).
 
 - Every exportable setting is part of the preset format: an **optional** field
   on `PresetV1` in `packages/investigator-fvtt-types`, plus a default in
-  `pathOfCthulhuPreset` (`src/presets.ts`, typed `Required<PresetV1>`, the base
+  `defaultSettings` (`src/presets.ts`, typed `Required<PresetV1>`, the base
   layer when applying presets).
+- `defaultSettings` is also each setting's registered default, which is what
+  any world reads for a setting it has never stored: so a new setting's
+  default reaches every existing world, whatever its preset. New settings
+  default to off; presets (including Trail of Cthulhu's) turn them on. New
+  worlds get the Trail of Cthulhu preset's values written on their first run
+  (`migrateWorldIfNeeded`).
 - Importing older exports must keep working (missing keys leave current
   values alone). Add the new keys to `validateImportedSettings.test.ts` and the
   fixture in `src/components/settings/store.test.ts`, then update snapshots
   with `vitest -u` after checking them.
 - Settings that have never been released can be renamed or merged without a
   migration: check with `git tag` / `git merge-base --is-ancestor`.
+- `PresetV1` is read from the types package's built `dist`, which `pnpm check`
+  rebuilds. After changing it, vitest's typecheck can keep reporting the old
+  type from its incremental cache: delete
+  `node_modules/.pnpm/vitest@*/node_modules/vitest/dist/tsconfig.tmp.tsbuildinfo`.
 - Settings pages (e.g. under Combat) are `directions.ts` + `*Pages.ts` +
   `*SettingsRoutes.tsx`; `SettingsStringList` edits a list of names.
 
@@ -97,6 +114,9 @@ translations, adding fields and settings, releases).
 
 `docs/fodg-combat-plan.md` holds the rules as implemented and the decisions
 behind them (the book has errata; the rules summary wins).
+`docs/fodg-preset.md` covers the preset and its packs, and the remaining
+gaps. We can ship ability names and game numbers from the book, but never its
+descriptive text.
 
 - Attacks are an `attack` chat message subtype (`AttackMessageModel`). The
   rules code uses a plain `AttackData` type, kept in step with the schema by

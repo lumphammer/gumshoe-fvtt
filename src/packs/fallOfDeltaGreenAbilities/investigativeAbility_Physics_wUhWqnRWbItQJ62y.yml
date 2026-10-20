@@ -1,0 +1,42 @@
+name: Physics
+type: investigativeAbility
+img: /systems/investigator/assets/icons/magnifying-glass.webp
+system:
+  notes: ""
+  allowPoolToExceedRating: false
+  boost: false
+  categoryId: Technical
+  excludeFromGeneralRefresh: false
+  hasSpecialities: false
+  max: 99
+  min: 0
+  occupational: false
+  pool: 0
+  rating: 0
+  refreshesDaily: false
+  showTracker: false
+  situationalModifiers: []
+  specialities: []
+  specialitiesMode: one
+  unlocks: []
+  isQuickShock: false
+  hideIfZeroRated: true
+flags: {}
+_id: wUhWqnRWbItQJ62y
+effects: []
+folder: null
+ownership:
+  default: 0
+  uGKGNvlghwYPLPsN: 3
+_stats:
+  coreVersion: "14.366"
+  systemId: investigator
+  systemVersion: "10.115"
+  createdTime: 1786986401000
+  modifiedTime: 1786986401001
+  lastModifiedBy: uGKGNvlghwYPLPsN
+  compendiumSource: null
+  duplicateSource: null
+  exportSource: null
+sort: 0
+_key: "!items!wUhWqnRWbItQJ62y"

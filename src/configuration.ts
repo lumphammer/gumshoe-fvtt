@@ -30,6 +30,8 @@ import { InvestigatorGamePause } from "./module/InvestigatorGamePause";
 import { InvestigatorJournalSheet } from "./module/InvestigatorJournalSheet";
 import { InvestigatorToken } from "./module/InvestigatorToken";
 import { InvestigatorTokenDocument } from "./module/InvestigatorTokenDocument";
+import { BondModel } from "./module/items/bond";
+import { NetworkContactModel } from "./module/items/networkContact";
 import { CardModel } from "./module/items/card";
 import { EquipmentModel } from "./module/items/equipment";
 import { GeneralAbilityModel } from "./module/items/generalAbility";
@@ -110,6 +112,8 @@ declare module "fvtt-types/configuration" {
       mwItem: typeof MwItemModel;
       personalDetail: typeof PersonalDetailModel;
       card: typeof CardModel;
+      bond: typeof BondModel;
+      networkContact: typeof NetworkContactModel;
     };
     ChatMessage: {
       attack: typeof AttackMessageModel;
@@ -205,6 +209,8 @@ Hooks.once("init", function () {
   CONFIG.Item.dataModels.mwItem = MwItemModel;
   CONFIG.Item.dataModels.personalDetail = PersonalDetailModel;
   CONFIG.Item.dataModels.card = CardModel;
+  CONFIG.Item.dataModels.bond = BondModel;
+  CONFIG.Item.dataModels.networkContact = NetworkContactModel;
 
   CONFIG.ChatMessage.dataModels.attack = AttackMessageModel;
 
@@ -243,6 +249,8 @@ Hooks.once("init", function () {
       constants.mwItem,
       constants.personalDetail,
       constants.card,
+      constants.bond,
+      constants.networkContact,
     ],
   });
 

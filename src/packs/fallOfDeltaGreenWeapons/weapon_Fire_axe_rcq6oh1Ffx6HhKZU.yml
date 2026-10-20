@@ -1,0 +1,47 @@
+_id: rcq6oh1Ffx6HhKZU
+name: Fire axe
+type: weapon
+img: systems/investigator/assets/icons/trench-knife.webp
+system:
+  notes: ""
+  ability: Melee Weapons
+  damage: 1
+  pointBlankDamage: 0
+  closeRangeDamage: 0
+  nearRangeDamage: 0
+  longRangeDamage: 0
+  isPointBlank: true
+  isCloseRange: false
+  isNearRange: false
+  isLongRange: false
+  usesAmmo: false
+  ammo:
+    min: 0
+    max: 0
+    value: 0
+  ammoPerShot: 1
+  ammoPerBurst: 3
+  ammoPerFullAuto: 10
+  cost: 0
+  isGunfire: false
+  fireModes: single
+  lethality: null
+  jammed: false
+  pendingJam: null
+effects: []
+flags: {}
+folder: null
+sort: 1100000
+ownership:
+  default: 0
+_stats:
+  coreVersion: "14.366"
+  systemId: investigator
+  systemVersion: "10.124"
+  createdTime: 1792175327401
+  modifiedTime: 1792175327401
+  lastModifiedBy: null
+  compendiumSource: null
+  duplicateSource: null
+  exportSource: null
+_key: "!items!rcq6oh1Ffx6HhKZU"

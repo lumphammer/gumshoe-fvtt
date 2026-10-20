@@ -29,9 +29,12 @@ import { installResourceUpdateHookHandler } from "./startup/installResourceUpdat
 import { installShowThemeFarmHack } from "./startup/installShowThemeFarmHack";
 import { installSocketActionHandler } from "./startup/installSocketActionHandler";
 import { installTurnPassingHandler } from "./startup/installTurnPassingHandler";
+import { installStabilityStatusHandler } from "./startup/installStabilityStatusHandler";
+import { installSanityCapHandler } from "./startup/installSanityCapHandler";
 import { installWoundStatusHandler } from "./startup/installWoundStatusHandler";
 import { loadCustomThemes } from "./startup/loadCustomThemes";
 import { migrateWorldIfNeeded } from "./startup/migrateWorldIfNeeded";
+import { offerTrailOfCthulhuRules } from "./startup/offerTrailOfCthulhuRules";
 import { registerBabele } from "./startup/registerBabele";
 import { registerDevModeDebugFlag } from "./startup/registerDevModeDebugFlag";
 import { registerSettingsMenu } from "./startup/registerSettingsMenu";
@@ -58,6 +61,8 @@ Hooks.once("setup", function () {
 
 Hooks.once("ready", async () => {
   await migrateWorldIfNeeded();
+  // this waits for the GM to answer, so don't hold up the rest of startup
+  void offerTrailOfCthulhuRules();
   await installDSNFix();
 
   assertGame(game);
@@ -91,6 +96,8 @@ installItemCombatAbilityHandler();
 installActorCombatAbilityHandler();
 installNextTurnHandler();
 installWoundStatusHandler();
+installStabilityStatusHandler();
+installSanityCapHandler();
 
 /**
  * Recursively get all layer names from a CSSRule and its children.

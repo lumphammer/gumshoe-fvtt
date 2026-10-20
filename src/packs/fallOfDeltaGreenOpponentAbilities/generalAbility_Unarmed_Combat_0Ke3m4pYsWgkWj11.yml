@@ -1,0 +1,50 @@
+_id: 0Ke3m4pYsWgkWj11
+name: Unarmed Combat
+type: generalAbility
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes: ""
+  allowPoolToExceedRating: false
+  boost: false
+  categoryId: General
+  excludeFromGeneralRefresh: false
+  hasSpecialities: false
+  max: 99
+  min: 0
+  occupational: false
+  pool: 0
+  rating: 0
+  refreshesDaily: true
+  showTracker: false
+  situationalModifiers: []
+  specialities: []
+  specialitiesMode: one
+  unlocks: []
+  canBeInvestigative: true
+  goesFirstInCombat: false
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  linkToResource: false
+  resourceId: ""
+  hideIfZeroRated: true
+effects: []
+flags: {}
+folder: null
+sort: 300000
+ownership:
+  default: 0
+_stats:
+  coreVersion: "14.366"
+  systemId: investigator
+  systemVersion: "10.124"
+  createdTime: 1792175327401
+  modifiedTime: 1792175327401
+  lastModifiedBy: null
+  compendiumSource: null
+  duplicateSource: null
+  exportSource: null
+_key: "!items!0Ke3m4pYsWgkWj11"

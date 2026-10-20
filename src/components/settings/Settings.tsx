@@ -3,6 +3,7 @@ import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppCo
 import { useCallback, useContext, useEffect } from "react";
 import {
   FaCircle,
+  FaBrain,
   FaEllipsis,
   FaLayerGroup,
   FaLightbulb,
@@ -53,6 +54,7 @@ import {
   coreSettings,
   equipmentSettings,
   miscSettings,
+  stabilitySettings,
 } from "./directions";
 import { EquipmentSettings } from "./Equipment/EquipmentSettings";
 import { EquipmentSettingsRoutes } from "./Equipment/EquipmentSettingsRoutes";
@@ -61,6 +63,9 @@ import { getVisibleMiscPages, miscPages } from "./Misc/miscPages";
 import { MiscSettingsRoutes } from "./Misc/MiscSettingsRoutes";
 import { SettingsBreadcrumbs } from "./SettingsBreadcrumbs";
 import { SettingsMenu } from "./SettingsMenu";
+import { stabilityPages } from "./Stability/stabilityPages";
+import { StabilitySettings } from "./Stability/StabilitySettings";
+import { StabilitySettingsRoutes } from "./Stability/StabilitySettingsRoutes";
 
 export const Settings = () => {
   assertGame(game);
@@ -170,6 +175,18 @@ export const Settings = () => {
       icon: <FaLayerGroup />,
       content: <CardsSettings setters={setters} />,
       childRoutes: <CardsSettingsRoutes />,
+    },
+    {
+      direction: stabilitySettings,
+      label: "Sanity & Stability",
+      description: "SanityAndStabilityDescription",
+      summary: (s: SettingsDict) => (
+        <Translate>{s.useStabilityRules ? "On" : "Off"}</Translate>
+      ),
+      icon: <FaBrain />,
+      content: <StabilitySettings setters={setters} />,
+      subPages: stabilityPages,
+      childRoutes: <StabilitySettingsRoutes setters={setters} />,
     },
     {
       direction: miscSettings,

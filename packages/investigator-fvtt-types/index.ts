@@ -156,6 +156,11 @@ export interface ThemeSeedV1 {
    */
   displayFont?: string;
   /**
+   * Case for title or label text, e.g. "uppercase" (the `font` shorthand in
+   * `displayFont` can't set it). Defaults to none.
+   */
+  displayFontTextTransform?: CSSObject["textTransform"];
+  /**
    * Styles for the fancy character sheet logo. See the LogoEditable component
    * for details.
    */
@@ -448,6 +453,70 @@ export interface PresetV1 {
    */
   equipmentCategories?: Record<string, EquipmentCategory>;
   /**
+   * Stability rules (Fall of DELTA GREEN and others): turns on the Sanity &
+   * Stability settings below. Nothing below does anything without it.
+   */
+  useStabilityRules?: boolean;
+  /**
+   * The name of the Stability ability: Bonds are spent on it, its pool sets
+   * the Stability state, and trauma tests are made with it. Defaults to
+   * Stability.
+   */
+  stabilityAbility?: string;
+  /**
+   * Sanity rules: the Sanity ability's rating is capped, and trauma types can
+   * cost Sanity.
+   */
+  useSanityRules?: boolean;
+  /**
+   * The name of the Sanity ability. Defaults to Sanity.
+   */
+  sanityAbility?: string;
+  /**
+   * The ability whose rating comes off the Sanity cap, e.g. Cthulhu Mythos.
+   */
+  sanityCapAbility?: string;
+  /**
+   * The Sanity cap before the cap ability's rating comes off it. Defaults to
+   * 10.
+   */
+  sanityCapBase?: number;
+  /**
+   * Shaken, Shattered and Gone follow the Stability pool.
+   */
+  useStabilityStates?: boolean;
+  /**
+   * The names of the Stability states, and the highest pool in each.
+   */
+  stabilityStates?: StabilityStatesSettings;
+  /**
+   * Should PCs have Bonds (Fall of DELTA GREEN)? If so, they appear (and
+   * they can spend on Stability), on their own tab.
+   */
+  useBonds?: boolean;
+  /**
+   * The investigative ability category whose points can be spent when
+   * rebuilding a Bond between operations. Defaults to Interpersonal.
+   */
+  bondRebuildSpendCategory?: string;
+  /**
+   * Stability tests against trauma.
+   */
+  useTrauma?: boolean;
+  /**
+   * The kinds of trauma Stability can be tested against.
+   */
+  traumaTypes?: TraumaType[];
+  /**
+   * Network contacts (Fall of DELTA GREEN, Night's Black Agents): PCs reveal
+   * contacts, each with a pool of points taken from the Network ability.
+   */
+  useNetworkContacts?: boolean;
+  /**
+   * The name of the ability contacts' points come from. Defaults to Network.
+   */
+  networkAbility?: string;
+  /**
    * Should we use cards?
    */
   useCards?: boolean;
@@ -473,6 +542,35 @@ interface InvestigatorConfig {
 
 export interface HasId {
   id: string;
+}
+
+export interface StabilityStateSettings {
+  name: string;
+  /** the highest Stability pool in this state */
+  upTo: number;
+}
+
+export interface StabilityStatesSettings {
+  shaken: StabilityStateSettings;
+  shattered: StabilityStateSettings;
+  gone: StabilityStateSettings;
+}
+
+export interface TraumaType extends HasId {
+  name: string;
+  difficulty: number;
+  /** the Difficulty once adapted */
+  adaptedDifficulty: number;
+  /** shocks (getting worse) cost Sanity */
+  causesSanityLoss: boolean;
+  /** can be adapted to */
+  useAdaptation: boolean;
+  /** abilities whose ratings are capped once adapted */
+  cappedAbilities: string[];
+  /** Bonds are capped once adapted */
+  capsBonds: boolean;
+  /** what comes off each refresh once adapted */
+  refreshPenalty: number;
 }
 
 export interface CardCategory extends HasId {
