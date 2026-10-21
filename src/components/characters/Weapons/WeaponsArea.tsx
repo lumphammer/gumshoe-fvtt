@@ -1,6 +1,7 @@
 import { useContext } from "react";
 
 import { weapon } from "../../../constants";
+import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import { sortEntitiesByName } from "../../../functions/utilities";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { assertActiveCharacterActor } from "../../../module/actors/types";
@@ -146,17 +147,28 @@ export const WeaponsArea = ({ fillHeight = false }: WeaponsAreaProps) => {
         >
           {readyWeapon ? (
             <>
-              <h2
+              <div
                 css={{
-                  // "&&" beats the CSS reset's `border: none` on headings
-                  "&&": {
-                    margin: "0 0 0.5em 0",
-                    borderBottom: `1px solid ${theme.colors.text}`,
-                  },
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "flex-end",
+                  marginBottom: "0.5em",
+                  borderBottom: `1px solid ${theme.colors.text}`,
                 }}
               >
-                {readyWeapon.name}
-              </h2>
+                <h2 css={{ flex: 1, ...headingStyle }}>{readyWeapon.name}</h2>
+                <Button
+                  css={{ flexBasis: "max-content", marginBottom: "0.2em" }}
+                  onClick={() => {
+                    const sheet = readyWeapon.sheet;
+                    assertApplicationV2(sheet);
+                    void sheet.render({ force: true });
+                  }}
+                >
+                  <i className="fa fa-edit" />
+                  <Translate>Edit</Translate>
+                </Button>
+              </div>
               <div css={{ minHeight: 0, overflow: "auto" }}>
                 {/* a fresh panel for each weapon, so spends etc. don't carry
                     over */}

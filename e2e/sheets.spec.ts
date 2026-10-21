@@ -47,9 +47,18 @@ test("one weapon at a time is ready to attack with on the Combat tab", async ({
     name: "Revolver",
     type: "weapon",
   });
-  await createOwnedItem(page, id, { name: "Shotgun", type: "weapon" });
+  const shotgunId = await createOwnedItem(page, id, {
+    name: "Shotgun",
+    type: "weapon",
+  });
   const sheet = await openSheet(page, `Actor.${id}`);
   await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
+  const isSheetOpen = (itemId: string) =>
+    page.evaluate(
+      ({ id, itemId }) =>
+        game.actors.get(id)!.items.get(itemId)!.sheet!.rendered,
+      { id, itemId },
+    );
 
   const revolver = sheet.getByRole("switch", { name: "Ready Revolver" });
   const shotgun = sheet.getByRole("switch", { name: "Ready Shotgun" });
@@ -68,6 +77,15 @@ test("one weapon at a time is ready to attack with on the Combat tab", async ({
   await expect(shotgun).toBeChecked();
   await expect(revolver).not.toBeChecked();
   await expect(attackButton).toHaveText(/Shotgun/);
+  // the ready weapon's Edit button opens its sheet
+  await sheet.getByRole("button", { name: "Edit" }).click();
+  await expect.poll(() => isSheetOpen(shotgunId)).toBe(true);
+  // (out of the way of the PC's sheet)
+  await page.evaluate(
+    ({ id, shotgunId }) =>
+      game.actors.get(id)!.items.get(shotgunId)!.sheet!.close(),
+    { id, shotgunId },
+  );
 
   await shotgun.click();
   await expect(shotgun).not.toBeChecked();
@@ -75,15 +93,7 @@ test("one weapon at a time is ready to attack with on the Combat tab", async ({
 
   // the rest of the row opens the weapon's sheet
   await sheet.getByText("Revolver", { exact: true }).click();
-  await expect
-    .poll(() =>
-      page.evaluate(
-        ({ id, revolverId }) =>
-          game.actors.get(id)!.items.get(revolverId)!.sheet!.rendered,
-        { id, revolverId },
-      ),
-    )
-    .toBe(true);
+  await expect.poll(() => isSheetOpen(revolverId)).toBe(true);
 });
 
 test("an NPC's abilities and weapons each switch between play and edit mode", async ({
