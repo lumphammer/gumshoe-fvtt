@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useState } from "react";
 
 import { assertGame } from "../../functions/isGame";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
@@ -19,6 +20,7 @@ import { Translate } from "../Translate";
 import { AbilitiesAreaEdit } from "./AbilitiesAreaEdit";
 import { AbilitiesAreaPlay } from "./AbilitiesAreaPlay";
 import { CharacterCombatAbilityPicker } from "./CharacterCombatAbilityPicker";
+import { EditModeToggle } from "./EditModeToggle";
 import { LogoEditable } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { StatField } from "./StatField";
@@ -42,6 +44,9 @@ export const NPCSheetFull = () => {
   const themeName = actor.system.getSheetThemeName();
   const theme = useTheme(themeName);
   const stats = settingsNpcStats();
+  // kept while the sheet is open, so looking at another tab doesn't lose it
+  const [abilitiesEditMode, setAbilitiesEditMode] = useState(false);
+  const [combatEditMode, setCombatEditMode] = useState(false);
 
   return (
     <CSSReset
@@ -185,28 +190,50 @@ export const NPCSheetFull = () => {
         }}
       >
         <TabContainer
-          defaultTab="play"
+          defaultTab="abilities"
           tabs={[
             {
-              id: "play",
-              label: "Play",
+              id: "abilities",
+              label: "Abilities",
               content: (
                 <>
-                  <WeaponsArea />
-                  <div css={{ height: "1em" }} />
-                  <AbilitiesAreaPlay flipLeftRight />
+                  <EditModeToggle
+                    editMode={abilitiesEditMode}
+                    setEditMode={setAbilitiesEditMode}
+                  />
+                  {abilitiesEditMode ? (
+                    <AbilitiesAreaEdit npcMode />
+                  ) : (
+                    <AbilitiesAreaPlay flipLeftRight />
+                  )}
                 </>
               ),
             },
             {
-              id: "edit",
-              label: "Edit",
+              id: "combat",
+              label: "Combat",
               content: (
-                <>
-                  <WeaponsAreaEdit />
-                  <div css={{ height: "1em" }} />
-                  <AbilitiesAreaEdit npcMode />
-                </>
+                // out of edit mode, the tab's height, so the ready weapon can
+                // sit at the bottom
+                <div
+                  css={{
+                    height: combatEditMode ? undefined : "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <EditModeToggle
+                    editMode={combatEditMode}
+                    setEditMode={setCombatEditMode}
+                  />
+                  {combatEditMode ? (
+                    <WeaponsAreaEdit />
+                  ) : (
+                    <div css={{ flex: 1, minHeight: 0 }}>
+                      <WeaponsArea fillHeight />
+                    </div>
+                  )}
+                </div>
               ),
             },
             {

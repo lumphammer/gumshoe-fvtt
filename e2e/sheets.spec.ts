@@ -86,6 +86,39 @@ test("one weapon at a time is ready to attack with on the Combat tab", async ({
     .toBe(true);
 });
 
+test("an NPC's abilities and weapons each switch between play and edit mode", async ({
+  page,
+}) => {
+  const id = await createActor(page, { name: "Cultist", type: "npc" });
+  await createOwnedItem(page, id, { name: "Ritual Knife", type: "weapon" });
+  const sheet = await openSheet(page, `Actor.${id}`);
+  await expect(sheet.locator(".tab-strip > label")).toHaveText([
+    "Abilities",
+    "Combat",
+    "Notes",
+    "GM Notes",
+  ]);
+
+  // NPCs' ratings are only inputs for editing
+  const ratingInputs = sheet.locator(".tab-content input[role=text-input]");
+  await expect(ratingInputs).toHaveCount(0);
+  await sheet.getByLabel("Edit mode").click();
+  await expect(ratingInputs.first()).toBeVisible();
+
+  // the Combat tab has an edit mode of its own
+  await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
+  const ready = sheet.getByRole("switch", { name: "Ready Ritual Knife" });
+  const nameInput = sheet.locator('input[value="Ritual Knife"]');
+  await expect(ready).toBeVisible();
+  await expect(nameInput).toHaveCount(0);
+  await sheet.getByLabel("Edit mode").click();
+  await expect(nameInput).toBeVisible();
+  await expect(ready).toHaveCount(0);
+
+  await sheet.locator(".tab-strip > label", { hasText: "Abilities" }).click();
+  await expect(ratingInputs.first()).toBeVisible();
+});
+
 const itemTypes = [
   "investigativeAbility",
   "generalAbility",

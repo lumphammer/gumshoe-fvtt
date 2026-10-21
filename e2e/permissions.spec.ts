@@ -161,7 +161,7 @@ test("players don't see an NPC's GM notes", async ({ page, joinAs }) => {
   // wait for the tabs, so checking one isn't there means something
   const tabs = sheet.locator(".tab-strip > label");
   await expect(tabs.filter({ hasText: /^Notes$/ })).toBeVisible();
-  await expect(tabs).toHaveText(["Play", "Edit", "Notes"]);
+  await expect(tabs).toHaveText(["Abilities", "Combat", "Notes"]);
   await expect(sheet).not.toContainText("Secretly a ghoul");
 });
 
