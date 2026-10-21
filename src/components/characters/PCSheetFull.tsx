@@ -288,7 +288,7 @@ export const PCSheetFull = () => {
             !settings.mwUseAlternativeItemTypes.get() && {
               id: "combat",
               label: "Combat",
-              content: <WeaponsArea />,
+              content: <WeaponsArea fillHeight />,
             },
             (areBondsOn() || getAdaptableTraumaTypes().length > 0) && {
               id: "bonds",

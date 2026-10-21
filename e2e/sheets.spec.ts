@@ -39,6 +39,53 @@ test("a PC's abilities switch between play and edit mode", async ({ page }) => {
   await expect(occupational).toHaveCount(0);
 });
 
+test("one weapon at a time is ready to attack with on the Combat tab", async ({
+  page,
+}) => {
+  const id = await createActor(page, { name: "Quickdraw", type: "pc" });
+  const revolverId = await createOwnedItem(page, id, {
+    name: "Revolver",
+    type: "weapon",
+  });
+  await createOwnedItem(page, id, { name: "Shotgun", type: "weapon" });
+  const sheet = await openSheet(page, `Actor.${id}`);
+  await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
+
+  const revolver = sheet.getByRole("switch", { name: "Ready Revolver" });
+  const shotgun = sheet.getByRole("switch", { name: "Ready Shotgun" });
+  const attackButton = sheet.getByRole("button", {
+    name: /^(Fire|Attack with) /,
+  });
+  await expect(sheet).toContainText("Ready a weapon to attack with it");
+  await expect(attackButton).toHaveCount(0);
+
+  await revolver.click();
+  await expect(revolver).toBeChecked();
+  await expect(attackButton).toHaveText(/Revolver/);
+
+  // readying another unreadies the first
+  await shotgun.click();
+  await expect(shotgun).toBeChecked();
+  await expect(revolver).not.toBeChecked();
+  await expect(attackButton).toHaveText(/Shotgun/);
+
+  await shotgun.click();
+  await expect(shotgun).not.toBeChecked();
+  await expect(sheet).toContainText("Ready a weapon to attack with it");
+
+  // the rest of the row opens the weapon's sheet
+  await sheet.getByText("Revolver", { exact: true }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        ({ id, revolverId }) =>
+          game.actors.get(id)!.items.get(revolverId)!.sheet!.rendered,
+        { id, revolverId },
+      ),
+    )
+    .toBe(true);
+});
+
 const itemTypes = [
   "investigativeAbility",
   "generalAbility",

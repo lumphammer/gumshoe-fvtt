@@ -622,5 +622,8 @@
   "investigator.Location": "Location",
   "investigator.ManuallyAdjustPool": "Manually adjust pool",
   "investigator.BurningStraightAfterTheLossRestored": "That was straight after the loss, so {ActorName} gets back {Ratings}",
-  "investigator.EditMode": "Edit mode"
+  "investigator.EditMode": "Edit mode",
+  "investigator.Ready": "Ready",
+  "investigator.ReadyWeaponName": "Ready {WeaponName}",
+  "investigator.ReadyAWeaponToAttackWithIt": "Ready a weapon to attack with it"
 }

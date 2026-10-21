@@ -65,6 +65,19 @@ export class ActiveCharacterModel<
     return this.parent.items.filter((item) => isWeaponItem(item));
   }
 
+  /** The weapon the character has ready, if it still exists */
+  getReadyWeapon(): WeaponItem | undefined {
+    const id = this.parent.system.readyWeaponId;
+    return this.getWeapons().find((weapon) => weapon.id === id);
+  }
+
+  /** Make a weapon the ready one, or `null` for none */
+  setReadyWeapon = async (weapon: WeaponItem | null): Promise<void> => {
+    await this.parent.update({
+      system: { readyWeaponId: weapon?.id ?? "" },
+    });
+  };
+
   getTrackerAbilities(): AbilityItem[] {
     return this.getAbilities().filter(
       (item): item is AbilityItem =>

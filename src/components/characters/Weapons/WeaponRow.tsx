@@ -1,227 +1,97 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import type React from "react";
+import { useContext } from "react";
 
-import { generalAbility } from "../../../constants";
 import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import { getTranslated } from "../../../functions/getTranslated";
-import { cleanAndEnrichHtml } from "../../../functions/textFunctions";
-import { isAbilityItem } from "../../../module/items/exports";
-import type { InvestigatorItem } from "../../../module/items/InvestigatorItem";
 import type { WeaponItem } from "../../../module/items/weapon";
-import type { FireMode } from "../../../module/attacks/rules";
-import { getAvailableFireModes } from "../../../module/attacks/rules";
-import { settings } from "../../../settings/settings";
-import { hasAmmoFor } from "../../equipment/consumeWeaponAmmo";
-import { performAttack } from "../../equipment/performAttack";
-import { Button } from "../../inputs/Button";
-import { CheckButtons } from "../../inputs/CheckButtons";
+import { ThemeContext } from "../../../themes/ThemeContext";
+import { Toggle } from "../../inputs/Toggle";
 
 type WeaponRowProps = {
   weapon: WeaponItem;
+  isReady: boolean;
+  setReady: (ready: boolean) => void;
 };
 
-export const WeaponRow = ({ weapon }: WeaponRowProps) => {
+/** A weapon in the Combat tab's table: click it to open its sheet */
+export const WeaponRow = ({ weapon, isReady, setReady }: WeaponRowProps) => {
   const app = useContext(FoundryAppContext);
-  const onDragStart = useCallback(
-    (e: React.DragEvent<HTMLAnchorElement>) => {
-      if (app !== null) {
-        (app as any)._onDragStart(e);
-      }
-    },
-    [app],
-  );
-  const [hover, setHover] = useState(false);
-  const onMouseOver = useCallback(() => {
-    setHover(true);
-  }, []);
-  const onMouseOut = useCallback(() => {
-    setHover(false);
-  }, []);
-  const makeRangeOption = (
-    isRange: boolean,
-    rangeDamage: number,
-    id: number,
-    hover: string,
-  ) => {
-    const totalDamage = weapon.system.damage + rangeDamage;
-    const label = isRange
-      ? (totalDamage >= 0 ? "+" : "") + totalDamage.toString()
-      : "-";
-    return { label, value: id, enabled: isRange, rangeDamage, hover };
+  const theme = useContext(ThemeContext);
+
+  const openSheet = () => {
+    const sheet = weapon.sheet;
+    assertApplicationV2(sheet);
+    void sheet.render({ force: true });
   };
-  const rangeInfo = [
-    makeRangeOption(
-      weapon.system.isPointBlank,
-      weapon.system.pointBlankDamage,
-      0,
-      "Point Blank",
-    ),
-    makeRangeOption(
-      weapon.system.isCloseRange,
-      weapon.system.closeRangeDamage,
-      1,
-      "Close Range",
-    ),
-    makeRangeOption(
-      weapon.system.isNearRange,
-      weapon.system.nearRangeDamage,
-      2,
-      "Near Range",
-    ),
-    makeRangeOption(
-      weapon.system.isLongRange,
-      weapon.system.longRangeDamage,
-      3,
-      "Long Range",
-    ),
-  ];
-  const [rangeSelected, setRangeSelected] = useState(0);
-  // quick attacks are single shots, except from machine guns, which only fire
-  // full-auto. Bursts and full-auto from selective-fire weapons get chosen in
-  // the weapon's own attack panel.
-  const fireMode: FireMode = getAvailableFireModes({
-    weaponFireModes: weapon.system.fireModes,
-    useAutofire:
-      settings.useDamageApplication.get() &&
-      settings.useLethalityAndAutofire.get(),
-  }).includes("single")
-    ? "single"
-    : "fullAuto";
-  const isJammed =
-    settings.useLethalityAndAutofire.get() &&
-    settings.useShotDryAndJams.get() &&
-    weapon.system.jammed;
-  const ammoFail = !hasAmmoFor(weapon.system, fireMode);
-
-  const abilityName = weapon.system.ability;
-  const ability: InvestigatorItem | undefined = weapon.actor?.items.find(
-    (item: InvestigatorItem) => {
-      return item.type === generalAbility && item.name === abilityName;
-    },
-  );
-  const pool = ability && isAbilityItem(ability) ? ability.system.pool : 0;
-  const [spend, setSpend] = useState(0);
-  const [bonusPool, setBonusPool] = useState(0);
-  const onClickInc = useCallback(() => {
-    setSpend((s) => s + 1);
-  }, []);
-  const onClickDec = useCallback(() => {
-    setSpend((s) => s - 1);
-  }, []);
-
-  const basePerformAttack = useMemo(() => {
-    return performAttack({
-      spend,
-      bonusPool,
-      setSpend,
-      setBonusPool,
-      ability,
-      weapon,
-    });
-  }, [ability, bonusPool, spend, weapon]);
-
-  const rawHtml = weapon.system.notes;
-
-  const [html, setHtml] = useState("");
-
-  useEffect(() => {
-    void cleanAndEnrichHtml(rawHtml).then(setHtml);
-  }, [rawHtml]);
-
-  const onAttack = () => {
-    void basePerformAttack({
-      rangeName: rangeInfo[rangeSelected].hover,
-      rangeDamage: rangeInfo[rangeSelected].rangeDamage,
-      fireMode,
-    });
-  };
-
-  const sheet = weapon.sheet;
-  assertApplicationV2(sheet);
 
   return (
     <>
-      <a
-        css={{ gridColumn: 1, overflow: "hidden", textOverflow: "ellipsis" }}
-        className={hover ? "hover" : ""}
-        onClick={() => sheet.render({ force: true })}
-        onMouseOver={onMouseOver}
-        onMouseOut={onMouseOut}
-        data-item-id={weapon.id}
-        onDragStart={onDragStart}
-        draggable="true"
+      <div
+        css={{
+          gridColumn: 1,
+          display: "flex",
+          alignItems: "center",
+          paddingInline: "0.25em",
+        }}
       >
-        {weapon.name}
-      </a>
-      {weapon.system.usesAmmo ? (
-        <div css={{ gridColumn: 2 }}>
-          <Button
-            css={{ width: "1.5em", padding: "0" }}
-            onClick={weapon.system.reload}
-          >
-            <i className="fa fa-redo fa-xs" />
-          </Button>
-          &nbsp;
-          {weapon.system.ammo.value}/{weapon.system.ammo.max}
-        </div>
-      ) : (
-        <div css={{ gridColumn: 2, textAlign: "center" }}>&mdash;</div>
-      )}
-      <div css={{ gridColumn: 3 }}>
-        <CheckButtons
-          onChange={setRangeSelected}
-          selected={rangeSelected}
-          options={rangeInfo}
-          size={1}
+        <Toggle
+          checked={isReady}
+          onChange={setReady}
+          label={getTranslated("ReadyWeaponName", {
+            WeaponName: weapon.name,
+          })}
         />
       </div>
       <div
+        role="button"
+        tabIndex={0}
         css={{
-          gridColumn: 4,
+          gridColumn: "2 / -1",
           display: "grid",
-          gridTemplateColumns: "1.6em 1.6em",
+          gridTemplateColumns: "subgrid",
+          alignItems: "center",
+          padding: "0.2em 0",
+          cursor: "pointer",
+          borderRadius: "0.2em",
+          "& > *": { paddingInline: "0.25em" },
+          "&:hover, &:focus-visible": {
+            background: `color-mix(in srgb, ${theme.colors.glow} 25%, transparent)`,
+            outline: "none",
+          },
+        }}
+        onClick={openSheet}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openSheet();
+          }
+        }}
+        data-item-id={weapon.id}
+        draggable="true"
+        onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
+          if (app !== null) {
+            (app as any)._onDragStart(e);
+          }
         }}
       >
-        <Button
-          css={{ gridColumn: "1" }}
-          onClick={onClickDec}
-          disabled={spend <= 0}
+        <span
+          css={{
+            color: theme.colors.accent,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
         >
-          <i css={{ fontSize: "x-small" }} className="fa fa-minus" />
-        </Button>
-        <Button
-          css={{ gridColumn: "2" }}
-          onClick={onClickInc}
-          disabled={spend >= pool}
-        >
-          <i css={{ fontSize: "x-small" }} className="fa fa-plus" />
-        </Button>
-        <Button
-          css={{ gridColumn: 3, width: "4.1em" }}
-          onClick={onAttack}
-          disabled={ammoFail || isJammed}
-          title={isJammed ? getTranslated("Jammed") : undefined}
-        >
-          <i className="fa fa-dice" title="Test" />+{spend}
-        </Button>
-      </div>
-      <div
-        css={{
-          gridColumn: "1 / -1",
-          paddingLeft: "1em",
-          whiteSpace: "normal",
-          maxHeight: "8em",
-          overflow: "auto",
-          marginBottom: "1em",
-        }}
-      >
-        <div dangerouslySetInnerHTML={{ __html: html }} />
+          {weapon.name}
+        </span>
+        <span css={{ textAlign: "center" }}>
+          {weapon.system.usesAmmo
+            ? `${weapon.system.ammo.value}/${weapon.system.ammo.max}`
+            : "—"}
+        </span>
+        <span css={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+          {weapon.system.ability}
+        </span>
       </div>
     </>
   );
