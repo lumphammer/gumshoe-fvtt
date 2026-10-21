@@ -12,6 +12,17 @@ import { IndexedRichTextEditor } from "../../inputs/IndexedRichTextEditor";
 import { OtherableDropDown } from "../../inputs/OtherableDropDown";
 import { Toggle } from "../../inputs/Toggle";
 
+// the icons get Font Awesome's fixed width (1.25em), which is wider than the
+// button, so they stuck out to the right: let them be as wide as the chevron
+const rangeButtonStyle = {
+  width: "1em",
+  padding: "0.2em 0",
+  display: "inline-flex",
+  justifyContent: "center",
+  alignItems: "center",
+  "& > i": { width: "auto" },
+};
+
 type WeaponRowEditProps = {
   weapon: WeaponItem;
   index: number;
@@ -140,19 +151,15 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
                   ? "cr"
                   : "pb",
           gridRow,
+          // the buttons stretch to the height of the inputs beside them
+          display: "flex",
         }}
       >
-        <Button
-          css={{ width: "1em", padding: "0.2em 0.1em" }}
-          onClick={weaponRangeReduce}
-        >
+        <Button css={rangeButtonStyle} onClick={weaponRangeReduce}>
           <i className="fa fa-chevron-left" />
         </Button>
         {weapon.system.isLongRange || (
-          <Button
-            css={{ width: "1em", padding: "0.2em 0.1em" }}
-            onClick={weaponRangeExpand}
-          >
+          <Button css={rangeButtonStyle} onClick={weaponRangeExpand}>
             <i className="fa fa-chevron-right" />
           </Button>
         )}
