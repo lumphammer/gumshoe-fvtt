@@ -1,6 +1,9 @@
+import { useState } from "react";
+
 import { getTranslated } from "../../../functions/getTranslated";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { assertPCActor } from "../../../module/actors/pc";
+import type { EquipmentItem } from "../../../module/items/equipment";
 import { isEquipmentItem } from "../../../module/items/equipment";
 import { settings } from "../../../settings/settings";
 import { EquipmentCategory } from "./EquipmentCategory";
@@ -10,6 +13,9 @@ export const EquipmentArea = () => {
   assertPCActor(actor);
   const items = actor.system.getEquipment();
   const categories = settings.equipmentCategories.get();
+  // the item being dragged, if it's one of these, so the other categories
+  // can take it
+  const [draggedItem, setDraggedItem] = useState<EquipmentItem | null>(null);
 
   const uncategorizedItems = items.filter(
     (item) =>
@@ -31,6 +37,8 @@ export const EquipmentArea = () => {
             name={category.name}
             key={categoryId}
             fields={category.fields}
+            draggedItem={draggedItem}
+            setDraggedItem={setDraggedItem}
           />
         );
       })}
@@ -41,6 +49,8 @@ export const EquipmentArea = () => {
           items={uncategorizedItems}
           name={getTranslated("Uncategorized")}
           fields={{}}
+          draggedItem={draggedItem}
+          setDraggedItem={setDraggedItem}
         />
       )}
     </div>

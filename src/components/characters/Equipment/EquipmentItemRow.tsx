@@ -9,6 +9,7 @@ import { CheckOrCross } from "./CheckOrCross";
 interface EquipmentItemRowProps {
   item: EquipmentItem;
   onDragStart: (e: React.DragEvent<HTMLElement>) => void;
+  onDragEnd: () => void;
   gridRow: number;
   fields: Record<string, EquipmentFieldMetadata>;
 }
@@ -16,6 +17,7 @@ interface EquipmentItemRowProps {
 export const EquipmentItemRow = ({
   item,
   onDragStart,
+  onDragEnd,
   gridRow,
   fields,
 }: EquipmentItemRowProps) => {
@@ -56,6 +58,7 @@ export const EquipmentItemRow = ({
         onClick={() => sheet.render({ force: true })}
         data-item-id={item.id}
         onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
         draggable="true"
         onMouseOver={handleMouseOver}
         onMouseOut={handleMouseOut}
