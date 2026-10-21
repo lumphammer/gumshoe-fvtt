@@ -29,7 +29,8 @@ export const EditModeToggle = ({
         <Translate>Edit mode</Translate>
       </label>
       <IdContext.Provider value={id}>
-        <Toggle checked={editMode} onChange={setEditMode} />
+        {/* observers can look at edit mode too, with its inputs disabled */}
+        <Toggle checked={editMode} onChange={setEditMode} alwaysEnabled />
       </IdContext.Provider>
     </div>
   );

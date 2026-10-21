@@ -169,6 +169,23 @@ test("players don't see an NPC's GM notes", async ({ page, joinAs }) => {
   await expect(sheet).not.toContainText("Secretly a ghoul");
 });
 
+test("an Observer can switch a PC's abilities to edit mode, but not edit them", async ({
+  page,
+  joinAs,
+}) => {
+  const pcId = await createActor(page, { name: "Dr Ellery", type: "pc" });
+  const playerId = await createPlayer(page, "Onlooker");
+  await giveOwnership(page, pcId, playerId, "OBSERVER");
+
+  const player = await joinAs("Onlooker");
+  const sheet = await openSheet(player, `Actor.${pcId}`);
+  await sheet.getByLabel("Edit mode").click();
+  // edit mode shows, with its inputs disabled
+  const occupational = sheet.getByTitle("Occupational Ability?");
+  await expect(occupational.first()).toBeVisible();
+  await expect(occupational.first()).toBeDisabled();
+});
+
 test("with Limited permission, players see a character's name and picture, not their details", async ({
   page,
   joinAs,
