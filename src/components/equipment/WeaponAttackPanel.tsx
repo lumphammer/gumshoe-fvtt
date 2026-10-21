@@ -35,7 +35,7 @@ import {
 } from "../../module/attacks/rules";
 import { settings } from "../../settings/settings";
 import { hasAmmoFor } from "./consumeWeaponAmmo";
-import { getHintColors, Hint } from "../inputs/Hint";
+import { Hint } from "../inputs/Hint";
 
 const defaultSpendOptions = Array.from({ length: 8 })
   .fill(null)
@@ -72,6 +72,17 @@ function getTargetsLabel(
         Count: String(used.length - 1),
       });
 }
+
+const openSheet = (document: InvestigatorItem) => {
+  const sheet = document.sheet;
+  assertApplicationV2(sheet);
+  void sheet.render({ force: true });
+};
+
+/** An ability's name, as a link to its sheet */
+const AbilityLink = ({ ability }: { ability: InvestigatorItem }) => (
+  <a onClick={() => openSheet(ability)}>{ability.name}</a>
+);
 
 const getPool = (ability: InvestigatorItem | undefined) =>
   ability && isAbilityItem(ability) ? ability.system.pool : 0;
@@ -166,7 +177,6 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
     settings.useShotDryAndJams.get() &&
     item.system.jammed;
   const spendTooLow = totalSpend < minimumSpend;
-  const spendLabel = extraSpends.length > 0 ? ability?.name : undefined;
 
   const ranges = [
     {
@@ -262,10 +272,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
   }, [abilityName, item.actor]);
 
   const activateButton = (
-    <ToolbarButton
-      css={{ display: "inline", marginLeft: "0.5em" }}
-      onClick={onClickUseForInitiative}
-    >
+    <ToolbarButton onClick={onClickUseForInitiative}>
       <Translate>Activate</Translate>
     </ToolbarButton>
   );
@@ -380,8 +387,9 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
         )}
         {/* alongside other abilities' spends, name the ability being spent */}
         <GridField
-          label={spendLabel ?? "Spend"}
-          noTranslate={spendLabel !== undefined}
+          label={ability ? <AbilityLink ability={ability} /> : "Spend"}
+          // not a <label> for the spends, so clicking the link only opens it
+          noLabel
         >
           <CheckButtons
             size={1}
@@ -393,8 +401,8 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
         {extraSpends.map((extra) => (
           <GridField
             key={extra.ability.id}
-            label={extra.ability.name}
-            noTranslate
+            label={<AbilityLink ability={extra.ability} />}
+            noLabel
           >
             <CheckButtons
               size={1}
@@ -492,50 +500,6 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
                 <Translate>Reload</Translate>
               </Button>
             </div>
-          </GridField>
-        )}
-
-        {item.actor && (
-          <GridField label="Initiative">
-            <span css={{ display: "inline-block", paddingTop: "0.3em" }}>
-              {/* Link to ability, if it exists */}
-              {ability && (
-                <a
-                  onClick={() => {
-                    const sheet = ability.sheet;
-                    assertApplicationV2(sheet);
-                    void sheet.render({ force: true });
-                  }}
-                >
-                  {ability.name}{" "}
-                </a>
-              )}
-              {/* Show "Not Found" if ability doesn't exist */}
-              {ability === undefined && (
-                <>
-                  {abilityName}
-                  <span
-                    css={{
-                      ...getHintColors(theme, "danger"),
-                      display: "inline-block",
-                      padding: "0 0.2em",
-                      margin: "0 0.2em",
-                      borderRadius: "0.2em",
-                    }}
-                  >
-                    <Translate>NotFound!</Translate>
-                  </span>{" "}
-                </>
-              )}
-              {/* Show "Active" if ability is used */}
-              {isAbilityUsed && (
-                <>
-                  (<Translate>Active</Translate> ✓){" "}
-                </>
-              )}
-            </span>
-            {/* Show "Activate" button if ability is not used */}
-            {isAbilityUsed || activateButton}
           </GridField>
         )}
       </InputGrid>

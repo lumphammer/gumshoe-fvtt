@@ -159,11 +159,7 @@ test("a PC can only attack with their active initiative ability", async ({
   );
   await expect(hint).toBeVisible();
 
-  // the hint's own Activate button, rather than the Initiative row's
-  await hint
-    .locator("xpath=ancestor::*[.//button][1]")
-    .getByRole("button", { name: "Activate" })
-    .click();
+  await sheet.getByRole("button", { name: "Activate" }).click();
   await expect(attackButton).toBeEnabled();
   await expect(hint).toHaveCount(0);
   expect(
@@ -174,24 +170,19 @@ test("a PC can only attack with their active initiative ability", async ({
   ).toBe("Scuffling");
 });
 
-test("an NPC's weapon shows when its ability is their initiative ability", async ({
+test("the spend is labelled with a link to the weapon's ability", async ({
   page,
 }) => {
-  const npcId = await createActor(page, {
-    name: "Thug",
-    type: "npc",
-    system: { initiativeAbility: "Scuffling" },
-  });
-  const knifeId = await createOwnedItem(page, npcId, {
-    name: "Knife",
-    type: "weapon",
-    system: knife,
-  });
-  const sheet = await openSheet(page, `Actor.${npcId}.Item.${knifeId}`);
-  await expect(sheet).toContainText("Active ✓");
-  await expect(sheet.getByRole("button", { name: "Activate" })).toHaveCount(0);
-  // (NPCs are never stopped by their initiative ability, unlike PCs)
-  await expect(
-    sheet.getByRole("button", { name: "Attack with Knife" }),
-  ).toBeEnabled();
+  const { pcId, weaponId } = await setUpFight(page, { weapon: knife });
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
+  await sheet.locator("label").getByText("Scuffling", { exact: true }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (pcId) =>
+          game.actors.get(pcId)!.items.getName("Scuffling")!.sheet!.rendered,
+        pcId,
+      ),
+    )
+    .toBe(true);
 });

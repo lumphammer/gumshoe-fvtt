@@ -62,7 +62,7 @@ test("a three-round burst hits up to three times, one after another", async ({
 
   const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
   await choose(sheet, "Fire mode", "Burst");
-  await choose(sheet, "Spend", "3");
+  await choose(sheet, "Firearms", "3");
   await sheet.getByRole("button", { name: "Fire Weapon" }).click();
 
   // 6 + 3 = 9 against Hit Threshold 3 is a margin of 6: three bullets
@@ -118,7 +118,7 @@ test("a Lethality weapon kills on a low roll", async ({ page }) => {
 
   const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
   // 1 + 2 meets Hit Threshold 3
-  await choose(sheet, "Spend", "2");
+  await choose(sheet, "Firearms", "2");
   await sheet.getByRole("button", { name: "Fire Weapon" }).click();
 
   const card = lastChatMessage(page);
@@ -173,7 +173,7 @@ test("walking a burst's fire onto another target", async ({ page }) => {
 
   const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
   await choose(sheet, "Fire mode", "Burst");
-  await choose(sheet, "Spend", "3");
+  await choose(sheet, "Firearms", "3");
   await sheet.getByRole("button", { name: "Fire Weapon" }).click();
 
   const card = lastChatMessage(page);
@@ -206,7 +206,7 @@ test("a critical hit adds two damage rolls together", async ({ page }) => {
 
   const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
   // an unmodified 6, and 6 + 2 beats Hit Threshold 3 by 5
-  await choose(sheet, "Spend", "2");
+  await choose(sheet, "Firearms", "2");
   await sheet.getByRole("button", { name: "Fire Weapon" }).click();
 
   const card = lastChatMessage(page);
