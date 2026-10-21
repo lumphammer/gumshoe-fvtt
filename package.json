@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode dev",
     "build:watch": "vite build --watch --mode dev",
     "link": "./tasks.ts link",
-    "dev": "concurrently --names vite,ts --prefix-colors magenta,blue 'vite dev --clearScreen false' 'pnpm run typecheck:watch'",
+    "dev": "concurrently --kill-others --kill-timeout 5000 --names vite,ts --prefix-colors magenta,blue 'vite dev --clearScreen false' 'tsc --build --watch --preserveWatchOutput . e2e'",
     "start": "pnpm dev",
     "clean": "./tasks.ts clean",
     "build-pack-translations": "./tasks.ts buildPackTranslations",
