@@ -11,6 +11,7 @@ import { getTranslated, getTranslatedOr } from "../../functions/getTranslated";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import { useUserTargets } from "../../hooks/useUserTargets";
 import { isPCActor } from "../../module/actors/pc";
+import { isActiveCharacterActor } from "../../module/actors/types";
 import { isAbilityItem } from "../../module/items/exports";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { findGeneralAbility } from "../../module/items/findGeneralAbility";
@@ -229,7 +230,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
   const weaponActor = item.actor;
 
   const [actorInitiativeAbility, setActorInitiativeAbility] = useState(
-    weaponActor && isPCActor(weaponActor)
+    weaponActor && isActiveCharacterActor(weaponActor)
       ? weaponActor.system.initiativeAbility
       : "",
   );
@@ -238,7 +239,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
     const callback = (actor: Actor) => {
       if (actor.id === weaponActor?.id) {
         setActorInitiativeAbility(
-          weaponActor && isPCActor(weaponActor)
+          weaponActor && isActiveCharacterActor(weaponActor)
             ? weaponActor.system.initiativeAbility
             : "",
         );
@@ -260,6 +261,15 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
     });
   }, [abilityName, item.actor]);
 
+  const activateButton = (
+    <ToolbarButton
+      css={{ display: "inline", marginLeft: "0.5em" }}
+      onClick={onClickUseForInitiative}
+    >
+      <Translate>Activate</Translate>
+    </ToolbarButton>
+  );
+
   // everything which stops an attack, shown as hints below the attack button;
   // the first one is also the disabled attack button's tooltip
   const blockers: { key: string; message: string; action?: ReactNode }[] = [];
@@ -271,6 +281,15 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
       message: item.actor
         ? getTranslated("WeaponAbilityNotFound", { AbilityName: abilityName })
         : getTranslated("WeaponHasNoOwner"),
+    });
+  } else if (weaponActor && isPCActor(weaponActor) && !isAbilityUsed) {
+    // a PC fights with their active initiative ability
+    blockers.push({
+      key: "initiative",
+      message: getTranslated("WeaponAbilityNotActiveForInitiative", {
+        AbilityName: abilityName,
+      }),
+      action: activateButton,
     });
   }
   if (isJammed) {
@@ -516,14 +535,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
               )}
             </span>
             {/* Show "Activate" button if ability is not used */}
-            {isAbilityUsed || (
-              <ToolbarButton
-                css={{ display: "inline", marginLeft: "0.5em" }}
-                onClick={onClickUseForInitiative}
-              >
-                Activate
-              </ToolbarButton>
-            )}
+            {isAbilityUsed || activateButton}
           </GridField>
         )}
       </InputGrid>

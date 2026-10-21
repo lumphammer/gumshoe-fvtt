@@ -434,6 +434,7 @@
   "investigator.AttackTargetsWithWeaponName": "Attack {Targets} with {WeaponName}",
   "investigator.NameAndCountMore": "{Name} (+{Count} more)",
   "investigator.WeaponHasNoRanges": "This weapon has no range bands. Turn some on in its settings.",
+  "investigator.WeaponAbilityNotActiveForInitiative": "{AbilityName} isn’t this character’s active initiative ability.",
   "investigator.WeaponAbilityNotFound": "This character has no \"{AbilityName}\" ability to attack with.",
   "investigator.WeaponHasNoOwner": "Only a character's weapons can attack.",
   "investigator.Jammed": "Jammed",

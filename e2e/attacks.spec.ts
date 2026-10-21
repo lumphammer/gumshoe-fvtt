@@ -136,3 +136,62 @@ test("an NPC's combat and damage bonuses add to its attacks", async ({
     )
     .toBe(2);
 });
+
+test("a PC can only attack with their active initiative ability", async ({
+  page,
+}) => {
+  const pcId = await createActor(page, {
+    name: "Brawler",
+    type: "pc",
+    system: { initiativeAbility: "Athletics" },
+  });
+  await updateAbility(page, pcId, "Scuffling", { rating: 6, pool: 6 });
+  const knifeId = await createOwnedItem(page, pcId, {
+    name: "Knife",
+    type: "weapon",
+    system: knife,
+  });
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${knifeId}`);
+  const attackButton = sheet.getByRole("button", { name: "Attack with Knife" });
+  await expect(attackButton).toBeDisabled();
+  const hint = sheet.getByText(
+    "Scuffling isn’t this character’s active initiative ability.",
+  );
+  await expect(hint).toBeVisible();
+
+  // the hint's own Activate button, rather than the Initiative row's
+  await hint
+    .locator("xpath=ancestor::*[.//button][1]")
+    .getByRole("button", { name: "Activate" })
+    .click();
+  await expect(attackButton).toBeEnabled();
+  await expect(hint).toHaveCount(0);
+  expect(
+    await page.evaluate(
+      (pcId) => game.actors.get(pcId)!.system.initiativeAbility,
+      pcId,
+    ),
+  ).toBe("Scuffling");
+});
+
+test("an NPC's weapon shows when its ability is their initiative ability", async ({
+  page,
+}) => {
+  const npcId = await createActor(page, {
+    name: "Thug",
+    type: "npc",
+    system: { initiativeAbility: "Scuffling" },
+  });
+  const knifeId = await createOwnedItem(page, npcId, {
+    name: "Knife",
+    type: "weapon",
+    system: knife,
+  });
+  const sheet = await openSheet(page, `Actor.${npcId}.Item.${knifeId}`);
+  await expect(sheet).toContainText("Active ✓");
+  await expect(sheet.getByRole("button", { name: "Activate" })).toHaveCount(0);
+  // (NPCs are never stopped by their initiative ability, unlike PCs)
+  await expect(
+    sheet.getByRole("button", { name: "Attack with Knife" }),
+  ).toBeEnabled();
+});
