@@ -30,7 +30,9 @@ test("the GM attacks a target, applies the damage, and undoes it", async ({
 
   const weaponSheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
   await weaponSheet.locator("label", { hasText: /^2$/ }).click();
-  await weaponSheet.getByRole("button", { name: "Attack with Weapon" }).click();
+  await weaponSheet
+    .getByRole("button", { name: "Attack Cultist 1 with Weapon" })
+    .click();
 
   const card = lastChatMessage(page);
   await expect(card).toContainText("Hit roll: 6+2");
@@ -74,7 +76,9 @@ test("a player's damage to a token they don't own goes through the GM", async ({
   await targetTokens(player, [npcTokenId]);
   await forceDice(player, 6);
   const weaponSheet = await openSheet(player, `Actor.${pcId}.Item.${weaponId}`);
-  await weaponSheet.getByRole("button", { name: "Attack with Weapon" }).click();
+  await weaponSheet
+    .getByRole("button", { name: "Attack Cultist 1 with Weapon" })
+    .click();
 
   const card = lastChatMessage(player);
   await expect(card).toContainText("Cultist 1");
@@ -113,7 +117,7 @@ test("an NPC's combat and damage bonuses add to its attacks", async ({
   await forceDice(page, 6);
 
   const sheet = await openSheet(page, `Actor.${npcId}.Item.${clubId}`);
-  await sheet.getByRole("button", { name: "Attack with Club" }).click();
+  await sheet.getByRole("button", { name: "Attack Victim with Club" }).click();
 
   const card = lastChatMessage(page);
   // 6 + spend 0 + NPC's 1 + the ability's 0

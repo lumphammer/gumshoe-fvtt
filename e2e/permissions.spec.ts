@@ -36,7 +36,9 @@ test.describe("attack cards", () => {
     await targetTokens(player, [cultist]);
     await forceDice(player, 6);
     const sheet = await openSheet(player, `Actor.${pcId}.Item.${weaponId}`);
-    await sheet.getByRole("button", { name: "Attack with Weapon" }).click();
+    await sheet
+      .getByRole("button", { name: "Attack Cultist 1 with Weapon" })
+      .click();
 
     const card = lastChatMessage(player);
     await expect(card).toContainText("Hit Threshold3: Hit");
@@ -68,7 +70,9 @@ test.describe("attack cards", () => {
     await targetTokens(page, [cultist]);
     await forceDice(page, 6);
     const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
-    await sheet.getByRole("button", { name: "Attack with Weapon" }).click();
+    await sheet
+      .getByRole("button", { name: "Attack Cultist 1 with Weapon" })
+      .click();
     await expect(lastChatMessage(page)).toContainText("Cultist 1");
     const messageId = await page.evaluate(
       () => game.messages.contents.at(-1)!.id,

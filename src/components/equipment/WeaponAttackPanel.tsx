@@ -9,6 +9,7 @@ import {
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated, getTranslatedOr } from "../../functions/getTranslated";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
+import { useUserTargets } from "../../hooks/useUserTargets";
 import { isPCActor } from "../../module/actors/pc";
 import { isAbilityItem } from "../../module/items/exports";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
@@ -27,6 +28,7 @@ import { performAttack } from "./performAttack";
 import type { FireMode } from "../../module/attacks/rules";
 import {
   getAvailableFireModes,
+  isMultiTargetFireMode,
   getMinimumSpend,
   getWastedExtraSpend,
 } from "../../module/attacks/rules";
@@ -46,6 +48,29 @@ const fireModeText: Record<FireMode, string> = {
   burst: "FireModeBurst",
   fullAuto: "FireModeFullAuto",
 };
+
+/**
+ * Who the attack will be at, to name on its button: the first target, unless
+ * the fire mode spreads across all of them (only the first target is used
+ * otherwise, with a warning). Any others are just counted, to keep the button
+ * short.
+ */
+function getTargetsLabel(
+  targets: TokenDocument[],
+  fireMode: FireMode,
+): string | null {
+  const used = isMultiTargetFireMode(fireMode) ? targets : targets.slice(0, 1);
+  if (used.length === 0) {
+    return null;
+  }
+  const name = used[0].name ?? "";
+  return used.length === 1
+    ? name
+    : getTranslated("NameAndCountMore", {
+        Name: name,
+        Count: String(used.length - 1),
+      });
+}
 
 const getPool = (ability: InvestigatorItem | undefined) =>
   ability && isAbilityItem(ability) ? ability.system.pool : 0;
@@ -286,6 +311,23 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
 
   const attackTitle = blockers[0]?.message;
 
+  const targets = useUserTargets();
+  // attacks only use targets when damage is applied to them
+  const targetsLabel = settings.useDamageApplication.get()
+    ? getTargetsLabel(targets, effectiveFireMode)
+    : null;
+  const attackLabel =
+    targetsLabel === null
+      ? getTranslated(isMeleeOnly ? "AttackWithWeaponName" : "FireWeaponName", {
+          WeaponName: item.name,
+        })
+      : getTranslated(
+          isMeleeOnly
+            ? "AttackTargetsWithWeaponName"
+            : "FireWeaponNameAtTargets",
+          { WeaponName: item.name, Targets: targetsLabel },
+        );
+
   return (
     <>
       <InputGrid
@@ -370,10 +412,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
             title={attackTitle}
             onClick={onAttack}
           >
-            {getTranslated(
-              isMeleeOnly ? "AttackWithWeaponName" : "FireWeaponName",
-              { WeaponName: item.name },
-            )}
+            {attackLabel}
           </Button>
         </GridFieldStacked>
         {/* All the sheet's warnings render here, in one place, just below
