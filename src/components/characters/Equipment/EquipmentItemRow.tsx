@@ -2,8 +2,11 @@ import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types
 import React, { useCallback, useContext, useState } from "react";
 
 import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
+import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
+import { getTranslated } from "../../../functions/getTranslated";
 import type { EquipmentItem } from "../../../module/items/equipment";
 import { ThemeContext } from "../../../themes/ThemeContext";
+import { Button } from "../../inputs/Button";
 import { CheckOrCross } from "./CheckOrCross";
 
 interface EquipmentItemRowProps {
@@ -32,6 +35,23 @@ export const EquipmentItemRow = ({
 
   const sheet = item.sheet;
   assertApplicationV2(sheet);
+
+  const onClickDelete = async () => {
+    const yes = await confirmADoodleDo({
+      message: "DeleteActorNamesEquipmentName",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      confirmIconClass: "fa-trash",
+      resolveFalseOnCancel: true,
+      values: {
+        ActorName: item.actor?.name ?? "",
+        EquipmentName: item.name ?? "",
+      },
+    });
+    if (yes) {
+      await item.delete();
+    }
+  };
 
   return (
     <>
@@ -86,6 +106,24 @@ export const EquipmentItemRow = ({
           </a>
         );
       })}
+      <Button
+        css={{
+          gridColumn: Object.keys(fields).length + 2,
+          gridRow,
+          alignSelf: "center",
+          "&&": { width: "auto" },
+          padding: "0 0.3em",
+          margin: "0.1em 0",
+          lineHeight: 1.4,
+        }}
+        aria-label={getTranslated("Delete")}
+        title={getTranslated("Delete")}
+        onClick={onClickDelete}
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
+      >
+        <i className="fa fa-trash" />
+      </Button>
     </>
   );
 };

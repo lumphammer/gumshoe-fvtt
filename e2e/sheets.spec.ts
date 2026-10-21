@@ -129,6 +129,36 @@ test("an NPC's abilities and weapons each switch between play and edit mode", as
   await expect(ratingInputs.first()).toBeVisible();
 });
 
+test("deleting equipment from a PC's Equipment tab, after confirming", async ({
+  page,
+}) => {
+  const id = await createActor(page, { name: "Hoarder", type: "pc" });
+  await createOwnedItem(page, id, { name: "Brass Lantern", type: "equipment" });
+  const sheet = await openSheet(page, `Actor.${id}`);
+  await sheet.locator(".tab-strip > label", { hasText: "Equipment" }).click();
+  const getEquipmentCount = () =>
+    page.evaluate(
+      (id) =>
+        game.actors.get(id)!.items.filter((item) => item.type === "equipment")
+          .length,
+      id,
+    );
+  const deleteButton = sheet.getByRole("button", { name: "Delete" });
+  const dialog = page.locator(".application.dialog");
+
+  // cancelling keeps it
+  await deleteButton.click();
+  await expect(dialog).toContainText('Delete Hoarder\'s "Brass Lantern"?');
+  await dialog.getByRole("button", { name: "Cancel" }).click();
+  await expect(dialog).toHaveCount(0);
+  expect(await getEquipmentCount()).toBe(1);
+
+  await deleteButton.click();
+  await dialog.getByRole("button", { name: "Delete" }).click();
+  await expect.poll(getEquipmentCount).toBe(0);
+  await expect(sheet).not.toContainText("Brass Lantern");
+});
+
 const itemTypes = [
   "investigativeAbility",
   "generalAbility",
