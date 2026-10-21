@@ -119,6 +119,15 @@ export const createActiveCharacterSchema = () => {
       choices: ["uninjured", "hurt", "down", "unconscious", "dead"],
       initial: "uninjured",
     }),
+    /**
+     * The id of the weapon the character has ready, shown on their Combat
+     * tab; only one at a time. Empty (or a deleted weapon's id) means none.
+     */
+    readyWeaponId: new StringField({
+      nullable: false,
+      required: true,
+      initial: "",
+    }),
     resources: createResourcesField(),
     stats: createStatsField(),
   };

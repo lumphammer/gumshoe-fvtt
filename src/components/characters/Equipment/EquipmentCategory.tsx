@@ -1,6 +1,7 @@
 import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import React, { useCallback, useContext } from "react";
+import type React from "react";
+import { useContext, useState } from "react";
 
 import { sortEntitiesByName } from "../../../functions/utilities";
 import type { PCActor } from "../../../module/actors/pc";
@@ -16,6 +17,8 @@ interface EquipmentCategoryProps {
   name: string;
   actor: PCActor;
   fields: Record<string, EquipmentFieldMetadata>;
+  draggedItem: EquipmentItem | null;
+  setDraggedItem: (item: EquipmentItem | null) => void;
 }
 
 export const EquipmentCategory = ({
@@ -24,25 +27,70 @@ export const EquipmentCategory = ({
   name,
   actor,
   fields,
+  draggedItem,
+  setDraggedItem,
 }: EquipmentCategoryProps) => {
   const app = useContext(FoundryAppContext);
-
-  const onDragStart = useCallback(
-    (e: React.DragEvent<HTMLElement>) => {
-      if (app !== null) {
-        (app as any)._onDragStart(e);
-      }
-    },
-    [app],
-  );
-
   const theme = useContext(ThemeContext);
+
+  const onDragStart = (
+    e: React.DragEvent<HTMLElement>,
+    item: EquipmentItem,
+  ) => {
+    // Foundry's drag data, so it can still be dropped on other sheets etc.
+    if (app !== null) {
+      (app as any)._onDragStart(e);
+    }
+    setDraggedItem(item);
+  };
+
+  // another category's item can be dropped here (but not on Uncategorized)
+  const canDrop =
+    draggedItem !== null &&
+    categoryId !== "" &&
+    draggedItem.system.categoryId !== categoryId;
+  const [isOver, setIsOver] = useState(false);
 
   return (
     <div
+      onDragOver={(e) => {
+        if (!canDrop) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        setIsOver(true);
+      }}
+      onDragLeave={(e) => {
+        // only when leaving the category, not moving between its children
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+          setIsOver(false);
+        }
+      }}
+      onDrop={(e) => {
+        setIsOver(false);
+        if (!canDrop) return;
+        // ours, not the sheet's (which would sort the item, or copy it)
+        e.preventDefault();
+        e.stopPropagation();
+        setDraggedItem(null);
+        void draggedItem.system.setCategoryId(categoryId);
+      }}
       css={{
+        borderRadius: "0.3em",
+        outline: canDrop
+          ? `2px dashed ${isOver ? theme.colors.accent : theme.colors.controlBorder}`
+          : "2px dashed transparent",
+        outlineOffset: "0.2em",
+        background: isOver
+          ? `color-mix(in srgb, ${theme.colors.glow} 25%, transparent)`
+          : undefined,
         display: "grid",
-        gridTemplateColumns: `1fr repeat(${Object.keys(fields).length}, 1fr)`,
+        // the name, the fields, then each row's delete button (`repeat()`
+        // can't take 0, so no fields means none of it)
+        gridTemplateColumns: [
+          "1fr",
+          ...Object.keys(fields).map(() => "1fr"),
+          "max-content",
+        ].join(" "),
         gridTemplateRows: "[title] auto [headers] auto [items] auto",
         // gap: "0.5em",
       }}
@@ -116,7 +164,8 @@ export const EquipmentCategory = ({
         <EquipmentItemRow
           item={item}
           key={item.id}
-          onDragStart={onDragStart}
+          onDragStart={(e) => onDragStart(e, item)}
+          onDragEnd={() => setDraggedItem(null)}
           gridRow={i + 4}
           fields={fields}
         />

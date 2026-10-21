@@ -30,7 +30,9 @@ test("the GM attacks a target, applies the damage, and undoes it", async ({
 
   const weaponSheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
   await weaponSheet.locator("label", { hasText: /^2$/ }).click();
-  await weaponSheet.getByRole("button", { name: "Attack with Weapon" }).click();
+  await weaponSheet
+    .getByRole("button", { name: "Attack Cultist 1 with Weapon" })
+    .click();
 
   const card = lastChatMessage(page);
   await expect(card).toContainText("Hit roll: 6+2");
@@ -74,7 +76,9 @@ test("a player's damage to a token they don't own goes through the GM", async ({
   await targetTokens(player, [npcTokenId]);
   await forceDice(player, 6);
   const weaponSheet = await openSheet(player, `Actor.${pcId}.Item.${weaponId}`);
-  await weaponSheet.getByRole("button", { name: "Attack with Weapon" }).click();
+  await weaponSheet
+    .getByRole("button", { name: "Attack Cultist 1 with Weapon" })
+    .click();
 
   const card = lastChatMessage(player);
   await expect(card).toContainText("Cultist 1");
@@ -113,7 +117,7 @@ test("an NPC's combat and damage bonuses add to its attacks", async ({
   await forceDice(page, 6);
 
   const sheet = await openSheet(page, `Actor.${npcId}.Item.${clubId}`);
-  await sheet.getByRole("button", { name: "Attack with Club" }).click();
+  await sheet.getByRole("button", { name: "Attack Victim with Club" }).click();
 
   const card = lastChatMessage(page);
   // 6 + spend 0 + NPC's 1 + the ability's 0
@@ -131,4 +135,54 @@ test("an NPC's combat and damage bonuses add to its attacks", async ({
       ),
     )
     .toBe(2);
+});
+
+test("a PC can only attack with their active initiative ability", async ({
+  page,
+}) => {
+  const pcId = await createActor(page, {
+    name: "Brawler",
+    type: "pc",
+    system: { initiativeAbility: "Athletics" },
+  });
+  await updateAbility(page, pcId, "Scuffling", { rating: 6, pool: 6 });
+  const knifeId = await createOwnedItem(page, pcId, {
+    name: "Knife",
+    type: "weapon",
+    system: knife,
+  });
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${knifeId}`);
+  const attackButton = sheet.getByRole("button", { name: "Attack with Knife" });
+  await expect(attackButton).toBeDisabled();
+  const hint = sheet.getByText(
+    "Scuffling isn’t this character’s active initiative ability.",
+  );
+  await expect(hint).toBeVisible();
+
+  await sheet.getByRole("button", { name: "Activate" }).click();
+  await expect(attackButton).toBeEnabled();
+  await expect(hint).toHaveCount(0);
+  expect(
+    await page.evaluate(
+      (pcId) => game.actors.get(pcId)!.system.initiativeAbility,
+      pcId,
+    ),
+  ).toBe("Scuffling");
+});
+
+test("the spend is labelled with a link to the weapon's ability", async ({
+  page,
+}) => {
+  const { pcId, weaponId } = await setUpFight(page, { weapon: knife });
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
+  await sheet.locator("label").getByText("Scuffling", { exact: true }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (pcId) =>
+          game.actors.get(pcId)!.items.getName("Scuffling")!.sheet!.rendered,
+        pcId,
+      ),
+    )
+    .toBe(true);
 });

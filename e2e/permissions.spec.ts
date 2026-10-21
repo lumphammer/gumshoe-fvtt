@@ -36,7 +36,9 @@ test.describe("attack cards", () => {
     await targetTokens(player, [cultist]);
     await forceDice(player, 6);
     const sheet = await openSheet(player, `Actor.${pcId}.Item.${weaponId}`);
-    await sheet.getByRole("button", { name: "Attack with Weapon" }).click();
+    await sheet
+      .getByRole("button", { name: "Attack Cultist 1 with Weapon" })
+      .click();
 
     const card = lastChatMessage(player);
     await expect(card).toContainText("Hit Threshold3: Hit");
@@ -68,7 +70,9 @@ test.describe("attack cards", () => {
     await targetTokens(page, [cultist]);
     await forceDice(page, 6);
     const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
-    await sheet.getByRole("button", { name: "Attack with Weapon" }).click();
+    await sheet
+      .getByRole("button", { name: "Attack Cultist 1 with Weapon" })
+      .click();
     await expect(lastChatMessage(page)).toContainText("Cultist 1");
     const messageId = await page.evaluate(
       () => game.messages.contents.at(-1)!.id,
@@ -161,8 +165,25 @@ test("players don't see an NPC's GM notes", async ({ page, joinAs }) => {
   // wait for the tabs, so checking one isn't there means something
   const tabs = sheet.locator(".tab-strip > label");
   await expect(tabs.filter({ hasText: /^Notes$/ })).toBeVisible();
-  await expect(tabs).toHaveText(["Play", "Edit", "Notes"]);
+  await expect(tabs).toHaveText(["Abilities", "Combat", "Notes"]);
   await expect(sheet).not.toContainText("Secretly a ghoul");
+});
+
+test("an Observer can switch a PC's abilities to edit mode, but not edit them", async ({
+  page,
+  joinAs,
+}) => {
+  const pcId = await createActor(page, { name: "Dr Ellery", type: "pc" });
+  const playerId = await createPlayer(page, "Onlooker");
+  await giveOwnership(page, pcId, playerId, "OBSERVER");
+
+  const player = await joinAs("Onlooker");
+  const sheet = await openSheet(player, `Actor.${pcId}`);
+  await sheet.getByLabel("Edit mode").click();
+  // edit mode shows, with its inputs disabled
+  const occupational = sheet.getByTitle("Occupational Ability?");
+  await expect(occupational.first()).toBeVisible();
+  await expect(occupational.first()).toBeDisabled();
 });
 
 test("with Limited permission, players see a character's name and picture, not their details", async ({

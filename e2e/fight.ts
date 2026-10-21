@@ -25,7 +25,12 @@ export async function setUpFight(
   },
 ) {
   await setSettings(page, { useDamageApplication: true });
-  const pcId = await createActor(page, { name: "Attacker", type: "pc" });
+  // PCs can only attack with their active initiative ability
+  const pcId = await createActor(page, {
+    name: "Attacker",
+    type: "pc",
+    system: { initiativeAbility: weapon.ability },
+  });
   await updateAbility(page, pcId, weapon.ability, { rating: 6, pool: 6 });
   const weaponId = await createOwnedItem(page, pcId, {
     name: "Weapon",

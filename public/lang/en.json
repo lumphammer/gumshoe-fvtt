@@ -430,7 +430,11 @@
   "investigator.LongRangeShort": "Long",
   "investigator.FireWeaponName": "Fire {WeaponName}",
   "investigator.AttackWithWeaponName": "Attack with {WeaponName}",
+  "investigator.FireWeaponNameAtTargets": "Fire {WeaponName} at {Targets}",
+  "investigator.AttackTargetsWithWeaponName": "Attack {Targets} with {WeaponName}",
+  "investigator.NameAndCountMore": "{Name} (+{Count} more)",
   "investigator.WeaponHasNoRanges": "This weapon has no range bands. Turn some on in its settings.",
+  "investigator.WeaponAbilityNotActiveForInitiative": "{AbilityName} isn’t this character’s active initiative ability.",
   "investigator.WeaponAbilityNotFound": "This character has no \"{AbilityName}\" ability to attack with.",
   "investigator.WeaponHasNoOwner": "Only a character's weapons can attack.",
   "investigator.Jammed": "Jammed",
@@ -621,5 +625,9 @@
   "investigator.ContactCantSpareThatMany": "{ContactName} can't spare that many points",
   "investigator.Location": "Location",
   "investigator.ManuallyAdjustPool": "Manually adjust pool",
-  "investigator.BurningStraightAfterTheLossRestored": "That was straight after the loss, so {ActorName} gets back {Ratings}"
+  "investigator.BurningStraightAfterTheLossRestored": "That was straight after the loss, so {ActorName} gets back {Ratings}",
+  "investigator.EditMode": "Edit mode",
+  "investigator.Ready": "Ready",
+  "investigator.ReadyWeaponName": "Ready {WeaponName}",
+  "investigator.ReadyAWeaponToAttackWithIt": "Ready a weapon to attack with it"
 }

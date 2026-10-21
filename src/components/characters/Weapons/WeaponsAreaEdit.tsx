@@ -18,17 +18,15 @@ export const WeaponsAreaEdit = () => {
           flexDirection: "row",
         }}
       >
-        <h1
-          css={{
-            flex: 1,
-          }}
-        >
+        {/* as in play mode (WeaponsArea) */}
+        <h2 css={{ flex: 1, "&&": { margin: 0 } }}>
           <Translate>Weapons</Translate>
-        </h1>
+        </h2>
         <Button
           css={{
-            float: "right",
-            width: "auto",
+            flexBasis: "max-content",
+            // not stretched to the heading's height
+            alignSelf: "flex-start",
           }}
           onClick={async () => {
             await actor.createEmbeddedDocuments("Item", [

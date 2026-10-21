@@ -2,6 +2,7 @@ import type { Page } from "@playwright/test";
 
 import {
   createActor,
+  createOwnedItem,
   createPlayer,
   expect,
   giveOwnership,
@@ -130,7 +131,7 @@ test("dropping a weapon from a compendium onto a PC sheet", async ({
   await expect
     .poll(() => getItemNames(page, pcId, "weapon"))
     .toEqual([weaponName]);
-  await sheet.locator(".tab-strip > label", { hasText: "Equipment" }).click();
+  await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
   await expect(sheet).toContainText(weaponName);
 });
 
@@ -191,7 +192,7 @@ test("dragging a weapon from one PC's sheet to another's copies it", async ({
     },
     { giverId, takerId },
   );
-  await giver.locator(".tab-strip > label", { hasText: "Equipment" }).click();
+  await giver.locator(".tab-strip > label", { hasText: "Combat" }).click();
   await giver
     .getByText("Old Revolver", { exact: true })
     .dragTo(taker.locator(".window-content"));
@@ -429,4 +430,40 @@ test("dropping an item into an image's caption adds a link to it", async ({
       ),
     )
     .toBe(`Found with@UUID[Item.${itemId}]{Torn Ticket}`);
+});
+
+test("dragging equipment from one category to another on a PC's sheet", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    equipmentCategories: {
+      general: { name: "General", fields: {} },
+      tomes: { name: "Tomes", fields: {} },
+    },
+  });
+  const pcId = await createActor(page, { name: "Collector", type: "pc" });
+  const lanternId = await createOwnedItem(page, pcId, {
+    name: "Brass Lantern",
+    type: "equipment",
+    system: { categoryId: "general" },
+  });
+  const sheet = await openSheet(page, `Actor.${pcId}`);
+  await sheet.locator(".tab-strip > label", { hasText: "Equipment" }).click();
+
+  await sheet
+    .getByText("Brass Lantern", { exact: true })
+    .dragTo(sheet.getByRole("heading", { name: "Tomes" }));
+  await expect
+    .poll(() =>
+      page.evaluate(
+        ({ pcId, lanternId }) =>
+          game.actors.get(pcId)!.items.get(lanternId)!.system.categoryId,
+        { pcId, lanternId },
+      ),
+    )
+    .toBe("tomes");
+  // moved, not copied
+  expect(await getItemNames(page, pcId, "equipment")).toEqual([
+    "Brass Lantern",
+  ]);
 });

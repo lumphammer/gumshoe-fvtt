@@ -10,17 +10,32 @@ type ToggleProps = {
   checked: boolean;
   onChange: (checked: boolean) => void;
   className?: string;
+  /** For screen readers and tooltips, when there's no `<label>` for it */
+  label?: string;
+  /**
+   * Usable even when the user can't edit the document, for toggles which
+   * only change what's shown (like edit mode)
+   */
+  alwaysEnabled?: boolean;
 };
 
 export const Toggle = memo<ToggleProps>(
-  ({ checked, onChange, className }: ToggleProps) => {
+  ({
+    checked,
+    onChange,
+    className,
+    label,
+    alwaysEnabled = false,
+  }: ToggleProps) => {
     const id = useContext(IdContext);
     const isEditable = useIsEditable();
     const theme = useContext(ThemeContext);
     return (
       <Switch.Root
         id={id}
-        disabled={!isEditable}
+        aria-label={label}
+        title={label}
+        disabled={!isEditable && !alwaysEnabled}
         className={className}
         css={{
           fontSize: "0.9em",

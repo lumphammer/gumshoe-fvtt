@@ -62,7 +62,7 @@ test("a three-round burst hits up to three times, one after another", async ({
 
   const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
   await choose(sheet, "Fire mode", "Burst");
-  await choose(sheet, "Spend", "3");
+  await choose(sheet, "Firearms", "3");
   await sheet.getByRole("button", { name: "Fire Weapon" }).click();
 
   // 6 + 3 = 9 against Hit Threshold 3 is a margin of 6: three bullets
@@ -118,7 +118,7 @@ test("a Lethality weapon kills on a low roll", async ({ page }) => {
 
   const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
   // 1 + 2 meets Hit Threshold 3
-  await choose(sheet, "Spend", "2");
+  await choose(sheet, "Firearms", "2");
   await sheet.getByRole("button", { name: "Fire Weapon" }).click();
 
   const card = lastChatMessage(page);
@@ -173,7 +173,7 @@ test("walking a burst's fire onto another target", async ({ page }) => {
 
   const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
   await choose(sheet, "Fire mode", "Burst");
-  await choose(sheet, "Spend", "3");
+  await choose(sheet, "Firearms", "3");
   await sheet.getByRole("button", { name: "Fire Weapon" }).click();
 
   const card = lastChatMessage(page);
@@ -206,7 +206,7 @@ test("a critical hit adds two damage rolls together", async ({ page }) => {
 
   const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
   // an unmodified 6, and 6 + 2 beats Hit Threshold 3 by 5
-  await choose(sheet, "Spend", "2");
+  await choose(sheet, "Firearms", "2");
   await sheet.getByRole("button", { name: "Fire Weapon" }).click();
 
   const card = lastChatMessage(page);
@@ -284,4 +284,27 @@ test("with two targets, the shooter chooses who gets Shot Dry's dice", async ({
   await expect(chooseSecond).toBeChecked();
   await expect(chooseFirst).toBeChecked();
   await expect(card.getByText("+1 Lethality dice")).toHaveCount(2);
+});
+
+test("the attack button names who it's at", async ({ page }) => {
+  const {
+    pcId,
+    weaponId,
+    npcTokenIds: [first, second, third],
+  } = await setUpFight(page, { weapon: rifle, cultists: 3 });
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
+  const attackButton = sheet.getByRole("button", { name: /^Fire Weapon/ });
+  await expect(attackButton).toHaveText("Fire Weapon");
+
+  // a single shot only uses the first target
+  await targetTokens(page, [first, second]);
+  await expect(attackButton).toHaveText("Fire Weapon at Cultist 1");
+  // full-auto uses them all
+  await choose(sheet, "Fire mode", "Full-auto");
+  await expect(attackButton).toHaveText("Fire Weapon at Cultist 1 (+1 more)");
+  await targetTokens(page, [first, second, third]);
+  await expect(attackButton).toHaveText("Fire Weapon at Cultist 1 (+2 more)");
+
+  await targetTokens(page, []);
+  await expect(attackButton).toHaveText("Fire Weapon");
 });
