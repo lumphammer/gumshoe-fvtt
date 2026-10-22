@@ -103,10 +103,10 @@ test("a player can't change anything on a PC sheet they can only observe", async
       await createOwnedItem(page, pcId, { name: `A ${type}`, type }),
     );
   }
-  const playerId = await createPlayer(page, "Onlooker");
+  const playerId = await createPlayer(page, "Spectator");
   await giveOwnership(page, pcId, playerId, "OBSERVER");
 
-  const player = await joinAs("Onlooker");
+  const player = await joinAs("Spectator");
   const actorSheet = await openSheet(player, `Actor.${pcId}`);
   await visitEveryTab(actorSheet, () =>
     pokeEverything(player, actorSheet, pageErrors),
