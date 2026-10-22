@@ -120,6 +120,8 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
   ...defaultSettings,
   displayName: "Trail of Cthulhu (built-in)",
   newNPCPacks: [`${systemId}.${packNames.pathOfCthulhuNPCAbilities}`],
+  useDamageApplication: true,
+  useWoundStatusEffects: true,
   useStabilityRules: true,
   useSanityRules: true,
   sanityCapAbility: "Cthulhu Mythos",
@@ -157,6 +159,29 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
   ],
 };
 
+/**
+ * For games with a single kind of Stability test, at the standard Difficulty
+ * 4 (Night's Black Agents, Fear Itself, The Esoterrorists)
+ */
+const basicTraumaType: Required<PresetV1>["traumaTypes"][number] = {
+  id: "trauma",
+  name: "Trauma",
+  difficulty: 4,
+  adaptedDifficulty: 4,
+  causesSanityLoss: false,
+  useAdaptation: false,
+  cappedAbilities: [],
+  capsBonds: false,
+  refreshPenalty: 0,
+};
+
+/** Night's Black Agents and The Esoterrorists name the last state this way */
+const incurablyInsaneStabilityStates: Required<PresetV1>["stabilityStates"] = {
+  shaken: { name: "Shaken", upTo: 0 },
+  shattered: { name: "Shattered", upTo: -6 },
+  gone: { name: "Incurably Insane", upTo: -12 },
+};
+
 export const niceBlackAgentsPreset: PresetV1 = {
   schemaVersion: "v1",
   displayName: "Night's Black Agents (built-in)",
@@ -180,6 +205,15 @@ export const niceBlackAgentsPreset: PresetV1 = {
   pcStats: pathOfCthulhuPreset.pcStats,
   npcStats: pathOfCthulhuPreset.npcStats,
   equipmentCategories: { general: { name: "General", fields: {} } },
+  useDamageApplication: true,
+  useWoundStatusEffects: true,
+  useCriticalHits: true,
+  useStabilityRules: true,
+  useStabilityStates: true,
+  stabilityStates: incurablyInsaneStabilityStates,
+  useTrauma: true,
+  traumaTypes: [basicTraumaType],
+  useNetworkContacts: true,
 };
 
 export const nothingToFearPreset: PresetV1 = {
@@ -207,6 +241,11 @@ export const nothingToFearPreset: PresetV1 = {
   pcStats: pathOfCthulhuPreset.pcStats,
   npcStats: pathOfCthulhuPreset.npcStats,
   equipmentCategories: { general: { name: "General", fields: {} } },
+  useDamageApplication: true,
+  useWoundStatusEffects: true,
+  useStabilityRules: true,
+  useTrauma: true,
+  traumaTypes: [basicTraumaType],
 };
 
 export const pallidStarsPreset: PresetV1 = {
@@ -270,6 +309,8 @@ export const pallidStarsPreset: PresetV1 = {
       },
     },
   },
+  useDamageApplication: true,
+  useWoundStatusEffects: true,
 };
 
 export const castingTheRunesPreset: PresetV1 = {
@@ -364,6 +405,13 @@ export const esoterroristsPreset: PresetV1 = {
   pcStats: pathOfCthulhuPreset.pcStats,
   npcStats: pathOfCthulhuPreset.npcStats,
   equipmentCategories: { general: { name: "General", fields: {} } },
+  useDamageApplication: true,
+  useWoundStatusEffects: true,
+  useStabilityRules: true,
+  useStabilityStates: true,
+  stabilityStates: incurablyInsaneStabilityStates,
+  useTrauma: true,
+  traumaTypes: [basicTraumaType],
 };
 
 export const mutantCityBluesPreset: PresetV1 = {
@@ -430,6 +478,8 @@ export const mutantCityBluesPreset: PresetV1 = {
       thresholdType: "none",
     },
   ],
+  useDamageApplication: true,
+  useWoundStatusEffects: true,
 };
 
 export const fallOfDeltaGreenPreset: PresetV1 = {

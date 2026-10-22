@@ -29,7 +29,7 @@ system:
   damageBonus: 0
   isPushPool: false
   linkToResource: true
-  resourceId: ""
+  resourceId: health
   hideIfZeroRated: false
 effects: []
 flags: {}
