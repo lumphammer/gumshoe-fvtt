@@ -15,6 +15,7 @@ const attack: AttackData = {
   hitDie: 6,
   attackerIsHurt: false,
   isGunfire: true,
+  burstSize: 3,
   isShotDry: false,
   lethality: null,
   damageFormula: "1d6 + @damage",

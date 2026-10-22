@@ -11,6 +11,8 @@ type AsyncNumberInputProps = {
   className?: string;
   min?: number;
   max?: number;
+  /** only accept whole numbers */
+  integer?: boolean;
   disabled?: boolean;
   noPlusMinus?: boolean;
   smallButtons?: boolean;
@@ -37,6 +39,7 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
     className,
     min,
     max,
+    integer = false,
     disabled,
     noPlusMinus = false,
     smallButtons = false,
@@ -48,6 +51,11 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
           return {
             state: "failed",
             reasons: ["Not a number"],
+          };
+        } else if (integer && !Number.isInteger(num)) {
+          return {
+            state: "failed",
+            reasons: ["Not a whole number"],
           };
         } else if (min !== undefined && num < min) {
           return {
@@ -66,7 +74,7 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
           };
         }
       },
-      [max, min],
+      [integer, max, min],
     );
 
     const onChangeString = useCallback(

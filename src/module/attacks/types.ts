@@ -44,6 +44,8 @@ export type AttackData = {
   /** snapshot of whether the attacker was Hurt when they attacked */
   attackerIsHurt: boolean;
   isGunfire: boolean;
+  /** snapshot of the weapon's ammo per burst: the bullets a burst shares out */
+  burstSize: number;
   /** an unmodified 6 on full-auto, with the Shot Dry rule on */
   isShotDry: boolean;
   /** snapshot of the weapon's Lethality, if it has one and the rule is on */

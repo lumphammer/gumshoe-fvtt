@@ -194,6 +194,58 @@ test("walking a burst's fire onto another target", async ({ page }) => {
     .toBe(1);
 });
 
+test("a burst can only walk as many bullets as the weapon fires", async ({
+  page,
+}) => {
+  await setSettings(page, { useWalkingFire: true });
+  const {
+    pcId,
+    weaponId,
+    npcTokenIds: [first],
+  } = await setUpFight(page, {
+    weapon: { ...rifle, ammoPerBurst: 1 },
+    cultists: 2,
+  });
+  await targetTokens(page, [first]);
+  // a margin of 1 is one bullet: all this burst has
+  await forceDice(page, 1);
+
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
+  await choose(sheet, "Fire mode", "Burst");
+  await choose(sheet, "Firearms", "3");
+  await sheet.getByRole("button", { name: "Fire Weapon" }).click();
+
+  const card = lastChatMessage(page);
+  await expect(card).toContainText("Cultist 1");
+  await expect(card).toContainText(
+    "All the burst's bullets have hit, so there are none left to walk.",
+  );
+  await expect(
+    card.getByRole("button", { name: "2 Firearms", exact: true }),
+  ).toHaveCount(0);
+  expect(await getWeapon(page, pcId, weaponId)).toMatchObject({ ammo: 29 });
+});
+
+test("a weapon's burst is a whole number of bullets, at least one", async ({
+  page,
+}) => {
+  // as older weapons could have
+  const sizes = await page.evaluate(async () => {
+    const items = await Item.createDocuments(
+      [1.5, 0].map((ammoPerBurst) => ({
+        name: `Burst of ${ammoPerBurst}`,
+        type: "weapon",
+        system: { ammoPerBurst },
+      })),
+    );
+    return items.map(
+      (item) =>
+        (item.system as unknown as { ammoPerBurst: number }).ammoPerBurst,
+    );
+  });
+  expect(sizes).toEqual([2, 1]);
+});
+
 test("a critical hit adds two damage rolls together", async ({ page }) => {
   await setSettings(page, { useCriticalHits: true });
   const {

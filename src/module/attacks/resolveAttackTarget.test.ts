@@ -14,6 +14,7 @@ const makeAttack = (overrides: Partial<AttackData> = {}): AttackData => ({
   hitDie: 4,
   attackerIsHurt: false,
   isGunfire: true,
+  burstSize: 3,
   isShotDry: false,
   lethality: null,
   damageFormula: "1d6",
@@ -519,6 +520,52 @@ describe("walking fire", () => {
       );
       expect(counts).toEqual([2, 1, 0]);
       expect(getBurstBulletsFired(burst, infoFor, options)).toBe(3);
+    });
+
+    it("shares out a bigger burst, but still no more than three per target", () => {
+      // margin 4: two bullets each, if they had them
+      const burst = makeAttack({
+        fireMode: "burst",
+        burstSize: 5,
+        hitTotal: 7,
+        hitDie: 4,
+        targets: [first, second, third],
+      });
+      const counts = [first, second, third].map(
+        (t) =>
+          resolveAttackTargetInAttack(burst, t, infoFor, options).bulletCount,
+      );
+      expect(counts).toEqual([2, 2, 1]);
+      expect(getBurstBulletsFired(burst, infoFor, options)).toBe(5);
+
+      // margin 9 would be four bullets, but one target only takes three
+      const bigMargin = { ...burst, hitTotal: 12, hitDie: 6 };
+      expect(
+        resolveAttackTargetInAttack(bigMargin, first, infoFor, options)
+          .bulletCount,
+      ).toBe(3);
+      expect(
+        resolveAttackTargetInAttack(bigMargin, second, infoFor, options)
+          .bulletCount,
+      ).toBe(2);
+    });
+
+    it("never hits with more bullets than a smaller burst has", () => {
+      // margin 6 would be three bullets
+      const burst = makeAttack({
+        fireMode: "burst",
+        burstSize: 2,
+        hitTotal: 9,
+        hitDie: 6,
+        targets: [first, second],
+      });
+      expect(
+        resolveAttackTargetInAttack(burst, first, infoFor, options).bulletCount,
+      ).toBe(2);
+      expect(
+        resolveAttackTargetInAttack(burst, second, infoFor, options)
+          .bulletCount,
+      ).toBe(0);
     });
 
     it("leaves a target with no bullets without damage", () => {
