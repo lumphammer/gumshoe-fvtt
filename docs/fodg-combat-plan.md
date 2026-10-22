@@ -99,6 +99,10 @@ Firearms/Heavy Weapons + 2 Athletics, to hit one more target within 3 yards of
 the previous one. The *original* result must meet the new target's Hit
 Threshold. Repeatable. A burst can never exceed three bullets in total.
 
+We generalise this: a weapon's `ammoPerBurst` (default 3) is its burst size,
+snapshotted onto the attack as `burstSize`, and caps the bullets shared out.
+One target still takes at most three, so walking spreads a bigger burst.
+
 ### Shot Dry and Jams (p. 101)
 
 - Shot Dry: unmodified 6 on a full-auto roll empties the weapon (ammo → 0),
@@ -399,9 +403,10 @@ Decisions made while implementing Phase 5:
   without spending anything. Otherwise the points are taken (refunded if
   anything fails), the target is added marked "walked fire", and its damage
   is rolled. Removing a walked target doesn't refund the points.
-- A burst's three bullets are shared out in target order: each target gets
-  its own margin-based count, capped by what earlier targets left. A target
-  with none left takes no damage, and walking stops once all three have hit.
+- A burst's bullets (`burstSize`, usually three) are shared out in target
+  order: each target gets its own margin-based count, capped by what earlier
+  targets left. A target with none left takes no damage, and walking stops
+  once all of them have hit.
   Cover changes on an earlier target can move bullets between targets.
 - Full-auto walking adds a target exactly like "Add targets" (one Lethality
   die), just paid for; the difference is geometry, which we don't check.

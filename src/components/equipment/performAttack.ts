@@ -89,6 +89,7 @@ async function buildAttackData({
     hitDie: hitRoll.dice[0]?.total ?? 0,
     attackerIsHurt: attackerHealth !== null && attackerHealth <= hurtHealth,
     isGunfire: weapon.system.isGunfire,
+    burstSize: Math.max(1, weapon.system.ammoPerBurst),
     isShotDry:
       settings.useLethalityAndAutofire.get() &&
       settings.useShotDryAndJams.get() &&

@@ -6,7 +6,6 @@ import {
   pickSingleTargetToken,
 } from "../../module/attacks/attackTargets";
 import type { WalkingFirePayment } from "../../module/attacks/rules";
-import { burstMaxBullets } from "../../module/attacks/rules";
 import type { AttackData } from "../../module/attacks/types";
 import { editAttack } from "../../module/attacks/editAttack";
 import {
@@ -34,7 +33,7 @@ export const WalkingFireActions = ({
 
   const noBulletsLeft =
     attack.fireMode === "burst" &&
-    getBurstBulletsFiredLive(attack) >= burstMaxBullets;
+    getBurstBulletsFiredLive(attack) >= attack.burstSize;
 
   // the target is whoever this user has targeted, and if it can't be done,
   // they're the one who needs to know why, so check here before asking
@@ -66,7 +65,7 @@ export const WalkingFireActions = ({
           {noBulletsLeft ? "WalkFireNoBulletsLeft" : "WalkFireHint"}
         </Translate>
       </div>
-      {/* once all three bullets have hit, there's nothing to walk */}
+      {/* once all the burst's bullets have hit, there's nothing to walk */}
       {!noBulletsLeft && (
         <div
           css={{

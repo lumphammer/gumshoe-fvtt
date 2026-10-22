@@ -6,7 +6,6 @@ import {
   defaultHitThreshold,
   getEffectiveHitThreshold,
   getRequiredDamageRollCount,
-  burstMaxBullets,
   getBurstBulletCount,
   getShotDryExtraDice,
   isCriticalHit,
@@ -79,14 +78,14 @@ export function resolveAttackTarget(
   });
   const isHit = attack.hitTotal >= hitThreshold;
   const isBurst = attack.fireMode === "burst";
-  // a burst is only three bullets, even walked across several targets
+  // a burst only has so many bullets, even walked across several targets
   const bulletCount =
     isHit && isBurst
       ? Math.max(
           0,
           Math.min(
             getBurstBulletCount(attack.hitTotal - hitThreshold),
-            burstMaxBullets - bulletsAlreadyFired,
+            attack.burstSize - bulletsAlreadyFired,
           ),
         )
       : 1;

@@ -174,15 +174,24 @@ export function isCriticalHit({
   return hitDie === 6 && hitTotal - hitThreshold >= 5;
 }
 
-/** A burst is three bullets, however they're shared out (p. 100) */
-export const burstMaxBullets = 3;
+/**
+ * A burst is three bullets, however they're shared out (p. 100). Weapons can
+ * set their own burst size (`ammoPerBurst`); this is the default.
+ */
+export const defaultBurstSize = 3;
+
+/** However big the burst, one target can only take three of its bullets */
+export const burstMaxBulletsPerTarget = 3;
 
 /**
  * Three-round burst (p. 100): one extra bullet for each 3 points of margin
  * over the target's Hit Threshold, to a maximum of three bullets.
  */
 export function getBurstBulletCount(margin: number): number {
-  return 1 + Math.min(burstMaxBullets - 1, Math.floor(Math.max(0, margin) / 3));
+  return (
+    1 +
+    Math.min(burstMaxBulletsPerTarget - 1, Math.floor(Math.max(0, margin) / 3))
+  );
 }
 
 /**

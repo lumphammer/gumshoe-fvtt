@@ -8,7 +8,7 @@ import {
   TypeDataModel,
 } from "../../fvtt-exports";
 import { createLethalityFields } from "../schemaFields";
-import { coverValues, fireModeValues } from "./rules";
+import { coverValues, defaultBurstSize, fireModeValues } from "./rules";
 
 const createDamageRollField = () =>
   new SchemaField({
@@ -90,6 +90,13 @@ export const attackDataSchema = {
     nullable: false,
     required: true,
     initial: false,
+  }),
+  /** snapshot of the weapon's ammo per burst: the bullets a burst shares out */
+  burstSize: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    initial: defaultBurstSize,
   }),
   /** an unmodified 6 on full-auto, with the Shot Dry rule on */
   isShotDry: new BooleanField({
