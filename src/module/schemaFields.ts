@@ -103,6 +103,12 @@ export const createRecordField = <T extends AnyObject>(
 
 export const createActiveCharacterSchema = () => {
   return {
+    /** Unnatural creatures (p. 093), or PCs who have become one */
+    immuneToLethality: new BooleanField({
+      nullable: false,
+      required: true,
+      initial: false,
+    }),
     initiativeAbility: new StringField({
       nullable: false,
       required: true,

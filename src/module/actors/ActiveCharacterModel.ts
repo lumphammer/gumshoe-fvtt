@@ -71,6 +71,10 @@ export class ActiveCharacterModel<
     return this.getWeapons().find((weapon) => weapon.id === id);
   }
 
+  setImmuneToLethality = async (immuneToLethality: boolean): Promise<void> => {
+    await this.parent.update({ system: { immuneToLethality } });
+  };
+
   setIsHuman = async (isHuman: boolean): Promise<void> => {
     await this.parent.update({ system: { isHuman } });
   };

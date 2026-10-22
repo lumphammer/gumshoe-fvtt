@@ -1,4 +1,3 @@
-import { isNPCActor } from "../actors/npc";
 import { isActiveCharacterActor } from "../actors/types";
 import type { GeneralAbilityItem } from "../items/generalAbility";
 import { isGeneralAbilityItem } from "../items/generalAbility";
@@ -68,9 +67,9 @@ export function getStat(actor: Actor, statId: string): number | null {
   return typeof value === "number" ? value : null;
 }
 
-/** Only NPCs can be immune (unnatural creatures, p. 093) */
+/** Unnatural creatures are immune (p. 093) */
 export function isImmuneToLethality(actor: Actor): boolean {
-  return isNPCActor(actor) && actor.system.immuneToLethality;
+  return isActiveCharacterActor(actor) && actor.system.immuneToLethality;
 }
 
 /** PCs and NPCs have a flag (ghouls, dogs, etc. aren't human) */

@@ -161,10 +161,8 @@ suppressive fire, evasion, non-lethal attacks, rubber/special ammunition.
   - `fullAutoLethality` (default L1, for selective-fire weapons)
   - `ammoPerBurst` (default 3), `ammoPerFullAuto` (default 10)
   - `lastRollWasOne` (or similar) for jam tracking
-- **NPC**: `isHuman` (default true), `immuneToLethality` (default false). PCs
-  are never immune.
-- **PC**: `isHuman` too (shared with NPCs; on the sheet's options tab, as it
-  rarely changes).
+- **NPC and PC**: `isHuman` (default true), `immuneToLethality` (default
+  false). On a PC they're on the sheet's options tab, as they rarely change.
 - **Settings** (combat options page):
   - `useDamageApplication`
   - `useGunfireOnHumans`
