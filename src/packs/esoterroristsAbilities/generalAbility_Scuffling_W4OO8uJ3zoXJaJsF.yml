@@ -18,7 +18,7 @@ system:
   showTracker: false
   boost: false
   excludeFromGeneralRefresh: false
-  refreshesDaily: false
+  refreshesDaily: true
   unlocks: []
   situationalModifiers: []
   allowPoolToExceedRating: false

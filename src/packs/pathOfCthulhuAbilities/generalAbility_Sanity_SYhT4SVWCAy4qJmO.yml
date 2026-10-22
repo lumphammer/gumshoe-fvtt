@@ -6,18 +6,18 @@ system:
     format: richText
     source: ""
     html: ""
-  rating: 1
-  pool: 1
+  rating: 4
+  pool: 4
   hasSpecialities: false
   specialitiesMode: one
   specialities: []
-  min: -12
-  max: 15
+  min: 0
+  max: 99
   occupational: false
   categoryId: General
   showTracker: true
   boost: false
-  excludeFromGeneralRefresh: false
+  excludeFromGeneralRefresh: true
   refreshesDaily: false
   unlocks: []
   situationalModifiers: []

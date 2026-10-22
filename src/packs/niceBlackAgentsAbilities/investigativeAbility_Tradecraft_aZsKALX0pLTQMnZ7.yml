@@ -7,7 +7,7 @@ system:
     source: ""
     html: ""
   rating: 1
-  pool: 0
+  pool: 1
   hasSpecialities: false
   specialitiesMode: one
   specialities: []

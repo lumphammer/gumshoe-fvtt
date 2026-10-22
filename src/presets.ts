@@ -258,7 +258,7 @@ export const pallidStarsPreset: PresetV1 = {
       },
     },
     omvQkNoORdSNhVgI42hYi: {
-      name: "Virusware",
+      name: "Viroware",
       fields: {
         YdjIcb6lTZpa07DynCO1C: {
           name: "Upkeep",

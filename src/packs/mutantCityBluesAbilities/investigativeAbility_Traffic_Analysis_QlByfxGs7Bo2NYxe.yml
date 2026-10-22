@@ -1,5 +1,6 @@
-name: Data Retrival
+name: Traffic Analysis
 type: investigativeAbility
+_id: QlByfxGs7Bo2NYxe
 img: /systems/investigator/assets/icons/magnifying-glass.webp
 system:
   notes:
@@ -12,7 +13,7 @@ system:
   specialitiesMode: one
   specialities: []
   min: 0
-  max: 8
+  max: 1
   occupational: false
   categoryId: Technical
   showTracker: false
@@ -23,24 +24,22 @@ system:
   situationalModifiers: []
   allowPoolToExceedRating: false
   hideIfZeroRated: true
-  isQuickShock: false
+  isQuickShock: true
   category: Technical
   fields: {}
 effects: []
-flags: {}
-_stats:
-  systemId: investigator
-  systemVersion: 8.2.4
-  coreVersion: "12.331"
-  createdTime: 1687168327144
-  modifiedTime: 1738772886965
-  lastModifiedBy: fdD7YxceKPQmVCc5
-  compendiumSource: null
-  duplicateSource: null
 folder: null
 sort: 0
 ownership:
   default: 0
-  sd3DZQkzaLrrgkOz: 3
-_id: MGsTRBKKd1QJqbtZ
-_key: "!items!MGsTRBKKd1QJqbtZ"
+flags: {}
+_stats:
+  compendiumSource: null
+  duplicateSource: null
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.2.4
+  createdTime: 1792682611000
+  modifiedTime: 1792682611000
+  lastModifiedBy: fdD7YxceKPQmVCc5
+_key: "!items!QlByfxGs7Bo2NYxe"

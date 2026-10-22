@@ -15,7 +15,7 @@ system:
   min: 0
   max: 8
   occupational: false
-  categoryId: Interpersonal
+  categoryId: Academic
   showTracker: false
   boost: false
   excludeFromGeneralRefresh: false

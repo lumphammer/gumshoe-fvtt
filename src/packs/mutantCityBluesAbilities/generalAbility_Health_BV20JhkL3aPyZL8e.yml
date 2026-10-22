@@ -13,7 +13,7 @@ system:
   specialitiesMode: one
   specialities:
     - ""
-  min: -5
+  min: -12
   max: 15
   occupational: false
   categoryId: Physical
