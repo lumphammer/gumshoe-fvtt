@@ -3,6 +3,7 @@ import {
   createOwnedItem,
   expect,
   openSheet,
+  setSettings,
   test,
   visitEveryTab,
 } from "./foundry.ts";
@@ -157,6 +158,34 @@ test("deleting equipment from a PC's Equipment tab, after confirming", async ({
   await dialog.getByRole("button", { name: "Delete" }).click();
   await expect.poll(getEquipmentCount).toBe(0);
   await expect(sheet).not.toContainText("Brass Lantern");
+});
+
+test("a PC can be marked as not human, or immune to Lethality, on the options tab", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    useDamageApplication: true,
+    useGunfireOnHumans: true,
+    useLethalityAndAutofire: true,
+  });
+  const id = await createActor(page, { name: "Ghoulish", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${id}`);
+  await sheet.locator(".tab-strip > label").last().click();
+  const getFlags = () =>
+    page.evaluate((id) => {
+      const { isHuman, immuneToLethality } = game.actors.get(id)!.system;
+      return { isHuman, immuneToLethality };
+    }, id);
+  expect(await getFlags()).toEqual({ isHuman: true, immuneToLethality: false });
+
+  await sheet.getByRole("switch", { name: "Human?" }).click();
+  await expect
+    .poll(getFlags)
+    .toEqual({ isHuman: false, immuneToLethality: false });
+  await sheet.getByRole("switch", { name: "Immune to Lethality?" }).click();
+  await expect
+    .poll(getFlags)
+    .toEqual({ isHuman: false, immuneToLethality: true });
 });
 
 const itemTypes = [

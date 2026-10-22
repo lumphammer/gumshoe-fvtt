@@ -1,7 +1,7 @@
 import * as c from "../../constants";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
-import { BooleanField, NumberField, StringField } from "../../fvtt-exports";
+import { NumberField, StringField } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { createActiveCharacterSchema } from "../schemaFields";
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
@@ -12,12 +12,6 @@ export const npcSchema = {
   combatBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
   damageBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
   gmNotes: new StringField({ nullable: false, required: true }),
-  isHuman: new BooleanField({ nullable: false, required: true, initial: true }),
-  immuneToLethality: new BooleanField({
-    nullable: false,
-    required: true,
-    initial: false,
-  }),
   notes: new StringField({ nullable: false, required: true }),
   sheetTheme: new StringField({
     nullable: true,
@@ -54,14 +48,6 @@ export class NPCModel extends ActiveCharacterModel<typeof npcSchema, NPCActor> {
 
   setDamageBonus = async (damageBonus: number) => {
     await this.parent.update({ system: { damageBonus } });
-  };
-
-  setIsHuman = async (isHuman: boolean) => {
-    await this.parent.update({ system: { isHuman } });
-  };
-
-  setImmuneToLethality = async (immuneToLethality: boolean) => {
-    await this.parent.update({ system: { immuneToLethality } });
   };
 }
 

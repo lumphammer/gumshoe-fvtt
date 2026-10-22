@@ -13,10 +13,15 @@ import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
+import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 
 const defaultThemeIdentifier = "PQkMK35MWjRI2";
 const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
+const settingsShowIsHuman = () =>
+  settings.useDamageApplication.get() && settings.useGunfireOnHumans.get();
+const settingsShowImmuneToLethality = () =>
+  settings.useDamageApplication.get() && settings.useLethalityAndAutofire.get();
 
 export const SettingArea = () => {
   const { actor } = useActorSheetContext();
@@ -59,6 +64,26 @@ export const SettingArea = () => {
             <AsyncNumberInput
               value={actor.system.initiativePassingTurns}
               onChange={actor.system.setPassingTurns}
+            />
+          </GridField>
+        )}
+
+        {settingsShowIsHuman() && (
+          <GridField label="Human?">
+            <Toggle
+              label={getTranslated("Human?")}
+              checked={actor.system.isHuman}
+              onChange={actor.system.setIsHuman}
+            />
+          </GridField>
+        )}
+
+        {settingsShowImmuneToLethality() && (
+          <GridField label="Immune to Lethality?">
+            <Toggle
+              label={getTranslated("Immune to Lethality?")}
+              checked={actor.system.immuneToLethality}
+              onChange={actor.system.setImmuneToLethality}
             />
           </GridField>
         )}

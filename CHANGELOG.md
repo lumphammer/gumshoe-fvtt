@@ -2,6 +2,11 @@
 
 (Skipped version numbers are testing releases.)
 
+## Unreleased
+
+- **Attack targetting and damage application (#1421)** You can now use Foundry's token-targetting system to direct attacks to a specific token. The attack roll will work out whether it's a hit or miss, and you can then apply the damage to the targetted combattant.
+-
+
 ## 10.123 (2026-08-27)
 
 - BUGFIX: Chat messages for ability pushes were broken under certain circumstances. This is now fixed. Unfortunately, messsages created with previous versions can't be rescued, but they will at least show a decent placeholder instead of nothing at all (#1380, thanks @Xyxorswords).
