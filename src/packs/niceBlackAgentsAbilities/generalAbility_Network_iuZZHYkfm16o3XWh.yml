@@ -6,8 +6,8 @@ system:
     format: richText
     source: ""
     html: ""
-  rating: 0
-  pool: 0
+  rating: 15
+  pool: 15
   hasSpecialities: false
   specialitiesMode: one
   specialities: []

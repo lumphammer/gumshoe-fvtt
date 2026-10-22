@@ -8,7 +8,7 @@ system:
     html: ""
   rating: 0
   pool: 0
-  hasSpecialities: false
+  hasSpecialities: true
   specialitiesMode: one
   specialities: []
   min: 0

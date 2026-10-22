@@ -1,0 +1,55 @@
+type: generalAbility
+name: Aberrance
+img: /systems/investigator/assets/icons/fist.webp
+system:
+  notes:
+    format: richText
+    source: ""
+    html: ""
+  rating: 0
+  pool: 0
+  hasSpecialities: false
+  specialitiesMode: one
+  specialities: []
+  min: 0
+  max: 99
+  occupational: false
+  categoryId: General
+  showTracker: false
+  boost: false
+  excludeFromGeneralRefresh: false
+  refreshesDaily: false
+  unlocks: []
+  situationalModifiers: []
+  allowPoolToExceedRating: false
+  canBeInvestigative: false
+  goesFirstInCombat: false
+  hideIfZeroRated: true
+  mwTrumps: ""
+  mwTrumpedBy: ""
+  mwRefreshGroup: 2
+  combatBonus: 0
+  damageBonus: 0
+  isPushPool: false
+  linkToResource: false
+  resourceId: ""
+  type: generalAbility
+  img: /systems/investigator/assets/icons/fist.webp
+effects: []
+folder: null
+ownership:
+  default: 0
+  fdD7YxceKPQmVCc5: 3
+flags: {}
+_stats:
+  compendiumSource: null
+  duplicateSource: null
+  coreVersion: "12.331"
+  systemId: investigator
+  systemVersion: 8.2.4
+  createdTime: 1792684822834
+  modifiedTime: 1792684822834
+  lastModifiedBy: fdD7YxceKPQmVCc5
+_id: Nn602P5Z4DkLKV7S
+sort: 0
+_key: "!items!Nn602P5Z4DkLKV7S"

@@ -6,13 +6,13 @@ system:
     format: richText
     source: ""
     html: ""
-  rating: 0
-  pool: 0
+  rating: 1
+  pool: 1
   hasSpecialities: false
   specialitiesMode: one
   specialities: []
   min: -12
-  max: 15
+  max: 99
   occupational: false
   categoryId: General
   showTracker: true

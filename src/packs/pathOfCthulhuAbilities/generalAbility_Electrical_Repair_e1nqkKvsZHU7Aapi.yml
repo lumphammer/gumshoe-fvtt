@@ -22,7 +22,7 @@ system:
   unlocks: []
   situationalModifiers: []
   allowPoolToExceedRating: false
-  canBeInvestigative: false
+  canBeInvestigative: true
   goesFirstInCombat: false
   hideIfZeroRated: false
   mwTrumps: ""

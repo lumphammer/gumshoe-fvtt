@@ -47,8 +47,10 @@ export const networkContactIcon = "icons/svg/mystery-man.svg";
 export const packNames = {
   niceBlackAgentsAbilities: "niceBlackAgentsAbilities",
   nothingToFearAbilities: "nothingToFearAbilities",
+  nothingToFearNPCAbilities: "nothingToFearNPCAbilities",
   pallidStarsAbilities: "pallidStarsAbilities",
   pathOfCthulhuAbilities: "pathOfCthulhuAbilities",
+  pathOfCthulhuNPCAbilities: "pathOfCthulhuNPCAbilities",
   srdAbilities: "srdAbilities",
   castingTheRunesAbilities: "castingTheRunesAbilities",
   moribundWorldAbilities: "moribundWorldAbilities",

@@ -103,6 +103,21 @@ existing world, whatever its preset. So:
   Stability settings, not the whole preset, which would overwrite the GM's
   other changes.
 
+## Other presets
+
+Night's Black Agents and The Esoterrorists use the same bands, and what the
+states do matches: Shaken bars Investigative spends (Esoterrorists allows one
+after a Stability test, which "ask first" covers) and adds 1 to General
+Difficulties, and Shattered costs a rating point. Their last state is
+"Incurably Insane". Fear Itself's bands are the same, but its effects are
+chosen from tables (Shaken is one of four ways of Losing It, and Shattered
+costs no rating point), so its preset leaves states off. All three have one
+trauma type at Difficulty 4, without adaptation, and no Sanity or Bonds.
+
+The state reminders on trauma cards say only what the system enforces, so
+they suit every game; each book's mental illness rules are left to the
+table.
+
 ## Labels
 
 Wherever "Stability" or "Sanity" appears in a label on these settings pages,

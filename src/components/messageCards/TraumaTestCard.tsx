@@ -4,6 +4,7 @@ import { isAdapted } from "../../module/bonds/adaptation";
 import { getStabilityStateName } from "../../module/stability/settings";
 import type { StabilityState } from "../../module/stability/states";
 import type { TraumaTestRecord } from "../../module/stability/trauma";
+import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
@@ -132,7 +133,11 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
               {getStabilityStateName(stateAfter)}
               {"! "}
             </b>
-            <Translate>{reminders[stateAfter]}</Translate>
+            <Translate
+              values={{ GenericOccupation: settings.genericOccupation.get() }}
+            >
+              {reminders[stateAfter]}
+            </Translate>
           </div>
         )}
         {record.stabilityRating && (

@@ -13,7 +13,7 @@ system:
   specialities:
     - ""
   min: 0
-  max: 8
+  max: 99
   occupational: false
   categoryId: General
   showTracker: false

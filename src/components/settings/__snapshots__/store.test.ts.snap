@@ -130,15 +130,24 @@ exports[`reducer > should apply a preset 1`] = `
       "migrationFlags": Object {
         "actor": Object {},
         "item": Object {},
-@@ -70,17 +72,40 @@
+@@ -63,24 +65,47 @@
+      "migrationAttempts": 0,
+      "migrationLastError": "",
+      "useTurnPassingInitiative": false,
+-     "useDamageApplication": false,
++     "useDamageApplication": true,
+      "useGunfireOnHumans": false,
+      "useCriticalHits": false,
+      "useLethalityAndAutofire": false,
       "useShotDryAndJams": false,
       "useWalkingFire": false,
-      "useWoundStatusEffects": false,
+-     "useWoundStatusEffects": false,
 -     "walkingFireSpendAbilities": Array [],
 -     "fullAutoSpendAbilities": Array [],
 -     "genericOccupation": "",
 -     "investigativeAbilityCategories": Array [],
 -     "longNotes": Array [],
++     "useWoundStatusEffects": true,
 +     "walkingFireSpendAbilities": Array [
 +       "Athletics",
 +     ],
@@ -165,7 +174,7 @@ exports[`reducer > should apply a preset 1`] = `
 -     "occupationLabel": "",
 -     "personalDetails": Array [],
 +     "newNPCPacks": Array [
-+       "investigator.opponentAbilities",
++       "investigator.pathOfCthulhuNPCAbilities",
 +     ],
 +     "newPCPacks": Array [
 +       "investigator.pathOfCthulhuAbilities",
