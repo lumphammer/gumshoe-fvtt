@@ -119,6 +119,7 @@ export const defaultSettings: Required<PresetV1> = {
 export const pathOfCthulhuPreset: Required<PresetV1> = {
   ...defaultSettings,
   displayName: "Trail of Cthulhu (built-in)",
+  newNPCPacks: [`${systemId}.${packNames.pathOfCthulhuNPCAbilities}`],
   useStabilityRules: true,
   useSanityRules: true,
   sanityCapAbility: "Cthulhu Mythos",
@@ -197,7 +198,7 @@ export const nothingToFearPreset: PresetV1 = {
   personalDetails: [],
   longNotes: ["Risk Factors", "Sources of Stability", "Notes"],
   newPCPacks: [`${systemId}.${packNames.nothingToFearAbilities}`],
-  newNPCPacks: [`${systemId}.${npcPackName}`],
+  newNPCPacks: [`${systemId}.${packNames.nothingToFearNPCAbilities}`],
   useBoost: false,
   useMwStyleAbilities: false,
   mwUseAlternativeItemTypes: false,

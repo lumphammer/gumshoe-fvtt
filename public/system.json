@@ -39,7 +39,9 @@
           "sorting": "a",
           "packs": [
             "opponentAbilities",
+            "pathOfCthulhuNPCAbilities",
             "niceBlackAgentsNPCAbilities",
+            "nothingToFearNPCAbilities",
             "fallOfDeltaGreenOpponentAbilities"
           ]
         },
@@ -137,6 +139,20 @@
       "label": "Dying Earth Abilities",
       "system": "investigator",
       "path": "./packs/moribundWorldAbilities",
+      "type": "Item"
+    },
+    {
+      "name": "pathOfCthulhuNPCAbilities",
+      "label": "Trail of Cthulhu NPC Abilities",
+      "system": "investigator",
+      "path": "./packs/pathOfCthulhuNPCAbilities",
+      "type": "Item"
+    },
+    {
+      "name": "nothingToFearNPCAbilities",
+      "label": "Fear Itself NPC Abilities",
+      "system": "investigator",
+      "path": "./packs/nothingToFearNPCAbilities",
       "type": "Item"
     },
     {

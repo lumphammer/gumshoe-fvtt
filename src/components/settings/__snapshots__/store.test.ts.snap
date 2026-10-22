@@ -165,7 +165,7 @@ exports[`reducer > should apply a preset 1`] = `
 -     "occupationLabel": "",
 -     "personalDetails": Array [],
 +     "newNPCPacks": Array [
-+       "investigator.opponentAbilities",
++       "investigator.pathOfCthulhuNPCAbilities",
 +     ],
 +     "newPCPacks": Array [
 +       "investigator.pathOfCthulhuAbilities",

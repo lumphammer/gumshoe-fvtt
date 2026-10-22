@@ -34,7 +34,7 @@ system:
   isPushPool: false
   linkToResource: false
   resourceId: ""
-  category: Physical Powers
+  category: Presence Powers
   fields: {}
 effects: []
 folder: null
