@@ -96,6 +96,7 @@ export const attackDataSchema = {
     nullable: false,
     required: true,
     integer: true,
+    min: 1,
     initial: defaultBurstSize,
   }),
   /** an unmodified 6 on full-auto, with the Shot Dry rule on */

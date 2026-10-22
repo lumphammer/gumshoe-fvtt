@@ -186,7 +186,8 @@ export const WeaponConfig = () => {
           {showFireModes && fireModes === "selective" && (
             <GridField label="Ammo per burst">
               <AsyncNumberInput
-                min={0}
+                min={1}
+                integer
                 value={item.system.ammoPerBurst}
                 onChange={item.system.setAmmoPerBurst}
               />

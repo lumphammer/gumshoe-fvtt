@@ -226,6 +226,26 @@ test("a burst can only walk as many bullets as the weapon fires", async ({
   expect(await getWeapon(page, pcId, weaponId)).toMatchObject({ ammo: 29 });
 });
 
+test("a weapon's burst is a whole number of bullets, at least one", async ({
+  page,
+}) => {
+  // as older weapons could have
+  const sizes = await page.evaluate(async () => {
+    const items = await Item.createDocuments(
+      [1.5, 0].map((ammoPerBurst) => ({
+        name: `Burst of ${ammoPerBurst}`,
+        type: "weapon",
+        system: { ammoPerBurst },
+      })),
+    );
+    return items.map(
+      (item) =>
+        (item.system as unknown as { ammoPerBurst: number }).ammoPerBurst,
+    );
+  });
+  expect(sizes).toEqual([2, 1]);
+});
+
 test("a critical hit adds two damage rolls together", async ({ page }) => {
   await setSettings(page, { useCriticalHits: true });
   const {

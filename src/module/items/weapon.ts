@@ -14,6 +14,13 @@ import { weaponFireModesValues } from "../attacks/rules";
 import { createLethalityFields } from "../schemaFields";
 import { InvestigatorItem } from "./InvestigatorItem";
 
+/** A burst is a whole number of bullets, and at least one */
+function toBurstSize(ammoPerBurst: unknown) {
+  return typeof ammoPerBurst === "number" && Number.isFinite(ammoPerBurst)
+    ? Math.max(1, Math.round(ammoPerBurst))
+    : ammoPerBurst;
+}
+
 export const weaponSchema = {
   ability: new StringField({
     nullable: false,
@@ -32,9 +39,12 @@ export const weaponSchema = {
     },
   ),
   ammoPerShot: new NumberField({ nullable: false, required: true, initial: 1 }),
+  /** also the burst's size: the bullets it can share out between targets */
   ammoPerBurst: new NumberField({
     nullable: false,
     required: true,
+    integer: true,
+    min: 1,
     initial: 3,
   }),
   ammoPerFullAuto: new NumberField({
@@ -120,6 +130,8 @@ export class WeaponModel extends TypeDataModel<
 
   static migrateData(source) {
     migrateValue(source, "notes", maybeNotesObjectToString);
+    // bursts used to allow fractions and zero
+    migrateValue(source, "ammoPerBurst", toBurstSize);
     return super.migrateData(source);
   }
 
