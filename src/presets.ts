@@ -65,7 +65,9 @@ export const defaultSettings: Required<PresetV1> = {
   },
   useNpcCombatBonuses: false,
   useTurnPassingInitiative: false,
-  useDamageApplication: false,
+  // on everywhere: it only adds targets to attack cards, and nothing is
+  // applied until someone asks
+  useDamageApplication: true,
   useGunfireOnHumans: false,
   useCriticalHits: false,
   useLethalityAndAutofire: false,
@@ -120,7 +122,6 @@ export const pathOfCthulhuPreset: Required<PresetV1> = {
   ...defaultSettings,
   displayName: "Trail of Cthulhu (built-in)",
   newNPCPacks: [`${systemId}.${packNames.pathOfCthulhuNPCAbilities}`],
-  useDamageApplication: true,
   useWoundStatusEffects: true,
   useStabilityRules: true,
   useSanityRules: true,
@@ -205,7 +206,6 @@ export const niceBlackAgentsPreset: PresetV1 = {
   pcStats: pathOfCthulhuPreset.pcStats,
   npcStats: pathOfCthulhuPreset.npcStats,
   equipmentCategories: { general: { name: "General", fields: {} } },
-  useDamageApplication: true,
   useWoundStatusEffects: true,
   useCriticalHits: true,
   useStabilityRules: true,
@@ -241,7 +241,6 @@ export const nothingToFearPreset: PresetV1 = {
   pcStats: pathOfCthulhuPreset.pcStats,
   npcStats: pathOfCthulhuPreset.npcStats,
   equipmentCategories: { general: { name: "General", fields: {} } },
-  useDamageApplication: true,
   useWoundStatusEffects: true,
   useStabilityRules: true,
   useTrauma: true,
@@ -309,7 +308,6 @@ export const pallidStarsPreset: PresetV1 = {
       },
     },
   },
-  useDamageApplication: true,
   useWoundStatusEffects: true,
 };
 
@@ -405,7 +403,6 @@ export const esoterroristsPreset: PresetV1 = {
   pcStats: pathOfCthulhuPreset.pcStats,
   npcStats: pathOfCthulhuPreset.npcStats,
   equipmentCategories: { general: { name: "General", fields: {} } },
-  useDamageApplication: true,
   useWoundStatusEffects: true,
   useStabilityRules: true,
   useStabilityStates: true,
@@ -478,7 +475,6 @@ export const mutantCityBluesPreset: PresetV1 = {
       thresholdType: "none",
     },
   ],
-  useDamageApplication: true,
   useWoundStatusEffects: true,
 };
 
