@@ -3,6 +3,7 @@ import {
   createOwnedItem,
   expect,
   openSheet,
+  setSettings,
   test,
   visitEveryTab,
 } from "./foundry.ts";
@@ -157,6 +158,22 @@ test("deleting equipment from a PC's Equipment tab, after confirming", async ({
   await dialog.getByRole("button", { name: "Delete" }).click();
   await expect.poll(getEquipmentCount).toBe(0);
   await expect(sheet).not.toContainText("Brass Lantern");
+});
+
+test("a PC can be marked as not human on the options tab", async ({ page }) => {
+  await setSettings(page, {
+    useDamageApplication: true,
+    useGunfireOnHumans: true,
+  });
+  const id = await createActor(page, { name: "Ghoulish", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${id}`);
+  await sheet.locator(".tab-strip > label").last().click();
+  const isHuman = () =>
+    page.evaluate((id) => game.actors.get(id)!.system.isHuman, id);
+  expect(await isHuman()).toBe(true);
+
+  await sheet.getByRole("switch").click();
+  await expect.poll(isHuman).toBe(false);
 });
 
 const itemTypes = [

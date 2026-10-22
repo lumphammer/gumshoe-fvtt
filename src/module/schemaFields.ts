@@ -2,6 +2,7 @@ import type { AnyObject } from "fvtt-types/utils";
 
 import type { DataField } from "../fvtt-exports";
 import {
+  BooleanField,
   NumberField,
   ObjectField,
   SchemaField,
@@ -112,6 +113,12 @@ export const createActiveCharacterSchema = () => {
       required: true,
       initial: 1,
       min: 0,
+    }),
+    /** For gunfire on humans (PCs who have become ghouls etc. aren’t) */
+    isHuman: new BooleanField({
+      nullable: false,
+      required: true,
+      initial: true,
     }),
     mwInjuryStatus: new StringField({
       nullable: false,

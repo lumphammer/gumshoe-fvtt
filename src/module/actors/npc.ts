@@ -12,7 +12,6 @@ export const npcSchema = {
   combatBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
   damageBonus: new NumberField({ nullable: false, required: true, initial: 0 }),
   gmNotes: new StringField({ nullable: false, required: true }),
-  isHuman: new BooleanField({ nullable: false, required: true, initial: true }),
   immuneToLethality: new BooleanField({
     nullable: false,
     required: true,
@@ -54,10 +53,6 @@ export class NPCModel extends ActiveCharacterModel<typeof npcSchema, NPCActor> {
 
   setDamageBonus = async (damageBonus: number) => {
     await this.parent.update({ system: { damageBonus } });
-  };
-
-  setIsHuman = async (isHuman: boolean) => {
-    await this.parent.update({ system: { isHuman } });
   };
 
   setImmuneToLethality = async (immuneToLethality: boolean) => {

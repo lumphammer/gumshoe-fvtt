@@ -13,10 +13,13 @@ import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
+import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 
 const defaultThemeIdentifier = "PQkMK35MWjRI2";
 const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
+const settingsShowIsHuman = () =>
+  settings.useDamageApplication.get() && settings.useGunfireOnHumans.get();
 
 export const SettingArea = () => {
   const { actor } = useActorSheetContext();
@@ -59,6 +62,15 @@ export const SettingArea = () => {
             <AsyncNumberInput
               value={actor.system.initiativePassingTurns}
               onChange={actor.system.setPassingTurns}
+            />
+          </GridField>
+        )}
+
+        {settingsShowIsHuman() && (
+          <GridField label="Human?">
+            <Toggle
+              checked={actor.system.isHuman}
+              onChange={actor.system.setIsHuman}
             />
           </GridField>
         )}

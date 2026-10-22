@@ -1,5 +1,4 @@
 import { isNPCActor } from "../actors/npc";
-import { isPCActor } from "../actors/pc";
 import { isActiveCharacterActor } from "../actors/types";
 import type { GeneralAbilityItem } from "../items/generalAbility";
 import { isGeneralAbilityItem } from "../items/generalAbility";
@@ -74,9 +73,7 @@ export function isImmuneToLethality(actor: Actor): boolean {
   return isNPCActor(actor) && actor.system.immuneToLethality;
 }
 
-/** PCs are always human. NPCs have a flag (ghouls, dogs, etc. aren't). */
+/** PCs and NPCs have a flag (ghouls, dogs, etc. aren't human) */
 export function isHumanActor(actor: Actor): boolean {
-  if (isPCActor(actor)) return true;
-  if (isNPCActor(actor)) return actor.system.isHuman;
-  return false;
+  return isActiveCharacterActor(actor) && actor.system.isHuman;
 }

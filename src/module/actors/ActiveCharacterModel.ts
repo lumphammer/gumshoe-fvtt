@@ -71,6 +71,10 @@ export class ActiveCharacterModel<
     return this.getWeapons().find((weapon) => weapon.id === id);
   }
 
+  setIsHuman = async (isHuman: boolean): Promise<void> => {
+    await this.parent.update({ system: { isHuman } });
+  };
+
   /** Make a weapon the ready one, or `null` for none */
   setReadyWeapon = async (weapon: WeaponItem | null): Promise<void> => {
     await this.parent.update({
