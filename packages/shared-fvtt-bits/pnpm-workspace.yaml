@@ -5,3 +5,33 @@ allowBuilds:
   '@swc/core': true
   classic-level: true
   esbuild: true
+
+# Used when this repo is built standalone. Inside the investigator-fvtt
+# monorepo, pnpm ignores this file and uses the root catalog instead, so keep
+# these in step with it.
+catalog:
+  '@swc/plugin-emotion': 10.0.3
+  '@types/react': ^19.3.0
+  '@vitejs/plugin-react-swc': 3.11.0
+  fvtt-types: 14.366.0-beta.20261009164208
+  happy-dom: ^21.0.3
+  react: ^19.3.1
+  react-dom: ^19.3.1
+  tsx: ^4.23.15
+  typescript: 7.0.2
+  vite: 8.3.4
+  vitest: ^3.2.4
+
+# Force one copy of each (e.g. vitest 3 would otherwise bring its own vite).
+overrides:
+  '@swc/plugin-emotion': 'catalog:'
+  '@types/react': 'catalog:'
+  '@vitejs/plugin-react-swc': 'catalog:'
+  fvtt-types: 'catalog:'
+  happy-dom: 'catalog:'
+  react: 'catalog:'
+  react-dom: 'catalog:'
+  tsx: 'catalog:'
+  typescript: 'catalog:'
+  vite: 'catalog:'
+  vitest: 'catalog:'
