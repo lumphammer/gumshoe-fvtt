@@ -24,10 +24,6 @@ const starburstGradientOffset = createStarburstGradient(
 export const deltaGroovyTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Delta Groovy",
-  global: `
-    ${averiaLibre.importStatement}
-    @import url('https://fonts.googleapis.com/css2?family=Spicy+Rice&display=swap');
-  `,
   smallSheetRootStyle: {
     ":before": {
       backgroundImage: starburstGradientOffset,

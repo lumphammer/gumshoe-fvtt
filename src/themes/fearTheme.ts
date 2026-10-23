@@ -6,10 +6,6 @@ import type { ThemeV1 } from "./types";
 export const fearTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Nothing To Fear",
-  global: `
-    ${averiaLibre.importStatement}
-    @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
-  `,
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/annie-spratt-xvU-X0GV9-o-unsplash.webp)`,
   },

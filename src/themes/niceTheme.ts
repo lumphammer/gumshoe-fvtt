@@ -6,11 +6,6 @@ import type { ThemeV1 } from "./types";
 export const niceTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Nice Light Agents",
-  global: `
-    @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Text:wght@100;200;300;400;500;600;700;800;900&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@100;200;300;400;500;600;700;800;900&family=Big+Shoulders+Text:wght@100;200;300;400;500;600;700;800;900&display=swap');
-    ${averiaLibre.importStatement}
-  `,
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/marjanblan-5Ft4NWTmeJE-unsplash.webp)`,
   },

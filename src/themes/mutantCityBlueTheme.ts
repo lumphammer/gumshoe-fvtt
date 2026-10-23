@@ -29,10 +29,6 @@ const accentTrans = `${colors.accent}77`;
 export const mutantCityBlueTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Mutant City Blue",
-  global: `
-    @import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
-    ${averiaLibre.importStatement}
-  `,
   largeSheetRootStyle: {
     fontSize: "1.1em",
     backgroundImage: `

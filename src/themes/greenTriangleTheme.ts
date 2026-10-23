@@ -6,10 +6,6 @@ import type { ThemeV1 } from "./types";
 export const greenTriangleTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Green triangle",
-  global: `
-    ${averiaLibre.importStatement}
-    @import url('https://fonts.googleapis.com/css2?family=Protest+Guerrilla&display=swap');
-  `,
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/annie-spratt-xTaOPMa6wAE-unsplash.webp)`,
   },

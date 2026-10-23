@@ -194,6 +194,12 @@ Document data is defined with Foundry's `TypeDataModel`s, one per subtype (e.g. 
 
 A setting which has never been in a release can be renamed or removed without a migration.
 
+## Theme fonts
+
+The themes' fonts are self-hosted (not loaded from Google Fonts, which would send every user's IP address to Google). They come from [Fontsource](https://fontsource.org/) packages: [`src/vitePluginFontsource.ts`](src/vitePluginFontsource.ts) writes `fonts/fontsource.css` (listed in `system.json`) and the Latin `woff2` files it needs. Browsers only download a font file when a page uses it.
+
+To add a font, `pnpm add @fontsource/<name>` (or `@fontsource-variable/<name>`, if it's a variable font and you want several weights), and add it to `fontsourceFamilies` in that file. Don't `import` Fontsource's CSS from the code: Vite's library mode would inline every font into the bundle as base64.
+
 ## Using the "Developer mode" module
 
 There's a Foundry VTT module called [🧙 Developer Mode](https://foundryvtt.com/packages/_dev-mode). It may no longer be maintained, but the system still supports it. You can also use it to activate specific developer features for systems. To do this, click on the little wizard dude in the top left of the screen, go to "Package specific debugging", and "Enable Debug Mode" for "INVESTIGATOR System".

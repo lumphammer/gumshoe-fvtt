@@ -201,6 +201,51 @@ importers:
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@10.2.2)
+      '@fontsource-variable/big-shoulders-display':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/big-shoulders-text':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/cormorant':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/roboto-flex':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/averia-libre':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/averia-serif-libre':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/cormorant-unicase':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/federo':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/fira-sans-condensed':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/im-fell-english':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/nova-square':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/protest-guerrilla':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/russo-one':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/special-elite':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/spicy-rice':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@lumphammer/investigator-fvtt-types':
         specifier: workspace:^
         version: link:packages/investigator-fvtt-types
@@ -966,6 +1011,51 @@ packages:
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
+
+  '@fontsource-variable/big-shoulders-display@5.3.0':
+    resolution: {integrity: sha512-7k1REXMZFEa7gSWOURbmCJW5Gv9D0EbEFQgosZidM8Ob/qpPlK96vqyIzCTnNZ/C0XFZWxeKU53D3QdeHctYCA==}
+
+  '@fontsource-variable/big-shoulders-text@5.3.0':
+    resolution: {integrity: sha512-7L4K9uS3YG0DRGPmLYA6Ubeu5EIg0BQswAVYwf9t0PgywUFeAFXhCBoomLP0eMMdCde3g3ZOwJc4FLpsWaOcCw==}
+
+  '@fontsource-variable/cormorant@5.3.0':
+    resolution: {integrity: sha512-S3/jFZ2+Erx8ML5+lo71rYKqVpJF13CZ3yWX7xfjQk1wFcPhT9Gp+l2tnNSLOx5Mzjn3mQmVPutpvx91O2VqpQ==}
+
+  '@fontsource-variable/roboto-flex@5.3.0':
+    resolution: {integrity: sha512-bOxckUy0qXNRjhV6e4pcHGSvptix4ZRD1uaj5Za8h+p3qrb2GL4U4TQdpVmPSy0SmqwldfD+JJqEKdF68EyiAw==}
+
+  '@fontsource/averia-libre@5.3.0':
+    resolution: {integrity: sha512-A5CjNXcnkNYAkGICcQ8hgjhMudbaZvvPTE2V6plX3Kkwpc0lx7Ye1JaQX+ue1BVQlFfR5kITBQwAyOJ+k8YaaA==}
+
+  '@fontsource/averia-serif-libre@5.3.0':
+    resolution: {integrity: sha512-rjZmEKNuUrh1AmjCiikhMwCBO0Ce5is9Y1BhSuo6PY5S9bymdI84TRMO96pUDgBIPpClLivFDp7pUBDWGckEpA==}
+
+  '@fontsource/cormorant-unicase@5.3.0':
+    resolution: {integrity: sha512-x9aUMox6cSI3aWckMDlinaBWdRhVteKTLakTAkzdRHlpAIVMspUgRaV1qkCR4ZcWlovyc7KUq7zqUb/F72/8lQ==}
+
+  '@fontsource/federo@5.3.0':
+    resolution: {integrity: sha512-w0zBtyzMYyqDP2lGwgFDqj0uaxs/angWugn3UOaR4DmQqiokOmxMDlLO3xJLEv22/gBjR6dlxOLqwxsN1Nn8iA==}
+
+  '@fontsource/fira-sans-condensed@5.3.0':
+    resolution: {integrity: sha512-aYiPJnAwfvhHW1Yra+YPGdFvhvJhQax1wHb6aa6979ixPe51CspvxgZTJ8JNfIs3Gu7UcclUl6d2MuDnw1wsdg==}
+
+  '@fontsource/im-fell-english@5.3.0':
+    resolution: {integrity: sha512-FcgdWfY9WeUM2gQkfmwhn4Ed9LVtlll8LSSZvHfbsUrnHK5tHHnGg6BgwAfHogp52adU3eE89J/3B52qV3b+Vw==}
+
+  '@fontsource/nova-square@5.3.0':
+    resolution: {integrity: sha512-+IL9rCBQNb/Ei12mctNsQcO56fNxLHVuy5paLvJJMJLzg7jZLCYe8SGFLLh2R2m1JH7JDk+8wGs8LArYVdd+Aw==}
+
+  '@fontsource/protest-guerrilla@5.3.0':
+    resolution: {integrity: sha512-Lgcirvo3mR/jGQRzdNbpuaybbd+xSmcQBSbHSMcK1/OHb2XbEjaHA7nG8gaUvxFQeFpTCUJ2OfOfgeT8bylh6Q==}
+
+  '@fontsource/russo-one@5.3.0':
+    resolution: {integrity: sha512-loHnqTq6D+H2WQdOB2pnAeCHbbsGqobmxnxU79MNFKjPWV2TPXdc78dbbkOAcWuKWDEY+FNXZFZ1nhaQvCWNAw==}
+
+  '@fontsource/special-elite@5.3.0':
+    resolution: {integrity: sha512-fOQ9XU8m4KnqzcLibAXCxTsKzbxePNDjPqVss5GSMcPVCY1TuCv+Wq8gm1ebqIR6XS1rhMbQ7ECP9ocKVEEpTA==}
+
+  '@fontsource/spicy-rice@5.3.0':
+    resolution: {integrity: sha512-pmezo7oZAJZdOHfg98GiOeeGsDC6QP5y0GQD/PtK9oGcq9jshQKYwxVLV1iv3I4sjIw4hw/JeOnQieeZh4Vq2w==}
 
   '@foundryvtt/foundryvtt-cli@3.0.5':
     resolution: {integrity: sha512-ZPu+z9aHtzAO1aTkZjwo7xwe8KcVw1+Gzn3AvF/jYP73MEii2o8AiLe4RvGyMkAvVXWSAMuYHiFpm6pbpgmTgw==}
@@ -5666,6 +5756,36 @@ snapshots:
       react-dom: 19.3.1(react@19.3.1)
 
   '@floating-ui/utils@0.2.10': {}
+
+  '@fontsource-variable/big-shoulders-display@5.3.0': {}
+
+  '@fontsource-variable/big-shoulders-text@5.3.0': {}
+
+  '@fontsource-variable/cormorant@5.3.0': {}
+
+  '@fontsource-variable/roboto-flex@5.3.0': {}
+
+  '@fontsource/averia-libre@5.3.0': {}
+
+  '@fontsource/averia-serif-libre@5.3.0': {}
+
+  '@fontsource/cormorant-unicase@5.3.0': {}
+
+  '@fontsource/federo@5.3.0': {}
+
+  '@fontsource/fira-sans-condensed@5.3.0': {}
+
+  '@fontsource/im-fell-english@5.3.0': {}
+
+  '@fontsource/nova-square@5.3.0': {}
+
+  '@fontsource/protest-guerrilla@5.3.0': {}
+
+  '@fontsource/russo-one@5.3.0': {}
+
+  '@fontsource/special-elite@5.3.0': {}
+
+  '@fontsource/spicy-rice@5.3.0': {}
 
   '@foundryvtt/foundryvtt-cli@3.0.5':
     dependencies:

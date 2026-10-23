@@ -6,10 +6,6 @@ import type { ThemeV1 } from "./types";
 export const tealTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Teal of Cthulhu",
-  global: `
-    @import url("https://fonts.googleapis.com/css2?family=Federo&display=swap");
-    ${averiaLibre.importStatement}
-  `,
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/marjanblan-5Ft4NWTmeJE-unsplash.webp)`,
   },

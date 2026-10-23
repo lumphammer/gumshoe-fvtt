@@ -13,10 +13,6 @@ const wallpaper = brick;
 export const unsafeRealityTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Unsafe Reality",
-  global: `
-    @import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
-    ${averiaLibre.importStatement}
-  `,
   largeSheetRootStyle: {
     backgroundImage: `
     linear-gradient(
