@@ -2,6 +2,7 @@ import {
   createActor,
   expect,
   openSheet,
+  reloadGame,
   setSettings,
   test,
 } from "./foundry.ts";
@@ -15,6 +16,8 @@ test("theme fonts load from the system, not Google Fonts", async ({ page }) => {
   });
   await setSettings(page, { defaultThemeName: "fearTheme" });
   const actorId = await createActor(page, { name: "Font Tester", type: "pc" });
+  // reload, so we also see any font requests made while the game starts
+  await reloadGame(page);
 
   await openSheet(page, `Actor.${actorId}`);
 
