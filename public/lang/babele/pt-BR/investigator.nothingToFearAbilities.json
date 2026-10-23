@@ -1,8 +1,5 @@
 {
     "label": "Habilidades Nothing to Fear",
-    "mapping": {
-        "category": "data.category"
-    },
     "entries": {
         "Athletics": {
             "name": "Atletismo",

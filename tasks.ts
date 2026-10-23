@@ -9,15 +9,16 @@
 
 import { boot } from "@lumphammer/shared-fvtt-bits/task-core/boot";
 import {
-  buildPackTranslations,
   clean,
-  copyPacksBack,
+  configureBuildPackTranslations,
   extractPacks,
   link,
   unlink,
 } from "@lumphammer/shared-fvtt-bits/task-core/tasks";
 import path from "path";
 import { fileURLToPath } from "url";
+
+import { packTranslationsConfig } from "./src/packTranslations";
 
 const rootPath = path.dirname(fileURLToPath(import.meta.url));
 
@@ -34,8 +35,7 @@ void boot({
     link,
     unlink,
     clean,
-    buildPackTranslations,
-    copyPacksBack,
+    configureBuildPackTranslations(packTranslationsConfig),
     extractPacks,
   ],
 });

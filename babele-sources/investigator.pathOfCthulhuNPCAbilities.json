@@ -1,0 +1,28 @@
+{
+    "label": "Trail of Cthulhu NPC Abilities",
+    "entries": {
+        "Athletics": {
+            "name": "Athletics",
+            "category": "General"
+        },
+        "Firearms": {
+            "name": "Firearms",
+            "category": "General"
+        },
+        "Fist, kick": {
+            "name": "Fist, kick"
+        },
+        "Health": {
+            "name": "Health",
+            "category": "General"
+        },
+        "Scuffling": {
+            "name": "Scuffling",
+            "category": "General"
+        },
+        "Weapons": {
+            "name": "Weapons",
+            "category": "General"
+        }
+    }
+}

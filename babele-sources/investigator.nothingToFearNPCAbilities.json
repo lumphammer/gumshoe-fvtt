@@ -1,0 +1,28 @@
+{
+    "label": "Fear Itself NPC Abilities",
+    "entries": {
+        "Aberrance": {
+            "name": "Aberrance",
+            "category": "General"
+        },
+        "Athletics": {
+            "name": "Athletics",
+            "category": "General"
+        },
+        "Health": {
+            "name": "Health",
+            "category": "General"
+        },
+        "Punch, kick": {
+            "name": "Punch, kick"
+        },
+        "Scuffling": {
+            "name": "Scuffling",
+            "category": "General"
+        },
+        "Shooting": {
+            "name": "Shooting",
+            "category": "General"
+        }
+    }
+}

@@ -1,8 +1,5 @@
 {
     "label": "Umiejętność Fear Itself",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Athletics": {
             "name": "Wysportowanie",

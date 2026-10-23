@@ -1,8 +1,5 @@
 {
     "label": "Habilidades de Fear Itself",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Athletics": {
             "name": "Atletismo",

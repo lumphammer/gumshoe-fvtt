@@ -1,8 +1,5 @@
 {
     "label": "Armas del SRD",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Firearm (heavy)": {
             "name": "Armas de fuego (pesadas)"

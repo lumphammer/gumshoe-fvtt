@@ -1,0 +1,253 @@
+{
+    "label": "Fall of DELTA GREEN Abilities",
+    "entries": {
+        "Accounting": {
+            "name": "Accounting",
+            "category": "Academic"
+        },
+        "Agency": {
+            "name": "Agency",
+            "category": "Interpersonal"
+        },
+        "Anthropology": {
+            "name": "Anthropology",
+            "category": "Academic"
+        },
+        "Archaeology": {
+            "name": "Archaeology",
+            "category": "Academic"
+        },
+        "Architecture": {
+            "name": "Architecture",
+            "category": "Technical"
+        },
+        "Art": {
+            "name": "Art",
+            "category": "Technical"
+        },
+        "Astronomy": {
+            "name": "Astronomy",
+            "category": "Academic"
+        },
+        "Athletics": {
+            "name": "Athletics",
+            "category": "General"
+        },
+        "Biology": {
+            "name": "Biology",
+            "category": "Academic"
+        },
+        "Bureaucracy": {
+            "name": "Bureaucracy",
+            "category": "General"
+        },
+        "Chemistry": {
+            "name": "Chemistry",
+            "category": "Technical"
+        },
+        "Conceal": {
+            "name": "Conceal",
+            "category": "General"
+        },
+        "Cop Talk": {
+            "name": "Cop Talk",
+            "category": "Interpersonal"
+        },
+        "Criminology": {
+            "name": "Criminology",
+            "category": "Academic"
+        },
+        "Cryptography": {
+            "name": "Cryptography",
+            "category": "Technical"
+        },
+        "Data Retrieval": {
+            "name": "Data Retrieval",
+            "category": "Technical"
+        },
+        "Demolitions": {
+            "name": "Demolitions",
+            "category": "General"
+        },
+        "Disguise": {
+            "name": "Disguise",
+            "category": "General"
+        },
+        "Drive": {
+            "name": "Drive",
+            "category": "General"
+        },
+        "Filch": {
+            "name": "Filch",
+            "category": "General"
+        },
+        "Firearms": {
+            "name": "Firearms",
+            "category": "General"
+        },
+        "First Aid": {
+            "name": "First Aid",
+            "category": "General"
+        },
+        "Flattery": {
+            "name": "Flattery",
+            "category": "Interpersonal"
+        },
+        "Foreign Language": {
+            "name": "Foreign Language",
+            "category": "Academic"
+        },
+        "Forensics": {
+            "name": "Forensics",
+            "category": "Technical"
+        },
+        "Fringe Science": {
+            "name": "Fringe Science",
+            "category": "Technical"
+        },
+        "Health": {
+            "name": "Health",
+            "category": "General"
+        },
+        "Heavy Weapons": {
+            "name": "Heavy Weapons",
+            "category": "General"
+        },
+        "History": {
+            "name": "History",
+            "category": "Academic"
+        },
+        "HUMINT": {
+            "name": "HUMINT",
+            "category": "Interpersonal"
+        },
+        "Hypergeometry": {
+            "name": "Hypergeometry",
+            "category": "General"
+        },
+        "Inspiration": {
+            "name": "Inspiration",
+            "category": "Interpersonal"
+        },
+        "Interrogation": {
+            "name": "Interrogation",
+            "category": "Interpersonal"
+        },
+        "Intimidation": {
+            "name": "Intimidation",
+            "category": "Interpersonal"
+        },
+        "Law": {
+            "name": "Law",
+            "category": "Academic"
+        },
+        "Mechanics": {
+            "name": "Mechanics",
+            "category": "General"
+        },
+        "Medicine": {
+            "name": "Medicine",
+            "category": "Academic"
+        },
+        "Melee Weapons": {
+            "name": "Melee Weapons",
+            "category": "General"
+        },
+        "Military Science": {
+            "name": "Military Science",
+            "category": "Academic"
+        },
+        "Negotiation": {
+            "name": "Negotiation",
+            "category": "Interpersonal"
+        },
+        "Network": {
+            "name": "Network",
+            "category": "General"
+        },
+        "Notice": {
+            "name": "Notice",
+            "category": "Technical"
+        },
+        "Occult": {
+            "name": "Occult",
+            "category": "Academic"
+        },
+        "Pharmacy": {
+            "name": "Pharmacy",
+            "category": "Technical"
+        },
+        "Photography": {
+            "name": "Photography",
+            "category": "Technical"
+        },
+        "Physics": {
+            "name": "Physics",
+            "category": "Technical"
+        },
+        "Pilot": {
+            "name": "Pilot",
+            "category": "General"
+        },
+        "Preparedness": {
+            "name": "Preparedness",
+            "category": "General"
+        },
+        "Psychotherapy": {
+            "name": "Psychotherapy",
+            "category": "General"
+        },
+        "Reassurance": {
+            "name": "Reassurance",
+            "category": "Interpersonal"
+        },
+        "Ride": {
+            "name": "Ride",
+            "category": "General"
+        },
+        "Sanity": {
+            "name": "Sanity",
+            "category": "General"
+        },
+        "Sense Trouble": {
+            "name": "Sense Trouble",
+            "category": "General"
+        },
+        "SIGINT": {
+            "name": "SIGINT",
+            "category": "Technical"
+        },
+        "Stability": {
+            "name": "Stability",
+            "category": "General"
+        },
+        "Stealth": {
+            "name": "Stealth",
+            "category": "General"
+        },
+        "Streetwise": {
+            "name": "Streetwise",
+            "category": "Interpersonal"
+        },
+        "Survival": {
+            "name": "Survival",
+            "category": "Technical"
+        },
+        "The Unnatural": {
+            "name": "The Unnatural",
+            "category": "Academic"
+        },
+        "Tradecraft": {
+            "name": "Tradecraft",
+            "category": "Interpersonal"
+        },
+        "Traffic Analysis": {
+            "name": "Traffic Analysis",
+            "category": "Technical"
+        },
+        "Unarmed Combat": {
+            "name": "Unarmed Combat",
+            "category": "General"
+        }
+    }
+}

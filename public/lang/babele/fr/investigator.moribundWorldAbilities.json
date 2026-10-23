@@ -1,8 +1,5 @@
 {
     "label": "Dying Earth (built-in)",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Appraisal": {
             "name": "Appraisal",

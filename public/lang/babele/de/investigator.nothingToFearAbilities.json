@@ -1,8 +1,5 @@
 {
     "label": "Fear Itself Fähigkeiten",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Athletics": {
             "name": "Athletik",

@@ -1,8 +1,5 @@
 {
     "label": "Armes du SRD",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Firearm (heavy)": {
             "name": "Arme à feu (lourde)"

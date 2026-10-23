@@ -1,8 +1,5 @@
 {
     "label": "Compétences Ashen Stars",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Anthropology": {
             "name": "Anthropologie",

@@ -1,8 +1,5 @@
 {
     "label": "Night's Black Agents Fähigkeiten",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Buchführung",

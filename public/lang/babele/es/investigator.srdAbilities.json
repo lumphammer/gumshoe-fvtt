@@ -1,8 +1,5 @@
 {
     "label": "Habilidades SRD ",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Analytic Taste": {
             "name": "Analytic Taste",

@@ -4,7 +4,7 @@ lang_map = pt_BR: pt-BR, ja_JP: ja-JP, pt_PT: pt-PT
 
 [o:investigator-system:p:investigator-system:r:casting-the-runes-abilities]
 file_filter  = public/lang/babele/<lang>/investigator.castingTheRunesAbilities.json
-source_file  = public/lang/babele-sources/investigator.castingTheRunesAbilities.json
+source_file  = babele-sources/investigator.castingTheRunesAbilities.json
 source_lang  = en
 type         = KEYVALUEJSON
 minimum_perc = 0
@@ -18,7 +18,7 @@ minimum_perc = 0
 
 [o:investigator-system:p:investigator-system:r:investigatoresoterroristsabilitiesjson]
 file_filter   = public/lang/babele/<lang>/investigator.esoterroristsAbilities.json
-source_file   = public/lang/babele-sources/investigator.esoterroristsAbilities.json
+source_file   = babele-sources/investigator.esoterroristsAbilities.json
 type          = KEYVALUEJSON
 minimum_perc  = 0
 resource_name = Esoterrorists Abilities
@@ -32,56 +32,144 @@ resource_name = Moribund World strings
 
 [o:investigator-system:p:investigator-system:r:nice-black-agents-abilities]
 file_filter  = public/lang/babele/<lang>/investigator.niceBlackAgentsAbilities.json
-source_file  = public/lang/babele-sources/investigator.niceBlackAgentsAbilities.json
+source_file  = babele-sources/investigator.niceBlackAgentsAbilities.json
 source_lang  = en
 type         = KEYVALUEJSON
 minimum_perc = 0
 
 [o:investigator-system:p:investigator-system:r:nothing-to-fear-abilities]
 file_filter  = public/lang/babele/<lang>/investigator.nothingToFearAbilities.json
-source_file  = public/lang/babele-sources/investigator.nothingToFearAbilities.json
+source_file  = babele-sources/investigator.nothingToFearAbilities.json
 source_lang  = en
 type         = KEYVALUEJSON
 minimum_perc = 0
 
 [o:investigator-system:p:investigator-system:r:opponent-abilities]
 file_filter  = public/lang/babele/<lang>/investigator.opponentAbilities.json
-source_file  = public/lang/babele-sources/investigator.opponentAbilities.json
+source_file  = babele-sources/investigator.opponentAbilities.json
 source_lang  = en
 type         = KEYVALUEJSON
 minimum_perc = 0
 
 [o:investigator-system:p:investigator-system:r:pallid-stars-abilities]
 file_filter  = public/lang/babele/<lang>/investigator.pallidStarsAbilities.json
-source_file  = public/lang/babele-sources/investigator.pallidStarsAbilities.json
+source_file  = babele-sources/investigator.pallidStarsAbilities.json
 source_lang  = en
 type         = KEYVALUEJSON
 minimum_perc = 0
 
 [o:investigator-system:p:investigator-system:r:path-of-cthulhu-abilities]
 file_filter  = public/lang/babele/<lang>/investigator.pathOfCthulhuAbilities.json
-source_file  = public/lang/babele-sources/investigator.pathOfCthulhuAbilities.json
+source_file  = babele-sources/investigator.pathOfCthulhuAbilities.json
 source_lang  = en
 type         = KEYVALUEJSON
 minimum_perc = 0
 
 [o:investigator-system:p:investigator-system:r:srd-abilities]
 file_filter  = public/lang/babele/<lang>/investigator.srdAbilities.json
-source_file  = public/lang/babele-sources/investigator.srdAbilities.json
+source_file  = babele-sources/investigator.srdAbilities.json
 source_lang  = en
 type         = KEYVALUEJSON
 minimum_perc = 0
 
 [o:investigator-system:p:investigator-system:r:srd-weapons]
 file_filter  = public/lang/babele/<lang>/investigator.srdWeapons.json
-source_file  = public/lang/babele-sources/investigator.srdWeapons.json
+source_file  = babele-sources/investigator.srdWeapons.json
 source_lang  = en
 type         = KEYVALUEJSON
 minimum_perc = 0
 
 [o:investigator-system:p:investigator-system:r:moribund-world-abilities]
 file_filter  = public/lang/babele/<lang>/investigator.moribundWorldAbilities.json
-source_file  = public/lang/babele-sources/investigator.moribundWorldAbilities.json
+source_file  = babele-sources/investigator.moribundWorldAbilities.json
 source_lang  = en
 type         = KEYVALUEJSON
 minimum_perc = 0
+
+[o:investigator-system:p:investigator-system:r:missing-abilities-note]
+file_filter   = public/lang/babele/<lang>/investigator.missingAbilitiesNote.json
+source_file   = babele-sources/investigator.missingAbilitiesNote.json
+source_lang   = en
+type          = KEYVALUEJSON
+minimum_perc  = 0
+resource_name = Full compendiums note
+
+[o:investigator-system:p:investigator-system:r:path-of-cthulhu-npc-abilities]
+file_filter   = public/lang/babele/<lang>/investigator.pathOfCthulhuNPCAbilities.json
+source_file   = babele-sources/investigator.pathOfCthulhuNPCAbilities.json
+source_lang   = en
+type          = KEYVALUEJSON
+minimum_perc  = 0
+resource_name = Trail of Cthulhu NPC Abilities
+
+[o:investigator-system:p:investigator-system:r:nothing-to-fear-npc-abilities]
+file_filter   = public/lang/babele/<lang>/investigator.nothingToFearNPCAbilities.json
+source_file   = babele-sources/investigator.nothingToFearNPCAbilities.json
+source_lang   = en
+type          = KEYVALUEJSON
+minimum_perc  = 0
+resource_name = Fear Itself NPC Abilities
+
+[o:investigator-system:p:investigator-system:r:nice-black-agents-npc-abilities]
+file_filter   = public/lang/babele/<lang>/investigator.niceBlackAgentsNPCAbilities.json
+source_file   = babele-sources/investigator.niceBlackAgentsNPCAbilities.json
+source_lang   = en
+type          = KEYVALUEJSON
+minimum_perc  = 0
+resource_name = Night's Black Agents NPC Abilities
+
+[o:investigator-system:p:investigator-system:r:mutant-city-blues-abilities]
+file_filter   = public/lang/babele/<lang>/investigator.mutantCityBluesAbilities.json
+source_file   = babele-sources/investigator.mutantCityBluesAbilities.json
+source_lang   = en
+type          = KEYVALUEJSON
+minimum_perc  = 0
+resource_name = Mutant City Blues Abilities
+
+[o:investigator-system:p:investigator-system:r:mutant-city-blues-powers]
+file_filter   = public/lang/babele/<lang>/investigator.mutantCityBluesPowers.json
+source_file   = babele-sources/investigator.mutantCityBluesPowers.json
+source_lang   = en
+type          = KEYVALUEJSON
+minimum_perc  = 0
+resource_name = Mutant City Blues Mutant Powers
+
+[o:investigator-system:p:investigator-system:r:mutant-city-blues-stress-cards]
+file_filter   = public/lang/babele/<lang>/investigator.mutantCityBluesStressCards.json
+source_file   = babele-sources/investigator.mutantCityBluesStressCards.json
+source_lang   = en
+type          = KEYVALUEJSON
+minimum_perc  = 0
+resource_name = Mutant City Blues Stress Cards
+
+[o:investigator-system:p:investigator-system:r:mutant-city-blues-genetic-risk-factors]
+file_filter   = public/lang/babele/<lang>/investigator.mutantCityBluesGeneticRiskFactors.json
+source_file   = babele-sources/investigator.mutantCityBluesGeneticRiskFactors.json
+source_lang   = en
+type          = KEYVALUEJSON
+minimum_perc  = 0
+resource_name = Mutant City Blues Genetic Risk Factors
+
+[o:investigator-system:p:investigator-system:r:fall-of-delta-green-abilities]
+file_filter   = public/lang/babele/<lang>/investigator.fallOfDeltaGreenAbilities.json
+source_file   = babele-sources/investigator.fallOfDeltaGreenAbilities.json
+source_lang   = en
+type          = KEYVALUEJSON
+minimum_perc  = 0
+resource_name = Fall of DELTA GREEN Abilities
+
+[o:investigator-system:p:investigator-system:r:fall-of-delta-green-opponent-abilities]
+file_filter   = public/lang/babele/<lang>/investigator.fallOfDeltaGreenOpponentAbilities.json
+source_file   = babele-sources/investigator.fallOfDeltaGreenOpponentAbilities.json
+source_lang   = en
+type          = KEYVALUEJSON
+minimum_perc  = 0
+resource_name = Fall of DELTA GREEN Opponent Abilities
+
+[o:investigator-system:p:investigator-system:r:fall-of-delta-green-weapons]
+file_filter   = public/lang/babele/<lang>/investigator.fallOfDeltaGreenWeapons.json
+source_file   = babele-sources/investigator.fallOfDeltaGreenWeapons.json
+source_lang   = en
+type          = KEYVALUEJSON
+minimum_perc  = 0
+resource_name = Fall of DELTA GREEN Weapons

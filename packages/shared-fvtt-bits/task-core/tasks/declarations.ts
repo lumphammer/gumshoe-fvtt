@@ -7,7 +7,6 @@ declare module "@foundryvtt/foundryvtt-cli" {
   //
   namespace compilePack {
     interface Options {
-      nedb?: boolean;
       yaml?: boolean;
       log?: boolean;
       recursive?: boolean;
@@ -22,16 +21,7 @@ declare module "@foundryvtt/foundryvtt-cli" {
   ): Promise<string[]>;
 
   namespace extractPack {
-    type NedbRelatedOptions =
-      | {
-          nedb: true;
-          documentType: string;
-        }
-      | {
-          nedb?: false;
-        };
-
-    interface CoreOptions {
+    interface Options {
       yaml?: boolean;
       log?: boolean;
       yamlOptions?: DumpOptions;
@@ -40,8 +30,6 @@ declare module "@foundryvtt/foundryvtt-cli" {
       transformName?:
         ((doc: any) => Promise<string | void>) | ((doc: any) => string | void);
     }
-
-    type Options = CoreOptions & NedbRelatedOptions;
   }
 
   export function extractPack(

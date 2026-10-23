@@ -1,8 +1,5 @@
 {
     "label": "パス・オブ・クトゥルー技能",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Accounting",

@@ -1,8 +1,5 @@
 {
     "label": "Habilitats dels oponents",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Athletics": {
             "name": "Atlètiques",

@@ -1,8 +1,5 @@
 {
     "label": "Ashen Stars Fähigkeiten",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Anthropology": {
             "name": "Anthropologie",

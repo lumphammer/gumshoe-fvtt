@@ -1,8 +1,5 @@
 {
     "label": "Umiejętności Na Tropie Cthulhu",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Księgowość",

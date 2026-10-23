@@ -1,8 +1,5 @@
 {
     "label": "Night's Black Agents Abilities",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Accounting",

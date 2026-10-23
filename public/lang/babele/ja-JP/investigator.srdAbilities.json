@@ -1,8 +1,5 @@
 {
     "label": "SRD技能",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Analytic Taste": {
             "name": "Analytic Taste",

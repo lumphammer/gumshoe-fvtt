@@ -1,8 +1,5 @@
 {
     "label": "Night's Black Agents Abilities",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Accounting",
@@ -99,6 +96,10 @@
         "Flirting": {
             "name": "Flirting",
             "category": "Interpersonal"
+        },
+        "Forensic Pathology": {
+            "name": "Forensic Pathology",
+            "category": "Technical"
         },
         "Forgery": {
             "name": "Forgery",

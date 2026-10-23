@@ -1,8 +1,5 @@
 {
     "label": "Trail of Cthulhu Abilities",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Accounting",

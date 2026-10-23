@@ -1,8 +1,5 @@
 {
     "label": "Trail of Cthulhu Fähigkeiten",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Buchhaltung",

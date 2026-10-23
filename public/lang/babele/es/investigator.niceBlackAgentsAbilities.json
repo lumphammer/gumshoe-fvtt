@@ -1,8 +1,5 @@
 {
     "label": "Habilidades de Agentes de la Noche",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Contabilidad",

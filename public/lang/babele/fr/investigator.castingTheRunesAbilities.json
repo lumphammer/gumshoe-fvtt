@@ -1,8 +1,5 @@
 {
     "label": "Compétences Casting the Runes",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Anthropology": {
             "name": "Anthropologie",

@@ -1,8 +1,5 @@
 {
-    "label": "Esoterrorists Abilities (built-in)",
-    "mapping": {
-        "category": "system.category"
-    },
+    "label": "Esoterrorists Abilities",
     "entries": {
         "Anthropology": {
             "name": "Anthropology",

@@ -1,8 +1,5 @@
 {
     "label": "Habilidades de El Rastro de Cthulhu",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Contabilidad",

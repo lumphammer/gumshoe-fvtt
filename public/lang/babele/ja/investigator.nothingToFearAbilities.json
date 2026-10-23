@@ -1,8 +1,5 @@
 {
     "label": "Fear Itself Abilities",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Athletics": {
             "name": "運動",

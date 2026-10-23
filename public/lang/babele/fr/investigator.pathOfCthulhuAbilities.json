@@ -1,8 +1,5 @@
 {
     "label": "Compétences Trail of Cthulhu",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Comptabilité",

@@ -1,8 +1,5 @@
 {
     "label": "Habilidades SDR",
-    "mapping": {
-        "category": "data.category"
-    },
     "entries": {
         "Analytic Taste": {
             "name": "Paladar Analítico",

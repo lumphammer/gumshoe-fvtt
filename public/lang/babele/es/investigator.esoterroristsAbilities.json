@@ -1,8 +1,5 @@
 {
     "label": "Habilidades Esoterroristas (integradas)",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Anthropology": {
             "name": "Antropología",

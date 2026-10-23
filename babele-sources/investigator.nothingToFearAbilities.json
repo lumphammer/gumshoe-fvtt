@@ -1,9 +1,10 @@
 {
     "label": "Fear Itself Abilities",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
+        "Aberrance": {
+            "name": "Aberrance",
+            "category": "General"
+        },
         "Athletics": {
             "name": "Athletics",
             "category": "General"
@@ -175,6 +176,10 @@
         "Shrink": {
             "name": "Shrink",
             "category": "General"
+        },
+        "Social Sciences": {
+            "name": "Social Sciences",
+            "category": "Academic"
         },
         "Stability": {
             "name": "Stability",
