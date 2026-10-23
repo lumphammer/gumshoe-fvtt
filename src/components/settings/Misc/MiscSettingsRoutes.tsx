@@ -8,10 +8,12 @@ import {
   dyingEarthOptions,
   importExport,
   migrationRecovery,
+  usageStats,
 } from "./directions";
 import { DyingEarthSettings } from "./DyingEarthSettings";
 import { ImportExportSettings } from "./ImportExportSettings";
 import { MigrationRecoverySettings } from "./MigrationRecoverySettings";
+import { UsageStatsSettings } from "./UsageStatsSettings";
 
 /**
  * Routes below the miscellaneous settings menu. These are mounted alongside
@@ -29,6 +31,9 @@ export const MiscSettingsRoutes = ({ setters }: { setters: Setters }) => {
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={importExport} margin="0em">
         <ImportExportSettings />
+      </SlideInNestedPanelRoute>
+      <SlideInNestedPanelRoute direction={usageStats} margin="0em">
+        <UsageStatsSettings />
       </SlideInNestedPanelRoute>
       <SlideInNestedPanelRoute direction={developerOptions} margin="0em">
         <DeveloperSettings setters={setters} />
