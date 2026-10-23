@@ -1,3 +1,4 @@
+import { usageStatsEndpoint } from "../../../constants";
 import { getDevMode } from "../../../functions/utilities";
 import { settings } from "../../../settings/settings";
 import type { SettingsPageDef } from "../SettingsMenu";
@@ -7,6 +8,7 @@ import {
   dyingEarthOptions,
   importExport,
   migrationRecovery,
+  usageStats,
 } from "./directions";
 
 /**
@@ -29,6 +31,11 @@ export const miscPages: SettingsPageDef[] = [
     description: "ImportExportDescription",
   },
   {
+    direction: usageStats,
+    label: "Usage stats",
+    description: "UsageStatsDescription",
+  },
+  {
     direction: developerOptions,
     label: "Developer options",
     description: "DeveloperOptionsDescription",
@@ -48,6 +55,9 @@ export const getVisibleMiscPages = () =>
   miscPages.filter(({ direction }) => {
     if (direction === developerOptions) {
       return getDevMode();
+    }
+    if (direction === usageStats) {
+      return usageStatsEndpoint !== null;
     }
     if (direction === migrationRecovery) {
       return settings.migrationLastError.get() !== "";
