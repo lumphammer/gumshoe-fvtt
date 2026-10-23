@@ -1,8 +1,5 @@
 {
     "label": "SRD Armes",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Firearm (heavy)": {
             "name": "Arma de foc (pesada)"

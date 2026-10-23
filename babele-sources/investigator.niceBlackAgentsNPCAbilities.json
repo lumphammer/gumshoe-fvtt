@@ -1,0 +1,33 @@
+{
+    "label": "Night's Black Agents NPC Abilities",
+    "entries": {
+        "Aberrance": {
+            "name": "Aberrance",
+            "category": "General"
+        },
+        "Athletics": {
+            "name": "Athletics",
+            "category": "General"
+        },
+        "Driving": {
+            "name": "Driving",
+            "category": "General"
+        },
+        "Hand-to-Hand": {
+            "name": "Hand-to-Hand",
+            "category": "General"
+        },
+        "Health": {
+            "name": "Health",
+            "category": "General"
+        },
+        "Shooting": {
+            "name": "Shooting",
+            "category": "General"
+        },
+        "Weapons": {
+            "name": "Weapons",
+            "category": "General"
+        }
+    }
+}

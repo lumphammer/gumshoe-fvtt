@@ -1,8 +1,5 @@
 {
     "label": "Habilidades Night's Black Agents",
-    "mapping": {
-        "category": "data.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Contabilidade",

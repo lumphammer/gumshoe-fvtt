@@ -1,8 +1,5 @@
 {
     "label": "Compétences Night's Black Agents",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Comptabilit\u00e9",

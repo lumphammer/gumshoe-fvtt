@@ -1,16 +1,33 @@
 {
-    "label": "Fear Itself Abilities",
-    "mapping": {
-        "category": "system.category"
-    },
+    "label": "Esoterrorists Abilities",
     "entries": {
+        "Anthropology": {
+            "name": "Anthropology",
+            "category": "Academic"
+        },
+        "Archaeology": {
+            "name": "Archaeology",
+            "category": "Academic"
+        },
+        "Architecture": {
+            "name": "Architecture",
+            "category": "Academic"
+        },
+        "Art History": {
+            "name": "Art History",
+            "category": "Academic"
+        },
+        "Astronomy": {
+            "name": "Astronomy",
+            "category": "Technical"
+        },
         "Athletics": {
             "name": "Athletics",
             "category": "General"
         },
-        "Aura Reading": {
-            "name": "Aura Reading",
-            "category": "Psychic Powers"
+        "Ballistics": {
+            "name": "Ballistics",
+            "category": "Technical"
         },
         "Bullshit Detector": {
             "name": "Bullshit Detector",
@@ -20,48 +37,80 @@
             "name": "Bureaucracy",
             "category": "Interpersonal"
         },
-        "Computer Use": {
-            "name": "Computer Use",
+        "Chemistry": {
+            "name": "Chemistry",
             "category": "Technical"
         },
         "Cop Talk": {
             "name": "Cop Talk",
             "category": "Interpersonal"
         },
+        "Cryptography": {
+            "name": "Cryptography",
+            "category": "Technical"
+        },
+        "Data Retrieval": {
+            "name": "Data Retrieval",
+            "category": "Technical"
+        },
+        "Document Analysis": {
+            "name": "Document Analysis",
+            "category": "Technical"
+        },
         "Driving": {
             "name": "Driving",
             "category": "General"
+        },
+        "Electronic Surveillance": {
+            "name": "Electronic Surveillance",
+            "category": "Technical"
+        },
+        "Evidence Collection": {
+            "name": "Evidence Collection",
+            "category": "Technical"
+        },
+        "Explosive Devices": {
+            "name": "Explosive Devices",
+            "category": "Technical"
         },
         "Filch": {
             "name": "Filch",
             "category": "General"
         },
+        "Fingerprinting": {
+            "name": "Fingerprinting",
+            "category": "Technical"
+        },
         "Flattery": {
             "name": "Flattery",
             "category": "Interpersonal"
-        },
-        "Fleeing": {
-            "name": "Fleeing",
-            "category": "General"
         },
         "Flirting": {
             "name": "Flirting",
             "category": "Interpersonal"
         },
+        "Forensic Accounting": {
+            "name": "Forensic Accounting",
+            "category": "Academic"
+        },
+        "Forensic Anthropology": {
+            "name": "Forensic Anthropology",
+            "category": "Technical"
+        },
+        "Forensic Entomology": {
+            "name": "Forensic Entomology",
+            "category": "Technical"
+        },
+        "Forensic Psychology": {
+            "name": "Forensic Psychology",
+            "category": "Academic"
+        },
         "Health": {
             "name": "Health",
             "category": "General"
         },
-        "Hiding": {
-            "name": "Hiding",
-            "category": "General"
-        },
         "History": {
             "name": "History",
-            "category": "Academic"
-        },
-        "Humanities": {
-            "name": "Humanities",
             "category": "Academic"
         },
         "Impersonate": {
@@ -80,16 +129,20 @@
             "name": "Intimidation",
             "category": "Interpersonal"
         },
-        "Investigative Procedure": {
-            "name": "Investigative Procedure",
-            "category": "Technical"
-        },
         "Languages": {
             "name": "Languages",
             "category": "Academic"
         },
         "Law": {
             "name": "Law",
+            "category": "Academic"
+        },
+        "Linguistics": {
+            "name": "Linguistics",
+            "category": "Academic"
+        },
+        "Local Knowledge": {
+            "name": "Local Knowledge",
             "category": "Academic"
         },
         "Mechanics": {
@@ -100,41 +153,25 @@
             "name": "Medic",
             "category": "General"
         },
-        "Medicine": {
-            "name": "Medicine",
-            "category": "Technical"
-        },
-        "Medium": {
-            "name": "Medium",
-            "category": "Psychic Powers"
-        },
-        "Messenger": {
-            "name": "Messenger",
-            "category": "Psychic Powers"
+        "Natural History": {
+            "name": "Natural History",
+            "category": "Academic"
         },
         "Negotiation": {
             "name": "Negotiation",
             "category": "Interpersonal"
         },
-        "Notice": {
-            "name": "Notice",
-            "category": "Technical"
-        },
         "Occult Studies": {
             "name": "Occult Studies",
             "category": "Academic"
         },
-        "Outdoor Survival": {
-            "name": "Outdoor Survival",
-            "category": "Technical"
+        "Pathology": {
+            "name": "Pathology",
+            "category": "Academic"
         },
         "Photography": {
             "name": "Photography",
             "category": "Technical"
-        },
-        "Premonitions": {
-            "name": "Premonitions",
-            "category": "Psychic Powers"
         },
         "Preparedness": {
             "name": "Preparedness",
@@ -144,29 +181,13 @@
             "name": "Reassurance",
             "category": "Interpersonal"
         },
-        "Remote Viewing": {
-            "name": "Remote Viewing",
-            "category": "Psychic Powers"
-        },
         "Research": {
             "name": "Research",
             "category": "Academic"
         },
-        "Science": {
-            "name": "Science",
-            "category": "Technical"
-        },
         "Scuffling": {
             "name": "Scuffling",
             "category": "General"
-        },
-        "Sense Trouble": {
-            "name": "Sense Trouble",
-            "category": "General"
-        },
-        "Sensitive": {
-            "name": "Sensitive",
-            "category": "Psychic Powers"
         },
         "Shooting": {
             "name": "Shooting",
@@ -184,9 +205,13 @@
             "name": "Streetwise",
             "category": "Interpersonal"
         },
-        "Synchronicity": {
-            "name": "Synchronicity",
-            "category": "Psychic Powers"
+        "Surveillance": {
+            "name": "Surveillance",
+            "category": "General"
+        },
+        "Textual Analysis": {
+            "name": "Textual Analysis",
+            "category": "Academic"
         },
         "Trivia": {
             "name": "Trivia",

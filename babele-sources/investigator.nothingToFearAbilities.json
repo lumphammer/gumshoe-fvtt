@@ -1,0 +1,201 @@
+{
+    "label": "Fear Itself Abilities",
+    "entries": {
+        "Aberrance": {
+            "name": "Aberrance",
+            "category": "General"
+        },
+        "Athletics": {
+            "name": "Athletics",
+            "category": "General"
+        },
+        "Aura Reading": {
+            "name": "Aura Reading",
+            "category": "Psychic Powers"
+        },
+        "Bullshit Detector": {
+            "name": "Bullshit Detector",
+            "category": "Interpersonal"
+        },
+        "Bureaucracy": {
+            "name": "Bureaucracy",
+            "category": "Interpersonal"
+        },
+        "Computer Use": {
+            "name": "Computer Use",
+            "category": "Technical"
+        },
+        "Cop Talk": {
+            "name": "Cop Talk",
+            "category": "Interpersonal"
+        },
+        "Driving": {
+            "name": "Driving",
+            "category": "General"
+        },
+        "Filch": {
+            "name": "Filch",
+            "category": "General"
+        },
+        "Flattery": {
+            "name": "Flattery",
+            "category": "Interpersonal"
+        },
+        "Fleeing": {
+            "name": "Fleeing",
+            "category": "General"
+        },
+        "Flirting": {
+            "name": "Flirting",
+            "category": "Interpersonal"
+        },
+        "Health": {
+            "name": "Health",
+            "category": "General"
+        },
+        "Hiding": {
+            "name": "Hiding",
+            "category": "General"
+        },
+        "History": {
+            "name": "History",
+            "category": "Academic"
+        },
+        "Humanities": {
+            "name": "Humanities",
+            "category": "Academic"
+        },
+        "Impersonate": {
+            "name": "Impersonate",
+            "category": "Interpersonal"
+        },
+        "Infiltration": {
+            "name": "Infiltration",
+            "category": "General"
+        },
+        "Interrogation": {
+            "name": "Interrogation",
+            "category": "Interpersonal"
+        },
+        "Intimidation": {
+            "name": "Intimidation",
+            "category": "Interpersonal"
+        },
+        "Investigative Procedure": {
+            "name": "Investigative Procedure",
+            "category": "Technical"
+        },
+        "Languages": {
+            "name": "Languages",
+            "category": "Academic"
+        },
+        "Law": {
+            "name": "Law",
+            "category": "Academic"
+        },
+        "Mechanics": {
+            "name": "Mechanics",
+            "category": "General"
+        },
+        "Medic": {
+            "name": "Medic",
+            "category": "General"
+        },
+        "Medicine": {
+            "name": "Medicine",
+            "category": "Technical"
+        },
+        "Medium": {
+            "name": "Medium",
+            "category": "Psychic Powers"
+        },
+        "Messenger": {
+            "name": "Messenger",
+            "category": "Psychic Powers"
+        },
+        "Negotiation": {
+            "name": "Negotiation",
+            "category": "Interpersonal"
+        },
+        "Notice": {
+            "name": "Notice",
+            "category": "Technical"
+        },
+        "Occult Studies": {
+            "name": "Occult Studies",
+            "category": "Academic"
+        },
+        "Outdoor Survival": {
+            "name": "Outdoor Survival",
+            "category": "Technical"
+        },
+        "Photography": {
+            "name": "Photography",
+            "category": "Technical"
+        },
+        "Premonitions": {
+            "name": "Premonitions",
+            "category": "Psychic Powers"
+        },
+        "Preparedness": {
+            "name": "Preparedness",
+            "category": "General"
+        },
+        "Reassurance": {
+            "name": "Reassurance",
+            "category": "Interpersonal"
+        },
+        "Remote Viewing": {
+            "name": "Remote Viewing",
+            "category": "Psychic Powers"
+        },
+        "Research": {
+            "name": "Research",
+            "category": "Academic"
+        },
+        "Science": {
+            "name": "Science",
+            "category": "Technical"
+        },
+        "Scuffling": {
+            "name": "Scuffling",
+            "category": "General"
+        },
+        "Sense Trouble": {
+            "name": "Sense Trouble",
+            "category": "General"
+        },
+        "Sensitive": {
+            "name": "Sensitive",
+            "category": "Psychic Powers"
+        },
+        "Shooting": {
+            "name": "Shooting",
+            "category": "General"
+        },
+        "Shrink": {
+            "name": "Shrink",
+            "category": "General"
+        },
+        "Social Sciences": {
+            "name": "Social Sciences",
+            "category": "Academic"
+        },
+        "Stability": {
+            "name": "Stability",
+            "category": "General"
+        },
+        "Streetwise": {
+            "name": "Streetwise",
+            "category": "Interpersonal"
+        },
+        "Synchronicity": {
+            "name": "Synchronicity",
+            "category": "Psychic Powers"
+        },
+        "Trivia": {
+            "name": "Trivia",
+            "category": "Academic"
+        }
+    }
+}

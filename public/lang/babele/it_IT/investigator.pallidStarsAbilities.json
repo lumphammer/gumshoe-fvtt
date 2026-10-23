@@ -1,8 +1,5 @@
 {
     "label": "Ashen Stars Abilities",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Anthropology": {
             "name": "Antropologia",
@@ -65,7 +62,7 @@
             "category": "Abilità Accademiche"
         },
         "Data Retrieval": {
-            "name": "Data Retrieval",
+            "name": "Ritieva dei dati",
             "category": "Abilità Tecniche"
         },
         "Decryption": {

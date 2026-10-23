@@ -1,8 +1,5 @@
 {
     "label": "SRD Fähigkeiten",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Analytic Taste": {
             "name": "Analystischer Geschmack",

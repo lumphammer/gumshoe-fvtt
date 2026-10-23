@@ -1,8 +1,5 @@
 {
     "label": "Habilidades SRD ",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Analytic Taste": {
             "name": "Analytic Taste",
@@ -129,7 +126,7 @@
             "category": "Académicas"
         },
         "Data Retrieval": {
-            "name": "Data Retrieval",
+            "name": "Recuperar Datos",
             "category": "Técnicas"
         },
         "Disguise": {

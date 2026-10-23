@@ -1,8 +1,5 @@
 {
     "label": "Habilidades de Ashen Stars",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Anthropology": {
             "name": "Antropología",
@@ -65,7 +62,7 @@
             "category": "Académicas"
         },
         "Data Retrieval": {
-            "name": "Data Retrieval",
+            "name": "Recuperar Datos",
             "category": "Técnicas"
         },
         "Decryption": {

@@ -1,0 +1,65 @@
+{
+    "label": "Mutant City Blues Genetic Risk Factors",
+    "entries": {
+        "Addictive Personality": {
+            "name": "Addictive Personality"
+        },
+        "Asthma": {
+            "name": "Asthma"
+        },
+        "Cortisol Elevation": {
+            "name": "Cortisol Elevation"
+        },
+        "Dissociation": {
+            "name": "Dissociation"
+        },
+        "Empathy Loop": {
+            "name": "Empathy Loop"
+        },
+        "Forced Genetic Drift": {
+            "name": "Forced Genetic Drift"
+        },
+        "GABA Oversufficiency": {
+            "name": "GABA Oversufficiency"
+        },
+        "Insula Skew": {
+            "name": "Insula Skew"
+        },
+        "Limbic Hypertrophy": {
+            "name": "Limbic Hypertrophy"
+        },
+        "Low Impulse Control": {
+            "name": "Low Impulse Control"
+        },
+        "Megalomania": {
+            "name": "Megalomania"
+        },
+        "Messiah Complex": {
+            "name": "Messiah Complex"
+        },
+        "Meta-Persona Identity Disorder": {
+            "name": "Meta-Persona Identity Disorder"
+        },
+        "Personality Drift": {
+            "name": "Personality Drift"
+        },
+        "Plasma Deficiency": {
+            "name": "Plasma Deficiency"
+        },
+        "Scleroderma": {
+            "name": "Scleroderma"
+        },
+        "Sensory Overload": {
+            "name": "Sensory Overload"
+        },
+        "Skeletal Mineralization": {
+            "name": "Skeletal Mineralization"
+        },
+        "Trance Susceptible": {
+            "name": "Trance Susceptible"
+        },
+        "Watcher Syndrome": {
+            "name": "Watcher Syndrome"
+        }
+    }
+}

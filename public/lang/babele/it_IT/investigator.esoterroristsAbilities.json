@@ -1,8 +1,5 @@
 {
     "label": "Esoterrorists Abilities (built-in)",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Anthropology": {
             "name": "Antropologia",
@@ -53,7 +50,7 @@
             "category": "Abilità Tecniche"
         },
         "Data Retrieval": {
-            "name": "Data Retrieval",
+            "name": "Ritieva dei dati",
             "category": "Abilità Tecniche"
         },
         "Document Analysis": {

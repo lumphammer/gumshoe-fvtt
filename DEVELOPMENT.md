@@ -118,13 +118,24 @@ You can also edit the YAML directly and rebuild.
 There are two npm tasks pertaining to translations:
 
 * `pnpm run build-pack-translations` will:
-  * populate `public/lang/babele-sources` with template translation files based on the packs.
-  * These should be picked up by Transifex automatically.
+  * write the untranslated (English) Babele files for the compendium packs into [`babele-sources/`](babele-sources/), from the pack sources in `src/packs`. Transifex reads these.
+  * write `public/lang/babele/mappings.json`, which tells Babele which document fields the entries' keys (e.g. `category`) translate.
+  * carry translations over when a document is renamed, in every language's file. It spots renames by id, using `babele-sources/ids.json`.
+  * warn about any pack which has no resource in `.tx/config`.
 * `pnpm run pull-translations` will:
   * use the Transifex command line tool, [`tx`](https://github.com/transifex/cli), to pull in the latest translations and overwrite all the JSONs.
   * THIS WILL CLOBBER ANY JSON MODIFICATIONS WHICH HAVE NOT BEEN UPLOADED TO TRANSIFEX!
 
-To keep the translation imports running sweetly, you will need to update `.tx/config` to map everything to the right places.
+A test (`src/packTranslations.test.ts`, part of `pnpm check`) fails if the files in `babele-sources/` don't match the packs, so run `pnpm run build-pack-translations` whenever you change a pack. What it offers for translation is configured in [`src/packTranslations.ts`](src/packTranslations.ts); the generator itself is in `packages/shared-fvtt-bits/task-core/packTranslations`.
+
+After changing packs:
+
+1. `pnpm run pull-translations` first, so you're working from Transifex's latest.
+2. `pnpm run build-pack-translations`, and check the changes in git.
+3. Push the new sources to Transifex: `tx push -s`. If any documents were renamed, also push the translations of those resources (`tx push -t -r <resource>`), or Transifex drops the translations of the old names.
+4. Commit.
+
+A new pack also needs a resource in `.tx/config` (the task warns if one is missing). `tx push -s` creates it on Transifex.
 
 The core strings are in [`public/lang/en.json`](public/lang/en.json). In code, `<Translate>Some text</Translate>` and `getTranslated("Some text")` look up the key `investigator.` + the text in PascalCase (via `Case.pascal`), so "Hit threshold" is `investigator.HitThreshold`. Punctuation is dropped, so "Shot dry!" and "Shot dry" share a key. New strings only show up in a running Foundry after a restart.
 

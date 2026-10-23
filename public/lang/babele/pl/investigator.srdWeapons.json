@@ -1,8 +1,5 @@
 {
     "label": "SRD - Uzbrojenie",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Firearm (heavy)": {
             "name": "Broń palna (ciężka)"

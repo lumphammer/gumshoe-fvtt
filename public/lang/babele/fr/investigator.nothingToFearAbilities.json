@@ -1,8 +1,5 @@
 {
     "label": "Compétences Terreurs",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Athletics": {
             "name": "Athl\u00e9tisme",

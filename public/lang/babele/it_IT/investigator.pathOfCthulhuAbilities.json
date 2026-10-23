@@ -1,8 +1,5 @@
 {
     "label": "Sulle tracce di Cthulhu: Abilità",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Accounting": {
             "name": "Contabilità",

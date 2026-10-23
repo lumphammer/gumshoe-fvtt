@@ -1,9 +1,10 @@
 {
-    "label": "Opponent Abilities",
-    "mapping": {
-        "category": "system.category"
-    },
+    "label": "Fear Itself NPC Abilities",
     "entries": {
+        "Aberrance": {
+            "name": "Aberrance",
+            "category": "General"
+        },
         "Athletics": {
             "name": "Athletics",
             "category": "General"
@@ -12,11 +13,8 @@
             "name": "Health",
             "category": "General"
         },
-        "Melee Attack": {
-            "name": "Melee Attack"
-        },
-        "Ranged Attack": {
-            "name": "Ranged Attack"
+        "Punch, kick": {
+            "name": "Punch, kick"
         },
         "Scuffling": {
             "name": "Scuffling",

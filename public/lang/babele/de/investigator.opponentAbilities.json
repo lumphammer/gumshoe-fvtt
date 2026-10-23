@@ -1,8 +1,5 @@
 {
     "label": "Gegner Fähigkeiten",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Athletics": {
             "name": "Athletik",

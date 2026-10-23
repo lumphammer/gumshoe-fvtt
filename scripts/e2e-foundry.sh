@@ -7,7 +7,9 @@
 #
 # `up` creates (or starts) a podman container running Foundry, with its own
 # data folder, and installs a copy of `build/` as the system (the tests'
-# global setup refreshes the copy on every run). Foundry checks its licence
+# global setup refreshes the copy on every run). It also installs the latest
+# releases of the modules the tests use (Babele and libWrapper, for the pack
+# translations test), so `restart` picks up new releases. Foundry checks its licence
 # against the machine's hostname, so we copy an already-signed `license.json`
 # from another Foundry data folder and give the container the hostname it was
 # signed for.
@@ -43,6 +45,37 @@ install_system() {
   cp -r "$ROOT/build" "$DATA/Data/systems/investigator"
 }
 
+# the modules the tests use, as id=manifest URL
+MODULES=(
+  "lib-wrapper=https://github.com/ruipin/fvtt-lib-wrapper/releases/latest/download/module.json"
+  "babele=https://gitlab.com/riccisi/foundryvtt-babele/raw/master/module/module.json"
+)
+
+install_modules() {
+  local tmp
+  tmp=$(mktemp -d)
+  for module in "${MODULES[@]}"; do
+    local id=${module%%=*} manifest_url=${module#*=}
+    curl -fsSL -o "$tmp/$id.json" "$manifest_url"
+    local download version
+    download=$(json_field "$tmp/$id.json" download)
+    version=$(json_field "$tmp/$id.json" version)
+    echo "Installing $id $version"
+    curl -fsSL -o "$tmp/$id.zip" "$download"
+    mkdir -p "$tmp/$id"
+    unzip -q "$tmp/$id.zip" -d "$tmp/$id"
+    # some zips have the module at the top, some in a folder: take the
+    # shallowest module.json
+    local module_json
+    module_json=$(find "$tmp/$id" -name module.json -printf '%d %p\n' |
+      sort -n | head -n 1 | cut -d' ' -f2-)
+    mkdir -p "$DATA/Data/modules"
+    rm -rf "${DATA:?}/Data/modules/$id"
+    cp -r "$(dirname "$module_json")" "$DATA/Data/modules/$id"
+  done
+  rm -rf "$tmp"
+}
+
 up() {
   if podman container exists "$CONTAINER"; then
     if [[ "$(podman container inspect -f '{{.State.Running}}' "$CONTAINER")" == true ]]; then
@@ -51,6 +84,7 @@ up() {
     fi
     # copy while Foundry is stopped, so the packs aren't open
     install_system
+    install_modules
     podman start "$CONTAINER" >/dev/null
   else
     local license=${E2E_FOUNDRY_LICENSE:-}
@@ -64,6 +98,7 @@ up() {
     mkdir -p "$DATA/Config" "$DATA/Data/systems" "$DATA/Data/worlds"
     cp "$license" "$DATA/Config/license.json"
     install_system
+    install_modules
     # keep-id and label=disable let Foundry write to the bind-mounted folder
     # under rootless podman with SELinux
     podman run -d --name "$CONTAINER" \

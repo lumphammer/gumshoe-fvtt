@@ -1,18 +1,18 @@
-import { systemLogger } from "../functions/utilities";
+interface BabeleFacade {
+  setSystemTranslationsDir: (dir: string) => void;
+}
 
+/**
+ * Point Babele at our pack translations. It has to happen in Babele's own
+ * `babele.init` hook: Babele makes a fresh instance in its `init` hook, which
+ * runs after ours, so anything we set up on `Babele.get()` before then is
+ * lost.
+ */
 export const registerBabele = () => {
-  // register babele translations
-  if (typeof Babele !== "undefined") {
-    const babele = Babele.get();
-    if (babele.setSystemTranslationsDir) {
+  Hooks.once(
+    "babele.init" as Hooks.HookName,
+    ((babele: BabeleFacade) => {
       babele.setSystemTranslationsDir("lang/babele");
-    } else {
-      const message =
-        "Please make sure you have installed the latest version of Babele (unable to set system translations path).";
-      systemLogger.warn(message);
-      Hooks.once("ready", () => {
-        ui.notifications?.warn(message);
-      });
-    }
-  }
+    }) as any,
+  );
 };

@@ -1,8 +1,5 @@
 {
     "label": "Umiejetności przeciwników",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Athletics": {
             "name": "Wysportowanie",

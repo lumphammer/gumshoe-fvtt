@@ -1,15 +1,12 @@
 {
-    "label": "Esoterrorists Abilities (built-in)",
-    "mapping": {
-        "category": "system.category"
-    },
+    "label": "Mutant City Blues Abilities",
     "entries": {
+        "Anamorphology": {
+            "name": "Anamorphology",
+            "category": "Technical"
+        },
         "Anthropology": {
             "name": "Anthropology",
-            "category": "Academic"
-        },
-        "Archaeology": {
-            "name": "Archaeology",
             "category": "Academic"
         },
         "Architecture": {
@@ -20,13 +17,9 @@
             "name": "Art History",
             "category": "Academic"
         },
-        "Astronomy": {
-            "name": "Astronomy",
-            "category": "Technical"
-        },
         "Athletics": {
             "name": "Athletics",
-            "category": "General"
+            "category": "Physical"
         },
         "Ballistics": {
             "name": "Ballistics",
@@ -40,13 +33,29 @@
             "name": "Bureaucracy",
             "category": "Interpersonal"
         },
+        "Charm": {
+            "name": "Charm",
+            "category": "Interpersonal"
+        },
         "Chemistry": {
             "name": "Chemistry",
             "category": "Technical"
         },
+        "Community Relations": {
+            "name": "Community Relations",
+            "category": "Interpersonal"
+        },
+        "Composure": {
+            "name": "Composure",
+            "category": "Presence"
+        },
         "Cop Talk": {
             "name": "Cop Talk",
             "category": "Interpersonal"
+        },
+        "Criminology": {
+            "name": "Criminology",
+            "category": "Academic"
         },
         "Cryptography": {
             "name": "Cryptography",
@@ -62,10 +71,14 @@
         },
         "Driving": {
             "name": "Driving",
-            "category": "General"
+            "category": "Physical"
         },
         "Electronic Surveillance": {
             "name": "Electronic Surveillance",
+            "category": "Technical"
+        },
+        "Energy Residue Analysis": {
+            "name": "Energy Residue Analysis",
             "category": "Technical"
         },
         "Evidence Collection": {
@@ -78,19 +91,11 @@
         },
         "Filch": {
             "name": "Filch",
-            "category": "General"
+            "category": "Focus"
         },
         "Fingerprinting": {
             "name": "Fingerprinting",
             "category": "Technical"
-        },
-        "Flattery": {
-            "name": "Flattery",
-            "category": "Interpersonal"
-        },
-        "Flirting": {
-            "name": "Flirting",
-            "category": "Interpersonal"
         },
         "Forensic Accounting": {
             "name": "Forensic Accounting",
@@ -100,17 +105,13 @@
             "name": "Forensic Anthropology",
             "category": "Technical"
         },
-        "Forensic Entomology": {
-            "name": "Forensic Entomology",
-            "category": "Technical"
-        },
         "Forensic Psychology": {
             "name": "Forensic Psychology",
             "category": "Academic"
         },
         "Health": {
             "name": "Health",
-            "category": "General"
+            "category": "Physical"
         },
         "History": {
             "name": "History",
@@ -122,7 +123,11 @@
         },
         "Infiltration": {
             "name": "Infiltration",
-            "category": "General"
+            "category": "Focus"
+        },
+        "Influence Detection": {
+            "name": "Influence Detection",
+            "category": "Interpersonal"
         },
         "Interrogation": {
             "name": "Interrogation",
@@ -140,21 +145,13 @@
             "name": "Law",
             "category": "Academic"
         },
-        "Linguistics": {
-            "name": "Linguistics",
-            "category": "Academic"
-        },
-        "Local Knowledge": {
-            "name": "Local Knowledge",
-            "category": "Academic"
-        },
         "Mechanics": {
             "name": "Mechanics",
-            "category": "General"
+            "category": "Focus"
         },
         "Medic": {
             "name": "Medic",
-            "category": "General"
+            "category": "Focus"
         },
         "Natural History": {
             "name": "Natural History",
@@ -168,17 +165,25 @@
             "name": "Occult Studies",
             "category": "Academic"
         },
-        "Pathology": {
-            "name": "Pathology",
-            "category": "Academic"
+        "Pharmacy": {
+            "name": "Pharmacy",
+            "category": "Technical"
         },
         "Photography": {
             "name": "Photography",
             "category": "Technical"
         },
+        "Popular Culture": {
+            "name": "Popular Culture",
+            "category": "Academic"
+        },
         "Preparedness": {
             "name": "Preparedness",
-            "category": "General"
+            "category": "Presence"
+        },
+        "Pushes": {
+            "name": "Pushes",
+            "category": "Pushes"
         },
         "Reassurance": {
             "name": "Reassurance",
@@ -190,19 +195,15 @@
         },
         "Scuffling": {
             "name": "Scuffling",
-            "category": "General"
+            "category": "Physical"
+        },
+        "Sense Trouble": {
+            "name": "Sense Trouble",
+            "category": "Presence"
         },
         "Shooting": {
             "name": "Shooting",
-            "category": "General"
-        },
-        "Shrink": {
-            "name": "Shrink",
-            "category": "General"
-        },
-        "Stability": {
-            "name": "Stability",
-            "category": "General"
+            "category": "Physical"
         },
         "Streetwise": {
             "name": "Streetwise",
@@ -210,15 +211,11 @@
         },
         "Surveillance": {
             "name": "Surveillance",
-            "category": "General"
+            "category": "Presence"
         },
-        "Textual Analysis": {
-            "name": "Textual Analysis",
-            "category": "Academic"
-        },
-        "Trivia": {
-            "name": "Trivia",
-            "category": "Academic"
+        "Traffic Analysis": {
+            "name": "Traffic Analysis",
+            "category": "Technical"
         }
     }
 }

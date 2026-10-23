@@ -1,8 +1,5 @@
 {
     "label": "Opponent Abilities",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Athletics": {
             "name": "Fisico",

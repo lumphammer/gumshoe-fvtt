@@ -1,0 +1,449 @@
+{
+    "label": "Mutant City Blues Mutant Powers",
+    "entries": {
+        "Absorption": {
+            "name": "Absorption",
+            "category": "Presence Powers"
+        },
+        "Alter Form": {
+            "name": "Alter Form",
+            "category": "Physical Powers"
+        },
+        "Analytic Taste": {
+            "name": "Analytic Taste",
+            "category": "Investigative Powers"
+        },
+        "Armor": {
+            "name": "Armor",
+            "category": "Physical Powers"
+        },
+        "Blade Immunity": {
+            "name": "Blade Immunity",
+            "category": "Physical Powers"
+        },
+        "Blood Spray": {
+            "name": "Blood Spray",
+            "category": "Physical Powers"
+        },
+        "Cognition": {
+            "name": "Cognition",
+            "category": "Focus Powers"
+        },
+        "Command Amphibians & Reptiles": {
+            "name": "Command Amphibians & Reptiles",
+            "category": "Presence Powers"
+        },
+        "Command Birds": {
+            "name": "Command Birds",
+            "category": "Presence Powers"
+        },
+        "Command Fish": {
+            "name": "Command Fish",
+            "category": "Presence Powers"
+        },
+        "Command Insects": {
+            "name": "Command Insects",
+            "category": "Presence Powers"
+        },
+        "Command Mammals": {
+            "name": "Command Mammals",
+            "category": "Presence Powers"
+        },
+        "Concussion Beam": {
+            "name": "Concussion Beam",
+            "category": "Focus Powers"
+        },
+        "Cure Disease": {
+            "name": "Cure Disease",
+            "category": "Presence Powers"
+        },
+        "Deplete Oxygen": {
+            "name": "Deplete Oxygen",
+            "category": "Presence Powers"
+        },
+        "Detect Influence": {
+            "name": "Detect Influence",
+            "category": "Focus Powers"
+        },
+        "Disease Immunity": {
+            "name": "Disease Immunity",
+            "category": "Physical Powers"
+        },
+        "Disintegration": {
+            "name": "Disintegration",
+            "category": "Focus Powers"
+        },
+        "Earth Control": {
+            "name": "Earth Control",
+            "category": "Focus Powers"
+        },
+        "Emotion Control": {
+            "name": "Emotion Control",
+            "category": "Presence Powers"
+        },
+        "Empathy": {
+            "name": "Empathy",
+            "category": "Presence Powers"
+        },
+        "Endorphin Control (Others)": {
+            "name": "Endorphin Control (Others)",
+            "category": "Presence Powers"
+        },
+        "Endorphin Control (Self)": {
+            "name": "Endorphin Control (Self)",
+            "category": "Presence Powers"
+        },
+        "Entangling Hair": {
+            "name": "Entangling Hair",
+            "category": "Physical Powers"
+        },
+        "Enter Dreams": {
+            "name": "Enter Dreams",
+            "category": "Focus Powers"
+        },
+        "Environmental Awareness": {
+            "name": "Environmental Awareness",
+            "category": "Investigative Powers"
+        },
+        "Fangs": {
+            "name": "Fangs",
+            "category": "Physical Powers"
+        },
+        "Fire Control": {
+            "name": "Fire Control",
+            "category": "Focus Powers"
+        },
+        "Fire Immunity": {
+            "name": "Fire Immunity",
+            "category": "Physical Powers"
+        },
+        "Fire Projection": {
+            "name": "Fire Projection",
+            "category": "Focus Powers"
+        },
+        "Flight": {
+            "name": "Flight",
+            "category": "Physical Powers"
+        },
+        "Force Field": {
+            "name": "Force Field",
+            "category": "Focus Powers"
+        },
+        "Gills": {
+            "name": "Gills",
+            "category": "Physical Powers"
+        },
+        "Gravity Control": {
+            "name": "Gravity Control",
+            "category": "Focus Powers"
+        },
+        "Healing": {
+            "name": "Healing",
+            "category": "Presence Powers"
+        },
+        "Hearing": {
+            "name": "Hearing",
+            "category": "Investigative Powers"
+        },
+        "Heat Blast": {
+            "name": "Heat Blast",
+            "category": "Focus Powers"
+        },
+        "High Energy Dispersal": {
+            "name": "High Energy Dispersal",
+            "category": "Presence Powers"
+        },
+        "Ice Blast": {
+            "name": "Ice Blast",
+            "category": "Physical Powers"
+        },
+        "Illusion": {
+            "name": "Illusion",
+            "category": "Focus Powers"
+        },
+        "Impersonate": {
+            "name": "Impersonate",
+            "category": "Presence Powers"
+        },
+        "Induce Aggression": {
+            "name": "Induce Aggression",
+            "category": "Presence Powers"
+        },
+        "Induce Fear": {
+            "name": "Induce Fear",
+            "category": "Presence Powers"
+        },
+        "Induce Mental Disorder": {
+            "name": "Induce Mental Disorder",
+            "category": "Presence Powers"
+        },
+        "Invisibility": {
+            "name": "Invisibility",
+            "category": "Physical Powers"
+        },
+        "Kinetic Energy Dispersal": {
+            "name": "Kinetic Energy Dispersal",
+            "category": "Presence Powers"
+        },
+        "Light Blast": {
+            "name": "Light Blast",
+            "category": "Focus Powers"
+        },
+        "Light Control": {
+            "name": "Light Control",
+            "category": "Focus Powers"
+        },
+        "Lightning": {
+            "name": "Lightning",
+            "category": "Focus Powers"
+        },
+        "Lightning Decisions": {
+            "name": "Lightning Decisions",
+            "category": "Focus Powers"
+        },
+        "Limb Extension": {
+            "name": "Limb Extension",
+            "category": "Physical Powers"
+        },
+        "Magnetism": {
+            "name": "Magnetism",
+            "category": "Focus Powers"
+        },
+        "Memory Alteration": {
+            "name": "Memory Alteration",
+            "category": "Focus Powers"
+        },
+        "Microvision": {
+            "name": "Microvision",
+            "category": "Investigative Powers"
+        },
+        "Natural Weaponry": {
+            "name": "Natural Weaponry",
+            "category": "Physical Powers"
+        },
+        "Night Vision": {
+            "name": "Night Vision",
+            "category": "Physical Powers"
+        },
+        "Nondescript": {
+            "name": "Nondescript",
+            "category": "Presence Powers"
+        },
+        "Observe Dreams": {
+            "name": "Observe Dreams",
+            "category": "Investigative Powers"
+        },
+        "Olfactory Center": {
+            "name": "Olfactory Center",
+            "category": "Investigative Powers"
+        },
+        "Pain Immunity": {
+            "name": "Pain Immunity",
+            "category": "Physical Powers"
+        },
+        "Phase": {
+            "name": "Phase",
+            "category": "Physical Powers"
+        },
+        "Plant Communication": {
+            "name": "Plant Communication",
+            "category": "Investigative Powers"
+        },
+        "Plant Control": {
+            "name": "Plant Control",
+            "category": "Presence Powers"
+        },
+        "Possession": {
+            "name": "Possession",
+            "category": "Presence Powers"
+        },
+        "Precision Memory": {
+            "name": "Precision Memory",
+            "category": "Focus Powers"
+        },
+        "Psionic Blast": {
+            "name": "Psionic Blast",
+            "category": "Focus Powers"
+        },
+        "Quills": {
+            "name": "Quills",
+            "category": "Physical Powers"
+        },
+        "Radiation Immunity": {
+            "name": "Radiation Immunity",
+            "category": "Physical Powers"
+        },
+        "Radiation Projection": {
+            "name": "Radiation Projection",
+            "category": "Physical Powers"
+        },
+        "Read Minds": {
+            "name": "Read Minds",
+            "category": "Investigative Powers"
+        },
+        "Reduce Temperature": {
+            "name": "Reduce Temperature",
+            "category": "Presence Powers"
+        },
+        "Reflexes": {
+            "name": "Reflexes",
+            "category": "Focus Powers"
+        },
+        "Regeneration": {
+            "name": "Regeneration",
+            "category": "Physical Powers"
+        },
+        "Resist Influence": {
+            "name": "Resist Influence",
+            "category": "Presence Powers"
+        },
+        "Secrete Acid": {
+            "name": "Secrete Acid",
+            "category": "Physical Powers"
+        },
+        "Self-Detonation": {
+            "name": "Self-Detonation",
+            "category": "Physical Powers"
+        },
+        "Sexual Chemistry": {
+            "name": "Sexual Chemistry",
+            "category": "Presence Powers"
+        },
+        "Sonar": {
+            "name": "Sonar",
+            "category": "Physical Powers"
+        },
+        "Sonic Blast": {
+            "name": "Sonic Blast",
+            "category": "Physical Powers"
+        },
+        "Spatial Awareness": {
+            "name": "Spatial Awareness",
+            "category": "Investigative Powers"
+        },
+        "Speed": {
+            "name": "Speed",
+            "category": "Physical Powers"
+        },
+        "Spit Acid": {
+            "name": "Spit Acid",
+            "category": "Physical Powers"
+        },
+        "Spontaneous Combustion": {
+            "name": "Spontaneous Combustion",
+            "category": "Presence Powers"
+        },
+        "Spread Pathogen": {
+            "name": "Spread Pathogen",
+            "category": "Presence Powers"
+        },
+        "Strength": {
+            "name": "Strength",
+            "category": "Physical Powers"
+        },
+        "Suppress Explosion": {
+            "name": "Suppress Explosion",
+            "category": "Physical Powers"
+        },
+        "Suppress Influence": {
+            "name": "Suppress Influence",
+            "category": "Presence Powers"
+        },
+        "Swimming": {
+            "name": "Swimming",
+            "category": "Physical Powers"
+        },
+        "Technokinesis": {
+            "name": "Technokinesis",
+            "category": "Focus Powers"
+        },
+        "Technopathy": {
+            "name": "Technopathy",
+            "category": "Investigative Powers"
+        },
+        "Telekinesis": {
+            "name": "Telekinesis",
+            "category": "Focus Powers"
+        },
+        "Telepathy": {
+            "name": "Telepathy",
+            "category": "Focus Powers"
+        },
+        "Teleportation": {
+            "name": "Teleportation",
+            "category": "Physical Powers"
+        },
+        "Telescopic Vision": {
+            "name": "Telescopic Vision",
+            "category": "Focus Powers"
+        },
+        "Thermal Vision": {
+            "name": "Thermal Vision",
+            "category": "Investigative Powers"
+        },
+        "Threat Calculus": {
+            "name": "Threat Calculus",
+            "category": "Focus Powers"
+        },
+        "Touch": {
+            "name": "Touch",
+            "category": "Investigative Powers"
+        },
+        "Toxin Immunity (Ingested)": {
+            "name": "Toxin Immunity (Ingested)",
+            "category": "Physical Powers"
+        },
+        "Toxin Immunity (Inhaled)": {
+            "name": "Toxin Immunity (Inhaled)",
+            "category": "Physical Powers"
+        },
+        "Tracking": {
+            "name": "Tracking",
+            "category": "Focus Powers"
+        },
+        "Translation": {
+            "name": "Translation",
+            "category": "Investigative Powers"
+        },
+        "Transmutation": {
+            "name": "Transmutation",
+            "category": "Focus Powers"
+        },
+        "Venom (Bite)": {
+            "name": "Venom (Bite)",
+            "category": "Physical Powers"
+        },
+        "Venom (Spit)": {
+            "name": "Venom (Spit)",
+            "category": "Physical Powers"
+        },
+        "Venom (Stinger)": {
+            "name": "Venom (Stinger)",
+            "category": "Physical Powers"
+        },
+        "Wall Crawling": {
+            "name": "Wall Crawling",
+            "category": "Physical Powers"
+        },
+        "Water Blast": {
+            "name": "Water Blast",
+            "category": "Focus Powers"
+        },
+        "Water Manipulation": {
+            "name": "Water Manipulation",
+            "category": "Focus Powers"
+        },
+        "Webbing": {
+            "name": "Webbing",
+            "category": "Physical Powers"
+        },
+        "Wind Control": {
+            "name": "Wind Control",
+            "category": "Focus Powers"
+        },
+        "X-Ray Vision": {
+            "name": "X-Ray Vision",
+            "category": "Investigative Powers"
+        }
+    }
+}

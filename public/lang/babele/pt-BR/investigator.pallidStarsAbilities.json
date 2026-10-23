@@ -1,8 +1,5 @@
 {
     "label": "Habilidades Pallid Stars",
-    "mapping": {
-        "category": "data.category"
-    },
     "entries": {
         "Anthropology": {
             "name": "Antropologia",

@@ -11,7 +11,7 @@ import { boot } from "@lumphammer/shared-fvtt-bits/task-core/boot";
 import {
   buildPackTranslations,
   clean,
-  copyPacksBack,
+  extractPacks,
   link,
   packidge,
   unlink,
@@ -36,6 +36,6 @@ void boot({
     clean,
     packidge,
     buildPackTranslations,
-    copyPacksBack,
+    extractPacks,
   ],
 });

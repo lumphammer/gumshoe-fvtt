@@ -1,8 +1,5 @@
 {
     "label": "SRD - Umiejętności",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Analytic Taste": {
             "name": "Analityczny smak",

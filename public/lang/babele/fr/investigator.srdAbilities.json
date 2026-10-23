@@ -1,8 +1,5 @@
 {
     "label": "Comp\u00e9tences du SRD",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Analytic Taste": {
             "name": "Go\u00fbt analytique",

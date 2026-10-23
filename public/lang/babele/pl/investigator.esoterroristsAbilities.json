@@ -1,8 +1,5 @@
 {
     "label": "Umiejętności Esoterrorists (wbudowane)",
-    "mapping": {
-        "category": "system.category"
-    },
     "entries": {
         "Anthropology": {
             "name": "Antropologia",

@@ -60,6 +60,12 @@ translations, adding fields and settings, releases).
   tooltip to `<Translate title={...}>` as well.
 - `GridField` labels are translated unless you pass `noTranslate` (needed for
   labels that are ability names).
+- After changing a pack, run `pnpm run build-pack-translations` (a test fails
+  until you do). Babele keys entries by name; the task carries translations
+  over to renamed documents via `babele-sources/ids.json`. Field mappings live
+  in `public/lang/babele/mappings.json` (generated from
+  `src/packTranslations.ts`), not in each file: a `mapping` in a file
+  overrides it.
 
 ## React
 

@@ -1,0 +1,89 @@
+{
+    "label": "Fall of DELTA GREEN Weapons",
+    "entries": {
+        "Anti-materiel rifle": {
+            "name": "Anti-materiel rifle"
+        },
+        "Assault rifle": {
+            "name": "Assault rifle"
+        },
+        "Baseball bat, heavy club": {
+            "name": "Baseball bat, heavy club"
+        },
+        "Brass knuckles, sap": {
+            "name": "Brass knuckles, sap"
+        },
+        "Claw, bite": {
+            "name": "Claw, bite"
+        },
+        "Crossbow": {
+            "name": "Crossbow"
+        },
+        "Fire axe": {
+            "name": "Fire axe"
+        },
+        "Fist, kick": {
+            "name": "Fist, kick"
+        },
+        "Fixed bayonet": {
+            "name": "Fixed bayonet"
+        },
+        "Grenade launcher": {
+            "name": "Grenade launcher"
+        },
+        "Hand grenade": {
+            "name": "Hand grenade"
+        },
+        "Heavy machine gun": {
+            "name": "Heavy machine gun"
+        },
+        "Knife": {
+            "name": "Knife"
+        },
+        "Large improvised weapon": {
+            "name": "Large improvised weapon"
+        },
+        "Light machine gun": {
+            "name": "Light machine gun"
+        },
+        "Machete": {
+            "name": "Machete"
+        },
+        "Nightstick": {
+            "name": "Nightstick"
+        },
+        "Pistol (heavy)": {
+            "name": "Pistol (heavy)"
+        },
+        "Pistol (light)": {
+            "name": "Pistol (light)"
+        },
+        "Rifle (heavy)": {
+            "name": "Rifle (heavy)"
+        },
+        "Rifle (light)": {
+            "name": "Rifle (light)"
+        },
+        "Rocket launcher": {
+            "name": "Rocket launcher"
+        },
+        "Shotgun (12-gauge)": {
+            "name": "Shotgun (12-gauge)"
+        },
+        "Shotgun (20-gauge)": {
+            "name": "Shotgun (20-gauge)"
+        },
+        "Small improvised weapon": {
+            "name": "Small improvised weapon"
+        },
+        "Submachine gun": {
+            "name": "Submachine gun"
+        },
+        "Sword": {
+            "name": "Sword"
+        },
+        "White phosphorus grenade": {
+            "name": "White phosphorus grenade"
+        }
+    }
+}
