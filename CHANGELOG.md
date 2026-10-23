@@ -2,7 +2,7 @@
 
 (Skipped version numbers are testing releases.)
 
-## Unreleased
+## 10.129 (2026-10-23)
 
 - **Attack targetting and damage application (#1421)** You can now use Foundry's token-targetting system to direct attacks to a specific token. The attack roll will work out whether it's a hit or miss, and you can then apply the damage to the targetted combatant.
 - **Wound status effects (#1405)** Health "brackets" (like Hurt, Seriously Wounded) are now implemented as Foundry Effects and can do things like blocking Investigative spends.
@@ -19,7 +19,7 @@
 - **New preset for Fall of DELTA GREEN (#1423)** Like the other built-in presets, this can't contain any rules text or descriptions, but it's totally playable if you have the book!
 - **Settings overhaul:** This update adds so many new options that I had to completely rework the "GUMSHOE System Settings" window. Hopefully it's nice and easy to find any given setting now.
 - **Combat and Abilities tabs overhaul (#909)** The "Edit" tab is gone, now there's just an edit toggle on the Abilities tab. There's a new "Combat" tab which shows weapons and lets you make attacks directly. I'm afraid the old quick-weapons rows have gone, because they weren't great for UX (most of my players couldn't parse the display at all and just opened the weapon to attack,) and there was no sane way to cram autofire in there. Instead you can toggle a weapon "ready" and the fire controls show up right in the character sheet.
-- **BUGS FIXED:** Creating a new combat was sometimes impossible. Equipment categories got reset when editing a field value. Status effect icon in the combat tracker were broken.
+- **BUGS FIXED:** Creating a new combat was sometimes impossible. Equipment categories got reset when editing a field value. Status effect icon in the combat tracker were broken. Babele translations were broken.
 
 ## 10.123 (2026-08-27)
 
