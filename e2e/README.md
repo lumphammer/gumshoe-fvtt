@@ -14,7 +14,9 @@ These aren't part of `pnpm check` or CI yet: they need a licensed Foundry.
    data folder (`~/foundrydata/e2e`). It copies the signed licence from the
    `dataPath` in `foundryconfig.json`. See the top of
    [`scripts/e2e-foundry.sh`](../scripts/e2e-foundry.sh) for the settings.
-   `pnpm e2e:foundry down` stops it.
+   `pnpm e2e:foundry down` stops it. Starting it also installs the latest
+   releases of Babele and libWrapper into its modules folder, for the pack
+   translations test; `pnpm e2e:foundry restart` updates them.
 3. Install Chromium the first time: `pnpm exec playwright install chromium`.
    On a minimal Linux (e.g. a Fedora toolbox) it may also need some system
    libraries: `pnpm exec playwright install-deps chromium` installs them on
@@ -53,5 +55,9 @@ password. If the data folder isn't here, the system must already be installed.
   locators and clicks for the thing you're actually testing. Code inside
   `page.evaluate` is typechecked against fvtt-types like the rest of the
   system.
+- [`packTranslations.spec.ts`](packTranslations.spec.ts) switches Babele
+  on for its own tests only, and checks a pack ability comes out translated
+  in a few languages. Its expected values come from `public/lang/babele`, so
+  pulling new translations doesn't break it.
 - Force dice with `CONFIG.Dice.randomUniform = () => 0.01` (every die
   rolls 6) or `0.99` (1s).

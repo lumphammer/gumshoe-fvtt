@@ -110,6 +110,26 @@ function installSystem() {
 }
 
 /**
+ * Check the modules the tests use are installed (`scripts/e2e-foundry.sh`
+ * installs them when it starts Foundry).
+ */
+function checkModules() {
+  if (!fs.existsSync(foundryDataPath)) return;
+  const missing = ["babele", "lib-wrapper"].filter(
+    (id) =>
+      !fs.existsSync(
+        path.join(foundryDataPath, "Data/modules", id, "module.json"),
+      ),
+  );
+  if (missing.length > 0) {
+    throw new Error(
+      `The test Foundry is missing modules the tests use (${missing.join(", ")}): ` +
+        "`pnpm e2e:foundry restart` installs them.",
+    );
+  }
+}
+
+/**
  * Throw away the test world, create a fresh one, and launch it.
  */
 async function resetWorld(browser: Browser) {
@@ -171,6 +191,7 @@ async function resetWorld(browser: Browser) {
 }
 
 export default async function globalSetup(_config: FullConfig) {
+  checkModules();
   const browser = await chromium.launch();
   try {
     await resetWorld(browser);
