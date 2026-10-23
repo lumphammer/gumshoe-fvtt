@@ -126,6 +126,34 @@ export function mappingsMatch(translation: BabeleFile, source: BabeleFile) {
 }
 
 /**
+ * Which of a translated file's entries move, as old key -> new key. The moves
+ * happen all at once, so names can swap or shift along a chain. An entry
+ * doesn't move onto a key whose entry is staying put: that's an existing
+ * translation of the new name, which we keep.
+ */
+export function planMoves(
+  translation: BabeleFile,
+  source: BabeleFile,
+  renames: Map<string, string>,
+) {
+  const entries = translation.entries ?? {};
+  const moves = new Map(
+    [...renames].filter(
+      ([from, to]) => from in entries && to in source.entries,
+    ),
+  );
+  // dropping one move can leave its entry blocking another, so repeat
+  let blocked: string[];
+  do {
+    blocked = [...moves]
+      .filter(([, to]) => to in entries && !moves.has(to))
+      .map(([from]) => from);
+    for (const from of blocked) moves.delete(from);
+  } while (blocked.length > 0);
+  return moves;
+}
+
+/**
  * Bring a translated file into line with its source: carry translations over
  * to renamed documents, and make its `mapping` match (a `mapping` in a file
  * overrides the one in `mappings.json`). Returns `undefined` if nothing
@@ -136,20 +164,11 @@ export function updateTranslation(
   source: BabeleFile,
   renames: Map<string, string>,
 ): BabeleFile | undefined {
-  let changed = false;
+  const moves = planMoves(translation, source, renames);
+  let changed = moves.size > 0;
   const entries: Record<string, BabeleEntry> = {};
   for (const [key, entry] of Object.entries(translation.entries ?? {})) {
-    const newKey = renames.get(key);
-    if (
-      newKey !== undefined &&
-      !(newKey in (translation.entries ?? {})) &&
-      newKey in source.entries
-    ) {
-      entries[newKey] = entry;
-      changed = true;
-    } else {
-      entries[key] = entry;
-    }
+    entries[moves.get(key) ?? key] = entry;
   }
   const updated: BabeleFile = { ...translation, entries };
   if (!mappingsMatch(translation, source)) {
@@ -195,26 +214,26 @@ export function updateTranslationText(
             .replace(/,(\s*\n[ \t]*"mapping"\s*:\s*\{[^{}]*\})(?=\s*\})/, "")
         : undefined;
   }
-  for (const [from, to] of renames) {
-    if (text === undefined) {
-      break;
+  const moves = planMoves(translation, source, renames);
+  if (text !== undefined && moves.size > 0) {
+    // all in one pass, so a swap doesn't move an entry and then move it back
+    const replacements = new Map<string, string>();
+    for (const [from, to] of moves) {
+      replacements.set(JSON.stringify(from), JSON.stringify(to));
+      replacements.set(asciiJsonString(from), asciiJsonString(to));
     }
-    if (!(to in updated.entries) || from in updated.entries) {
-      continue;
-    }
-    const encodings: Array<[string, string]> = [
-      [JSON.stringify(from), JSON.stringify(to)],
-      [asciiJsonString(from), asciiJsonString(to)],
-    ];
-    const match = encodings.find(([encoded]) =>
-      new RegExp(`${escapeRegExp(encoded)}\\s*:`).test(text ?? ""),
+    const pattern = new RegExp(
+      `(${[...replacements.keys()].map(escapeRegExp).join("|")})(\\s*:)`,
+      "g",
     );
-    text = match
-      ? text.replace(
-          new RegExp(`${escapeRegExp(match[0])}(\\s*:)`),
-          (_, colon: string) => `${match[1]}${colon}`,
-        )
-      : undefined;
+    // only the first of each: the entry's own key, before any page's
+    const done = new Set<string>();
+    text = text.replace(pattern, (match, key: string, colon: string) => {
+      const name = JSON.parse(key) as string;
+      if (done.has(name)) return match;
+      done.add(name);
+      return `${replacements.get(key)}${colon}`;
+    });
   }
   try {
     if (

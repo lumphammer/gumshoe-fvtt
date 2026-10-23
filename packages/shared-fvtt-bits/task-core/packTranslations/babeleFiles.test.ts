@@ -6,6 +6,7 @@ import {
   buildIdIndex,
   diffEntries,
   findRenames,
+  planMoves,
   serializeJsonLike,
   translatablePacks,
   updateTranslation,
@@ -203,6 +204,89 @@ describe("updateTranslation", () => {
   });
 });
 
+const file = (...names: string[]): BabeleFile => ({
+  label: "",
+  entries: Object.fromEntries(names.map((n) => [n, { name: `fr ${n}` }])),
+});
+
+describe("planMoves", () => {
+  it("swaps names", () => {
+    const moves = planMoves(
+      file("A", "B"),
+      file("A", "B"),
+      new Map([
+        ["A", "B"],
+        ["B", "A"],
+      ]),
+    );
+    expect([...moves]).toEqual([
+      ["A", "B"],
+      ["B", "A"],
+    ]);
+  });
+
+  it("follows a chain", () => {
+    const moves = planMoves(
+      file("A", "B"),
+      file("B", "C"),
+      new Map([
+        ["A", "B"],
+        ["B", "C"],
+      ]),
+    );
+    expect([...moves]).toEqual([
+      ["A", "B"],
+      ["B", "C"],
+    ]);
+  });
+
+  it("drops moves blocked by an entry that stays, and moves they block", () => {
+    // B stays (its translation of the new name wins), so A can't move to
+    // B, so C can't move to A
+    const moves = planMoves(
+      file("A", "B", "C"),
+      file("A", "B"),
+      new Map([
+        ["A", "B"],
+        ["C", "A"],
+      ]),
+    );
+    expect(moves.size).toBe(0);
+  });
+});
+
+describe("updateTranslation with swaps and chains", () => {
+  it("swaps translations when names swap", () => {
+    const updated = updateTranslation(
+      file("A", "B"),
+      file("A", "B"),
+      new Map([
+        ["A", "B"],
+        ["B", "A"],
+      ]),
+    );
+    expect(updated?.entries).toEqual({
+      B: { name: "fr A" },
+      A: { name: "fr B" },
+    });
+  });
+
+  it("moves every translation along a chain", () => {
+    const updated = updateTranslation(
+      file("A", "B"),
+      file("B", "C"),
+      new Map([
+        ["A", "B"],
+        ["B", "C"],
+      ]),
+    );
+    expect(updated?.entries).toEqual({
+      B: { name: "fr A" },
+      C: { name: "fr B" },
+    });
+  });
+});
+
 describe("updateTranslationText", () => {
   it("edits the text in place, keeping escapes and formatting", () => {
     const original = [
@@ -237,6 +321,23 @@ describe("updateTranslationText", () => {
         "    }",
         "}",
       ].join("\n"),
+    );
+  });
+
+  it("swaps keys in place", () => {
+    const original =
+      '{"label": "L", "entries": {"A": {"name": "a"}, "B": {"name": "b"}}}';
+    expect(
+      updateTranslationText(
+        original,
+        file("A", "B"),
+        new Map([
+          ["A", "B"],
+          ["B", "A"],
+        ]),
+      ),
+    ).toBe(
+      '{"label": "L", "entries": {"B": {"name": "a"}, "A": {"name": "b"}}}',
     );
   });
 
