@@ -129,3 +129,10 @@ export const journalMemory = "journalMemory";
 // magic values
 
 export const occupationSlotIndex = -1;
+
+/**
+ * Where usage stats go (see `src/usageStats`). Until the service is deployed
+ * this is null, which means nothing is asked or sent, and the settings page
+ * is hidden.
+ */
+export const usageStatsEndpoint: string | null = null;

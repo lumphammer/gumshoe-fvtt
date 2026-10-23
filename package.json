@@ -57,6 +57,7 @@
     "@fontsource/russo-one": "^5.3.0",
     "@fontsource/special-elite": "^5.3.0",
     "@fontsource/spicy-rice": "^5.3.0",
+    "@lumphammer/fvtt-telemetry-schema": "github:lumphammer/fvtt-telemetry#path:/packages/schema",
     "@lumphammer/investigator-fvtt-types": "workspace:^",
     "@lumphammer/minirouter": "workspace:^",
     "@lumphammer/shared-fvtt-bits": "workspace:^",

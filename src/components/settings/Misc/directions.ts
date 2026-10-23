@@ -5,3 +5,4 @@ export const dyingEarthOptions = createDirection("dyingEarthOptions");
 export const importExport = createDirection("importExport");
 export const developerOptions = createDirection("developerOptions");
 export const migrationRecovery = createDirection("migrationRecovery");
+export const usageStats = createDirection("usageStats");

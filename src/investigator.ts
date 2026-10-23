@@ -38,6 +38,7 @@ import { offerTrailOfCthulhuRules } from "./startup/offerTrailOfCthulhuRules";
 import { registerBabele } from "./startup/registerBabele";
 import { registerDevModeDebugFlag } from "./startup/registerDevModeDebugFlag";
 import { registerSettingsMenu } from "./startup/registerSettingsMenu";
+import { registerUsageStats, runUsageStats } from "./startup/installUsageStats";
 
 // @emotion/react 11.13 introduced a ~breaking change that labelling is now
 // opt-in. There are good perf reasons for this, but personally I like it
@@ -52,6 +53,7 @@ Hooks.once("init", function () {
   systemLogger.log(`Initializing ${systemId} system`);
   registerSettingsMenu();
   registerBabele();
+  registerUsageStats();
 });
 
 // Setup system
@@ -61,8 +63,9 @@ Hooks.once("setup", function () {
 
 Hooks.once("ready", async () => {
   await migrateWorldIfNeeded();
-  // this waits for the GM to answer, so don't hold up the rest of startup
-  void offerTrailOfCthulhuRules();
+  // these wait for the GM to answer, so don't hold up the rest of startup;
+  // one question at a time
+  void offerTrailOfCthulhuRules().then(runUsageStats);
   await installDSNFix();
 
   assertGame(game);
