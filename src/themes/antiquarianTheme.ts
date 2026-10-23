@@ -6,10 +6,6 @@ import type { ThemeV1 } from "./types";
 export const antiquarianTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Antiquarian",
-  global: `
-    ${averiaLibre.importStatement}
-    @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap');
-  `,
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/scott-webb-UjupleczBOY-unsplash.webp)`,
     backgroundPosition: "center",

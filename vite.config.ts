@@ -7,6 +7,7 @@ import packageManifest from "./package.json" with { type: "json" };
 // requires extra config and breaks vitest
 import { createViteUserConfig } from "./packages/shared-fvtt-bits/dotfiles/import/createViteUserConfig.ts";
 import systemManifest from "./public/system.json" with { type: "json" };
+import { vitePluginFontsource } from "./src/vitePluginFontsource.ts";
 
 const config = defineConfig(({ mode }) => {
   const userConfig = createViteUserConfig({
@@ -14,6 +15,7 @@ const config = defineConfig(({ mode }) => {
     foundryPackageId: systemManifest.id,
     packageType: "system",
     importMetaUrl: import.meta.url,
+    plugins: [vitePluginFontsource()],
   });
   // typechecking with tsgo in vitest is problematique rn - I can't get vitest
   // to find tests by setting .checker to the path to the executable. I've tried
