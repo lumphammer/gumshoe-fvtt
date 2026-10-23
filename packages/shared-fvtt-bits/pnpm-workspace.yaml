@@ -1,0 +1,7 @@
+# fvtt-types depends on pixi packages via github: URLs
+blockExoticSubdeps: false
+
+allowBuilds:
+  '@swc/core': true
+  classic-level: true
+  esbuild: true
