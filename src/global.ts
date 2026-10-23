@@ -2,8 +2,6 @@
 import type { ApplicationV2 } from "./fvtt-exports";
 
 declare global {
-  const Babele: any;
-
   // this is for the pop out module - currently broken
   namespace PopOut {
     interface DialogHookInfo {
