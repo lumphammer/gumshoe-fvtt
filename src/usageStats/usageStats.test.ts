@@ -272,6 +272,12 @@ describe("setSharing", () => {
 });
 
 describe("the dialog's content", () => {
+  // stands in for Foundry's, which strips scripts and event handlers
+  const cleanHTML = vi.fn((html: string) => html.replace(/<img[^>]*>/g, ""));
+  beforeEach(() => {
+    vi.stubGlobal("foundry", { utils: { cleanHTML } });
+  });
+
   it("previews the report", () => {
     const root = document.createElement("div");
     root.innerHTML = buildOfferContent(config);
@@ -279,19 +285,27 @@ describe("the dialog's content", () => {
     expect(JSON.parse(pre.textContent)).toEqual(previewReport(config));
   });
 
-  it("doesn't let module names become markup", () => {
-    (game as unknown as { modules: Map<string, object> }).modules.set("x", {
-      id: "<img src=x onerror=alert(1)>",
-      version: "1.0",
-      active: true,
-    });
+  it("lets the explanation use HTML, cleaned by Foundry", () => {
     const root = document.createElement("div");
     root.innerHTML = buildOfferContent({
       ...config,
-      localize: () => "<b>bold</b>",
+      localize: () => "a <em>short</em> report<img src=x onerror=alert(1)>",
     });
+    expect(cleanHTML).toHaveBeenCalled();
+    expect(root.querySelector("p em")?.textContent).toBe("short");
     expect(root.querySelector("img")).toBeNull();
-    expect(root.querySelector("b")).toBeNull();
+  });
+
+  it("shows the preview as text", () => {
+    const root = document.createElement("div");
+    root.innerHTML = buildOfferContent({
+      ...config,
+      getSettings: () => ({ preset: "<b>not markup</b>" }),
+    });
+    expect(root.querySelector("pre b")).toBeNull();
+    expect(root.querySelector("pre")?.textContent).toContain(
+      '"preset": "<b>not markup</b>"',
+    );
   });
 });
 

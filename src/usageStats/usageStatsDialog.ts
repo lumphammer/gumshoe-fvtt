@@ -17,14 +17,22 @@ function element<K extends keyof HTMLElementTagNameMap>(
   return el;
 }
 
+/** A paragraph of translated text, which may use some HTML (e.g. `<em>`). */
+function paragraph(html: string) {
+  const p = element("p");
+  p.innerHTML = foundry.utils.cleanHTML(html);
+  return p;
+}
+
 /** The JSON a report shows as, in the preview. */
 export function formatReport(config: UsageStatsConfig) {
   return JSON.stringify(previewReport(config), null, 2);
 }
 
 /**
- * The explanation and the report preview, as HTML. Built with the DOM so
- * nothing in them (module names, say) can become markup.
+ * The explanation and the report preview, as HTML. The explanation may use
+ * HTML (cleaned by Foundry); the preview is plain text, so it shows exactly
+ * what would be sent.
  */
 export function buildOfferContent(config: UsageStatsConfig) {
   const { localize } = config;
@@ -34,8 +42,8 @@ export function buildOfferContent(config: UsageStatsConfig) {
   content.className = "usage-stats-offer";
 
   content.append(
-    element("p", localize("UsageStatsOffer", values)),
-    element("p", localize("UsageStatsPrivacy", values)),
+    paragraph(localize("UsageStatsOffer", values)),
+    paragraph(localize("UsageStatsPrivacy", values)),
   );
 
   const details = element("details");
