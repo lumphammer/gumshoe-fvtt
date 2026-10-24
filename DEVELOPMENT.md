@@ -202,7 +202,7 @@ To add a font, `pnpm add @fontsource/<name>` (or `@fontsource-variable/<name>`, 
 
 ## Usage stats
 
-GMs can opt in to sending anonymous usage stats once a day (see [lumphammer/fvtt-telemetry](https://github.com/lumphammer/fvtt-telemetry), which has the server and [the plan](https://github.com/lumphammer/fvtt-telemetry/blob/main/docs/plan.md)). Nothing is asked or sent while `usageStatsEndpoint` in [`src/constants.ts`](src/constants.ts) is `null`.
+GMs can opt in to sending anonymous usage stats once a day (see [lumphammer/fvtt-telemetry](https://github.com/lumphammer/fvtt-telemetry), which has the server and [the plan](https://github.com/lumphammer/fvtt-telemetry/blob/main/docs/plan.md)). Reports go to `usageStatsEndpoint` in [`src/constants.ts`](src/constants.ts); setting it to `null` turns usage stats off (nothing is asked or sent, and the settings page is hidden).
 
 - [`src/usageStats/`](src/usageStats/) is the client. It doesn't import anything from INVESTIGATOR (a test checks), so it can move to a shared package for our other Foundry projects.
 - [`src/startup/installUsageStats.ts`](src/startup/installUsageStats.ts) is INVESTIGATOR's part: what to report (`getReportedSettings`) and the hooks. Only report values we chose (preset IDs, switches), never anything a user typed.
