@@ -15,7 +15,7 @@ import {
   type OfferAnswer,
   type UsageStatsConfig,
 } from "./usageStats";
-import { buildOfferContent, wirePreview } from "./usageStatsDialog";
+import { buildOfferContent } from "./usageStatsDialog";
 
 /** A fake `game`, with just what usage stats use. */
 function fakeGame({
@@ -94,10 +94,9 @@ afterEach(() => {
 });
 
 describe("buildReport", () => {
-  it("leaves out the modules unless they're shared", () => {
+  it("puts the report together, leaving out modules the server would refuse", () => {
     const report = buildReport(info, {
       installId: "kq7Xb2c9TzRf1mWd8sLp4a",
-      shareModules: false,
       settings: { preset: "pathOfCthulhuPreset" },
     });
     expect(report).toEqual({
@@ -108,20 +107,17 @@ describe("buildReport", () => {
       language: "en",
       userCount: 4,
       settings: { preset: "pathOfCthulhuPreset" },
+      modules: [{ id: "dice-so-nice", version: "5.2.1" }],
     });
   });
 
-  it("leaves out modules the server would refuse", () => {
-    const report = buildReport(info, {
-      installId: "kq7Xb2c9TzRf1mWd8sLp4a",
-      shareModules: true,
-    });
-    expect(report.modules).toEqual([{ id: "dice-so-nice", version: "5.2.1" }]);
+  it("leaves out settings if there aren't any", () => {
+    const report = buildReport(info, { installId: "kq7Xb2c9TzRf1mWd8sLp4a" });
     expect(report).not.toHaveProperty("settings");
   });
 
   it("previews with only active modules, and a placeholder ID", () => {
-    const report = previewReport(config, true);
+    const report = previewReport(config);
     expect(report.installId).toBe(previewInstallId);
     expect(report.modules?.map((m) => m.id)).toEqual([
       "dice-so-nice",
@@ -134,30 +130,29 @@ describe("offerUsageStats", () => {
   const answer = (result: OfferAnswer) => vi.fn(() => Promise.resolve(result));
 
   it("records a yes, with a new install ID", async () => {
-    await offerUsageStats(
-      config,
-      answer({ answer: "yes", shareModules: true }),
-    );
+    await offerUsageStats(config, answer("yes"));
     const state = getUsageStatsState(config);
     expect(state.consent).toBe("yes");
-    expect(state.shareModules).toBe(true);
     expect(state.installId).toMatch(/^[A-Za-z0-9_-]{22}$/);
   });
 
   it("records a no, and doesn't ask again", async () => {
-    await offerUsageStats(config, answer({ answer: "no" }));
-    expect(getUsageStatsState(config).consent).toBe("no");
+    await offerUsageStats(config, answer("no"));
+    expect(getUsageStatsState(config)).toMatchObject({
+      consent: "no",
+      installId: "",
+    });
 
-    const ask = answer({ answer: "yes", shareModules: false });
+    const ask = answer("yes");
     await offerUsageStats(config, ask);
     expect(ask).not.toHaveBeenCalled();
   });
 
   it("asks again after an update if the GM said later", async () => {
-    await offerUsageStats(config, answer({ answer: "later" }));
+    await offerUsageStats(config, answer("later"));
     expect(getUsageStatsState(config).consent).toBe("unset");
 
-    const ask = answer({ answer: "later" });
+    const ask = answer("later");
     await offerUsageStats(config, ask);
     expect(ask).not.toHaveBeenCalled();
 
@@ -168,7 +163,7 @@ describe("offerUsageStats", () => {
   });
 
   it("doesn't ask without an endpoint", async () => {
-    const ask = answer({ answer: "no" });
+    const ask = answer("no");
     await offerUsageStats({ ...config, endpoint: null }, ask);
     expect(ask).not.toHaveBeenCalled();
   });
@@ -176,7 +171,7 @@ describe("offerUsageStats", () => {
   it("only asks on the active GM's client", async () => {
     fakeGame({ isActiveGM: false });
     await register();
-    const ask = answer({ answer: "no" });
+    const ask = answer("no");
     await offerUsageStats(config, ask);
     expect(ask).not.toHaveBeenCalled();
   });
@@ -191,7 +186,7 @@ describe("sendUsageStatsIfDue", () => {
   });
 
   it("sends once a day", async () => {
-    await setSharing(config, { share: true, shareModules: false });
+    await setSharing(config, true);
 
     expect(await sendUsageStatsIfDue(config, now)).toBe(true);
     expect(await sendUsageStatsIfDue(config, now)).toBe(false);
@@ -204,8 +199,8 @@ describe("sendUsageStatsIfDue", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
-  it("sends a valid report, with modules only if they're shared", async () => {
-    await setSharing(config, { share: true, shareModules: true });
+  it("sends a valid report, with the active modules", async () => {
+    await setSharing(config, true);
     await sendUsageStatsIfDue(config, now);
 
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
@@ -224,7 +219,7 @@ describe("sendUsageStatsIfDue", () => {
   });
 
   it("tries again later if the server refuses", async () => {
-    await setSharing(config, { share: true, shareModules: false });
+    await setSharing(config, true);
     fetchMock.mockResolvedValueOnce(new Response("no", { status: 400 }));
 
     expect(await sendUsageStatsIfDue(config, now)).toBe(false);
@@ -232,7 +227,7 @@ describe("sendUsageStatsIfDue", () => {
   });
 
   it("sends nothing without an endpoint", async () => {
-    await setSharing(config, { share: true, shareModules: false });
+    await setSharing(config, true);
     expect(await sendUsageStatsIfDue({ ...config, endpoint: null }, now)).toBe(
       false,
     );
@@ -240,7 +235,7 @@ describe("sendUsageStatsIfDue", () => {
   });
 
   it("sends nothing from other clients", async () => {
-    await setSharing(config, { share: true, shareModules: false });
+    await setSharing(config, true);
     (
       game as unknown as { users: { activeGM: { isSelf: boolean } } }
     ).users.activeGM.isSelf = false;
@@ -249,26 +244,26 @@ describe("sendUsageStatsIfDue", () => {
 });
 
 describe("setSharing", () => {
-  it("forgets the install ID when sharing is turned off", async () => {
-    await setSharing(config, { share: true, shareModules: true });
-    await setSharing(config, { share: false, shareModules: true });
-    expect(getUsageStatsState(config)).toEqual({
+  it("keeps the install ID when sharing is turned off and on again", async () => {
+    await setSharing(config, true);
+    const { installId } = getUsageStatsState(config);
+
+    await setSharing(config, false);
+    expect(getUsageStatsState(config)).toMatchObject({
       consent: "no",
-      shareModules: false,
-      installId: "",
-      lastSentDay: "",
+      installId,
+    });
+    expect(await sendUsageStatsIfDue(config)).toBe(false);
+
+    await setSharing(config, true);
+    expect(getUsageStatsState(config)).toMatchObject({
+      consent: "yes",
+      installId,
     });
   });
 
-  it("keeps the install ID when only the module setting changes", async () => {
-    await setSharing(config, { share: true, shareModules: false });
-    const { installId } = getUsageStatsState(config);
-    await setSharing(config, { share: true, shareModules: true });
-    expect(getUsageStatsState(config).installId).toBe(installId);
-  });
-
   it("resetInstallId makes a new one", async () => {
-    await setSharing(config, { share: true, shareModules: false });
+    await setSharing(config, true);
     const { installId } = getUsageStatsState(config);
     await resetInstallId(config);
     expect(getUsageStatsState(config).installId).not.toBe(installId);
@@ -277,19 +272,11 @@ describe("setSharing", () => {
 });
 
 describe("the dialog's content", () => {
-  it("previews the report, and follows the module list box", () => {
+  it("previews the report", () => {
     const root = document.createElement("div");
     root.innerHTML = buildOfferContent(config);
-    wirePreview(root, config);
     const pre = root.querySelector("pre")!;
-    expect(JSON.parse(pre.textContent)).not.toHaveProperty("modules");
-
-    const checkbox = root.querySelector<HTMLInputElement>(
-      'input[name="shareModules"]',
-    )!;
-    checkbox.checked = true;
-    checkbox.dispatchEvent(new Event("change"));
-    expect(JSON.parse(pre.textContent).modules).toHaveLength(2);
+    expect(JSON.parse(pre.textContent)).toEqual(previewReport(config));
   });
 
   it("doesn't let module names become markup", () => {

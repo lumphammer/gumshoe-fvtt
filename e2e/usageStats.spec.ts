@@ -20,7 +20,6 @@ async function makeUnaskedWorld(page: Page) {
   // set them all, so whatever the test changes is put back afterwards
   await setSettings(page, {
     usageStatsConsent: "unset",
-    usageStatsShareModules: false,
     usageStatsInstallId: "",
     usageStatsLastSentDay: "",
     usageStatsAskedVersion: "",
@@ -47,19 +46,14 @@ test("the test world has said no, so it isn't asked", async ({ page }) => {
   await expect(offer(page)).toHaveCount(0);
 });
 
-test("a GM can opt in to usage stats, with modules, and a report goes", async ({
-  page,
-}) => {
+test("a GM can opt in to usage stats, and a report goes", async ({ page }) => {
   await makeUnaskedWorld(page);
   const reports = await catchReports(page);
   await reloadGame(page);
 
   await expect(offer(page)).toContainText("can send a short, anonymous report");
   await offer(page).getByText("Show exactly what would be sent").click();
-  const preview = offer(page).locator("pre");
-  await expect(preview).not.toContainText('"modules"');
-  await offer(page).getByLabel("Also share the list of active modules").check();
-  await expect(preview).toContainText('"modules"');
+  await expect(offer(page).locator("pre")).toContainText('"modules"');
 
   await offer(page).getByRole("button", { name: "Share usage stats" }).click();
   await expect(offer(page)).toHaveCount(0);

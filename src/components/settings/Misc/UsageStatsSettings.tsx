@@ -30,20 +30,13 @@ export const UsageStatsSettings = () => {
   const sharing = state.consent === "yes";
 
   const handleShare = async (share: boolean) => {
-    await setSharing(usageStatsConfig, {
-      share,
-      shareModules: share && state.shareModules,
-    });
+    await setSharing(usageStatsConfig, share);
     refresh();
     if (share) {
       // send today's report now, rather than on the next load
       await sendUsageStatsIfDue(usageStatsConfig);
       refresh();
     }
-  };
-  const handleShareModules = async (shareModules: boolean) => {
-    await setSharing(usageStatsConfig, { share: true, shareModules });
-    refresh();
   };
   const handleReset = async () => {
     await resetInstallId(usageStatsConfig);
@@ -60,19 +53,11 @@ export const UsageStatsSettings = () => {
           <Toggle checked={sharing} onChange={handleShare} />
         </SettingsGridField>
         {sharing && (
-          <SettingsGridField label="Also share the list of active modules">
-            <Toggle
-              checked={state.shareModules}
-              onChange={handleShareModules}
-            />
-          </SettingsGridField>
-        )}
-        {sharing && (
           <SettingsGridField label="Last sent">
             {state.lastSentDay || <Translate>Not yet</Translate>}
           </SettingsGridField>
         )}
-        {sharing && (
+        {state.installId && (
           <SettingsGridField label="Install ID">
             <div css={{ display: "flex", gap: "0.5em", alignItems: "center" }}>
               <code>{state.installId}</code>
@@ -94,7 +79,7 @@ export const UsageStatsSettings = () => {
                 userSelect: "text",
               }}
             >
-              {formatReport(usageStatsConfig, sharing && state.shareModules)}
+              {formatReport(usageStatsConfig)}
             </pre>
           </details>
           <a href={usageStatsInfoUrl} target="_blank" rel="noopener noreferrer">

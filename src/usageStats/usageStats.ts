@@ -40,7 +40,6 @@ export type Consent = "unset" | "yes" | "no";
 /** The world settings we keep, by their keys. */
 export const settingKeys = {
   consent: "usageStatsConsent",
-  shareModules: "usageStatsShareModules",
   installId: "usageStatsInstallId",
   lastSentDay: "usageStatsLastSentDay",
   askedVersion: "usageStatsAskedVersion",
@@ -76,7 +75,6 @@ export function registerUsageStatsSettings(config: UsageStatsConfig) {
   const register = (key: SettingKey, data: object) =>
     store().register(config.packageId, key, { ...world, ...data });
   register(settingKeys.consent, { type: String, default: "unset" });
-  register(settingKeys.shareModules, { type: Boolean, default: false });
   register(settingKeys.installId, { type: String, default: "" });
   register(settingKeys.lastSentDay, { type: String, default: "" });
   register(settingKeys.askedVersion, { type: String, default: "" });
@@ -84,7 +82,6 @@ export function registerUsageStatsSettings(config: UsageStatsConfig) {
 
 export type UsageStatsState = {
   consent: Consent;
-  shareModules: boolean;
   installId: string;
   lastSentDay: string;
 };
@@ -95,7 +92,6 @@ export function getUsageStatsState(config: UsageStatsConfig): UsageStatsState {
   const consent = get(config, settingKeys.consent);
   return {
     consent: consent === "yes" || consent === "no" ? consent : "unset",
-    shareModules: get(config, settingKeys.shareModules) === true,
     installId: asString(get(config, settingKeys.installId)),
     lastSentDay: asString(get(config, settingKeys.lastSentDay)),
   };
@@ -134,16 +130,17 @@ export function collectFoundryInfo(config: UsageStatsConfig): FoundryInfo {
 /** The ID shown in a preview when the world doesn't have one yet. */
 export const previewInstallId = "xxxxxxxxxxxxxxxxxxxxxx";
 
-/** Put a report together. */
+/**
+ * Put a report together. (The server only keeps modules in Foundry's public
+ * package index.)
+ */
 export function buildReport(
   info: FoundryInfo,
   {
     installId,
-    shareModules,
     settings,
   }: {
     installId: string;
-    shareModules: boolean;
     settings?: Record<string, string | number | boolean>;
   },
 ): ReportV1 {
@@ -155,16 +152,10 @@ export function buildReport(
     language: info.language,
     userCount: info.userCount,
     ...(settings && Object.keys(settings).length > 0 ? { settings } : {}),
-    ...(shareModules
-      ? {
-          // one odd module mustn't stop the whole report
-          modules: info.modules
-            .filter(
-              (m) => idPattern.test(m.id) && versionPattern.test(m.version),
-            )
-            .slice(0, maxModules),
-        }
-      : {}),
+    // one odd module mustn't stop the whole report
+    modules: info.modules
+      .filter((m) => idPattern.test(m.id) && versionPattern.test(m.version))
+      .slice(0, maxModules),
   };
 }
 
@@ -172,13 +163,9 @@ export function buildReport(
  * The report this world would send, for showing the GM. Uses a placeholder ID
  * if it hasn't got one yet.
  */
-export function previewReport(
-  config: UsageStatsConfig,
-  shareModules = getUsageStatsState(config).shareModules,
-) {
+export function previewReport(config: UsageStatsConfig) {
   return buildReport(collectFoundryInfo(config), {
     installId: getUsageStatsState(config).installId || previewInstallId,
-    shareModules,
     settings: config.getSettings?.(),
   });
 }
@@ -188,24 +175,15 @@ function isActiveGM() {
   return game.users?.activeGM?.isSelf === true;
 }
 
-/** Turn sharing on (with a new install ID, if needed) or off. */
-export async function setSharing(
-  config: UsageStatsConfig,
-  { share, shareModules }: { share: boolean; shareModules: boolean },
-) {
-  if (share) {
-    if (!getUsageStatsState(config).installId) {
-      await set(config, settingKeys.installId, createInstallId());
-    }
-    await set(config, settingKeys.shareModules, shareModules);
-    await set(config, settingKeys.consent, "yes");
-  } else {
-    // forget the ID, so turning it back on later starts afresh
-    await set(config, settingKeys.consent, "no");
-    await set(config, settingKeys.installId, "");
-    await set(config, settingKeys.lastSentDay, "");
-    await set(config, settingKeys.shareModules, false);
+/**
+ * Turn sharing on or off. The install ID is made the first time it's turned
+ * on, and kept when it's turned off, so turning it back on carries on with it.
+ */
+export async function setSharing(config: UsageStatsConfig, share: boolean) {
+  if (share && !getUsageStatsState(config).installId) {
+    await set(config, settingKeys.installId, createInstallId());
   }
+  await set(config, settingKeys.consent, share ? "yes" : "no");
 }
 
 /** Give the world a new install ID. */
@@ -214,10 +192,7 @@ export async function resetInstallId(config: UsageStatsConfig) {
   await set(config, settingKeys.lastSentDay, "");
 }
 
-export type OfferAnswer =
-  | { answer: "yes"; shareModules: boolean }
-  | { answer: "no" }
-  | { answer: "later" };
+export type OfferAnswer = "yes" | "no" | "later";
 
 /**
  * Ask the GM whether to share usage stats, if we haven't got an answer.
@@ -237,16 +212,11 @@ export async function offerUsageStats(
   ) {
     return;
   }
-  const result = await ask(config);
-  if (result.answer === "yes") {
-    await setSharing(config, {
-      share: true,
-      shareModules: result.shareModules,
-    });
-  } else if (result.answer === "no") {
-    await setSharing(config, { share: false, shareModules: false });
-  } else {
+  const answer = await ask(config);
+  if (answer === "later") {
     await set(config, settingKeys.askedVersion, version);
+  } else {
+    await setSharing(config, answer === "yes");
   }
 }
 
@@ -271,7 +241,6 @@ export async function sendUsageStatsIfDue(
   const result = parseReport(
     buildReport(collectFoundryInfo(config), {
       installId: state.installId,
-      shareModules: state.shareModules,
       settings: config.getSettings?.(),
     }),
   );

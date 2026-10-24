@@ -18,13 +18,13 @@ function element<K extends keyof HTMLElementTagNameMap>(
 }
 
 /** The JSON a report shows as, in the preview. */
-export function formatReport(config: UsageStatsConfig, shareModules: boolean) {
-  return JSON.stringify(previewReport(config, shareModules), null, 2);
+export function formatReport(config: UsageStatsConfig) {
+  return JSON.stringify(previewReport(config), null, 2);
 }
 
 /**
- * The explanation, the module list box, and the report preview, as HTML. Built
- * with the DOM so nothing in them (module names, say) can become markup.
+ * The explanation and the report preview, as HTML. Built with the DOM so
+ * nothing in them (module names, say) can become markup.
  */
 export function buildOfferContent(config: UsageStatsConfig) {
   const { localize } = config;
@@ -38,19 +38,8 @@ export function buildOfferContent(config: UsageStatsConfig) {
     element("p", localize("UsageStatsPrivacy", values)),
   );
 
-  const label = element("label");
-  label.style.display = "flex";
-  label.style.gap = "0.5em";
-  label.style.alignItems = "center";
-  const checkbox = element("input");
-  checkbox.type = "checkbox";
-  checkbox.name = "shareModules";
-  label.append(checkbox, localize("UsageStatsShareModules"));
-  content.append(label);
-
   const details = element("details");
-  const pre = element("pre", formatReport(config, false));
-  pre.dataset["usageStatsPreview"] = "";
+  const pre = element("pre", formatReport(config));
   pre.style.maxHeight = "16em";
   pre.style.overflow = "auto";
   pre.style.userSelect = "text";
@@ -66,17 +55,6 @@ export function buildOfferContent(config: UsageStatsConfig) {
   content.append(more);
 
   return content.outerHTML;
-}
-
-/** Keep the preview in step with the module list box. */
-export function wirePreview(root: HTMLElement, config: UsageStatsConfig) {
-  const checkbox = root.querySelector<HTMLInputElement>(
-    'input[name="shareModules"]',
-  );
-  const pre = root.querySelector<HTMLElement>("[data-usage-stats-preview]");
-  checkbox?.addEventListener("change", () => {
-    if (pre) pre.textContent = formatReport(config, checkbox.checked);
-  });
 }
 
 /** Ask the GM. Closing the dialog counts as "ask me later". */
@@ -104,26 +82,8 @@ export async function askAboutUsageStats(
         action: "yes",
         label: localize("ShareUsageStats"),
         icon: "fa-solid fa-check",
-        callback: (_event, button) => ({
-          answer: "yes",
-          shareModules:
-            (
-              button.form?.elements.namedItem(
-                "shareModules",
-              ) as HTMLInputElement | null
-            )?.checked ?? false,
-        }),
       },
     ],
-    render: (_event, dialog) => wirePreview(dialog.element, config),
   });
-  if (result === "no") return { answer: "no" };
-  if (
-    typeof result === "object" &&
-    result !== null &&
-    (result as OfferAnswer).answer === "yes"
-  ) {
-    return result as OfferAnswer;
-  }
-  return { answer: "later" };
+  return result === "yes" || result === "no" ? result : "later";
 }
