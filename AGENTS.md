@@ -47,12 +47,14 @@ translations, adding fields and settings, releases).
 ## Translations
 
 - `<Translate>Some text</Translate>` and `getTranslated("Some text")` look up
-  `investigator.` + `Case.pascal(text)`. Punctuation is dropped and
-  abbreviations get mangled: "Shot dry!" and "Shot dry" share `ShotDry`, and
-  "HT" becomes `Ht`. Put punctuation outside `<Translate>`, and write words in
-  full. All-caps runs stick together too: "DELTA GREEN Bond?" becomes
-  `DELTAGREENBond`, so write "Delta Green Bond?" and put the capitals in
-  `en.json`.
+  `investigator.` + `Case.pascal(text)`. Punctuation is dropped: "Shot dry!"
+  and "Shot dry" share `ShotDry`, so put punctuation outside `<Translate>`.
+  Capitals in mixed-case text are kept: "Install ID" is `InstallID`, "Edit
+  NPC" is `EditNPC`. But text that is all capitals is lowered first: "HT" is
+  `Ht`, "DELTA GREEN" is `DeltaGreen`. Runs of capitals stick together, so
+  "DELTA GREEN Bond?" is `DELTAGREENBond`: write "Delta Green Bond?" and put
+  the capitals in `en.json`. When unsure, check with
+  `pnpm exec node -e 'console.log(require("case").pascal("Install ID"))'`.
 - `<Translate>` sets an inline `background` (for its debug highlighting), so a
   `background` passed in its `css` never shows. Style a wrapper instead.
 - `<Translate>` also gives its span a `title` (the translated text), which
