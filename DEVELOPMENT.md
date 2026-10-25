@@ -200,6 +200,15 @@ The themes' fonts are self-hosted (not loaded from Google Fonts, which would sen
 
 To add a font, `pnpm add @fontsource/<name>` (or `@fontsource-variable/<name>`, if it's a variable font and you want several weights), and add it to `fontsourceFamilies` in that file. Don't `import` Fontsource's CSS from the code: Vite's library mode would inline every font into the bundle as base64.
 
+## Usage stats
+
+GMs can opt in to sending anonymous usage stats once a day (see [lumphammer/fvtt-telemetry](https://github.com/lumphammer/fvtt-telemetry), which has the server and [the plan](https://github.com/lumphammer/fvtt-telemetry/blob/main/docs/plan.md)). Reports go to `usageStatsEndpoint` in [`src/constants.ts`](src/constants.ts); setting it to `null` turns usage stats off (nothing is asked or sent, and the settings page is hidden).
+
+- [`src/usageStats/`](src/usageStats/) is the client. It doesn't import anything from INVESTIGATOR (a test checks), so it can move to a shared package for our other Foundry projects.
+- [`src/startup/installUsageStats.ts`](src/startup/installUsageStats.ts) is INVESTIGATOR's part: what to report (`getReportedSettings`) and the hooks. Only report values we chose (preset IDs, switches), never anything a user typed.
+- The report format comes from `@lumphammer/fvtt-telemetry-schema`, installed from GitHub for now. `pnpm update @lumphammer/fvtt-telemetry-schema` picks up changes.
+- The GM can change their mind under Miscellaneous → Usage stats in the system settings.
+
 ## Using the "Developer mode" module
 
 There's a Foundry VTT module called [🧙 Developer Mode](https://foundryvtt.com/packages/_dev-mode). It may no longer be maintained, but the system still supports it. You can also use it to activate specific developer features for systems. To do this, click on the little wizard dude in the top left of the screen, go to "Package specific debugging", and "Enable Debug Mode" for "INVESTIGATOR System".

@@ -7,6 +7,10 @@ import {
 
 import { foundryUrl } from "./config.ts";
 
+/** Where the system sends usage stats (`usageStatsEndpoint`). */
+export const usageStatsEndpointPattern =
+  "https://ingest.stats.lumphammer.net/**";
+
 /** Wait until Foundry has finished loading the world in this page. */
 export async function waitForGameReady(page: Page) {
   await page.waitForFunction(
@@ -113,6 +117,11 @@ export const test = base.extend<{
       for (const { name, value } of settings) localStorage.setItem(name, value);
     }, clientSettings(canvas));
     await watchForErrors(page, pageErrors, "GM");
+    // never send a test world's usage stats to the real server (a test can
+    // route them somewhere of its own: later routes win)
+    await page.route(usageStatsEndpointPattern, (route) =>
+      route.fulfill({ status: 204 }),
+    );
     await page.goto("/game");
     await waitForGameAndWatchNotifications(page);
     // the tests share a world, so clear out earlier tests' chat: otherwise

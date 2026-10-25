@@ -129,3 +129,10 @@ export const journalMemory = "journalMemory";
 // magic values
 
 export const occupationSlotIndex = -1;
+
+/**
+ * Where usage stats go (see `src/usageStats`). Setting this to null turns
+ * usage stats off: nothing is asked or sent, and the settings page is hidden.
+ */
+export const usageStatsEndpoint: string | null =
+  "https://ingest.stats.lumphammer.net/v1/report";

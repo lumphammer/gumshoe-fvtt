@@ -215,6 +215,13 @@ export default async function globalSetup(_config: FullConfig) {
       // No canvas means no WebGL, so no "no hardware acceleration" warning,
       // and pages load faster.
       await game.settings.set("core", "noCanvas", true);
+      // A world setting: say no to usage stats, so the offer never opens over
+      // a test. (usageStats.spec.ts asks again.)
+      await game.settings.set(
+        "investigator",
+        "usageStatsConsent" as never,
+        "no" as never,
+      );
     });
     await page.context().storageState({ path: gmStorageStatePath });
   } finally {

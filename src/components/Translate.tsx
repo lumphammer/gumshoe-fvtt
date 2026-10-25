@@ -11,10 +11,12 @@ type TranslateProps = {
   values?: { [key: string]: string };
   title?: string;
   className?: string;
+  block?: boolean;
+  rich?: boolean;
 };
 
 export const Translate = React.memo<TranslateProps>(
-  ({ children, values, title, className }) => {
+  ({ children, values, title, className, block, rich }) => {
     assertGame(game);
     const debug = settings.debugTranslations.get() && getDevMode();
     const pascal = useMemo(() => Case.pascal(children), [children]);
@@ -28,16 +30,26 @@ export const Translate = React.memo<TranslateProps>(
       return game.i18n.has(prefixed, false);
     }, [prefixed]);
 
+    const Tag = block ? "div" : "span";
+
     return (
-      <span
+      <Tag
         className={className}
-        title={title ?? (debug ? prefixed : local)}
+        // a rich string's title would show its markup
+        title={title ?? (debug ? prefixed : rich ? undefined : local)}
         style={{
           background: debug ? (has ? "lightgreen" : "red") : "none",
         }}
+        {...(rich
+          ? {
+              dangerouslySetInnerHTML: {
+                __html: foundry.utils.cleanHTML(local),
+              },
+            }
+          : {})}
       >
-        {local}
-      </span>
+        {rich ? undefined : local}
+      </Tag>
     );
   },
 );
