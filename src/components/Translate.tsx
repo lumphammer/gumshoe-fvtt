@@ -25,7 +25,6 @@ export const Translate = React.memo<TranslateProps>(
       assertGame(game);
       return game.i18n.format(prefixed, values);
     }, [prefixed, values]);
-    console.log(local);
     const has = useMemo(() => {
       assertGame(game);
       return game.i18n.has(prefixed, false);
@@ -36,11 +35,18 @@ export const Translate = React.memo<TranslateProps>(
     return (
       <Tag
         className={className}
-        title={title ?? (debug ? prefixed : local)}
+        // a rich string's title would show its markup
+        title={title ?? (debug ? prefixed : rich ? undefined : local)}
         style={{
           background: debug ? (has ? "lightgreen" : "red") : "none",
         }}
-        {...(rich ? { dangerouslySetInnerHTML: { __html: foundry.utils.cleanHTML(local) } } : {})}
+        {...(rich
+          ? {
+              dangerouslySetInnerHTML: {
+                __html: foundry.utils.cleanHTML(local),
+              },
+            }
+          : {})}
       >
         {rich ? undefined : local}
       </Tag>

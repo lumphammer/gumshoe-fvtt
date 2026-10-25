@@ -1,6 +1,9 @@
 import { useState } from "react";
 
-import { usageStatsConfig } from "../../../startup/installUsageStats";
+import {
+  getUsageStatsTranslationValues,
+  usageStatsConfig,
+} from "../../../startup/installUsageStats";
 import {
   getUsageStatsState,
   resetInstallId,
@@ -12,7 +15,10 @@ import { Button } from "../../inputs/Button";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Toggle } from "../../inputs/Toggle";
 import { Translate } from "../../Translate";
-import { SettingsGridField, SettingsGridFieldStacked } from "../SettingsGridField";
+import {
+  SettingsGridField,
+  SettingsGridFieldStacked,
+} from "../SettingsGridField";
 import { SettingsNote } from "../SettingsNote";
 
 /**
@@ -20,7 +26,9 @@ import { SettingsNote } from "../SettingsNote";
  * away, rather than with the rest of the settings when you save.
  */
 export const UsageStatsSettings = () => {
-  const [state, setState] = useState(() => getUsageStatsState(usageStatsConfig));
+  const [state, setState] = useState(() =>
+    getUsageStatsState(usageStatsConfig),
+  );
   const refresh = () => setState(getUsageStatsState(usageStatsConfig));
   const sharing = state.consent === "yes";
 
@@ -41,7 +49,7 @@ export const UsageStatsSettings = () => {
   return (
     <>
       <SettingsNote mode="info">
-        <Translate rich block>
+        <Translate rich block values={getUsageStatsTranslationValues()}>
           UsageStatsOffer
         </Translate>
       </SettingsNote>

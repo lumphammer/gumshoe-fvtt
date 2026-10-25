@@ -28,7 +28,6 @@ export function buildOfferContent(config: UsageStatsConfig) {
   const content = element("div");
   content.className = "usage-stats-offer";
 
-  // debugger;
   const offerText = element("div");
   offerText.innerHTML = foundry.utils.cleanHTML(localize("UsageStatsOffer"));
   content.append(offerText);

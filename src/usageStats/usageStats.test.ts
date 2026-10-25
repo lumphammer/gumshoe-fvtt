@@ -289,10 +289,15 @@ describe("the dialog's content", () => {
     const root = document.createElement("div");
     root.innerHTML = buildOfferContent({
       ...config,
-      localize: () => "a <em>short</em> report<img src=x onerror=alert(1)>",
+      localize: (key) =>
+        key === "UsageStatsOffer"
+          ? "a <em>short</em> report<img src=x onerror=alert(1)>"
+          : key,
     });
     expect(cleanHTML).toHaveBeenCalled();
-    expect(root.querySelector("p em")?.textContent).toBe("short");
+    expect(root.querySelector(".usage-stats-offer em")?.textContent).toBe(
+      "short",
+    );
     expect(root.querySelector("img")).toBeNull();
   });
 

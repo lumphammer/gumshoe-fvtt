@@ -43,20 +43,22 @@ export function getReportedSettings() {
   };
 }
 
+/** The placeholders the usage stats strings can use. */
+export const getUsageStatsTranslationValues = () => ({
+  Settings: getTranslated("SystemNameSystemSettings", {
+    SystemName: getTranslated("SystemName"),
+  }),
+  PackageTitle: getTranslated("SystemName"),
+  PolicyURL:
+    "https://github.com/lumphammer/gumshoe-fvtt/blob/main/STATS_POLICY.md",
+});
+
 export const usageStatsConfig: UsageStatsConfig = {
   packageId: systemId,
   endpoint: usageStatsEndpoint,
   getSettings: getReportedSettings,
   localize: (key, values = {}) =>
-    getTranslated(key, {
-      Settings: getTranslated("SystemNameSystemSettings", {
-        SystemName: getTranslated("SystemName"),
-      }),
-      PackageTitle: getTranslated("SystemName"),
-      PolicyURL:
-        "https://github.com/lumphammer/gumshoe-fvtt/blob/main/STATS_POLICY.md",
-      ...values,
-    }),
+    getTranslated(key, { ...getUsageStatsTranslationValues(), ...values }),
 };
 
 /** Call in the `init` hook. */
