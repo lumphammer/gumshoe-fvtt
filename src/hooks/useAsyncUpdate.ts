@@ -13,7 +13,10 @@ const toSingleLine = (text: string) => text.replace(/\s*[\r\n]+\s*/g, " ");
 const textWithLineBreaks = (element: HTMLElement) => {
   const clone = element.cloneNode(true) as HTMLElement;
   for (const br of clone.querySelectorAll("br")) br.replaceWith("\n");
-  for (const block of clone.querySelectorAll("div, p, li")) block.before("\n");
+  for (const block of clone.querySelectorAll("div, p, li")) {
+    block.before("\n");
+    block.after("\n");
+  }
   return clone.textContent;
 };
 
@@ -122,11 +125,14 @@ export const useAsyncUpdate = (
     (e: React.ClipboardEvent<HTMLElement>) => {
       e.preventDefault();
       const element = e.currentTarget;
-      insertAtSelection(
-        element,
-        toSingleLine(e.clipboardData.getData("text/plain")),
-      );
-      onChange(element.textContent);
+      const text = toSingleLine(e.clipboardData.getData("text/plain"));
+      // insertText is deprecated, but it's still the only way to edit that
+      // the browser can undo. It fires input, which saves
+      // eslint-disable-next-line typescript/no-deprecated -- nothing replaces it
+      if (!element.ownerDocument.execCommand("insertText", false, text)) {
+        insertAtSelection(element, text);
+        onChange(element.textContent);
+      }
     },
     [onChange],
   );

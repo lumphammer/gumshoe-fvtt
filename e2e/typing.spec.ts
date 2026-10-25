@@ -109,12 +109,33 @@ test.describe("editable titles stay on one line", () => {
     );
   });
 
+  test("a paste can be undone", async ({ page }) => {
+    const { title, savedName } = await openTitle(page);
+    await title.click();
+    await page.keyboard.press("ControlOrMeta+A");
+    await title.evaluate((element) => {
+      const clipboardData = new DataTransfer();
+      clipboardData.setData("text/plain", "Lamp");
+      element.dispatchEvent(
+        new ClipboardEvent("paste", {
+          clipboardData,
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+    await expect.poll(savedName).toBe("Lamp");
+    await page.keyboard.press("ControlOrMeta+Z");
+    await expect(title).toHaveText("Lantern");
+    await expect.poll(savedName).toBe("Lantern");
+  });
+
   test("line breaks that get in anyway are flattened", async ({ page }) => {
     const { title, savedName } = await openTitle(page);
     await title.click();
     // as if text had been dragged in
     await title.evaluate((element) => {
-      element.innerHTML = "Red<br>Lantern<div>Society</div>";
+      element.innerHTML = "<div>Red</div>Lantern<br>Society";
       element.dispatchEvent(new InputEvent("input", { bubbles: true }));
     });
     await expect.poll(savedName).toBe("Red Lantern Society");
