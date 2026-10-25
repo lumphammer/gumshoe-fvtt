@@ -78,13 +78,7 @@ export const UsageStatsSettings = () => {
             <summary>
               <Translate>UsageStatsShowReport</Translate>
             </summary>
-            <pre
-              css={{
-                // maxHeight: "20em",
-                // overflow: "auto",
-                userSelect: "text",
-              }}
-            >
+            <pre css={{ userSelect: "text" }}>
               {formatReport(usageStatsConfig)}
             </pre>
           </details>
