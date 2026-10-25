@@ -27,7 +27,8 @@ export const EquipmentFieldSettings = () => {
   const { value: categoryId } = useStateSelector(
     (s) =>
       Object.keys(s.settings.equipmentCategories)[categoryIndex] as
-        string | undefined,
+        | string
+        | undefined,
   );
   // select the id and the field separately so each is a stable value
   const { value: fieldId, freeze: freezeId } = useStateSelector((s) =>

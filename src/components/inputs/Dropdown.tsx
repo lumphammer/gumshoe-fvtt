@@ -53,11 +53,13 @@ export const Dropdown = ({
       const targetIsButtonElement = buttonRef.current?.contains(
         event.target as Node,
       );
-      if (!(
-        targetIsRootElement ||
-        targetIsInsideRootElement ||
-        targetIsButtonElement
-      )) {
+      if (
+        !(
+          targetIsRootElement ||
+          targetIsInsideRootElement ||
+          targetIsButtonElement
+        )
+      ) {
         handleClose();
       }
     },

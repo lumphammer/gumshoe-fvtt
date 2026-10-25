@@ -4,30 +4,29 @@ A weekend project gone awry.
 
 An over-engineered solution to a problem that never existed.
 
-
 ## Background
 
 So, I'm writing the fancy new HTML editor for journals and it strikes me that I want some kind of version-saving mechanism, so that mistakes can be safely corrected, and we can review the history of a document.
 
 There are two questions to answer:
 
-* What mechanism or algorithm will we use?
-* Where will we store the data?
+- What mechanism or algorithm will we use?
+- Where will we store the data?
 
 The second one (where to store it) is a question for another day.
 
 The first one (algorithm) is where this mini-project comes in. Ideas I rapidly dropped:
 
-* Just store the last *n* states! REJECTED - I want to be able to store a decent age of history, like at least 100 and maybe a thousand? If the document is a megabyte (which is huge but possible) you're looking at a *gigabyte* of backups!
-* Store a long list of diffs - this is a lot better! But you're still going to be dealing with monotonically increasing storage until you hit that history limit.
+- Just store the last _n_ states! REJECTED - I want to be able to store a decent age of history, like at least 100 and maybe a thousand? If the document is a megabyte (which is huge but possible) you're looking at a _gigabyte_ of backups!
+- Store a long list of diffs - this is a lot better! But you're still going to be dealing with monotonically increasing storage until you hit that history limit.
 
-I want to say now that actually a simple history of the last 1000 diffs would have be *fine*. If I was launching a startup that's what I would have done.
+I want to say now that actually a simple history of the last 1000 diffs would have be _fine_. If I was launching a startup that's what I would have done.
 
-But I figured we could do better[^1]. What I envisioned was something where older states were stored with decreasing granularity, getting collapsed together as they age. So you can always go back to *near* the start, but the number of individual states you can restore to gets less the older you go. But the most recent states are all individually addressable.
+But I figured we could do better[^1]. What I envisioned was something where older states were stored with decreasing granularity, getting collapsed together as they age. So you can always go back to _near_ the start, but the number of individual states you can restore to gets less the older you go. But the most recent states are all individually addressable.
 
 [^1]: worse
 
-So I had the idea of a series of stacks. The top-level stack is where the most recent diffs get pushed. When there are *p* diffs built up, we combine them together and push them onto the next stack down. We call *p* the "period" of the memory - it's the base size for each stack and therefore controls the frequency with which "something happens" when you push.
+So I had the idea of a series of stacks. The top-level stack is where the most recent diffs get pushed. When there are _p_ diffs built up, we combine them together and push them onto the next stack down. We call _p_ the "period" of the memory - it's the base size for each stack and therefore controls the frequency with which "something happens" when you push.
 
 ## The first version
 
@@ -35,10 +34,10 @@ My first jab at this had the problem that the number of accessible edits would f
 
 To illustrate, imagine a document where I'm typing in the letters of the alphabet, a to z.
 
-* First state: "a".
-* Second state: "ab".
-* Third state: "abc".
-* etc.
+- First state: "a".
+- Second state: "ab".
+- Third state: "abc".
+- etc.
 
 Now imagine that we're using a period (stack size) of 3.
 
@@ -99,7 +98,6 @@ Stack 1    Stack 2    Stack 3
 ```
 
 The problem is we lose fidelity on each stack every time we "push" a combined commit up to the next one.
-
 
 ## The bomb bay system
 
@@ -173,7 +171,6 @@ Bomb bay   Bomb bay   Bomb bay
 
 Stack three is new so there's nothing in the bomb bay yet. And the other two bomb bays are empty because they've been squashed and pushed over.
 
-
 ## Serial numbers
 
 The memory has a property called `serial` which is a monotonically increasing number. Each new edit is tagged with the current serial. When edits get squashed and pushed, the squashed edit is tagged with the most recent serial in the squash.
@@ -206,7 +203,7 @@ If p is 3 and d is 3:
 = 66
 ```
 
-You can think of this as "each stack needs to fill its own size *twice* and the size of all the higher stacks *once each* before pushing downwards.
+You can think of this as "each stack needs to fill its own size _twice_ and the size of all the higher stacks _once each_ before pushing downwards.
 
 Just to be look at bigger numbers, if we had p = 100 and d = 4 (plausible production numbers for a large document with lots of edits):
 
@@ -220,21 +217,20 @@ In other words, if your period is 100, your fourth stack will push onto your fif
 
 And because I can do it with maths, I did.
 
-
 ## Diffing algorithm
 
 Classic patch files are going to be way to big and cumbersome for this job. Luckily this is a well-explored field.
 
 Google publishes an algorithm for syncing text state called [diff-match-patch][diff-match-patch]. There is an alternative implementation of the same idea called [fast-diff][fast-diff] which is a little faster. I suggest looking at the diff-match-patch docs for an intro but the TLDR is:
 
-* Myers-based text diffing (same stragedy as `diff` in git)
-* The output is a list up tuples of `(type, text)`, where `type` is -1 for a deletion, 0 for an equality, +1 for an insertion
-* To apply a diff, you just imagine a cursor in the source text,iterate over the tuples and follow the instructions.
-  * For a deletion (-1), delete the matching text.
-  * For and equality (0), skip the cursor forward over the matching text.
-  * For an insertion (+1), insert the text.
+- Myers-based text diffing (same stragedy as `diff` in git)
+- The output is a list up tuples of `(type, text)`, where `type` is -1 for a deletion, 0 for an equality, +1 for an insertion
+- To apply a diff, you just imagine a cursor in the source text,iterate over the tuples and follow the instructions.
+  - For a deletion (-1), delete the matching text.
+  - For and equality (0), skip the cursor forward over the matching text.
+  - For an insertion (+1), insert the text.
 
-Both of those implementations create full diffs, which means that the content of deletions and equalities is stored in the diff. This gives you very complete data, and means that diffs can be reversed. But for append-only history like what we're doing, we really only need the *size* of deletions and equalities.
+Both of those implementations create full diffs, which means that the content of deletions and equalities is stored in the diff. This gives you very complete data, and means that diffs can be reversed. But for append-only history like what we're doing, we really only need the _size_ of deletions and equalities.
 
 That's where [textdiff-create][textdiff-create] and [textdiff-patch][textdiff-patch] come in. The first is a thin wrapper around fast-diff which strips out the full text for deletions and equalities and replaces it with a number, being the length of the deletion or equality. The second is a small function to apply these compacted diffs to a source text.
 
@@ -244,7 +240,6 @@ These compacted diffs give us enough information to store a forwards-only histor
 [fast-diff]: https://github.com/jhchen/fast-diff
 [textdiff-create]: https://www.npmjs.com/package/textdiff-create
 [textdiff-patch]: https://github.com/icflorescu/textdiff-patch
-
 
 ## Snapshots and state
 
@@ -258,13 +253,13 @@ To avoid having to do a full restore every time, we store a state at the top lev
 
 Also, when we push from a stack onto a deeper stack, we want to condense all the changes into one. Note that for a while I was thinking in terms of some kind of simple append - like, you have change x, change y, and change z. It would be pretty simple to imagine some extension to the diff structure that would allow you to just concatenate x, y, and z into one long diff. But the problem there is you're not saving anything. The whole idea of the receding horizon memory is that you discard granularity as edits get older. It's okay to lose a bunch of interstitial states; what you're saving is space. But if we're just concatenating diffs, we're barely saving any space, we're just losing access to some states. To combine a series of diffs, what we really need to do is:
 
-* Take the initial state.
-* Apply each diff one by to create a final state.
-* Now diff the initial state against the final state.
+- Take the initial state.
+- Apply each diff one by to create a final state.
+- Now diff the initial state against the final state.
 
 This will give us a diff that actually does discard all the in-between states and thus save space.
 
-To do this we need to store a snapshot for each stack, *OR* rebuild the history from scratch each time we push. Clearly that's suboptimal, so we store snapshots for each stack.
+To do this we need to store a snapshot for each stack, _OR_ rebuild the history from scratch each time we push. Clearly that's suboptimal, so we store snapshots for each stack.
 
 These are stored at the top level and passed down in the push function. The reason they are store at the top level is that it makes it much easier to strip them out for serialisation - see the next section.
 
@@ -274,7 +269,6 @@ Somewhat fancy words for what we're doing. Dehydrate takes a working document me
 
 Rehydrate does what you'd expect - it takes the denuded object from `dehydrate` and rebuilds the state and snapshots by walking the edits from right to left, top to bottom, giving you a working object memory ready to be used in a text editor.
 
-
 ## TL;DR
 
-We're using [textdiff-create][textdiff-create] and [textdiff-patch][textdiff-patch] to create diffs whenever the document changes. We have a configurable "period" (p) and we condense individual diffs together every *p* edits, so the size of the history doesn't just grow monotonically.
+We're using [textdiff-create][textdiff-create] and [textdiff-patch][textdiff-patch] to create diffs whenever the document changes. We have a configurable "period" (p) and we condense individual diffs together every _p_ edits, so the size of the history doesn't just grow monotonically.

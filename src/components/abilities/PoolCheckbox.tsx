@@ -32,9 +32,7 @@ export const PoolCheckbox = ({
         background: selected
           ? theme.colors.accent
           : theme.colors.backgroundPrimary,
-        color: `${
-          selected ? theme.colors.accentContrast : undefined
-        } !important`,
+        color: `${selected ? theme.colors.accentContrast : undefined} !important`,
         textAlign: "center",
         display: "inline-block",
         position: "relative",

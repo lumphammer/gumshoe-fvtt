@@ -323,7 +323,9 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
       key: "spend",
       message: getTranslated(
         isFullAuto ? "FullAutoNeedsSpendOfMin" : "BurstNeedsSpendOfMin",
-        { Min: String(minimumSpend) },
+        {
+          Min: String(minimumSpend),
+        },
       ),
     });
   }
@@ -351,7 +353,10 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
           isMeleeOnly
             ? "AttackTargetsWithWeaponName"
             : "FireWeaponNameAtTargets",
-          { WeaponName: item.name, Targets: targetsLabel },
+          {
+            WeaponName: item.name,
+            Targets: targetsLabel,
+          },
         );
 
   return (

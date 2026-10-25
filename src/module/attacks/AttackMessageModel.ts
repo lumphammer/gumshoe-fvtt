@@ -115,7 +115,11 @@ export const attackDataSchema = {
   damageFormula: new StringField({ nullable: false, required: true }),
   damageParams: new TypedObjectField(
     new NumberField({ nullable: false, required: true }),
-    { nullable: false, required: true, initial: () => ({}) },
+    {
+      nullable: false,
+      required: true,
+      initial: () => ({}),
+    },
   ),
   /**
    * Damage rolls which belong to the attack but no target is using: to start
