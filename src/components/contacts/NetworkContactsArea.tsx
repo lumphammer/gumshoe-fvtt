@@ -80,8 +80,9 @@ export const NetworkContactsArea = () => {
         <div
           css={{
             display: "grid",
-            // name, location, pool
-            gridTemplateColumns: "minmax(0, 2fr) minmax(0, 2fr) max-content",
+            // name, location, pool, delete
+            gridTemplateColumns:
+              "minmax(0, 2fr) minmax(0, 2fr) max-content max-content",
             gridAutoRows: "min-content",
             columnGap: "0.5em",
           }}

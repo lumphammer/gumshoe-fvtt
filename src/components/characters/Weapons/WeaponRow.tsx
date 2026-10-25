@@ -6,6 +6,7 @@ import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import { getTranslated } from "../../../functions/getTranslated";
 import type { WeaponItem } from "../../../module/items/weapon";
 import { ThemeContext } from "../../../themes/ThemeContext";
+import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { Toggle } from "../../inputs/Toggle";
 
 type WeaponRowProps = {
@@ -14,7 +15,10 @@ type WeaponRowProps = {
   setReady: (ready: boolean) => void;
 };
 
-/** A weapon in the Combat tab's table: click it to open its sheet */
+/**
+ * A weapon in the Combat tab's table: click it to open its sheet, or delete it
+ * with the button at the end
+ */
 export const WeaponRow = ({ weapon, isReady, setReady }: WeaponRowProps) => {
   const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
@@ -47,7 +51,7 @@ export const WeaponRow = ({ weapon, isReady, setReady }: WeaponRowProps) => {
         role="button"
         tabIndex={0}
         css={{
-          gridColumn: "2 / -1",
+          gridColumn: "2 / -2",
           display: "grid",
           gridTemplateColumns: "subgrid",
           alignItems: "center",
@@ -93,6 +97,7 @@ export const WeaponRow = ({ weapon, isReady, setReady }: WeaponRowProps) => {
           {weapon.system.ability}
         </span>
       </div>
+      <DeleteItemButton item={weapon} />
     </>
   );
 };
