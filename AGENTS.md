@@ -150,10 +150,17 @@ descriptive text.
 - `performAttack` holds a per-weapon lock, re-checks pools and ammo, takes the
   points before rolling, and refunds (relatively) if anything throws.
 
+## Commit style
+
+Commit messages should be terse and prediminantly lower-case. Do not include a commit message body unless there's a very good reason. Do not add co-author attribution.
+
 ## Pull requests
 
-- CodeRabbit and Greptile review every PR. Triage their comments: fix the
-  valid ones, reply with reasoning to the rest (they usually withdraw).
+- Codex, CodeRabbit and Greptile may or may not review PRs. Triage their
+  comments: fix the valid ones, reply with reasoning to the rest (they usually
+  withdraw).
+- If reviews are going to happen, they will happen within 20 minutes; don't
+  wait any longer than that.
 - `main` requires all review conversations to be resolved. CodeRabbit often
   leaves a stale "changes requested" review after its finding is fixed or
   withdrawn; dismiss it via
