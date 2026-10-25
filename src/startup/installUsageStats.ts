@@ -52,6 +52,9 @@ export const usageStatsConfig: UsageStatsConfig = {
       Settings: getTranslated("SystemNameSystemSettings", {
         SystemName: getTranslated("SystemName"),
       }),
+      PackageTitle: getTranslated("SystemName"),
+      PolicyURL:
+        "https://github.com/lumphammer/gumshoe-fvtt/blob/main/STATS_POLICY.md",
       ...values,
     }),
 };

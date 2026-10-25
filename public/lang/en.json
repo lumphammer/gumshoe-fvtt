@@ -633,19 +633,13 @@
   "investigator.UsageStats": "Usage stats",
   "investigator.UsageStatsDescription": "Share anonymous stats about how this world uses the system.",
   "investigator.UsageStatsTitle": "Share anonymous usage stats?",
-  "investigator.UsageStatsOffer": "{Package} can send a short, anonymous report about this world once a day: which versions of {Package} and Foundry it runs, its language, how many users it has, and which preset, theme and rules it uses. It helps decide what to work on, and which versions of Foundry to keep supporting.",
-  "investigator.UsageStatsPrivacy": "Nothing is sent unless you agree, and nothing in it identifies you or your players: the world gets a random ID, and the server keeps the country a report came from, not its IP address. You can change your mind at any time in {Settings}.",
-  "investigator.UsageStatsShareModules": "Also share the list of active modules (which modules, and their versions)",
+  "investigator.UsageStatsOffer": "<p>{PackageTitle} can send a short, <b>anonymous</b> report (at most once per day) which includes:</p> <ul><li>{PackageTitle} and Foundry version</li><li>Language</li><li>Number of users (not names)</li><li>Other modules in use</li><li>Some info about your GUMSHOE settings</li></ul> <p>It really helps me decide what to work on! But I understand if you'd rather opt out. You can change your mind at any time in {Settings}.</p><p><a href='{PolicyURL}'>Read the full Stats Policy</a></p>",
   "investigator.UsageStatsShowReport": "Show exactly what would be sent",
-  "investigator.UsageStatsHowItWorks": "How it works, and what's kept",
-  "investigator.UsageStatsSettingsNote": "Changes here take effect straight away. Turning sharing off forgets this world's ID.",
   "investigator.AskMeLater": "Ask me later",
   "investigator.ShareUsageStats": "Share usage stats",
   "investigator.ShareAnonymousUsageStats": "Share anonymous usage stats",
-  "investigator.AlsoShareTheListOfActiveModules": "Also share the list of active modules",
   "investigator.LastSent": "Last sent",
   "investigator.NotYet": "Not yet",
   "investigator.InstallID": "Install ID",
-  "investigator.Reset": "Reset",
-  "investigator.WhatWouldBeSent": "What would be sent"
+  "investigator.Reset": "Reset"
 }

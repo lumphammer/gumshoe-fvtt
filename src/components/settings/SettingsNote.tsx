@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from "react";
 import { useContext } from "react";
-import { FaTriangleExclamation } from "react-icons/fa6";
+import { FaTriangleExclamation, FaCircleInfo } from "react-icons/fa6";
 
 import { ThemeContext } from "../../themes/ThemeContext";
 
@@ -8,8 +8,14 @@ import { ThemeContext } from "../../themes/ThemeContext";
  * A short explanatory note at the top of a settings page, for things people
  * need to know before they start changing stuff.
  */
-export const SettingsNote = ({ children }: PropsWithChildren) => {
+export const SettingsNote = ({
+  children,
+  mode = "warn",
+}: PropsWithChildren<{ mode?: "warn" | "info" }>) => {
   const theme = useContext(ThemeContext);
+
+  const Icon = mode === "warn" ? FaTriangleExclamation : FaCircleInfo;
+
   return (
     <div
       role="note"
@@ -24,9 +30,7 @@ export const SettingsNote = ({ children }: PropsWithChildren) => {
         background: theme.colors.backgroundSecondary,
       }}
     >
-      <FaTriangleExclamation
-        css={{ flex: "0 0 auto", color: theme.colors.accent }}
-      />
+      <Icon css={{ flex: "0 0 auto", color: theme.colors.accent }} />
       <div>{children}</div>
     </div>
   );

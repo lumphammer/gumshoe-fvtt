@@ -7,15 +7,12 @@ import {
   sendUsageStatsIfDue,
   setSharing,
 } from "../../../usageStats/usageStats";
-import {
-  formatReport,
-  usageStatsInfoUrl,
-} from "../../../usageStats/usageStatsDialog";
+import { formatReport } from "../../../usageStats/usageStatsDialog";
 import { Button } from "../../inputs/Button";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Toggle } from "../../inputs/Toggle";
 import { Translate } from "../../Translate";
-import { SettingsGridField } from "../SettingsGridField";
+import { SettingsGridField, SettingsGridFieldStacked } from "../SettingsGridField";
 import { SettingsNote } from "../SettingsNote";
 
 /**
@@ -23,9 +20,7 @@ import { SettingsNote } from "../SettingsNote";
  * away, rather than with the rest of the settings when you save.
  */
 export const UsageStatsSettings = () => {
-  const [state, setState] = useState(() =>
-    getUsageStatsState(usageStatsConfig),
-  );
+  const [state, setState] = useState(() => getUsageStatsState(usageStatsConfig));
   const refresh = () => setState(getUsageStatsState(usageStatsConfig));
   const sharing = state.consent === "yes";
 
@@ -45,8 +40,10 @@ export const UsageStatsSettings = () => {
 
   return (
     <>
-      <SettingsNote>
-        <Translate>UsageStatsSettingsNote</Translate>
+      <SettingsNote mode="info">
+        <Translate rich block>
+          UsageStatsOffer
+        </Translate>
       </SettingsNote>
       <InputGrid>
         <SettingsGridField label="Share anonymous usage stats">
@@ -67,25 +64,23 @@ export const UsageStatsSettings = () => {
             </div>
           </SettingsGridField>
         )}
-        <SettingsGridField label="What would be sent">
-          <details>
+
+        <SettingsGridFieldStacked>
+          <details css={{ cursor: "pointer" }}>
             <summary>
               <Translate>UsageStatsShowReport</Translate>
             </summary>
             <pre
               css={{
-                maxHeight: "20em",
-                overflow: "auto",
+                // maxHeight: "20em",
+                // overflow: "auto",
                 userSelect: "text",
               }}
             >
               {formatReport(usageStatsConfig)}
             </pre>
           </details>
-          <a href={usageStatsInfoUrl} target="_blank" rel="noopener noreferrer">
-            <Translate>UsageStatsHowItWorks</Translate>
-          </a>
-        </SettingsGridField>
+        </SettingsGridFieldStacked>
       </InputGrid>
     </>
   );
