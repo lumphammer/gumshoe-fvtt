@@ -52,10 +52,12 @@ export const useAsyncUpdate = (
   // stuff for handling content-editable - first, a ref to attach to the element
   const contentEditableRef = useRef<HTMLDivElement | null>(null);
 
-  // a callback for when edits happen
+  // a callback for when edits happen. Use textContent, not innerText:
+  // innerText is the rendered text, so it picks up any CSS text-transform
+  // (e.g. a theme with uppercase titles) and we would save that instead
   const onInput = useCallback(
     (e: React.InputEvent<HTMLInputElement>) => {
-      const text = e.currentTarget.innerText;
+      const text = e.currentTarget.textContent;
       onChange(text);
     },
     [onChange],
@@ -67,7 +69,7 @@ export const useAsyncUpdate = (
     if (!focusedRef.current) {
       setDisplay(value);
       if (contentEditableRef.current) {
-        contentEditableRef.current.innerText = value;
+        contentEditableRef.current.textContent = value;
       }
     }
   }, [value]);
