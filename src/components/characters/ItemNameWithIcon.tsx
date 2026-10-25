@@ -9,9 +9,6 @@ type ItemNameWithIconProps = ComponentProps<"div"> & {
  * be), for the first cell of a row in a list of items
  */
 export const ItemNameWithIcon = ({ item, ...rest }: ItemNameWithIconProps) => {
-  // Foundry's own icons (like the stand-in for contacts) are white, made for
-  // its dark UI, so they'd vanish on a light sheet
-  const isFoundryIcon = item.img?.startsWith("icons/svg/") ?? false;
   return (
     <div
       css={{
@@ -34,11 +31,6 @@ export const ItemNameWithIcon = ({ item, ...rest }: ItemNameWithIconProps) => {
             flexShrink: 0,
             objectFit: "cover",
             border: "none",
-            ...(isFoundryIcon && {
-              backgroundColor: "#333",
-              borderRadius: "0.2em",
-              padding: "0.1em",
-            }),
           }}
         />
       ) : (

@@ -86,5 +86,6 @@ of the rule above.
   which doesn't touch Network.
 - "New contact" makes a contact with no points and opens its sheet, where
   points are assigned like a top-up.
-- The contact item's icon is a stand-in (Foundry's `mystery-man.svg`) until
-  there's one in the style of the system's game-icons.
+- The contact item's icon is `rotary-phone.webp`. Earlier releases used
+  Foundry's `mystery-man.svg` as a stand-in, which the
+  `setNetworkContactIcon` migration replaces.

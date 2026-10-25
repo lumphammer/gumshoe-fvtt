@@ -39,8 +39,7 @@ export const partyIcon = `/systems/${systemId}/assets/icons/dark-squad.webp`;
 export const personalDetailIcon = `/systems/${systemId}/assets/icons/notebook.webp`;
 export const cardIcon = `/systems/${systemId}/assets/icons/card.webp`;
 export const bondIcon = `/systems/${systemId}/assets/icons/transfuse.webp`;
-// a stand-in from Foundry's own icons
-export const networkContactIcon = "icons/svg/mystery-man.svg";
+export const networkContactIcon = `/systems/${systemId}/assets/icons/rotary-phone.webp`;
 
 // packs
 

@@ -103,6 +103,19 @@ describe("flagged migrations", () => {
     ).toEqual({});
   });
 
+  it("gives contacts with the stand-in icon their own, and leaves others", () => {
+    const migrate = flaggedMigrations.item["setNetworkContactIcon"];
+    expect(
+      migrate({ type: c.networkContact, img: "icons/svg/mystery-man.svg" }, {}),
+    ).toEqual({ img: c.networkContactIcon });
+    expect(
+      migrate({ type: c.networkContact, img: "worlds/x/fred.webp" }, {}),
+    ).toEqual({});
+    expect(
+      migrate({ type: c.bond, img: "icons/svg/mystery-man.svg" }, {}),
+    ).toEqual({});
+  });
+
   it("marks short-note conversion on an actor so a retry cannot duplicate items", () => {
     const actor = {
       flags: {},
