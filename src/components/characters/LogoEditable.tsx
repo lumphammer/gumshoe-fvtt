@@ -64,6 +64,8 @@ export const LogoEditable = ({
   // all the editing logic is done in the hook
   const {
     onInput: onInputText,
+    onKeyDown: onKeyDownText,
+    onPaste: onPasteText,
     onFocus: onFocusText,
     onBlur: onBlurText,
     contentEditableRef: contentEditableRefText,
@@ -76,6 +78,8 @@ export const LogoEditable = ({
 
   const {
     onInput: onInputSubtext,
+    onKeyDown: onKeyDownSubtext,
+    onPaste: onPasteSubtext,
     onFocus: onFocusSubtext,
     onBlur: onBlurSubtext,
     contentEditableRef: contentEditableRefSubtext,
@@ -179,6 +183,8 @@ export const LogoEditable = ({
             contentEditable={isEditable}
             ref={contentEditableRefText}
             onInput={onInputText}
+            onKeyDown={onKeyDownText}
+            onPaste={onPasteText}
             onFocus={onFocusText}
             onBlur={onBlurText}
           />
@@ -191,6 +197,8 @@ export const LogoEditable = ({
               contentEditable={isEditable && onChangeSubText !== undefined}
               ref={contentEditableRefSubtext}
               onInput={onInputSubtext}
+              onKeyDown={onKeyDownSubtext}
+              onPaste={onPasteSubtext}
               onFocus={onFocusSubtext}
               onBlur={onBlurSubtext}
             />

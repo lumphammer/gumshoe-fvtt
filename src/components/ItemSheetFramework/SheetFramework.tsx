@@ -21,10 +21,8 @@ export const ItemSheetFramework = ({
 }: ItemSheetFrameworkProps) => {
   const { item, app } = useItemSheetContext();
 
-  const { contentEditableRef, onBlur, onFocus, onInput } = useAsyncUpdate(
-    item.name ?? "",
-    item.setName,
-  );
+  const { contentEditableRef, onBlur, onFocus, onInput, onKeyDown, onPaste } =
+    useAsyncUpdate(item.name ?? "", item.setName);
 
   const [configMode, setConfigMode] = useState(false);
 
@@ -69,6 +67,8 @@ export const ItemSheetFramework = ({
             }}
             ref={contentEditableRef}
             onInput={onInput}
+            onKeyDown={onKeyDown}
+            onPaste={onPaste}
             onBlur={onBlur}
             onFocus={onFocus}
           />

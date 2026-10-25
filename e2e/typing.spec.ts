@@ -5,6 +5,7 @@ import {
   setSettings,
   test,
 } from "./foundry.ts";
+import type { Page } from "@playwright/test";
 
 // Text fields save as you type, a little at a time, and ignore the saves
 // coming back while you're still typing.
@@ -58,4 +59,65 @@ test("editing a title in a theme with uppercase titles keeps its case", async ({
   await expect
     .poll(() => page.evaluate((id) => game.items.get(id)!.name, itemId))
     .toBe("Lanterns");
+});
+
+test.describe("editable titles stay on one line", () => {
+  async function openTitle(page: Page) {
+    const itemId = await page.evaluate(async () => {
+      const item = await Item.create({ name: "Lantern", type: "equipment" });
+      return item!.id;
+    });
+    const sheet = await openSheet(page, `Item.${itemId}`);
+    const title = sheet.locator("h1 [contenteditable]");
+    const savedName = () =>
+      page.evaluate((id) => game.items.get(id)!.name, itemId);
+    return { title, savedName };
+  }
+
+  test("Enter finishes the edit instead of adding a line", async ({ page }) => {
+    const { title, savedName } = await openTitle(page);
+    await title.click();
+    await page.keyboard.press("End");
+    await page.keyboard.type(" Red");
+    await page.keyboard.press("Enter");
+    await expect(title).not.toBeFocused();
+    await expect.poll(savedName).toBe("Lantern Red");
+    await expect(title).toHaveText("Lantern Red");
+  });
+
+  test("pasting puts the lines on one line, as plain text", async ({
+    page,
+  }) => {
+    const { title, savedName } = await openTitle(page);
+    await title.click();
+    await page.keyboard.press("End");
+    await title.evaluate((element) => {
+      const clipboardData = new DataTransfer();
+      clipboardData.setData("text/plain", " Red\nand\r\n Green");
+      clipboardData.setData("text/html", "<b>Red</b><br>and<p>Green</p>");
+      element.dispatchEvent(
+        new ClipboardEvent("paste", {
+          clipboardData,
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+    await expect.poll(savedName).toBe("Lantern Red and Green");
+    expect(await title.evaluate((element) => element.innerHTML)).toBe(
+      await title.evaluate((element) => element.textContent),
+    );
+  });
+
+  test("line breaks that get in anyway are flattened", async ({ page }) => {
+    const { title, savedName } = await openTitle(page);
+    await title.click();
+    // as if text had been dragged in
+    await title.evaluate((element) => {
+      element.innerHTML = "Red<br>Lantern<div>Society</div>";
+      element.dispatchEvent(new InputEvent("input", { bubbles: true }));
+    });
+    await expect.poll(savedName).toBe("Red Lantern Society");
+    await expect(title).toHaveText("Red Lantern Society");
+  });
 });
