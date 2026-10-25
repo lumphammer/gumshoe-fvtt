@@ -64,7 +64,9 @@ export const CardCategorySettings = () => {
   const handleThresholdTypeChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const newThresholdType = e.currentTarget.value as
-        "none" | "goal" | "limit";
+        | "none"
+        | "goal"
+        | "limit";
       modify((s) => {
         s.cardCategories[index].thresholdType = newThresholdType;
       });

@@ -830,7 +830,9 @@ export class PCModel extends ActiveCharacterModel<
     await this.parent.createEmbeddedDocuments(
       "Item",
       [{ type: c.bond, name: "New Bond" }],
-      { renderSheet: true },
+      {
+        renderSheet: true,
+      },
     );
   };
 

@@ -15,7 +15,9 @@ export function useIsDocumentLimited() {
     return doc.testUserPermission(
       game.user,
       CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED,
-      { exact: true },
+      {
+        exact: true,
+      },
     );
   }, [doc]);
 

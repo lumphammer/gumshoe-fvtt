@@ -210,7 +210,10 @@ describe("getJamUpdate", () => {
   it("jams on a second 1 in the same fight", () => {
     expect(
       getJamUpdate({ ...fullAuto, hitDie: 1, pendingJam: { combatId: "c1" } }),
-    ).toEqual({ jams: true, pendingJam: null });
+    ).toEqual({
+      jams: true,
+      pendingJam: null,
+    });
   });
 
   it("jams on two 1s in a row outside combat", () => {
@@ -227,16 +230,25 @@ describe("getJamUpdate", () => {
   it("starts again in a new fight", () => {
     expect(
       getJamUpdate({ ...fullAuto, hitDie: 1, pendingJam: { combatId: "c0" } }),
-    ).toEqual({ jams: false, pendingJam: { combatId: "c1" } });
+    ).toEqual({
+      jams: false,
+      pendingJam: { combatId: "c1" },
+    });
     expect(
       getJamUpdate({ ...fullAuto, hitDie: 1, pendingJam: { combatId: null } }),
-    ).toEqual({ jams: false, pendingJam: { combatId: "c1" } });
+    ).toEqual({
+      jams: false,
+      pendingJam: { combatId: "c1" },
+    });
   });
 
   it("resets on any other roll", () => {
     expect(
       getJamUpdate({ ...fullAuto, hitDie: 2, pendingJam: { combatId: "c1" } }),
-    ).toEqual({ jams: false, pendingJam: null });
+    ).toEqual({
+      jams: false,
+      pendingJam: null,
+    });
   });
 
   it("resets on a single shot or burst, even a 1", () => {

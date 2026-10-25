@@ -21,7 +21,6 @@
   - [GitLab Legacy](#gitlab-legacy)
   - [fvtt-types](#fvtt-types)
 
-
 ## Contributing & general hacking
 
 If you'd like to contribute this code, please be aware it uses various modern front-end tools like Vite and React, so some of it will not look like normal Handlebars + JQuery Foundry stuff.
@@ -30,27 +29,28 @@ That said, please read on!
 
 These docs were mostly written for my own benefit, so feel free to reach out to me on Discord if you have questions. Head to the [Pelgrane's Virtual Tabletops Discord channel][pelgrane-discord] and ask for `@n3dst4`.
 
-
 ### Prerequisites
 
-* Have [Node.js](https://nodejs.org/) installed.
-* Have `pnpm` available. You can do this by running `corepack enable` after you've installed Node.
-
+- Have [Node.js](https://nodejs.org/) installed.
+- Have `pnpm` available. You can do this by running `corepack enable` after you've installed Node.
 
 ### Getting started
 
 1. Clone the repo.
 2. Copy `foundryconfig_template.json` to `foundryconfig.json` and edit it to fill in
-  * `dataPath` is the path to your foundry data folder
-  * `url` is the URL of your foundry instance
 
-    Example:
-      ```json
-      {
-        "dataPath": "/home/ndc/foundrydata",
-        "url": "http://localhost:30000/"
-      }
-      ```
+- `dataPath` is the path to your foundry data folder
+- `url` is the URL of your foundry instance
+
+  Example:
+
+  ```json
+  {
+    "dataPath": "/home/ndc/foundrydata",
+    "url": "http://localhost:30000/"
+  }
+  ```
+
 3. Run `pnpm install` to install dependencies.
 4. Run `pnpm run build` to do a build.
 5. Run `pnpm run link` to link it into your foundry data folder.
@@ -62,13 +62,16 @@ There are also browser tests, which drive a real Foundry with Playwright: see [`
 
 If you're working with an AI coding agent, see also [`AGENTS.md`](AGENTS.md), which collects the less obvious things about this codebase.
 
-
 ### Linting and formatting
 
-We use [oxlint](https://oxc.rs/docs/guide/usage/linter) and [Prettier](https://prettier.io/) for linting and formatting. You can run these tools with `pnpm run lint:check` and `pnpm run format:check` to check for errors and `pnpm run lint:fix` and `pnpm run format:fix` to fix them.
+We use [oxlint](https://oxc.rs/docs/guide/usage/linter) and [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) for linting and formatting. You can run these tools with `pnpm run lint:check` and `pnpm run format:check` to check for errors and `pnpm run lint:fix` and `pnpm run format:fix` to fix them.
 
-Even better (and more reliable) is to install a plugin for your editor that will run these tools automatically. For example, for VSCode, you can install the [oxc](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) extensions. Personally I have my IDE set up to "format on save" so I don't have to think about it.
+Even better (and more reliable) is to install a plugin for your editor that will run these tools automatically. For example:
 
+- [Oxc plugin for zed](https://zed.dev/extensions/oxc)
+- [Oxc plugin for VSCode](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode)
+
+Personally I have my IDE set up to "format on save" so I don't have to think about it.
 
 ### pnpm
 
@@ -89,7 +92,13 @@ On startup, `src/startup/migrateWorldIfNeeded.ts` runs any unflagged migrations 
 To see the current state of flagged migrations, open the console and type
 
 ```js
-console.log(JSON.stringify(game.settings.get("investigator", "migrationFlags"), null,  "  "))
+console.log(
+  JSON.stringify(
+    game.settings.get("investigator", "migrationFlags"),
+    null,
+    "  ",
+  ),
+);
 ```
 
 There will be a flag in there for every migration that has been run. To force a migration to run again, delete its flag and reload. For example, to re-run the `addIdtoUnlocks` item migration:
@@ -117,14 +126,14 @@ You can also edit the YAML directly and rebuild.
 
 There are two npm tasks pertaining to translations:
 
-* `pnpm run build-pack-translations` will:
-  * write the untranslated (English) Babele files for the compendium packs into [`babele-sources/`](babele-sources/), from the pack sources in `src/packs`. Transifex reads these.
-  * write `public/lang/babele/mappings.json`, which tells Babele which document fields the entries' keys (e.g. `category`) translate.
-  * carry translations over when a document is renamed, in every language's file. It spots renames by id, using `babele-sources/ids.json`.
-  * warn about any pack which has no resource in `.tx/config`.
-* `pnpm run pull-translations` will:
-  * use the Transifex command line tool, [`tx`](https://github.com/transifex/cli), to pull in the latest translations and overwrite all the JSONs.
-  * THIS WILL CLOBBER ANY JSON MODIFICATIONS WHICH HAVE NOT BEEN UPLOADED TO TRANSIFEX!
+- `pnpm run build-pack-translations` will:
+  - write the untranslated (English) Babele files for the compendium packs into [`babele-sources/`](babele-sources/), from the pack sources in `src/packs`. Transifex reads these.
+  - write `public/lang/babele/mappings.json`, which tells Babele which document fields the entries' keys (e.g. `category`) translate.
+  - carry translations over when a document is renamed, in every language's file. It spots renames by id, using `babele-sources/ids.json`.
+  - warn about any pack which has no resource in `.tx/config`.
+- `pnpm run pull-translations` will:
+  - use the Transifex command line tool, [`tx`](https://github.com/transifex/cli), to pull in the latest translations and overwrite all the JSONs.
+  - THIS WILL CLOBBER ANY JSON MODIFICATIONS WHICH HAVE NOT BEEN UPLOADED TO TRANSIFEX!
 
 A test (`src/packTranslations.test.ts`, part of `pnpm check`) fails if the files in `babele-sources/` don't match the packs, so run `pnpm run build-pack-translations` whenever you change a pack. What it offers for translation is configured in [`src/packTranslations.ts`](src/packTranslations.ts); the generator itself is in `packages/shared-fvtt-bits/task-core/packTranslations`.
 
@@ -151,9 +160,9 @@ The command to pull translations has gone through a few iterations and never qui
 tx pull --all --force --workers 16
 ```
 
-* `--all` - pull all languages, not just the pre-existing ones.
-* `--workers 16` - seems to make sense on a 16-core machine. I'm not sure if it's actually helping.
-* `--force` - overwrite "newer" files. This should only happen if there has been a PR or commit that changed the translations without also uploading those changes to Transifex.
+- `--all` - pull all languages, not just the pre-existing ones.
+- `--workers 16` - seems to make sense on a 16-core machine. I'm not sure if it's actually helping.
+- `--force` - overwrite "newer" files. This should only happen if there has been a PR or commit that changed the translations without also uploading those changes to Transifex.
 
 > ⚠️ After running `pnpm run pull-translations` (or the `tx pull` command above), you MUST look through the changes in git and confirm that they make sense. Look for languages with a lot of changes and double check that you are not accidentally overwriting changes that were added to git but not TX.
 
@@ -162,7 +171,6 @@ tx pull --all --force --workers 16
 It's better to feed those into TX (resources -> language -> upload file) and then pull them back down again, rather than committing directly. This way TX remains the single source of truth for translations.
 
 Alternatively, if the PR looks safe, you can merge it - but then you should upload the changes to TX and immediately pull them back down again to make sure that nothing else changed in the meantime.
-
 
 ### Getting set up to pull translations from Transifex
 
@@ -181,7 +189,7 @@ Document data is defined with Foundry's `TypeDataModel`s, one per subtype (e.g. 
 1. Add the field to the model's schema, with an `initial` value so existing documents get a sensible default.
 2. If you need to change the shape of existing data, add a `migrateData` step or a flagged migration (see [Migrations](#migrations)).
 3. Add a setter to the model if the UI needs one (see the existing `set*` methods).
-4. New document *subtypes* also need adding to `documentTypes` in [`public/system.json`](public/system.json), registering in `CONFIG.*.dataModels` and the `DataModelConfig` type in [`src/configuration.ts`](src/configuration.ts), and a `TYPES.*` label in `public/lang/en.json`.
+4. New document _subtypes_ also need adding to `documentTypes` in [`public/system.json`](public/system.json), registering in `CONFIG.*.dataModels` and the `DataModelConfig` type in [`src/configuration.ts`](src/configuration.ts), and a `TYPES.*` label in `public/lang/en.json`.
 
 ## Adding system settings
 
@@ -215,37 +223,36 @@ There's a Foundry VTT module called [🧙 Developer Mode](https://foundryvtt.com
 
 What this enables (list subject to change):
 
-* Notes fields will now have a "view source" mode (looks like `</>`.)
-* "NUKE" button on PC character sheet (this used to be present all the time.)
-* "Debug translations" option available in INVESTIGATOR System Settings.
-
+- Notes fields will now have a "view source" mode (looks like `</>`.)
+- "NUKE" button on PC character sheet (this used to be present all the time.)
+- "Debug translations" option available in INVESTIGATOR System Settings.
 
 ## Development flow
 
-* We develop on `main`, with occasional feature branches or forks as needed and wanted.
-* We deliver both the public-facing manifest and the downloadable zip package using [tagged GitHub releases][gh-releases]
-* The manifest in VCS points to the "latest package" of the manifest and the download.
-* To do a release, we push a tag.
-* The CI kicks in and:
-  * Checks that the tag matches the version in the manifest. Barfs if not right.
-  * Works out the release asset URL and set the `download` path.
-  * Runs tests.
-  * Runs the build.
-  * Creates the zip package.
-  * Creates/updates a tagged release with two extra attachments:
-    * The zip package
-    * The manifest
-  * If the tag is a release (i.e.there is no pre-release suffix), it also marks the release as "latest" on GitHub.
-  * You can always find the latest release at the URL https://github.com/lumphammer/gumshoe-fvtt/releases/latest
-
+- We develop on `main`, with occasional feature branches or forks as needed and wanted.
+- We deliver both the public-facing manifest and the downloadable zip package using [tagged GitHub releases][gh-releases]
+- The manifest in VCS points to the "latest package" of the manifest and the download.
+- To do a release, we push a tag.
+- The CI kicks in and:
+  - Checks that the tag matches the version in the manifest. Barfs if not right.
+  - Works out the release asset URL and set the `download` path.
+  - Runs tests.
+  - Runs the build.
+  - Creates the zip package.
+  - Creates/updates a tagged release with two extra attachments:
+    - The zip package
+    - The manifest
+  - If the tag is a release (i.e.there is no pre-release suffix), it also marks the release as "latest" on GitHub.
+  - You can always find the latest release at the URL https://github.com/lumphammer/gumshoe-fvtt/releases/latest
 
 ## Release process
 
 > The innocuous-looking 4.9.7 release represented a change in how we do releases. We used to have a `release` branch which pointed to the most recent release, with attachment links pasted into `system.json` for the download. For the foreseeable future we will need to fast-forward `release` to `main` when releasing to make sure we catch slow updaters*
 >
 > 7.0.0 will be (probably) the first release from GitHub:
-> * Uses GitGub actions instead of GitLab CI
-> * Uses GitHub Releases instead of GitLab Generic Packages
+>
+> - Uses GitGub actions instead of GitLab CI
+> - Uses GitHub Releases instead of GitLab Generic Packages
 >
 > As of 8.2.1 We no longer need to create the release by hand on the Foundry website - it's all handled by a GitHub action. You can see the package management page at https://foundryvtt.com/packages/investigator/edit to check it's worked if you like.
 >
@@ -256,20 +263,20 @@ To perform a release:
 1. Decide if you're doing a testing release or a real release. DO DO A TESTING RELEASE AND CHECK IT ON A TEST SERVER.
 2. Pick the new version number by incrementing the second part of of the curent number, e.g. `8.3` -> `8.4`. WE NO LONGER USE SEMVER.
 3. Update the version in
-   * [`package.json`](package.json)
-   * [`system.json`](public/system.json).
+   - [`package.json`](package.json)
+   - [`system.json`](public/system.json).
 4. For a full release, update the [`CHANGELOG`](CHANGELOG.md).
 5. Run this one handy command, which will commit, push, and create a new tag and push it also:
 
-    ```sh
-    pnpm run do-prerelease
-    ```
+   ```sh
+   pnpm run do-prerelease
+   ```
 
-    or
+   or
 
-    ```sh
-    pnpm run do-full-release
-    ```
+   ```sh
+   pnpm run do-full-release
+   ```
 
 6. If this is a test release, stop here. You can find the manifest URL to install this test release on [the GitHub releases page][gh-releases].
 
@@ -277,44 +284,41 @@ To perform a release:
 
 7. Fast-forward `release` to `main`:
 
-    ```sh
-    pnpm run update-legacy-release-branch
-    ```
+   ```sh
+   pnpm run update-legacy-release-branch
+   ```
 
 8. Wait for the release email from GitHub (or go to the [CI page][gh-ci] and wait for the pipeline to finish if you're rushing.)
 
 9. Barf forth glad tidings on the [Pelgrane's Virtual Tabletops Discord channel][pelgrane-discord] and the [Foundry Package Releases channel][fprd].
 
-    Paste in the CHANGELOG entry you just wrote, adding "INVESTIGATOR" in front of the version number to give people context.
+   Paste in the CHANGELOG entry you just wrote, adding "INVESTIGATOR" in front of the version number to give people context.
 
 ### What happens if the CI pipeline fails?
 
 1. Delete the `vX.Y.Z` tag from local and remote:
 
-    ```sh
-    git tag -d vX.Y.Z
-    git push origin :refs/tags/vX.Y.Z
-    ```
+   ```sh
+   git tag -d vX.Y.Z
+   git push origin :refs/tags/vX.Y.Z
+   ```
 
 2. Fix the problem, commit.
 3. Run `pnpm run do-prerelease` or `pnpm run do-full-release` again.
-
 
 ## GitLab Legacy
 
 As of v7.0.0 we are moving off GitLab and going home to GitHub. The following links are historical purposes only:
 
-* [GitLab CI pipeline][gl-ci]
-* [GitLab Releases][gl-releases]
-* [GitLab Generic Packages (docs)][gl-generic-packages]
-
+- [GitLab CI pipeline][gl-ci]
+- [GitLab Releases][gl-releases]
+- [GitLab Generic Packages (docs)][gl-generic-packages]
 
 ## fvtt-types
 
 We use the community [`fvtt-types`](https://github.com/League-of-Foundry-Developers/foundry-vtt-types) for Foundry's core types. The version is pinned in the `catalog` in [`pnpm-workspace.yaml`](pnpm-workspace.yaml), and shared by the workspace packages. To try a branch straight from GitHub, run `./scripts/install-fvtt-types.sh <branch>`.
 
 The types are good these days, but some corners of Foundry are hard to express in TypeScript, so you'll still see the occasional `@ts-expect-error fvtt-types`.
-
 
 [gl-generic-packages]: https://docs.gitlab.com/ee/user/packages/generic_packages/
 [gl-releases]: https://gitlab.com/n3dst4/investigator-fvtt/-/releases
@@ -323,3 +327,7 @@ The types are good these days, but some corners of Foundry are hard to express i
 [pelgrane-discord]: https://discord.com/channels/692113540210753568/720741108937916518
 [fprd]: https://discord.com/channels/170995199584108546/64821535989524071
 [gh-releases]: https://github.com/lumphammer/gumshoe-fvtt/releases
+
+## A note on `prettier`
+
+We now use [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) for formatting code, but [prettier](https://prettier.io/) remains because it's actually used in-code to provide HTML formatting for the custom journal editor.

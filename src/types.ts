@@ -48,7 +48,11 @@ export type Resource = {
 
 /** MW Injury status */
 export type MwInjuryStatus =
-  "uninjured" | "hurt" | "down" | "unconscious" | "dead";
+  | "uninjured"
+  | "hurt"
+  | "down"
+  | "unconscious"
+  | "dead";
 
 /** difficulty levels for MW */
 export type MWDifficulty = "easy" | number;
@@ -60,7 +64,8 @@ export type MWDifficulty = "easy" | number;
 // #############################################################################
 
 export type AbilityType =
-  typeof constants.investigativeAbility | typeof constants.generalAbility;
+  | typeof constants.investigativeAbility
+  | typeof constants.generalAbility;
 
 export type Unlock = {
   id: string;

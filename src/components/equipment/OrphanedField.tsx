@@ -87,9 +87,7 @@ export const OrphanedField = ({
       <Button
         css={{
           gridColumn: 4,
-          gridRow: `${index * gridRowsPerField + 1} / ${
-            index * gridRowsPerField + 3
-          }`,
+          gridRow: `${index * gridRowsPerField + 1} / ${index * gridRowsPerField + 3}`,
         }}
         onClick={() => {
           onDelete(fieldId);

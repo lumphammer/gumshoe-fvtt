@@ -10,7 +10,7 @@ translations, adding fields and settings, releases).
   before every commit, and only commit if it passes (check the exit code; a
   piped command can hide a failure).
 - Run Node via `pnpm exec node`.
-- `pnpm exec prettier --write src` fixes formatting; `pnpm exec oxlint <path>`
+- `pnpm exec oxfmt --write src` fixes formatting; `pnpm exec oxlint <path>`
   lints a file quickly.
 
 ## Local Foundry

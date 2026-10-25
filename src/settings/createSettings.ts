@@ -52,62 +52,61 @@ interface SettingObject<T, TValidator extends z.ZodType | undefined> {
 
 // a nest of factories! I'll walk you through it...
 export const createSetting =
+  // the first factory allows us to inject TSetting, the main type of the
+  // setting
   <TSetting>() =>
-  // 👆 the first factory allows us to inject TSetting, the main type of the
-  // setting (sorry about the comment position, this should be above the call
-  // signature but prettier does something weird with it)
-  //
-  // 👇 the second factory allows us to inject TValidator, the type of
-  // the validator for this setting factory. it's a separate call from
-  // the first one so we can be explicit about TSetting but use inference for
-  // TValidator. We also give Foundry its "type" (which is basically a
-  // constructor) here.
-  <
-    TValidator extends
-      z.ZodType<TSetting> | z.ZodOptional<z.ZodType<TSetting>> | undefined =
-      undefined,
-  >(
-    type: any,
-    validator?: TValidator,
-  ) =>
-  // finally, the actual function that creates the setting. the args (see
-  // SettingFactoryArgs<...> and SettingObject<...> at the end of the signature)
-  // for this function are based on TSetting and TValidator
-  ({
-    default: _default,
-    key,
-    name,
-    config = false,
-    scope = "world",
-    choices,
-    onChange,
-    exportable = true,
-    managedBySettingsForm = true,
-  }: SettingFactoryArgs<TSetting>): SettingObject<TSetting, TValidator> => {
-    Hooks.once("init", () => {
-      assertGame(game);
-      // the actual foundry setting is registered here
-      // @ts-expect-error settings are typed now, but we're doing our own thing
-      game.settings.register(c.systemId, key, {
-        name,
-        scope,
-        config,
-        default: _default,
-        type,
-        choices,
-        onChange,
-      });
-    });
-    return {
-      key,
+    // the second factory allows us to inject TValidator, the type of
+    // the validator for this setting factory. it's a separate call from
+    // the first one so we can be explicit about TSetting but use inference for
+    // TValidator. We also give Foundry its "type" (which is basically a
+    // constructor) here.
+    <
+      TValidator extends
+        | z.ZodType<TSetting>
+        | z.ZodOptional<z.ZodType<TSetting>>
+        | undefined = undefined,
+    >(
+      type: any,
+      validator?: TValidator,
+    ) =>
+    // finally, the actual function that creates the setting. the args (see
+    // SettingFactoryArgs<...> and SettingObject<...> at the end of the signature)
+    // for this function are based on TSetting and TValidator
+    ({
       default: _default,
-      get: getSetting<TSetting>(key),
-      set: setSetting<TSetting>(key),
-      exportable,
-      managedBySettingsForm,
-      validator: validator,
+      key,
+      name,
+      config = false,
+      scope = "world",
+      choices,
+      onChange,
+      exportable = true,
+      managedBySettingsForm = true,
+    }: SettingFactoryArgs<TSetting>): SettingObject<TSetting, TValidator> => {
+      Hooks.once("init", () => {
+        assertGame(game);
+        // the actual foundry setting is registered here
+        // @ts-expect-error settings are typed now, but we're doing our own thing
+        game.settings.register(c.systemId, key, {
+          name,
+          scope,
+          config,
+          default: _default,
+          type,
+          choices,
+          onChange,
+        });
+      });
+      return {
+        key,
+        default: _default,
+        get: getSetting<TSetting>(key),
+        set: setSetting<TSetting>(key),
+        exportable,
+        managedBySettingsForm,
+        validator: validator,
+      };
     };
-  };
 
 /**
  * Creates a setting object with a string value.

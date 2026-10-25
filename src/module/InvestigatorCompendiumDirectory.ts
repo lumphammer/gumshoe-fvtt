@@ -206,10 +206,12 @@ export class InvestigatorCompendiumDirectory<
     if (candidate.label === undefined) {
       throw new Error("Candidate compendium did not contain a label");
     }
-    if (!(
-      candidate.entity &&
-      ["Actor", "Item", "JournalEntry"].includes(candidate.entity)
-    )) {
+    if (
+      !(
+        candidate.entity &&
+        ["Actor", "Item", "JournalEntry"].includes(candidate.entity)
+      )
+    ) {
       throw new Error("Candidate compendium did not contain an entity");
     }
     if (!Array.isArray(candidate.contents)) {

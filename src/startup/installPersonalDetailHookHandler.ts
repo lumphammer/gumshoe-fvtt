@@ -187,12 +187,14 @@ export function installPersonalDetailHookHandler() {
       assertGame(game);
       // first off, make sure this is a personal detail, being created inside a
       // pc or npc actor, by the current user
-      if (!(
-        game.userId === userId &&
-        isPersonalDetailItem(item) &&
-        isActiveCharacterActor(item.actor) &&
-        isPersonalDetailCreateData(createData)
-      )) {
+      if (
+        !(
+          game.userId === userId &&
+          isPersonalDetailItem(item) &&
+          isActiveCharacterActor(item.actor) &&
+          isPersonalDetailCreateData(createData)
+        )
+      ) {
         return;
       }
       // this is the creation we re-issued ourselves - everything was settled

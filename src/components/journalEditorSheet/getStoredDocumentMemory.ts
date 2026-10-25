@@ -7,6 +7,7 @@ export function getStoredDocumentMemory(
   page: any,
 ): BareDocumentMemory | undefined {
   const pageMemory = page.getFlag?.(systemId, journalMemory) as
-    BareDocumentMemory | undefined;
+    | BareDocumentMemory
+    | undefined;
   return pageMemory ?? settings.journalMemories.get()?.[getMemoryId(page)];
 }
