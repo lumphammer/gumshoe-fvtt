@@ -34,6 +34,12 @@ At most once per day, when the GM logs in, and _if_ they have consented, INVESTI
 - _Potentially_ anyone who works on INVESTIGATOR in an official capacity in future.
 - Rights-holders for the games we support, such as Pelgrane Press, if they were to ask.
 
+## Is AI used in processing the data/is the data fed into any LLMs?
+
+No.
+
+Some AI was used in generating the ingest code and the dashboard, but it doesn't go anywhere near the collected data.
+
 ## What is the data used for?
 
 To peer into the dimly-lit world of "how people actually use this thing." For example:
