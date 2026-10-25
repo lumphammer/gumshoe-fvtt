@@ -1,6 +1,6 @@
 # Stats Policy
 
-## Why does INVESTIGATOR asks if it can share anonymous stats?
+## Why does INVESTIGATOR ask if it can share anonymous stats?
 
 Because I want to know _how_ INVESTIGATOR is being used in the wild.
 
@@ -16,17 +16,23 @@ Knowing this info will help to guide future development.
 - The language you're using.
 - The number of users (_not_ their usernames.)
 - Some info about your GUMSHOE settings (e.g. preset, theme, customizations.)
-- The other modules you're using.
+- The other modules you're using, and their versions.
+
+We also store the country that the report was sent from, but we don't retain the IP address.
+
+## How can I opt out?
+
+At any time, open GUMSHOE System Settings from the Foundry sidebar, navigate to Miscellaneous -> Usage stats, and turn off "Share anonymous usage stats".
 
 ## How and when is the data collected?
 
-At most once per day, when a GM logs in, and _if_ they have consented, INVESTIGATOR sends a little JSON payload to a service running on Cloudflare. You can preview the payload before consenting to anonymous stats, or at any time in the GUMSHOE System Settings. These reports are aggregated in a database once a day. We drop the details of any modules that don't appear in Foundry's public module registry.
+At most once per day, when the GM logs in, and _if_ they have consented, INVESTIGATOR sends a little JSON payload to a service running on Cloudflare. You can preview the payload before consenting to anonymous stats, or at any time in the GUMSHOE System Settings. These reports are aggregated in a database once a day. We drop the details of any modules that don't appear in Foundry's public module registry. The raw reports are help for 400 days.
 
 ## Who has access to the collected data?
 
 - Me (Neil de Carteret).
 - _Potentially_ anyone who works on INVESTIGATOR in an official capacity in future.
-- Again _potentially_, rights-holders for the games we support, such as Pelgrane Press, if they were to ask.
+- Rights-holders for the games we support, such as Pelgrane Press, if they were to ask.
 
 ## What is the data used for?
 
@@ -34,4 +40,6 @@ To peer into the dimly-lit world of "how people actually use this thing." For ex
 
 - Do people ever use the "equipment categories" feature?
 - Do people running Night's Black Agents stick with the default theme?
-- What proportion of users are running a fully homegrewed game?
+- What proportion of users are running a fully homebrewed game?
+
+These are all facts that would really help me. And also it's just nice to know!
