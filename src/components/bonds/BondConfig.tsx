@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
-import { useCallback } from "react";
 
-import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
+import { confirmAndDeleteItem } from "../../functions/confirmAndDeleteItem";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { Button } from "../inputs/Button";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -14,32 +13,12 @@ import { Translate } from "../Translate";
  */
 export const BondConfig = ({ children }: { children?: ReactNode }) => {
   const { item } = useItemSheetContext();
-  const onClickDelete = useCallback(async () => {
-    const message = item.actor
-      ? "DeleteActorNamesEquipmentName"
-      : "DeleteEquipmentName";
-
-    const aye = await confirmADoodleDo({
-      message,
-      confirmText: "Delete",
-      cancelText: "Cancel",
-      confirmIconClass: "fa-trash",
-      values: {
-        ActorName: item.actor?.name ?? "",
-        EquipmentName: item.name ?? "",
-      },
-      resolveFalseOnCancel: true,
-    });
-    if (aye) {
-      await item.delete();
-    }
-  }, [item]);
 
   return (
     <InputGrid>
       {children}
       <GridFieldStacked label="Delete">
-        <Button onClick={onClickDelete}>
+        <Button onClick={() => void confirmAndDeleteItem(item)}>
           <Translate>Delete Item</Translate>
         </Button>
       </GridFieldStacked>

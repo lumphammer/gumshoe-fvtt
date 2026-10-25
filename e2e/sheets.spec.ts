@@ -130,35 +130,69 @@ test("an NPC's abilities and weapons each switch between play and edit mode", as
   await expect(ratingInputs.first()).toBeVisible();
 });
 
-test("deleting equipment from a PC's Equipment tab, after confirming", async ({
-  page,
-}) => {
-  const id = await createActor(page, { name: "Hoarder", type: "pc" });
-  await createOwnedItem(page, id, { name: "Brass Lantern", type: "equipment" });
-  const sheet = await openSheet(page, `Actor.${id}`);
-  await sheet.locator(".tab-strip > label", { hasText: "Equipment" }).click();
-  const getEquipmentCount = () =>
-    page.evaluate(
-      (id) =>
-        game.actors.get(id)!.items.filter((item) => item.type === "equipment")
-          .length,
-      id,
-    );
-  const deleteButton = sheet.getByRole("button", { name: "Delete" });
-  const dialog = page.locator(".application.dialog");
+const quickDeletes = [
+  {
+    type: "equipment",
+    what: "equipment",
+    tab: "Equipment",
+    name: "Brass Lantern",
+    settings: {},
+  },
+  {
+    type: "weapon",
+    what: "a weapon",
+    tab: "Combat",
+    name: "Old Revolver",
+    settings: {},
+  },
+  {
+    type: "bond",
+    what: "a Bond",
+    tab: "Bonds",
+    name: "Mom",
+    settings: { useBonds: true },
+  },
+  {
+    type: "networkContact",
+    what: "a contact",
+    tab: "Contacts",
+    name: "Fred",
+    settings: { useNetworkContacts: true, networkAbility: "Network" },
+  },
+] as const;
 
-  // cancelling keeps it
-  await deleteButton.click();
-  await expect(dialog).toContainText('Delete Hoarder\'s "Brass Lantern"?');
-  await dialog.getByRole("button", { name: "Cancel" }).click();
-  await expect(dialog).toHaveCount(0);
-  expect(await getEquipmentCount()).toBe(1);
+for (const { type, what, tab, name, settings } of quickDeletes) {
+  test(`deleting ${what} from a PC's ${tab} tab, after confirming`, async ({
+    page,
+  }) => {
+    await setSettings(page, settings);
+    const id = await createActor(page, { name: "Hoarder", type: "pc" });
+    await createOwnedItem(page, id, { name, type });
+    const sheet = await openSheet(page, `Actor.${id}`);
+    await sheet.locator(".tab-strip > label", { hasText: tab }).click();
+    const getCount = () =>
+      page.evaluate(
+        ({ id, type }) =>
+          game.actors.get(id)!.items.filter((item) => item.type === type)
+            .length,
+        { id, type },
+      );
+    const deleteButton = sheet.getByRole("button", { name: "Delete" });
+    const dialog = page.locator(".application.dialog");
 
-  await deleteButton.click();
-  await dialog.getByRole("button", { name: "Delete" }).click();
-  await expect.poll(getEquipmentCount).toBe(0);
-  await expect(sheet).not.toContainText("Brass Lantern");
-});
+    // cancelling keeps it
+    await deleteButton.click();
+    await expect(dialog).toContainText(`Delete Hoarder's "${name}"?`);
+    await dialog.getByRole("button", { name: "Cancel" }).click();
+    await expect(dialog).toHaveCount(0);
+    expect(await getCount()).toBe(1);
+
+    await deleteButton.click();
+    await dialog.getByRole("button", { name: "Delete" }).click();
+    await expect.poll(getCount).toBe(0);
+    await expect(sheet).not.toContainText(name);
+  });
+}
 
 test("a PC can be marked as not human, or immune to Lethality, on the options tab", async ({
   page,

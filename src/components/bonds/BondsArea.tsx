@@ -81,14 +81,14 @@ export const BondsArea = () => {
                     // name (at least a third; a long one can take up to half: see
                     // `BondRow`, which caps it), badges, rating, and an empty
                     // column to take the slack, so the rating stays near the rest
-                    // rather than out on the right
+                    // rather than out on the right; then the delete button
                     gridTemplateColumns:
-                      "minmax(33.33%, max-content) max-content max-content 1fr",
+                      "minmax(33.33%, max-content) max-content max-content 1fr max-content",
                     // when it's too narrow for a third plus both badges, the name
                     // gives way first (cut off), rather than the table overflowing
                     "@container (max-width: 28em)": {
                       gridTemplateColumns:
-                        "minmax(0, max-content) max-content max-content 1fr",
+                        "minmax(0, max-content) max-content max-content 1fr max-content",
                     },
                     gridAutoRows: "min-content",
                     columnGap: "0.5em",

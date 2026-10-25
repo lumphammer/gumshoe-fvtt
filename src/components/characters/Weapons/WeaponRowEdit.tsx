@@ -1,7 +1,6 @@
 import { useCallback, useContext } from "react";
 
-import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
-import { assertGame } from "../../../functions/isGame";
+import { confirmAndDeleteItem } from "../../../functions/confirmAndDeleteItem";
 import type { WeaponItem } from "../../../module/items/weapon";
 import { settings } from "../../../settings/settings";
 import { ThemeContext } from "../../../themes/ThemeContext";
@@ -47,26 +46,6 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
       await weapon.system.setIsNearRange(true);
     } else if (!weapon.system.isLongRange) {
       await weapon.system.setIsLongRange(true);
-    }
-  }, [weapon]);
-  const onClickDelete = useCallback(async () => {
-    assertGame(game);
-    const message = weapon.actor
-      ? "DeleteActorNamesEquipmentName"
-      : "DeleteEquipmentName";
-
-    const yes = await confirmADoodleDo({
-      message,
-      confirmText: "Delete",
-      cancelText: "Cancel",
-      confirmIconClass: "fa-trash",
-      values: {
-        ActorName: weapon.actor?.name ?? "",
-        EquipmentName: weapon.name ?? "",
-      },
-    });
-    if (yes) {
-      await weapon.delete();
     }
   }, [weapon]);
 
@@ -174,7 +153,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
           padding: "0.2em 0.1em",
           // margin: "0.5em 0.5em 0 0",
         }}
-        onClick={onClickDelete}
+        onClick={() => void confirmAndDeleteItem(weapon)}
       >
         <i className="fa fa-trash" />
       </Button>

@@ -5,10 +5,12 @@ import { useCallback, useContext } from "react";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import type { NetworkContactItem } from "../../module/items/networkContact";
 import { ThemeContext } from "../../themes/ThemeContext";
+import { DeleteItemButton } from "../inputs/DeleteItemButton";
 
 /**
- * One contact on the Contacts tab: name, location and pool. The whole row opens
- * the contact's sheet (where they're used), and drags the contact.
+ * One contact on the Contacts tab: name, location and pool, and a delete
+ * button. The rest of the row opens the contact's sheet (where they're used),
+ * and drags the contact.
  */
 export const NetworkContactRow = ({
   contact,
@@ -30,40 +32,49 @@ export const NetworkContactRow = ({
   const exhausted = contact.system.pool === 0;
 
   return (
-    <a
-      // a subgrid, so the cells line up with the headers, and the row can
-      // still be one thing to hover, click and drag
+    // a subgrid, so the cells line up with the headers, and the row can be
+    // one thing to hover
+    <div
       css={{
         gridColumn: "1/-1",
         display: "grid",
         gridTemplateColumns: "subgrid",
         alignItems: "center",
-        padding: "0.2em 0",
-        cursor: "pointer",
-        opacity: exhausted ? 0.6 : 1,
-        "&&:hover": {
-          backgroundColor: theme.colors.backgroundButton,
-          textDecoration: "none",
-        },
-        "& > *": {
-          paddingInline: "0.25em",
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-          textOverflow: "ellipsis",
-        },
+        "&:hover": { backgroundColor: theme.colors.backgroundButton },
       }}
-      onClick={() => sheet.render({ force: true })}
-      data-item-id={contact.id}
-      data-testid="network-contact-row"
-      onDragStart={onDragStart}
-      draggable="true"
     >
-      <div title={contact.name ?? ""}>{contact.name}</div>
-      <div title={contact.system.location}>{contact.system.location}</div>
-      <div data-testid="network-contact-pool" css={{ textAlign: "end" }}>
-        {contact.system.pool}
-      </div>
-    </a>
+      {/* everything but the delete button, to click and drag */}
+      <a
+        css={{
+          gridColumn: "1/-2",
+          display: "grid",
+          gridTemplateColumns: "subgrid",
+          alignItems: "center",
+          padding: "0.2em 0",
+          cursor: "pointer",
+          opacity: exhausted ? 0.6 : 1,
+          "&&:hover": { textDecoration: "none" },
+          "& > *": {
+            paddingInline: "0.25em",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+          },
+        }}
+        onClick={() => sheet.render({ force: true })}
+        data-item-id={contact.id}
+        data-testid="network-contact-row"
+        onDragStart={onDragStart}
+        draggable="true"
+      >
+        <div title={contact.name ?? ""}>{contact.name}</div>
+        <div title={contact.system.location}>{contact.system.location}</div>
+        <div data-testid="network-contact-pool" css={{ textAlign: "end" }}>
+          {contact.system.pool}
+        </div>
+      </a>
+      <DeleteItemButton item={contact} />
+    </div>
   );
 };
 

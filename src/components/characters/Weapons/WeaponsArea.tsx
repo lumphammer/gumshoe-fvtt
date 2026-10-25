@@ -90,7 +90,9 @@ export const WeaponsArea = ({ fillHeight = false }: WeaponsAreaProps) => {
           <div
             css={{
               display: "grid",
-              gridTemplateColumns: "max-content 1fr max-content 1fr",
+              // ready, name, ammo, ability, delete
+              gridTemplateColumns:
+                "max-content 1fr max-content 1fr max-content",
               gridAutoRows: "min-content",
               columnGap: "0.5em",
               whiteSpace: "nowrap",
