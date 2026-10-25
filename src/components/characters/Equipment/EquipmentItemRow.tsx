@@ -5,6 +5,7 @@ import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import type { EquipmentItem } from "../../../module/items/equipment";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { DeleteItemButton } from "../../inputs/DeleteItemButton";
+import { ItemNameWithIcon } from "../ItemNameWithIcon";
 import { CheckOrCross } from "./CheckOrCross";
 
 interface EquipmentItemRowProps {
@@ -64,7 +65,7 @@ export const EquipmentItemRow = ({
         onMouseOver={handleMouseOver}
         onMouseOut={handleMouseOut}
       >
-        {item.name}
+        <ItemNameWithIcon item={item} />
       </a>
       {Object.entries(fields).map(([fieldId, field], j) => {
         return (
