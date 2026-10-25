@@ -80,6 +80,8 @@ export const MwItemSheet = () => {
         // false positive here because "name" gets flagged as a ref
         // eslint-disable-next-line react/refs
         onInput={name.onInput}
+        onKeyDown={name.onKeyDown}
+        onPaste={name.onPaste}
         onFocus={name.onFocus}
         onBlur={name.onBlur}
         ref={name.contentEditableRef}

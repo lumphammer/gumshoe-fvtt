@@ -3,6 +3,48 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { inputThrottleTime } from "../constants";
 import { throttle } from "../functions/utilities";
 
+/** Join lines with spaces. */
+const toSingleLine = (text: string) => text.replace(/\s*[\r\n]+\s*/g, " ");
+
+/**
+ * An element's text with its line breaks. Not innerText, which would also
+ * pick up CSS text-transform.
+ */
+const textWithLineBreaks = (element: HTMLElement) => {
+  const clone = element.cloneNode(true) as HTMLElement;
+  for (const br of clone.querySelectorAll("br")) br.replaceWith("\n");
+  for (const block of clone.querySelectorAll("div, p, li")) {
+    block.before("\n");
+    block.after("\n");
+  }
+  return clone.textContent;
+};
+
+const placeCaretAtEnd = (element: HTMLElement) => {
+  const selection = element.ownerDocument.getSelection();
+  if (!selection) return;
+  const range = element.ownerDocument.createRange();
+  range.selectNodeContents(element);
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
+};
+
+/** Put text in place of the selection, if it's in the element. */
+const insertAtSelection = (element: HTMLElement, text: string) => {
+  const selection = element.ownerDocument.getSelection();
+  if (!selection || selection.rangeCount === 0) return;
+  const range = selection.getRangeAt(0);
+  if (!element.contains(range.commonAncestorContainer)) return;
+  range.deleteContents();
+  const node = element.ownerDocument.createTextNode(text);
+  range.insertNode(node);
+  range.setStartAfter(node);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+};
+
 /**
  * Hook for handling async updates, e,g, where you want to be calling an
  * external onChange every so often but you can't be relying on it updating
@@ -57,8 +99,40 @@ export const useAsyncUpdate = (
   // (e.g. a theme with uppercase titles) and we would save that instead
   const onInput = useCallback(
     (e: React.InputEvent<HTMLInputElement>) => {
-      const text = e.currentTarget.textContent;
-      onChange(text);
+      const element = e.currentTarget;
+      // these are single-line. If something got a line break or markup in
+      // anyway (e.g. text dragged in), flatten it back to one line of text
+      if (element.childElementCount > 0 || /[\r\n]/.test(element.textContent)) {
+        element.textContent = toSingleLine(textWithLineBreaks(element)).trim();
+        placeCaretAtEnd(element);
+      }
+      onChange(element.textContent);
+    },
+    [onChange],
+  );
+
+  // Enter finishes the edit rather than adding a line (unless it's confirming
+  // an IME composition)
+  const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key === "Enter" && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      e.currentTarget.blur();
+    }
+  }, []);
+
+  // paste as plain text, on one line
+  const onPaste = useCallback(
+    (e: React.ClipboardEvent<HTMLElement>) => {
+      e.preventDefault();
+      const element = e.currentTarget;
+      const text = toSingleLine(e.clipboardData.getData("text/plain"));
+      // insertText is deprecated, but it's still the only way to edit that
+      // the browser can undo. It fires input, which saves
+      // eslint-disable-next-line typescript/no-deprecated -- nothing replaces it
+      if (!element.ownerDocument.execCommand("insertText", false, text)) {
+        insertAtSelection(element, text);
+        onChange(element.textContent);
+      }
     },
     [onChange],
   );
@@ -82,6 +156,8 @@ export const useAsyncUpdate = (
 
     contentEditableRef,
     onInput,
+    onKeyDown,
+    onPaste,
   };
 };
 
