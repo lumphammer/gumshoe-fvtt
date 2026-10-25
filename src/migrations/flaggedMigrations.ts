@@ -97,6 +97,19 @@ export const flaggedMigrations: FlaggedMigrations = {
       }
       return updateData;
     },
+    /**
+     * Contacts had Foundry's `mystery-man.svg` as a stand-in icon until they
+     * got one of their own
+     */
+    setNetworkContactIcon: (item: any, updateData: any) => {
+      if (
+        item.type === c.networkContact &&
+        item.img === "icons/svg/mystery-man.svg"
+      ) {
+        updateData.img = c.networkContactIcon;
+      }
+      return updateData;
+    },
   },
   actor: {
     /**

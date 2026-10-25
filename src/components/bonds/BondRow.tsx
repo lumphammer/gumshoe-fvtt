@@ -5,6 +5,7 @@ import { useCallback, useContext } from "react";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import type { BondItem } from "../../module/items/bond";
 import { ThemeContext } from "../../themes/ThemeContext";
+import { ItemNameWithIcon } from "../characters/ItemNameWithIcon";
 import { DeleteItemButton } from "../inputs/DeleteItemButton";
 import { BondBadges } from "./BondBadges";
 
@@ -57,20 +58,14 @@ export const BondRow = ({ bond }: { bond: BondItem }) => {
         onDragStart={onDragStart}
         draggable="true"
       >
-        <div
+        <ItemNameWithIcon
+          item={bond}
           data-testid="bond-name"
           title={bond.name ?? ""}
-          css={{
-            // up to half the table (cqw: the table is the container), then
-            // cut off
-            maxWidth: "50cqw",
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {bond.name}
-        </div>
+          // up to half the table (cqw: the table is the container), then cut
+          // off
+          css={{ maxWidth: "50cqw" }}
+        />
         <div
           css={{
             display: "flex",

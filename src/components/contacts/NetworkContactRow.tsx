@@ -5,6 +5,7 @@ import { useCallback, useContext } from "react";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import type { NetworkContactItem } from "../../module/items/networkContact";
 import { ThemeContext } from "../../themes/ThemeContext";
+import { ItemNameWithIcon } from "../characters/ItemNameWithIcon";
 import { DeleteItemButton } from "../inputs/DeleteItemButton";
 
 /**
@@ -67,7 +68,7 @@ export const NetworkContactRow = ({
         onDragStart={onDragStart}
         draggable="true"
       >
-        <div title={contact.name ?? ""}>{contact.name}</div>
+        <ItemNameWithIcon item={contact} title={contact.name ?? ""} />
         <div title={contact.system.location}>{contact.system.location}</div>
         <div data-testid="network-contact-pool" css={{ textAlign: "end" }}>
           {contact.system.pool}

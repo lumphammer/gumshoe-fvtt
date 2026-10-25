@@ -8,6 +8,7 @@ import type { WeaponItem } from "../../../module/items/weapon";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { Toggle } from "../../inputs/Toggle";
+import { ItemNameWithIcon } from "../ItemNameWithIcon";
 
 type WeaponRowProps = {
   weapon: WeaponItem;
@@ -79,15 +80,7 @@ export const WeaponRow = ({ weapon, isReady, setReady }: WeaponRowProps) => {
           }
         }}
       >
-        <span
-          css={{
-            color: theme.colors.accent,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {weapon.name}
-        </span>
+        <ItemNameWithIcon item={weapon} css={{ color: theme.colors.accent }} />
         <span css={{ textAlign: "center" }}>
           {weapon.system.usesAmmo
             ? `${weapon.system.ammo.value}/${weapon.system.ammo.max}`

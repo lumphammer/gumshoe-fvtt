@@ -5,6 +5,7 @@ import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import type { EquipmentItem } from "../../../module/items/equipment";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { DeleteItemButton } from "../../inputs/DeleteItemButton";
+import { ItemNameWithIcon } from "../ItemNameWithIcon";
 import { CheckOrCross } from "./CheckOrCross";
 
 interface EquipmentItemRowProps {
@@ -55,6 +56,8 @@ export const EquipmentItemRow = ({
           // mouseEvents: "none",
           // pointerEvents: "",
           cursor: "pointer",
+          // so a long name is cut off, rather than widening the table
+          minWidth: 0,
         }}
         onClick={() => sheet.render({ force: true })}
         data-item-id={item.id}
@@ -64,7 +67,7 @@ export const EquipmentItemRow = ({
         onMouseOver={handleMouseOver}
         onMouseOut={handleMouseOut}
       >
-        {item.name}
+        <ItemNameWithIcon item={item} />
       </a>
       {Object.entries(fields).map(([fieldId, field], j) => {
         return (
