@@ -56,6 +56,8 @@ export const EquipmentItemRow = ({
           // mouseEvents: "none",
           // pointerEvents: "",
           cursor: "pointer",
+          // so a long name is cut off, rather than widening the table
+          minWidth: 0,
         }}
         onClick={() => sheet.render({ force: true })}
         data-item-id={item.id}
