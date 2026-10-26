@@ -66,6 +66,8 @@ If you're working with an AI coding agent, see also [`AGENTS.md`](AGENTS.md), wh
 
 We use [oxlint](https://oxc.rs/docs/guide/usage/linter) and [oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) for linting and formatting. You can run these tools with `pnpm run lint:check` and `pnpm run format:check` to check for errors and `pnpm run lint:fix` and `pnpm run format:fix` to fix them.
 
+To look for unused dependencies, run `pnpm knip`. Some packages are only used indirectly (loaded by name, or referenced by a type directive), so knip can't see them; list those under `ignoreDependencies` in `knip.json`.
+
 Even better (and more reliable) is to install a plugin for your editor that will run these tools automatically. For example:
 
 - [Oxc plugin for zed](https://zed.dev/extensions/oxc)

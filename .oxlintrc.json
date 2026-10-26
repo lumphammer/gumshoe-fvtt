@@ -16,7 +16,6 @@
     "**/build",
     "**/dist",
     "**/node_modules",
-    "*/**/*.eslintrc*.?js",
     "packages/shared-fvtt-bits/dotfiles/copy"
   ],
   "overrides": [
