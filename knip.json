@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "include": ["dependencies", "unlisted", "binaries", "unresolved"],
+  "ignoreBinaries": ["tx"],
+  "workspaces": {
+    ".": {
+      "ignoreDependencies": [
+        // loaded by name in src/vitePluginFontsource.ts
+        "@fontsource/*",
+        // named as strings in the svgr options in createViteUserConfig.ts
+        "@svgr/plugin-jsx",
+        "@svgr/plugin-svgo",
+        // types referenced with /// <reference> in src/global.ts
+        "vite-plugin-svgr"
+      ]
+    },
+    "packages/*": {}
+  }
+}

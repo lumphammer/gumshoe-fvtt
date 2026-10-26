@@ -19,11 +19,9 @@
       // see *our* @emotion/react not its own.
       "@emotion/react": ["./node_modules/@emotion/react"]
     },
-    // we don't use js in actual code but it's simpler to have a single eslint
-    // setup, and our main eslint config uses typescript-eslint with typed
-    // linting, so we need to allow tsc to "see" js files so thast eslint can
-    // work on trhe various stray js files that need to live in the root of a
-    // project.
+    // we don't use js in actual code, but this lets tsc (and oxlint's
+    // type-aware rules) see the various stray js files that need to live in
+    // the root of a project.
     "allowJs": true,
     "noEmit": true,
     // lets us write `.ts` extensions in imports, which vite's native config
@@ -43,7 +41,7 @@
     "skipLibCheck": true,
     "isolatedModules": true,
     // https://devblogs.microsoft.com/typescript/announcing-typescript-5-5/#isolated-declarations
-    // this causes a problem with eslint (probably typescript-eslint?)
+    // this caused a problem with eslint (probably typescript-eslint?)
     //"isolatedDeclarations": true,
     //
     // `"composite": true` causes phantom errors in TS Server along the lines of
