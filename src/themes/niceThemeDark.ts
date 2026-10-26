@@ -1,5 +1,4 @@
 import { systemId } from "../constants";
-import { averiaLibre } from "./constants";
 import { themeFactory } from "./functions";
 import type { ThemeV1 } from "./types";
 
@@ -18,8 +17,8 @@ export const niceThemeDark: ThemeV1 = themeFactory({
     borderRadius: "0.5em",
     overflow: "hidden",
   },
-  bodyFont: averiaLibre.fontFamily,
-  displayFont: "normal normal 400 1.2em 'Big Shoulders Text', serif",
+  bodyFont: "semi-condensed 500 16px 'Saira', sans-serif",
+  displayFont: "condensed normal small-caps 600 1.2em 'Saira', serif",
   logo: {
     fontScaleFactor: 18,
     frontTextElementStyle: {
@@ -30,7 +29,7 @@ export const niceThemeDark: ThemeV1 = themeFactory({
       textShadow: "2px 0px 1px black, -1px 0px 0px rgba(255,255,255,0.5)",
     },
     textElementsStyle: {
-      font: "normal normal 300 1.2em 'Big Shoulders Display', serif",
+      font: "condensed normal small-caps 400 1.2em 'Saira', serif",
     },
     backdropStyle: {
       backgroundColor: "rgba(0,0,0,0.4)",

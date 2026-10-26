@@ -1,5 +1,4 @@
 import { systemId } from "../constants";
-import { averiaLibre } from "./constants";
 import { themeFactory } from "./functions";
 import type { ThemeV1 } from "./types";
 
@@ -9,8 +8,9 @@ export const niceTheme: ThemeV1 = themeFactory({
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/marjanblan-5Ft4NWTmeJE-unsplash.webp)`,
   },
-  bodyFont: averiaLibre.fontFamily,
-  displayFont: "normal normal 400 1.2em 'Big Shoulders Text', serif",
+  bodyFont: "semi-condensed 500 16px 'Saira', sans-serif",
+  // bodyFont: "500 16px 'Saira', sans-serif",
+  displayFont: "condensed normal small-caps 600 1.2em 'Saira', serif",
   logo: {
     fontScaleFactor: 18,
     frontTextElementStyle: {
@@ -20,7 +20,7 @@ export const niceTheme: ThemeV1 = themeFactory({
       textShadow: "2px 0px 1px black, -1px 0px 0px rgba(255,255,255,0.5)",
     },
     textElementsStyle: {
-      font: "normal normal 300 1.2em 'Big Shoulders Display', serif",
+      font: "condensed normal small-caps 400 1.2em 'Saira', serif",
     },
     backdropStyle: {
       background: `#4a0d00 url(systems/${systemId}/assets/wallpaper/nice_red_agents.webp)`,
