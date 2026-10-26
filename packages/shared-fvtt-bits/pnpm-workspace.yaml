@@ -1,4 +1,3 @@
-# fvtt-types depends on pixi packages via github: URLs
 blockExoticSubdeps: false
 
 allowBuilds:
@@ -14,12 +13,12 @@ catalog:
   '@types/react': ^19.3.0
   '@vitejs/plugin-react-swc': 3.11.0
   fvtt-types: 14.366.0-beta.20261009164208
-  happy-dom: ^21.0.3
+  happy-dom: ^21.0.4
   react: ^19.3.1
   react-dom: ^19.3.1
   tsx: ^4.23.15
   typescript: 7.0.2
-  vite: 8.3.4
+  vite: 8.3.5
   vitest: ^3.2.4
 
 # Force one copy of each (e.g. vitest 3 would otherwise bring its own vite).
