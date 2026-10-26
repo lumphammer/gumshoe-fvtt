@@ -616,5 +616,10 @@
   "investigator.LastSent": "Last sent",
   "investigator.NotYet": "Not yet",
   "investigator.InstallID": "Install ID",
-  "investigator.Reset": "Reset"
+  "investigator.Reset": "Reset",
+  "investigator.Stability": "Stability",
+  "investigator.Sanity": "Sanity",
+  "investigator.Turn": "Turn",
+  "investigator.Caption": "Caption",
+  "investigator.YouHaveUnsavedChangesAreYouSureYouWantToOverwriteThem": "You have unsaved changes. Are you sure you want to overwrite them?"
 }

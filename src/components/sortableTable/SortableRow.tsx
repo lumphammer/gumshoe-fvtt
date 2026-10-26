@@ -3,7 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 import type { PropsWithChildren } from "react";
 import { useContext } from "react";
 
-import { DragHandle } from "../settings/DragDrop/DragHandle";
+import { DragHandle } from "./DragHandle";
 import { ActiveIdContext } from "./ActiveIdContext";
 
 type SortableRowProps = PropsWithChildren<{
