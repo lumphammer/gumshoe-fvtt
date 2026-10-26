@@ -27,10 +27,6 @@ export interface ThemeV1 extends ThemeSeedV1 {
     success: string;
   };
 
-  logo: ThemeSeedV1["logo"] & {
-    fontScaleFactor: number;
-  };
-
   cards: {
     base: CardStyles;
     area: CardsAreaStyles;

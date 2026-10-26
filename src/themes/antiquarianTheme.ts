@@ -14,7 +14,6 @@ export const antiquarianTheme: ThemeV1 = themeFactory({
   bodyFont: averiaLibre.fontFamily,
   displayFont: "normal small-caps normal 1.1em 'IM Fell English', serif",
   logo: {
-    fontScaleFactor: 24,
     frontTextElementStyle: {
       color: "#000",
       maskImage: `url(systems/${systemId}/assets/wallpaper/stonelike-mask.webp)`,

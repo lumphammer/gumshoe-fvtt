@@ -166,9 +166,7 @@ export interface ThemeSeedV1 {
    */
   logo: {
     /**
-     * This number is used when working out how to scale the lettering in the
-     * character sheet logo. The default is 14,
-     * @default 14
+     * @deprecated Ignored: the logo's lettering is now sized to fit its width.
      */
     fontScaleFactor?: number;
     /**

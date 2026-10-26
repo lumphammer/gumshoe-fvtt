@@ -6,8 +6,6 @@ import type {
 import { irid } from "../irid/irid";
 import type { ThemeV1 } from "./types";
 
-const defaultFontScaleFactor = 14;
-
 /**
  * Given two colors, create a third which is the result of overlaying the second
  * on the first
@@ -140,10 +138,7 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
       warning: warning.toString(),
       success: success.toString(),
     },
-    logo: {
-      ...seed.logo,
-      fontScaleFactor: seed.logo.fontScaleFactor ?? defaultFontScaleFactor,
-    },
+    logo: seed.logo,
     cards: {
       base: cardBase,
       area: {

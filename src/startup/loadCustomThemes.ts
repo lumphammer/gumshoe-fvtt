@@ -94,7 +94,6 @@ export function loadCustomThemes() {
             textElementsStyle:
               blob.logo?.textElementsStyle ??
               highContrastTheme.logo.textElementsStyle,
-            fontScaleFactor: blob.logo?.fontScaleFactor,
           },
           schemaVersion: blob.schemaVersion,
           appWindowStyle: blob.appWindowStyle ?? {},

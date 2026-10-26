@@ -128,20 +128,6 @@ export const PCSheetFull = () => {
         <LogoEditable
           mainText={actor.name ?? ""}
           subText={occupation?.name ?? genericOccupation}
-          onChangeMainText={actor.setName}
-          onChangeSubText={occupation?.setName}
-        />
-      </div>
-      <div
-        css={{
-          gridArea: "title",
-          textAlign: "center",
-          position: "relative",
-        }}
-      >
-        <LogoEditable
-          mainText={actor.name ?? ""}
-          subText={occupation?.name ?? genericOccupation}
           defaultSubText={settings.genericOccupation.get()}
           onChangeMainText={actor.setName}
           onChangeSubText={occupation?.setName}
