@@ -78,8 +78,8 @@ async function addPack(
 ) {
   const shouldAdd = await confirmADoodleDo({
     message: "Add all items from pack {Name}?",
-    cancelText: getTranslated("Cancel"),
-    confirmText: getTranslated("Add"),
+    cancelText: "Cancel",
+    confirmText: "Add",
     confirmIconClass: "fas fa-plus",
     values: {
       Name: pack.metadata.label, //

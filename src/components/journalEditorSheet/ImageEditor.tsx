@@ -33,7 +33,7 @@ export const ImageEditor = ({ page }: ImageEditorProps) => {
     >
       <ImageArea page={page} />
       <InputGrid css={{ padding: "0.5em", gridTemplateRows: "1fr 1fr" }}>
-        <GridFieldStacked label="Caption" noTranslate>
+        <GridFieldStacked label="Caption">
           <AsyncTextArea
             value={page.image.caption}
             onChange={handleChange}
