@@ -181,6 +181,7 @@ export const LogoEditable = ({
               ...theme.logo.frontTextElementStyle,
             }}
             contentEditable={isEditable}
+            spellCheck={false}
             ref={contentEditableRefText}
             onInput={onInputText}
             onKeyDown={onKeyDownText}
@@ -195,6 +196,7 @@ export const LogoEditable = ({
                 ...theme.logo.frontTextElementStyle,
               }}
               contentEditable={isEditable && onChangeSubText !== undefined}
+              spellCheck={false}
               ref={contentEditableRefSubtext}
               onInput={onInputSubtext}
               onKeyDown={onKeyDownSubtext}
