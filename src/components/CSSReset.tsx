@@ -149,9 +149,6 @@ export const CSSReset = ({
           userSelect: "auto",
           boxSizing: "border-box",
           scrollbarColor: `${theme.colors.accent} ${theme.colors.backgroundButton}`,
-          "&:focus": {
-            textDecoration: "underline",
-          },
         },
 
         "h1, h2, h3, h4": {
