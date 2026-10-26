@@ -57,11 +57,6 @@ export const fontsourceFamilies: FontsourceFamily[] = [
     pkg: "@fontsource-variable/big-shoulders-text",
     css: ["wght"],
   },
-  {
-    family: "Big Shoulders Display",
-    pkg: "@fontsource-variable/big-shoulders-display",
-    css: ["wght"],
-  },
   { family: "Russo One", pkg: "@fontsource/russo-one", css: ["400"] },
   {
     family: "Protest Guerrilla",
@@ -74,6 +69,11 @@ export const fontsourceFamilies: FontsourceFamily[] = [
     family: "IM Fell English",
     pkg: "@fontsource/im-fell-english",
     css: ["400", "400-italic"],
+  },
+  {
+    family: "Saira",
+    css: ["wdth"],
+    pkg: "@fontsource-variable/saira",
   },
 ];
 
