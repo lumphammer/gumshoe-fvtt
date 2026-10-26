@@ -12,6 +12,7 @@
     "fonts/fontsource.css"
   ],
   "socket": true,
+  "primaryTokenAttribute": "resources.health",
   "packFolders": [
     {
       "name": "GUMSHOE",
