@@ -20,7 +20,6 @@ export const niceThemeDark: ThemeV1 = themeFactory({
   bodyFont: "semi-condensed 500 16px 'Saira', sans-serif",
   displayFont: "condensed normal small-caps 600 1.2em 'Saira', serif",
   logo: {
-    fontScaleFactor: 18,
     frontTextElementStyle: {
       background: "linear-gradient(135deg, #fff 0%, #fff 90%)",
       backgroundClip: "text",

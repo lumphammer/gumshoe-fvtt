@@ -12,7 +12,6 @@ export const niceTheme: ThemeV1 = themeFactory({
   // bodyFont: "500 16px 'Saira', sans-serif",
   displayFont: "condensed normal small-caps 600 1.2em 'Saira', serif",
   logo: {
-    fontScaleFactor: 18,
     frontTextElementStyle: {
       color: "#fff",
     },

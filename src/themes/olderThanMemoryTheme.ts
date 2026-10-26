@@ -23,7 +23,6 @@ export const olderThanMemoryTheme: ThemeV1 = themeFactory({
   bodyFont: "normal 16px 'Signika', sans-serif",
   displayFont: "bold normal normal 1.1em 'Cormorant Unicase', serif",
   logo: {
-    fontScaleFactor: 24,
     frontTextElementStyle: {
       color: "#fff",
       textShadow: [
