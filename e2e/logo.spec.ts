@@ -71,13 +71,43 @@ test("a long name is shown at its fitted size straight away", async ({
     name: "Professor Henry Armitage of Miskatonic University",
     type: "pc",
   });
-  const sheet = await openSheet(page, `Actor.${actorId}`);
-  // if it animated down from full size, we'd catch it on the way
-  let first: Awaited<ReturnType<typeof measure>> | undefined;
-  await expect
-    .poll(async () => (first = await measure(sheet)).scale)
-    .toBeLessThan(0.9);
-  expect(first!.settled).toBe(true);
+  // from before the sheet opens, record the name's size (as a fraction of its
+  // full size) as painted on each frame: sampled just after the paint, since
+  // in requestAnimationFrame we'd see the size from before it's been fitted.
+  // Not the first time we see it, though: it may have been added since the
+  // last paint, so we'd see a size it's never had on screen
+  await page.evaluate(() => {
+    const scales: number[] = [];
+    (window as unknown as { logoScales: number[] }).logoScales = scales;
+    let seen: HTMLElement | null = null;
+    const sample = () => {
+      const text = document.querySelector<HTMLElement>(
+        ".logo .front-text-element > [contenteditable]",
+      );
+      const isNew = text !== seen;
+      seen = text;
+      if (text?.offsetWidth && !isNew) {
+        const size = (element: Element) =>
+          parseFloat(getComputedStyle(element).fontSize);
+        scales.push(size(text) / size(text.parentElement!));
+      }
+      if (scales.length < 60) {
+        requestAnimationFrame(() => setTimeout(sample));
+      }
+    };
+    requestAnimationFrame(() => setTimeout(sample));
+  });
+  await openSheet(page, `Actor.${actorId}`);
+  const recorded = () =>
+    page.evaluate(
+      () => (window as unknown as { logoScales: number[] }).logoScales,
+    );
+  // a second's worth of frames, longer than the transition
+  await expect.poll(async () => (await recorded()).length).toBe(60);
+  const scales = await recorded();
+  // if it animated down from full size, it would start big and change
+  expect(scales[0]).toBeLessThan(0.9);
+  expect(new Set(scales).size).toBe(1);
 });
 
 test("a long occupation doesn't shrink the name", async ({ page }) => {

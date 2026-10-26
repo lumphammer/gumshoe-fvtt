@@ -32,7 +32,10 @@ const subtextSyle: CSSObject = {
  *
  * Changes in size are animated, but not the first fit: the text should just
  * appear at the right size. The first measurement comes after layout but
- * before the first paint, and the transition is turned on in the frame after.
+ * before the first paint, so it's not animated as long as the transition is
+ * off. It's turned on once the fonts have loaded (the first sheet opened may
+ * be measured in a fallback font, then refitted when the theme's arrives) and
+ * the refit that causes has happened, a frame later.
  */
 const useFitTextToWidth = (
   wrapperRef: RefObject<HTMLElement | null>,
@@ -44,7 +47,21 @@ const useFitTextToWidth = (
     if (!wrapper || !measure) {
       return;
     }
+    let started = false;
+    let stopped = false;
     let frame: number | undefined;
+    const startAnimating = async () => {
+      await wrapper.ownerDocument.fonts.ready;
+      if (stopped) {
+        return;
+      }
+      // one frame for the refit, if a font arrived, and one after it
+      frame = requestAnimationFrame(() => {
+        frame = requestAnimationFrame(() => {
+          wrapper.style.setProperty("--logo-fit-duration", "500ms");
+        });
+      });
+    };
     const observer = new ResizeObserver(() => {
       const available = wrapper.clientWidth;
       const natural = measure.offsetWidth;
@@ -54,13 +71,15 @@ const useFitTextToWidth = (
       }
       const scale = Math.min(1, available / natural);
       wrapper.style.setProperty("--logo-fit", String(scale));
-      frame ??= requestAnimationFrame(() => {
-        wrapper.style.setProperty("--logo-fit-duration", "500ms");
-      });
+      if (!started) {
+        started = true;
+        void startAnimating();
+      }
     });
     observer.observe(wrapper);
     observer.observe(measure);
     return () => {
+      stopped = true;
       observer.disconnect();
       if (frame !== undefined) cancelAnimationFrame(frame);
     };
