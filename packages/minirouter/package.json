@@ -28,9 +28,9 @@
     "@emotion/react": "^11.14.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@types/react": "catalog:",
-    "motion": "^14.3.0",
-    "oxlint": "^1.88.0",
-    "oxlint-tsgolint": "^7.0.2004",
+    "motion": "^14.6.0",
+    "oxlint": "^1.89.0",
+    "oxlint-tsgolint": "^7.0.2005",
     "react": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
