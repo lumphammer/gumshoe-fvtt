@@ -399,7 +399,8 @@ export async function targetTokens(page: Page, tokenIds: string[]) {
 
 /**
  * Click every tab in a sheet, including tabs that only appear inside other
- * tabs, so each one renders at least once.
+ * tabs, and the PC sheet's settings (a button in the header), so each one
+ * renders at least once.
  */
 export async function visitEveryTab(
   sheet: Locator,
@@ -423,6 +424,13 @@ export async function visitEveryTab(
       await onEachTab?.();
       clicked = true;
     }
-    if (!clicked) return;
+    if (!clicked) break;
+  }
+  const settings = sheet.locator(
+    '.window-header [data-action="toggleSheetSettings"]',
+  );
+  if (await settings.isVisible()) {
+    await settings.click();
+    await onEachTab?.();
   }
 }

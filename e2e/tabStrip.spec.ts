@@ -85,3 +85,32 @@ test("too many tabs for one row are laid out in a grid, and back again", async (
     .poll(() => layout(sheet))
     .toEqual({ wrapped: false, allInside: true });
 });
+
+test("the settings button in the header shows the settings, and goes back", async ({
+  page,
+}) => {
+  const actorId = await createActor(page, { name: "Configured", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const button = sheet.locator(
+    '.window-header [data-action="toggleSheetSettings"]',
+  );
+  const selectedTab = sheet.locator(".tab-strip > input:checked + label");
+  const content = sheet.locator(".tab-content");
+
+  await sheet.locator(".tab-strip > label", { hasText: "Notes" }).click();
+  await button.click();
+  await expect(button).toHaveAttribute("aria-pressed", "true");
+  await expect(selectedTab).toHaveCount(0);
+  await expect(content).toContainText("Theme");
+
+  // clicking it again goes back to the tab that was showing
+  await button.click();
+  await expect(button).toHaveAttribute("aria-pressed", "false");
+  await expect(selectedTab).toHaveText("Notes");
+
+  // and so does clicking a tab
+  await button.click();
+  await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
+  await expect(button).toHaveAttribute("aria-pressed", "false");
+  await expect(content).not.toContainText("Theme");
+});

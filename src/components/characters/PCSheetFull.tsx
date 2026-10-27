@@ -39,6 +39,7 @@ import { PersonalDetailField } from "./PersonalDetailField";
 import { SettingArea } from "./SettingsArea";
 import { StatField } from "./StatField";
 import { TrackersArea } from "./TrackersArea";
+import { useSettingsButton } from "./useSettingsButton";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
 
 const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
@@ -49,6 +50,8 @@ export const PCSheetFull = () => {
   const { actor } = useActorSheetContext();
   // kept here, not in the tab, so it lasts while you look at other tabs
   const [editMode, setEditMode] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("abilities");
+  useSettingsButton(selectedTab, setSelectedTab, "settings");
 
   assertGame(game);
   assertPCActor(actor);
@@ -250,6 +253,8 @@ export const PCSheetFull = () => {
       >
         <TabContainer
           defaultTab="abilities"
+          selected={selectedTab}
+          onSelect={setSelectedTab}
           tabs={[
             {
               id: "abilities",
@@ -310,8 +315,9 @@ export const PCSheetFull = () => {
             },
             {
               id: "settings",
-              label: <i className="fa fa-cog" />,
+              label: "Settings",
               content: <SettingArea />,
+              hidden: true,
             },
           ]}
         />

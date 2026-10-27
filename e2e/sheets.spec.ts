@@ -24,7 +24,6 @@ test("a PC's abilities switch between play and edit mode", async ({ page }) => {
     "Combat",
     "Equipment",
     "Notes",
-    "",
   ]);
   // the occupational checkboxes are only for editing
   const occupational = sheet.getByTitle("Occupational Ability?");
@@ -194,7 +193,7 @@ for (const { type, what, tab, name, settings } of quickDeletes) {
   });
 }
 
-test("a PC can be marked as not human, or immune to Lethality, on the options tab", async ({
+test("a PC can be marked as not human, or immune to Lethality, in its settings", async ({
   page,
 }) => {
   await setSettings(page, {
@@ -204,7 +203,9 @@ test("a PC can be marked as not human, or immune to Lethality, on the options ta
   });
   const id = await createActor(page, { name: "Ghoulish", type: "pc" });
   const sheet = await openSheet(page, `Actor.${id}`);
-  await sheet.locator(".tab-strip > label").last().click();
+  await sheet
+    .locator('.window-header [data-action="toggleSheetSettings"]')
+    .click();
   const getFlags = () =>
     page.evaluate((id) => {
       const { isHuman, immuneToLethality } = game.actors.get(id)!.system;

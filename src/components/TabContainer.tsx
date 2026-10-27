@@ -58,18 +58,26 @@ type TabDefinition = {
   label: ReactNode;
   content: ReactNode;
   translate?: boolean;
+  /** not in the strip: only shown by setting `selected` */
+  hidden?: boolean;
 };
 
 type TabContainerProps = {
   tabs: (TabDefinition | null | false | undefined)[];
   defaultTab: string;
+  /** the selected tab, to control it from outside */
+  selected?: string;
+  onSelect?: (id: string) => void;
 };
 
 export const TabContainer = ({
   tabs: rawTabsDefs,
   defaultTab,
+  selected: controlledSelected,
+  onSelect,
 }: TabContainerProps) => {
-  const [selected, setSelected] = useState(defaultTab);
+  const [uncontrolledSelected, setSelected] = useState(defaultTab);
+  const selected = controlledSelected ?? uncontrolledSelected;
   const [optimistic, setOptimistic] = useState(defaultTab);
   const [pending, startTransition] = useTransition();
   const tabDefs = useMemo(() => rawTabsDefs.filter((t) => !!t), [rawTabsDefs]);
@@ -77,14 +85,20 @@ export const TabContainer = ({
     () => tabDefs.find((t) => t.id === selected),
     [selected, tabDefs],
   );
-  const onChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setOptimistic(e.currentTarget.value);
-    startTransition(() => {
-      setSelected(e.currentTarget.value);
-    });
-  }, []);
+  const onChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const id = e.currentTarget.value;
+      setOptimistic(id);
+      startTransition(() => {
+        setSelected(id);
+        onSelect?.(id);
+      });
+    },
+    [onSelect],
+  );
 
   const theme = useContext(ThemeContext);
+  const stripTabDefs = tabDefs.filter((t) => !t.hidden);
 
   // would love to do this point-free, but react compiler wants to see a
   // function literal
@@ -118,7 +132,7 @@ export const TabContainer = ({
   }, []);
 
   // and when the tabs or their labels change (Bonds and Adapted to share an id)
-  const fitKey = tabDefs
+  const fitKey = stripTabDefs
     .map(({ id, label }) => `${id}:${typeof label === "string" ? label : ""}`)
     .join("\n");
   useLayoutEffect(() => {
@@ -175,7 +189,7 @@ export const TabContainer = ({
       }}
     >
       <div className="tab-strip" ref={observeStrip}>
-        {tabDefs.map(({ id, label, translate = true }, index) => {
+        {stripTabDefs.map(({ id, label, translate = true }, index) => {
           const htmlId = nanoid();
           return (
             <Fragment key={id}>
@@ -210,7 +224,7 @@ export const TabContainer = ({
                   label
                 )}
               </label>
-              {index < tabDefs.length - 1 && (
+              {index < stripTabDefs.length - 1 && (
                 <div className="tab-spacer" css={theme.tabSpacerStyle} />
               )}
             </Fragment>
