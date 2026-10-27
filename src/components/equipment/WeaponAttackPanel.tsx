@@ -32,6 +32,7 @@ import {
   isMultiTargetFireMode,
   getMinimumSpend,
   getWastedExtraSpend,
+  getSpendAfterRange,
 } from "../../module/attacks/rules";
 import { settings } from "../../settings/settings";
 import { hasAmmoFor } from "./consumeWeaponAmmo";
@@ -182,9 +183,11 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
   // shooting at some ranges costs points, which don't add to the roll
   // (p. 098). They come out of the same pool, before the spend.
   const rangeSpend = effectiveRange?.spend ?? 0;
-  const rangeUnaffordable = rangeSpend > getPool(ability) + bonusPool;
-
-  const available = Math.max(0, getPool(ability) + bonusPool - rangeSpend);
+  const { rangeAffordable, available } = getSpendAfterRange({
+    pool: getPool(ability),
+    bonusPool,
+    rangeSpend,
+  });
   const spendOptions = getSpendOptions(available);
   // if points get spent elsewhere, don't leave more selected than is left
   if (spend > available) {
@@ -357,7 +360,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
     });
   }
 
-  if (effectiveRange !== undefined && rangeUnaffordable) {
+  if (effectiveRange !== undefined && !rangeAffordable) {
     blockers.push({
       key: "rangeSpend",
       message: getTranslated("RangeNeedsSpendOfN", {

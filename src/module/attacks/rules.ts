@@ -326,3 +326,47 @@ export function getWalkingFirePayments({
 export function canWalkFireFrom(fireMode: FireMode): boolean {
   return fireMode === "burst" || fireMode === "fullAuto";
 }
+
+/**
+ * Shooting at some ranges costs points, which don't add to the roll (p. 098).
+ * They come out of the same pools as the spend, first, so the spend can only
+ * use what's left.
+ */
+export function getSpendAfterRange({
+  pool,
+  bonusPool,
+  rangeSpend,
+}: {
+  pool: number;
+  bonusPool: number;
+  rangeSpend: number;
+}): { rangeAffordable: boolean; available: number } {
+  return {
+    rangeAffordable: rangeSpend <= pool + bonusPool,
+    available: Math.max(0, pool + bonusPool - rangeSpend),
+  };
+}
+
+/**
+ * Pays for an attack: the spend (which adds to the roll) plus the range spend
+ * (which doesn't). The bonus pool goes first, then the ability's pool.
+ */
+export function payForAttack({
+  pool,
+  bonusPool,
+  spend,
+  rangeSpend,
+}: {
+  pool: number;
+  bonusPool: number;
+  spend: number;
+  rangeSpend: number;
+}): { affordable: boolean; pool: number; bonusPool: number } {
+  const cost = spend + rangeSpend;
+  const poolHit = Math.max(0, cost - bonusPool);
+  return {
+    affordable: cost <= pool + bonusPool,
+    pool: Math.max(0, pool - poolHit),
+    bonusPool: Math.max(0, bonusPool - cost),
+  };
+}

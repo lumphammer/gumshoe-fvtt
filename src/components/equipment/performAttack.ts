@@ -24,6 +24,7 @@ import {
   isShotDry,
   hurtHealth,
   isMultiTargetFireMode,
+  payForAttack,
 } from "../../module/attacks/rules";
 import type { AttackData } from "../../module/attacks/types";
 import { assertAbilityItem, isAbilityItem } from "../../module/items/exports";
@@ -208,8 +209,14 @@ export const performAttack =
       // take the points straight away, before anything else can spend them.
       const currentPool =
         ability && isAbilityItem(ability) ? ability.system.pool : 0;
+      const payment = payForAttack({
+        pool: currentPool,
+        bonusPool,
+        spend: Number(spend),
+        rangeSpend,
+      });
       if (
-        spend + rangeSpend > currentPool + bonusPool ||
+        !payment.affordable ||
         usableExtraSpends.some(
           (extra) =>
             !isAbilityItem(extra.ability) ||
@@ -225,10 +232,7 @@ export const performAttack =
       const refunds: (() => Promise<void>)[] = [];
       let shotDry = false;
       try {
-        const totalCost = Number(spend) + rangeSpend;
-        const poolHit = Math.max(0, totalCost - bonusPool);
-        const newPool = Math.max(0, currentPool - poolHit);
-        const newBonusPool = Math.max(0, bonusPool - totalCost);
+        const newPool = payment.pool;
         await ability?.system.setPool(newPool);
         refunds.push(async () => {
           await ability?.system.setPool(
@@ -237,7 +241,7 @@ export const performAttack =
           setBonusPool(bonusPool);
           setSpend(spend);
         });
-        setBonusPool(newBonusPool);
+        setBonusPool(payment.bonusPool);
         setSpend(0);
         for (const extra of usableExtraSpends) {
           const extraAbility = extra.ability;

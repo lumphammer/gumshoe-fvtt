@@ -88,3 +88,18 @@ export const rifle = {
   isCloseRange: true,
   closeRangeDamage: 0,
 };
+
+/**
+ * A pistol which costs 2 points to shoot at long range (with Extended Range
+ * on), which uses Firearms.
+ */
+export const pistol = {
+  ability: "Firearms",
+  usesAmmo: false,
+  isGunfire: true,
+  isPointBlank: true,
+  pointBlankDamage: 0,
+  isLongRange: true,
+  longRangeDamage: 0,
+  longRangeSpend: 2,
+};
