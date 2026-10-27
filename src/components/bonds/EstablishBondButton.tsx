@@ -19,9 +19,7 @@ export const EstablishBondButton = () => {
       onClick={() => navigate("here", establish())}
       title={tooltip}
     >
-      {/* Translate titles its span, which would hide the button's title */}
-      <Translate title={tooltip}>Establish Bond</Translate>{" "}
-      <i className="fa fa-arrow-right" />
+      <Translate>Establish Bond</Translate> <i className="fa fa-arrow-right" />
     </Button>
   );
 };

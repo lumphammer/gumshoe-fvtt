@@ -35,8 +35,8 @@ export const Translate = React.memo<TranslateProps>(
     return (
       <Tag
         className={className}
-        // a rich string's title would show its markup
-        title={title ?? (debug ? prefixed : rich ? undefined : local)}
+        // no title by default: it would hide the title of anything around it
+        title={title ?? (debug ? prefixed : undefined)}
         style={{
           background: debug ? (has ? "lightgreen" : "red") : "none",
         }}

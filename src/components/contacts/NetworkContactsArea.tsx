@@ -47,8 +47,7 @@ export const NetworkContactsArea = () => {
           title={newContactTooltip}
         >
           <i className="fa fa-plus" />
-          {/* Translate titles its span, which would hide the button's title */}
-          <Translate title={newContactTooltip}>New contact</Translate>
+          <Translate>New contact</Translate>
         </Button>
       </div>
       <div data-testid="network-summary" css={{ margin: "0.5em 0" }}>

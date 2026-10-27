@@ -158,8 +158,7 @@ export const PartySheet = () => {
                 onClick={() => callTeamCrisis(party)}
               >
                 <i className="fas fa-bolt" />
-                {/* Translate titles its span, which would hide the button's title */}
-                <Translate title={callTeamCrisisTooltip}>Team Crisis</Translate>
+                <Translate>Team Crisis</Translate>
               </Button>
             )}
           </div>

@@ -60,8 +60,7 @@ export const BondsArea = () => {
                 title={addBondTooltip}
               >
                 <i className="fa fa-plus" />
-                {/* Translate titles its span, which would hide the button's title */}
-                <Translate title={addBondTooltip}>Add Bond</Translate>
+                <Translate>Add Bond</Translate>
               </Button>
               <EstablishBondButton />
               <TeamCrisisButton />

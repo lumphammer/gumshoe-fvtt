@@ -295,8 +295,7 @@ export const TeamCrisisPanel = ({
             disabled={blocker !== undefined}
             title={blocker}
           >
-            <Translate title={blocker}>Make the test</Translate>{" "}
-            <i className="fa fa-dice" />
+            <Translate>Make the test</Translate> <i className="fa fa-dice" />
           </Button>
         </GridFieldStacked>
         {/* below the button, as on the weapon sheet */}
