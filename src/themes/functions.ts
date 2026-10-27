@@ -97,6 +97,10 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
     ...seed.cards?.base,
   };
 
+  const tabContentStyle = seed.tabContentStyle || {
+    backgroundColor: seed.colors.backgroundPrimary,
+  };
+
   const final: ThemeV1 = {
     ...seed,
     largeSheetRootStyle: {
@@ -118,15 +122,16 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
     panelStylePrimary: seed.panelStylePrimary || {
       backgroundColor: seed.colors.backgroundPrimary,
     },
-    tabContentStyle: seed.tabContentStyle || {
-      backgroundColor: seed.colors.backgroundPrimary,
-    },
+    tabContentStyle,
     tabWrappedStyle: seed.tabWrappedStyle ?? {
       borderRadius: "0.2em",
     },
+    // the same background as the content, as a selected tab in a row has
     tabWrappedActiveStyle: seed.tabWrappedActiveStyle ?? {
-      background: seed.colors.accent,
-      color: seed.colors.accentContrast,
+      background:
+        tabContentStyle.background ??
+        tabContentStyle.backgroundColor ??
+        seed.colors.backgroundPrimary,
       ":hover": {
         textShadow: "none",
       },

@@ -142,7 +142,8 @@ export interface ThemeSeedV1 {
   tabWrappedStyle?: CSSObject;
   /**
    * Added to `tabStyle` and `tabWrappedStyle` for the active tab when the tabs
-   * are in a grid (`tabActiveStyle` isn't used then)
+   * are in a grid (`tabActiveStyle` isn't used then). By default it has the
+   * same background as `tabContentStyle`, to tie it to the content.
    */
   tabWrappedActiveStyle?: CSSObject;
   /**
