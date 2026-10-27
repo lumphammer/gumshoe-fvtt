@@ -75,3 +75,32 @@ test("adding two members at once keeps both", async ({ page }) => {
     ),
   ).toEqual([carolId, daveId]);
 });
+
+test("deleting a member removes it from the party, sheet closed", async ({
+  page,
+}) => {
+  const partyId = await createActor(page, {
+    name: "Lost Party",
+    type: "party",
+  });
+  const erinId = await createActor(page, { name: "Erin", type: "pc" });
+  const frankId = await createActor(page, { name: "Frank", type: "pc" });
+  await page.evaluate(
+    async ({ partyId, erinId, frankId }) => {
+      const party = game.actors.get(partyId)! as unknown as {
+        system: { addActorIds: (ids: string[]) => Promise<unknown> };
+      };
+      await party.system.addActorIds([erinId, frankId]);
+      await game.actors.get(erinId)!.delete();
+    },
+    { partyId, erinId, frankId },
+  );
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (id) => game.actors.get(id)!.system.actorIds as string[],
+        partyId,
+      ),
+    )
+    .toEqual([frankId]);
+});

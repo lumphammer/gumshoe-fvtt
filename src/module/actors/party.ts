@@ -85,6 +85,17 @@ export class PartyModel extends TypeDataModel<
     runExclusive(this.parent.uuid ?? "", () =>
       this.setActorIds(this.getCurrentActorIds().filter((x) => x !== id)),
     );
+
+  /** Drop the ids of actors that no longer exist. */
+  removeMissingActorIds = () =>
+    runExclusive(this.parent.uuid ?? "", async () => {
+      assertGame(game);
+      const currentIds = this.getCurrentActorIds();
+      const remainingIds = currentIds.filter((id) => game.actors.has(id));
+      if (remainingIds.length < currentIds.length) {
+        await this.setActorIds(remainingIds);
+      }
+    });
 }
 
 export type PartyActor = InvestigatorActor<typeof c.party>;

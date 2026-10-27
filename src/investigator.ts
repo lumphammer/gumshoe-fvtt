@@ -14,6 +14,7 @@ import { installActorCombatAbilityHandler } from "./startup/installActorCombatAb
 import { installActorImageHookHandler } from "./startup/installActorImageHookHandler";
 import { installCardCategoryHookHandler } from "./startup/installCardCategoryHookHandler";
 import { installDropActorSheetDataHandler } from "./startup/installDropActorSheetDataHandler";
+import { installPartyMemberPruner } from "./startup/installPartyMemberPruner";
 import { installDSNFix } from "./startup/installDSNFix";
 import { installEquipmentAddedNotifier } from "./startup/installEquipmentAddedNotifier";
 import { installEquipmentCategoryHookHandler } from "./startup/installEquipmentCategoryHookHandler";
@@ -78,6 +79,7 @@ installAbilityCategoryHookHandler();
 installItemImageHookHandler();
 installRenderSettingsHandler();
 installDropActorSheetDataHandler();
+installPartyMemberPruner();
 registerDevModeDebugFlag();
 installActorImageHookHandler();
 installAbilityCardChatWrangler();
