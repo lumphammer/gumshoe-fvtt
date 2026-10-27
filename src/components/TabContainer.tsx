@@ -131,7 +131,9 @@ export const TabContainer = ({
     };
   }, []);
 
-  // and when the tabs or their labels change (Bonds and Adapted to share an id)
+  // and when the tabs or their labels change (Bonds and Adapted to share an
+  // id), or the theme does: that can change the tabs' widths but not the
+  // strip's, so the ResizeObserver won't notice
   const fitKey = stripTabDefs
     .map(({ id, label }) => `${id}:${typeof label === "string" ? label : ""}`)
     .join("\n");
@@ -139,7 +141,7 @@ export const TabContainer = ({
     if (stripRef.current) {
       fitTabStrip(stripRef.current);
     }
-  }, [fitKey]);
+  }, [fitKey, theme]);
 
   return (
     <div

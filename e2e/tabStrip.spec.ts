@@ -114,3 +114,49 @@ test("the settings button in the header shows the settings, and goes back", asyn
   await expect(button).toHaveAttribute("aria-pressed", "false");
   await expect(content).not.toContainText("Theme");
 });
+
+test("the tabs are refitted when the sheet's theme changes", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    ...stabilityRulesOn,
+    useBonds: true,
+    useNetworkContacts: true,
+    useCards: true,
+  });
+  const actorId = await createActor(page, {
+    name: "Rethemed",
+    type: "pc",
+    system: { sheetTheme: "fearTheme" },
+  });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  // wide enough for one row in the Nice theme, but not in Fear's wider font.
+  // Both have the same font size, so the strip is the same width in each,
+  // and the ResizeObserver doesn't fire
+  await setSheetWidth(page, actorId, 700);
+  const setTheme = (theme: string) =>
+    page.evaluate(
+      async ({ actorId, theme }) => {
+        await game.actors
+          .get(actorId)!
+          .update({ system: { sheetTheme: theme } });
+      },
+      { actorId, theme },
+    );
+  await expect
+    .poll(() => layout(sheet))
+    .toEqual({ wrapped: true, allInside: true });
+
+  // both themes' fonts are loaded after the first switch, so after that a
+  // font loading can't be what refits the tabs
+  for (let i = 0; i < 2; i++) {
+    await setTheme("niceTheme");
+    await expect
+      .poll(() => layout(sheet))
+      .toEqual({ wrapped: false, allInside: true });
+    await setTheme("fearTheme");
+    await expect
+      .poll(() => layout(sheet))
+      .toEqual({ wrapped: true, allInside: true });
+  }
+});
