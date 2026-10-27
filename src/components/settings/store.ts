@@ -190,6 +190,17 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
       }
       field.default = payload.newDefault;
     },
+    setFieldVisibleToLimited: (
+      { settings: { equipmentCategories: cats } }: State,
+      payload: {
+        categoryId: string;
+        fieldId: string;
+        visibleToLimited: boolean;
+      },
+    ) => {
+      cats[payload.categoryId].fields[payload.fieldId].visibleToLimited =
+        payload.visibleToLimited;
+    },
     setFieldMin: (
       { settings: { equipmentCategories: cats } }: State,
       payload: {

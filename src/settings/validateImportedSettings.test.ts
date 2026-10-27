@@ -164,7 +164,7 @@ it("should preserve card category style keys through a round trip", () => {
   );
 });
 
-it("should preserve equipment number field bounds through a round trip", () => {
+it("should preserve equipment field bounds and visibility through a round trip", () => {
   const exportedSettings = {
     equipmentCategories: {
       general: {
@@ -176,6 +176,7 @@ it("should preserve equipment number field bounds through a round trip", () => {
             default: 1,
             min: 0,
             max: 99,
+            visibleToLimited: true,
           },
         },
       },

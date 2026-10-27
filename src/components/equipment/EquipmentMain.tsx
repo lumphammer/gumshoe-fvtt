@@ -2,8 +2,12 @@ import type { ChangeEvent } from "react";
 import { useCallback } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
+import { useIsDocumentLimited } from "../../hooks/useIsDocumentLimited";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertEquipmentItem } from "../../module/items/equipment";
+import {
+  assertEquipmentItem,
+  isVisibleToLimited,
+} from "../../module/items/equipment";
 import { settings } from "../../settings/settings";
 import { absoluteCover } from "../absoluteCover";
 import { GridField } from "../inputs/GridField";
@@ -20,6 +24,7 @@ interface EquipmentMainProps {
 
 export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
   const { item } = useItemSheetContext();
+  const isLimited = useIsDocumentLimited();
 
   assertEquipmentItem(item);
 
@@ -36,7 +41,12 @@ export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
 
   const selectedCat = isRealCategory ? item.system.categoryId : "";
 
-  const fieldsLength = Object.keys(categoryMetadata?.fields ?? {}).length + 2;
+  // people with Limited permission only see the fields marked for them
+  const fields = Object.entries(categoryMetadata?.fields ?? {}).filter(
+    ([, fieldMetadata]) => !isLimited || isVisibleToLimited(fieldMetadata),
+  );
+
+  const fieldsLength = fields.length + 2;
 
   return (
     <InputGrid
@@ -76,19 +86,17 @@ export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
         </div>
       </GridField>
 
-      {Object.entries(categoryMetadata?.fields ?? {}).map(
-        ([fieldId, fieldMetadata]) => {
-          return (
-            <EquipmentField
-              key={fieldId}
-              fieldId={fieldId}
-              fieldMetadata={fieldMetadata}
-              value={item.system.fields?.[fieldId]}
-              equipment={item}
-            />
-          );
-        },
-      )}
+      {fields.map(([fieldId, fieldMetadata]) => {
+        return (
+          <EquipmentField
+            key={fieldId}
+            fieldId={fieldId}
+            fieldMetadata={fieldMetadata}
+            value={item.system.fields?.[fieldId]}
+            equipment={item}
+          />
+        );
+      })}
 
       <div
         css={{

@@ -10,6 +10,7 @@ export const equipmentCategoriesValidator = z
         z
           .object({
             name: z.string(),
+            visibleToLimited: z.boolean().optional(),
           })
           .and(
             z.discriminatedUnion("type", [
