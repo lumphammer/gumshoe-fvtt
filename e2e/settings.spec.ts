@@ -123,3 +123,25 @@ test("exported settings import again", async ({ page }) => {
     ),
   ).toBe(true);
 });
+
+test("a selected pack which no longer exists can be unticked", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    newPCPacks: ["world.deleted-abilities", "investigator.srdAbilities"],
+  });
+  const app = await openSystemSettings(page);
+  await goTo(app, "Abilities", "PC ability compendiums");
+  await expect(app.getByText("2 selected")).toBeVisible();
+  await expect(app.getByText("World (missing)")).toBeVisible();
+  await app.getByLabel("world.deleted-abilities").click();
+  await expect(app.getByText("1 selected")).toBeVisible();
+  await expect(app.getByText("World (missing)")).toBeHidden();
+  await app.getByRole("button", { name: "Save changes" }).click();
+  await expect(app).toBeHidden();
+  expect(
+    await page.evaluate(
+      () => game.settings.get("investigator", "newPCPacks" as never) as unknown,
+    ),
+  ).toEqual(["investigator.srdAbilities"]);
+});
