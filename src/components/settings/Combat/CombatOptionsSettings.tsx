@@ -22,6 +22,12 @@ export const CombatOptionsSettings = ({ setters }: { setters: Setters }) => {
           onChange={setters.useTurnPassingInitiative}
         />
       </SettingsGridField>
+      <SettingsGridField label="Use Extended Range and range spends?">
+        <Toggle
+          checked={settings.useExtendedRange}
+          onChange={setters.useExtendedRange}
+        />
+      </SettingsGridField>
       <SettingsGridField label="Use damage application?">
         <Toggle
           checked={settings.useDamageApplication}

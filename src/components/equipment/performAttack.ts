@@ -57,6 +57,11 @@ type PerformAttackArgs1 = {
 type PerformAttackArgs2 = {
   rangeName: string;
   rangeDamage: number;
+  /**
+   * points needed to shoot at this range at all, taken from the same pool as
+   * the spend but not added to the roll (Extended Range, p. 098)
+   */
+  rangeSpend?: number;
   fireMode: FireMode;
 };
 
@@ -147,7 +152,12 @@ export const performAttack =
     extraSpends = [],
     resetExtraSpends,
   }: PerformAttackArgs1) =>
-  async ({ rangeName, rangeDamage, fireMode }: PerformAttackArgs2) => {
+  async ({
+    rangeName,
+    rangeDamage,
+    rangeSpend = 0,
+    fireMode,
+  }: PerformAttackArgs2) => {
     assertGame(game);
     assertAbilityItem(ability);
     if (weapon.actor === null) {
@@ -199,7 +209,7 @@ export const performAttack =
       const currentPool =
         ability && isAbilityItem(ability) ? ability.system.pool : 0;
       if (
-        spend > currentPool + bonusPool ||
+        spend + rangeSpend > currentPool + bonusPool ||
         usableExtraSpends.some(
           (extra) =>
             !isAbilityItem(extra.ability) ||
@@ -215,9 +225,10 @@ export const performAttack =
       const refunds: (() => Promise<void>)[] = [];
       let shotDry = false;
       try {
-        const poolHit = Math.max(0, Number(spend) - bonusPool);
+        const totalCost = Number(spend) + rangeSpend;
+        const poolHit = Math.max(0, totalCost - bonusPool);
         const newPool = Math.max(0, currentPool - poolHit);
-        const newBonusPool = Math.max(0, bonusPool - Number(spend));
+        const newBonusPool = Math.max(0, bonusPool - totalCost);
         await ability?.system.setPool(newPool);
         refunds.push(async () => {
           await ability?.system.setPool(
@@ -358,6 +369,7 @@ export const performAttack =
             weaponName: weapon.name,
             weaponImg: weapon.img ?? "",
             rangeName,
+            rangeSpend,
           },
         });
       } catch (error) {

@@ -179,6 +179,11 @@ export const settings = {
     name: "Use Shot Dry and jams?",
     default: defaultSettings.useShotDryAndJams,
   }),
+  useExtendedRange: createSettingBoolean({
+    key: "useExtendedRange",
+    name: "Use Extended Range and range spends?",
+    default: defaultSettings.useExtendedRange,
+  }),
   useWalkingFire: createSettingBoolean({
     key: "useWalkingFire",
     name: "Use walking fire?",

@@ -30,15 +30,20 @@ type WeaponRowEditProps = {
 export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
   const theme = useContext(ThemeContext);
 
+  const useExtendedRange = settings.useExtendedRange.get();
+  const hasExtendedRange = useExtendedRange && weapon.system.isExtendedRange;
+
   const weaponRangeReduce = useCallback(async () => {
-    if (weapon.system.isLongRange) {
+    if (hasExtendedRange) {
+      await weapon.system.setIsExtendedRange(false);
+    } else if (weapon.system.isLongRange) {
       await weapon.system.setIsLongRange(false);
     } else if (weapon.system.isNearRange) {
       await weapon.system.setIsNearRange(false);
     } else if (weapon.system.isCloseRange) {
       await weapon.system.setIsCloseRange(false);
     }
-  }, [weapon]);
+  }, [weapon, hasExtendedRange]);
   const weaponRangeExpand = useCallback(async () => {
     if (!weapon.system.isCloseRange) {
       await weapon.system.setIsCloseRange(true);
@@ -46,8 +51,10 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
       await weapon.system.setIsNearRange(true);
     } else if (!weapon.system.isLongRange) {
       await weapon.system.setIsLongRange(true);
+    } else if (useExtendedRange && !weapon.system.isExtendedRange) {
+      await weapon.system.setIsExtendedRange(true);
     }
-  }, [weapon]);
+  }, [weapon, useExtendedRange]);
 
   const gridRow = index * 3 + 3;
 
@@ -116,19 +123,31 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
           css={{ gridColumn: "lr", gridRow }}
         />
       )}
+      {hasExtendedRange && (
+        <AsyncNumberInput
+          value={weapon.system.extendedRangeDamage}
+          onChange={weapon.system.setExtendedRangeDamage}
+          noPlusMinus
+          css={{ gridColumn: "er", gridRow }}
+        />
+      )}
 
       {/* left/right arrows */}
       <div
         css={{
-          gridColumn: weapon.system.isLongRange
+          gridColumn: hasExtendedRange
             ? "back"
-            : weapon.system.isNearRange
-              ? "lr"
-              : weapon.system.isCloseRange
-                ? "nr"
-                : weapon.system.isPointBlank
-                  ? "cr"
-                  : "pb",
+            : weapon.system.isLongRange
+              ? useExtendedRange
+                ? "er"
+                : "back"
+              : weapon.system.isNearRange
+                ? "lr"
+                : weapon.system.isCloseRange
+                  ? "nr"
+                  : weapon.system.isPointBlank
+                    ? "cr"
+                    : "pb",
           gridRow,
           // the buttons stretch to the height of the inputs beside them
           display: "flex",
@@ -137,7 +156,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
         <Button css={rangeButtonStyle} onClick={weaponRangeReduce}>
           <i className="fa fa-chevron-left" />
         </Button>
-        {weapon.system.isLongRange || (
+        {(useExtendedRange ? hasExtendedRange : weapon.system.isLongRange) || (
           <Button css={rangeButtonStyle} onClick={weaponRangeExpand}>
             <i className="fa fa-chevron-right" />
           </Button>

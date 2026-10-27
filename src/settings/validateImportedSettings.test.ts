@@ -20,6 +20,7 @@ it("should accept an older export without the damage application settings", () =
   expect(validatedResult).not.toHaveProperty("useLethalityAndAutofire");
   expect(validatedResult).not.toHaveProperty("fullAutoSpendAbilities");
   expect(validatedResult).not.toHaveProperty("useShotDryAndJams");
+  expect(validatedResult).not.toHaveProperty("useExtendedRange");
   expect(validatedResult).not.toHaveProperty("useWalkingFire");
   expect(validatedResult).not.toHaveProperty("walkingFireSpendAbilities");
   expect(validatedResult).not.toHaveProperty("useWoundStatusEffects");
@@ -50,6 +51,7 @@ it("should preserve the damage application settings through a round trip", () =>
     useCriticalHits: false,
     useLethalityAndAutofire: true,
     useShotDryAndJams: true,
+    useExtendedRange: true,
     useWalkingFire: true,
     useWoundStatusEffects: true,
     walkingFireSpendAbilities: ["Athletics"],

@@ -174,6 +174,8 @@ suppressive fire, evasion, non-lethal attacks, rubber/special ammunition.
   - `useLethalityAndAutofire` (Lethality, burst, and full-auto; see Phase 4)
   - `useWalkingFire`
   - `useShotDryAndJams`
+  - `useExtendedRange` (the Extended range band, and spends to shoot at a
+    range at all, p. 098)
   - `fullAutoSpendAbilities`: a list of ability names (default Athletics and
     Stability) for full-auto spends, edited on its own settings page; names
     vary by preset and language. Walking fire may want its own list.

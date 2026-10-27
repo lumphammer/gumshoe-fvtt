@@ -143,6 +143,14 @@ export const attackMessageSchema = {
   weaponName: new StringField({ nullable: false, required: true }),
   weaponImg: new StringField({ nullable: false, required: true }),
   rangeName: new StringField({ nullable: false, required: true }),
+  /** points spent just to shoot at that range (Extended Range, p. 098) */
+  rangeSpend: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
+    initial: 0,
+  }),
   /** whether this attack jammed the weapon */
   weaponJammed: new BooleanField({
     nullable: false,

@@ -119,7 +119,72 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
   useRefreshOnActorItemChanges(item.actor);
 
   const ability = findGeneralAbility(item.actor, abilityName);
-  const available = getPool(ability) + bonusPool;
+  const useExtendedRange = settings.useExtendedRange.get();
+  const ranges = [
+    {
+      name: "point blank",
+      label: getTranslatedOr("PointBlankShort", "Point Blank"),
+      fullLabel: getTranslated("Point Blank"),
+      enabled: item.system.isPointBlank,
+      damage: item.system.pointBlankDamage,
+      spend: item.system.pointBlankSpend,
+    },
+    {
+      name: "close range",
+      label: getTranslatedOr("CloseRangeShort", "Close Range"),
+      fullLabel: getTranslated("Close Range"),
+      enabled: item.system.isCloseRange,
+      damage: item.system.closeRangeDamage,
+      spend: item.system.closeRangeSpend,
+    },
+    {
+      name: "near range",
+      label: getTranslatedOr("NearRangeShort", "Near Range"),
+      fullLabel: getTranslated("Near Range"),
+      enabled: item.system.isNearRange,
+      damage: item.system.nearRangeDamage,
+      spend: item.system.nearRangeSpend,
+    },
+    {
+      name: "long range",
+      label: getTranslatedOr("LongRangeShort", "Long Range"),
+      fullLabel: getTranslated("Long Range"),
+      enabled: item.system.isLongRange,
+      damage: item.system.longRangeDamage,
+      spend: item.system.longRangeSpend,
+    },
+    ...(useExtendedRange
+      ? [
+          {
+            name: "extended range",
+            label: getTranslatedOr("ExtendedRangeShort", "Extended Range"),
+            fullLabel: getTranslated("Extended Range"),
+            enabled: item.system.isExtendedRange,
+            damage: item.system.extendedRangeDamage,
+            spend: item.system.extendedRangeSpend,
+          },
+        ]
+      : []),
+  ].map((range) => ({
+    ...range,
+    // range spends are part of the Extended Range rule
+    spend: useExtendedRange ? range.spend : 0,
+  }));
+  const enabledRanges = ranges.filter((range) => range.enabled);
+  // the picked range can be switched off in the config tab
+  const effectiveRange = ranges[rangeIndex]?.enabled
+    ? ranges[rangeIndex]
+    : enabledRanges[0];
+  // melee weapons only have point blank, so there's nothing to pick
+  const isMeleeOnly =
+    enabledRanges.length === 1 && enabledRanges[0] === ranges[0];
+
+  // shooting at some ranges costs points, which don't add to the roll
+  // (p. 098). They come out of the same pool, before the spend.
+  const rangeSpend = effectiveRange?.spend ?? 0;
+  const rangeUnaffordable = rangeSpend > getPool(ability) + bonusPool;
+
+  const available = Math.max(0, getPool(ability) + bonusPool - rangeSpend);
   const spendOptions = getSpendOptions(available);
   // if points get spent elsewhere, don't leave more selected than is left
   if (spend > available) {
@@ -178,45 +243,6 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
     item.system.jammed;
   const spendTooLow = totalSpend < minimumSpend;
 
-  const ranges = [
-    {
-      name: "point blank",
-      label: getTranslatedOr("PointBlankShort", "Point Blank"),
-      fullLabel: getTranslated("Point Blank"),
-      enabled: item.system.isPointBlank,
-      damage: item.system.pointBlankDamage,
-    },
-    {
-      name: "close range",
-      label: getTranslatedOr("CloseRangeShort", "Close Range"),
-      fullLabel: getTranslated("Close Range"),
-      enabled: item.system.isCloseRange,
-      damage: item.system.closeRangeDamage,
-    },
-    {
-      name: "near range",
-      label: getTranslatedOr("NearRangeShort", "Near Range"),
-      fullLabel: getTranslated("Near Range"),
-      enabled: item.system.isNearRange,
-      damage: item.system.nearRangeDamage,
-    },
-    {
-      name: "long range",
-      label: getTranslatedOr("LongRangeShort", "Long Range"),
-      fullLabel: getTranslated("Long Range"),
-      enabled: item.system.isLongRange,
-      damage: item.system.longRangeDamage,
-    },
-  ];
-  const enabledRanges = ranges.filter((range) => range.enabled);
-  // the picked range can be switched off in the config tab
-  const effectiveRange = ranges[rangeIndex]?.enabled
-    ? ranges[rangeIndex]
-    : enabledRanges[0];
-  // melee weapons only have point blank, so there's nothing to pick
-  const isMeleeOnly =
-    enabledRanges.length === 1 && enabledRanges[0] === ranges[0];
-
   const onAttack = () => {
     if (effectiveRange === undefined) {
       return;
@@ -233,6 +259,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
     })({
       rangeName: effectiveRange.name,
       rangeDamage: effectiveRange.damage,
+      rangeSpend,
       fireMode: effectiveFireMode,
     });
   };
@@ -330,6 +357,15 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
     });
   }
 
+  if (effectiveRange !== undefined && rangeUnaffordable) {
+    blockers.push({
+      key: "rangeSpend",
+      message: getTranslated("RangeNeedsSpendOfN", {
+        Range: effectiveRange.fullLabel,
+        N: String(rangeSpend),
+      }),
+    });
+  }
   if (effectiveRange === undefined) {
     blockers.push({
       key: "range",
@@ -429,8 +465,17 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
               onChange={setRangeIndex}
               selected={effectiveRange ? ranges.indexOf(effectiveRange) : -1}
               options={ranges.map((range, index) => ({
-                label: range.label,
-                hover: range.fullLabel,
+                label:
+                  range.spend > 0
+                    ? `${range.label} · ${range.spend}`
+                    : range.label,
+                hover:
+                  range.spend > 0
+                    ? getTranslated("RangeCostsN", {
+                        Range: range.fullLabel,
+                        N: String(range.spend),
+                      })
+                    : range.fullLabel,
                 value: index,
                 enabled: range.enabled,
               }))}
