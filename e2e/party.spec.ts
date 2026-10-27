@@ -2,6 +2,7 @@ import {
   createActor,
   expect,
   openSheet,
+  reloadGame,
   test,
   updateAbility,
 } from "./foundry.ts";
@@ -74,4 +75,61 @@ test("adding two members at once keeps both", async ({ page }) => {
       partyId,
     ),
   ).toEqual([carolId, daveId]);
+});
+
+test("deleting a member removes it from the party, sheet closed", async ({
+  page,
+}) => {
+  const partyId = await createActor(page, {
+    name: "Lost Party",
+    type: "party",
+  });
+  const erinId = await createActor(page, { name: "Erin", type: "pc" });
+  const frankId = await createActor(page, { name: "Frank", type: "pc" });
+  await page.evaluate(
+    async ({ partyId, erinId, frankId }) => {
+      const party = game.actors.get(partyId)! as unknown as {
+        system: { addActorIds: (ids: string[]) => Promise<unknown> };
+      };
+      await party.system.addActorIds([erinId, frankId]);
+      await game.actors.get(erinId)!.delete();
+    },
+    { partyId, erinId, frankId },
+  );
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (id) => game.actors.get(id)!.system.actorIds as string[],
+        partyId,
+      ),
+    )
+    .toEqual([frankId]);
+});
+
+test("loading the world removes members that no longer exist", async ({
+  page,
+}) => {
+  const partyId = await createActor(page, {
+    name: "Haunted Party",
+    type: "party",
+  });
+  const ginaId = await createActor(page, { name: "Gina", type: "pc" });
+  // as if the member had been deleted while no GM was around
+  await page.evaluate(
+    async ({ partyId, ginaId }) => {
+      await game.actors
+        .get(partyId)!
+        .update({ system: { actorIds: [ginaId, "missingActor0000"] } });
+    },
+    { partyId, ginaId },
+  );
+  await reloadGame(page);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (id) => game.actors.get(id)!.system.actorIds as string[],
+        partyId,
+      ),
+    )
+    .toEqual([ginaId]);
 });
