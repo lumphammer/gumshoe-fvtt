@@ -121,6 +121,17 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
     tabContentStyle: seed.tabContentStyle || {
       backgroundColor: seed.colors.backgroundPrimary,
     },
+    tabWrappedStyle: seed.tabWrappedStyle ?? {
+      borderRadius: "0.2em",
+    },
+    tabWrappedActiveStyle: seed.tabWrappedActiveStyle ?? {
+      background: seed.colors.accent,
+      color: seed.colors.accentContrast,
+      ":hover": {
+        textShadow: "none",
+      },
+    },
+    tabContentWrappedStyle: seed.tabContentWrappedStyle ?? {},
     panelStyleSecondary: seed.panelStyleSecondary ||
       seed.panelStylePrimary || {
         backgroundColor: seed.colors.backgroundSecondary,

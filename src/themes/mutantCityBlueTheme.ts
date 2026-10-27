@@ -90,6 +90,10 @@ export const mutantCityBlueTheme: ThemeV1 = themeFactory({
     border: `1px solid ${colors.accent}`,
     borderStyle: "none solid solid solid",
   },
+  tabContentWrappedStyle: {
+    borderStyle: "solid",
+    borderRadius: "0.2em",
+  },
   colors,
   cards: {
     base: {

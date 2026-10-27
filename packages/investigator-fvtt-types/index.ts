@@ -136,6 +136,21 @@ export interface ThemeSeedV1 {
    */
   tabContentStyle?: CSSObject;
   /**
+   * When the tabs don't fit in one row, they're laid out as a grid of buttons
+   * instead. This is added to `tabStyle` for each of them.
+   */
+  tabWrappedStyle?: CSSObject;
+  /**
+   * Added to `tabStyle` and `tabWrappedStyle` for the active tab when the tabs
+   * are in a grid (`tabActiveStyle` isn't used then)
+   */
+  tabWrappedActiveStyle?: CSSObject;
+  /**
+   * Added to `tabContentStyle` when the tabs are in a grid, which doesn't join
+   * on to the content area the way a row of tabs does
+   */
+  tabContentWrappedStyle?: CSSObject;
+  /**
    * Classname that will be applied to all panels
    */
   panelClass?: string;
