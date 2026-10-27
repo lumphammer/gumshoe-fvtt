@@ -13,6 +13,9 @@ export interface ThemeV1 extends ThemeSeedV1 {
   panelStylePrimary: CSSObject;
   panelStyleSecondary: CSSObject;
   tabContentStyle: CSSObject;
+  tabWrappedStyle: CSSObject;
+  tabWrappedActiveStyle: CSSObject;
+  tabContentWrappedStyle: CSSObject;
 
   colors: ThemeSeedV1["colors"] & {
     bgOpaquePrimary: string;
