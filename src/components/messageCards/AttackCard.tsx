@@ -48,6 +48,7 @@ export const AttackCard = React.memo(
 
     const fireMode = isAttackMessage(msg) ? msg.system.fireMode : "single";
     const isShotDry = isAttackMessage(msg) && msg.system.isShotDry;
+    const rangeSpend = isAttackMessage(msg) ? msg.system.rangeSpend : 0;
     const weaponJammed = isAttackMessage(msg) && msg.system.weaponJammed;
 
     // older attack messages don't have targets at all
@@ -102,7 +103,16 @@ export const AttackCard = React.memo(
                 name
               )}
             </b>{" "}
-            (<Translate>{rangeName || ""}</Translate>)
+            (<Translate>{rangeName || ""}</Translate>
+            {rangeSpend > 0 && (
+              <>
+                {", "}
+                <Translate values={{ N: String(rangeSpend) }}>
+                  RangeSpentN
+                </Translate>
+              </>
+            )}
+            )
             {fireMode !== "single" && (
               <>
                 {" · "}

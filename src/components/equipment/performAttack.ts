@@ -24,6 +24,7 @@ import {
   isShotDry,
   hurtHealth,
   isMultiTargetFireMode,
+  payForAttack,
 } from "../../module/attacks/rules";
 import type { AttackData } from "../../module/attacks/types";
 import { assertAbilityItem, isAbilityItem } from "../../module/items/exports";
@@ -57,6 +58,11 @@ type PerformAttackArgs1 = {
 type PerformAttackArgs2 = {
   rangeName: string;
   rangeDamage: number;
+  /**
+   * points needed to shoot at this range at all, taken from the same pool as
+   * the spend but not added to the roll (Extended Range, p. 098)
+   */
+  rangeSpend?: number;
   fireMode: FireMode;
 };
 
@@ -147,7 +153,12 @@ export const performAttack =
     extraSpends = [],
     resetExtraSpends,
   }: PerformAttackArgs1) =>
-  async ({ rangeName, rangeDamage, fireMode }: PerformAttackArgs2) => {
+  async ({
+    rangeName,
+    rangeDamage,
+    rangeSpend = 0,
+    fireMode,
+  }: PerformAttackArgs2) => {
     assertGame(game);
     assertAbilityItem(ability);
     if (weapon.actor === null) {
@@ -198,8 +209,14 @@ export const performAttack =
       // take the points straight away, before anything else can spend them.
       const currentPool =
         ability && isAbilityItem(ability) ? ability.system.pool : 0;
+      const payment = payForAttack({
+        pool: currentPool,
+        bonusPool,
+        spend: Number(spend),
+        rangeSpend,
+      });
       if (
-        spend > currentPool + bonusPool ||
+        !payment.affordable ||
         usableExtraSpends.some(
           (extra) =>
             !isAbilityItem(extra.ability) ||
@@ -215,9 +232,7 @@ export const performAttack =
       const refunds: (() => Promise<void>)[] = [];
       let shotDry = false;
       try {
-        const poolHit = Math.max(0, Number(spend) - bonusPool);
-        const newPool = Math.max(0, currentPool - poolHit);
-        const newBonusPool = Math.max(0, bonusPool - Number(spend));
+        const newPool = payment.pool;
         await ability?.system.setPool(newPool);
         refunds.push(async () => {
           await ability?.system.setPool(
@@ -226,7 +241,7 @@ export const performAttack =
           setBonusPool(bonusPool);
           setSpend(spend);
         });
-        setBonusPool(newBonusPool);
+        setBonusPool(payment.bonusPool);
         setSpend(0);
         for (const extra of usableExtraSpends) {
           const extraAbility = extra.ability;
@@ -358,6 +373,7 @@ export const performAttack =
             weaponName: weapon.name,
             weaponImg: weapon.img ?? "",
             rangeName,
+            rangeSpend,
           },
         });
       } catch (error) {

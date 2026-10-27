@@ -91,9 +91,12 @@ they're ordinary packs now, so edit them in Foundry and run `extract-packs`.
 - **Ammo capacities** aren't in the book. We picked: pistols 7–8, rifles and
   shotguns 5, assault rifle 20, SMG 30, machine guns 100, two grenades, one
   shot for launchers.
-- **Extended Range** (p. 098): pistols and SMGs can be fired at Long range,
-  but the 2-point spend doesn't add to the roll, which the system can't
-  express. Players deduct it by hand.
+- **Extended Range** (p. 098): with `useExtendedRange` on, weapons get an
+  Extended range band, and every range can have a spend which is taken from
+  the pool before the roll but doesn't add to it. Pistols and SMGs cost 2 at
+  Long range; rifles and assault rifles have Extended range at 2. A scope
+  takes a point off (edit the weapon). Sniping with a scope makes it free,
+  which isn't modelled. Shotguns never get Extended range.
 - **Not modelled:** grenade difficulty by range, Heavy Weapons landing
   difficulty, blast and debris ranges, special ammunition.
 - **Agency** (p. 052) is really one ability per named agency, each with its

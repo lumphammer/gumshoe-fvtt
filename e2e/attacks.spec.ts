@@ -1,4 +1,4 @@
-import { getTokenHealth, knife, setUpFight } from "./fight.ts";
+import { getTokenHealth, knife, pistol, setUpFight } from "./fight.ts";
 import {
   createActor,
   createOwnedItem,
@@ -90,6 +90,56 @@ test("a player's damage to a token they don't own goes through the GM", async ({
 
   await card.getByRole("button", { name: "Undo" }).click();
   await expect.poll(() => getTokenHealth(page, npcTokenId)).toBe(10);
+});
+
+test("shooting at a costly range takes points that don't add to the roll", async ({
+  page,
+}) => {
+  const {
+    pcId,
+    weaponId,
+    npcTokenIds: [npcTokenId],
+  } = await setUpFight(page, { weapon: pistol });
+  await setSettings(page, { useExtendedRange: true });
+  await targetTokens(page, [npcTokenId]);
+  await forceDice(page, 6);
+
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
+  await sheet.locator("label", { hasText: "Long · 2" }).click();
+  // the range spend comes off what's left to spend
+  await expect(
+    sheet.locator("input:enabled + label", { hasText: /^4$/ }),
+  ).toHaveCount(1);
+  await expect(
+    sheet.locator("input:disabled + label", { hasText: /^5$/ }),
+  ).toHaveCount(1);
+  await sheet.locator("label", { hasText: /^1$/ }).click();
+  await sheet
+    .getByRole("button", { name: "Fire Weapon at Cultist 1" })
+    .click();
+
+  const card = lastChatMessage(page);
+  await expect(card).toContainText("Hit roll: 6+1");
+  await expect(card).toContainText("2 spent for range");
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (pcId) =>
+          game.actors.get(pcId)!.items.getName("Firearms")!.system
+            .pool as number,
+        pcId,
+      ),
+    )
+    .toBe(3);
+
+  // with 1 point left, Long range can't be paid for
+  await updateAbility(page, pcId, "Firearms", { pool: 1 });
+  await expect(
+    sheet.getByRole("button", { name: "Fire Weapon at Cultist 1" }),
+  ).toBeDisabled();
+  await expect(
+    sheet.getByText(/Shooting at Long range needs a spend of 2/),
+  ).toBeVisible();
 });
 
 test("an NPC's combat and damage bonuses add to its attacks", async ({

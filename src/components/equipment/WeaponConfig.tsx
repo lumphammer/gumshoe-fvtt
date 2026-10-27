@@ -17,7 +17,7 @@ import { TextInput } from "../inputs/TextInput";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 import { WeaponLethalityField } from "./WeaponLethalityField";
-import { WeaponRange } from "./WeaponRangeConfig";
+import { WeaponRange, WeaponRangeHeadings } from "./WeaponRangeConfig";
 import { getTranslated } from "../../functions/getTranslated";
 import type { WeaponFireModes } from "../../module/attacks/rules";
 import { weaponFireModesValues } from "../../module/attacks/rules";
@@ -71,6 +71,7 @@ export const WeaponConfig = () => {
   const showFireModes =
     useDamageApplication && settings.useLethalityAndAutofire.get();
   const fireModes = item.system.fireModes;
+  const useExtendedRange = settings.useExtendedRange.get();
 
   return (
     <InputGrid>
@@ -133,12 +134,17 @@ export const WeaponConfig = () => {
           />
         </GridField>
       )}
+      {useExtendedRange && <WeaponRangeHeadings />}
       <WeaponRange
         label="Point Blank"
         damage={item.system.pointBlankDamage ?? 0}
         enabled={item.system.isPointBlank}
         setDamage={item.system.setPointBlankDamage}
         setEnabled={item.system.setIsPointBlank}
+        {...(useExtendedRange && {
+          spend: item.system.pointBlankSpend,
+          setSpend: item.system.setPointBlankSpend,
+        })}
       />
       <WeaponRange
         label="Close range"
@@ -146,6 +152,10 @@ export const WeaponConfig = () => {
         enabled={item.system.isCloseRange}
         setDamage={item.system.setCloseRangeDamage}
         setEnabled={item.system.setIsCloseRange}
+        {...(useExtendedRange && {
+          spend: item.system.closeRangeSpend,
+          setSpend: item.system.setCloseRangeSpend,
+        })}
       />
       <WeaponRange
         label="Near range"
@@ -153,6 +163,10 @@ export const WeaponConfig = () => {
         enabled={item.system.isNearRange}
         setDamage={item.system.setNearRangeDamage}
         setEnabled={item.system.setIsNearRange}
+        {...(useExtendedRange && {
+          spend: item.system.nearRangeSpend,
+          setSpend: item.system.setNearRangeSpend,
+        })}
       />
       <WeaponRange
         label="Long range"
@@ -160,7 +174,22 @@ export const WeaponConfig = () => {
         enabled={item.system.isLongRange}
         setDamage={item.system.setLongRangeDamage}
         setEnabled={item.system.setIsLongRange}
+        {...(useExtendedRange && {
+          spend: item.system.longRangeSpend,
+          setSpend: item.system.setLongRangeSpend,
+        })}
       />
+      {useExtendedRange && (
+        <WeaponRange
+          label="Extended range"
+          damage={item.system.extendedRangeDamage}
+          enabled={item.system.isExtendedRange}
+          setDamage={item.system.setExtendedRangeDamage}
+          setEnabled={item.system.setIsExtendedRange}
+          spend={item.system.extendedRangeSpend}
+          setSpend={item.system.setExtendedRangeSpend}
+        />
+      )}
       <GridField label="Uses ammo?">
         <Toggle
           checked={item.system.usesAmmo}

@@ -57,9 +57,38 @@ export const weaponSchema = {
     required: true,
     initial: 0,
   }),
+  /**
+   * points which must be spent to shoot at a range at all; they don't add
+   * to the roll (Extended Range, p. 098). Only used with useExtendedRange on.
+   */
+  closeRangeSpend: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
+    initial: 0,
+  }),
   cost: new NumberField({ nullable: false, required: true, initial: 0 }),
   damage: new NumberField({ nullable: false, required: true, initial: 0 }),
   isCloseRange: new BooleanField({ nullable: false, required: true }),
+  /** only offered with the useExtendedRange setting on */
+  isExtendedRange: new BooleanField({
+    nullable: false,
+    required: true,
+    initial: false,
+  }),
+  extendedRangeDamage: new NumberField({
+    nullable: false,
+    required: true,
+    initial: 0,
+  }),
+  extendedRangeSpend: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
+    initial: 0,
+  }),
   isGunfire: new BooleanField({
     nullable: false,
     required: true,
@@ -100,15 +129,36 @@ export const weaponSchema = {
     required: true,
     initial: 0,
   }),
+  longRangeSpend: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
+    initial: 0,
+  }),
   nearRangeDamage: new NumberField({
     nullable: false,
     required: true,
+    initial: 0,
+  }),
+  nearRangeSpend: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
     initial: 0,
   }),
   notes: new StringField({ nullable: false, required: true }),
   pointBlankDamage: new NumberField({
     nullable: false,
     required: true,
+    initial: 0,
+  }),
+  pointBlankSpend: new NumberField({
+    nullable: false,
+    required: true,
+    integer: true,
+    min: 0,
     initial: 0,
   }),
   usesAmmo: new BooleanField({
@@ -227,6 +277,36 @@ export class WeaponModel extends TypeDataModel<
 
   setIsLongRange = async (isLongRange: boolean): Promise<void> => {
     await this.parent.update({ system: { isLongRange } });
+  };
+
+  setPointBlankSpend = async (pointBlankSpend: number): Promise<void> => {
+    await this.parent.update({ system: { pointBlankSpend } });
+  };
+
+  setCloseRangeSpend = async (closeRangeSpend: number): Promise<void> => {
+    await this.parent.update({ system: { closeRangeSpend } });
+  };
+
+  setNearRangeSpend = async (nearRangeSpend: number): Promise<void> => {
+    await this.parent.update({ system: { nearRangeSpend } });
+  };
+
+  setLongRangeSpend = async (longRangeSpend: number): Promise<void> => {
+    await this.parent.update({ system: { longRangeSpend } });
+  };
+
+  setExtendedRangeDamage = async (
+    extendedRangeDamage: number,
+  ): Promise<void> => {
+    await this.parent.update({ system: { extendedRangeDamage } });
+  };
+
+  setExtendedRangeSpend = async (extendedRangeSpend: number): Promise<void> => {
+    await this.parent.update({ system: { extendedRangeSpend } });
+  };
+
+  setIsExtendedRange = async (isExtendedRange: boolean): Promise<void> => {
+    await this.parent.update({ system: { isExtendedRange } });
   };
 
   setIsGunfire = async (isGunfire: boolean): Promise<void> => {

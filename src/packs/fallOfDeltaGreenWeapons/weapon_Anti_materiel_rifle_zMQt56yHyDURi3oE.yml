@@ -14,6 +14,9 @@ system:
   isCloseRange: true
   isNearRange: true
   isLongRange: true
+  isExtendedRange: true
+  extendedRangeDamage: 0
+  extendedRangeSpend: 2
   usesAmmo: true
   ammo:
     min: 0

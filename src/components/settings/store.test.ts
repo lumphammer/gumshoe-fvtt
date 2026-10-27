@@ -78,6 +78,7 @@ const initialState: State = {
     useCriticalHits: false,
     useLethalityAndAutofire: false,
     useShotDryAndJams: false,
+    useExtendedRange: false,
     useWalkingFire: false,
     useWoundStatusEffects: false,
     walkingFireSpendAbilities: [],

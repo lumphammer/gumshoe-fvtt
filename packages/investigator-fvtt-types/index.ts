@@ -441,6 +441,12 @@ export interface PresetV1 {
    */
   useShotDryAndJams?: boolean;
   /**
+   * Fall of DELTA GREEN: weapons can have an Extended range band, and any
+   * range can need a spend (which doesn't add to the roll) before you can
+   * shoot at it at all (p. 098)
+   */
+  useExtendedRange?: boolean;
+  /**
    * Fall of DELTA GREEN: after a burst or full-auto attack, pay to "walk" the
    * fire onto another target the original result would hit. Only applies
    * with Lethality and autofire.

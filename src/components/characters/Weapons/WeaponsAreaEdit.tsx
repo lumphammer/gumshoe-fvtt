@@ -2,6 +2,7 @@ import { weapon } from "../../../constants";
 import { sortEntitiesByName } from "../../../functions/utilities";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { assertActiveCharacterActor } from "../../../module/actors/types";
+import { settings } from "../../../settings/settings";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { WeaponRowEdit } from "./WeaponRowEdit";
@@ -10,6 +11,8 @@ export const WeaponsAreaEdit = () => {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const items = actor.system.getWeapons();
+  // an extra column for Extended range
+  const useExtendedRange = settings.useExtendedRange.get();
   return (
     <div>
       <div
@@ -55,10 +58,14 @@ export const WeaponsAreaEdit = () => {
         <div
           css={{
             display: "grid",
-            gridTemplateColumns: "10em repeat(5, 1fr) 2em 2em",
-            gridTemplateAreas:
-              '"name base  pb    cr    nr    lr    back  delete" ' +
-              '"ammo notes notes notes notes notes notes notes"',
+            gridTemplateColumns: useExtendedRange
+              ? "10em repeat(6, 1fr) 2em 2em"
+              : "10em repeat(5, 1fr) 2em 2em",
+            gridTemplateAreas: useExtendedRange
+              ? '"name base  pb    cr    nr    lr    er    back  delete" ' +
+                '"ammo notes notes notes notes notes notes notes notes"'
+              : '"name base  pb    cr    nr    lr    back  delete" ' +
+                '"ammo notes notes notes notes notes notes notes"',
             gridAutoRows: "min-content",
             gap: "0.5em",
             whiteSpace: "nowrap",
@@ -81,7 +88,7 @@ export const WeaponsAreaEdit = () => {
           <div
             className="header"
             css={{
-              gridColumn: "base / span 6",
+              gridColumn: useExtendedRange ? "base / span 7" : "base / span 6",
               alignSelf: "end",
               gridRow: 1,
               borderBottom: "1px solid currentColor",
@@ -135,6 +142,17 @@ export const WeaponsAreaEdit = () => {
           >
             <Translate>LR</Translate>
           </div>
+
+          {useExtendedRange && (
+            <div
+              css={{
+                gridColumn: "er",
+                gridRow: 2,
+              }}
+            >
+              <Translate>ER</Translate>
+            </div>
+          )}
 
           {sortEntitiesByName(items).map((item, index) => (
             <WeaponRowEdit key={item.id} weapon={item} index={index} />

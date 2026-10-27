@@ -15,6 +15,8 @@ import {
   isCriticalHit,
   isSamePendingJam,
   isShotDry,
+  getSpendAfterRange,
+  payForAttack,
 } from "./rules";
 
 describe("getWoundState", () => {
@@ -312,5 +314,64 @@ describe("canWalkFireFrom", () => {
     expect(canWalkFireFrom("burst")).toBe(true);
     expect(canWalkFireFrom("fullAuto")).toBe(true);
     expect(canWalkFireFrom("single")).toBe(false);
+  });
+});
+
+describe("getSpendAfterRange", () => {
+  it("leaves the whole pool when the range is free", () => {
+    expect(
+      getSpendAfterRange({ pool: 6, bonusPool: 0, rangeSpend: 0 }),
+    ).toEqual({ rangeAffordable: true, available: 6 });
+  });
+
+  it("takes the range spend off what's left to spend (p. 098)", () => {
+    // a pistol shooting at Long range
+    expect(
+      getSpendAfterRange({ pool: 6, bonusPool: 0, rangeSpend: 2 }),
+    ).toEqual({ rangeAffordable: true, available: 4 });
+  });
+
+  it("counts the bonus pool", () => {
+    expect(
+      getSpendAfterRange({ pool: 1, bonusPool: 2, rangeSpend: 2 }),
+    ).toEqual({ rangeAffordable: true, available: 1 });
+  });
+
+  it("can't afford a range spend bigger than the pools", () => {
+    expect(
+      getSpendAfterRange({ pool: 1, bonusPool: 0, rangeSpend: 2 }),
+    ).toEqual({ rangeAffordable: false, available: 0 });
+  });
+});
+
+describe("payForAttack", () => {
+  it("takes the spend and the range spend from the pool", () => {
+    expect(
+      payForAttack({ pool: 6, bonusPool: 0, spend: 1, rangeSpend: 2 }),
+    ).toEqual({ affordable: true, pool: 3, bonusPool: 0 });
+  });
+
+  it("uses the bonus pool first", () => {
+    expect(
+      payForAttack({ pool: 6, bonusPool: 2, spend: 1, rangeSpend: 2 }),
+    ).toEqual({ affordable: true, pool: 5, bonusPool: 0 });
+  });
+
+  it("can pay the range spend entirely from the bonus pool", () => {
+    expect(
+      payForAttack({ pool: 6, bonusPool: 4, spend: 1, rangeSpend: 2 }),
+    ).toEqual({ affordable: true, pool: 6, bonusPool: 1 });
+  });
+
+  it("can spend everything", () => {
+    expect(
+      payForAttack({ pool: 2, bonusPool: 1, spend: 1, rangeSpend: 2 }),
+    ).toEqual({ affordable: true, pool: 0, bonusPool: 0 });
+  });
+
+  it("can't afford more than the pools hold", () => {
+    expect(
+      payForAttack({ pool: 2, bonusPool: 0, spend: 1, rangeSpend: 2 }),
+    ).toMatchObject({ affordable: false });
   });
 });
