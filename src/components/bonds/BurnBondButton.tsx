@@ -30,8 +30,7 @@ export const BurnBondButton = ({ bond, className }: BurnBondButtonProps) => {
       title={tooltip}
     >
       <i className="fa fa-fire" />
-      {/* Translate titles its span, which would hide the button's title */}
-      <Translate title={tooltip}>Burn</Translate>
+      <Translate>Burn</Translate>
     </Button>
   );
 };

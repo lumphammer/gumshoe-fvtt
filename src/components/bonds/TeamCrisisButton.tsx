@@ -20,9 +20,7 @@ export const TeamCrisisButton = () => {
       onClick={() => navigate("here", crisis())}
       title={tooltip}
     >
-      {/* Translate titles its span, which would hide the button's title */}
-      <Translate title={tooltip}>Team Crisis</Translate>{" "}
-      <i className="fa fa-arrow-right" />
+      <Translate>Team Crisis</Translate> <i className="fa fa-arrow-right" />
     </Button>
   );
 };

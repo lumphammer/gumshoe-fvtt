@@ -57,9 +57,6 @@ translations, adding fields and settings, releases).
   `pnpm exec node -e 'console.log(require("case").pascal("Install ID"))'`.
 - `<Translate>` sets an inline `background` (for its debug highlighting), so a
   `background` passed in its `css` never shows. Style a wrapper instead.
-- `<Translate>` also gives its span a `title` (the translated text), which
-  hides a `title` on anything around it, e.g. a button's tooltip. Pass the
-  tooltip to `<Translate title={...}>` as well.
 - `GridField` labels are translated unless you pass `noTranslate` (needed for
   labels that are ability names).
 - After changing a pack, run `pnpm run build-pack-translations` (a test fails

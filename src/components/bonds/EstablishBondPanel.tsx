@@ -183,8 +183,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
             disabled={!canEstablish}
             title={noPointsMessage}
           >
-            <Translate title={noPointsMessage}>Establish Bond</Translate>{" "}
-            <i className="fa fa-dice" />
+            <Translate>Establish Bond</Translate> <i className="fa fa-dice" />
           </Button>
         </GridFieldStacked>
         {/* below the button, as on the weapon sheet */}

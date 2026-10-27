@@ -56,7 +56,7 @@ export const GridField = ({
           (noTranslate || typeof label !== "string" ? (
             label
           ) : (
-            <Translate title={labelTitle}>{label}</Translate>
+            <Translate>{label}</Translate>
           ))}
       </label>
       <div
