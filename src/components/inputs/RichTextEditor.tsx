@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 
+import { popOutClickedImage } from "../../functions/popOutClickedImage";
 import { cleanAndEnrichHtml } from "../../functions/textFunctions";
 import { systemLogger } from "../../functions/utilities";
 import { useIsEditable } from "../../hooks/useIsEditable";
@@ -115,11 +116,15 @@ const EditableRichTextEditor = ({
   return (
     <div
       ref={divRef}
+      onClick={popOutClickedImage}
       css={{
         backgroundColor: theme.colors.backgroundPrimary,
         border: `1px solid ${theme.colors.controlBorder}`,
         position: "absolute",
         inset: "0px",
+        "prose-mirror:not([open]) img:not(.nopopout)": {
+          cursor: "pointer",
+        },
         ".prosemirror": {
           position: "absolute",
           inset: "0.5em",

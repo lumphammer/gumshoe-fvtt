@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
+import { popOutClickedImage } from "../../functions/popOutClickedImage";
 import { cleanAndEnrichHtml } from "../../functions/textFunctions";
 import { systemLogger } from "../../functions/utilities";
 import { useIsDocumentOwner } from "../../hooks/useIsDocumentOwner";
@@ -68,8 +69,12 @@ export const NotesDisplay = ({
     <div
       ref={ref}
       className={className}
+      onClick={popOutClickedImage}
       css={{
         minHeight: "100%",
+        "img:not(.nopopout)": {
+          cursor: "pointer",
+        },
         "section.secret": {
           display: isOwner ? "block" : "none",
           "&.revealed": {
