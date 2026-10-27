@@ -2,6 +2,7 @@ import {
   createActor,
   expect,
   openSheet,
+  reloadGame,
   test,
   updateAbility,
 } from "./foundry.ts";
@@ -103,4 +104,32 @@ test("deleting a member removes it from the party, sheet closed", async ({
       ),
     )
     .toEqual([frankId]);
+});
+
+test("loading the world removes members that no longer exist", async ({
+  page,
+}) => {
+  const partyId = await createActor(page, {
+    name: "Haunted Party",
+    type: "party",
+  });
+  const ginaId = await createActor(page, { name: "Gina", type: "pc" });
+  // as if the member had been deleted while no GM was around
+  await page.evaluate(
+    async ({ partyId, ginaId }) => {
+      await game.actors
+        .get(partyId)!
+        .update({ system: { actorIds: [ginaId, "missingActor0000"] } });
+    },
+    { partyId, ginaId },
+  );
+  await reloadGame(page);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (id) => game.actors.get(id)!.system.actorIds as string[],
+        partyId,
+      ),
+    )
+    .toEqual([ginaId]);
 });
