@@ -28,6 +28,23 @@ const getPackSource = (pack: Pack): string => {
   return game.modules.get(packageName)?.title ?? packageName;
 };
 
+/**
+ * Where a selected pack which isn't in `game.packs` came from, going by its
+ * collection id ("package.pack"). Usually a deleted world pack, or a pack
+ * from a module which isn't active at the moment.
+ */
+const getMissingPackSource = (collection: string): string => {
+  assertGame(game);
+  const packageName = collection.split(".")[0];
+  const source =
+    packageName === "world"
+      ? getTranslated("World")
+      : packageName === game.system.id
+        ? getTranslated("Built in")
+        : (game.modules.get(packageName)?.title ?? packageName);
+  return getTranslated("MissingPackSource", { Source: source });
+};
+
 type AbilityPacksSettingsProps = {
   which: "newPCPacks" | "newNPCPacks";
   setters: Setters;
@@ -46,13 +63,28 @@ export const AbilityPacksSettings = ({
   const selectedPacks = settings[which];
   const setSelectedPacks = setters[which];
 
-  const packs = game.packs
-    .filter((pack) => pack.metadata.type === "Item")
-    .map((pack) => ({ pack, source: getPackSource(pack) }));
-  // don't count selected ids for packs which no longer exist
-  const selectedCount = packs.filter(({ pack }) =>
-    selectedPacks.includes(pack.collection),
-  ).length;
+  const packs = [
+    ...game.packs
+      .filter((pack) => pack.metadata.type === "Item")
+      .map((pack) => ({
+        collection: pack.collection,
+        label: pack.metadata.label,
+        source: getPackSource(pack),
+        missing: false,
+      })),
+    // selected packs which don't exist (deleted, or from an inactive module)
+    // are listed so they can be unticked, rather than pruned, because an
+    // inactive module's packs will come back
+    ...selectedPacks
+      .filter((collection) => !game.packs.has(collection))
+      .map((collection) => ({
+        collection,
+        label: collection,
+        source: getMissingPackSource(collection),
+        missing: true,
+      })),
+  ];
+  const selectedCount = selectedPacks.length;
   const baseId = useId();
   const [search, setSearch] = useState("");
 
@@ -62,8 +94,8 @@ export const AbilityPacksSettings = ({
   const visiblePacks =
     needle === ""
       ? packs
-      : packs.filter(({ pack, source }) =>
-          [pack.metadata.label, source, pack.collection].some((text) =>
+      : packs.filter(({ label, source, collection }) =>
+          [label, source, collection].some((text) =>
             text.toLocaleLowerCase().includes(needle),
           ),
         );
@@ -120,10 +152,10 @@ export const AbilityPacksSettings = ({
           columnGap: "0.5em",
         }}
       >
-        {visiblePacks.map(({ pack, source }, i) => {
-          const id = `${baseId}-${pack.collection}`;
+        {visiblePacks.map(({ collection, label, source, missing }, i) => {
+          const id = `${baseId}-${collection}`;
           return (
-            <IdContext.Provider value={id} key={pack.collection}>
+            <IdContext.Provider value={id} key={collection}>
               <div
                 css={{
                   gridColumn: "1 / -1",
@@ -136,19 +168,25 @@ export const AbilityPacksSettings = ({
                 }}
               >
                 <Toggle
-                  checked={selectedPacks.includes(pack.collection)}
+                  checked={selectedPacks.includes(collection)}
                   onChange={(checked) => {
                     setSelectedPacks(
                       checked
-                        ? [...selectedPacks, pack.collection]
-                        : selectedPacks.filter((x) => x !== pack.collection),
+                        ? [...selectedPacks, collection]
+                        : selectedPacks.filter((x) => x !== collection),
                     );
                   }}
                 />
-                <label htmlFor={id} title={pack.collection}>
-                  {pack.metadata.label}
+                <label htmlFor={id} title={collection}>
+                  {label}
                 </label>
-                <span css={{ fontStyle: "italic", opacity: 0.75 }}>
+                <span
+                  css={{
+                    fontStyle: "italic",
+                    opacity: missing ? undefined : 0.75,
+                    color: missing ? theme.colors.warning : undefined,
+                  }}
+                >
                   {source}
                 </span>
               </div>

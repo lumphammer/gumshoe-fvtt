@@ -351,6 +351,7 @@
   "investigator.NoCompendiumPacksMatchYourSearch": "No compendium packs match your search.",
   "investigator.BuiltIn": "Built in",
   "investigator.World": "World",
+  "investigator.MissingPackSource": "{Source} (missing)",
   "investigator.UseDamageApplication": "Use damage application?",
   "investigator.UseGunfireOnHumans": "Use gunfire on humans?",
   "investigator.UseCriticalHits": "Use critical hits?",
