@@ -289,6 +289,11 @@ export interface Stat {
 
 export type EquipmentFieldMetadata = {
   name: string;
+  /**
+   * Whether people with Limited permission on the item can see this field
+   * (default true)
+   */
+  visibleToLimited?: boolean;
 } & (
   | {
       type: "string";

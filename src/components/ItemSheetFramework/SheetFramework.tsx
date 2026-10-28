@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
+import { useIsDocumentLimited } from "../../hooks/useIsDocumentLimited";
+import { useIsEditable } from "../../hooks/useIsEditable";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { ImagePickle } from "../ImagePickle";
 import { ModeContext } from "./modeContext";
@@ -25,6 +27,8 @@ export const ItemSheetFramework = ({
     useAsyncUpdate(item.name ?? "", item.setName);
 
   const [configMode, setConfigMode] = useState(false);
+  const isLimited = useIsDocumentLimited();
+  const isEditable = useIsEditable();
 
   assertApplicationV2(app);
 
@@ -60,7 +64,7 @@ export const ItemSheetFramework = ({
         {/* Headline */}
         <h1 css={{ gridArea: "headline" }}>
           <span
-            contentEditable
+            contentEditable={isEditable}
             css={{
               minWidth: "1em",
               display: "inline-block",
@@ -85,17 +89,19 @@ export const ItemSheetFramework = ({
           }}
         />
 
-        {/* Cog */}
-        <a
-          css={{
-            gridArea: "cog",
-          }}
-          onClick={() => {
-            setConfigMode((mode) => !mode);
-          }}
-        >
-          <i className={`fa fa-${configMode ? "check" : "cog"}`} />
-        </a>
+        {/* Cog (people with Limited permission don't get the config) */}
+        {!isLimited && (
+          <a
+            css={{
+              gridArea: "cog",
+            }}
+            onClick={() => {
+              setConfigMode((mode) => !mode);
+            }}
+          >
+            <i className={`fa fa-${configMode ? "check" : "cog"}`} />
+          </a>
+        )}
         {/* regular editing stuff */}
         <div
           css={{

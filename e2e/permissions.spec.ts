@@ -8,6 +8,7 @@ import {
   lastChatMessage,
   openSheet,
   reloadGame,
+  setSettings,
   targetTokens,
   test,
 } from "./foundry.ts";
@@ -228,4 +229,53 @@ test("with Limited permission, players see a character's name and picture, not t
   const npcSheet = await openSheet(player, `Actor.${npcId}`);
   await expect(npcSheet).toContainText("Knows more than he says");
   await expect(npcSheet).not.toContainText("Secretly a ghoul");
+});
+
+test("with Limited permission, players don't see equipment fields hidden from them", async ({
+  page,
+  joinAs,
+}) => {
+  await setSettings(page, {
+    equipmentCategories: {
+      tomes: {
+        name: "Tomes",
+        fields: {
+          // visible by default
+          language: { name: "Language", type: "string", default: "" },
+          mythos: {
+            name: "Mythos Bonus",
+            type: "number",
+            default: 0,
+            visibleToLimited: false,
+          },
+        },
+      },
+    },
+  });
+  const playerId = await createPlayer(page, "Browser");
+  const itemId = await page.evaluate(async (playerId) => {
+    const item = await Item.create({
+      name: "Unaussprechlichen Kulten",
+      type: "equipment",
+      system: {
+        categoryId: "tomes",
+        fields: { language: "German", mythos: 3 },
+        notes: "<p>Bound in black leather</p>",
+      },
+      ownership: { [playerId]: CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED },
+    });
+    return item!.id;
+  }, playerId);
+
+  const player = await joinAs("Browser");
+  const sheet = await openSheet(player, `Item.${itemId}`);
+  await expect(sheet).toContainText("Unaussprechlichen Kulten");
+  await expect(sheet).toContainText("Tomes");
+  await expect(sheet.getByLabel("Language")).toHaveValue("German");
+  await expect(sheet.getByLabel("Language")).toBeDisabled();
+  await expect(sheet).toContainText("Bound in black leather");
+  // the field that isn't marked, and the config, stay hidden
+  await expect(sheet).not.toContainText("Mythos Bonus");
+  await expect(sheet.locator(".fa-cog")).toHaveCount(0);
+  await expect(sheet.locator("[contenteditable=true]")).toHaveCount(0);
 });

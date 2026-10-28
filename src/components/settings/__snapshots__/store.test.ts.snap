@@ -349,6 +349,17 @@ exports[`reducer > should delete a stat 1`] = `
           "min": 0,"
 `;
 
+exports[`reducer > should make a field visible to Limited users 1`] = `
+"@@ -27,6 +27,7 @@
+              "name": "Initial field",
+              "type": "string",
+              "default": "default value",
++             "visibleToLimited": true,
+            },
+            "field1": Object {
+              "name": "Initial field","
+`;
+
 exports[`reducer > should move a category down 1`] = `
 "@@ -20,6 +20,10 @@
       "combatAbilities": Array [],

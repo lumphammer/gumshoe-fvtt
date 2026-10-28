@@ -406,6 +406,14 @@ describe("reducer", () => {
       }),
     ],
     [
+      "make a field visible to Limited users",
+      slice.creators.setFieldVisibleToLimited({
+        categoryId: "category0",
+        fieldId: "field0",
+        visibleToLimited: true,
+      }),
+    ],
+    [
       "set a field minimum",
       slice.creators.setFieldMin({
         categoryId: "category0",

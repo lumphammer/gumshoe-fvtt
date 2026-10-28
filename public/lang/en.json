@@ -241,6 +241,7 @@
   "investigator.Text": "Text",
   "investigator.Number": "Number",
   "investigator.Toggle": "Toggle",
+  "investigator.VisibleToLimitedUsers": "Visible to Limited users",
   "investigator.Initiative": "Initiative",
   "investigator.NotFound": "Not Found!",
   "investigator.Other": "Other",

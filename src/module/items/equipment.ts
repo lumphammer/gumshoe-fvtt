@@ -1,3 +1,5 @@
+import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
+
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
 import type { SourceData } from "../../fvtt-exports";
@@ -109,4 +111,13 @@ export function assertEquipmentItem(
   if (!isEquipmentItem(item)) {
     throw new Error("Expected an equipment item");
   }
+}
+
+/**
+ * Whether people with Limited permission on a piece of equipment can see this
+ * field. Fields are visible unless they say otherwise, so fields from before
+ * this was a choice stay visible.
+ */
+export function isVisibleToLimited(field: EquipmentFieldMetadata): boolean {
+  return field.visibleToLimited ?? true;
 }

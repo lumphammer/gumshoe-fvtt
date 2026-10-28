@@ -3,10 +3,12 @@ import type { ChangeEventHandler } from "react";
 import { useCallback, useContext } from "react";
 
 import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
+import { isVisibleToLimited } from "../../../module/items/equipment";
 import { assertIsEquipmentFieldType } from "../../../typeAssertions";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
 import { Select } from "../../inputs/Select";
+import { Toggle } from "../../inputs/Toggle";
 import { SettingsGridField } from "../SettingsGridField";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Translate } from "../../Translate";
@@ -68,6 +70,20 @@ export const EquipmentFieldSettings = () => {
       const newType = e.currentTarget.value;
       assertIsEquipmentFieldType(newType);
       dispatch(store.creators.setFieldType({ categoryId, fieldId, newType }));
+    },
+    [categoryId, dispatch, fieldId],
+  );
+
+  const handleChangeVisibleToLimited = useCallback(
+    (visibleToLimited: boolean) => {
+      if (categoryId === undefined || fieldId === undefined) return;
+      dispatch(
+        store.creators.setFieldVisibleToLimited({
+          categoryId,
+          fieldId,
+          visibleToLimited,
+        }),
+      );
     },
     [categoryId, dispatch, fieldId],
   );
@@ -153,6 +169,12 @@ export const EquipmentFieldSettings = () => {
           fieldId={fieldId}
         />
       )}
+      <SettingsGridField label="Visible to Limited users">
+        <Toggle
+          checked={isVisibleToLimited(field)}
+          onChange={handleChangeVisibleToLimited}
+        />
+      </SettingsGridField>
       <SettingsGridField label="Delete">
         <Button css={{ width: "auto" }} onClick={handleClickDelete}>
           <i className="fas fa-trash" /> <Translate>Delete</Translate>
