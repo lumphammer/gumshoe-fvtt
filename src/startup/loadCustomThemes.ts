@@ -6,6 +6,7 @@ import { systemLogger } from "../functions/utilities";
 import { FilePicker } from "../fvtt-exports";
 import { settings } from "../settings/settings";
 import { highContrastTheme } from "../themes/highContrastTheme";
+import { installTheme } from "./injectGlobalHelper";
 
 export function loadCustomThemes() {
   const jsonRe = /\.(?:json|json5)$/;
@@ -104,7 +105,7 @@ export function loadCustomThemes() {
           smallSheetRootStyle: blob.smallSheetRootStyle ?? {},
         };
         systemLogger.log(`Loaded local theme ${filename}`, seed);
-        CONFIG.Investigator?.installTheme(filename, seed);
+        installTheme(filename, seed, { type: "local" });
       } catch (e: any) {
         if (game?.user?.isGM) {
           ui.notifications?.error(
@@ -115,6 +116,4 @@ export function loadCustomThemes() {
       }
     }
   });
-
-  // CONFIG.Investigator.installTheme: (id: string, seed: ThemeSeedV1)
 }
