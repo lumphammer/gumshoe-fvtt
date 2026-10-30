@@ -1,7 +1,8 @@
 import { systemId, usageStatsEndpoint } from "../constants";
 import { getTranslated } from "../functions/getTranslated";
 import { basePresets } from "../presets";
-import { settings } from "../settings/settings";
+import { runtimeConfig } from "../runtime";
+import { getSettingsDict } from "../settings/settings";
 import { baseThemes } from "../themes/baseThemes";
 import {
   offerUsageStats,
@@ -10,38 +11,15 @@ import {
   type UsageStatsConfig,
 } from "../usageStats/usageStats";
 import { askAboutUsageStats } from "../usageStats/usageStatsDialog";
+import { buildReportedSettings } from "./reportedSettings";
 
-/** The rules switches we report, to see which rules get used. */
-const reportedSwitches = [
-  "useBoost",
-  "useCards",
-  "useStabilityRules",
-  "useSanityRules",
-  "useBonds",
-  "useTrauma",
-  "useNetworkContacts",
-  "useDamageApplication",
-  "useLethalityAndAutofire",
-  "useTurnPassingInitiative",
-  "useMwStyleAbilities",
-] as const;
-
-/**
- * Which preset and theme the world uses, and which rules are on. Presets and
- * themes from elsewhere (modules, custom themes) are just "other": their names
- * are someone else's to share.
- */
-export function getReportedSettings() {
-  const preset = settings.systemPreset.get();
-  const theme = settings.defaultThemeName.get();
-  return {
-    preset: Object.hasOwn(basePresets, preset) ? preset : "other",
-    theme: Object.hasOwn(baseThemes, theme) ? theme : "other",
-    ...Object.fromEntries(
-      reportedSwitches.map((key) => [key, settings[key].get()]),
-    ),
-  };
-}
+/** The settings we report (see `buildReportedSettings`). */
+export const getReportedSettings = () =>
+  buildReportedSettings(getSettingsDict(), {
+    basePresetIds: Object.keys(basePresets),
+    baseThemeIds: Object.keys(baseThemes),
+    runtime: runtimeConfig,
+  });
 
 /** The placeholders the usage stats strings can use. */
 export const getUsageStatsTranslationValues = () => ({

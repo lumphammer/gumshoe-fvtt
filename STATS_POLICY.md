@@ -15,7 +15,10 @@ Knowing this info will help to guide future development.
 - The version of Foundry you're running.
 - The language you're using.
 - The number of users (_not_ their usernames.)
-- Some info about your GUMSHOE settings (e.g. preset, theme, customizations.)
+- Some info about your GUMSHOE settings:
+  - Which built-in preset and theme you're using. If you're using a preset or theme from elsewhere, we send whether it came from a module (and which module) or, for themes, your custom themes folder, but not its name.
+  - Which rules options are switched on.
+  - Which lists (e.g. ability categories, equipment categories) you've changed from the preset's. We don't send what's in them.
 - The other modules you're using, and their versions.
 
 We also store the country that the report was sent from, but we don't retain the IP address.
