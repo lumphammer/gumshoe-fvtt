@@ -46,63 +46,89 @@ test("the test world has said no, so it isn't asked", async ({ page }) => {
   await expect(offer(page)).toHaveCount(0);
 });
 
-test("a GM can opt in to usage stats, and a report goes", async ({ page }) => {
-  await makeUnaskedWorld(page);
-  const reports = await catchReports(page);
-  await reloadGame(page);
-
-  await expect(offer(page)).toContainText("can send a short, anonymous report");
-  await offer(page).getByText("Show exactly what would be sent").click();
-  await expect(offer(page).locator("pre")).toContainText('"modules"');
-
-  await offer(page).getByRole("button", { name: "Share usage stats" }).click();
-  await expect(offer(page)).toHaveCount(0);
-  await expect.poll(() => reports.length).toBe(1);
-
-  const installId = await getSetting(page, "usageStatsInstallId");
-  expect(installId).toMatch(/^[A-Za-z0-9_-]{22}$/);
-  expect(reports[0]).toMatchObject({
-    schemaVersion: 1,
-    installId,
-    package: { id: "investigator" },
-    settings: { preset: "pathOfCthulhuPreset" },
-    modules: expect.any(Array),
-  });
-  expect(await getSetting(page, "usageStatsLastSentDay")).not.toBe("");
-
-  // once a day is enough
-  await reloadGame(page);
-  await expect(offer(page)).toHaveCount(0);
-  expect(reports).toHaveLength(1);
-});
-
-test("after Ask me later, it isn't asked again on this version", async ({
+// The startup offer is off for now (`askOnStartup` in
+// src/startup/installUsageStats.ts). Turn these back on with it.
+test("while the offer is off, an unasked world isn't asked", async ({
   page,
 }) => {
   await makeUnaskedWorld(page);
   const reports = await catchReports(page);
   await reloadGame(page);
+  // the offer would open a moment after `ready`
+  await page.waitForTimeout(2000);
 
-  await offer(page).getByRole("button", { name: "Ask me later" }).click();
   await expect(offer(page)).toHaveCount(0);
-  await expect
-    .poll(() => getSetting(page, "usageStatsAskedVersion"))
-    .not.toBe("");
   expect(await getSetting(page, "usageStatsConsent")).toBe("unset");
-
-  await reloadGame(page);
-  await expect(offer(page)).toHaveCount(0);
   expect(reports).toEqual([]);
 });
 
-test("No thanks is remembered, and nothing is sent", async ({ page }) => {
-  await makeUnaskedWorld(page);
-  const reports = await catchReports(page);
-  await reloadGame(page);
+test.describe("the startup offer", () => {
+  test.skip(true, "the startup offer is off for now");
 
-  await offer(page).getByRole("button", { name: "No thanks" }).click();
-  await expect.poll(() => getSetting(page, "usageStatsConsent")).toBe("no");
-  await reloadGame(page);
-  await expect(offer(page)).toHaveCount(0);
-  expect(reports).toEqual([]);
+  test("a GM can opt in to usage stats, and a report goes", async ({
+    page,
+  }) => {
+    await makeUnaskedWorld(page);
+    const reports = await catchReports(page);
+    await reloadGame(page);
+
+    await expect(offer(page)).toContainText(
+      "can send a short, anonymous report",
+    );
+    await offer(page).getByText("Show exactly what would be sent").click();
+    await expect(offer(page).locator("pre")).toContainText('"modules"');
+
+    await offer(page)
+      .getByRole("button", { name: "Share usage stats" })
+      .click();
+    await expect(offer(page)).toHaveCount(0);
+    await expect.poll(() => reports.length).toBe(1);
+
+    const installId = await getSetting(page, "usageStatsInstallId");
+    expect(installId).toMatch(/^[A-Za-z0-9_-]{22}$/);
+    expect(reports[0]).toMatchObject({
+      schemaVersion: 1,
+      installId,
+      package: { id: "investigator" },
+      settings: { preset: "pathOfCthulhuPreset" },
+      modules: expect.any(Array),
+    });
+    expect(await getSetting(page, "usageStatsLastSentDay")).not.toBe("");
+
+    // once a day is enough
+    await reloadGame(page);
+    await expect(offer(page)).toHaveCount(0);
+    expect(reports).toHaveLength(1);
+  });
+
+  test("after Ask me later, it isn't asked again on this version", async ({
+    page,
+  }) => {
+    await makeUnaskedWorld(page);
+    const reports = await catchReports(page);
+    await reloadGame(page);
+
+    await offer(page).getByRole("button", { name: "Ask me later" }).click();
+    await expect(offer(page)).toHaveCount(0);
+    await expect
+      .poll(() => getSetting(page, "usageStatsAskedVersion"))
+      .not.toBe("");
+    expect(await getSetting(page, "usageStatsConsent")).toBe("unset");
+
+    await reloadGame(page);
+    await expect(offer(page)).toHaveCount(0);
+    expect(reports).toEqual([]);
+  });
+
+  test("No thanks is remembered, and nothing is sent", async ({ page }) => {
+    await makeUnaskedWorld(page);
+    const reports = await catchReports(page);
+    await reloadGame(page);
+
+    await offer(page).getByRole("button", { name: "No thanks" }).click();
+    await expect.poll(() => getSetting(page, "usageStatsConsent")).toBe("no");
+    await reloadGame(page);
+    await expect(offer(page)).toHaveCount(0);
+    expect(reports).toEqual([]);
+  });
 });

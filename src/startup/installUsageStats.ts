@@ -45,10 +45,18 @@ export const registerUsageStats = () => {
 };
 
 /**
- * Call in the `ready` hook. Asks the GM (once) whether to share usage stats,
- * then sends today's report if they do.
+ * Whether to ask the GM on startup. Off for now: GMs can still opt in from
+ * the settings.
+ */
+const askOnStartup: boolean = false;
+
+/**
+ * Call in the `ready` hook. Asks the GM (once) whether to share usage stats
+ * (when `askOnStartup` is on), then sends today's report if they do.
  */
 export const runUsageStats = async () => {
-  await offerUsageStats(usageStatsConfig, askAboutUsageStats);
+  if (askOnStartup) {
+    await offerUsageStats(usageStatsConfig, askAboutUsageStats);
+  }
   await sendUsageStatsIfDue(usageStatsConfig);
 };
