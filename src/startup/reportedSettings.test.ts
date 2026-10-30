@@ -1,3 +1,5 @@
+import { maxSettings, parseReport } from "@lumphammer/fvtt-telemetry-schema";
+import { makeReport } from "@lumphammer/fvtt-telemetry-schema/testReports";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -207,5 +209,24 @@ describe("buildReportedSettings", () => {
     );
     expect(settings).toMatchObject({ themeSource: "unknown" });
     expect(settings).not.toHaveProperty("themeModule");
+  });
+
+  it("fits in a report with every switch on and everything from modules", () => {
+    const everythingOn = Object.fromEntries(
+      Object.entries(deltaGreenWorld).map(([key, value]) => [
+        key,
+        typeof value === "boolean" ? true : value,
+      ]),
+    ) as ReportableSettings;
+    const settings = buildReportedSettings(
+      {
+        ...everythingOn,
+        systemPreset: "modulePreset",
+        defaultThemeName: "fromModule",
+      },
+      options,
+    );
+    expect(Object.keys(settings).length).toBeLessThanOrEqual(maxSettings);
+    expect(parseReport(makeReport({ settings })).success).toBe(true);
   });
 });

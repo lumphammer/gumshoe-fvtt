@@ -248,7 +248,7 @@ importers:
         version: 5.3.0
       '@lumphammer/fvtt-telemetry-schema':
         specifier: github:lumphammer/fvtt-telemetry#path:/packages/schema
-        version: https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/71618f155d255057828a6ce4e31ad6c4de0f9de8#path:/packages/schema(typescript@7.0.2)
+        version: https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/5d71e6bd5305fee54f31c1b064f0bdb2c2d39061#path:/packages/schema(typescript@7.0.2)
       '@lumphammer/investigator-fvtt-types':
         specifier: workspace:^
         version: link:packages/investigator-fvtt-types
@@ -1018,8 +1018,8 @@ packages:
   '@lezer/markdown@1.4.3':
     resolution: {integrity: sha512-kfw+2uMrQ/wy/+ONfrH83OkdFNM0ye5Xq96cLlaCy7h5UT9FO54DU4oRoIc0CSBh5NWmWuiIJA7NGLMJbQ+Oxg==}
 
-  '@lumphammer/fvtt-telemetry-schema@https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/71618f155d255057828a6ce4e31ad6c4de0f9de8#path:/packages/schema':
-    resolution: {gitHosted: true, integrity: sha512-kc7QslOg/4l9n1O0DCcMCKvK3yclUlyWNMri+sJCqQbMuL6cH3O0VA9xHjbImjBRjQBaXKtbsnPWGXJIm9oKmw==, path: /packages/schema, tarball: https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/71618f155d255057828a6ce4e31ad6c4de0f9de8}
+  '@lumphammer/fvtt-telemetry-schema@https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/5d71e6bd5305fee54f31c1b064f0bdb2c2d39061#path:/packages/schema':
+    resolution: {gitHosted: true, integrity: sha512-0skalVb/LuVfrWq07uazwrk+DUiQGRpEKnGobH4riI/oG8VE7RlGOTotBXxrKQDo7DdDT6V9FczPvnmMvXkHnw==, path: /packages/schema, tarball: https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/5d71e6bd5305fee54f31c1b064f0bdb2c2d39061}
     version: 0.1.0
 
   '@lumphammer/investigator-fvtt-types@1.13.2':
@@ -5309,7 +5309,7 @@ snapshots:
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
 
-  '@lumphammer/fvtt-telemetry-schema@https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/71618f155d255057828a6ce4e31ad6c4de0f9de8#path:/packages/schema(typescript@7.0.2)':
+  '@lumphammer/fvtt-telemetry-schema@https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/5d71e6bd5305fee54f31c1b064f0bdb2c2d39061#path:/packages/schema(typescript@7.0.2)':
     dependencies:
       valibot: 1.5.0(typescript@7.0.2)
     transitivePeerDependencies:
