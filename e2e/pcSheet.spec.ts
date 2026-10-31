@@ -81,3 +81,40 @@ test("the pools panel follows pools and the initiative ability changed elsewhere
       .locator("select"),
   ).toHaveValue(initiative);
 });
+
+test("the Notes and Settings tabs follow changes made elsewhere", async ({
+  page,
+}) => {
+  const actorId = await createActor(page, { name: "Diarist", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const tab = (name: string) =>
+    sheet.locator(".tab-strip > label", { hasText: name }).first().click();
+
+  await tab("Notes");
+  await page.evaluate(async (actorId) => {
+    await game.actors
+      .get(actorId)!
+      .update({ system: { longNotes: ["<p>Dreams of a sunken city</p>"] } });
+  }, actorId);
+  await expect(sheet).toContainText("Dreams of a sunken city");
+
+  // the Settings tab is opened from the sheet's header
+  await sheet.locator('[data-action="toggleSheetSettings"]').click();
+  const themeSelect = sheet
+    .locator("label", { hasText: /^Theme$/ })
+    .locator("xpath=following-sibling::div[1]")
+    .locator("select");
+  const otherTheme = await themeSelect.evaluate((select) => {
+    const options = [...(select as HTMLSelectElement).options];
+    return options.find((option) => !option.selected)!.value;
+  });
+  await page.evaluate(
+    async ({ actorId, otherTheme }) => {
+      await game.actors
+        .get(actorId)!
+        .update({ system: { sheetTheme: otherTheme } });
+    },
+    { actorId, otherTheme },
+  );
+  await expect(themeSelect).toHaveValue(otherTheme);
+});

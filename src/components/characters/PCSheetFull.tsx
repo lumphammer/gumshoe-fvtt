@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 
 import { assertGame } from "../../functions/isGame";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
 import { assertPCActor } from "../../module/actors/pc";
 import {
   areBondsOn,
-  getAdaptableTraumaTypes,
+  getAdaptableTraumaTypesFrom,
 } from "../../module/stability/settings";
-import { settings } from "../../settings/settings";
 import { CardsArea } from "../cards/CardsArea";
 import { CSSReset } from "../CSSReset";
 import { BondsArea } from "../bonds/BondsArea";
@@ -18,6 +19,7 @@ import { AbilitiesAreaEdit } from "./AbilitiesAreaEdit";
 import { AbilitiesAreaPlay } from "./AbilitiesAreaPlay";
 import { EditModeToggle } from "./EditModeToggle";
 import { EquipmentArea } from "./Equipment/EquipmentArea";
+import { LiveActorIsland } from "./LiveActorIsland";
 import { AbilitiesAreaMW } from "./MoribundWorld/AbilitiesAreaMW";
 import { MwItemArea } from "./MoribundWorld/MwItemArea";
 import { NotesArea } from "./NotesArea";
@@ -26,10 +28,13 @@ import { SettingArea } from "./SettingsArea";
 import { useSettingsButton } from "./useSettingsButton";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
 
-const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
-const settingsUseCards = settings.useCards.get;
-
-export const PCSheetFull = () => {
+/**
+ * The PC sheet. Memoised (it has no props), so Foundry's own re-render stops
+ * here: everything below reads the actor and settings through snapshots, or
+ * sits in a `LiveActorIsland` until it does. `PCSheet`, above, provides
+ * `IsEditableContext`.
+ */
+export const PCSheetFull = memo(function PCSheetFull() {
   const { actor } = useActorSheetContext();
   // kept here, not in the tab, so it lasts while you look at other tabs
   const [editMode, setEditMode] = useState(false);
@@ -39,8 +44,22 @@ export const PCSheetFull = () => {
   assertGame(game);
   assertPCActor(actor);
 
-  const themeName = actor.system.getSheetThemeName();
-  const theme = useTheme(themeName);
+  const sheetTheme = useActorSnapshot(
+    actor,
+    (snapshot) =>
+      (snapshot?.system as { sheetTheme?: string | null } | undefined)
+        ?.sheetTheme ?? null,
+  );
+  const s = useSettings((s) => ({
+    defaultThemeName: s.defaultThemeName,
+    useMwStyleAbilities: s.useMwStyleAbilities,
+    mwUseAlternativeItemTypes: s.mwUseAlternativeItemTypes,
+    bondsOn: areBondsOn(s),
+    hasAdaptableTraumaTypes: getAdaptableTraumaTypesFrom(s).length > 0,
+    useNetworkContacts: s.useNetworkContacts,
+    useCards: s.useCards,
+  }));
+  const theme = useTheme(sheetTheme || s.defaultThemeName);
 
   return (
     <CSSReset
@@ -89,7 +108,7 @@ export const PCSheetFull = () => {
                   />
                   {editMode ? (
                     <AbilitiesAreaEdit />
-                  ) : settingsUseMwStyleAbilities() ? (
+                  ) : s.useMwStyleAbilities ? (
                     <AbilitiesAreaMW />
                   ) : (
                     <AbilitiesAreaPlay />
@@ -98,32 +117,32 @@ export const PCSheetFull = () => {
               ),
             },
             // Moribund World's alternative item types have no weapons
-            !settings.mwUseAlternativeItemTypes.get() && {
+            !s.mwUseAlternativeItemTypes && {
               id: "combat",
               label: "Combat",
               content: <WeaponsArea fillHeight />,
             },
-            (areBondsOn() || getAdaptableTraumaTypes().length > 0) && {
+            (s.bondsOn || s.hasAdaptableTraumaTypes) && {
               id: "bonds",
               // adaptations without Bonds
-              label: areBondsOn() ? "Bonds" : "Adapted to",
-              content: <BondsArea />,
+              label: s.bondsOn ? "Bonds" : "Adapted to",
+              content: <LiveActorIsland component={BondsArea} />,
             },
-            settings.useNetworkContacts.get() && {
+            s.useNetworkContacts && {
               id: "contacts",
               label: "Contacts",
-              content: <NetworkContactsArea />,
+              content: <LiveActorIsland component={NetworkContactsArea} />,
             },
-            settingsUseCards() && {
+            s.useCards && {
               id: "cards",
               label: "Cards",
-              content: <CardsArea />,
+              content: <LiveActorIsland component={CardsArea} />,
             },
-            settings.mwUseAlternativeItemTypes.get()
+            s.mwUseAlternativeItemTypes
               ? {
                   id: "items",
                   label: "MWItems",
-                  content: <MwItemArea />,
+                  content: <LiveActorIsland component={MwItemArea} />,
                 }
               : {
                   id: "equipment",
@@ -146,6 +165,6 @@ export const PCSheetFull = () => {
       </div>
     </CSSReset>
   );
-};
+});
 
 PCSheetFull.displayName = "PCSheetFull";
