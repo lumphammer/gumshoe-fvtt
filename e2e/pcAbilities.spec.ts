@@ -7,6 +7,7 @@ import {
   expect,
   giveOwnership,
   openSheet,
+  setSettings,
   test,
   updateAbility,
 } from "./foundry.ts";
@@ -133,5 +134,31 @@ test.describe("with the canvas", () => {
 
     await giveOwnership(page, actorId, playerId, "OWNER");
     await expect(occupational).toBeEnabled();
+  });
+});
+
+test.describe("Moribund World abilities", () => {
+  test.afterEach(async ({ page }) => {
+    await setSettings(page, { useMwStyleAbilities: false });
+  });
+
+  test("the Abilities tab follows pools spent and abilities added elsewhere", async ({
+    page,
+  }) => {
+    await setSettings(page, { useMwStyleAbilities: true });
+    const actorId = await createActor(page, { name: "Wanderer", type: "pc" });
+    await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
+    const sheet = await openSheet(page, `Actor.${actorId}`);
+    await expect(poolAndRating(sheet, "Athletics")).toHaveText("4/4");
+
+    await updateAbility(page, actorId, "Athletics", { pool: 1 });
+    await expect(poolAndRating(sheet, "Athletics")).toHaveText("1/4");
+
+    await createOwnedItem(page, actorId, {
+      name: "Juggling",
+      type: "generalAbility",
+      system: { rating: 2, pool: 2 },
+    });
+    await expect(poolAndRating(sheet, "Juggling")).toHaveText("2/2");
   });
 });

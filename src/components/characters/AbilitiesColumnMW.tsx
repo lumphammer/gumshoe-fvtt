@@ -1,9 +1,10 @@
-import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import type { AbilityItem } from "../../module/items/exports";
 import { AbilitySlugPlayMw } from "./AbilitySlugPlayMw";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
 
 interface AbilitiesColumnMWProps {
-  abilities: InvestigatorItem[];
+  /** The live abilities: each row reads its own through a snapshot */
+  abilities: AbilityItem[];
 }
 
 export const AbilitiesColumnMW = ({ abilities }: AbilitiesColumnMWProps) => {
