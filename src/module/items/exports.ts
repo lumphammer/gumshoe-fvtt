@@ -1,9 +1,19 @@
-import type { GeneralAbilityItem } from "./generalAbility";
+import type {
+  GeneralAbilityItem,
+  GeneralAbilitySystemData,
+} from "./generalAbility";
 import { isGeneralAbilityItem } from "./generalAbility";
-import type { InvestigativeAbilityItem } from "./investigativeAbility";
+import type {
+  InvestigativeAbilityItem,
+  InvestigativeAbilitySystemData,
+} from "./investigativeAbility";
 import { isInvestigativeAbilityItem } from "./investigativeAbility";
 
 export type AbilityItem = GeneralAbilityItem | InvestigativeAbilityItem;
+
+export type AbilitySystemData =
+  | GeneralAbilitySystemData
+  | InvestigativeAbilitySystemData;
 
 export function isAbilityItem(x: unknown): x is AbilityItem {
   return isGeneralAbilityItem(x) || isInvestigativeAbilityItem(x);

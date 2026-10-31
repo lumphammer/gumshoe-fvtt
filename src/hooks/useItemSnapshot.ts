@@ -1,7 +1,5 @@
-import { useMemo } from "react";
-
 import type { ItemSnapshot } from "../module/snapshots/documentStores";
-import { createItemStore } from "../module/snapshots/documentStores";
+import { getItemStore } from "../module/snapshots/documentStores";
 import { useSnapshot, useSnapshotSelector } from "./useSnapshot";
 
 export type { ItemSnapshot };
@@ -18,7 +16,7 @@ export type { ItemSnapshot };
 export function useItemSnapshot<TSystem>(
   item: Item.Implementation,
 ): ItemSnapshot<TSystem> {
-  const store = useMemo(() => createItemStore<TSystem>(item), [item]);
+  const store = getItemStore<TSystem>(item);
   return useSnapshot(store);
 }
 
@@ -31,6 +29,6 @@ export function useItemSelector<R, TSystem = unknown>(
   item: Item.Implementation,
   selector: (item: ItemSnapshot<TSystem>) => R,
 ): R {
-  const store = useMemo(() => createItemStore<TSystem>(item), [item]);
+  const store = getItemStore<TSystem>(item);
   return useSnapshotSelector(store, selector);
 }

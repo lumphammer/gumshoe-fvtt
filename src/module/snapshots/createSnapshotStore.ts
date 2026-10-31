@@ -67,7 +67,12 @@ export function createSnapshotStore<T>(
         }
       };
     },
-    getSnapshot: () => snapshot,
+    getSnapshot: () => {
+      // nothing is watching, so it may be out of date (a store can sit
+      // unwatched between one component unmounting and another mounting)
+      if (unwatch === null) change(read(), false);
+      return snapshot;
+    },
   };
 }
 

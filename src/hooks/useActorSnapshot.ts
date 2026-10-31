@@ -1,8 +1,6 @@
-import { useMemo } from "react";
-
 import { nullStore } from "../module/snapshots/createSnapshotStore";
 import type { ActorSnapshot } from "../module/snapshots/documentStores";
-import { createActorStore } from "../module/snapshots/documentStores";
+import { getActorStore } from "../module/snapshots/documentStores";
 import { useSnapshotSelector } from "./useSnapshot";
 
 export type { ActorSnapshot };
@@ -17,10 +15,7 @@ export function useActorSnapshot<R, TSystem = unknown>(
   actor: Actor.Implementation | null,
   selector: (actor: ActorSnapshot<TSystem> | null) => R,
 ): R {
-  const store = useMemo(
-    () => (actor ? createActorStore<TSystem>(actor) : nullStore),
-    [actor],
-  );
+  const store = actor ? getActorStore<TSystem>(actor) : nullStore;
   return useSnapshotSelector<unknown, R>(store, (snapshot) =>
     selector(snapshot as ActorSnapshot<TSystem> | null),
   );

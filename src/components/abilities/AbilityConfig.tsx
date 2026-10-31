@@ -1,15 +1,19 @@
 import type { ChangeEvent } from "react";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
-import { assertGame } from "../../functions/isGame";
 import { useIsEditable } from "../../hooks/useIsEditable";
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertAbilityItem } from "../../module/items/exports";
-import { isGeneralAbilityItem } from "../../module/items/generalAbility";
-import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
-import { settings } from "../../settings/settings";
+import { useSettings } from "../../hooks/useSettings";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
+import {
+  isGeneralAbilitySnapshot,
+  isInvestigativeAbilitySnapshot,
+} from "../../module/items/abilitySnapshots";
+import type { AbilityItem } from "../../module/items/exports";
+import type { GeneralAbilityItem } from "../../module/items/generalAbility";
+import type { InvestigativeAbilityItem } from "../../module/items/investigativeAbility";
 import type { MwRefreshGroup, SpecialitiesMode } from "../../types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
@@ -22,15 +26,32 @@ import { Translate } from "../Translate";
 import { SituationalModifiersEditor } from "./SituationalModifiersEditor";
 import { UnlocksEditor } from "./UnlocksEditor";
 
-const settingsUseNpcCombatBonuses = settings.useNpcCombatBonuses.get;
-const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
+interface AbilityConfigProps {
+  /** Only to write through: read from `ability`. */
+  item: AbilityItem;
+  ability: AbilitySnapshot;
+}
 
-export const AbilityConfig = () => {
-  const { item } = useItemSheetContext();
+export const AbilityConfig = memo(function AbilityConfig({
+  item,
+  ability,
+}: AbilityConfigProps) {
   const isEditable = useIsEditable();
-  assertGame(game);
-  assertAbilityItem(item);
-  const isGeneral = isGeneralAbilityItem(item);
+  const isGeneral = isGeneralAbilitySnapshot(ability);
+  const system = ability.system;
+  const methods = useSystemMethods(item);
+  // the general and investigative abilities' own setters
+  const generalMethods = useSystemMethods(item as GeneralAbilityItem);
+  const investigativeMethods = useSystemMethods(
+    item as InvestigativeAbilityItem,
+  );
+  const settings = useSettings((s) => ({
+    useNpcCombatBonuses: s.useNpcCombatBonuses,
+    useMwStyleAbilities: s.useMwStyleAbilities,
+    categories: isGeneral
+      ? s.generalAbilityCategories
+      : s.investigativeAbilityCategories,
+  }));
 
   const onClickDelete = useCallback(() => {
     const message = item.actor
@@ -54,14 +75,13 @@ export const AbilityConfig = () => {
     });
   }, [item]);
 
-  const categories = isGeneral
-    ? settings.generalAbilityCategories.get()
-    : settings.investigativeAbilityCategories.get();
+  const categories = settings.categories;
 
-  const isRealCategory = categories.includes(item.system.categoryId);
+  const isRealCategory = categories.includes(system.categoryId);
   const [showCustomField, setShowCustomField] = useState(!isRealCategory);
   const [selectCustomOption, setSelectCustomOption] = useState(!isRealCategory);
 
+  const { setCategoryId } = methods;
   const onChangeCategory = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
       const value = e.currentTarget.value;
@@ -70,18 +90,18 @@ export const AbilityConfig = () => {
         setSelectCustomOption(true);
       } else {
         setSelectCustomOption(false);
-        void item.system.setCategoryId(e.currentTarget.value);
+        void setCategoryId(e.currentTarget.value);
       }
     },
-    [item],
+    [setCategoryId],
   );
 
-  const selectedCat = selectCustomOption ? "" : item.system.categoryId;
+  const selectedCat = selectCustomOption ? "" : system.categoryId;
 
   return (
     <InputGrid>
       <GridField label="Item Name">
-        <AsyncTextInput value={item.name ?? ""} onChange={item.setName} />
+        <AsyncTextInput value={ability.name} onChange={item.setName} />
       </GridField>
       <GridField label="Category">
         <div
@@ -100,7 +120,7 @@ export const AbilityConfig = () => {
                 height: "inherit",
               }}
             >
-              {categories.map((cat: string) => (
+              {categories.map((cat) => (
                 <option key={cat}>{cat}</option>
               ))}
               <option value="">Custom</option>
@@ -113,8 +133,8 @@ export const AbilityConfig = () => {
           >
             {showCustomField && (
               <AsyncTextInput
-                value={item.system.categoryId}
-                onChange={item.system.setCategoryId}
+                value={ability.system.categoryId}
+                onChange={methods.setCategoryId}
               />
             )}
           </div>
@@ -122,48 +142,48 @@ export const AbilityConfig = () => {
       </GridField>
       <GridField label="Min">
         <AsyncNumberInput
-          max={item.system.max}
-          value={item.system.min}
-          onChange={item.system.setMin}
+          max={ability.system.max}
+          value={ability.system.min}
+          onChange={methods.setMin}
         />
       </GridField>
       <GridField label="Max">
         <AsyncNumberInput
-          min={item.system.min}
-          value={item.system.max}
-          onChange={item.system.setMax}
+          min={ability.system.min}
+          value={ability.system.max}
+          onChange={methods.setMax}
         />
       </GridField>
-      {settingsUseNpcCombatBonuses() && isGeneralAbilityItem(item) && (
+      {settings.useNpcCombatBonuses && isGeneralAbilitySnapshot(ability) && (
         <>
           <GridField label="Combat bonus">
             <AsyncNumberInput
-              value={item.system.combatBonus}
-              onChange={item.system.setCombatBonus}
+              value={ability.system.combatBonus}
+              onChange={generalMethods.setCombatBonus}
             />
           </GridField>
           <GridField label="Damage bonus">
             <AsyncNumberInput
-              value={item.system.damageBonus}
-              onChange={item.system.setDamageBonus}
+              value={ability.system.damageBonus}
+              onChange={generalMethods.setDamageBonus}
             />
           </GridField>
         </>
       )}
       <GridField label="Has Specialities?">
         <Toggle
-          checked={item.system.hasSpecialities}
+          checked={ability.system.hasSpecialities}
           onChange={(t) => {
-            void item.system.setHasSpecialities(t);
+            void methods.setHasSpecialities(t);
           }}
         />
       </GridField>
-      {item.system.hasSpecialities && (
+      {ability.system.hasSpecialities && (
         <GridField label="Specialities Mode">
           <Select
-            value={item.system.specialitiesMode}
+            value={ability.system.specialitiesMode}
             onChange={(t) => {
-              void item.system.setSpecialitiesMode(
+              void methods.setSpecialitiesMode(
                 t.currentTarget.value as SpecialitiesMode,
               );
             }}
@@ -177,96 +197,96 @@ export const AbilityConfig = () => {
       )}
       <GridField label="Occupational?">
         <Toggle
-          checked={item.system.occupational}
-          onChange={item.system.setOccupational}
+          checked={ability.system.occupational}
+          onChange={methods.setOccupational}
         />
       </GridField>
-      {isGeneralAbilityItem(item) && (
+      {isGeneralAbilitySnapshot(ability) && (
         <GridField label="Can be investigative?">
           <Toggle
-            checked={item.system.canBeInvestigative}
-            onChange={item.system.setCanBeInvestigative}
+            checked={ability.system.canBeInvestigative}
+            onChange={generalMethods.setCanBeInvestigative}
           />
         </GridField>
       )}
       <GridField label="Show tracker?">
         <Toggle
-          checked={item.system.showTracker}
-          onChange={item.system.setShowTracker}
+          checked={ability.system.showTracker}
+          onChange={methods.setShowTracker}
         />
       </GridField>
       <GridField label="Exclude from general refresh?">
         <Toggle
-          checked={item.system.excludeFromGeneralRefresh}
-          onChange={item.system.setExcludeFromGeneralRefresh}
+          checked={ability.system.excludeFromGeneralRefresh}
+          onChange={methods.setExcludeFromGeneralRefresh}
         />
       </GridField>
       <GridField label="Include in 24h refresh?">
         <Toggle
-          checked={item.system.refreshesDaily}
-          onChange={item.system.setRefreshesDaily}
+          checked={ability.system.refreshesDaily}
+          onChange={methods.setRefreshesDaily}
         />
       </GridField>
       <GridField label="Hide if zero-rated?">
         <Toggle
-          checked={item.system.hideIfZeroRated}
-          onChange={item.system.setHideIfZeroRated}
+          checked={ability.system.hideIfZeroRated}
+          onChange={methods.setHideIfZeroRated}
         />
       </GridField>
-      {isGeneralAbilityItem(item) && (
+      {isGeneralAbilitySnapshot(ability) && (
         <GridField label="Goes first in combat?">
           <Toggle
-            checked={item.system.goesFirstInCombat}
-            onChange={item.system.setGoesFirstInCombat}
+            checked={ability.system.goesFirstInCombat}
+            onChange={generalMethods.setGoesFirstInCombat}
           />
         </GridField>
       )}
-      {isGeneralAbilityItem(item) && (
+      {isGeneralAbilitySnapshot(ability) && (
         <GridField label="IsAPushPool">
           <Toggle
-            checked={item.system.isPushPool}
-            onChange={item.system.setIsPushPool}
+            checked={ability.system.isPushPool}
+            onChange={generalMethods.setIsPushPool}
           />
         </GridField>
       )}
       <GridField label="AllowPoolToExceedRating">
         <Toggle
-          checked={item.system.allowPoolToExceedRating}
-          onChange={item.system.setAllowPoolToExceedRating}
+          checked={ability.system.allowPoolToExceedRating}
+          onChange={methods.setAllowPoolToExceedRating}
         />
       </GridField>
-      {isGeneralAbilityItem(item) && (
+      {isGeneralAbilitySnapshot(ability) && (
         <GridField
           label="Link to resource?"
           css={{ display: "flex", flexDirection: "row", gap: "0.5em" }}
         >
           <Toggle
-            checked={item.system.linkToResource}
-            onChange={item.system.setLinkToResource}
+            checked={ability.system.linkToResource}
+            onChange={generalMethods.setLinkToResource}
           />
-          {item.system.linkToResource && (
+          {ability.system.linkToResource && (
             <AsyncTextInput
-              value={item.system.resourceId ?? ""}
-              onChange={item.system.setResourceId}
+              value={ability.system.resourceId ?? ""}
+              onChange={generalMethods.setResourceId}
             />
           )}
         </GridField>
       )}
-      {isInvestigativeAbilityItem(item) && (
+      {isInvestigativeAbilitySnapshot(ability) && (
         <GridField label="IsQuickShock">
           <Toggle
-            checked={item.system.isQuickShock}
-            onChange={item.system.setIsQuickShock}
+            checked={ability.system.isQuickShock}
+            onChange={investigativeMethods.setIsQuickShock}
           />
         </GridField>
       )}
 
-      {settingsUseMwStyleAbilities() && isGeneralAbilityItem(item) && (
+      {settings.useMwStyleAbilities && isGeneralAbilitySnapshot(ability) && (
         <GridField label="Refresh group">
           <Select
-            value={item.system.mwRefreshGroup}
+            value={ability.system.mwRefreshGroup}
             onChange={(e) => {
-              void item.system.setMwRefreshGroup(
+              void generalMethods.setMwRefreshGroup(
                 Number(e.currentTarget.value) as MwRefreshGroup,
               );
             }}
@@ -278,10 +298,13 @@ export const AbilityConfig = () => {
         </GridField>
       )}
       <GridField label="Unlocks">
-        <UnlocksEditor />
+        <UnlocksEditor item={item} unlocks={system.unlocks} />
       </GridField>
       <GridField label="Situational Modifiers">
-        <SituationalModifiersEditor />
+        <SituationalModifiersEditor
+          item={item}
+          situationalModifiers={system.situationalModifiers}
+        />
       </GridField>
       <GridField label="Delete ability">
         <Button
@@ -295,4 +318,4 @@ export const AbilityConfig = () => {
       </GridField>
     </InputGrid>
   );
-};
+});

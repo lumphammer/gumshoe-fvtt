@@ -6,7 +6,11 @@
 import { systemId } from "../../constants";
 import type { SettingsDict } from "../../settings/settings";
 import { getSettingsDict } from "../../settings/settings";
-import type { DeepReadonly, OnChange } from "./createSnapshotStore";
+import type {
+  DeepReadonly,
+  OnChange,
+  SnapshotStore,
+} from "./createSnapshotStore";
 import { createSnapshotStore } from "./createSnapshotStore";
 
 /** An item's prepared data (`toObject(false)`), its system data as `TSystem`. */
@@ -43,7 +47,7 @@ const itemData = (item: Item.Implementation) =>
   item.toObject(false) as unknown as ItemData;
 
 /** A store of one item, which follows changes to it and its effects. */
-export function createItemStore<TSystem>(item: Item.Implementation) {
+function createItemStore<TSystem>(item: Item.Implementation) {
   return createSnapshotStore<ItemData<TSystem>>(
     () => itemData(item) as ItemData<TSystem>,
     (onChange) => {
@@ -109,7 +113,7 @@ function withDocument<T extends { readonly _id: string | null }>(
  * any of them. Only the document that changed is copied (and the actor's own
  * data, which can be derived from its items).
  */
-export function createActorStore<TSystem>(actor: Actor.Implementation) {
+function createActorStore<TSystem>(actor: Actor.Implementation) {
   return createSnapshotStore<ActorData<TSystem>>(
     () => actorData(actor) as ActorData<TSystem>,
     (onChange: OnChange<ActorData<TSystem>>) => {
@@ -169,6 +173,43 @@ export function createActorStore<TSystem>(actor: Actor.Implementation) {
       return () => offs.forEach((off) => off());
     },
   );
+}
+
+// One store per document, shared by everything that reads it (e.g. the
+// badges on every ability row of a PC sheet share the PC's store). Weak, so a
+// store goes when its document does; and a store only listens to hooks while
+// something is subscribed to it.
+const itemStores = new WeakMap<
+  Item.Implementation,
+  ReturnType<typeof createItemStore>
+>();
+const actorStores = new WeakMap<
+  Actor.Implementation,
+  ReturnType<typeof createActorStore>
+>();
+
+/** The store of an item (see `createItemStore`) */
+export function getItemStore<TSystem>(
+  item: Item.Implementation,
+): SnapshotStore<ItemData<TSystem>> {
+  let store = itemStores.get(item);
+  if (!store) {
+    store = createItemStore(item);
+    itemStores.set(item, store);
+  }
+  return store as SnapshotStore<ItemData<TSystem>>;
+}
+
+/** The store of an actor (see `createActorStore`) */
+export function getActorStore<TSystem>(
+  actor: Actor.Implementation,
+): SnapshotStore<ActorData<TSystem>> {
+  let store = actorStores.get(actor);
+  if (!store) {
+    store = createActorStore(actor);
+    actorStores.set(actor, store);
+  }
+  return store as SnapshotStore<ActorData<TSystem>>;
 }
 
 let settingsStore: ReturnType<typeof createSettingsStore> | null = null;

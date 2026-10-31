@@ -1,6 +1,5 @@
 import { memo, type ReactNode, useCallback, useContext, useState } from "react";
 
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated, getTranslatedOr } from "../../functions/getTranslated";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import type { ItemSnapshot } from "../../hooks/useItemSnapshot";
@@ -23,6 +22,7 @@ import { CheckButtons } from "../inputs/CheckButtons";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
+import { EmbeddedItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
 import type { ExtraSpend } from "./performAttack";
 import { performAttack } from "./performAttack";
@@ -79,26 +79,6 @@ type AbilityRef = { _id: string | null; name: string; pool: number };
 /** The live item behind an `AbilityRef` */
 const getLiveItem = (actor: Actor | null, ability: AbilityRef) =>
   actor?.items.get(ability._id ?? "") as InvestigatorItem | undefined;
-
-/** An ability's name, as a link to its sheet */
-const AbilityLink = ({
-  actor,
-  ability,
-}: {
-  actor: Actor | null;
-  ability: AbilityRef;
-}) => (
-  <a
-    onClick={() => {
-      const sheet = getLiveItem(actor, ability)?.sheet;
-      if (!sheet) return;
-      assertApplicationV2(sheet);
-      void sheet.render({ force: true });
-    }}
-  >
-    {ability.name}
-  </a>
-);
 
 /** Points spent from another ability (see `ExtraSpend`), as shown */
 type ExtraSpendSnapshot = { ability: AbilityRef; spend: number };
@@ -469,7 +449,11 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
         <GridField
           label={
             ability ? (
-              <AbilityLink actor={weaponActor} ability={ability} />
+              <EmbeddedItemSheetLink
+                actor={weaponActor}
+                id={ability._id}
+                name={ability.name}
+              />
             ) : (
               "Spend"
             )
@@ -487,7 +471,13 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
         {extraSpends.map((extra) => (
           <GridField
             key={extra.ability._id}
-            label={<AbilityLink actor={weaponActor} ability={extra.ability} />}
+            label={
+              <EmbeddedItemSheetLink
+                actor={weaponActor}
+                id={extra.ability._id}
+                name={extra.ability.name}
+              />
+            }
             noLabel
           >
             <CheckButtons

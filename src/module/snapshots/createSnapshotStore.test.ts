@@ -67,6 +67,15 @@ describe("createSnapshotStore", () => {
     expect(store.getSnapshot()).toBe(before);
   });
 
+  it("is up to date while nothing is subscribed", () => {
+    const { live, store } = setUp();
+    const before = store.getSnapshot();
+    expect(store.getSnapshot()).toBe(before);
+    live.a.x = 9;
+    expect(store.getSnapshot().a).toEqual({ x: 9 });
+    expect(store.getSnapshot().b).toBe(before.b);
+  });
+
   it("catches up on changes made before subscribing", () => {
     const { live, store } = setUp();
     live.a.x = 5;

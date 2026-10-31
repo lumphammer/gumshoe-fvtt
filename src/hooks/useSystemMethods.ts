@@ -13,12 +13,12 @@ type Methods<T> = {
  * would make it re-render every time; these call whatever `doc.system` is when
  * they're called.
  */
-export function useSystemMethods<TSystem extends object>(doc: {
-  system: TSystem;
-}): Methods<TSystem> {
+export function useSystemMethods<TDoc extends { system: object }>(
+  doc: TDoc,
+): Methods<TDoc["system"]> {
   return useMemo(() => {
     const cache = new Map<PropertyKey, unknown>();
-    return new Proxy({} as Methods<TSystem>, {
+    return new Proxy({} as Methods<TDoc["system"]>, {
       get: (_target, key) => {
         if (!cache.has(key)) {
           cache.set(key, (...args: unknown[]) =>

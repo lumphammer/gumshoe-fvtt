@@ -1,13 +1,17 @@
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback } from "react";
 
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import * as c from "../../constants";
+import { getRatingCapIn } from "../../module/actors/pcDerived";
+import { isActiveCharacterActor } from "../../module/actors/types";
+import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
 import {
-  assertActiveCharacterActor,
-  isActiveCharacterActor,
-} from "../../module/actors/types";
-import { assertAbilityItem } from "../../module/items/exports";
-import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
-import { settings } from "../../settings/settings";
+  getSpecialitiesOf,
+  isInvestigativeAbilitySnapshot,
+} from "../../module/items/abilitySnapshots";
+import type { AbilityItem } from "../../module/items/exports";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button, ToolbarButton } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -19,79 +23,64 @@ import { Translate } from "../Translate";
 import { AbilityBadges } from "./AbilityBadges";
 import { SpecialityList } from "./SpecialityList";
 
-const settingsUseBoost = settings.useBoost.get;
-const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
+interface AbilityMainBitsProps {
+  /** Only to write through: read from `ability`. */
+  item: AbilityItem;
+  ability: AbilitySnapshot;
+}
 
-export const AbilityMainBits = () => {
-  const { item } = useItemSheetContext();
-  assertAbilityItem(item);
+export const AbilityMainBits = memo(function AbilityMainBits({
+  item,
+  ability,
+}: AbilityMainBitsProps) {
+  const system = ability.system;
+  const methods = useSystemMethods(item);
+  const settings = useSettings((s) => s);
+  const itemActor = item.actor;
+  const fromActor = useActorSnapshot(itemActor, (actor) => ({
+    initiativeAbility: isActiveCharacterActor(itemActor)
+      ? (actor?.system as { initiativeAbility?: string } | undefined)
+          ?.initiativeAbility
+      : undefined,
+    // rating caps come from a PC's adaptations, or Sanity's cap
+    ratingCap:
+      actor?.type === c.pc
+        ? getRatingCapIn(actor, ability.name, settings)
+        : null,
+  }));
 
   const onClickRefresh = useCallback(() => {
-    void item.system.refreshPool();
-  }, [item]);
+    void methods.refreshPool();
+  }, [methods]);
 
-  const useBoost = settingsUseBoost();
+  const isCombatAbility = settings.combatAbilities.includes(ability.name);
 
-  const isCombatAbility = settings.combatAbilities
-    .get()
-    .includes(item.name ?? "");
-
-  const [actorInitiativeAbility, setActorInitiativeAbility] = useState(
-    isActiveCharacterActor(item?.actor) &&
-      item?.actor?.system.initiativeAbility,
-  );
-
-  useEffect(() => {
-    const callback = (actor: Actor) => {
-      if (actor.id === item?.actor?.id) {
-        setActorInitiativeAbility(
-          isActiveCharacterActor(item?.actor) &&
-            item?.actor?.system.initiativeAbility,
-        );
-      }
-    };
-    Hooks.on("updateActor", callback);
-    return () => {
-      Hooks.off("updateActor", callback);
-    };
-  }, [item?.actor]);
-
-  // breaking these out into vars allows the react-hooks eslint rule to
-  // understand what's happening. if the callback has dependencies on
-  // item?.actor it gets all upset.
-  const itemActor = item.actor;
-  const itemName = item.name ?? "";
-
-  const isAbilityUsed = actorInitiativeAbility === item.name;
+  const itemName = ability.name;
+  const isAbilityUsed = fromActor.initiativeAbility === itemName;
   const onClickUseForInitiative = useCallback(() => {
-    assertActiveCharacterActor(itemActor);
-    void itemActor?.update({
+    if (!isActiveCharacterActor(itemActor)) return;
+    void itemActor.update({
       system: {
         initiativeAbility: itemName,
       },
     });
   }, [itemActor, itemName]);
 
-  const useMwStyleAbilities = settingsUseMwStyleAbilities();
-
-  const poolMax = useMwStyleAbilities
+  const poolMax = settings.useMwStyleAbilities
     ? undefined
-    : item.system.allowPoolToExceedRating
-      ? item.system.max
-      : item.system.rating;
+    : system.allowPoolToExceedRating
+      ? system.max
+      : system.rating;
 
   const isQuickShock =
-    isInvestigativeAbilityItem(item) && item.system.isQuickShock;
+    isInvestigativeAbilitySnapshot(ability) && ability.system.isQuickShock;
 
+  const { setRatingAndRefreshPool } = methods;
   const handleQuickShockToggle = useCallback(
     (checked: boolean) => {
-      if (checked) {
-        void item.system.setRatingAndRefreshPool(1);
-      } else {
-        void item.system.setRatingAndRefreshPool(0);
-      }
+      void setRatingAndRefreshPool(checked ? 1 : 0);
     },
-    [item],
+    [setRatingAndRefreshPool],
   );
 
   return (
@@ -105,7 +94,7 @@ export const AbilityMainBits = () => {
       {isQuickShock && (
         <GridField label="Enabled">
           <Toggle
-            checked={item.system.rating > 0}
+            checked={system.rating > 0}
             onChange={handleQuickShockToggle}
           />
         </GridField>
@@ -120,10 +109,10 @@ export const AbilityMainBits = () => {
               }}
             >
               <AsyncNumberInput
-                min={item.system.min}
+                min={system.min}
                 max={poolMax}
-                value={item.system.pool}
-                onChange={item.system.setPool}
+                value={system.pool}
+                onChange={methods.setPool}
                 css={{
                   flex: 1,
                 }}
@@ -143,9 +132,9 @@ export const AbilityMainBits = () => {
           <GridField label="Rating">
             <AsyncNumberInput
               min={0}
-              max={item.system.getRatingCap() ?? undefined}
-              value={item.system.rating}
-              onChange={item.system.setRating}
+              max={fromActor.ratingCap ?? undefined}
+              value={system.rating}
+              onChange={methods.setRating}
             />
             <AbilityBadges
               css={{
@@ -185,17 +174,17 @@ export const AbilityMainBits = () => {
       >
         <RichTextEditor
           name="notes"
-          html={item.system.notes}
-          onSave={item.system.setNotes}
+          html={system.notes}
+          onSave={methods.setNotes}
           css={{
             gridRow: "notes",
           }}
         />
       </div>
-      {item.system.hasSpecialities && (
+      {system.hasSpecialities && (
         <GridFieldStacked
           label={
-            item.system.getSpecialities().length === 1
+            getSpecialitiesOf(system).length === 1
               ? "Speciality"
               : "Specialities"
           }
@@ -210,13 +199,11 @@ export const AbilityMainBits = () => {
           </div>
         </GridFieldStacked>
       )}
-      {useBoost && (
+      {settings.useBoost && (
         <GridField label="Boost?">
-          <Toggle checked={item.system.boost} onChange={item.system.setBoost} />
+          <Toggle checked={system.boost} onChange={methods.setBoost} />
         </GridField>
       )}
     </InputGrid>
   );
-};
-
-AbilityMainBits.displayName = "AbilityMainBits";
+});

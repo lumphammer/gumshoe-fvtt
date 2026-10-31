@@ -1,19 +1,29 @@
-import { useCallback, useContext, useState } from "react";
+import { memo, useCallback, useContext, useState } from "react";
 import { FaHeartCrack } from "react-icons/fa6";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
-import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { isPCActor } from "../../module/actors/pc";
-import { doesSpendBreakBond, getMaxBondSpend } from "../../module/bonds/rules";
-import { assertAbilityItem } from "../../module/items/exports";
-import { isGeneralAbilityItem } from "../../module/items/generalAbility";
-import { areBondsOn, getTraumaTypes } from "../../module/stability/settings";
 import {
-  getTraumaTestDifficulty,
-  traumaTest,
-} from "../../module/stability/traumaTest";
+  getBondPointsOf,
+  getBondsIn,
+  getStabilityAbilityIn,
+  getTraumaTestDifficultyIn,
+} from "../../module/actors/pcDerived";
+import { doesSpendBreakBond, getMaxBondSpend } from "../../module/bonds/rules";
+import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
+import { isGeneralAbilitySnapshot } from "../../module/items/abilitySnapshots";
+import { isBondItem } from "../../module/items/bond";
+import type { AbilityItem } from "../../module/items/exports";
+import {
+  areBondsOn,
+  getTraumaTypes,
+  getTraumaTypesFrom,
+} from "../../module/stability/settings";
+import { traumaTest } from "../../module/stability/traumaTest";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -21,16 +31,25 @@ import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
 import { SpendButtons } from "../inputs/SpendButtons";
-import { ItemSheetLink } from "../ItemSheetLink";
+import { EmbeddedItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
 
 /** the book's losses run from 1 to 8; a little room beyond */
 const potentialLosses = Array.from({ length: 12 }, (_, i) => i + 1);
 
-export const AbilityTest = () => {
-  const { item } = useItemSheetContext();
-  assertAbilityItem(item);
+interface AbilityTestProps {
+  /** Only to write through: read from `ability`. */
+  item: AbilityItem;
+  ability: AbilitySnapshot;
+}
+
+export const AbilityTest = memo(function AbilityTest({
+  item,
+  ability,
+}: AbilityTestProps) {
   const theme = useContext(ThemeContext);
+  const methods = useSystemMethods(item);
+  const settings = useSettings((s) => s);
   const [spend, setSpend] = useState(0);
   // points to spend from each Bond, by id
   const [bondSpends, setBondSpends] = useState<Record<string, number>>({});
@@ -38,38 +57,53 @@ export const AbilityTest = () => {
   // by trauma type id
   const [traumaId, setTraumaId] = useState("");
   const [potentialLoss, setPotentialLoss] = useState(1);
-  // Bonds live on the actor, not this item
-  useRefreshOnActorItemChanges(item.actor);
 
-  const isGeneral = isGeneralAbilityItem(item);
+  const isGeneral = isGeneralAbilitySnapshot(ability);
   const actor = item.actor;
-  const isStability =
-    isGeneral &&
-    isPCActor(actor) &&
-    actor.system.getStabilityAbility()?.id === item.id;
-  // Fall of DELTA GREEN: Bond points can go on Stability tests (p. 120)
-  const bonds =
-    isStability && areBondsOn() && isPCActor(actor)
-      ? // broken ones too, so nobody goes looking for them
-        actor.system.getBonds()
-      : [];
-
   // Fall of DELTA GREEN: Stability tests against trauma (pp. 115–121)
-  const traumaTypes = isStability ? getTraumaTypes() : [];
+  const traumaTypes = getTraumaTypesFrom(settings);
+  // the type may have gone from settings since it was picked
+  const pickedTrauma = traumaTypes.find(({ id }) => id === traumaId);
+
+  // Bonds live on the actor, not this item
+  const fromActor = useActorSnapshot(actor, (snapshot) => {
+    const isStability =
+      isGeneral &&
+      snapshot !== null &&
+      isPCActor(actor) &&
+      getStabilityAbilityIn(snapshot.items, settings)?._id === ability._id;
+    return {
+      isStability,
+      // Fall of DELTA GREEN: Bond points can go on Stability tests (p. 120)
+      bonds:
+        isStability && areBondsOn(settings)
+          ? // broken ones too, so nobody goes looking for them
+            getBondsIn(snapshot.items).map((bond) => ({
+              _id: bond._id,
+              name: bond.name,
+              ...getBondPointsOf(bond),
+            }))
+          : [],
+      traumaDifficulty:
+        isStability && pickedTrauma !== undefined
+          ? getTraumaTestDifficultyIn(snapshot, pickedTrauma, settings)
+          : null,
+    };
+  });
+  const { isStability, bonds } = fromActor;
   const canTestTrauma =
     isStability && isPCActor(actor) && traumaTypes.length > 0;
-  // the type may have gone from settings since it was picked
-  const trauma = traumaTypes.find(({ id }) => id === traumaId);
-  const traumaDifficulty =
-    canTestTrauma && trauma !== undefined
-      ? getTraumaTestDifficulty(actor, trauma)
-      : null;
+  const trauma = canTestTrauma ? pickedTrauma : undefined;
+  const traumaDifficulty = canTestTrauma ? fromActor.traumaDifficulty : null;
 
   const handleClickTest = async () => {
-    const spends = bonds.map((bond) => ({
-      bond,
-      spend: bondSpends[bond.id ?? ""] ?? 0,
-    }));
+    // test with the live Bonds (the test re-checks what they can spare)
+    const spends = bonds.flatMap((bond) => {
+      const live = actor?.items.get(bond._id ?? "");
+      return isBondItem(live)
+        ? [{ bond: live, spend: bondSpends[bond._id ?? ""] ?? 0 }]
+        : [];
+    });
     const breaking = spends.filter(({ bond, spend }) =>
       doesSpendBreakBond(bond.system.points, spend),
     );
@@ -90,27 +124,30 @@ export const AbilityTest = () => {
         return;
       }
     }
-    if (canTestTrauma && trauma !== undefined) {
+    const liveTrauma =
+      trauma && getTraumaTypes().find(({ id }) => id === trauma.id);
+    if (canTestTrauma && liveTrauma !== undefined && isPCActor(actor)) {
       void traumaTest(actor, {
-        trauma,
+        trauma: liveTrauma,
         potentialLoss,
         spend,
         bondSpends: spends,
       });
     } else {
-      void item.system.testAbility(spend, spends);
+      void methods.testAbility(spend, spends);
     }
     setSpend(0);
     setBondSpends({});
   };
 
+  const { confirmSpendAbility } = methods;
   const handleClickSpend = useCallback(() => {
-    void item.system.confirmSpendAbility(spend);
+    void confirmSpendAbility(spend);
     setSpend(0);
-  }, [item, spend]);
+  }, [confirmSpendAbility, spend]);
 
   // alongside Bonds, name the ability being spent (as the weapon sheet does)
-  const spendLabel = bonds.length > 0 ? (item.name ?? undefined) : undefined;
+  const spendLabel = bonds.length > 0 ? ability.name : undefined;
 
   return (
     <InputGrid
@@ -175,17 +212,21 @@ export const AbilityTest = () => {
         <SpendButtons
           value={spend}
           onChange={setSpend}
-          max={item.system.pool}
+          max={ability.system.pool}
         />
       </GridField>
       {bonds.map((bond) => (
         <GridField
-          key={bond.id}
+          key={bond._id}
           label={
             <>
-              <ItemSheetLink item={bond} />
+              <EmbeddedItemSheetLink
+                actor={actor}
+                id={bond._id}
+                name={bond.name}
+              />
               {/* no points: the enabled buttons say how many there are */}
-              {bond.system.isBroken && (
+              {bond.isBroken && (
                 <>
                   {" "}
                   <FaHeartCrack
@@ -200,15 +241,15 @@ export const AbilityTest = () => {
           noLabel
         >
           <SpendButtons
-            value={bondSpends[bond.id ?? ""] ?? 0}
+            value={bondSpends[bond._id ?? ""] ?? 0}
             onChange={(bondSpend) =>
               setBondSpends((current) => ({
                 ...current,
-                [bond.id ?? ""]: bondSpend,
+                [bond._id ?? ""]: bondSpend,
               }))
             }
-            max={getMaxBondSpend(bond.system.points)}
-            disabled={bond.system.isBroken}
+            max={getMaxBondSpend(bond.points)}
+            disabled={bond.isBroken}
           />
         </GridField>
       ))}
@@ -235,4 +276,4 @@ export const AbilityTest = () => {
       </GridFieldStacked>
     </InputGrid>
   );
-};
+});
