@@ -1,6 +1,8 @@
 import type { Page } from "@playwright/test";
 
 import {
+  createActor,
+  createOwnedItem,
   createPlayer,
   expect,
   openSheet,
@@ -143,4 +145,55 @@ test("a player's open equipment sheet becomes editable when they're made its own
 
   await setOwnership(page, itemId, playerId, "OBSERVER");
   await expect(name).toBeDisabled();
+});
+
+test("a PC's Equipment tab follows items changed elsewhere", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    equipmentCategories: { tomes, other: { name: "Other", fields: {} } },
+  });
+  const actorId = await createActor(page, { name: "Collector", type: "pc" });
+  const itemId = await createOwnedItem(page, actorId, {
+    name: "Necronomicon",
+    type: "equipment",
+    system: { categoryId: "tomes", fields: { language: "Latin" } },
+  });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  await sheet.locator(".tab-strip > label", { hasText: "Equipment" }).click();
+  const category = (name: string) =>
+    sheet.locator("h2", { hasText: name }).locator("xpath=../..");
+  await expect(category("Tomes")).toContainText("Necronomicon");
+  await expect(category("Tomes")).toContainText("Latin");
+
+  const update = (data: Record<string, unknown>) =>
+    page.evaluate(
+      async ({ actorId, itemId, data }) => {
+        await game.actors.get(actorId)!.items.get(itemId)!.update(data);
+      },
+      { actorId, itemId, data },
+    );
+
+  // a field and the name, changed elsewhere
+  await update({
+    name: "Pnakotic Manuscripts",
+    system: { fields: { language: "Greek" } },
+  });
+  await expect(category("Tomes")).toContainText("Pnakotic Manuscripts");
+  await expect(category("Tomes")).toContainText("Greek");
+
+  // moved to another category, then to one that doesn't exist
+  await update({ system: { categoryId: "other" } });
+  await expect(category("Other")).toContainText("Pnakotic Manuscripts");
+  await expect(category("Tomes")).not.toContainText("Pnakotic Manuscripts");
+  await update({ system: { categoryId: "gone" } });
+  await expect(category("Uncategorized")).toContainText("Pnakotic Manuscripts");
+
+  // added elsewhere
+  await createOwnedItem(page, actorId, {
+    name: "Lantern",
+    type: "equipment",
+    system: { categoryId: "other" },
+  });
+  await expect(category("Other")).toContainText("Lantern");
 });

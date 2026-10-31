@@ -1,27 +1,45 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 
+import * as c from "../../../constants";
 import { getTranslated } from "../../../functions/getTranslated";
+import { sortEntitiesByName } from "../../../functions/utilities";
+import { useActorSnapshot } from "../../../hooks/useActorSnapshot";
+import { useSettings } from "../../../hooks/useSettings";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { assertPCActor } from "../../../module/actors/pc";
 import type { EquipmentItem } from "../../../module/items/equipment";
-import { isEquipmentItem } from "../../../module/items/equipment";
-import { settings } from "../../../settings/settings";
 import { EquipmentCategory } from "./EquipmentCategory";
 
-export const EquipmentArea = () => {
+// kept stable, so the categories can stay memoised
+const noIds: string[] = [];
+const noFields = {};
+
+/**
+ * The character's equipment, by category. Reads the actor through a snapshot,
+ * selecting only which items go in which category: each row reads its own
+ * item.
+ */
+export const EquipmentArea = memo(function EquipmentArea() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const items = actor.system.getEquipment();
-  const categories = settings.equipmentCategories.get();
+  const categories = useSettings((s) => s.equipmentCategories);
+  // item ids by category id, sorted by name ("" for those in no category)
+  const idsByCategory = useActorSnapshot(actor, (snapshot) => {
+    const result: Record<string, string[]> = {};
+    const equipment = sortEntitiesByName(
+      (snapshot?.items ?? []).filter((item) => item.type === c.equipment),
+    );
+    for (const item of equipment) {
+      const categoryId = (item.system as { categoryId: string }).categoryId;
+      const key = categoryId in categories ? categoryId : "";
+      (result[key] ??= []).push(item._id ?? "");
+    }
+    return result;
+  });
   // the item being dragged, if it's one of these, so the other categories
   // can take it
   const [draggedItem, setDraggedItem] = useState<EquipmentItem | null>(null);
-
-  const uncategorizedItems = items.filter(
-    (item) =>
-      isEquipmentItem(item) &&
-      Object.keys(categories).indexOf(item.system.categoryId) === -1,
-  );
+  const uncategorizedIds = idsByCategory[""] ?? noIds;
 
   return (
     <div>
@@ -30,10 +48,7 @@ export const EquipmentArea = () => {
           <EquipmentCategory
             actor={actor}
             categoryId={categoryId}
-            items={items.filter(
-              (item) =>
-                isEquipmentItem(item) && item.system.categoryId === categoryId,
-            )}
+            ids={idsByCategory[categoryId] ?? noIds}
             name={category.name}
             key={categoryId}
             fields={category.fields}
@@ -42,17 +57,17 @@ export const EquipmentArea = () => {
           />
         );
       })}
-      {uncategorizedItems.length > 0 && (
+      {uncategorizedIds.length > 0 && (
         <EquipmentCategory
           actor={actor}
           categoryId={""}
-          items={uncategorizedItems}
+          ids={uncategorizedIds}
           name={getTranslated("Uncategorized")}
-          fields={{}}
+          fields={noFields}
           draggedItem={draggedItem}
           setDraggedItem={setDraggedItem}
         />
       )}
     </div>
   );
-};
+});
