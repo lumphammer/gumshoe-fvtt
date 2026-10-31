@@ -288,6 +288,9 @@ async function openFixturePC(page: Page) {
     )!;
     const ops = globalThis.renderBench.ops;
     ops["ability pool"] = (i) => ability.update({ system: { pool: i % 3 } });
+    const equipment = actor.items.find((item) => item.type === "equipment");
+    ops["equipment name"] = (i) =>
+      equipment ? equipment.update({ name: `Kit ${i}` }) : Promise.resolve();
     ops["actor health"] = (i) =>
       actor.update({ system: { resources: { health: { value: i % 10 } } } });
     return actor.id;
@@ -321,6 +324,12 @@ test("PC sheet", async ({ page }) => {
     page,
     "PC, Equipment tab: ability pool",
     "ability pool",
+    selector,
+  );
+  await record(
+    page,
+    "PC, Equipment tab: an item's name",
+    "equipment name",
     selector,
   );
 });

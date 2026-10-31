@@ -1,28 +1,42 @@
-import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
-import React, { useCallback, useContext, useState } from "react";
+import React, { memo, useCallback, useContext, useState } from "react";
 
 import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
-import type { EquipmentItem } from "../../../module/items/equipment";
+import { useItemSelector } from "../../../hooks/useItemSnapshot";
+import type {
+  EquipmentCategoriesSnapshot,
+  EquipmentItem,
+  EquipmentSystemData,
+} from "../../../module/items/equipment";
+import type { ItemSnapshot } from "../../../module/snapshots/documentStores";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { ItemNameWithIcon } from "../ItemNameWithIcon";
 import { CheckOrCross } from "./CheckOrCross";
 
 interface EquipmentItemRowProps {
+  /** The live item: the row reads it through a snapshot */
   item: EquipmentItem;
-  onDragStart: (e: React.DragEvent<HTMLElement>) => void;
+  onDragStart: (e: React.DragEvent<HTMLElement>, item: EquipmentItem) => void;
   onDragEnd: () => void;
   gridRow: number;
-  fields: Record<string, EquipmentFieldMetadata>;
+  fields: EquipmentCategoriesSnapshot[string]["fields"];
 }
 
-export const EquipmentItemRow = ({
+export const EquipmentItemRow = memo(function EquipmentItemRow({
   item,
   onDragStart,
   onDragEnd,
   gridRow,
   fields,
-}: EquipmentItemRowProps) => {
+}: EquipmentItemRowProps) {
+  const row = useItemSelector(
+    item,
+    (snapshot: ItemSnapshot<EquipmentSystemData>) => ({
+      name: snapshot.name,
+      img: snapshot.img,
+      fields: snapshot.system.fields,
+    }),
+  );
   const theme = useContext(ThemeContext);
   const [hover, setHover] = useState(false);
   const handleMouseOver = useCallback((e: React.MouseEvent<HTMLElement>) => {
@@ -32,8 +46,11 @@ export const EquipmentItemRow = ({
     setHover(false);
   }, []);
 
-  const sheet = item.sheet;
-  assertApplicationV2(sheet);
+  const openSheet = () => {
+    const sheet = item.sheet;
+    assertApplicationV2(sheet);
+    void sheet.render({ force: true });
+  };
 
   return (
     <>
@@ -59,15 +76,15 @@ export const EquipmentItemRow = ({
           // so a long name is cut off, rather than widening the table
           minWidth: 0,
         }}
-        onClick={() => sheet.render({ force: true })}
+        onClick={openSheet}
         data-item-id={item.id}
-        onDragStart={onDragStart}
+        onDragStart={(e) => onDragStart(e, item)}
         onDragEnd={onDragEnd}
         draggable="true"
         onMouseOver={handleMouseOver}
         onMouseOut={handleMouseOut}
       >
-        <ItemNameWithIcon item={item} />
+        <ItemNameWithIcon item={row} />
       </a>
       {Object.entries(fields).map(([fieldId, field], j) => {
         return (
@@ -80,12 +97,12 @@ export const EquipmentItemRow = ({
             }}
             onMouseOver={handleMouseOver}
             onMouseOut={handleMouseOut}
-            onClick={() => sheet.render({ force: true })}
+            onClick={openSheet}
           >
             {field.type === "checkbox" ? (
-              <CheckOrCross checked={!!item.system.fields?.[fieldId]} />
+              <CheckOrCross checked={!!row.fields?.[fieldId]} />
             ) : (
-              <span>{item.system.fields?.[fieldId]}</span>
+              <span>{row.fields?.[fieldId]}</span>
             )}
           </a>
         );
@@ -101,6 +118,6 @@ export const EquipmentItemRow = ({
       />
     </>
   );
-};
+});
 
 EquipmentItemRow.displayName = "EquipmentItemRow";

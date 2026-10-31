@@ -1,11 +1,13 @@
-import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import type React from "react";
-import { useContext, useState } from "react";
+import { memo, useCallback, useContext, useState } from "react";
 
-import { sortEntitiesByName } from "../../../functions/utilities";
+import { useSystemMethods } from "../../../hooks/useSystemMethods";
 import type { PCActor } from "../../../module/actors/pc";
-import type { EquipmentItem } from "../../../module/items/equipment";
+import type {
+  EquipmentCategoriesSnapshot,
+  EquipmentItem,
+} from "../../../module/items/equipment";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
@@ -13,36 +15,44 @@ import { EquipmentItemRow } from "./EquipmentItemRow";
 
 interface EquipmentCategoryProps {
   categoryId: string;
-  items: EquipmentItem[];
+  /** The items' ids, in order: each row reads its own item */
+  ids: readonly string[];
   name: string;
   actor: PCActor;
-  fields: Record<string, EquipmentFieldMetadata>;
+  fields: EquipmentCategoriesSnapshot[string]["fields"];
   draggedItem: EquipmentItem | null;
   setDraggedItem: (item: EquipmentItem | null) => void;
 }
 
-export const EquipmentCategory = ({
+export const EquipmentCategory = memo(function EquipmentCategory({
   categoryId,
-  items,
+  ids,
   name,
   actor,
   fields,
   draggedItem,
   setDraggedItem,
-}: EquipmentCategoryProps) => {
+}: EquipmentCategoryProps) {
   const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
+  const { createEquipment } = useSystemMethods(actor);
+  // the live items, only to pass to the rows
+  const items = ids.flatMap((id) => {
+    const item = actor.items.get(id) as EquipmentItem | undefined;
+    return item ? [item] : [];
+  });
 
-  const onDragStart = (
-    e: React.DragEvent<HTMLElement>,
-    item: EquipmentItem,
-  ) => {
-    // Foundry's drag data, so it can still be dropped on other sheets etc.
-    if (app !== null) {
-      (app as any)._onDragStart(e);
-    }
-    setDraggedItem(item);
-  };
+  const onDragStart = useCallback(
+    (e: React.DragEvent<HTMLElement>, item: EquipmentItem) => {
+      // Foundry's drag data, so it can still be dropped on other sheets etc.
+      if (app !== null) {
+        (app as any)._onDragStart(e);
+      }
+      setDraggedItem(item);
+    },
+    [app, setDraggedItem],
+  );
+  const onDragEnd = useCallback(() => setDraggedItem(null), [setDraggedItem]);
 
   // another category's item can be dropped here (but not on Uncategorized)
   const canDrop =
@@ -118,7 +128,7 @@ export const EquipmentCategory = ({
               flexBasis: "max-content",
             }}
             onClick={async () => {
-              await actor.system.createEquipment(categoryId);
+              await createEquipment(categoryId);
             }}
           >
             <i className="fa fa-plus" />
@@ -160,12 +170,12 @@ export const EquipmentCategory = ({
       )}
 
       {/* Items */}
-      {sortEntitiesByName(items).map((item, i) => (
+      {items.map((item, i) => (
         <EquipmentItemRow
           item={item}
           key={item.id}
-          onDragStart={(e) => onDragStart(e, item)}
-          onDragEnd={() => setDraggedItem(null)}
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
           gridRow={i + 4}
           fields={fields}
         />
@@ -181,6 +191,6 @@ export const EquipmentCategory = ({
       />
     </div>
   );
-};
+});
 
 EquipmentCategory.displayName = "EquipmentCategory";
