@@ -9,3 +9,4 @@ tsconfig.vitest-temp.json
 e2e/.auth
 test-results
 playwright-report
+.foundry-common

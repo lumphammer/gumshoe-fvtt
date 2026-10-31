@@ -18,6 +18,7 @@
     "e2e": "playwright test",
     "e2e:foundry": "./scripts/e2e-foundry.sh",
     "test": "vitest",
+    "bench": "vitest bench --run",
     "format:check": "oxfmt --check src",
     "format:fix": "oxfmt --write src",
     "lint:check": "oxlint",
