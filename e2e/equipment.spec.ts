@@ -44,7 +44,7 @@ async function setOwnership(
   page: Page,
   itemId: string,
   userId: string,
-  level: "LIMITED" | "OBSERVER",
+  level: "LIMITED" | "OBSERVER" | "OWNER",
 ) {
   await page.evaluate(
     async ({ itemId, userId, level }) => {
@@ -120,4 +120,27 @@ test("a player's open equipment sheet hides fields when they drop to Limited", a
   await setOwnership(page, itemId, playerId, "LIMITED");
   await expect(sheet).not.toContainText("Mythos Bonus");
   await expect(sheet.getByLabel("Language")).toHaveValue("French");
+});
+
+test("a player's open equipment sheet becomes editable when they're made its owner", async ({
+  page,
+  joinAs,
+}) => {
+  await setSettings(page, { equipmentCategories: { tomes } });
+  const playerId = await createPlayer(page, "Promoted");
+  const itemId = await createTome(page);
+  await setOwnership(page, itemId, playerId, "OBSERVER");
+
+  const player = await joinAs("Promoted");
+  const sheet = await openSheet(player, `Item.${itemId}`);
+  const name = sheet.getByLabel("Name", { exact: true });
+  await expect(name).toBeDisabled();
+  await expect(sheet.getByLabel("Language")).toBeDisabled();
+
+  await setOwnership(page, itemId, playerId, "OWNER");
+  await expect(name).toBeEnabled();
+  await expect(sheet.getByLabel("Language")).toBeEnabled();
+
+  await setOwnership(page, itemId, playerId, "OBSERVER");
+  await expect(name).toBeDisabled();
 });

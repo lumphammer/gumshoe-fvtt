@@ -3,8 +3,10 @@ import type { Page } from "@playwright/test";
 import {
   createActor,
   createOwnedItem,
+  createPlayer,
   expect,
   forceDice,
+  giveOwnership,
   openSheet,
   setSettings,
   test,
@@ -132,4 +134,28 @@ test("an open ability sheet follows the Boost setting", async ({ page }) => {
 
   await setSettings(page, { useBoost: true });
   await expect(sheet.getByText("Boost?")).toBeVisible();
+});
+
+test.describe("with the canvas", () => {
+  // an actor's ownership changing makes Foundry cycle the player's tokens,
+  // which throws (before any hooks) when there's no canvas
+  test.use({ canvas: true });
+
+  test("a player's open ability sheet becomes editable when they're made the actor's owner", async ({
+    page,
+    joinAs,
+  }) => {
+    const playerId = await createPlayer(page, "Heir");
+    const actorId = await createActor(page, { name: "Inherited", type: "pc" });
+    await giveOwnership(page, actorId, playerId, "OBSERVER");
+    const id = await getAbilityId(page, actorId, "Athletics");
+
+    const player = await joinAs("Heir");
+    const sheet = await openSheet(player, `Actor.${actorId}.Item.${id}`);
+    await expect(sheet.getByLabel("Pool")).toBeDisabled();
+
+    // the item's own ownership doesn't change: it has its actor's
+    await giveOwnership(page, actorId, playerId, "OWNER");
+    await expect(sheet.getByLabel("Pool")).toBeEnabled();
+  });
 });

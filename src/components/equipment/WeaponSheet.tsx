@@ -1,4 +1,6 @@
 import { memo } from "react";
+import { IsEditableContext } from "../../hooks/useIsEditable";
+import { useSheetPermissions } from "../../hooks/useSheetPermissions";
 
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
@@ -22,16 +24,19 @@ import { WeaponMain } from "./WeaponMain";
 export const WeaponSheet = memo(function WeaponSheet() {
   const { item } = useItemSheetContext();
   assertWeaponItem(item);
+  const { isEditable } = useSheetPermissions(item);
   const weapon = useItemSnapshot<WeaponSystemData>(item);
 
   return (
-    <ItemSheetFramework supertitle={<Translate>Weapon</Translate>}>
-      <ModeSelect mode={ItemSheetMode.Main}>
-        <WeaponMain item={item} notes={weapon.system.notes} />
-      </ModeSelect>
-      <ModeSelect mode={ItemSheetMode.Config}>
-        <WeaponConfig item={item} weapon={weapon} />
-      </ModeSelect>
-    </ItemSheetFramework>
+    <IsEditableContext.Provider value={isEditable}>
+      <ItemSheetFramework supertitle={<Translate>Weapon</Translate>}>
+        <ModeSelect mode={ItemSheetMode.Main}>
+          <WeaponMain item={item} notes={weapon.system.notes} />
+        </ModeSelect>
+        <ModeSelect mode={ItemSheetMode.Config}>
+          <WeaponConfig item={item} weapon={weapon} />
+        </ModeSelect>
+      </ItemSheetFramework>
+    </IsEditableContext.Provider>
   );
 });

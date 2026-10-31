@@ -1,4 +1,6 @@
 import { memo } from "react";
+import { IsEditableContext } from "../../hooks/useIsEditable";
+import { useSheetPermissions } from "../../hooks/useSheetPermissions";
 
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
@@ -33,6 +35,7 @@ import { PushPoolButton } from "./PushPoolButton";
 export const AbilitySheet = memo(function AbilitySheet() {
   const { item } = useItemSheetContext();
   assertAbilityItem(item);
+  const { isEditable } = useSheetPermissions(item);
   const ability = useItemSnapshot<AbilitySystemData>(item) as AbilitySnapshot;
   const useMwStyleAbilities = useSettings((s) => s.useMwStyleAbilities);
   const actorName = useActorSnapshot(item.actor, (actor) => actor?.name);
@@ -40,42 +43,44 @@ export const AbilitySheet = memo(function AbilitySheet() {
   const isGeneral = isGeneralAbilitySnapshot(ability);
 
   return (
-    <ItemSheetFramework
-      supertitle={
-        <>
-          <Translate>
-            {isGeneral ? "General ability" : "Investigative ability"}
-          </Translate>
-          {actorName !== undefined && <span> ({actorName})</span>}
-        </>
-      }
-    >
-      <ModeSelect mode={ItemSheetMode.Config}>
-        <AbilityConfig item={item} ability={ability} />
-      </ModeSelect>
-      <ModeSelect mode={ItemSheetMode.Main}>
-        <>
-          {/* Spending/testing area: Moribund World's test and spend box, a
+    <IsEditableContext.Provider value={isEditable}>
+      <ItemSheetFramework
+        supertitle={
+          <>
+            <Translate>
+              {isGeneral ? "General ability" : "Investigative ability"}
+            </Translate>
+            {actorName !== undefined && <span> ({actorName})</span>}
+          </>
+        }
+      >
+        <ModeSelect mode={ItemSheetMode.Config}>
+          <AbilityConfig item={item} ability={ability} />
+        </ModeSelect>
+        <ModeSelect mode={ItemSheetMode.Main}>
+          <>
+            {/* Spending/testing area: Moribund World's test and spend box, a
               push pool's PUSH button, or a spend/test box */}
-          {item.isOwned && useMwStyleAbilities && isGeneral ? (
-            <AbilityTestMW item={item} pool={ability.system.pool} />
-          ) : isPushOrQuickShock(ability) ? (
-            <PushPoolButton item={item} />
-          ) : (
-            <AbilityTest item={item} ability={ability} />
-          )}
+            {item.isOwned && useMwStyleAbilities && isGeneral ? (
+              <AbilityTestMW item={item} pool={ability.system.pool} />
+            ) : isPushOrQuickShock(ability) ? (
+              <PushPoolButton item={item} />
+            ) : (
+              <AbilityTest item={item} ability={ability} />
+            )}
 
-          {/* Other bits */}
-          <AbilityMainBits item={item} ability={ability} />
-          {useMwStyleAbilities && isGeneral && (
-            <AbilityMwExtraFields
-              item={item}
-              trumps={ability.system.mwTrumps}
-              trumpedBy={ability.system.mwTrumpedBy}
-            />
-          )}
-        </>
-      </ModeSelect>
-    </ItemSheetFramework>
+            {/* Other bits */}
+            <AbilityMainBits item={item} ability={ability} />
+            {useMwStyleAbilities && isGeneral && (
+              <AbilityMwExtraFields
+                item={item}
+                trumps={ability.system.mwTrumps}
+                trumpedBy={ability.system.mwTrumpedBy}
+              />
+            )}
+          </>
+        </ModeSelect>
+      </ItemSheetFramework>
+    </IsEditableContext.Provider>
   );
 });
