@@ -2,6 +2,7 @@ import type { ChangeEvent } from "react";
 import { memo, useCallback } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { DeepReadonly } from "../../module/snapshots/createSnapshotStore";
 import type {
   EquipmentCategoriesSnapshot,
@@ -35,14 +36,15 @@ export const EquipmentMain = memo(function EquipmentMain({
   name,
   onChangeName,
 }: EquipmentMainProps) {
+  const { setCategoryId, setNotes } = useSystemMethods(item);
   const categoryMetadata = categories[system.categoryId];
   const isRealCategory = categoryMetadata !== undefined;
 
   const onChangeCategory = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
-      void item.system.setCategoryId(e.currentTarget.value);
+      void setCategoryId(e.currentTarget.value);
     },
-    [item],
+    [setCategoryId],
   );
 
   const selectedCat = isRealCategory ? system.categoryId : "";
@@ -111,11 +113,7 @@ export const EquipmentMain = memo(function EquipmentMain({
           gridColumn: "1/-1",
         }}
       >
-        <RichTextEditor
-          name="notes"
-          html={system.notes}
-          onSave={item.system.setNotes}
-        />
+        <RichTextEditor name="notes" html={system.notes} onSave={setNotes} />
       </div>
     </InputGrid>
   );

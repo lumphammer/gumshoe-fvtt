@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
+import type { OnChange } from "./createSnapshotStore";
 import { createSnapshotStore } from "./createSnapshotStore";
 
 /** Some mutable data, and a way to say it changed. */
@@ -84,5 +85,37 @@ describe("createSnapshotStore", () => {
     live.a.x = 7;
     change();
     expect(listener).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("createSnapshotStore updates", () => {
+  it("applies an update to the current snapshot, sharing the rest", () => {
+    const live = {
+      a: { x: 1 },
+      list: [
+        { _id: "p", v: 1 },
+        { _id: "q", v: 2 },
+      ],
+    };
+    let onChange: OnChange<typeof live> = () => undefined;
+    const store = createSnapshotStore(
+      () => structuredClone(live),
+      (fn) => {
+        onChange = fn;
+        return () => undefined;
+      },
+    );
+    const listener = vi.fn();
+    store.subscribe(listener);
+    const before = store.getSnapshot();
+    onChange((previous) => ({
+      ...previous,
+      list: [previous.list[0], { _id: "q", v: 3 }],
+    }));
+    const after = store.getSnapshot();
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(after.a).toBe(before.a);
+    expect(after.list[0]).toBe(before.list[0]);
+    expect(after.list[1]).toEqual({ _id: "q", v: 3 });
   });
 });

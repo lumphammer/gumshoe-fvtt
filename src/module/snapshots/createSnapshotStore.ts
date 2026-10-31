@@ -15,6 +15,13 @@ export interface SnapshotStore<T> {
 }
 
 /**
+ * Called by a store's `watch` function when the data might have changed: with
+ * no argument to re-read all of it, or with a function that makes the next
+ * data from the current snapshot (e.g. replacing just the item that changed).
+ */
+export type OnChange<T> = (update?: (previous: DeepReadonly<T>) => T) => void;
+
+/**
  * A store for `useSyncExternalStore` that holds an immutable snapshot of some
  * mutable data, structurally shared from one change to the next, so anything
  * that didn't change keeps its identity and memoised components can skip it.
@@ -27,17 +34,17 @@ export interface SnapshotStore<T> {
  */
 export function createSnapshotStore<T>(
   read: () => T,
-  watch: (onChange: () => void) => () => void,
+  watch: (onChange: OnChange<T>) => () => void,
 ): SnapshotStore<T> {
   let snapshot = read() as DeepReadonly<T>;
   const listeners = new Set<() => void>();
   let unwatch: (() => void) | null = null;
 
-  /** Re-read, and tell the listeners if anything changed. */
-  const refresh = (notify: boolean) => {
-    const next = replaceEqualDeep(snapshot, read() as DeepReadonly<T>);
-    if (next === snapshot) return;
-    snapshot = next;
+  /** Move to the next data, and tell the listeners if anything changed. */
+  const change = (next: T, notify: boolean) => {
+    const shared = replaceEqualDeep(snapshot, next as DeepReadonly<T>);
+    if (shared === snapshot) return;
+    snapshot = shared;
     if (notify) listeners.forEach((listener) => listener());
   };
 
@@ -47,8 +54,10 @@ export function createSnapshotStore<T>(
       if (unwatch === null) {
         // catch up on anything that changed while nothing was watching (React
         // checks the snapshot again after subscribing)
-        refresh(false);
-        unwatch = watch(() => refresh(true));
+        change(read(), false);
+        unwatch = watch((update) => {
+          change(update ? update(snapshot) : read(), true);
+        });
       }
       return () => {
         listeners.delete(listener);
@@ -61,3 +70,9 @@ export function createSnapshotStore<T>(
     getSnapshot: () => snapshot,
   };
 }
+
+/** A store of `null`, for when there's no document to snapshot. */
+export const nullStore: SnapshotStore<null> = createSnapshotStore(
+  () => null,
+  () => () => undefined,
+);

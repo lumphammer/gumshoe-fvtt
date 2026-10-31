@@ -1,52 +1,36 @@
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo } from "react";
 
-import type { DeepReadonly } from "../module/snapshots/createSnapshotStore";
-import { createSnapshotStore } from "../module/snapshots/createSnapshotStore";
+import type { ItemSnapshot } from "../module/snapshots/documentStores";
+import { createItemStore } from "../module/snapshots/documentStores";
+import { useSnapshot, useSnapshotSelector } from "./useSnapshot";
 
-/**
- * An immutable snapshot of an item's prepared data (`toObject(false)`), with
- * its system data typed as `TSystem`.
- */
-export type ItemSnapshot<TSystem> = DeepReadonly<ItemData<TSystem>>;
-
-type ItemData<TSystem> = Omit<Item.Source, "system"> & { system: TSystem };
+export type { ItemSnapshot };
 
 /**
- * An immutable snapshot of an item, which changes (sharing whatever didn't
- * change) whenever the item or its effects do. Memoised components given parts
- * of it re-render only when those parts change.
+ * An immutable snapshot of an item's prepared data, with its system data typed
+ * as `TSystem`. It changes (sharing whatever didn't change) whenever the item
+ * or its effects do, so memoised components given parts of it re-render only
+ * when those parts change.
  *
- * Write through the item itself (e.g. `item.update`), not the snapshot.
+ * Write through the item itself (e.g. `item.update`, or `useSystemMethods`),
+ * not the snapshot.
  */
 export function useItemSnapshot<TSystem>(
   item: Item.Implementation,
 ): ItemSnapshot<TSystem> {
-  const store = useMemo(
-    () =>
-      createSnapshotStore(
-        () => item.toObject(false) as unknown as ItemData<TSystem>,
-        (onChange) => {
-          const onItem = (doc: Item.Implementation) => {
-            if (doc === item) onChange();
-          };
-          const onEffect = (effect: ActiveEffect.Implementation) => {
-            if (effect.parent === item) onChange();
-          };
-          const ids = {
-            updateItem: Hooks.on("updateItem", onItem),
-            createActiveEffect: Hooks.on("createActiveEffect", onEffect),
-            updateActiveEffect: Hooks.on("updateActiveEffect", onEffect),
-            deleteActiveEffect: Hooks.on("deleteActiveEffect", onEffect),
-          };
-          return () => {
-            Hooks.off("updateItem", ids.updateItem);
-            Hooks.off("createActiveEffect", ids.createActiveEffect);
-            Hooks.off("updateActiveEffect", ids.updateActiveEffect);
-            Hooks.off("deleteActiveEffect", ids.deleteActiveEffect);
-          };
-        },
-      ),
-    [item],
-  );
-  return useSyncExternalStore(store.subscribe, store.getSnapshot);
+  const store = useMemo(() => createItemStore<TSystem>(item), [item]);
+  return useSnapshot(store);
+}
+
+/**
+ * Something from an immutable snapshot of an item. Like `useItemSnapshot`,
+ * but re-renders only when the selector's result changes (see
+ * `useSnapshotSelector`).
+ */
+export function useItemSelector<R, TSystem = unknown>(
+  item: Item.Implementation,
+  selector: (item: ItemSnapshot<TSystem>) => R,
+): R {
+  const store = useMemo(() => createItemStore<TSystem>(item), [item]);
+  return useSnapshotSelector(store, selector);
 }

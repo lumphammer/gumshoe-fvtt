@@ -1,11 +1,12 @@
+import { memo } from "react";
+
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useIsDocumentLimited } from "../../hooks/useIsDocumentLimited";
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
-import { useSettingSnapshot } from "../../hooks/useSettingSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import type { EquipmentSystemData } from "../../module/items/equipment";
 import { assertEquipmentItem } from "../../module/items/equipment";
-import { settings } from "../../settings/settings";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
 import { ItemSheetMode } from "../ItemSheetFramework/types";
@@ -17,13 +18,16 @@ import { EquipmentMain } from "./EquipmentMain";
  * Everything below here reads the item and settings through snapshots (passed
  * down as props), so its memoised parts only re-render when what they show
  * changes. The item itself is passed down only to write through.
+ *
+ * Memoised itself (it has no props), so Foundry re-rendering the sheet stops
+ * here: the snapshots have already brought in any change.
  */
-export const EquipmentSheet = () => {
+export const EquipmentSheet = memo(function EquipmentSheet() {
   const { item } = useItemSheetContext();
 
   assertEquipmentItem(item);
   const snapshot = useItemSnapshot<EquipmentSystemData>(item);
-  const categories = useSettingSnapshot(settings.equipmentCategories);
+  const categories = useSettings((s) => s.equipmentCategories);
   const isLimited = useIsDocumentLimited();
   const name = useAsyncUpdate(snapshot.name, item.setName);
 
@@ -48,4 +52,4 @@ export const EquipmentSheet = () => {
       </ModeSelect>
     </ItemSheetFramework>
   );
-};
+});
