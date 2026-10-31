@@ -11,8 +11,8 @@ type OtherableDropDownProps = {
   value: string;
   onChange: (newValue: string) => void;
   className?: string;
-  pickerValues: string[];
-  validValues?: string[];
+  pickerValues: readonly string[];
+  validValues?: readonly string[];
 };
 
 export const OtherableDropDown = ({

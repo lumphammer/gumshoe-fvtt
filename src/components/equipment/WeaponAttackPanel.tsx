@@ -1,21 +1,21 @@
-import {
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { memo, type ReactNode, useCallback, useContext, useState } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated, getTranslatedOr } from "../../functions/getTranslated";
-import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import type { ItemSnapshot } from "../../hooks/useItemSnapshot";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
+import { useSettings } from "../../hooks/useSettings";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { useUserTargets } from "../../hooks/useUserTargets";
 import { isPCActor } from "../../module/actors/pc";
 import { isActiveCharacterActor } from "../../module/actors/types";
-import { isAbilityItem } from "../../module/items/exports";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import { findGeneralAbility } from "../../module/items/findGeneralAbility";
-import type { WeaponItem } from "../../module/items/weapon";
+import {
+  findGeneralAbilityIn,
+  getPoolOf,
+} from "../../module/items/findGeneralAbility";
+import type { WeaponItem, WeaponSystemData } from "../../module/items/weapon";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button, ToolbarButton } from "../inputs/Button";
@@ -34,7 +34,6 @@ import {
   getWastedExtraSpend,
   getSpendAfterRange,
 } from "../../module/attacks/rules";
-import { settings } from "../../settings/settings";
 import { hasAmmoFor } from "./consumeWeaponAmmo";
 import { Hint } from "../inputs/Hint";
 
@@ -74,19 +73,35 @@ function getTargetsLabel(
       });
 }
 
-const openSheet = (document: InvestigatorItem) => {
-  const sheet = document.sheet;
-  assertApplicationV2(sheet);
-  void sheet.render({ force: true });
-};
+/** What the panel shows of an ability: picked out of the actor's snapshot */
+type AbilityRef = { _id: string | null; name: string; pool: number };
+
+/** The live item behind an `AbilityRef` */
+const getLiveItem = (actor: Actor | null, ability: AbilityRef) =>
+  actor?.items.get(ability._id ?? "") as InvestigatorItem | undefined;
 
 /** An ability's name, as a link to its sheet */
-const AbilityLink = ({ ability }: { ability: InvestigatorItem }) => (
-  <a onClick={() => openSheet(ability)}>{ability.name}</a>
+const AbilityLink = ({
+  actor,
+  ability,
+}: {
+  actor: Actor | null;
+  ability: AbilityRef;
+}) => (
+  <a
+    onClick={() => {
+      const sheet = getLiveItem(actor, ability)?.sheet;
+      if (!sheet) return;
+      assertApplicationV2(sheet);
+      void sheet.render({ force: true });
+    }}
+  >
+    {ability.name}
+  </a>
 );
 
-const getPool = (ability: InvestigatorItem | undefined) =>
-  ability && isAbilityItem(ability) ? ability.system.pool : 0;
+/** Points spent from another ability (see `ExtraSpend`), as shown */
+type ExtraSpendSnapshot = { ability: AbilityRef; spend: number };
 
 const getSpendOptions = (available: number) =>
   defaultSpendOptions.map((option) => ({
@@ -102,8 +117,16 @@ type WeaponAttackPanelProps = {
  * Everything for attacking with a weapon: fire mode, spends, range, the
  * attack button, ammo and initiative. Shown on the weapon's sheet and for the
  * ready weapon on a character's Combat tab.
+ *
+ * It reads the weapon, its actor and the settings through snapshots of its
+ * own, so it works the same inside a converted sheet or not, and re-renders
+ * only when something it shows changes (not for every item on the actor).
+ * `weapon` is only used to write through, and to find live documents when
+ * attacking.
  */
-export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
+export const WeaponAttackPanel = memo(function WeaponAttackPanel({
+  weapon: item,
+}: WeaponAttackPanelProps) {
   const [spend, setSpend] = useState(0);
   const [bonusPool, setBonusPool] = useState(0);
   const [fireMode, setFireMode] = useState<FireMode>("single");
@@ -114,45 +137,100 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
   >({});
   const theme = useContext(ThemeContext);
 
-  const abilityName = item.system.ability;
+  // everything but the notes, which the panel doesn't show
+  const weapon = useItemSelector(
+    item,
+    (snapshot: ItemSnapshot<WeaponSystemData>) => {
+      const { notes: _notes, ...system } = snapshot.system;
+      return { name: snapshot.name, system };
+    },
+  );
+  const system = weapon.system;
+  const { clearJam, setAmmo, reload } = useSystemMethods(item);
+  const settings = useSettings((s) => ({
+    useExtendedRange: s.useExtendedRange,
+    useDamageApplication: s.useDamageApplication,
+    useLethalityAndAutofire: s.useLethalityAndAutofire,
+    useShotDryAndJams: s.useShotDryAndJams,
+    fullAutoSpendAbilities: s.fullAutoSpendAbilities,
+  }));
+  const abilityName = system.ability;
 
-  // pools can be spent elsewhere (e.g. the ability's own sheet)
-  useRefreshOnActorItemChanges(item.actor);
+  const fireModes = getAvailableFireModes({
+    weaponFireModes: system.fireModes,
+    useAutofire:
+      settings.useDamageApplication && settings.useLethalityAndAutofire,
+  });
+  const effectiveFireMode: FireMode = fireModes.includes(fireMode)
+    ? fireMode
+    : fireModes[0];
+  const isFullAuto = effectiveFireMode === "fullAuto";
+  const minimumSpend = getMinimumSpend({
+    fireMode: effectiveFireMode,
+    weaponFireModes: system.fireModes,
+  });
 
-  const ability = findGeneralAbility(item.actor, abilityName);
-  const useExtendedRange = settings.useExtendedRange.get();
+  // full-auto can also spend other abilities (Athletics and Stability in
+  // FoDG), which count towards the minimum but don't add to the roll (p. 100).
+  // Machine guns have no minimum, so there's no point.
+  const needsExtraAbilities = isFullAuto && minimumSpend > 0;
+
+  // the actor is the same object for the weapon's life; what's on it isn't
+  // (pools can be spent elsewhere, e.g. the ability's own sheet). Select only
+  // what's shown, so other changes to the actor don't re-render the panel
+  const weaponActor = item.actor;
+  const fromActor = useActorSnapshot(weaponActor, (actor) => {
+    const find = (name: string): AbilityRef | undefined => {
+      const found = actor ? findGeneralAbilityIn(actor.items, name) : undefined;
+      return (
+        found && { _id: found._id, name: found.name, pool: getPoolOf(found) }
+      );
+    };
+    return {
+      ability: find(abilityName),
+      fullAutoAbilities: needsExtraAbilities
+        ? settings.fullAutoSpendAbilities.flatMap((name) => find(name) ?? [])
+        : [],
+      initiativeAbility: isActiveCharacterActor(weaponActor)
+        ? ((actor?.system as { initiativeAbility?: string } | undefined)
+            ?.initiativeAbility ?? "")
+        : "",
+    };
+  });
+  const ability = fromActor.ability;
+  const useExtendedRange = settings.useExtendedRange;
   const ranges = [
     {
       name: "point blank",
       label: getTranslatedOr("PointBlankShort", "Point Blank"),
       fullLabel: getTranslated("Point Blank"),
-      enabled: item.system.isPointBlank,
-      damage: item.system.pointBlankDamage,
-      spend: item.system.pointBlankSpend,
+      enabled: system.isPointBlank,
+      damage: system.pointBlankDamage,
+      spend: system.pointBlankSpend,
     },
     {
       name: "close range",
       label: getTranslatedOr("CloseRangeShort", "Close Range"),
       fullLabel: getTranslated("Close Range"),
-      enabled: item.system.isCloseRange,
-      damage: item.system.closeRangeDamage,
-      spend: item.system.closeRangeSpend,
+      enabled: system.isCloseRange,
+      damage: system.closeRangeDamage,
+      spend: system.closeRangeSpend,
     },
     {
       name: "near range",
       label: getTranslatedOr("NearRangeShort", "Near Range"),
       fullLabel: getTranslated("Near Range"),
-      enabled: item.system.isNearRange,
-      damage: item.system.nearRangeDamage,
-      spend: item.system.nearRangeSpend,
+      enabled: system.isNearRange,
+      damage: system.nearRangeDamage,
+      spend: system.nearRangeSpend,
     },
     {
       name: "long range",
       label: getTranslatedOr("LongRangeShort", "Long Range"),
       fullLabel: getTranslated("Long Range"),
-      enabled: item.system.isLongRange,
-      damage: item.system.longRangeDamage,
-      spend: item.system.longRangeSpend,
+      enabled: system.isLongRange,
+      damage: system.longRangeDamage,
+      spend: system.longRangeSpend,
     },
     ...(useExtendedRange
       ? [
@@ -160,9 +238,9 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
             name: "extended range",
             label: getTranslatedOr("ExtendedRangeShort", "Extended Range"),
             fullLabel: getTranslated("Extended Range"),
-            enabled: item.system.isExtendedRange,
-            damage: item.system.extendedRangeDamage,
-            spend: item.system.extendedRangeSpend,
+            enabled: system.isExtendedRange,
+            damage: system.extendedRangeDamage,
+            spend: system.extendedRangeSpend,
           },
         ]
       : []),
@@ -184,7 +262,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
   // (p. 098). They come out of the same pool, before the spend.
   const rangeSpend = effectiveRange?.spend ?? 0;
   const { rangeAffordable, available } = getSpendAfterRange({
-    pool: getPool(ability),
+    pool: ability?.pool ?? 0,
     bonusPool,
     rangeSpend,
   });
@@ -194,39 +272,16 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
     setSpend(available);
   }
 
-  const fireModes = getAvailableFireModes({
-    weaponFireModes: item.system.fireModes,
-    useAutofire:
-      settings.useDamageApplication.get() &&
-      settings.useLethalityAndAutofire.get(),
-  });
-  const effectiveFireMode: FireMode = fireModes.includes(fireMode)
-    ? fireMode
-    : fireModes[0];
-  const isFullAuto = effectiveFireMode === "fullAuto";
-  const minimumSpend = getMinimumSpend({
-    fireMode: effectiveFireMode,
-    weaponFireModes: item.system.fireModes,
-  });
-
-  // full-auto can also spend other abilities (Athletics and Stability in
-  // FoDG), which count towards the minimum but don't add to the roll (p. 100).
-  // Machine guns have no minimum, so there's no point.
-  const extraAbilities =
-    isFullAuto && minimumSpend > 0
-      ? settings.fullAutoSpendAbilities
-          .get()
-          .map((name) => findGeneralAbility(item.actor, name))
-          .filter(
-            (extra): extra is InvestigatorItem =>
-              extra !== undefined && extra !== ability,
-          )
-          // in case a name is listed twice
-          .filter((extra, i, all) => all.indexOf(extra) === i)
-      : [];
-  const extraSpends: ExtraSpend[] = extraAbilities.map((extra) => ({
+  const extraAbilities = fromActor.fullAutoAbilities
+    .filter((extra) => extra._id !== ability?._id)
+    // in case a name is listed twice
+    .filter(
+      (extra, i, all) =>
+        all.findIndex((other) => other._id === extra._id) === i,
+    );
+  const extraSpends: ExtraSpendSnapshot[] = extraAbilities.map((extra) => ({
     ability: extra,
-    spend: Math.min(extraSpendsByName[extra.name] ?? 0, getPool(extra)),
+    spend: Math.min(extraSpendsByName[extra.name] ?? 0, extra.pool),
   }));
   const extraSpendTotal = extraSpends.reduce(
     (total, extra) => total + extra.spend,
@@ -239,25 +294,30 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
     minimumSpend,
   });
 
-  const ammoFail = !hasAmmoFor(item.system, effectiveFireMode);
+  const ammoFail = !hasAmmoFor(system, effectiveFireMode);
   const isJammed =
-    settings.useLethalityAndAutofire.get() &&
-    settings.useShotDryAndJams.get() &&
-    item.system.jammed;
+    settings.useLethalityAndAutofire &&
+    settings.useShotDryAndJams &&
+    system.jammed;
   const spendTooLow = totalSpend < minimumSpend;
 
   const onAttack = () => {
     if (effectiveRange === undefined) {
       return;
     }
+    // attack with the live documents (performAttack re-checks their pools)
+    const liveExtraSpends = extraSpends.flatMap((extra): ExtraSpend[] => {
+      const live = getLiveItem(weaponActor, extra.ability);
+      return live ? [{ ability: live, spend: extra.spend }] : [];
+    });
     void performAttack({
       spend,
       bonusPool,
       setSpend,
       setBonusPool,
-      ability,
+      ability: ability && getLiveItem(weaponActor, ability),
       weapon: item,
-      extraSpends,
+      extraSpends: liveExtraSpends,
       resetExtraSpends: () => setExtraSpendsByName({}),
     })({
       rangeName: effectiveRange.name,
@@ -267,39 +327,15 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
     });
   };
 
-  const weaponActor = item.actor;
-
-  const [actorInitiativeAbility, setActorInitiativeAbility] = useState(
-    weaponActor && isActiveCharacterActor(weaponActor)
-      ? weaponActor.system.initiativeAbility
-      : "",
-  );
-
-  useEffect(() => {
-    const callback = (actor: Actor) => {
-      if (actor.id === weaponActor?.id) {
-        setActorInitiativeAbility(
-          weaponActor && isActiveCharacterActor(weaponActor)
-            ? weaponActor.system.initiativeAbility
-            : "",
-        );
-      }
-    };
-    Hooks.on("updateActor", callback);
-    return () => {
-      Hooks.off("updateActor", callback);
-    };
-  }, [weaponActor]);
-
-  const isAbilityUsed = actorInitiativeAbility === abilityName;
+  const isAbilityUsed = fromActor.initiativeAbility === abilityName;
 
   const onClickUseForInitiative = useCallback(() => {
-    void item.actor?.update({
+    void weaponActor?.update({
       system: {
         initiativeAbility: abilityName,
       },
     });
-  }, [abilityName, item.actor]);
+  }, [abilityName, weaponActor]);
 
   const activateButton = (
     <ToolbarButton onClick={onClickUseForInitiative}>
@@ -315,7 +351,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
   if (ability === undefined) {
     blockers.push({
       key: "ability",
-      message: item.actor
+      message: weaponActor
         ? getTranslated("WeaponAbilityNotFound", { AbilityName: abilityName })
         : getTranslated("WeaponHasNoOwner"),
     });
@@ -334,7 +370,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
       key: "jammed",
       message: getTranslated("WeaponJammedHint"),
       action: (
-        <Button onClick={item.system.clearJam}>
+        <Button onClick={clearJam}>
           <Translate>Clear jam</Translate>
         </Button>
       ),
@@ -344,7 +380,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
     blockers.push({
       key: "ammo",
       message: getTranslated(
-        item.system.ammo.value > 0 ? "Not enough ammo" : "Out of ammo",
+        system.ammo.value > 0 ? "Not enough ammo" : "Out of ammo",
       ),
     });
   }
@@ -380,20 +416,20 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
 
   const targets = useUserTargets();
   // attacks only use targets when damage is applied to them
-  const targetsLabel = settings.useDamageApplication.get()
+  const targetsLabel = settings.useDamageApplication
     ? getTargetsLabel(targets, effectiveFireMode)
     : null;
   const attackLabel =
     targetsLabel === null
       ? getTranslated(isMeleeOnly ? "AttackWithWeaponName" : "FireWeaponName", {
-          WeaponName: item.name,
+          WeaponName: weapon.name,
         })
       : getTranslated(
           isMeleeOnly
             ? "AttackTargetsWithWeaponName"
             : "FireWeaponNameAtTargets",
           {
-            WeaponName: item.name,
+            WeaponName: weapon.name,
             Targets: targetsLabel,
           },
         );
@@ -417,7 +453,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
               options={fireModes.map((mode, index) => ({
                 label: getTranslated(fireModeText[mode]),
                 value: index,
-                enabled: hasAmmoFor(item.system, mode),
+                enabled: hasAmmoFor(system, mode),
               }))}
             />
           </GridField>
@@ -431,7 +467,13 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
         )}
         {/* alongside other abilities' spends, name the ability being spent */}
         <GridField
-          label={ability ? <AbilityLink ability={ability} /> : "Spend"}
+          label={
+            ability ? (
+              <AbilityLink actor={weaponActor} ability={ability} />
+            ) : (
+              "Spend"
+            )
+          }
           // not a <label> for the spends, so clicking the link only opens it
           noLabel
         >
@@ -444,8 +486,8 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
         </GridField>
         {extraSpends.map((extra) => (
           <GridField
-            key={extra.ability.id}
-            label={<AbilityLink ability={extra.ability} />}
+            key={extra.ability._id}
+            label={<AbilityLink actor={weaponActor} ability={extra.ability} />}
             noLabel
           >
             <CheckButtons
@@ -457,7 +499,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
                 }))
               }
               selected={extra.spend}
-              options={getSpendOptions(getPool(extra.ability))}
+              options={getSpendOptions(extra.ability.pool)}
             />
           </GridField>
         ))}
@@ -524,9 +566,9 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
           <AsyncNumberInput onChange={setBonusPool} value={bonusPool} />
         </GridField>
 
-        {item.system.usesAmmo && (
+        {system.usesAmmo && (
           <GridField
-            label={`${getTranslated("Ammo")}/${item.system.ammo.max}:`}
+            label={`${getTranslated("Ammo")}/${system.ammo.max}:`}
             noTranslate
           >
             <div
@@ -538,9 +580,9 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
               <AsyncNumberInput
                 css={{ flex: 1 }}
                 min={0}
-                max={item.system.ammo.max}
-                value={item.system.ammo.value}
-                onChange={item.system.setAmmo}
+                max={system.ammo.max}
+                value={system.ammo.value}
+                onChange={setAmmo}
               />
               <Button
                 css={{
@@ -548,7 +590,7 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
                   flex: 0,
                   lineHeight: "inherit",
                 }}
-                onClick={item.system.reload}
+                onClick={reload}
               >
                 <Translate>Reload</Translate>
               </Button>
@@ -558,4 +600,4 @@ export const WeaponAttackPanel = ({ weapon: item }: WeaponAttackPanelProps) => {
       </InputGrid>
     </>
   );
-};
+});
