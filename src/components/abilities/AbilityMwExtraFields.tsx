@@ -1,12 +1,27 @@
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertGeneralAbilityItem } from "../../module/items/generalAbility";
+import { memo } from "react";
+
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import type { AbilityItem } from "../../module/items/exports";
+import type { GeneralAbilityItem } from "../../module/items/generalAbility";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 
-export const AbilityMwExtraFields = () => {
-  const { item } = useItemSheetContext();
-  assertGeneralAbilityItem(item);
+interface AbilityMwExtraFieldsProps {
+  /** Only to write through (a general ability, in Moribund World) */
+  item: AbilityItem;
+  trumps: string;
+  trumpedBy: string;
+}
+
+export const AbilityMwExtraFields = memo(function AbilityMwExtraFields({
+  item,
+  trumps,
+  trumpedBy,
+}: AbilityMwExtraFieldsProps) {
+  const { setMwTrumps, setMwTrumpedBy } = useSystemMethods(
+    item as GeneralAbilityItem,
+  );
 
   return (
     <InputGrid
@@ -15,17 +30,11 @@ export const AbilityMwExtraFields = () => {
       }}
     >
       <GridField label="Trumps">
-        <AsyncTextInput
-          value={item.system.mwTrumps}
-          onChange={item.system.setMwTrumps}
-        />
+        <AsyncTextInput value={trumps} onChange={setMwTrumps} />
       </GridField>
       <GridField label="Trumped by">
-        <AsyncTextInput
-          value={item.system.mwTrumpedBy}
-          onChange={item.system.setMwTrumpedBy}
-        />
+        <AsyncTextInput value={trumpedBy} onChange={setMwTrumpedBy} />
       </GridField>
     </InputGrid>
   );
-};
+});

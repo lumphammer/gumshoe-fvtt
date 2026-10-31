@@ -1,8 +1,9 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { memo, useCallback, useContext, useState } from "react";
 
 import { mwNegateCost, mwWallopCost } from "../../constants";
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertGeneralAbilityItem } from "../../module/items/generalAbility";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import type { AbilityItem } from "../../module/items/exports";
+import type { GeneralAbilityItem } from "../../module/items/generalAbility";
 import { ThemeContext } from "../../themes/ThemeContext";
 import type { MWDifficulty } from "../../types";
 import { Button } from "../inputs/Button";
@@ -11,24 +12,34 @@ import { InputGrid } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
 import { Translate } from "../Translate";
 
-export const AbilityTestMW = () => {
-  const { item } = useItemSheetContext();
-  assertGeneralAbilityItem(item);
+interface AbilityTestMWProps {
+  /** Only to write through (a general ability, in Moribund World) */
+  item: AbilityItem;
+  pool: number;
+}
+
+export const AbilityTestMW = memo(function AbilityTestMW({
+  item,
+  pool,
+}: AbilityTestMWProps) {
+  const { mwTestAbility, mWWallop, mWNegateIllustrious } = useSystemMethods(
+    item as GeneralAbilityItem,
+  );
   const theme = useContext(ThemeContext);
   const [difficulty, setDifficulty] = useState<MWDifficulty>(0);
   const [boonLevy, setBoonLevy] = useState(0);
 
   const onTest = useCallback(() => {
-    void item.system.mwTestAbility(difficulty, boonLevy);
-  }, [item, boonLevy, difficulty]);
+    void mwTestAbility(difficulty, boonLevy);
+  }, [mwTestAbility, boonLevy, difficulty]);
 
   const onWallop = useCallback(() => {
-    void item.system.mWWallop();
-  }, [item]);
+    void mWWallop();
+  }, [mWWallop]);
 
   const onNegateIllustrious = useCallback(() => {
-    void item.system.mWNegateIllustrious();
-  }, [item]);
+    void mWNegateIllustrious();
+  }, [mWNegateIllustrious]);
 
   const onChangeDifficulty = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.currentTarget.value;
@@ -90,14 +101,14 @@ export const AbilityTestMW = () => {
         }}
       >
         <Button
-          disabled={item.system.pool < mwNegateCost}
+          disabled={pool < mwNegateCost}
           css={{ flex: "1" }}
           onClick={onNegateIllustrious}
         >
           <Translate>Negate</Translate>
         </Button>
         <Button
-          disabled={item.system.pool < mwWallopCost}
+          disabled={pool < mwWallopCost}
           css={{ flex: "1" }}
           onClick={onWallop}
         >
@@ -109,4 +120,4 @@ export const AbilityTestMW = () => {
       </div>
     </div>
   );
-};
+});

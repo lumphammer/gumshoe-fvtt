@@ -1,20 +1,23 @@
-import { useContext } from "react";
+import { memo, useContext } from "react";
 
 import type { AbilityItem } from "../../module/items/exports";
 import { ThemeContext } from "../../themes/ThemeContext";
+import type { DeepReadonly } from "../../module/snapshots/createSnapshotStore";
 import type { SituationalModifier } from "../../types";
 
 interface SituationalModifierBadgeProps {
-  situationalModifier: SituationalModifier;
+  situationalModifier: DeepReadonly<SituationalModifier>;
+  isActive: boolean;
+  /** Only to toggle the modifier */
   ability: AbilityItem;
 }
 
-export const SituationalModifierBadge = ({
+export const SituationalModifierBadge = memo(function SituationalModifierBadge({
   situationalModifier: { situation, modifier, id },
+  isActive,
   ability,
-}: SituationalModifierBadgeProps) => {
+}: SituationalModifierBadgeProps) {
   const theme = useContext(ThemeContext);
-  const isActive = ability.system.isSituationalModifierActive(id);
   return (
     <a
       onClick={() => {
@@ -57,6 +60,4 @@ export const SituationalModifierBadge = ({
       </span>
     </a>
   );
-};
-
-SituationalModifierBadge.displayName = "SituationalModifierBadge";
+});

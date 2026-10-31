@@ -18,6 +18,16 @@ import {
 import { settings } from "../../settings/settings";
 import type { AbilityType, MwRefreshGroup, MwType } from "../../types";
 import type { AdaptationEffects } from "../bonds/adaptation";
+import type { PCView } from "./pcDerived";
+import {
+  getBondsIn,
+  getRatingCapIn,
+  getRatingCapsIn,
+  getSanityCapIn,
+  getStabilityAbilityIn,
+  getStabilityStateIn,
+  isAdaptedToIn,
+} from "./pcDerived";
 import {
   adaptationThreshold,
   adaptedRatingCap,
@@ -31,7 +41,6 @@ import {
   bondPointsPerBurnedStability,
   canBurnBond,
   clampBondPoints,
-  compareBonds,
   isBondBroken,
 } from "../bonds/rules";
 import type { BondItem } from "../items/bond";
@@ -49,14 +58,12 @@ import type { NetworkContactItem } from "../items/networkContact";
 import { isNetworkContactItem } from "../items/networkContact";
 import { getNetworkRefreshPool } from "../contacts/rules";
 import type { PersonalDetailItem } from "../items/personalDetail";
-import { getSanityCap } from "../sanity/rules";
 import {
   getAdaptableTraumaTypes,
   getStabilityThresholds,
-  isSanityOn,
 } from "../stability/settings";
 import type { StabilityState } from "../stability/states";
-import { getStabilityState, isShakenOrWorse } from "../stability/states";
+import { isShakenOrWorse } from "../stability/states";
 import type { LastTraumaTest } from "../stability/trauma";
 import { getBurnRefund, shakenDifficultyPenalty } from "../stability/trauma";
 import { isPersonalDetailItem } from "../items/personalDetail";
@@ -391,13 +398,14 @@ export class PCModel extends ActiveCharacterModel<
     return this.adaptations[traumaTypeId] ?? 0;
   }
 
+  /** This PC's data, as the functions in `pcDerived.ts` take it */
+  private view(): PCView {
+    return { system: this, items: this.parent.items.contents };
+  }
+
   /** Adapted to this trauma type? (Never, if it can't be adapted to.) */
   isAdaptedTo(traumaTypeId: string): boolean {
-    return getAdaptableTraumaTypes().some(
-      (type) =>
-        type.id === traumaTypeId &&
-        isAdapted(this.getAdaptationProgress(traumaTypeId)),
-    );
+    return isAdaptedToIn(this.view(), traumaTypeId);
   }
 
   /** The names of the trauma types the character has adapted to */
@@ -424,36 +432,12 @@ export class PCModel extends ActiveCharacterModel<
    * adaptations, and Sanity's cap
    */
   getRatingCaps(abilityName: string): { cap: number; reason: string }[] {
-    const caps: { cap: number; reason: string }[] = [];
-    const adaptedTo = this.getAdaptedTraumaNames(({ cappedAbilities }) =>
-      cappedAbilities.includes(abilityName),
-    );
-    if (adaptedTo.length > 0) {
-      caps.push({
-        cap: adaptedRatingCap,
-        reason: getTranslated("AdaptedToTrauma", {
-          Trauma: new Intl.ListFormat(game.i18n?.lang).format(adaptedTo),
-        }),
-      });
-    }
-    const sanityCap =
-      abilityName === settings.sanityAbility.get() ? this.getSanityCap() : null;
-    if (sanityCap !== null) {
-      caps.push({
-        cap: sanityCap,
-        reason: getTranslated("SanityCapReason", {
-          Base: String(settings.sanityCapBase.get()),
-          AbilityName: settings.sanityCapAbility.get(),
-        }),
-      });
-    }
-    return caps;
+    return getRatingCapsIn(this.view(), abilityName);
   }
 
   /** The cap on an ability's rating, if any: the lowest of its caps */
   getRatingCap(abilityName: string): number | null {
-    const caps = this.getRatingCaps(abilityName).map(({ cap }) => cap);
-    return caps.length > 0 ? Math.min(...caps) : null;
+    return getRatingCapIn(this.view(), abilityName);
   }
 
   /** The ability whose rating comes off Sanity's cap, e.g. Cthulhu Mythos */
@@ -467,13 +451,7 @@ export class PCModel extends ActiveCharacterModel<
 
   /** The highest Sanity's rating can go, or null if Sanity rules are off */
   getSanityCap(): number | null {
-    if (!isSanityOn()) {
-      return null;
-    }
-    return getSanityCap({
-      base: settings.sanityCapBase.get(),
-      capAbilityRating: this.getSanityCapAbility()?.system.rating ?? 0,
-    });
+    return getSanityCapIn(this.view());
   }
 
   /**
@@ -543,14 +521,9 @@ export class PCModel extends ActiveCharacterModel<
 
   /** Bonds in display order: ordinary first, then DELTA GREEN, by name */
   getBonds(): BondItem[] {
-    return this.parent.items
-      .filter((item) => isBondItem(item))
-      .toSorted((a, b) =>
-        compareBonds(
-          { name: a.name ?? "", isDeltaGreen: a.system.isDeltaGreen },
-          { name: b.name ?? "", isDeltaGreen: b.system.isDeltaGreen },
-        ),
-      );
+    return getBondsIn(this.parent.items.contents).filter((item) =>
+      isBondItem(item),
+    );
   }
 
   /**
@@ -558,11 +531,7 @@ export class PCModel extends ActiveCharacterModel<
    * states aren't in use, or there's no Stability ability
    */
   getStabilityState(): StabilityState | null {
-    const thresholds = getStabilityThresholds();
-    const stability = this.getStabilityAbility();
-    return thresholds && stability
-      ? getStabilityState(stability.system.pool, thresholds)
-      : null;
+    return getStabilityStateIn(this.view());
   }
 
   /** The Sanity ability: shocks reduce its rating, which is capped */
@@ -622,11 +591,8 @@ export class PCModel extends ActiveCharacterModel<
    * trauma tests are made with it
    */
   getStabilityAbility(): GeneralAbilityItem | undefined {
-    const name = settings.stabilityAbility.get();
-    return this.parent.items.find(
-      (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
-        isGeneralAbilityItem(item) && item.name === name,
-    );
+    const ability = getStabilityAbilityIn(this.parent.items.contents);
+    return isGeneralAbilityItem(ability) ? ability : undefined;
   }
 
   canBurnBond(bond: BondItem): boolean {

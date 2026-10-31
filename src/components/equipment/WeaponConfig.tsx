@@ -1,12 +1,14 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/isGame";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertActiveCharacterActor } from "../../module/actors/types";
-import { assertWeaponItem } from "../../module/items/weapon";
-import { settings } from "../../settings/settings";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import type { ItemSnapshot } from "../../hooks/useItemSnapshot";
+import { useSettings } from "../../hooks/useSettings";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import { getGeneralAbilityNamesIn } from "../../module/items/findGeneralAbility";
+import type { WeaponItem, WeaponSystemData } from "../../module/items/weapon";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -28,18 +30,29 @@ const weaponFireModesText: Record<WeaponFireModes, string> = {
   alwaysAuto: "WeaponFireModesAlwaysAuto",
 };
 
-export const WeaponConfig = () => {
-  assertGame(game);
-  const { item } = useItemSheetContext();
-  const actor = item.actor;
-  // neat, ts is smort enough to narrow to `ActiveCharacterActor | null` here
-  if (actor) {
-    assertActiveCharacterActor(actor);
-  }
-  const generalAbilityNames = actor?.system.getGeneralAbilityNames();
+interface WeaponConfigProps {
+  /** Only to write through: read from `weapon`. */
+  item: WeaponItem;
+  weapon: ItemSnapshot<WeaponSystemData>;
+}
 
-  assertWeaponItem(item);
-  const name = useAsyncUpdate(item.name || "", item.setName);
+export const WeaponConfig = memo(function WeaponConfig({
+  item,
+  weapon,
+}: WeaponConfigProps) {
+  const system = weapon.system;
+  const methods = useSystemMethods(item);
+  const generalAbilityNames = useActorSnapshot(item.actor, (actor) =>
+    actor ? getGeneralAbilityNamesIn(actor.items) : undefined,
+  );
+  const settings = useSettings((s) => ({
+    combatAbilities: s.combatAbilities,
+    useDamageApplication: s.useDamageApplication,
+    useGunfireOnHumans: s.useGunfireOnHumans,
+    useLethalityAndAutofire: s.useLethalityAndAutofire,
+    useExtendedRange: s.useExtendedRange,
+  }));
+  const name = useAsyncUpdate(weapon.name, item.setName);
 
   const onClickDelete = useCallback(async () => {
     assertGame(game);
@@ -63,15 +76,15 @@ export const WeaponConfig = () => {
     }
   }, [item]);
 
-  const validCombatAbilities = settings.combatAbilities.get();
-  const useDamageApplication = settings.useDamageApplication.get();
-  const showGunfire = useDamageApplication && settings.useGunfireOnHumans.get();
+  const validCombatAbilities = settings.combatAbilities;
+  const useDamageApplication = settings.useDamageApplication;
+  const showGunfire = useDamageApplication && settings.useGunfireOnHumans;
   const showLethality =
-    useDamageApplication && settings.useLethalityAndAutofire.get();
+    useDamageApplication && settings.useLethalityAndAutofire;
   const showFireModes =
-    useDamageApplication && settings.useLethalityAndAutofire.get();
-  const fireModes = item.system.fireModes;
-  const useExtendedRange = settings.useExtendedRange.get();
+    useDamageApplication && settings.useLethalityAndAutofire;
+  const fireModes = system.fireModes;
+  const useExtendedRange = settings.useExtendedRange;
 
   return (
     <InputGrid>
@@ -81,32 +94,29 @@ export const WeaponConfig = () => {
       <GridField label="Cost">
         <AsyncNumberInput
           min={0}
-          value={item.system.cost}
-          onChange={item.system.setCost}
+          value={system.cost}
+          onChange={methods.setCost}
         />
       </GridField>
 
       <GridField label="Initiative">
         <OtherableDropDown
-          value={item.system.ability}
-          onChange={item.system.setAbility}
+          value={system.ability}
+          onChange={methods.setAbility}
           pickerValues={validCombatAbilities}
           validValues={generalAbilityNames}
           css={{ marginBottom: "0.3em" }}
         />
       </GridField>
       <GridField label="Base Damage">
-        <AsyncNumberInput
-          value={item.system.damage}
-          onChange={item.system.setDamage}
-        />
+        <AsyncNumberInput value={system.damage} onChange={methods.setDamage} />
       </GridField>
       {showFireModes && (
         <GridField label="Fire modes">
           <Select
             value={fireModes}
             onChange={(e) => {
-              void item.system.setFireModes(
+              void methods.setFireModes(
                 e.currentTarget.value as WeaponFireModes,
               );
             }}
@@ -122,94 +132,88 @@ export const WeaponConfig = () => {
       )}
       {showLethality && (
         <WeaponLethalityField
-          lethality={item.system.lethality}
-          setLethality={item.system.setLethality}
+          lethality={system.lethality}
+          setLethality={methods.setLethality}
         />
       )}
       {showGunfire && (
         <GridField label="Gunfire?">
-          <Toggle
-            checked={item.system.isGunfire}
-            onChange={item.system.setIsGunfire}
-          />
+          <Toggle checked={system.isGunfire} onChange={methods.setIsGunfire} />
         </GridField>
       )}
       {useExtendedRange && <WeaponRangeHeadings />}
       <WeaponRange
         label="Point Blank"
-        damage={item.system.pointBlankDamage ?? 0}
-        enabled={item.system.isPointBlank}
-        setDamage={item.system.setPointBlankDamage}
-        setEnabled={item.system.setIsPointBlank}
+        damage={system.pointBlankDamage ?? 0}
+        enabled={system.isPointBlank}
+        setDamage={methods.setPointBlankDamage}
+        setEnabled={methods.setIsPointBlank}
         {...(useExtendedRange && {
-          spend: item.system.pointBlankSpend,
-          setSpend: item.system.setPointBlankSpend,
+          spend: system.pointBlankSpend,
+          setSpend: methods.setPointBlankSpend,
         })}
       />
       <WeaponRange
         label="Close range"
-        damage={item.system.closeRangeDamage ?? 0}
-        enabled={item.system.isCloseRange}
-        setDamage={item.system.setCloseRangeDamage}
-        setEnabled={item.system.setIsCloseRange}
+        damage={system.closeRangeDamage ?? 0}
+        enabled={system.isCloseRange}
+        setDamage={methods.setCloseRangeDamage}
+        setEnabled={methods.setIsCloseRange}
         {...(useExtendedRange && {
-          spend: item.system.closeRangeSpend,
-          setSpend: item.system.setCloseRangeSpend,
+          spend: system.closeRangeSpend,
+          setSpend: methods.setCloseRangeSpend,
         })}
       />
       <WeaponRange
         label="Near range"
-        damage={item.system.nearRangeDamage ?? 0}
-        enabled={item.system.isNearRange}
-        setDamage={item.system.setNearRangeDamage}
-        setEnabled={item.system.setIsNearRange}
+        damage={system.nearRangeDamage ?? 0}
+        enabled={system.isNearRange}
+        setDamage={methods.setNearRangeDamage}
+        setEnabled={methods.setIsNearRange}
         {...(useExtendedRange && {
-          spend: item.system.nearRangeSpend,
-          setSpend: item.system.setNearRangeSpend,
+          spend: system.nearRangeSpend,
+          setSpend: methods.setNearRangeSpend,
         })}
       />
       <WeaponRange
         label="Long range"
-        damage={item.system.longRangeDamage ?? 0}
-        enabled={item.system.isLongRange}
-        setDamage={item.system.setLongRangeDamage}
-        setEnabled={item.system.setIsLongRange}
+        damage={system.longRangeDamage ?? 0}
+        enabled={system.isLongRange}
+        setDamage={methods.setLongRangeDamage}
+        setEnabled={methods.setIsLongRange}
         {...(useExtendedRange && {
-          spend: item.system.longRangeSpend,
-          setSpend: item.system.setLongRangeSpend,
+          spend: system.longRangeSpend,
+          setSpend: methods.setLongRangeSpend,
         })}
       />
       {useExtendedRange && (
         <WeaponRange
           label="Extended range"
-          damage={item.system.extendedRangeDamage}
-          enabled={item.system.isExtendedRange}
-          setDamage={item.system.setExtendedRangeDamage}
-          setEnabled={item.system.setIsExtendedRange}
-          spend={item.system.extendedRangeSpend}
-          setSpend={item.system.setExtendedRangeSpend}
+          damage={system.extendedRangeDamage}
+          enabled={system.isExtendedRange}
+          setDamage={methods.setExtendedRangeDamage}
+          setEnabled={methods.setIsExtendedRange}
+          spend={system.extendedRangeSpend}
+          setSpend={methods.setExtendedRangeSpend}
         />
       )}
       <GridField label="Uses ammo?">
-        <Toggle
-          checked={item.system.usesAmmo}
-          onChange={item.system.setUsesAmmo}
-        />
+        <Toggle checked={system.usesAmmo} onChange={methods.setUsesAmmo} />
       </GridField>
-      {item.system.usesAmmo && (
+      {system.usesAmmo && (
         <>
           <GridField label="Ammo capacity">
             <AsyncNumberInput
               min={0}
-              value={item.system.ammo.max}
-              onChange={item.system.setAmmoMax}
+              value={system.ammo.max}
+              onChange={methods.setAmmoMax}
             />
           </GridField>
           <GridField label="Ammo per attack">
             <AsyncNumberInput
               min={0}
-              value={item.system.ammoPerShot}
-              onChange={item.system.setAmmoPerShot}
+              value={system.ammoPerShot}
+              onChange={methods.setAmmoPerShot}
             />
           </GridField>
           {showFireModes && fireModes === "selective" && (
@@ -217,8 +221,8 @@ export const WeaponConfig = () => {
               <AsyncNumberInput
                 min={1}
                 integer
-                value={item.system.ammoPerBurst}
-                onChange={item.system.setAmmoPerBurst}
+                value={system.ammoPerBurst}
+                onChange={methods.setAmmoPerBurst}
               />
             </GridField>
           )}
@@ -226,8 +230,8 @@ export const WeaponConfig = () => {
             <GridField label="Ammo per full-auto">
               <AsyncNumberInput
                 min={0}
-                value={item.system.ammoPerFullAuto}
-                onChange={item.system.setAmmoPerFullAuto}
+                value={system.ammoPerFullAuto}
+                onChange={methods.setAmmoPerFullAuto}
               />
             </GridField>
           )}
@@ -240,4 +244,4 @@ export const WeaponConfig = () => {
       </GridField>
     </InputGrid>
   );
-};
+});

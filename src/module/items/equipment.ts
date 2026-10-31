@@ -3,6 +3,7 @@ import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
 import type { SourceData } from "../../fvtt-exports";
+import type { DeepReadonly } from "../snapshots/createSnapshotStore";
 import { StringField, TypeDataModel } from "../../fvtt-exports";
 import { settings } from "../../settings/settings";
 import { createRecordField } from "../schemaFields";
@@ -98,6 +99,11 @@ export class EquipmentModel extends TypeDataModel<
  * System data for an equipment item
  */
 export type EquipmentSystemData = SourceData<typeof equipmentSchema>;
+
+/** A snapshot of the equipment categories setting (`useSettingSnapshot`). */
+export type EquipmentCategoriesSnapshot = DeepReadonly<
+  ReturnType<typeof settings.equipmentCategories.get>
+>;
 
 export type EquipmentItem = InvestigatorItem<"equipment">;
 

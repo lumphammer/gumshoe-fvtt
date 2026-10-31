@@ -1,21 +1,25 @@
-import { useCallback, useContext } from "react";
+import { memo, useCallback, useContext } from "react";
 
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertAbilityItem } from "../../module/items/exports";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import type { AbilityItem } from "../../module/items/exports";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Button } from "../inputs/Button";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 
-export const PushPoolButton = () => {
-  const { item } = useItemSheetContext();
+export const PushPoolButton = memo(function PushPoolButton({
+  item,
+}: {
+  /** Only to write through */
+  item: AbilityItem;
+}) {
   const theme = useContext(ThemeContext);
-  assertAbilityItem(item);
+  const { push } = useSystemMethods(item);
 
   const handleClickPush = useCallback(() => {
-    void item.system.push();
-  }, [item]);
+    void push();
+  }, [push]);
 
   return (
     <InputGrid
@@ -40,6 +44,4 @@ export const PushPoolButton = () => {
       </GridFieldStacked>
     </InputGrid>
   );
-};
-
-PushPoolButton.displayName = "PushPoolButton";
+});

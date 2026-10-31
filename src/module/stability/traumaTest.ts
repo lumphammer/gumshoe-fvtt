@@ -7,6 +7,7 @@ import * as constants from "../../constants";
 import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
 import { getTranslated } from "../../functions/getTranslated";
 import type { PCActor } from "../actors/pc";
+import { getTraumaTestDifficultyIn } from "../actors/pcDerived";
 import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
 import type { BondItem } from "../items/bond";
 import { getStabilityThresholds, isSanityOn } from "./settings";
@@ -27,15 +28,10 @@ export function getTraumaTestDifficulty(
   actor: PCActor,
   trauma: TraumaType,
 ): number | null {
-  const stability = actor.system.getStabilityAbility();
-  if (stability === undefined) {
-    return null;
-  }
-  return getTraumaDifficulty({
-    ...trauma,
-    adapted: actor.system.isAdaptedTo(trauma.id),
-    state: getTraumaState(stability.system.pool, getStabilityThresholds()),
-  });
+  return getTraumaTestDifficultyIn(
+    { system: actor.system, items: actor.items.contents },
+    trauma,
+  );
 }
 
 export type TraumaTestChoices = {

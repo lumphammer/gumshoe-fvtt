@@ -1,14 +1,27 @@
 import type { ReactNode } from "react";
-import { useContext } from "react";
+import { memo, useContext } from "react";
 
-import { findHealthAbility } from "../../module/attacks/health";
+import * as c from "../../constants";
+import { useActiveSituationalModifiers } from "../../hooks/useActiveSituationalModifiers";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
+import { useSettings } from "../../hooks/useSettings";
+import {
+  findHealthAbilityIn,
+  getRatingCapsIn,
+  getStabilityAbilityIn,
+  getStabilityStateIn,
+} from "../../module/actors/pcDerived";
 import type { WoundState } from "../../module/attacks/rules";
 import { getWoundState } from "../../module/attacks/rules";
-import { assertAbilityItem } from "../../module/items/exports";
-import { isGeneralAbilityItem } from "../../module/items/generalAbility";
+import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
+import {
+  getActiveUnlocksOf,
+  getVisibleSituationalModifiersOf,
+  isGeneralAbilitySnapshot,
+} from "../../module/items/abilitySnapshots";
+import type { AbilityItem } from "../../module/items/exports";
 import { getStabilityStateName } from "../../module/stability/settings";
-import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 import { SituationalModifierBadge } from "./SituationalModifierBadge";
@@ -20,25 +33,61 @@ const woundStateLabels: Record<Exclude<WoundState, "ok">, string> = {
 };
 
 interface UnlockBadgesProps {
-  ability: InvestigatorItem;
+  /** The live ability: the badges read it (and its actor) through snapshots */
+  ability: AbilityItem;
   className?: string;
 }
 
-export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
-  assertAbilityItem(ability);
-  const situationalModifiers = ability.system.getVisibleSituationalModifiers();
-  const unlocks = ability.system.getActiveUnlocks();
+/**
+ * Badges for an ability: boost, push pool, wound and Stability states, rating
+ * cap, unlocks and situational modifiers. Shown on the ability's sheet and on
+ * character sheets' ability rows, so it reads its own snapshots, and only
+ * re-renders when one of its badges changes.
+ */
+export const AbilityBadges = memo(function AbilityBadges({
+  ability: item,
+  className,
+}: UnlockBadgesProps) {
+  // only what the badges show
+  const ability = useItemSelector(item, (snapshot: AbilitySnapshot) => ({
+    _id: snapshot._id,
+    name: snapshot.name,
+    pool: snapshot.system.pool,
+    boost: snapshot.system.boost,
+    isPushPool:
+      isGeneralAbilitySnapshot(snapshot) && snapshot.system.isPushPool,
+    unlocks: getActiveUnlocksOf(snapshot.system),
+    situationalModifiers: getVisibleSituationalModifiersOf(snapshot.system),
+  }));
+  const settings = useSettings((s) => s);
+  const { situationalModifiers, unlocks } = ability;
+  const activeModifiers = useActiveSituationalModifiers(item.uuid ?? "");
   const theme = useContext(ThemeContext);
-  const ratingCap = ability.system.getRatingCap();
-  const stabilityState = ability.system.getStabilityState();
+  // a PC's adaptations and Sanity's cap, Stability and Health
+  const fromActor = useActorSnapshot(item.actor, (actor) => {
+    const isPC = actor?.type === c.pc;
+    const caps =
+      actor && isPC ? getRatingCapsIn(actor, ability.name, settings) : [];
+    return {
+      ratingCap:
+        caps.length > 0 ? Math.min(...caps.map(({ cap }) => cap)) : null,
+      ratingCapReasons: caps.map(({ reason }) => reason),
+      stabilityState:
+        actor &&
+        isPC &&
+        getStabilityAbilityIn(actor.items, settings)?._id === ability._id
+          ? getStabilityStateIn(actor, settings)
+          : null,
+      isHealth:
+        actor !== null && findHealthAbilityIn(actor.items)?._id === ability._id,
+    };
+  });
+  const { ratingCap, stabilityState } = fromActor;
   // the owner's wound state, if this is their Health and the statuses are in
   // use. From the pool, so it's right even if a status is toggled by hand.
-  const actor = ability.actor;
   const woundState =
-    settings.useWoundStatusEffects.get() &&
-    actor !== null &&
-    findHealthAbility(actor)?.id === ability.id
-      ? getWoundState(ability.system.pool)
+    settings.useWoundStatusEffects && fromActor.isHealth
+      ? getWoundState(ability.pool)
       : null;
   // styled on a wrapper: Translate sets its own background
   const stateBadgeStyle = {
@@ -63,7 +112,7 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
       }}
     >
       {/* Boost */}
-      {ability.system.boost && (
+      {ability.boost && (
         <Translate
           css={{
             background: theme.colors.accentContrast,
@@ -81,7 +130,7 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
       )}
 
       {/* Push pool */}
-      {isGeneralAbilityItem(ability) && ability.system.isPushPool && (
+      {ability.isPushPool && (
         <Translate
           css={{
             background: theme.colors.accentContrast,
@@ -108,7 +157,7 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
       {/* Shaken, Shattered or Gone */}
       {stabilityState !== null && stabilityState !== "steady" && (
         <span data-testid="stability-state-badge" css={stateBadgeStyle}>
-          {getStabilityStateName(stabilityState)}
+          {getStabilityStateName(stabilityState, settings)}
         </span>
       )}
 
@@ -130,7 +179,7 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
         >
           <Translate
             values={{ Cap: String(ratingCap) }}
-            title={ability.system.getRatingCapReasons().join("; ")}
+            title={fromActor.ratingCapReasons.join("; ")}
           >
             CappedAtCap
           </Translate>
@@ -162,12 +211,11 @@ export const AbilityBadges = ({ ability, className }: UnlockBadgesProps) => {
           <SituationalModifierBadge
             key={situationalModifer.id}
             situationalModifier={situationalModifer}
-            ability={ability}
+            isActive={activeModifiers.includes(situationalModifer.id)}
+            ability={item}
           />
         );
       })}
     </div>
   );
-};
-
-AbilityBadges.displayName = "AbilityBadges";
+});

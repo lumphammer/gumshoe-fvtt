@@ -72,9 +72,19 @@ translations, adding fields and settings, releases).
   on full re-renders. Only oxlint's `preserve-manual-memoization` rule is on:
   avoid `useMemo`/`useCallback` over values that change every render; plain
   functions are fine.
-- A Foundry sheet only re-renders when its own document changes. If it shows
-  data from another document (e.g. a weapon panel showing its ability's pool),
-  subscribe to hooks yourself: see `src/hooks/useRefreshOnActorItemChanges.ts`.
+- Sheets are being converted to read immutable **snapshots**, so they can be
+  memoised (`docs/immutable-data.md`). Converted so far: the equipment and
+  weapon sheets, and `WeaponAttackPanel`. In a converted tree, read data only
+  from `useItemSnapshot`, `useActorSnapshot(actor, selector)` and
+  `useSettings(selector)` (selector results are structurally shared, so they
+  can build objects). Use the live document only to write, in event handlers,
+  or through `useSystemMethods(doc)`: `doc.system` is replaced on update, so
+  `doc.system.setFoo` isn't stable. Memoise the sheet's root (it has no props),
+  so Foundry's own re-render stops there. Turn domain getters into pure
+  functions over snapshots (e.g. `findGeneralAbilityIn`).
+- An unconverted sheet only re-renders when its own document changes. If it
+  shows data from another document, subscribe to hooks yourself: see
+  `src/hooks/useRefreshOnActorItemChanges.ts`.
 - For text inputs which save as you type, use `useAsyncUpdate` (or
   `AsyncTextInput`/`AsyncNumberInput`): it throttles saves and ignores echoes
   while focused, so a late save can't overwrite newer typing.

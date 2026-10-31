@@ -47,10 +47,9 @@ export type AdaptationEffects = {
 };
 
 /** The trauma types an Agent has adapted to */
-export function getAdaptedTypes(
-  types: TraumaType[],
-  progress: AdaptationProgress,
-): TraumaType[] {
+export function getAdaptedTypes<
+  T extends Pick<TraumaType, "id" | "useAdaptation">,
+>(types: readonly T[], progress: Readonly<AdaptationProgress>): T[] {
   return types.filter(
     (type) => type.useAdaptation && isAdapted(progress[type.id] ?? 0),
   );

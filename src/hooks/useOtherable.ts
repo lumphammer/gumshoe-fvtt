@@ -5,8 +5,8 @@ const customValueToken = "CUSTOM_VALUE_TOKEN_DwSXJ76sDgTvXQwVCp8He";
 type UseOtherableArgs = {
   value: string;
   onChange: (value: string) => void;
-  pickerValues: string[];
-  validValues?: string[];
+  pickerValues: readonly string[];
+  validValues?: readonly string[];
 };
 
 export const useOtherable = ({

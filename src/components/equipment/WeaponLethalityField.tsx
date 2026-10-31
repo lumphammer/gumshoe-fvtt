@@ -1,8 +1,9 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import type { Lethality } from "../../module/attacks/lethality";
+import type { DeepReadonly } from "../../module/snapshots/createSnapshotStore";
 import {
   formatLethality,
   parseLethality,
@@ -11,7 +12,7 @@ import { GridField } from "../inputs/GridField";
 import { TextInput } from "../inputs/TextInput";
 
 type WeaponLethalityFieldProps = {
-  lethality: Lethality | null;
+  lethality: DeepReadonly<Lethality> | null;
   setLethality: (lethality: Lethality | null) => Promise<void>;
 };
 
@@ -19,10 +20,10 @@ type WeaponLethalityFieldProps = {
  * Lethality, typed in the book's notation, e.g. "L1*". Blank means none. Only
  * valid ratings get saved; anything else shows as invalid until fixed.
  */
-export const WeaponLethalityField = ({
+export const WeaponLethalityField = memo(function WeaponLethalityField({
   lethality,
   setLethality,
-}: WeaponLethalityFieldProps) => {
+}: WeaponLethalityFieldProps) {
   // stable, so useAsyncUpdate's throttle survives re-renders
   const onChangeText = useCallback(
     (newText: string) => {
@@ -66,4 +67,4 @@ export const WeaponLethalityField = ({
       />
     </GridField>
   );
-};
+});

@@ -1,3 +1,4 @@
+import { findHealthAbilityIn } from "../actors/pcDerived";
 import { isActiveCharacterActor } from "../actors/types";
 import type { GeneralAbilityItem } from "../items/generalAbility";
 import { isGeneralAbilityItem } from "../items/generalAbility";
@@ -5,27 +6,14 @@ import { isGeneralAbilityItem } from "../items/generalAbility";
 const healthResourceId = "health";
 
 /**
- * Find the general ability which represents an actor's Health. Prefer one
- * explicitly linked to the "health" resource, but fall back to one called
- * "Health" for legacy compatibility, like the resource sync does.
+ * Find the general ability which represents an actor's Health (see
+ * `findHealthAbilityIn`).
  */
 export function findHealthAbility(
   actor: Actor,
 ): GeneralAbilityItem | undefined {
-  const generalAbilities = actor.items.filter(
-    (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
-      isGeneralAbilityItem(item),
-  );
-  return (
-    generalAbilities.find(
-      (item) =>
-        item.system.linkToResource &&
-        item.system.resourceId === healthResourceId,
-    ) ??
-    generalAbilities.find(
-      (item) => item.name.trim().toLowerCase() === healthResourceId,
-    )
-  );
+  const ability = findHealthAbilityIn(actor.items.contents);
+  return isGeneralAbilityItem(ability) ? ability : undefined;
 }
 
 /**

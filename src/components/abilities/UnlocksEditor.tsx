@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
+import { memo } from "react";
 
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertAbilityItem } from "../../module/items/exports";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import type { AbilityItem } from "../../module/items/exports";
+import type { DeepReadonly } from "../../module/snapshots/createSnapshotStore";
+import type { Unlock } from "../../types";
 import { Button } from "../inputs/Button";
 import { useListShowHideTransition } from "../transitions/useListShowHideTransition";
 import { Translate } from "../Translate";
@@ -10,12 +13,19 @@ import { UnlocksEditorRow } from "./UnlocksEditorRow";
 
 const transitionTime = 400;
 
-export const UnlocksEditor = () => {
-  const { item } = useItemSheetContext();
-  assertAbilityItem(item);
+interface UnlocksEditorProps {
+  /** Only to write through */
+  item: AbilityItem;
+  unlocks: readonly DeepReadonly<Unlock>[];
+}
 
+export const UnlocksEditor = memo(function UnlocksEditor({
+  item,
+  unlocks,
+}: UnlocksEditorProps) {
+  const methods = useSystemMethods(item);
   const transitionedUnlocks = useListShowHideTransition(
-    item.system.unlocks,
+    unlocks,
     (unlock) => unlock.id,
     transitionTime,
   );
@@ -40,16 +50,16 @@ export const UnlocksEditor = () => {
               <UnlocksEditorRow
                 index={i}
                 unlock={unlock}
-                onChangeDescription={item.system.setUnlockDescription}
-                onChangeRating={item.system.setUnlockRating}
-                onDelete={item.system.deleteUnlock}
+                onChangeDescription={methods.setUnlockDescription}
+                onChangeRating={methods.setUnlockRating}
+                onDelete={methods.deleteUnlock}
               />
             </div>
           );
         },
       )}
       <Button
-        onClick={item.system.addUnlock}
+        onClick={methods.addUnlock}
         css={{
           margin: 0,
         }}
@@ -58,4 +68,4 @@ export const UnlocksEditor = () => {
       </Button>
     </div>
   );
-};
+});

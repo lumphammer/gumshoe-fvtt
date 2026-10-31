@@ -32,7 +32,7 @@ export function useListShowHideTransition<Item>(
    * The source list - what you would normally pass to a `map` function if you
    * were not using this hook.
    */
-  externallList: Item[],
+  externallList: readonly Item[],
   /**
    * A function which returns a unique identifier for each item in the list.
    * This is needed because we need to be able to track items as they enter and

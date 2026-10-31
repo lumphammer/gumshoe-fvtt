@@ -1,5 +1,6 @@
 import * as constants from "../../constants";
 import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
+import type { SourceData } from "../../fvtt-exports";
 import { BooleanField, NumberField, StringField } from "../../fvtt-exports";
 import type { MwRefreshGroup } from "../../types";
 import { AbilityModel } from "./AbilityModel";
@@ -116,6 +117,8 @@ export class GeneralAbilityModel extends AbilityModel<
 }
 
 export type GeneralAbilityItem = InvestigatorItem<"generalAbility">;
+
+export type GeneralAbilitySystemData = SourceData<typeof generalAbilitySchema>;
 
 export function isGeneralAbilityItem(x: unknown): x is GeneralAbilityItem {
   return x instanceof InvestigatorItem && x.type === "generalAbility";

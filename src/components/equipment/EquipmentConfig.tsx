@@ -1,10 +1,13 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/isGame";
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertEquipmentItem } from "../../module/items/equipment";
-import { settings } from "../../settings/settings";
+import type {
+  EquipmentCategoriesSnapshot,
+  EquipmentItem,
+  EquipmentSystemData,
+} from "../../module/items/equipment";
+import type { DeepReadonly } from "../../module/snapshots/createSnapshotStore";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -12,11 +15,18 @@ import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 import { OrphanedField } from "./OrphanedField";
 
-export const EquipmentConfig = () => {
-  const { item } = useItemSheetContext();
+interface EquipmentConfigProps {
+  /** Only to write through (and for its actor, when deleting): read from `system`. */
+  item: EquipmentItem;
+  system: DeepReadonly<EquipmentSystemData>;
+  categories: EquipmentCategoriesSnapshot;
+}
 
-  assertEquipmentItem(item);
-
+export const EquipmentConfig = memo(function EquipmentConfig({
+  item,
+  system,
+  categories,
+}: EquipmentConfigProps) {
   const onClickDelete = useCallback(async () => {
     assertGame(game);
     const message = item.actor
@@ -39,9 +49,9 @@ export const EquipmentConfig = () => {
     }
   }, [item]);
 
-  const allFields = item.system.fields;
+  const allFields = system.fields;
   const knownFieldIds = Object.keys(
-    settings.equipmentCategories.get()[item.system.categoryId]?.fields ?? {},
+    categories[system.categoryId]?.fields ?? {},
   );
   const unknownFields = Object.keys(allFields).filter(
     (fieldId) => !knownFieldIds.includes(fieldId),
@@ -50,7 +60,7 @@ export const EquipmentConfig = () => {
   return (
     <InputGrid>
       <GridField label="Category Id">
-        {item.system.categoryId ? (
+        {system.categoryId ? (
           <>
             <code
               css={{
@@ -58,16 +68,16 @@ export const EquipmentConfig = () => {
                 margin: "0.3em 1em 0.3em 0",
               }}
             >
-              {item.system.categoryId}
+              {system.categoryId}
             </code>
             <a
               css={{
                 gridArea: "cog",
               }}
               onClick={async () => {
-                await game.clipboard?.copyPlainText(item.system.categoryId);
+                await game.clipboard?.copyPlainText(system.categoryId);
                 ui.notifications?.info(
-                  `Copied category ID "${item.system.categoryId}" to clipboard`,
+                  `Copied category ID "${system.categoryId}" to clipboard`,
                 );
               }}
             >
@@ -113,6 +123,4 @@ export const EquipmentConfig = () => {
       </GridFieldStacked>
     </InputGrid>
   );
-};
-
-EquipmentConfig.displayName = "EquipmentConfig";
+});

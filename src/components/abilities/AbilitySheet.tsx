@@ -1,8 +1,18 @@
+import { memo } from "react";
+import { IsEditableContext } from "../../hooks/useIsEditable";
+import { useSheetPermissions } from "../../hooks/useSheetPermissions";
+
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useItemSnapshot } from "../../hooks/useItemSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { isGeneralAbilityItem } from "../../module/items/generalAbility";
-import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
-import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import { settings } from "../../settings/settings";
+import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
+import {
+  isGeneralAbilitySnapshot,
+  isPushOrQuickShock,
+} from "../../module/items/abilitySnapshots";
+import type { AbilitySystemData } from "../../module/items/exports";
+import { assertAbilityItem } from "../../module/items/exports";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
 import { ItemSheetMode } from "../ItemSheetFramework/types";
@@ -14,56 +24,63 @@ import { AbilityTest } from "./AbilityTest";
 import { AbilityTestMW } from "./AbilityTestMW";
 import { PushPoolButton } from "./PushPoolButton";
 
-const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
+/**
+ * Everything below here reads the ability (and its actor, and settings)
+ * through snapshots, so its memoised parts only re-render when what they show
+ * changes. The item itself is passed down only to write through.
+ *
+ * Memoised itself (it has no props), so Foundry re-rendering the sheet stops
+ * here: the snapshots have already brought in any change.
+ */
+export const AbilitySheet = memo(function AbilitySheet() {
+  const { item } = useItemSheetContext();
+  assertAbilityItem(item);
+  const { isEditable } = useSheetPermissions(item);
+  const ability = useItemSnapshot<AbilitySystemData>(item) as AbilitySnapshot;
+  const useMwStyleAbilities = useSettings((s) => s.useMwStyleAbilities);
+  const actorName = useActorSnapshot(item.actor, (actor) => actor?.name);
 
-function getTopAreaContent(ability: InvestigatorItem) {
-  if (
-    // if we're doing WM, we show the MW test/spend box
-    ability.isOwned &&
-    settingsUseMwStyleAbilities()
-  ) {
-    return <AbilityTestMW />;
-  } else if (
-    // push pools get a PUSH button
-    (isGeneralAbilityItem(ability) && ability.system.isPushPool) ||
-    (isInvestigativeAbilityItem(ability) && ability.system.isQuickShock)
-  ) {
-    return <PushPoolButton />;
-  } else {
-    // everything else gets a spend/test box
-    return <AbilityTest />;
-  }
-}
-
-export const AbilitySheet = () => {
-  const { item: ability } = useItemSheetContext();
-
-  const isGeneral = isGeneralAbilityItem(ability);
+  const isGeneral = isGeneralAbilitySnapshot(ability);
 
   return (
-    <ItemSheetFramework
-      supertitle={
-        <>
-          <Translate>
-            {isGeneral ? "General ability" : "Investigative ability"}
-          </Translate>
-          {ability.actor && <span> ({ability.actor.name})</span>}
-        </>
-      }
-    >
-      <ModeSelect mode={ItemSheetMode.Config}>
-        <AbilityConfig />
-      </ModeSelect>
-      <ModeSelect mode={ItemSheetMode.Main}>
-        <>
-          {/* Spending/testing area */}
-          {getTopAreaContent(ability)}
+    <IsEditableContext.Provider value={isEditable}>
+      <ItemSheetFramework
+        supertitle={
+          <>
+            <Translate>
+              {isGeneral ? "General ability" : "Investigative ability"}
+            </Translate>
+            {actorName !== undefined && <span> ({actorName})</span>}
+          </>
+        }
+      >
+        <ModeSelect mode={ItemSheetMode.Config}>
+          <AbilityConfig item={item} ability={ability} />
+        </ModeSelect>
+        <ModeSelect mode={ItemSheetMode.Main}>
+          <>
+            {/* Spending/testing area: Moribund World's test and spend box, a
+              push pool's PUSH button, or a spend/test box */}
+            {item.isOwned && useMwStyleAbilities && isGeneral ? (
+              <AbilityTestMW item={item} pool={ability.system.pool} />
+            ) : isPushOrQuickShock(ability) ? (
+              <PushPoolButton item={item} />
+            ) : (
+              <AbilityTest item={item} ability={ability} />
+            )}
 
-          {/* Other bits */}
-          <AbilityMainBits />
-          {settingsUseMwStyleAbilities() && <AbilityMwExtraFields />}
-        </>
-      </ModeSelect>
-    </ItemSheetFramework>
+            {/* Other bits */}
+            <AbilityMainBits item={item} ability={ability} />
+            {useMwStyleAbilities && isGeneral && (
+              <AbilityMwExtraFields
+                item={item}
+                trumps={ability.system.mwTrumps}
+                trumpedBy={ability.system.mwTrumpedBy}
+              />
+            )}
+          </>
+        </ModeSelect>
+      </ItemSheetFramework>
+    </IsEditableContext.Provider>
   );
-};
+});

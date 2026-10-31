@@ -1,3 +1,4 @@
+import type { SourceData } from "../../fvtt-exports";
 import { BooleanField } from "../../fvtt-exports";
 import { assertPCActor } from "../actors/pc";
 import { AbilityModel } from "./AbilityModel";
@@ -48,6 +49,10 @@ export class InvestigativeAbilityModel extends AbilityModel<
 }
 
 export type InvestigativeAbilityItem = InvestigatorItem<"investigativeAbility">;
+
+export type InvestigativeAbilitySystemData = SourceData<
+  typeof investigativeAbilitySchema
+>;
 
 export function isInvestigativeAbilityItem(
   x: unknown,

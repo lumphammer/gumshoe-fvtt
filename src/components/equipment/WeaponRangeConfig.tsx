@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { GridField } from "../inputs/GridField";
 import { Toggle } from "../inputs/Toggle";
@@ -43,7 +45,7 @@ type WeaponRangeProps = {
   setSpend?: (value: number) => void;
 };
 
-export const WeaponRange = ({
+export const WeaponRange = memo(function WeaponRange({
   label,
   damage,
   enabled,
@@ -51,7 +53,7 @@ export const WeaponRange = ({
   setEnabled,
   spend,
   setSpend,
-}: WeaponRangeProps) => {
+}: WeaponRangeProps) {
   const showSpend = spend !== undefined && setSpend !== undefined;
   return (
     <GridField label={label}>
@@ -84,4 +86,4 @@ export const WeaponRange = ({
       </div>
     </GridField>
   );
-};
+});
