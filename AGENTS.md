@@ -77,7 +77,7 @@ translations, adding fields and settings, releases).
   functions are fine.
 - Sheets are being converted to read immutable **snapshots**, so they can be
   memoised (`docs/immutable-data.md`). Converted so far: the equipment, weapon
-  and ability sheets, and the PC/NPC sheets' Abilities tab (not Moribund
+  and ability sheets, and the PC/NPC sheets' Abilities tab (including Moribund
   World's). In a converted tree:
   - Read data only from `useItemSnapshot`/`useItemSelector`,
     `useActorSnapshot(actor, selector)` and `useSettings(selector)`.

@@ -266,15 +266,17 @@ PC (76 items).
 Components rendered per change, before and after converting (from
 `e2e/renderTiming.bench.ts`; the PC is the 76-item fixture):
 
-| Change                                      | Before | After |
-| ------------------------------------------- | ------ | ----- |
-| weapon sheet: another ability on the actor  | 37     | 0     |
-| weapon sheet: its notes                     | 85     | 48    |
-| ability sheet: another ability on the actor | 34     | 0     |
-| ability sheet: its notes                    | 146    | 115   |
-| PC, Abilities tab: an ability's pool        | 1128   | 315   |
-| PC, Abilities tab: the actor's Health       | 1125   | 277   |
-| combat tracker (12 combatants): next turn   | 402    | 112   |
+| Change                                               | Before | After |
+| ---------------------------------------------------- | ------ | ----- |
+| weapon sheet: another ability on the actor           | 37     | 0     |
+| weapon sheet: its notes                              | 85     | 48    |
+| ability sheet: another ability on the actor          | 34     | 0     |
+| ability sheet: its notes                             | 146    | 115   |
+| PC, Abilities tab: an ability's pool                 | 1128   | 315   |
+| PC, Abilities tab: the actor's Health                | 1125   | 277   |
+| combat tracker (12 combatants): next turn            | 402    | 112   |
+| PC, Moribund World Abilities tab: an ability's pool  | 944    | 311   |
+| PC, Moribund World Abilities tab: the actor's Health | 944    | 283   |
 
 On the Abilities tab, the 277 left is the rest of the PC sheet (header,
 personal details, pools panel, tab strip), which Foundry still re-renders on
@@ -282,7 +284,7 @@ every change; the memoised areas stop it at their edge. Still to do:
 
 - the rest of the PC sheet, then memoising its root;
 - the Combat and Equipment tabs (410 and 486 components per change);
-- the NPC sheet beyond its Abilities tab, and Moribund World's ability area;
+- the NPC sheet beyond its Abilities tab;
 - the combat tracker's header, which still re-renders on every change.
 
 The combat tracker's rows were already memoised, but the keyboard sensor's

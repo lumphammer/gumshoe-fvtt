@@ -263,7 +263,12 @@ test("equipment sheet", async ({ page }) => {
   await record(page, "equipment: notes", "equipment notes", selector);
 });
 
-test("PC sheet", async ({ page }) => {
+/**
+ * Create the fixture PC, and the ops "ability pool" (an ability a weapon
+ * uses) and "actor health". Open its sheet; returns a selector for it, and a
+ * function to switch tabs.
+ */
+async function openFixturePC(page: Page) {
   const fixture = JSON.parse(
     fs.readFileSync(path.join(dirname, "fixtures/pc.json"), "utf8"),
   );
@@ -291,7 +296,11 @@ test("PC sheet", async ({ page }) => {
   const selector = `[id="${await sheet.getAttribute("id")}"]`;
   const tab = (name: string) =>
     sheet.locator(".tab-strip > label", { hasText: name }).first().click();
+  return { selector, tab };
+}
 
+test("PC sheet", async ({ page }) => {
+  const { selector, tab } = await openFixturePC(page);
   await tab("Abilities");
   await record(
     page,
@@ -314,6 +323,25 @@ test("PC sheet", async ({ page }) => {
     "ability pool",
     selector,
   );
+});
+
+test("PC sheet, Moribund World abilities", async ({ page }) => {
+  await setSettings(page, { useMwStyleAbilities: true });
+  const { selector, tab } = await openFixturePC(page);
+  await tab("Abilities");
+  await record(
+    page,
+    "PC, MW Abilities tab: ability pool",
+    "ability pool",
+    selector,
+  );
+  await record(
+    page,
+    "PC, MW Abilities tab: actor health",
+    "actor health",
+    selector,
+  );
+  await setSettings(page, { useMwStyleAbilities: false });
 });
 
 test("weapon sheet", async ({ page }) => {
