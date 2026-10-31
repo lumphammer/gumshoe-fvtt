@@ -121,6 +121,14 @@ test("the tracker follows turns and initiative changed elsewhere", async ({
   });
   const third = tracker.locator("li.combatant", { hasText: "Third" });
   await expect(third.locator("input")).toHaveValue("7");
+
+  // the header takes the round as a prop: it follows a new round
+  const header = tracker.locator(".combat-tracker-header");
+  await expect(header).toContainText("Round 1");
+  await page.evaluate(async () => {
+    await game.combat!.nextRound();
+  });
+  await expect(header).toContainText("Round 2");
 });
 
 test("a player takes their turn in a turn-passing combat", async ({

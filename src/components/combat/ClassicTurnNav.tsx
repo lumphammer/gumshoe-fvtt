@@ -8,16 +8,27 @@ import { CombatTrackerConfig } from "../../fvtt-exports";
 import { isClassicCombat } from "../../module/combat/classicCombat";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { format, localize } from "./functions";
-import { useClassicTrackerContext } from "./TrackerContext";
+import type { TrackerContextValue } from "./TrackerContext";
 
-export const ClassicTurnNav = memo(function ClassicTurnNav() {
+type ClassicTurnNavProps = {
+  combat: TrackerContextValue<"classic">["combat"];
+  /** The round, or 0 before the combat starts */
+  round: number;
+  turnCount: number;
+  isActiveUser: boolean;
+};
+
+/**
+ * The round and turn controls. Takes props, not the tracker's context, so a
+ * new turn in the same round doesn't re-render it.
+ */
+export const ClassicTurnNav = memo(function ClassicTurnNav({
+  combat,
+  round,
+  turnCount,
+  isActiveUser,
+}: ClassicTurnNavProps) {
   assertGame(game);
-  const {
-    combatState,
-    turnIds: turns,
-    isActiveUser,
-    combat,
-  } = useClassicTrackerContext();
 
   const handleNextRound = useCallback(() => {
     void combat.nextRound();
@@ -43,7 +54,7 @@ export const ClassicTurnNav = memo(function ClassicTurnNav() {
     <nav className="combat-controls">
       {game.user.isGM ? (
         <>
-          {combatState?.round ? (
+          {round ? (
             // combat started
             <>
               <button
@@ -72,7 +83,7 @@ export const ClassicTurnNav = memo(function ClassicTurnNav() {
                   label={
                     <>
                       {format("COMBAT.Round", {
-                        round: combatState.round.toString(),
+                        round: round.toString(),
                       })}
                       <FaChevronDown />
                     </>
@@ -144,9 +155,9 @@ export const ClassicTurnNav = memo(function ClassicTurnNav() {
               type="button"
               className="combat-control combat-control-lg"
               onClick={handleStartCombat}
-              disabled={(turns.length ?? 0) === 0}
+              disabled={turnCount === 0}
               css={{
-                cursor: (turns.length ?? 0) === 0 ? "not-allowed" : "pointer",
+                cursor: turnCount === 0 ? "not-allowed" : "pointer",
               }}
             >
               <LuSwords />
@@ -175,9 +186,9 @@ export const ClassicTurnNav = memo(function ClassicTurnNav() {
                 color: "var(--color-text-primary)",
               }}
             >
-              {combatState?.round
+              {round
                 ? format("COMBAT.Round", {
-                    round: combatState?.round.toString(),
+                    round: round.toString(),
                   })
                 : localize("COMBAT.NotStarted")}
             </strong>

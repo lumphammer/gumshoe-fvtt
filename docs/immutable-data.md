@@ -275,6 +275,7 @@ Components rendered per change, before and after converting (from
 | PC, Abilities tab: an ability's pool                   | 1128   | 315   |
 | PC, Abilities tab: the actor's Health                  | 1125   | 277   |
 | combat tracker (12 combatants): next turn              | 402    | 112   |
+| combat tracker, header on props: next turn             | 112    | 48    |
 | PC, Moribund World Abilities tab: an ability's pool    | 944    | 311   |
 | PC, Moribund World Abilities tab: the actor's Health   | 944    | 283   |
 | PC, Abilities tab, panels memoised: an ability's pool  | 315    | 71    |
@@ -306,12 +307,16 @@ every tab reads snapshots. Still to do:
   each sits in a `LiveActorIsland`, which re-renders it on any change to the
   actor or the settings (as Foundry's re-render of the sheet did), so that
   `PCSheetFull` can be memoised. Converting them means replacing the island;
-- the combat tracker's header, which still re-renders on every change.
+- the combat tracker's turn-passing header (`TurnPassingTurnNav`), which
+  still reads the tracker's context, and so re-renders on every change.
 
 The combat tracker's rows were already memoised, but the keyboard sensor's
 options were a new object on every render: that made new sensors, so every
 row got new drag listeners and re-rendered its contents. With the options
 hoisted, only the two rows whose turn changed re-render: the row is told
 whether it's active by the list, rather than reading `combat.turn` itself
-(which a memoised row would miss). `RENDER_BENCH_NAMES=1` lists which
+(which a memoised row would miss). The classic header's parts
+(`EncounterNav`, `ClassicTurnNav`, `ClassicToolsRow`) take props from
+`Tracker`, not the context (which changes on every update), so a new turn
+in the same round doesn't re-render them. `RENDER_BENCH_NAMES=1` lists which
 components rendered (build with `--minify false` for readable names).

@@ -44,6 +44,7 @@ export const Tracker = () => {
         {trackerContextValue.combat && (
           /* TOP ROW: ➕ 1️⃣ 2️⃣ 3️⃣ ⚙️ */
           <EncounterNav
+            combat={trackerContextValue.combat}
             combatIndex={combatIndex}
             prevCombatId={prevCombatId}
             nextCombatId={nextCombatId}
@@ -55,8 +56,18 @@ export const Tracker = () => {
         )}
         {isClassicCombat(trackerContextValue.combat) && (
           <>
-            <ClassicTurnNav />
-            {game.user.isGM && <ClassicToolsRow />}
+            <ClassicTurnNav
+              combat={trackerContextValue.combat}
+              round={trackerContextValue.combatState?.round ?? 0}
+              turnCount={trackerContextValue.turnIds.length}
+              isActiveUser={trackerContextValue.isActiveUser}
+            />
+            {game.user.isGM && (
+              <ClassicToolsRow
+                combat={trackerContextValue.combat}
+                turnCount={trackerContextValue.turnIds.length}
+              />
+            )}
           </>
         )}
       </header>
