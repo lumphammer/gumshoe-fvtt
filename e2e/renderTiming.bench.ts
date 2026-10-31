@@ -343,6 +343,36 @@ test("weapon sheet", async ({ page }) => {
   await record(page, "weapon: notes", "weapon notes", selector);
 });
 
+test("ability sheet", async ({ page }) => {
+  const pcId = await createActor(page, { name: "Runner", type: "pc" });
+  await page.evaluate((pcId) => {
+    const actor = game.actors.get(pcId)!;
+    const athletics = actor.items.getName("Athletics")!;
+    const stealth = actor.items.getName("Stealth")!;
+    const ops = globalThis.renderBench.ops;
+    ops["ability own pool"] = (i) =>
+      athletics.update({ system: { rating: 8, pool: 1 + (i % 7) } });
+    ops["ability other ability"] = (i) =>
+      stealth.update({ system: { rating: 8, pool: 1 + (i % 7) } });
+    ops["ability notes"] = (i) =>
+      athletics.update({ system: { notes: `<p>Fast, ${i}</p>` } });
+  }, pcId);
+  const athleticsId = await page.evaluate(
+    (pcId) => game.actors.get(pcId)!.items.getName("Athletics")!.id,
+    pcId,
+  );
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${athleticsId}`);
+  const selector = `[id="${await sheet.getAttribute("id")}"]`;
+  await record(page, "ability: its own pool", "ability own pool", selector);
+  await record(
+    page,
+    "ability: another ability",
+    "ability other ability",
+    selector,
+  );
+  await record(page, "ability: notes", "ability notes", selector);
+});
+
 test("combat tracker", async ({ page }) => {
   await setSettings(page, { useTurnPassingInitiative: false });
   await page.evaluate(async () => {
