@@ -1,11 +1,7 @@
-import { useContext } from "react";
+import { memo, useContext } from "react";
 
-import type { AbilityItem } from "../../module/items/exports";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
-
-const sumRatings = (abilities: AbilityItem[]) =>
-  abilities.reduce((total, ability) => total + ability.system.rating, 0);
 
 type BuildPointsCounterProps = {
   label: string;
@@ -48,8 +44,10 @@ const BuildPointsCounter = ({ label, total }: BuildPointsCounterProps) => {
 };
 
 type BuildPointsBarProps = {
-  investigativeAbilities: AbilityItem[];
-  generalAbilities: AbilityItem[];
+  /** the investigative abilities' ratings, added up */
+  investigativeTotal: number;
+  /** the general abilities' ratings, added up */
+  generalTotal: number;
   showInvestigative: boolean;
 };
 
@@ -57,11 +55,11 @@ type BuildPointsBarProps = {
  * A bar of "build point" totals (the sum of the ratings of the character's
  * abilitiy ratings, not really proper build points)
  */
-export const BuildPointsBar = ({
-  investigativeAbilities,
-  generalAbilities,
+export const BuildPointsBar = memo(function BuildPointsBar({
+  investigativeTotal,
+  generalTotal,
   showInvestigative,
-}: BuildPointsBarProps) => {
+}: BuildPointsBarProps) {
   const theme = useContext(ThemeContext);
   return (
     <div
@@ -92,15 +90,10 @@ export const BuildPointsBar = ({
       {showInvestigative && (
         <BuildPointsCounter
           label="Investigative build points"
-          total={sumRatings(investigativeAbilities)}
+          total={investigativeTotal}
         />
       )}
-      <BuildPointsCounter
-        label="General build points"
-        total={sumRatings(generalAbilities)}
-      />
+      <BuildPointsCounter label="General build points" total={generalTotal} />
     </div>
   );
-};
-
-BuildPointsBar.displayName = "BuildPointsBar";
+});

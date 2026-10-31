@@ -6,15 +6,17 @@ import {
 import { assertGame } from "../../functions/isGame";
 import type { DataSchema } from "../../fvtt-exports";
 import { TypeDataModel } from "../../fvtt-exports";
-import { settings } from "../../settings/settings";
 import type { MwInjuryStatus } from "../../types";
 import type { EquipmentItem } from "../items/equipment";
 import type { AbilityItem } from "../items/exports";
 import type { GeneralAbilityItem } from "../items/generalAbility";
 import type { InvestigativeAbilityItem } from "../items/investigativeAbility";
-import type { InvestigatorItem } from "../items/InvestigatorItem";
 import type { WeaponItem } from "../items/weapon";
-import { getPushPoolWarningKeys } from "./getPushPoolWarningKeys";
+import {
+  getCategorizedAbilitiesIn,
+  getPushPoolIn,
+  getPushPoolWarningKeysIn,
+} from "./abilitiesDerived";
 
 function isAbilityItem(x: unknown): x is AbilityItem {
   return (
@@ -25,10 +27,6 @@ function isAbilityItem(x: unknown): x is AbilityItem {
 
 function isGeneralAbilityItem(x: unknown): x is GeneralAbilityItem {
   return x instanceof Item && x.type === "generalAbility";
-}
-
-function isInvestigativeAbilityItem(x: unknown): x is InvestigativeAbilityItem {
-  return x instanceof Item && x.type === "investigativeAbility";
 }
 
 function isEquipmentItem(x: Item.Stored): x is EquipmentItem & Item.Stored {
@@ -181,70 +179,24 @@ export class ActiveCharacterModel<
     investigativeAbilities: { [category: string]: InvestigativeAbilityItem[] };
     generalAbilities: { [category: string]: GeneralAbilityItem[] };
   } {
-    const investigativeAbilities: {
-      [category: string]: InvestigativeAbilityItem[];
-    } = {};
-    const generalAbilities: { [category: string]: GeneralAbilityItem[] } = {};
-    const systemInvestigativeCats =
-      settings.investigativeAbilityCategories.get();
-    const systemGeneralCats = settings.generalAbilityCategories.get();
-    for (const cat of systemInvestigativeCats) {
-      investigativeAbilities[cat] = [];
-    }
-    for (const cat of systemGeneralCats) {
-      generalAbilities[cat] = [];
-    }
-
-    for (const item of this.parent.items.values()) {
-      if (!isAbilityItem(item)) {
-        continue;
-      }
-      if (
-        hideZeroRated &&
-        item.system.hideIfZeroRated &&
-        item.system.rating === 0
-      ) {
-        continue;
-      }
-      if (isInvestigativeAbilityItem(item)) {
-        const cat = item.system.categoryId || "Uncategorised";
-        if (investigativeAbilities[cat] === undefined) {
-          investigativeAbilities[cat] = [];
-        }
-        investigativeAbilities[cat].push(item);
-      } else if (isGeneralAbilityItem(item)) {
-        if (hidePushPool && item.system.isPushPool) {
-          continue;
-        }
-        const cat = item.system.categoryId || "Uncategorised";
-        if (generalAbilities[cat] === undefined) {
-          generalAbilities[cat] = [];
-        }
-        generalAbilities[cat].push(item);
-      }
-    }
-
-    return { investigativeAbilities, generalAbilities };
+    return getCategorizedAbilitiesIn(this.parent.items.contents, {
+      hideZeroRated,
+      hidePushPool,
+    }) as unknown as {
+      investigativeAbilities: Record<string, InvestigativeAbilityItem[]>;
+      generalAbilities: Record<string, GeneralAbilityItem[]>;
+    };
   }
 
   getPushPool(): GeneralAbilityItem | undefined {
-    return this.parent.items.find(
-      (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
-        isGeneralAbilityItem(item) && item.system.isPushPool,
-    );
+    return getPushPoolIn(this.parent.items.contents) as
+      | GeneralAbilityItem
+      | undefined;
   }
 
   getPushPoolWarnings(): string[] {
-    const pools = this.parent.items.filter(
-      (item: InvestigatorItem): item is GeneralAbilityItem =>
-        isGeneralAbilityItem(item) && item.system.isPushPool,
-    );
-    const quickShockAbilities = this.parent.items.filter(
-      (item: InvestigatorItem): item is InvestigativeAbilityItem =>
-        isInvestigativeAbilityItem(item) && item.system.isQuickShock,
-    );
-    return getPushPoolWarningKeys(pools.length, quickShockAbilities.length).map(
-      (key) => getTranslated(key),
+    return getPushPoolWarningKeysIn(this.parent.items.contents).map((key) =>
+      getTranslated(key),
     );
   }
 

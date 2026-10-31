@@ -10,7 +10,7 @@ export function trimLeadingPunctuation(s: string) {
   return s.replace(/^[\s\p{P}]+/gu, "");
 }
 
-export const sortEntitiesByName = <T extends NameHaver>(ents: T[]) => {
+export const sortEntitiesByName = <T extends NameHaver>(ents: readonly T[]) => {
   return ents.toSorted((a, b) => {
     const aName = trimLeadingPunctuation(a.name || "");
     const bName = trimLeadingPunctuation(b.name || "");

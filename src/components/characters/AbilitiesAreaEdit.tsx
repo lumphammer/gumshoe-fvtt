@@ -1,55 +1,111 @@
-import { Fragment, useContext } from "react";
+import { Fragment, memo, useContext } from "react";
 
+import { getTranslated } from "../../functions/getTranslated";
 import { sortEntitiesByName } from "../../functions/utilities";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import * as c from "../../constants";
+import {
+  getCategorizedAbilitiesIn,
+  getPushPoolWarningKeysIn,
+} from "../../module/actors/abilitiesDerived";
+import type { ItemView } from "../../module/actors/pcDerived";
 import { assertActiveCharacterActor } from "../../module/actors/types";
-import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
-import { settings } from "../../settings/settings";
+import type { AbilityItem } from "../../module/items/exports";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AbilitySlugEdit } from "./AbilitySlugEdit";
 import { AbilitySlugEditQuickShockInvestigative } from "./AbilitySlugEditQuickShockInvestigative";
 import { BuildPointsBar } from "./BuildPointsBar";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
 
-const settingsUseMwStyleAbilities = settings.useMwStyleAbilities.get;
-
 type AbilitiesAreaEditProps = {
   npcMode?: boolean;
 };
 
-export const AbilitiesAreaEdit = ({
+const systemOf = (item: ItemView) =>
+  item.system as { rating?: number; isQuickShock?: boolean };
+
+/** Each category's abilities, in order, as the rows need them */
+const toRows = (abilities: Record<string, ItemView[]>) =>
+  Object.fromEntries(
+    Object.entries(abilities).map(([cat, items]) => [
+      cat,
+      sortEntitiesByName(items).map((item) => ({
+        id: item._id ?? "",
+        isQuickShock: Boolean(systemOf(item).isQuickShock),
+      })),
+    ]),
+  );
+
+const sumRatings = (abilities: Record<string, ItemView[]>) =>
+  Object.values(abilities)
+    .flat()
+    .reduce((total, item) => total + (systemOf(item).rating ?? 0), 0);
+
+/**
+ * The character's abilities, to set their ratings. Reads the actor through a
+ * snapshot, selecting only which abilities go where (and the totals): each row
+ * reads its own ability, so a change to one ability re-renders only its row.
+ */
+export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
   npcMode = false,
-}: AbilitiesAreaEditProps) => {
+}: AbilitiesAreaEditProps) {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const theme = useContext(ThemeContext);
-  const { investigativeAbilities, generalAbilities } =
-    actor.system.getCategorizedAbilities(false, false);
+  const settings = useSettings((s) => s);
+
+  const layout = useActorSnapshot(actor, (snapshot) => {
+    const items = snapshot?.items ?? [];
+    const { investigativeAbilities, generalAbilities } =
+      getCategorizedAbilitiesIn(
+        items,
+        { hideZeroRated: false, hidePushPool: false },
+        settings,
+      );
+    return {
+      investigativeAbilities: toRows(investigativeAbilities),
+      generalAbilities: toRows(generalAbilities),
+      investigativeTotal: sumRatings(investigativeAbilities),
+      generalTotal: sumRatings(generalAbilities),
+      hasRegularInvestigativeAbilities: items.some(
+        (item) =>
+          item.type === c.investigativeAbility && !systemOf(item).isQuickShock,
+      ),
+      pushPoolWarningKeys: getPushPoolWarningKeysIn(items),
+    };
+  });
+  const { investigativeAbilities, generalAbilities } = layout;
+
+  // the live abilities, only to pass to the rows (which read them through
+  // snapshots, and write to them)
+  const getAbility = (id: string) =>
+    actor.items.get(id) as AbilityItem | undefined;
 
   // this is all a bit iffy-elsey, but...
 
   //  in MW mode, we hide the investigative abilities
-  const mwMode = settingsUseMwStyleAbilities();
+  const mwMode = settings.useMwStyleAbilities;
   // we're in "simplified mode" if it's an NPC or we're using MW style
   const simplifiedMode = npcMode || mwMode;
 
   // even when not simplified, we hide the "occupational" column if there are
   // no non-quickshock investigative abilities
-  const hasRegularInvestigativeAbilities = actor.items.some(
-    (item) => isInvestigativeAbilityItem(item) && !item.system.isQuickShock,
-  );
   const showInvestigativeOccupationalColumn =
-    !simplifiedMode && hasRegularInvestigativeAbilities;
+    !simplifiedMode && layout.hasRegularInvestigativeAbilities;
 
   // warnings from having weirdly set up push pools
-  const pushPoolWarnings = actor.system.getPushPoolWarnings();
+  const pushPoolWarnings = layout.pushPoolWarningKeys.map((key) =>
+    getTranslated(key),
+  );
 
   return (
     <>
       {!npcMode && (
         <BuildPointsBar
-          investigativeAbilities={Object.values(investigativeAbilities).flat()}
-          generalAbilities={Object.values(generalAbilities).flat()}
+          investigativeTotal={layout.investigativeTotal}
+          generalTotal={layout.generalTotal}
           showInvestigative={!mwMode}
         />
       )}
@@ -135,26 +191,22 @@ export const AbilitiesAreaEdit = ({
                 >
                   {cat}
                 </h2>
-                {sortEntitiesByName(investigativeAbilities[cat]).map(
-                  (ability) => {
-                    if (ability.system.isQuickShock) {
-                      return (
-                        <AbilitySlugEditQuickShockInvestigative
-                          key={ability.id}
-                          ability={ability}
-                        />
-                      );
-                    } else {
-                      return (
-                        <AbilitySlugEdit
-                          key={ability.id}
-                          ability={ability}
-                          showOcc={showInvestigativeOccupationalColumn}
-                        />
-                      );
-                    }
-                  },
-                )}
+                {investigativeAbilities[cat].map(({ id, isQuickShock }) => {
+                  const ability = getAbility(id);
+                  if (!ability) return null;
+                  return isQuickShock ? (
+                    <AbilitySlugEditQuickShockInvestigative
+                      key={id}
+                      ability={ability}
+                    />
+                  ) : (
+                    <AbilitySlugEdit
+                      key={id}
+                      ability={ability}
+                      showOcc={showInvestigativeOccupationalColumn}
+                    />
+                  );
+                })}
                 {investigativeAbilities[cat].length === 0 && (
                   <NoAbilitiesNote />
                 )}
@@ -215,13 +267,16 @@ export const AbilitiesAreaEdit = ({
               >
                 {cat}
               </h2>
-              {sortEntitiesByName(generalAbilities[cat]).map((ability) => (
-                <AbilitySlugEdit
-                  key={ability.id}
-                  ability={ability}
-                  showOcc={!simplifiedMode}
-                />
-              ))}
+              {generalAbilities[cat].map(({ id }) => {
+                const ability = getAbility(id);
+                return ability ? (
+                  <AbilitySlugEdit
+                    key={id}
+                    ability={ability}
+                    showOcc={!simplifiedMode}
+                  />
+                ) : null;
+              })}
               {generalAbilities[cat].length === 0 && <NoAbilitiesNote />}
             </Fragment>
           ))}
@@ -229,4 +284,4 @@ export const AbilitiesAreaEdit = ({
       </div>
     </>
   );
-};
+});
