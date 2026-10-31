@@ -33,6 +33,9 @@ translations, adding fields and settings, releases).
   `pnpm build` before `pnpm e2e`.
 - Not part of `pnpm check`. Run `pnpm e2e` when a change touches something a
   test covers.
+- Tests run with the canvas off. Changing an actor's ownership then makes
+  Foundry throw on the player's client (cycling tokens) before any hooks fire:
+  such tests need `test.use({ canvas: true })`.
 - Only one run at a time per Foundry: if `pnpm e2e` says another run is using
   it, the user may be running the tests too. Wait, rather than stopping it.
 
@@ -73,15 +76,31 @@ translations, adding fields and settings, releases).
   avoid `useMemo`/`useCallback` over values that change every render; plain
   functions are fine.
 - Sheets are being converted to read immutable **snapshots**, so they can be
-  memoised (`docs/immutable-data.md`). Converted so far: the equipment and
-  weapon sheets, and `WeaponAttackPanel`. In a converted tree, read data only
-  from `useItemSnapshot`, `useActorSnapshot(actor, selector)` and
-  `useSettings(selector)` (selector results are structurally shared, so they
-  can build objects). Use the live document only to write, in event handlers,
-  or through `useSystemMethods(doc)`: `doc.system` is replaced on update, so
-  `doc.system.setFoo` isn't stable. Memoise the sheet's root (it has no props),
-  so Foundry's own re-render stops there. Turn domain getters into pure
-  functions over snapshots (e.g. `findGeneralAbilityIn`).
+  memoised (`docs/immutable-data.md`). Converted so far: the equipment, weapon
+  and ability sheets, and the PC/NPC sheets' Abilities tab (not Moribund
+  World's). In a converted tree:
+  - Read data only from `useItemSnapshot`/`useItemSelector`,
+    `useActorSnapshot(actor, selector)` and `useSettings(selector)`.
+    Selector results are structurally shared, so they can build objects; select
+    only what's shown, so other changes don't re-render. There's one cached
+    store per document (`documentStores.ts`), so many components can read the
+    same actor cheaply.
+  - Use the live document only to write, in event handlers, or through
+    `useSystemMethods(doc)`: `doc.system` is replaced on update, so
+    `doc.system.setFoo` isn't stable. To render a list from a snapshot, select
+    ids and look the live items up to pass to memoised rows.
+  - Memoise the sheet's root (it has no props), so Foundry's own re-render stops
+    there, and provide `IsEditableContext` from it (`useSheetPermissions`,
+    which follows the item's and its actor's ownership): inputs read
+    `useIsEditable`, and a memoised parent would otherwise hide a permission
+    change from them.
+  - Components shared with unconverted sheets (`WeaponAttackPanel`,
+    `AbilityBadges`, `SpecialityList`, the ability rows) are islands: they
+    take the live document and read their own snapshots.
+  - Domain getters become pure functions over a plain view of the data and a
+    `SettingsView` (`pcDerived.ts`, `abilitiesDerived.ts`,
+    `abilitySnapshots.ts`); settings helpers take `s = liveSettings`. The
+    model's methods call the pure ones, so each rule lives once.
 - An unconverted sheet only re-renders when its own document changes. If it
   shows data from another document, subscribe to hooks yourself: see
   `src/hooks/useRefreshOnActorItemChanges.ts`.
