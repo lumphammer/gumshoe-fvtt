@@ -181,3 +181,82 @@ On the `immutable-data-bench` branch:
 
 To re-export the fixture, run
 `scripts/export-actor-fixture.ts <world data dir> "<actor name>" <out.json>`.
+
+## Render timing
+
+Separately from the snapshot strategies, `e2e/renderTiming.bench.ts` measures
+what a sheet costs to re-render after a document changes. It's a baseline for
+judging each sheet's conversion to snapshots.
+
+### How it works
+
+- A stand-in for React DevTools' global hook
+  (`e2e/renderTiming/commitRecorder.ts`) is installed before React loads. It
+  records every commit: when it happened, how long React spent rendering
+  (with React's profiling build only), and how many components rendered
+  rather than being skipped.
+- Each scenario changes a document 20 times, after 3 warm-up changes. After
+  each change it waits for React to go quiet, then reports:
+  - the time from the document's hook to React's last commit;
+  - the number of commits;
+  - React's render time;
+  - the components rendered, overall and per commit.
+
+To run it on the e2e Foundry:
+
+```sh
+pnpm build:profiling   # React's profiling build, for render durations
+RENDER_BENCH_LABEL=before pnpm bench:foundry e2e/renderTiming.bench.ts
+```
+
+Results go to `test-results/render-timing-<label>.json`. Run `pnpm build`
+afterwards to put a normal build back.
+
+**Use component counts to judge a change.** They're exact from run to run.
+The millisecond figures can vary by 2× between runs of the same code, so
+treat them as a rough indication.
+
+### Equipment sheet, before and after snapshots
+
+| Change | Wall | React | Components rendered (per commit) |
+|---|---|---|---|
+| a field, before | 2.3–3.5 ms | 1.0–1.2 ms | 116 (102, then 14) |
+| a field, after | 2.7–3.4 ms | 1.0–1.4 ms | 127 (77, then 50) |
+| notes, before | 2.0–2.7 ms | 0.7–1.0 ms | 91 (88, then 3) |
+| notes, after | 2.1–3.5 ms | 0.8–1.3 ms | 96 (57, then 39) |
+
+As expected, a sheet this small shows no difference in time. The
+per-commit counts show what happens on each update:
+
+- **Before,** Foundry's re-render (`render()` → `root.render`) redraws the
+  whole tree, then input effects make a small follow-up commit.
+- **After,** the snapshot update renders from `EquipmentSheet` down, skipping
+  the memoised parts. Then Foundry's re-render arrives and re-renders the
+  unmemoised outer shell (`ItemSheet`, `ItemSheetFramework`) **a second
+  time**.
+
+**Once a sheet reads everything through snapshots, Foundry's re-render is
+redundant, and it should be stopped.** Either make the mixin's
+`_renderHTML` skip `root.render` after the first render for converted sheets,
+or memoise at the root so the re-render goes no further. Until then, the
+outer shell renders twice per change.
+
+### Baseline for unconverted sheets
+
+These are from two runs of the current code. The PC sheet uses the fixture
+PC (76 items).
+
+| Scenario | Wall | React | Components rendered |
+|---|---|---|---|
+| PC, Abilities tab: ability pool | 12–28 ms | 10–23 ms | 1212 |
+| PC, Abilities tab: actor health | 21–28 ms | 17–23 ms | 1212 |
+| PC, Combat tab: ability pool | 5–11 ms | 4–8 ms | 422 |
+| PC, Equipment tab: ability pool | 5 ms | 4 ms | 498 |
+| combat tracker, 12 combatants: initiative | 0.5 ms | 0.1 ms | 2 |
+| combat tracker, 12 combatants: next turn | 4 ms | 3 ms | 402 |
+
+- **The PC sheet redraws all 1,212 components on its Abilities tab for one
+  pool change.** That's where snapshots have the most to gain.
+- **"Next turn" re-renders every row of the combat tracker,** even though
+  the tracker is already memoised. The likely causes are dnd-kit's sortable
+  context, or the rows reading `combat.turn` from the live document.
