@@ -1,12 +1,12 @@
-import { useCallback } from "react";
+import { memo } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
+import { isGeneralAbilitySnapshot } from "../../module/items/abilitySnapshots";
 import type { AbilityItem } from "../../module/items/exports";
-import { assertAbilityItem, isAbilityItem } from "../../module/items/exports";
-import {
-  assertGeneralAbilityItem,
-  isGeneralAbilityItem,
-} from "../../module/items/generalAbility";
+import { isGeneralAbilityItem } from "../../module/items/generalAbility";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
 import { AbilityBadges } from "./AbilityBadges";
@@ -21,24 +21,25 @@ const range = (from: number, to: number): number[] => {
 };
 
 type PoolTrackerProps = {
+  /** The live ability: the tracker reads it through a snapshot */
   ability: AbilityItem;
 };
 
-export const PoolTracker = ({ ability }: PoolTrackerProps) => {
-  assertAbilityItem(ability);
-  const min = ability?.system.min ?? 0;
-  const max = ability.system.allowPoolToExceedRating
-    ? ability.system.max
-    : ability?.system.rating;
-  const vals = range(min, max);
-
-  const handleClickPush = useCallback(() => {
-    assertGeneralAbilityItem(ability);
-    void ability.system.push();
-  }, [ability]);
-
-  const sheet = ability.sheet;
-  assertApplicationV2(sheet);
+export const PoolTracker = memo(function PoolTracker({
+  ability,
+}: PoolTrackerProps) {
+  const tracker = useItemSelector(ability, (snapshot: AbilitySnapshot) => ({
+    name: snapshot.name,
+    min: snapshot.system.min ?? 0,
+    max: snapshot.system.allowPoolToExceedRating
+      ? snapshot.system.max
+      : snapshot.system.rating,
+    pool: snapshot.system.pool,
+    isPushPool:
+      isGeneralAbilitySnapshot(snapshot) && snapshot.system.isPushPool,
+  }));
+  const methods = useSystemMethods(ability);
+  const vals = range(tracker.min, tracker.max);
 
   return (
     <div
@@ -52,7 +53,15 @@ export const PoolTracker = ({ ability }: PoolTrackerProps) => {
       }}
     >
       <h2 css={{ gridColumn: "start / end" }}>
-        <a onClick={() => sheet.render({ force: true })}>{ability.name}</a>
+        <a
+          onClick={() => {
+            const sheet = ability.sheet;
+            assertApplicationV2(sheet);
+            void sheet.render({ force: true });
+          }}
+        >
+          {tracker.name}
+        </a>
       </h2>
       {/* e.g. Shaken, under Stability: hard to miss on the sheet */}
       {isGeneralAbilityItem(ability) && (
@@ -72,25 +81,25 @@ export const PoolTracker = ({ ability }: PoolTrackerProps) => {
         <PoolCheckbox
           key={value}
           value={value}
-          onClick={ability.system.setPool}
-          selected={
-            ability && isAbilityItem(ability) && value === ability.system.pool
-          }
+          onClick={methods.setPool}
+          selected={value === tracker.pool}
         />
       ))}
-      {isGeneralAbilityItem(ability) && ability.system.isPushPool && (
+      {tracker.isPushPool && (
         <Button
           css={{
             gridColumn: "start / end",
             width: "auto",
             marginTop: "0.5em",
           }}
-          disabled={ability.system.pool === 0}
-          onClick={handleClickPush}
+          disabled={tracker.pool === 0}
+          onClick={() => {
+            if (isGeneralAbilityItem(ability)) void ability.system.push();
+          }}
         >
           <Translate>Push</Translate>
         </Button>
       )}
     </div>
   );
-};
+});

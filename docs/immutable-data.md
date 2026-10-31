@@ -266,24 +266,32 @@ PC (76 items).
 Components rendered per change, before and after converting (from
 `e2e/renderTiming.bench.ts`; the PC is the 76-item fixture):
 
-| Change                                               | Before | After |
-| ---------------------------------------------------- | ------ | ----- |
-| weapon sheet: another ability on the actor           | 37     | 0     |
-| weapon sheet: its notes                              | 85     | 48    |
-| ability sheet: another ability on the actor          | 34     | 0     |
-| ability sheet: its notes                             | 146    | 115   |
-| PC, Abilities tab: an ability's pool                 | 1128   | 315   |
-| PC, Abilities tab: the actor's Health                | 1125   | 277   |
-| combat tracker (12 combatants): next turn            | 402    | 112   |
-| PC, Moribund World Abilities tab: an ability's pool  | 944    | 311   |
-| PC, Moribund World Abilities tab: the actor's Health | 944    | 283   |
+| Change                                                 | Before | After |
+| ------------------------------------------------------ | ------ | ----- |
+| weapon sheet: another ability on the actor             | 37     | 0     |
+| weapon sheet: its notes                                | 85     | 48    |
+| ability sheet: another ability on the actor            | 34     | 0     |
+| ability sheet: its notes                               | 146    | 115   |
+| PC, Abilities tab: an ability's pool                   | 1128   | 315   |
+| PC, Abilities tab: the actor's Health                  | 1125   | 277   |
+| combat tracker (12 combatants): next turn              | 402    | 112   |
+| PC, Moribund World Abilities tab: an ability's pool    | 944    | 311   |
+| PC, Moribund World Abilities tab: the actor's Health   | 944    | 283   |
+| PC, Abilities tab, panels memoised: an ability's pool  | 315    | 71    |
+| PC, Abilities tab, panels memoised: the actor's Health | 277    | 33    |
+| PC, Combat tab, panels memoised: an ability's pool     | 410    | 166   |
+| PC, Equipment tab, panels memoised: an ability's pool  | 486    | 242   |
 
-On the Abilities tab, the 277 left is the rest of the PC sheet (header,
-personal details, pools panel, tab strip), which Foundry still re-renders on
-every change; the memoised areas stop it at their edge. Still to do:
+The PC sheet's header, stats panel and pools panel are now memoised sections
+(`PCSheetPanels.tsx`), and the pool trackers read snapshots. Most of what
+was left was the trackers' checkboxes. The 33 left on the Abilities tab is
+the sheet's shell (`PCSheetFull`, `TabContainer`, the edit-mode toggle),
+which Foundry re-renders on every change. Its root can only be memoised once
+every tab reads snapshots. Still to do:
 
-- the rest of the PC sheet, then memoising its root;
-- the Combat and Equipment tabs (410 and 486 components per change);
+- the Combat and Equipment tabs (166 and 242 components per change), then
+  the Notes, Settings, Bonds, Contacts and Cards tabs, then memoising
+  `PCSheetFull`;
 - the NPC sheet beyond its Abilities tab;
 - the combat tracker's header, which still re-renders on every change.
 
