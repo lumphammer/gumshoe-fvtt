@@ -1,74 +1,83 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import React, { Fragment, useCallback, useContext } from "react";
+import React, { Fragment, memo, useCallback, useContext } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { assertAbilityItem } from "../../module/items/exports";
-import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
+import type { AbilityItem } from "../../module/items/exports";
 import { AbilityBadges } from "../abilities/AbilityBadges";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
 
 type AbilitySlugPlayQuickShockInvestigativeProps = {
-  ability: InvestigatorItem;
+  /** The live ability: the row reads it through a snapshot */
+  ability: AbilityItem;
   disabled: boolean;
 };
 
-export const AbilitySlugPlayQuickShockInvestigative = ({
-  ability,
-  disabled,
-}: AbilitySlugPlayQuickShockInvestigativeProps) => {
-  assertAbilityItem(ability);
-  const app = useContext(FoundryAppContext);
-  const onDragStart = useCallback(
-    (e: React.DragEvent<HTMLAnchorElement>) => {
-      if (app !== null) {
-        (app as any)._onDragStart(e);
-      }
-    },
-    [app],
-  );
+export const AbilitySlugPlayQuickShockInvestigative = memo(
+  function AbilitySlugPlayQuickShockInvestigative({
+    ability,
+    disabled,
+  }: AbilitySlugPlayQuickShockInvestigativeProps) {
+    const row = useItemSelector(ability, (snapshot: AbilitySnapshot) => ({
+      name: snapshot.name,
+      hasSpecialities: snapshot.system.hasSpecialities,
+      specialities: snapshot.system.specialities,
+    }));
+    const { push } = useSystemMethods(ability);
+    const app = useContext(FoundryAppContext);
+    const onDragStart = useCallback(
+      (e: React.DragEvent<HTMLAnchorElement>) => {
+        if (app !== null) {
+          (app as any)._onDragStart(e);
+        }
+      },
+      [app],
+    );
 
-  const handleClickPush = useCallback(() => {
-    void ability.system.push();
-  }, [ability]);
+    const handleClickPush = useCallback(() => {
+      void push();
+    }, [push]);
 
-  const sheet = ability.sheet;
-  assertApplicationV2(sheet);
-
-  return (
-    <Fragment key={ability.id}>
-      <a
-        onClick={() => {
-          void sheet.render({ force: true });
-        }}
-        data-item-id={ability.id}
-        onDragStart={onDragStart}
-        draggable="true"
-        css={{
-          gridColumn: "ability",
-          lineHeight: 0.9,
-          textAlign: "end",
-        }}
-      >
-        {ability.name}
-      </a>
-      <div css={{ gridColumn: "rating/-1", justifySelf: "right" }}>
-        <Button
-          css={{ width: "4.1em" }}
-          onClick={handleClickPush}
-          disabled={disabled}
+    return (
+      <Fragment key={ability.id}>
+        <a
+          onClick={() => {
+            const sheet = ability.sheet;
+            assertApplicationV2(sheet);
+            void sheet.render({ force: true });
+          }}
+          data-item-id={ability.id}
+          onDragStart={onDragStart}
+          draggable="true"
+          css={{
+            gridColumn: "ability",
+            lineHeight: 0.9,
+            textAlign: "end",
+          }}
         >
-          <Translate>Push</Translate>
-        </Button>
-      </div>
-      <AbilityBadges ability={ability} css={{ gridColumn: "1/-1" }} />
-      {ability.system.hasSpecialities && (
-        <div css={{ paddingLeft: "1em", gridColumn: "1/-1" }}>
-          {(ability.system.specialities || []).map((x: string, i: number) => (
-            <div key={i}>{x.trim()}</div>
-          ))}
+          {row.name}
+        </a>
+        <div css={{ gridColumn: "rating/-1", justifySelf: "right" }}>
+          <Button
+            css={{ width: "4.1em" }}
+            onClick={handleClickPush}
+            disabled={disabled}
+          >
+            <Translate>Push</Translate>
+          </Button>
         </div>
-      )}
-    </Fragment>
-  );
-};
+        <AbilityBadges ability={ability} css={{ gridColumn: "1/-1" }} />
+        {row.hasSpecialities && (
+          <div css={{ paddingLeft: "1em", gridColumn: "1/-1" }}>
+            {row.specialities.map((x, i) => (
+              <div key={i}>{x.trim()}</div>
+            ))}
+          </div>
+        )}
+      </Fragment>
+    );
+  },
+);

@@ -1,22 +1,40 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import React, { Fragment, useCallback, useContext, useState } from "react";
+import React, {
+  Fragment,
+  memo,
+  useCallback,
+  useContext,
+  useState,
+} from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { assertAbilityItem } from "../../module/items/exports";
-import { isGeneralAbilityItem } from "../../module/items/generalAbility";
-import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
-import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
+import { isGeneralAbilitySnapshot } from "../../module/items/abilitySnapshots";
+import type { AbilityItem } from "../../module/items/exports";
 import { AbilityBadges } from "../abilities/AbilityBadges";
 import { Button } from "../inputs/Button";
 
 type AbilitySlugPlayNormalProps = {
-  ability: InvestigatorItem;
+  /** The live ability: the row reads it through a snapshot */
+  ability: AbilityItem;
 };
 
-export const AbilitySlugPlayNormal = ({
+export const AbilitySlugPlayNormal = memo(function AbilitySlugPlayNormal({
   ability,
-}: AbilitySlugPlayNormalProps) => {
-  assertAbilityItem(ability);
+}: AbilitySlugPlayNormalProps) {
+  const row = useItemSelector(ability, (snapshot: AbilitySnapshot) => ({
+    name: snapshot.name,
+    pool: snapshot.system.pool,
+    rating: snapshot.system.rating,
+    isGeneral: isGeneralAbilitySnapshot(snapshot),
+    canBeInvestigative:
+      isGeneralAbilitySnapshot(snapshot) && snapshot.system.canBeInvestigative,
+    hasSpecialities: snapshot.system.hasSpecialities,
+    specialities: snapshot.system.specialities,
+  }));
+  const { testAbility, confirmSpendAbility } = useSystemMethods(ability);
   const app = useContext(FoundryAppContext);
   const onDragStart = useCallback(
     (e: React.DragEvent<HTMLAnchorElement>) => {
@@ -30,14 +48,14 @@ export const AbilitySlugPlayNormal = ({
   const [spend, setSpend] = useState(0);
 
   const onTest = useCallback(() => {
-    void ability.system.testAbility(spend);
+    void testAbility(spend);
     setSpend(0);
-  }, [ability, spend]);
+  }, [testAbility, spend]);
 
   const onSpend = useCallback(() => {
-    void ability.system.confirmSpendAbility(spend);
+    void confirmSpendAbility(spend);
     setSpend(0);
-  }, [ability, spend]);
+  }, [confirmSpendAbility, spend]);
 
   const onClickInc = useCallback(() => {
     setSpend((s) => s + 1);
@@ -47,13 +65,12 @@ export const AbilitySlugPlayNormal = ({
     setSpend((s) => s - 1);
   }, []);
 
-  const sheet = ability.sheet;
-  assertApplicationV2(sheet);
-
   return (
     <Fragment key={ability.id}>
       <a
         onClick={() => {
+          const sheet = ability.sheet;
+          assertApplicationV2(sheet);
           void sheet.render({ force: true });
         }}
         data-item-id={ability.id}
@@ -65,10 +82,10 @@ export const AbilitySlugPlayNormal = ({
           textAlign: "end",
         }}
       >
-        {ability.name}
+        {row.name}
       </a>
       <div css={{ gridColumn: "rating", justifySelf: "right" }}>
-        {ability.system.pool}/{ability.system.rating}
+        {row.pool}/{row.rating}
       </div>
       <div
         css={{
@@ -87,13 +104,13 @@ export const AbilitySlugPlayNormal = ({
         <Button
           css={{ gridColumn: "2" }}
           onClick={onClickInc}
-          disabled={spend >= ability.system.pool}
+          disabled={spend >= row.pool}
         >
           <i css={{ fontSize: "x-small" }} className="fa fa-plus" />
         </Button>
       </div>
       <div css={{ gridColumn: "spend" }}>
-        {isInvestigativeAbilityItem(ability) && (
+        {!row.isGeneral && (
           <Button
             disabled={spend === 0}
             onClick={onSpend}
@@ -105,12 +122,12 @@ export const AbilitySlugPlayNormal = ({
             {spend}
           </Button>
         )}
-        {isGeneralAbilityItem(ability) && (
+        {row.isGeneral && (
           <Button css={{ width: "4.1em" }} onClick={onTest}>
             <i className="fa fa-dice" title="Test" />+{spend}
           </Button>
         )}
-        {isGeneralAbilityItem(ability) && ability.system.canBeInvestigative && (
+        {row.canBeInvestigative && (
           <Button
             css={{ width: "2em" }}
             disabled={spend === 0}
@@ -121,18 +138,18 @@ export const AbilitySlugPlayNormal = ({
         )}
       </div>
       <AbilityBadges ability={ability} css={{ gridColumn: "1/-1" }} />
-      {ability.system.hasSpecialities && (
+      {row.hasSpecialities && (
         <div
           css={{ paddingLeft: "1em", gridColumn: "1/-1", textAlign: "right" }}
         >
-          {(ability.system.specialities || []).map((x: string, i: number) => (
+          {row.specialities.map((x, i) => (
             <span key={i}>
               {x.trim()}
-              {i < ability.system.specialities.length - 1 && ", "}
+              {i < row.specialities.length - 1 && ", "}
             </span>
           ))}
         </div>
       )}
     </Fragment>
   );
-};
+});

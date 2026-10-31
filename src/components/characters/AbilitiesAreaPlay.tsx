@@ -1,9 +1,17 @@
-import { Fragment, useContext } from "react";
+import { Fragment, memo, useContext } from "react";
 
 import { sortEntitiesByName } from "../../functions/utilities";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import {
+  getCategorizedAbilitiesIn,
+  getPushPoolIn,
+} from "../../module/actors/abilitiesDerived";
+import type { ItemView } from "../../module/actors/pcDerived";
 import { assertActiveCharacterActor } from "../../module/actors/types";
-import { settings } from "../../settings/settings";
+import type { AbilityItem } from "../../module/items/exports";
+import { getPoolOf } from "../../module/items/findGeneralAbility";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AbilitySlugPlayNormal } from "./AbilitySlugPlayNormal";
 import { AbilitySlugPlayQuickShockInvestigative } from "./AbilitySlugPlayQuickShockInvestigative";
@@ -13,19 +21,54 @@ type AbilitiesAreaPlayProps = {
   flipLeftRight?: boolean;
 };
 
-export const AbilitiesAreaPlay = ({
+/** Each category's abilities, in order, as the rows need them */
+const toRows = (abilities: Record<string, ItemView[]>) =>
+  Object.fromEntries(
+    Object.entries(abilities).map(([cat, items]) => [
+      cat,
+      sortEntitiesByName(items).map((item) => ({
+        id: item._id ?? "",
+        isQuickShock: Boolean(
+          (item.system as { isQuickShock?: boolean }).isQuickShock,
+        ),
+      })),
+    ]),
+  );
+
+/**
+ * The character's abilities, to spend and test. Reads the actor through a
+ * snapshot, selecting only which abilities go where: each row reads its own
+ * ability, so a change to one ability re-renders only its row.
+ */
+export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
   flipLeftRight,
-}: AbilitiesAreaPlayProps) => {
+}: AbilitiesAreaPlayProps) {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
-  const { investigativeAbilities, generalAbilities } =
-    actor.system.getCategorizedAbilities(true, true);
   const theme = useContext(ThemeContext);
+  const settings = useSettings((s) => s);
+  const showEmpty = settings.showEmptyInvestigativeCategories;
 
-  const pushPool = actor.system.getPushPool();
-  const pushPoolIsZero = pushPool === undefined || pushPool.system.pool === 0;
+  const layout = useActorSnapshot(actor, (snapshot) => {
+    const items = snapshot?.items ?? [];
+    const { investigativeAbilities, generalAbilities } =
+      getCategorizedAbilitiesIn(
+        items,
+        { hideZeroRated: true, hidePushPool: true },
+        settings,
+      );
+    return {
+      investigativeAbilities: toRows(investigativeAbilities),
+      generalAbilities: toRows(generalAbilities),
+      pushPoolIsZero: getPoolOf(getPushPoolIn(items)) === 0,
+    };
+  });
+  const { investigativeAbilities, generalAbilities, pushPoolIsZero } = layout;
 
-  const showEmpty = settings.showEmptyInvestigativeCategories.get();
+  // the live abilities, only to pass to the rows (which read them through
+  // snapshots, and write to them)
+  const getAbility = (id: string) =>
+    actor.items.get(id) as AbilityItem | undefined;
 
   return (
     <>
@@ -65,26 +108,19 @@ export const AbilitiesAreaPlay = ({
                 >
                   {cat}
                 </h2>
-                {sortEntitiesByName(investigativeAbilities[cat]).map(
-                  (ability) => {
-                    if (ability.system.isQuickShock) {
-                      return (
-                        <AbilitySlugPlayQuickShockInvestigative
-                          key={ability.id}
-                          ability={ability}
-                          disabled={pushPoolIsZero}
-                        />
-                      );
-                    } else {
-                      return (
-                        <AbilitySlugPlayNormal
-                          key={ability.id}
-                          ability={ability}
-                        />
-                      );
-                    }
-                  },
-                )}
+                {investigativeAbilities[cat].map(({ id, isQuickShock }) => {
+                  const ability = getAbility(id);
+                  if (!ability) return null;
+                  return isQuickShock ? (
+                    <AbilitySlugPlayQuickShockInvestigative
+                      key={id}
+                      ability={ability}
+                      disabled={pushPoolIsZero}
+                    />
+                  ) : (
+                    <AbilitySlugPlayNormal key={id} ability={ability} />
+                  );
+                })}
                 {investigativeAbilities[cat].length === 0 && (
                   <NoAbilitiesNote />
                 )}
@@ -118,9 +154,12 @@ export const AbilitiesAreaPlay = ({
               >
                 {cat}
               </h2>
-              {sortEntitiesByName(generalAbilities[cat]).map((ability) => (
-                <AbilitySlugPlayNormal key={ability.id} ability={ability} />
-              ))}
+              {generalAbilities[cat].map(({ id }) => {
+                const ability = getAbility(id);
+                return ability ? (
+                  <AbilitySlugPlayNormal key={id} ability={ability} />
+                ) : null;
+              })}
               {generalAbilities[cat].length === 0 && <NoAbilitiesNote />}
             </Fragment>
           ))}
@@ -128,4 +167,4 @@ export const AbilitiesAreaPlay = ({
       </div>
     </>
   );
-};
+});
