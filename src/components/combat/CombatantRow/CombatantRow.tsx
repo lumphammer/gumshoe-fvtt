@@ -16,7 +16,8 @@ import { Content } from "./Content";
 
 interface CombatantRowProps {
   combatant: InvestigatorCombatant;
-  index: number;
+  /** Whether it's this combatant's turn. */
+  active: boolean;
 }
 
 // https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
@@ -28,7 +29,7 @@ const customTransition = {
   easing: "linear",
 };
 
-export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
+export const CombatantRow = memo(({ combatant, active }: CombatantRowProps) => {
   const {
     attributes,
     listeners,
@@ -59,9 +60,6 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
 
   const combatantContextValue = useCombatantContextValue(combatant);
 
-  const activeCombatantId =
-    combat.turn !== null ? (combat.turns[combat.turn]?.id ?? null) : null;
-  const active = activeCombatantId === combatant.id;
   const depleted =
     isTurnPassingCombatant(combatant) &&
     combatant.system.passingTurnsRemaining <= 0;
@@ -72,7 +70,7 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
         <li
           ref={setNodeRef}
           className={cx("combatant", {
-            active: combat.turn === index,
+            active,
             hide: combatantContextValue.combatantState.hidden,
             defeated: combatantContextValue.combatantState.defeated,
           })}

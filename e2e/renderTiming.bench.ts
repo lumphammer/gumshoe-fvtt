@@ -48,6 +48,8 @@ type Sample = {
   rendered: number;
   /** Per commit: ms from the hook, components rendered, React ms. */
   perCommit: { atMs: number; rendered: number; reactMs: number | null }[];
+  /** How many of each component rendered, across the commits. */
+  byComponent: Record<string, number>;
 };
 
 /**
@@ -97,6 +99,12 @@ async function measure(page: Page, op: string, selector: string) {
             rendered: c.rendered,
             reactMs: c.renderMs ?? null,
           })),
+          byComponent: commits.reduce<Record<string, number>>((acc, c) => {
+            for (const [name, n] of Object.entries(c.byComponent)) {
+              acc[name] = (acc[name] ?? 0) + n;
+            }
+            return acc;
+          }, {}),
         });
       }
       return samples;
@@ -130,6 +138,8 @@ function summarise(samples: Sample[]) {
     rendered: mean(samples.map((s) => s.rendered)),
     /** Components rendered in each commit, for the first sample. */
     renderedPerCommit: samples[0]?.perCommit.map((c) => c.rendered) ?? [],
+    /** Which components rendered, for the first sample. */
+    byComponent: samples[0]?.byComponent ?? {},
     samples,
   };
 }
@@ -208,6 +218,13 @@ test.afterEach(() => {
     `${JSON.stringify({ label, results: report.results }, null, 2)}\n`,
   );
   console.log(formatResults(results));
+  // RENDER_BENCH_NAMES=1 lists which components rendered
+  if (process.env["RENDER_BENCH_NAMES"]) {
+    for (const [name, r] of Object.entries(results)) {
+      const top = Object.entries(r.byComponent).sort((a, b) => b[1] - a[1]);
+      console.log(`${name}:\n${top.map(([c, n]) => `  ${n} ${c}`).join("\n")}`);
+    }
+  }
   for (const key of Object.keys(results)) delete results[key];
 });
 
