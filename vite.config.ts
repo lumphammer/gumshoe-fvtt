@@ -17,6 +17,16 @@ const config = defineConfig(({ mode }) => {
     importMetaUrl: import.meta.url,
     plugins: [vitePluginFontsource()],
   });
+  // `pnpm build:profiling`: React's profiling build, which records render
+  // durations for the render-timing benchmarks (e2e/renderTiming.bench.ts)
+  if (process.env["PROFILE_REACT"]) {
+    userConfig.resolve = {
+      ...userConfig.resolve,
+      alias: [
+        { find: /^react-dom\/client$/, replacement: "react-dom/profiling" },
+      ],
+    };
+  }
   // typechecking with tsgo in vitest is problematique rn - I can't get vitest
   // to find tests by setting .checker to the path to the executable. I've tried
   // `tsgo`, `./node_modules/.bin/tsgo`, anmd `../node_modules/.bin/tsgo`

@@ -6,6 +6,7 @@
   "description": "Official GUMSHOE support for FoundryVTT. Ships with compatiblity for several settings, and can be customized to work with any other setting.",
   "scripts": {
     "build": "vite build",
+    "build:profiling": "PROFILE_REACT=1 vite build",
     "build:dev": "vite build --mode dev",
     "build:watch": "vite build --watch --mode dev",
     "link": "./tasks.ts link",
@@ -17,6 +18,7 @@
     "test-types": "vitest --typecheck.only",
     "e2e": "playwright test",
     "e2e:foundry": "./scripts/e2e-foundry.sh",
+    "bench:foundry": "playwright test --config e2e/bench.config.ts",
     "test": "vitest",
     "format:check": "oxfmt --check src",
     "format:fix": "oxfmt --write src",
