@@ -1,14 +1,14 @@
 import type { ChangeEvent } from "react";
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
-import { useIsDocumentLimited } from "../../hooks/useIsDocumentLimited";
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import {
-  assertEquipmentItem,
-  isVisibleToLimited,
+import type { DeepReadonly } from "../../module/snapshots/createSnapshotStore";
+import type {
+  EquipmentCategoriesSnapshot,
+  EquipmentItem,
+  EquipmentSystemData,
 } from "../../module/items/equipment";
-import { settings } from "../../settings/settings";
+import { isVisibleToLimited } from "../../module/items/equipment";
 import { absoluteCover } from "../absoluteCover";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
@@ -18,18 +18,24 @@ import { TextInput } from "../inputs/TextInput";
 import { EquipmentField } from "./EquipmentField";
 
 interface EquipmentMainProps {
+  /** Only to write through: read from `system`. */
+  item: EquipmentItem;
+  system: DeepReadonly<EquipmentSystemData>;
+  categories: EquipmentCategoriesSnapshot;
+  isLimited: boolean;
   name: string;
   onChangeName: (name: string) => void;
 }
 
-export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
-  const { item } = useItemSheetContext();
-  const isLimited = useIsDocumentLimited();
-
-  assertEquipmentItem(item);
-
-  const categories = settings.equipmentCategories.get();
-  const categoryMetadata = categories[item.system.categoryId];
+export const EquipmentMain = memo(function EquipmentMain({
+  item,
+  system,
+  categories,
+  isLimited,
+  name,
+  onChangeName,
+}: EquipmentMainProps) {
+  const categoryMetadata = categories[system.categoryId];
   const isRealCategory = categoryMetadata !== undefined;
 
   const onChangeCategory = useCallback(
@@ -39,7 +45,7 @@ export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
     [item],
   );
 
-  const selectedCat = isRealCategory ? item.system.categoryId : "";
+  const selectedCat = isRealCategory ? system.categoryId : "";
 
   // people with Limited permission only see the fields marked for them
   const fields = Object.entries(categoryMetadata?.fields ?? {}).filter(
@@ -92,7 +98,7 @@ export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
             key={fieldId}
             fieldId={fieldId}
             fieldMetadata={fieldMetadata}
-            value={item.system.fields?.[fieldId]}
+            value={system.fields[fieldId]}
             equipment={item}
           />
         );
@@ -107,12 +113,10 @@ export const EquipmentMain = ({ name, onChangeName }: EquipmentMainProps) => {
       >
         <RichTextEditor
           name="notes"
-          html={item.system.notes}
+          html={system.notes}
           onSave={item.system.setNotes}
         />
       </div>
     </InputGrid>
   );
-};
-
-EquipmentMain.displayName = "EquipmentMain";
+});
