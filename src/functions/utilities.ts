@@ -30,7 +30,7 @@ function isMapIndexFunction<T>(
  * necessary.
  */
 export const padLength = <T>(
-  originalArray: T[] | null | undefined,
+  originalArray: readonly T[] | null | undefined,
   desiredlength: number,
   paddingElement: T | ((index: number) => T),
 ): T[] => {
@@ -51,7 +51,7 @@ export const padLength = <T>(
  * the original.
  */
 export const fixLength = <T>(
-  originalArray: T[] | null | undefined,
+  originalArray: readonly T[] | null | undefined,
   desiredlength: number,
   paddingElement: T,
 ): T[] => {

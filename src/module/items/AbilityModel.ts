@@ -23,6 +23,11 @@ import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
 import type { BondItem } from "./bond";
 import type { AbilitySchema } from "./createAbilitySchema";
 import type { AbilityItem } from "./exports";
+import {
+  clearActiveSituationalModifiers,
+  getActiveSituationalModifiers,
+  toggleActiveSituationalModifier,
+} from "./activeSituationalModifiers";
 import { migrateCategoryToCategoryId } from "./migrateCategoryToCategoryId";
 import { getSpecialitiesCount, resizeSpecialities } from "./resizeSpecialities";
 
@@ -40,9 +45,12 @@ export abstract class AbilityModel<
   }
 
   /**
-   * The situational modifiers that are currently active
+   * The situational modifiers that are currently active (see
+   * `activeSituationalModifiers.ts`)
    */
-  activeSituationalModifiers: string[] = [];
+  get activeSituationalModifiers(): readonly string[] {
+    return getActiveSituationalModifiers(this.parent.uuid);
+  }
 
   /**
    * classic gumshoe test: spend a number of points from the pool, and add that
@@ -135,6 +143,8 @@ export abstract class AbilityModel<
         ),
       }),
     });
+    // they were for this test
+    clearActiveSituationalModifiers(this.parent.uuid);
     const pool = this.pool - (Number(spend) || 0);
     await this.parent.update({ system: { pool } });
     if (usedBondSpends.length > 0) {
@@ -477,18 +487,7 @@ export abstract class AbilityModel<
   };
 
   toggleSituationalModifier = (id: string): void => {
-    if (this.isSituationalModifierActive(id)) {
-      const index = this.activeSituationalModifiers.indexOf(id);
-      if (index !== -1) {
-        this.activeSituationalModifiers.splice(index, 1);
-      }
-    } else {
-      if (!this.activeSituationalModifiers.includes(id)) {
-        this.activeSituationalModifiers.push(id);
-      }
-    }
-    void this.parent.sheet?.render();
-    void this.parent.parent?.sheet?.render();
+    toggleActiveSituationalModifier(this.parent.uuid, id);
   };
 
   isSituationalModifierActive = (id: string): boolean => {

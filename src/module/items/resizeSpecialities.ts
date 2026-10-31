@@ -31,7 +31,7 @@ export function getSpecialitiesCount({
 }
 
 export function resizeSpecialities(
-  specialities: string[],
+  specialities: readonly string[],
   settings: SpecialitiesSettings,
 ): string[] {
   return fixLength(specialities, getSpecialitiesCount(settings), "");
