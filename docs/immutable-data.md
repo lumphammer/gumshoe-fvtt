@@ -287,6 +287,9 @@ Components rendered per change, before and after converting (from
 | NPC (12 abilities), panels memoised: an ability's pool | 129    | 67    |
 | NPC, panels memoised: the actor's notes                | 96     | 34    |
 | NPC, Combat tab, panels memoised: an ability's pool    | 100    | 38    |
+| NPC, root memoised: an ability's pool                  | 67     | 35    |
+| NPC, root memoised: the actor's notes                  | 34     | 2     |
+| NPC, root memoised, Combat tab: an ability's pool      | 38     | 2     |
 
 The PC sheet's header, stats panel and pools panel are now memoised sections
 (`PCSheetPanels.tsx`), and the pool trackers read snapshots. Most of what
@@ -297,8 +300,6 @@ every tab reads snapshots. Still to do:
 
 - the Notes, Settings, Bonds, Contacts and Cards tabs, then memoising
   `PCSheetFull`;
-- the NPC sheet's notes tabs and weapons in edit mode, then memoising
-  `NPCSheetFull`;
 - the combat tracker's header, which still re-renders on every change.
 
 The combat tracker's rows were already memoised, but the keyboard sensor's

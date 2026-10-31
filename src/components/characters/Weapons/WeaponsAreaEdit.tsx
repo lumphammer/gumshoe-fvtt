@@ -1,18 +1,35 @@
+import { memo } from "react";
+
 import { weapon } from "../../../constants";
 import { sortEntitiesByName } from "../../../functions/utilities";
+import { useActorSnapshot } from "../../../hooks/useActorSnapshot";
+import { useSettings } from "../../../hooks/useSettings";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { assertActiveCharacterActor } from "../../../module/actors/types";
-import { settings } from "../../../settings/settings";
+import type { WeaponItem } from "../../../module/items/weapon";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { WeaponRowEdit } from "./WeaponRowEdit";
 
-export const WeaponsAreaEdit = () => {
+/**
+ * The character's weapons, to edit. Reads the actor through a snapshot,
+ * selecting only which weapons there are: each row reads its own.
+ */
+export const WeaponsAreaEdit = memo(function WeaponsAreaEdit() {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
-  const items = actor.system.getWeapons();
+  const ids = useActorSnapshot(actor, (snapshot) =>
+    sortEntitiesByName(
+      (snapshot?.items ?? []).filter((item) => item.type === weapon),
+    ).map((item) => item._id ?? ""),
+  );
+  // the live weapons, only to pass to the rows
+  const items = ids.flatMap((id) => {
+    const item = actor.items.get(id) as WeaponItem | undefined;
+    return item ? [item] : [];
+  });
   // an extra column for Extended range
-  const useExtendedRange = settings.useExtendedRange.get();
+  const useExtendedRange = useSettings((s) => s.useExtendedRange);
   return (
     <div>
       <div
@@ -154,11 +171,11 @@ export const WeaponsAreaEdit = () => {
             </div>
           )}
 
-          {sortEntitiesByName(items).map((item, index) => (
+          {items.map((item, index) => (
             <WeaponRowEdit key={item.id} weapon={item} index={index} />
           ))}
         </div>
       )}
     </div>
   );
-};
+});

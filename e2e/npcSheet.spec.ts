@@ -65,3 +65,47 @@ test("the NPC sidebar follows initiative, turns and trackers changed elsewhere",
   );
   await expect(tracker).toHaveCount(0);
 });
+
+test("the NPC's notes and edit-mode weapons follow changes made elsewhere", async ({
+  page,
+}) => {
+  const actorId = await createActor(page, { name: "Thug", type: "npc" });
+  const clubId = await createOwnedItem(page, actorId, {
+    name: "Club",
+    type: "weapon",
+    system: { damage: 1 },
+  });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const tab = (name: string) =>
+    sheet.locator(".tab-strip > label", { hasText: name }).first().click();
+
+  await tab("Notes");
+  await page.evaluate(async (actorId) => {
+    await game.actors
+      .get(actorId)!
+      .update({ system: { notes: "<p>Owes the Dons money</p>" } });
+  }, actorId);
+  await expect(sheet).toContainText("Owes the Dons money");
+
+  await tab("Combat");
+  await sheet.getByLabel("Edit mode").click();
+  await expect(sheet.locator('input[value="Club"]')).toHaveCount(1);
+  await page.evaluate(
+    async ({ actorId, clubId }) => {
+      await game.actors
+        .get(actorId)!
+        .items.get(clubId)!
+        .update({ name: "Cosh", system: { damage: 2 } });
+    },
+    { actorId, clubId },
+  );
+  await expect
+    .poll(() =>
+      sheet
+        .locator("input")
+        .evaluateAll((inputs) =>
+          inputs.map((input) => (input as HTMLInputElement).value),
+        ),
+    )
+    .toContain("Cosh");
+});
