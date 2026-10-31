@@ -20,7 +20,15 @@ import { fileURLToPath } from "node:url";
 
 import type { Page } from "@playwright/test";
 
-import { openSheet, reloadGame, setSettings, test } from "./foundry.ts";
+import { knife } from "./fight.ts";
+import {
+  createActor,
+  createOwnedItem,
+  openSheet,
+  reloadGame,
+  setSettings,
+  test,
+} from "./foundry.ts";
 import { installCommitRecorder } from "./renderTiming/commitRecorder.ts";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -289,6 +297,50 @@ test("PC sheet", async ({ page }) => {
     "ability pool",
     selector,
   );
+});
+
+test("weapon sheet", async ({ page }) => {
+  const pcId = await createActor(page, {
+    name: "Scrapper",
+    type: "pc",
+    system: { initiativeAbility: "Scuffling" },
+  });
+  const knifeId = await createOwnedItem(page, pcId, {
+    name: "Knife",
+    type: "weapon",
+    system: knife,
+  });
+  await page.evaluate(
+    ({ pcId, knifeId }) => {
+      const actor = game.actors.get(pcId)!;
+      const weapon = actor.items.get(knifeId)!;
+      const scuffling = actor.items.getName("Scuffling")!;
+      const athletics = actor.items.getName("Athletics")!;
+      const ops = globalThis.renderBench.ops;
+      ops["weapon ability pool"] = (i) =>
+        scuffling.update({ system: { rating: 8, pool: 1 + (i % 7) } });
+      ops["weapon other ability"] = (i) =>
+        athletics.update({ system: { rating: 8, pool: 1 + (i % 7) } });
+      ops["weapon notes"] = (i) =>
+        weapon.update({ system: { notes: `<p>Sharp, ${i}</p>` } });
+    },
+    { pcId, knifeId },
+  );
+  const sheet = await openSheet(page, `Actor.${pcId}.Item.${knifeId}`);
+  const selector = `[id="${await sheet.getAttribute("id")}"]`;
+  await record(
+    page,
+    "weapon: its ability's pool",
+    "weapon ability pool",
+    selector,
+  );
+  await record(
+    page,
+    "weapon: another ability",
+    "weapon other ability",
+    selector,
+  );
+  await record(page, "weapon: notes", "weapon notes", selector);
 });
 
 test("combat tracker", async ({ page }) => {
