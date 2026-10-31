@@ -17,17 +17,19 @@ import assert from "node:assert/strict";
 import { bench, describe } from "vitest";
 
 import { loadFoundryHelpers } from "./foundryHelpers";
-import type { ActorSource, Change, Strategy } from "./simulation";
+import type { ActorSource, Change, Strategy } from "./strategies";
 import {
   applyToLive,
   changes,
-  countNewNodes,
   enlargeFixture,
-  isAbility,
   loadFixture,
+} from "./simulation";
+import {
+  countNewNodes,
+  isAbility,
   makeCloneOnly,
   makeStrategies,
-} from "./simulation";
+} from "./strategies";
 
 const foundry = await loadFoundryHelpers();
 const strategies = makeStrategies(foundry);
