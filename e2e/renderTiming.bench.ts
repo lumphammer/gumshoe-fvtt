@@ -353,6 +353,45 @@ test("PC sheet, Moribund World abilities", async ({ page }) => {
   await setSettings(page, { useMwStyleAbilities: false });
 });
 
+test("NPC sheet", async ({ page }) => {
+  const actorId = await page.evaluate(async () => {
+    const actor = (await Actor.create({ name: "Bench NPC", type: "npc" }))!;
+    const [ability] = await actor.createEmbeddedDocuments(
+      "Item",
+      Array.from({ length: 12 }, (_, i) => ({
+        name: `Ability ${i + 1}`,
+        type: "generalAbility" as const,
+        system: { rating: 3, pool: 3 },
+      })),
+    );
+    const ops = globalThis.renderBench.ops;
+    ops["ability pool"] = (i) =>
+      ability ? ability.update({ system: { pool: i % 3 } }) : Promise.resolve();
+    ops["actor notes"] = (i) =>
+      actor.update({ system: { notes: `Note ${i}` } });
+    return actor.id;
+  });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const selector = `[id="${await sheet.getAttribute("id")}"]`;
+  await record(
+    page,
+    "NPC, Abilities tab: ability pool",
+    "ability pool",
+    selector,
+  );
+  await record(
+    page,
+    "NPC, Abilities tab: actor notes",
+    "actor notes",
+    selector,
+  );
+  await sheet
+    .locator(".tab-strip > label", { hasText: "Combat" })
+    .first()
+    .click();
+  await record(page, "NPC, Combat tab: ability pool", "ability pool", selector);
+});
+
 test("weapon sheet", async ({ page }) => {
   const pcId = await createActor(page, {
     name: "Scrapper",
