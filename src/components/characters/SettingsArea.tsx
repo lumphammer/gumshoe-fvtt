@@ -1,12 +1,14 @@
-import React, { useCallback, useContext } from "react";
+import React, { memo, useCallback, useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
 import { getDevMode } from "../../functions/utilities";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
 import { runtimeConfig } from "../../runtime";
-import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
@@ -17,36 +19,54 @@ import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 
 const defaultThemeIdentifier = "PQkMK35MWjRI2";
-const settingsUseTurnPassing = settings.useTurnPassingInitiative.get;
-const settingsShowIsHuman = () =>
-  settings.useDamageApplication.get() && settings.useGunfireOnHumans.get();
-const settingsShowImmuneToLethality = () =>
-  settings.useDamageApplication.get() && settings.useLethalityAndAutofire.get();
-
-export const SettingArea = () => {
+/** The PC's own settings, read through a snapshot */
+export const SettingArea = memo(function SettingArea() {
   const { actor } = useActorSheetContext();
   assertGame(game);
   assertPCActor(actor);
+  const pc = useActorSnapshot(actor, (snapshot) => {
+    const system = snapshot?.system as
+      | {
+          sheetTheme: string | null;
+          initiativePassingTurns: number;
+          isHuman: boolean;
+          immuneToLethality: boolean;
+        }
+      | undefined;
+    return {
+      sheetTheme: system?.sheetTheme ?? null,
+      initiativePassingTurns: system?.initiativePassingTurns ?? 0,
+      isHuman: system?.isHuman ?? false,
+      immuneToLethality: system?.immuneToLethality ?? false,
+    };
+  });
+  const s = useSettings((s) => ({
+    useTurnPassing: s.useTurnPassingInitiative,
+    showIsHuman: s.useDamageApplication && s.useGunfireOnHumans,
+    showImmuneToLethality: s.useDamageApplication && s.useLethalityAndAutofire,
+    defaultThemeName: s.defaultThemeName,
+  }));
+  const methods = useSystemMethods(actor);
+  const { setSheetTheme } = methods;
   const onSetTheme = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = e.currentTarget.value;
       const themeName = value === defaultThemeIdentifier ? null : value;
-      void actor.system.setSheetTheme(themeName);
+      void setSheetTheme(themeName);
     },
-    [actor],
+    [setSheetTheme],
   );
   const theme = useContext(ThemeContext);
   const isDevMode = getDevMode();
-  const defaultThemeName = settings.defaultThemeName.get();
   const defaultThemeDisplayName =
-    runtimeConfig.themes[defaultThemeName]?.displayName;
+    runtimeConfig.themes[s.defaultThemeName]?.displayName;
   return (
     <>
       <InputGrid>
         <GridField label="Theme">
           <Select
             onChange={onSetTheme}
-            value={actor.system.sheetTheme || defaultThemeIdentifier}
+            value={pc.sheetTheme || defaultThemeIdentifier}
           >
             {Object.keys(runtimeConfig.themes).map((themeName) => (
               <option key={themeName} value={themeName}>
@@ -59,38 +79,38 @@ export const SettingArea = () => {
           </Select>
         </GridField>
 
-        {settingsUseTurnPassing() && (
+        {s.useTurnPassing && (
           <GridField label="Number of turns">
             <AsyncNumberInput
-              value={actor.system.initiativePassingTurns}
-              onChange={actor.system.setPassingTurns}
+              value={pc.initiativePassingTurns}
+              onChange={methods.setPassingTurns}
             />
           </GridField>
         )}
 
-        {settingsShowIsHuman() && (
+        {s.showIsHuman && (
           <GridField label="Human?">
             <Toggle
               label={getTranslated("Human?")}
-              checked={actor.system.isHuman}
-              onChange={actor.system.setIsHuman}
+              checked={pc.isHuman}
+              onChange={methods.setIsHuman}
             />
           </GridField>
         )}
 
-        {settingsShowImmuneToLethality() && (
+        {s.showImmuneToLethality && (
           <GridField label="Immune to Lethality?">
             <Toggle
               label={getTranslated("Immune to Lethality?")}
-              checked={actor.system.immuneToLethality}
-              onChange={actor.system.setImmuneToLethality}
+              checked={pc.immuneToLethality}
+              onChange={methods.setImmuneToLethality}
             />
           </GridField>
         )}
 
         {isDevMode && (
           <GridField label="Nuke">
-            <Button onClick={actor.system.confirmNuke}>
+            <Button onClick={methods.confirmNuke}>
               <Translate>Nuke</Translate>
             </Button>
           </GridField>
@@ -118,4 +138,4 @@ export const SettingArea = () => {
       </p>
     </>
   );
-};
+});
