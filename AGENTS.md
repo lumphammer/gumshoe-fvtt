@@ -78,7 +78,8 @@ translations, adding fields and settings, releases).
 - Sheets are being converted to read immutable **snapshots**, so they can be
   memoised (`docs/immutable-data.md`). Converted so far: the equipment, weapon
   and ability sheets, the PC/NPC sheets' Abilities tab (including Moribund
-  World's), and the PC sheet's header and side panels. In a converted tree:
+  World's), the PC sheet's header and side panels, and the Combat tab's
+  weapons (`WeaponsArea`). In a converted tree:
   - Read data only from `useItemSnapshot`/`useItemSelector`,
     `useActorSnapshot(actor, selector)` and `useSettings(selector)`.
     Selector results are structurally shared, so they can build objects; select

@@ -281,6 +281,7 @@ Components rendered per change, before and after converting (from
 | PC, Abilities tab, panels memoised: the actor's Health | 277    | 33    |
 | PC, Combat tab, panels memoised: an ability's pool     | 410    | 166   |
 | PC, Equipment tab, panels memoised: an ability's pool  | 486    | 242   |
+| PC, Combat tab, weapons converted: an ability's pool   | 166    | 30    |
 
 The PC sheet's header, stats panel and pools panel are now memoised sections
 (`PCSheetPanels.tsx`), and the pool trackers read snapshots. Most of what
@@ -289,9 +290,9 @@ the sheet's shell (`PCSheetFull`, `TabContainer`, the edit-mode toggle),
 which Foundry re-renders on every change. Its root can only be memoised once
 every tab reads snapshots. Still to do:
 
-- the Combat and Equipment tabs (166 and 242 components per change), then
-  the Notes, Settings, Bonds, Contacts and Cards tabs, then memoising
-  `PCSheetFull`;
+- the Equipment tab (242 components per change), then the Notes, Settings,
+  Bonds, Contacts and Cards tabs, then memoising `PCSheetFull`;
+- the NPC sheet's weapons in edit mode (`WeaponsAreaEdit`);
 - the NPC sheet beyond its Abilities tab;
 - the combat tracker's header, which still re-renders on every change.
 

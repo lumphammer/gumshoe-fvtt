@@ -1,9 +1,12 @@
-import { useContext } from "react";
+import { memo, useCallback, useContext } from "react";
 
 import { weapon } from "../../../constants";
 import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import { sortEntitiesByName } from "../../../functions/utilities";
+import { useActorSnapshot } from "../../../hooks/useActorSnapshot";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
+import { useSystemMethods } from "../../../hooks/useSystemMethods";
+import type { WeaponItem } from "../../../module/items/weapon";
 import { assertActiveCharacterActor } from "../../../module/actors/types";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { WeaponAttackPanel } from "../../equipment/WeaponAttackPanel";
@@ -22,12 +25,43 @@ type WeaponsAreaProps = {
   fillHeight?: boolean;
 };
 
-export const WeaponsArea = ({ fillHeight = false }: WeaponsAreaProps) => {
+/**
+ * The character's weapons, and the ready one's attack panel. Reads the actor
+ * through a snapshot, selecting only which weapons there are and which is
+ * ready: each row reads its own weapon, and the panel is an island.
+ */
+export const WeaponsArea = memo(function WeaponsArea({
+  fillHeight = false,
+}: WeaponsAreaProps) {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const theme = useContext(ThemeContext);
-  const items = actor.system.getWeapons();
-  const readyWeapon = actor.system.getReadyWeapon();
+  const { ids, readyId, readyName } = useActorSnapshot(actor, (snapshot) => {
+    const weapons = (snapshot?.items ?? []).filter(
+      (item) => item.type === weapon,
+    );
+    const readyWeaponId = (snapshot?.system as { readyWeaponId?: string })
+      ?.readyWeaponId;
+    const ready = weapons.find((item) => item._id === readyWeaponId);
+    return {
+      ids: sortEntitiesByName(weapons).map((item) => item._id ?? ""),
+      readyId: ready?._id ?? null,
+      readyName: ready?.name ?? "",
+    };
+  });
+  // the live weapons, only to pass to the rows and the panel
+  const items = ids.flatMap((id) => {
+    const item = actor.items.get(id) as WeaponItem | undefined;
+    return item ? [item] : [];
+  });
+  const readyWeapon = items.find((item) => item.id === readyId);
+  const { setReadyWeapon } = useSystemMethods(actor);
+  // only one weapon is ready at a time
+  const setReady = useCallback(
+    (item: WeaponItem, ready: boolean) =>
+      void setReadyWeapon(ready ? item : null),
+    [setReadyWeapon],
+  );
   return (
     <div
       css={{
@@ -122,15 +156,12 @@ export const WeaponsArea = ({ fillHeight = false }: WeaponsAreaProps) => {
                 <Translate>Ability</Translate>
               </div>
             </div>
-            {sortEntitiesByName(items).map((item) => (
+            {items.map((item) => (
               <WeaponRow
                 key={item.id}
                 weapon={item}
                 isReady={item === readyWeapon}
-                // only one weapon is ready at a time
-                setReady={(ready) =>
-                  void actor.system.setReadyWeapon(ready ? item : null)
-                }
+                setReady={setReady}
               />
             ))}
           </div>
@@ -158,7 +189,7 @@ export const WeaponsArea = ({ fillHeight = false }: WeaponsAreaProps) => {
                   borderBottom: `1px solid ${theme.colors.text}`,
                 }}
               >
-                <h2 css={{ flex: 1, ...headingStyle }}>{readyWeapon.name}</h2>
+                <h2 css={{ flex: 1, ...headingStyle }}>{readyName}</h2>
                 <Button
                   css={{ flexBasis: "max-content", marginBottom: "0.2em" }}
                   onClick={() => {
@@ -186,4 +217,4 @@ export const WeaponsArea = ({ fillHeight = false }: WeaponsAreaProps) => {
       )}
     </div>
   );
-};
+});
