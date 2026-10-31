@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 
 import { assertGame } from "../../functions/isGame";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { useTheme } from "../../hooks/useTheme";
 import { assertNPCActor } from "../../module/actors/npc";
 import { absoluteCover } from "../absoluteCover";
@@ -17,12 +20,58 @@ import { NPCSheetHeader, NPCSheetSidebar } from "./NPCSheetPanels";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
 import { WeaponsAreaEdit } from "./Weapons/WeaponsAreaEdit";
 
-export const NPCSheetFull = () => {
+/** The Notes or GM Notes tab, which reads only its own notes */
+const NPCNotesTab = memo(function NPCNotesTab({
+  field,
+}: {
+  field: "notes" | "gmNotes";
+}) {
+  const { actor } = useActorSheetContext();
+  assertNPCActor(actor);
+  const html = useActorSnapshot(
+    actor,
+    (snapshot) =>
+      (snapshot?.system as Record<typeof field, string> | undefined)?.[field] ??
+      "",
+  );
+  const { setNotes, setGMNotes } = useSystemMethods(actor);
+
+  return (
+    <InputGrid
+      css={{
+        ...absoluteCover,
+        gridTemplateRows: "1fr",
+        padding: "0.5em",
+      }}
+    >
+      <NotesTypeContext.Provider value="npcNote">
+        <RichTextEditor
+          name={field}
+          html={html}
+          onSave={field === "notes" ? setNotes : setGMNotes}
+        />
+      </NotesTypeContext.Provider>
+    </InputGrid>
+  );
+});
+
+/**
+ * The NPC sheet. Memoised (it has no props), so Foundry's own re-render stops
+ * here: everything below reads the actor and settings through snapshots.
+ * `NPCSheet`, above, provides `IsEditableContext`.
+ */
+export const NPCSheetFull = memo(function NPCSheetFull() {
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   assertGame(game);
-  const themeName = actor.system.getSheetThemeName();
-  const theme = useTheme(themeName);
+  const sheetTheme = useActorSnapshot(
+    actor,
+    (snapshot) =>
+      (snapshot?.system as { sheetTheme?: string | null } | undefined)
+        ?.sheetTheme ?? null,
+  );
+  const defaultThemeName = useSettings((s) => s.defaultThemeName);
+  const theme = useTheme(sheetTheme || defaultThemeName);
   // kept while the sheet is open, so looking at another tab doesn't lose it
   const [abilitiesEditMode, setAbilitiesEditMode] = useState(false);
   const [combatEditMode, setCombatEditMode] = useState(false);
@@ -106,23 +155,7 @@ export const NPCSheetFull = () => {
             {
               id: "notes",
               label: "Notes",
-              content: (
-                <InputGrid
-                  css={{
-                    ...absoluteCover,
-                    gridTemplateRows: "1fr",
-                    padding: "0.5em",
-                  }}
-                >
-                  <NotesTypeContext.Provider value="npcNote">
-                    <RichTextEditor
-                      name="notes"
-                      html={actor.system.notes}
-                      onSave={actor.system.setNotes}
-                    />
-                  </NotesTypeContext.Provider>
-                </InputGrid>
-              ),
+              content: <NPCNotesTab field="notes" />,
             },
             // players who can see the NPC (with Observer permission) don't get
             // to see the GM's notes
@@ -131,23 +164,7 @@ export const NPCSheetFull = () => {
                   {
                     id: "gmNotes",
                     label: "GM Notes",
-                    content: (
-                      <InputGrid
-                        css={{
-                          ...absoluteCover,
-                          gridTemplateRows: "1fr",
-                          padding: "0.5em",
-                        }}
-                      >
-                        <NotesTypeContext.Provider value="npcNote">
-                          <RichTextEditor
-                            name="gmNotes"
-                            html={actor.system.gmNotes}
-                            onSave={actor.system.setGMNotes}
-                          />
-                        </NotesTypeContext.Provider>
-                      </InputGrid>
-                    ),
+                    content: <NPCNotesTab field="gmNotes" />,
                   },
                 ]
               : []),
@@ -156,6 +173,6 @@ export const NPCSheetFull = () => {
       </div>
     </CSSReset>
   );
-};
+});
 
 NPCSheetFull.displayName = "NPCSheetFull";

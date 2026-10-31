@@ -1,8 +1,14 @@
-import { useCallback, useContext } from "react";
+import { memo, useCallback, useContext } from "react";
 
 import { confirmAndDeleteItem } from "../../../functions/confirmAndDeleteItem";
-import type { WeaponItem } from "../../../module/items/weapon";
-import { settings } from "../../../settings/settings";
+import { useItemSelector } from "../../../hooks/useItemSnapshot";
+import { useSettings } from "../../../hooks/useSettings";
+import { useSystemMethods } from "../../../hooks/useSystemMethods";
+import type {
+  WeaponItem,
+  WeaponSystemData,
+} from "../../../module/items/weapon";
+import type { ItemSnapshot } from "../../../module/snapshots/documentStores";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
@@ -23,15 +29,30 @@ const rangeButtonStyle = {
 };
 
 type WeaponRowEditProps = {
+  /** The live weapon: the row reads it through a snapshot */
   weapon: WeaponItem;
   index: number;
 };
 
-export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
+export const WeaponRowEdit = memo(function WeaponRowEdit({
+  weapon,
+  index,
+}: WeaponRowEditProps) {
   const theme = useContext(ThemeContext);
-
-  const useExtendedRange = settings.useExtendedRange.get();
-  const hasExtendedRange = useExtendedRange && weapon.system.isExtendedRange;
+  const row = useItemSelector(
+    weapon,
+    (snapshot: ItemSnapshot<WeaponSystemData>) => ({
+      name: snapshot.name,
+      system: snapshot.system,
+    }),
+  );
+  const sys = row.system;
+  const m = useSystemMethods(weapon);
+  const { useExtendedRange, combatAbilities } = useSettings((s) => ({
+    useExtendedRange: s.useExtendedRange,
+    combatAbilities: s.combatAbilities,
+  }));
+  const hasExtendedRange = useExtendedRange && sys.isExtendedRange;
 
   const weaponRangeReduce = useCallback(async () => {
     if (hasExtendedRange) {
@@ -82,51 +103,51 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
           gridColumn: "name",
           gridRow,
         }}
-        value={weapon.name ?? ""}
+        value={row.name}
         onChange={weapon.setName}
       />
       <AsyncNumberInput
-        value={weapon.system.damage}
-        onChange={weapon.system.setDamage}
+        value={sys.damage}
+        onChange={m.setDamage}
         noPlusMinus
         css={{ gridColumn: "base", gridRow }}
       />
-      {weapon.system.isPointBlank && (
+      {sys.isPointBlank && (
         <AsyncNumberInput
-          value={weapon.system.pointBlankDamage}
-          onChange={weapon.system.setPointBlankDamage}
+          value={sys.pointBlankDamage}
+          onChange={m.setPointBlankDamage}
           noPlusMinus
           css={{ gridColumn: "pb", gridRow }}
         />
       )}
-      {weapon.system.isCloseRange && (
+      {sys.isCloseRange && (
         <AsyncNumberInput
-          value={weapon.system.closeRangeDamage}
-          onChange={weapon.system.setCloseRangeDamage}
+          value={sys.closeRangeDamage}
+          onChange={m.setCloseRangeDamage}
           noPlusMinus
           css={{ gridColumn: "cr", gridRow }}
         />
       )}
-      {weapon.system.isNearRange && (
+      {sys.isNearRange && (
         <AsyncNumberInput
-          value={weapon.system.nearRangeDamage}
-          onChange={weapon.system.setNearRangeDamage}
+          value={sys.nearRangeDamage}
+          onChange={m.setNearRangeDamage}
           noPlusMinus
           css={{ gridColumn: "nr", gridRow }}
         />
       )}
-      {weapon.system.isLongRange && (
+      {sys.isLongRange && (
         <AsyncNumberInput
-          value={weapon.system.longRangeDamage}
-          onChange={weapon.system.setLongRangeDamage}
+          value={sys.longRangeDamage}
+          onChange={m.setLongRangeDamage}
           noPlusMinus
           css={{ gridColumn: "lr", gridRow }}
         />
       )}
       {hasExtendedRange && (
         <AsyncNumberInput
-          value={weapon.system.extendedRangeDamage}
-          onChange={weapon.system.setExtendedRangeDamage}
+          value={sys.extendedRangeDamage}
+          onChange={m.setExtendedRangeDamage}
           noPlusMinus
           css={{ gridColumn: "er", gridRow }}
         />
@@ -137,15 +158,15 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
         css={{
           gridColumn: hasExtendedRange
             ? "back"
-            : weapon.system.isLongRange
+            : sys.isLongRange
               ? useExtendedRange
                 ? "er"
                 : "back"
-              : weapon.system.isNearRange
+              : sys.isNearRange
                 ? "lr"
-                : weapon.system.isCloseRange
+                : sys.isCloseRange
                   ? "nr"
-                  : weapon.system.isPointBlank
+                  : sys.isPointBlank
                     ? "cr"
                     : "pb",
           gridRow,
@@ -156,7 +177,7 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
         <Button css={rangeButtonStyle} onClick={weaponRangeReduce}>
           <i className="fa fa-chevron-left" />
         </Button>
-        {(useExtendedRange ? hasExtendedRange : weapon.system.isLongRange) || (
+        {(useExtendedRange ? hasExtendedRange : sys.isLongRange) || (
           <Button css={rangeButtonStyle} onClick={weaponRangeExpand}>
             <i className="fa fa-chevron-right" />
           </Button>
@@ -185,32 +206,28 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
         }}
       >
         <OtherableDropDown
-          value={weapon.system.ability}
-          onChange={(e) => weapon.system.setAbility(e)}
-          pickerValues={settings.combatAbilities.get().toSorted()}
+          value={sys.ability}
+          onChange={m.setAbility}
+          pickerValues={combatAbilities.toSorted()}
         />
         <div css={{ marginTop: "0.5em" }}>
           <label>
-            Use ammo?{" "}
-            <Toggle
-              checked={weapon.system.usesAmmo}
-              onChange={weapon.system.setUsesAmmo}
-            />
+            Use ammo? <Toggle checked={sys.usesAmmo} onChange={m.setUsesAmmo} />
           </label>
         </div>
-        {weapon.system.usesAmmo && (
+        {sys.usesAmmo && (
           <>
             Current
             <AsyncNumberInput
               min={0}
-              value={weapon.system.ammo.value}
-              onChange={weapon.system.setAmmo}
+              value={sys.ammo.value}
+              onChange={m.setAmmo}
             />
             Maximum
             <AsyncNumberInput
               min={0}
-              value={weapon.system.ammo.max}
-              onChange={weapon.system.setAmmoMax}
+              value={sys.ammo.max}
+              onChange={m.setAmmoMax}
             />
           </>
         )}
@@ -227,10 +244,10 @@ export const WeaponRowEdit = ({ weapon, index }: WeaponRowEditProps) => {
         <IndexedRichTextEditor
           index={index}
           name="weapon"
-          html={weapon.system.notes}
-          onSave={weapon.system.setNotes}
+          html={sys.notes}
+          onSave={m.setNotes}
         />
       </div>
     </>
   );
-};
+});

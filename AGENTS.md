@@ -79,8 +79,8 @@ translations, adding fields and settings, releases).
   memoised (`docs/immutable-data.md`). Converted so far: the equipment, weapon
   and ability sheets, the PC/NPC sheets' Abilities tab (including Moribund
   World's), the PC sheet's header and side panels, and its Combat and
-  Equipment tabs, and the NPC sheet's header and sidebar. In a converted
-  tree:
+  Equipment tabs, and the whole NPC sheet (`NPCSheetFull` is memoised).
+  In a converted tree:
   - Read data only from `useItemSnapshot`/`useItemSelector`,
     `useActorSnapshot(actor, selector)` and `useSettings(selector)`.
     Selector results are structurally shared, so they can build objects; select
