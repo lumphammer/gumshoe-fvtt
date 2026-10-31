@@ -14,6 +14,8 @@ export interface Commit {
   rendered: number;
   /** The DOM element the React root renders into. */
   container: Element;
+  /** How many of each component rendered, by name. */
+  byComponent: Record<string, number>;
 }
 
 export interface RenderBench {
@@ -41,6 +43,7 @@ export function installCommitRecorder() {
     sibling: Fiber | null;
     alternate: Fiber | null;
     actualDuration?: number;
+    type: unknown;
   };
   type FiberRoot = { current: Fiber; containerInfo: Element };
 
@@ -50,17 +53,40 @@ export function installCommitRecorder() {
   const componentTags = new Set([0, 1, 11, 15]);
 
   /** Components that rendered in the commit `fiber` is part of. */
-  const countRendered = (fiber: Fiber): number => {
+  const nameOf = (type: unknown): string => {
+    if (typeof type === "function") {
+      const fn = type as { displayName?: string; name?: string };
+      return fn.displayName || fn.name || "Anonymous";
+    }
+    if (typeof type === "object" && type !== null) {
+      const t = type as {
+        displayName?: string;
+        render?: unknown;
+        type?: unknown;
+      };
+      return t.displayName ?? nameOf(t.render ?? t.type);
+    }
+    return "Anonymous";
+  };
+
+  const countRendered = (
+    fiber: Fiber,
+    byComponent: Record<string, number>,
+  ): number => {
     const previous = fiber.alternate;
-    let count =
+    let count = 0;
+    if (
       componentTags.has(fiber.tag) &&
       (previous === null || (fiber.flags & performedWork) !== 0)
-        ? 1
-        : 0;
+    ) {
+      count = 1;
+      const name = nameOf(fiber.type);
+      byComponent[name] = (byComponent[name] ?? 0) + 1;
+    }
     // a subtree React bailed out of keeps its old children
     if (previous !== null && previous.child === fiber.child) return count;
     for (let child = fiber.child; child !== null; child = child.sibling) {
-      count += countRendered(child);
+      count += countRendered(child, byComponent);
     }
     return count;
   };
@@ -79,11 +105,13 @@ export function installCommitRecorder() {
     onCommitFiberUnmount: () => undefined,
     onPostCommitFiberRoot: () => undefined,
     onCommitFiberRoot: (_rendererId: number, root: FiberRoot) => {
+      const byComponent: Record<string, number> = {};
       bench.commits.push({
         time: performance.now(),
         renderMs: root.current.actualDuration,
-        rendered: countRendered(root.current),
+        rendered: countRendered(root.current, byComponent),
         container: root.containerInfo,
+        byComponent,
       });
     },
   };

@@ -30,6 +30,12 @@ const measuringConfig: MeasuringConfiguration = {
   },
 };
 
+// kept stable: a new options object makes new sensors, which gives every row
+// new drag listeners, so every row's content re-renders
+const keyboardSensorOptions = {
+  coordinateGetter: sortableKeyboardCoordinates,
+};
+
 export const CombatantList = memo(function CombatantList() {
   const { combat, turnIds } = useTrackerContext();
 
@@ -39,9 +45,7 @@ export const CombatantList = memo(function CombatantList() {
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    useSensor(KeyboardSensor, keyboardSensorOptions),
   );
 
   // ids is local state so the tracker can respond immediately to drag-n-drop
@@ -53,6 +57,9 @@ export const CombatantList = memo(function CombatantList() {
     // eslint-disable-next-line react/set-state-in-effect
     setIds(turnIds);
   }, [turnIds]);
+
+  const activeId =
+    combat.turn !== null ? (combat.turns[combat.turn]?.id ?? null) : null;
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -113,7 +120,8 @@ export const CombatantList = memo(function CombatantList() {
               return (
                 <CombatantRow
                   key={id}
-                  index={combat.turns.findIndex((x) => x.id === id)}
+                  // rows are memoised, so whose turn it is comes from here
+                  active={activeId === id}
                   combatant={combatant}
                 />
               );
