@@ -10,6 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import {
+  browserArgs,
   buildPath,
   foundryDataPath,
   foundryUrl,
@@ -192,7 +193,7 @@ async function resetWorld(browser: Browser) {
 
 export default async function globalSetup(_config: FullConfig) {
   checkModules();
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ args: browserArgs });
   try {
     await resetWorld(browser);
     // log in to the new world and save the session for the tests to reuse
