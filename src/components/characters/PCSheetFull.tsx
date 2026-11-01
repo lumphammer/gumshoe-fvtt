@@ -131,7 +131,7 @@ export const PCSheetFull = memo(function PCSheetFull() {
             s.useNetworkContacts && {
               id: "contacts",
               label: "Contacts",
-              content: <LiveActorIsland component={NetworkContactsArea} />,
+              content: <NetworkContactsArea />,
             },
             s.useCards && {
               id: "cards",

@@ -1,8 +1,9 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import type React from "react";
-import { useCallback, useContext } from "react";
+import { memo, useCallback, useContext } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
 import type { NetworkContactItem } from "../../module/items/networkContact";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { ItemNameWithIcon } from "../characters/ItemNameWithIcon";
@@ -13,11 +14,18 @@ import { DeleteItemButton } from "../inputs/DeleteItemButton";
  * button. The rest of the row opens the contact's sheet (where they're used),
  * and drags the contact.
  */
-export const NetworkContactRow = ({
+export const NetworkContactRow = memo(function NetworkContactRow({
   contact,
 }: {
+  /** The live contact: the row reads it through a snapshot */
   contact: NetworkContactItem;
-}) => {
+}) {
+  const row = useItemSelector(contact, (snapshot) => ({
+    name: snapshot.name,
+    img: snapshot.img,
+    location: (snapshot.system as { location: string }).location,
+    pool: (snapshot.system as { pool: number }).pool,
+  }));
   const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
   const onDragStart = useCallback(
@@ -28,9 +36,12 @@ export const NetworkContactRow = ({
     },
     [app],
   );
-  const sheet = contact.sheet;
-  assertApplicationV2(sheet);
-  const exhausted = contact.system.pool === 0;
+  const openSheet = () => {
+    const sheet = contact.sheet;
+    assertApplicationV2(sheet);
+    void sheet.render({ force: true });
+  };
+  const exhausted = row.pool === 0;
 
   return (
     // a subgrid, so the cells line up with the headers, and the row can be
@@ -62,21 +73,21 @@ export const NetworkContactRow = ({
             textOverflow: "ellipsis",
           },
         }}
-        onClick={() => sheet.render({ force: true })}
+        onClick={openSheet}
         data-item-id={contact.id}
         data-testid="network-contact-row"
         onDragStart={onDragStart}
         draggable="true"
       >
-        <ItemNameWithIcon item={contact} title={contact.name ?? ""} />
-        <div title={contact.system.location}>{contact.system.location}</div>
+        <ItemNameWithIcon item={row} title={row.name} />
+        <div title={row.location}>{row.location}</div>
         <div data-testid="network-contact-pool" css={{ textAlign: "end" }}>
-          {contact.system.pool}
+          {row.pool}
         </div>
       </a>
       <DeleteItemButton item={contact} />
     </div>
   );
-};
+});
 
 NetworkContactRow.displayName = "NetworkContactRow";

@@ -353,6 +353,39 @@ test("PC sheet, Moribund World abilities", async ({ page }) => {
   await setSettings(page, { useMwStyleAbilities: false });
 });
 
+test("PC sheet, Contacts tab", async ({ page }) => {
+  await setSettings(page, { useNetworkContacts: true });
+  const { selector, tab } = await openFixturePC(page);
+  await page.evaluate(async (selector) => {
+    const id = selector.match(/Actor-(\w+)/)![1];
+    const actor = game.actors.get(id)!;
+    const contacts = await actor.createEmbeddedDocuments(
+      "Item",
+      Array.from({ length: 8 }, (_, i) => ({
+        name: `Contact ${i + 1}`,
+        type: "networkContact" as const,
+        system: { pool: 2 },
+      })),
+    );
+    globalThis.renderBench.ops["contact pool"] = (i) =>
+      contacts[0].update({ system: { pool: i % 3 } });
+  }, selector);
+  await tab("Contacts");
+  await record(
+    page,
+    "PC, Contacts tab: ability pool",
+    "ability pool",
+    selector,
+  );
+  await record(
+    page,
+    "PC, Contacts tab: a contact's pool",
+    "contact pool",
+    selector,
+  );
+  await setSettings(page, { useNetworkContacts: false });
+});
+
 test("NPC sheet", async ({ page }) => {
   const actorId = await page.evaluate(async () => {
     const actor = (await Actor.create({ name: "Bench NPC", type: "npc" }))!;

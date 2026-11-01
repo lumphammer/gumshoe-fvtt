@@ -173,3 +173,54 @@ test("the Contacts tab only shows when contacts are on", async ({ page }) => {
     sheet.locator(".tab-strip > label", { hasText: "Contacts" }),
   ).toHaveCount(0);
 });
+
+test("the Contacts tab follows contacts and Network changed elsewhere", async ({
+  page,
+}) => {
+  await setSettings(page, contactsOn);
+  const actorId = await createActor(page, { name: "Fixer", type: "pc" });
+  const networkId = await createOwnedItem(page, actorId, {
+    name: "Network",
+    type: "generalAbility",
+    system: { rating: 5, pool: 5 },
+  });
+  const contactId = await createOwnedItem(page, actorId, {
+    name: "Fred",
+    type: "networkContact",
+    system: { pool: 2, location: "Paris" },
+  });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  await sheet.locator(".tab-strip > label", { hasText: "Contacts" }).click();
+  const summary = sheet.getByTestId("network-summary");
+  await expect(summary).toHaveText("Network: 5 of 5 left, 2 with contacts");
+  const row = sheet.getByTestId("network-contact-row");
+  await expect(row).toContainText("Paris");
+
+  const update = (itemId: string, data: Record<string, unknown>) =>
+    page.evaluate(
+      async ({ actorId, itemId, data }) => {
+        await game.actors.get(actorId)!.items.get(itemId)!.update(data);
+      },
+      { actorId, itemId, data },
+    );
+
+  await update(contactId, {
+    name: "Frederick",
+    system: { pool: 1, location: "Lyon" },
+  });
+  await expect(row).toContainText("Frederick");
+  await expect(row).toContainText("Lyon");
+  await expect(sheet.getByTestId("network-contact-pool")).toHaveText("1");
+  await expect(summary).toHaveText("Network: 5 of 5 left, 1 with contacts");
+
+  await update(networkId, { system: { pool: 3 } });
+  await expect(summary).toHaveText("Network: 3 of 5 left, 1 with contacts");
+
+  await createOwnedItem(page, actorId, {
+    name: "Ann",
+    type: "networkContact",
+    system: { pool: 1 },
+  });
+  await expect(row).toHaveCount(2);
+  await expect(row.first()).toContainText("Ann");
+});
