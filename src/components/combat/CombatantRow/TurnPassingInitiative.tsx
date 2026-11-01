@@ -10,8 +10,8 @@ import { assertTurnPassingCombatant } from "../../../module/combat/turnPassingCo
 import { NativeMenuItem } from "../../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../../inputs/NativeMenu/NativeDualFunctionMenu";
 import { NativeMenuLabel } from "../../inputs/NativeMenu/NativeMenuLabel";
-import { useTurnPassingTrackerContext } from "../TrackerContext";
 import { useTurnPassingCombatantContext } from "./CombatantContext";
+import { useCombatantTurn } from "./CombatantTurnContext";
 import { useInititative } from "./useInititative";
 
 const playButtonGradientWidth = "3em";
@@ -30,9 +30,12 @@ const scrollBg = keyframes({
 export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
   assertGame(game);
   const { combatant, combatantState } = useTurnPassingCombatantContext();
-  const { combatState, turnIds } = useTurnPassingTrackerContext();
+  // not the tracker's context, which changes on every combat update
+  // the round, only so this re-renders when it changes: the turns remaining
+  // below depend on it
+  const { active: isActive } = useCombatantTurn();
   const combat = combatant.combat;
-  if (combat === null || combatState === null || combatantState === null) {
+  if (combat === null || combatantState === null) {
     throw new Error(
       "TurnPassingInitiative must be rendered with a combatant that is in combat.",
     );
@@ -59,10 +62,6 @@ export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
     void combatant.system.removePassingTurn();
   }, [combatant]);
 
-  const activeTurnPassingCombatant =
-    combatState.turn !== null ? turnIds[combatState.turn] : null;
-
-  const isActive = activeTurnPassingCombatant === combatant.id;
   const depleted = combatant.system.passingTurnsRemaining <= 0;
 
   return (

@@ -275,6 +275,8 @@ Components rendered per change, before and after converting (from
 | PC, Abilities tab: an ability's pool        | 1128   | 315   |
 | PC, Abilities tab: the actor's Health       | 1125   | 277   |
 | combat tracker (12 combatants): next turn   | 402    | 112   |
+| combat tracker, header on props: next turn  | 112    | 48    |
+| turn-passing tracker (12): pass turn        | 571    | 131   |
 
 On the Abilities tab, the 277 left is the rest of the PC sheet (header,
 personal details, pools panel, tab strip), which Foundry still re-renders on
@@ -283,12 +285,22 @@ every change; the memoised areas stop it at their edge. Still to do:
 - the rest of the PC sheet, then memoising its root;
 - the Combat and Equipment tabs (410 and 486 components per change);
 - the NPC sheet beyond its Abilities tab, and Moribund World's ability area;
-- the combat tracker's header, which still re-renders on every change.
+- a new round in a turn-passing combat (535 components, then 69 for each
+  combatant's turns): every row's turns remaining change, so most of it is
+  real, but each row's menus re-render with it.
 
 The combat tracker's rows were already memoised, but the keyboard sensor's
 options were a new object on every render: that made new sensors, so every
 row got new drag listeners and re-rendered its contents. With the options
 hoisted, only the two rows whose turn changed re-render: the row is told
 whether it's active by the list, rather than reading `combat.turn` itself
-(which a memoised row would miss). `RENDER_BENCH_NAMES=1` lists which
+(which a memoised row would miss). The classic header's parts
+(`EncounterNav`, `ClassicTurnNav`, `ClassicToolsRow`) take props from
+`Tracker`, not the context (which changes on every update), so a new turn
+in the same round doesn't re-render them. `TurnPassingTurnNav` does the
+same. In turn-passing rows, `TurnPassingInitiative` read the tracker's
+context only to know whether it was the combatant's turn, so every row
+re-rendered on every combat update. It now reads `CombatantActiveContext`
+(per row) and `CombatRoundContext` (the round, which its turns remaining
+depend on). `RENDER_BENCH_NAMES=1` lists which
 components rendered (build with `--minify false` for readable names).

@@ -12,6 +12,7 @@ import {
   CombatantContextProvider,
   useCombatantContextValue,
 } from "./CombatantContext";
+import { CombatantActiveContext } from "./CombatantTurnContext";
 import { Content } from "./Content";
 
 interface CombatantRowProps {
@@ -66,31 +67,33 @@ export const CombatantRow = memo(({ combatant, active }: CombatantRowProps) => {
 
   return (
     <CombatantContextProvider value={combatantContextValue}>
-      <NativeContextMenuWrapper>
-        <li
-          ref={setNodeRef}
-          className={cx("combatant", {
-            active,
-            hide: combatantContextValue.combatantState.hidden,
-            defeated: combatantContextValue.combatantState.defeated,
-          })}
-          {...attributes}
-          data-combatant-id={combatant.id}
-          style={{
-            transform: CSS.Translate.toString(transform),
-            transition,
-            opacity: depleted && !active ? 0.7 : 1,
-          }}
-          css={{ alignItems: "start" }}
-        >
-          {/* the row content is pushed down so it can memoise even if the draggable
+      <CombatantActiveContext.Provider value={active}>
+        <NativeContextMenuWrapper>
+          <li
+            ref={setNodeRef}
+            className={cx("combatant", {
+              active,
+              hide: combatantContextValue.combatantState.hidden,
+              defeated: combatantContextValue.combatantState.defeated,
+            })}
+            {...attributes}
+            data-combatant-id={combatant.id}
+            style={{
+              transform: CSS.Translate.toString(transform),
+              transition,
+              opacity: depleted && !active ? 0.7 : 1,
+            }}
+            css={{ alignItems: "start" }}
+          >
+            {/* the row content is pushed down so it can memoise even if the draggable
           hook is updating very frequently */}
-          <Content
-            setActivatorNodeRef={setActivatorNodeRef}
-            listeners={listeners}
-          />
-        </li>
-      </NativeContextMenuWrapper>
+            <Content
+              setActivatorNodeRef={setActivatorNodeRef}
+              listeners={listeners}
+            />
+          </li>
+        </NativeContextMenuWrapper>
+      </CombatantActiveContext.Provider>
     </CombatantContextProvider>
   );
 });
