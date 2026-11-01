@@ -22,7 +22,8 @@ export const MwItemSheet = () => {
 
   assertMwItem(item);
 
-  const name = useAsyncUpdate(item.name || "", item.setName);
+  const { contentEditableRef, onBlur, onFocus, onInput, onKeyDown, onPaste } =
+    useAsyncUpdate(item.name || "", item.setName);
   const nameInput = useAsyncUpdate(item.name || "", item.setName);
 
   const onClickDelete = useCallback(async () => {
@@ -77,14 +78,12 @@ export const MwItemSheet = () => {
       <h1
         css={{ gridArea: "headline" }}
         contentEditable
-        // false positive here because "name" gets flagged as a ref
-        // eslint-disable-next-line react/refs
-        onInput={name.onInput}
-        onKeyDown={name.onKeyDown}
-        onPaste={name.onPaste}
-        onFocus={name.onFocus}
-        onBlur={name.onBlur}
-        ref={name.contentEditableRef}
+        onInput={onInput}
+        onKeyDown={onKeyDown}
+        onPaste={onPaste}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        ref={contentEditableRef}
       />
 
       {/* Image */}

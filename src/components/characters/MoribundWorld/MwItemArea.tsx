@@ -50,7 +50,9 @@ export const MwItemArea = memo(function MwItemArea() {
     );
     for (const item of items) {
       const mwType = (item.system as { mwType: MwType }).mwType;
-      (result[mwType] ??= []).push({ id: item._id ?? "", name: item.name });
+      const group = result[mwType] ?? [];
+      group.push({ id: item._id ?? "", name: item.name });
+      result[mwType] = group;
     }
     return result;
   });

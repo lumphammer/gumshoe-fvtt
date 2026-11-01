@@ -242,12 +242,10 @@ export const AbilityTest = memo(function AbilityTest({
         >
           <SpendButtons
             value={bondSpends[bond._id ?? ""] ?? 0}
-            onChange={(bondSpend) =>
-              setBondSpends((current) => ({
-                ...current,
-                [bond._id ?? ""]: bondSpend,
-              }))
-            }
+            onChange={(bondSpend) => {
+              const id = bond._id ?? "";
+              setBondSpends((current) => ({ ...current, [id]: bondSpend }));
+            }}
             max={getMaxBondSpend(bond.points)}
             disabled={bond.isBroken}
           />

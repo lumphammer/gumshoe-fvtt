@@ -13,6 +13,22 @@ import { DirtyContext, DispatchContext, StateContext } from "../contexts";
 import { SettingsGridField } from "../SettingsGridField";
 import { store } from "../store";
 
+/**
+ * The settings in a file, or null (with an error shown) if they won't do.
+ * Outside the component: React Compiler can't yet compile a `try` holding
+ * `?.`.
+ */
+const parseSettingsFile = (
+  raw: Parameters<typeof validateImportedSettings>[0],
+) => {
+  try {
+    return validateImportedSettings(raw);
+  } catch (e: any) {
+    ui.notifications?.error(`Error importing settings: ${e.message ?? e}`);
+    return null;
+  }
+};
+
 export const ImportExportSettings = () => {
   const dispatch = useContext(DispatchContext);
   const { settings: settingsState } = useContext(StateContext);
@@ -42,13 +58,12 @@ export const ImportExportSettings = () => {
     }
 
     const rawRext = await getUserFile("json");
-    try {
-      const newSettings = validateImportedSettings(rawRext);
-      dispatch(store.creators.setSome({ newSettings }));
-      ui.notifications?.info("Successfully imported settings");
-    } catch (e: any) {
-      ui.notifications?.error(`Error importing settings: ${e.message ?? e}`);
+    const newSettings = parseSettingsFile(rawRext);
+    if (newSettings === null) {
+      return;
     }
+    dispatch(store.creators.setSome({ newSettings }));
+    ui.notifications?.info("Successfully imported settings");
   };
 
   return (
