@@ -20,18 +20,16 @@ import { TrackersArea } from "./TrackersArea";
 
 // The NPC sheet's header and sidebar. Each is memoised, and reads the actor
 // and settings through snapshots (as `PCSheetPanels.tsx` does for PCs), so
-// Foundry's re-render of the sheet stops here. `ImagePickle` and `StatField`
-// still read the live actor, and re-render with their section, which selects
-// what they show.
+// Foundry's re-render of the sheet stops here.
 
 /** The name, and the portrait */
 export const NPCSheetHeader = memo(function NPCSheetHeader() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   const header = useActorSnapshot(actor, (snapshot) => ({
     name: snapshot?.name ?? "",
-    // `ImagePickle` reads it from the live actor: selected so this
-    // re-renders when it changes
     img: snapshot?.img,
   }));
 
@@ -54,6 +52,7 @@ export const NPCSheetHeader = memo(function NPCSheetHeader() {
       </div>
 
       <ImagePickle
+        img={header.img}
         css={{
           gridArea: "image",
           transform: "rotateZ(2deg)",
@@ -69,13 +68,14 @@ type NPCSidebarSystem = {
   damageBonus: number;
   isHuman: boolean;
   immuneToLethality: boolean;
-  stats: Record<string, number>;
   initiativeAbility: string;
   initiativePassingTurns: number;
 };
 
 /** Refresh, combat bonuses, stats, pool trackers and initiative */
 export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   const theme = useContext(ThemeContext);
@@ -88,9 +88,6 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
       damageBonus: system?.damageBonus ?? 0,
       isHuman: system?.isHuman ?? false,
       immuneToLethality: system?.immuneToLethality ?? false,
-      // `StatField` reads them from the live actor: selected here so this
-      // re-renders when they change
-      stats: system?.stats ?? {},
       initiativeAbility: system?.initiativeAbility ?? "",
       initiativePassingTurns: system?.initiativePassingTurns ?? 0,
       generalAbilityNames: (snapshot?.items ?? [])

@@ -5,6 +5,8 @@ import { PCSheetFull } from "./PCSheetFull";
 import { PCSheetSimple } from "./PCSheetSimple";
 
 export const PCSheet = () => {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   const { isEditable, isLimited } = useActorSheetPermissions(actor);
   // Foundry's render doesn't reach React here (the sheet keeps itself

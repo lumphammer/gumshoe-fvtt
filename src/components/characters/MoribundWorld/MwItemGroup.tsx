@@ -25,6 +25,8 @@ export const MwItemGroup = memo(function MwItemGroup({
   name,
   mwType,
 }: MwItemGroupProps) {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   const theme = useContext(ThemeContext);
   const openSheet = (id: string) => {

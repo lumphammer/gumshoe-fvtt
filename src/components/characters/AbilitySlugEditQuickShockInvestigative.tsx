@@ -20,6 +20,8 @@ export const AbilitySlugEditQuickShockInvestigative = memo(
   function AbilitySlugEditQuickShockInvestigative({
     ability,
   }: AbilitySlugEditQuickShockInvestigativeProps) {
+    "use memo";
+
     const row = useItemSelector(ability, (snapshot: AbilitySnapshot) => ({
       name: snapshot.name,
       rating: snapshot.system.rating,

@@ -34,6 +34,8 @@ import { WeaponsArea } from "./Weapons/WeaponsArea";
  * `IsEditableContext`.
  */
 export const PCSheetFull = memo(function PCSheetFull() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   // kept here, not in the tab, so it lasts while you look at other tabs
   const [editMode, setEditMode] = useState(false);

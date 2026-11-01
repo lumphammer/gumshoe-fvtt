@@ -10,6 +10,8 @@ import { establish } from "./directions";
  * router's context, so it can't live in the component that provides it.
  */
 export const EstablishBondButton = () => {
+  "use memo";
+
   const { navigate } = useNavigationContext();
   const tooltip = getTranslated("EstablishBondTooltip");
   return (

@@ -321,6 +321,28 @@ Components rendered per change, before and after converting (from
 | PC, re-render off, Combat/Equipment tabs: an ability's pool | 1              | 0             |
 | NPC, re-render off: an ability's pool                       | 35 (2 commits) | 33 (1 commit) |
 | NPC, re-render off: the actor's notes                       | 2              | 0             |
+| PC, compiled, Abilities tab: an ability's pool              | 38             | 9             |
+| PC, compiled, Equipment tab: an item's name                 | 20             | 8             |
+| PC, compiled, MW Abilities tab: an ability's pool           | 28             | 3             |
+| PC, compiled, Contacts tab: a contact's pool                | 41             | 22            |
+| PC, compiled, MW items tab: an item's name                  | 17             | 10            |
+| PC, compiled, Bonds tab: a Bond's points                    | 19             | 8             |
+| PC, compiled, Establish Bond panel: a Bond's points         | 47             | 24            |
+| PC, compiled, Cards tab: a card's subtitle                  | 9              | 5             |
+| PC, compiled, Cards tab: renaming a category, every card    | 112            | 85            |
+| NPC, compiled: an ability's pool                            | 33             | 9             |
+
+The PC and NPC sheets' own components, and the islands they use, are
+compiled by React Compiler (they're marked `"use memo"`). A compiled
+component hands back the same element for a child whose props haven't
+changed, so the child only re-renders for its own state and snapshots, as if
+it were memoised. The children which read the live actor and re-rendered with
+their panel (`StatField`, `PersonalDetailField`, `ImagePickle`, `BondBadges`,
+`ItemSheetLink`) now read snapshots or take what they show as props. Not
+compiled yet: the Cards tab's `CardsArea` and its arrays (they sort and group
+the live cards, re-rendering for the snapshot), `TeamCrisisPanel` (it lists
+other actors, read live), and the shared inputs, `Translate` and the like.
+Wall times barely change (they were around a millisecond already).
 
 Every part of the PC and NPC sheets now reads snapshots, and both roots
 (`PCSheetFull`, `NPCSheetFull`) are memoised, so Foundry's re-render stops

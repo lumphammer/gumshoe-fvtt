@@ -26,6 +26,8 @@ export const AbilitySlugEdit = memo(function AbilitySlugEdit({
   ability,
   showOcc = true,
 }: AbilitySlugEditProps) {
+  "use memo";
+
   const row = useItemSelector(ability, (snapshot: AbilitySnapshot) => ({
     name: snapshot.name,
     rating: snapshot.system.rating,

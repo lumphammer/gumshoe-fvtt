@@ -1,5 +1,7 @@
-import type { PCActor } from "../../module/actors/pc";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useIsEditable } from "../../hooks/useIsEditable";
+import * as c from "../../constants";
+import type { PCActor } from "../../module/actors/pc";
 import { GridField } from "../inputs/GridField";
 import { PersonalDetailSlug } from "./PersonalDetailSlug";
 import { Slug } from "./Slug";
@@ -13,8 +15,18 @@ export const PersonalDetailField = ({
   name: string;
   slotIndex: number;
 }) => {
-  const personalDetailItems =
-    actor.system.getPersonalDetailsInSlotIndex(slotIndex);
+  "use memo";
+
+  // as `actor.system.getPersonalDetailsInSlotIndex`, from the snapshot
+  const personalDetails = useActorSnapshot(actor, (snapshot) =>
+    (snapshot?.items ?? [])
+      .filter(
+        (item) =>
+          item.type === c.personalDetail &&
+          (item.system as { slotIndex: number }).slotIndex === slotIndex,
+      )
+      .map((item) => ({ id: item._id ?? "", name: item.name, img: item.img })),
+  );
   const isEditable = useIsEditable();
 
   return (
@@ -30,10 +42,10 @@ export const PersonalDetailField = ({
         // justifyContent: "end",
       }}
     >
-      {personalDetailItems.map((item) => (
-        <PersonalDetailSlug key={item.id} item={item} />
+      {personalDetails.map((detail) => (
+        <PersonalDetailSlug key={detail.id} actor={actor} detail={detail} />
       ))}
-      {personalDetailItems.length === 0 && isEditable && (
+      {personalDetails.length === 0 && isEditable && (
         <Slug
           onClick={() => {
             void actor.system.createPersonalDetail(slotIndex); //

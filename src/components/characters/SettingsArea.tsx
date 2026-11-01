@@ -21,6 +21,8 @@ import { Translate } from "../Translate";
 const defaultThemeIdentifier = "PQkMK35MWjRI2";
 /** The PC's own settings, read through a snapshot */
 export const SettingArea = memo(function SettingArea() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertGame(game);
   assertPCActor(actor);

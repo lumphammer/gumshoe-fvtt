@@ -22,6 +22,8 @@ export const CardArrayCard = memo(function CardArrayCard({
   card,
   className,
 }: CardArrayCardProps) {
+  "use memo";
+
   const data = useItemSelector(card, (snapshot) => {
     const system = snapshot.system as {
       active: boolean;

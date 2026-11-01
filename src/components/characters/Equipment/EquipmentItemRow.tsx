@@ -29,6 +29,8 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
   gridRow,
   fields,
 }: EquipmentItemRowProps) {
+  "use memo";
+
   const row = useItemSelector(
     item,
     (snapshot: ItemSnapshot<EquipmentSystemData>) => ({

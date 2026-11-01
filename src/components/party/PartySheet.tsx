@@ -193,6 +193,7 @@ export const PartySheet = () => {
           }}
         >
           <ImagePickle
+            img={party.img}
             css={{
               height: "5em",
               width: "4em",

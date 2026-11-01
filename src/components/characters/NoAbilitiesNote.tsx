@@ -1,6 +1,8 @@
 import { Translate } from "../Translate";
 
 export const NoAbilitiesNote = () => {
+  "use memo";
+
   return (
     <i style={{ gridColumn: "1/-1" }}>
       <Translate>No abilities in this category</Translate>

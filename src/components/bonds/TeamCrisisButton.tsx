@@ -11,6 +11,8 @@ import { crisis } from "./directions";
  * provides it.
  */
 export const TeamCrisisButton = () => {
+  "use memo";
+
   const { navigate } = useNavigationContext();
   const tooltip = getTranslated("TeamCrisisTooltip");
   return (

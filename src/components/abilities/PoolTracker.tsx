@@ -28,6 +28,8 @@ type PoolTrackerProps = {
 export const PoolTracker = memo(function PoolTracker({
   ability,
 }: PoolTrackerProps) {
+  "use memo";
+
   const tracker = useItemSelector(ability, (snapshot: AbilitySnapshot) => ({
     name: snapshot.name,
     min: snapshot.system.min ?? 0,

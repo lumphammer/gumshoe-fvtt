@@ -15,6 +15,8 @@ export const SpecListItem = ({
   value,
   disabled = false,
 }: SpecListItemProps) => {
+  "use memo";
+
   const onChange = useCallback(
     (newVal: string) => {
       onChangeProp(newVal, index);

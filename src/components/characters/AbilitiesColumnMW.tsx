@@ -8,6 +8,8 @@ interface AbilitiesColumnMWProps {
 }
 
 export const AbilitiesColumnMW = ({ abilities }: AbilitiesColumnMWProps) => {
+  "use memo";
+
   return (
     <div
       css={{

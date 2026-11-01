@@ -94,14 +94,18 @@ test("the GM reorders a classic combat by dragging a row", async ({ page }) => {
   }
   await addCombatants(page, ids);
   const names = tracker.locator("li.combatant .name");
-  await expect(names).toHaveText(["Alpha", "Bravo", "Charlie"]);
+  await expect(names).toHaveCount(3);
+  // they have the same initiative, so they can start in any order
+  const [first, second, last] = (await names.allTextContents()).map((name) =>
+    name.trim(),
+  );
 
   // the row's drag wiring goes through its context (so its context menu's
-  // root doesn't re-render): drag Charlie's grip above Alpha
+  // root doesn't re-render): drag the last row's grip above the first
   const grip = tracker
-    .locator("li.combatant", { hasText: "Charlie" })
+    .locator("li.combatant", { hasText: last })
     .locator(".drag-handle");
-  const target = tracker.locator("li.combatant", { hasText: "Alpha" });
+  const target = tracker.locator("li.combatant", { hasText: first });
   const from = (await grip.boundingBox())!;
   const to = (await target.boundingBox())!;
   await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
@@ -109,14 +113,14 @@ test("the GM reorders a classic combat by dragging a row", async ({ page }) => {
   await page.mouse.move(from.x + from.width / 2, to.y + 2, { steps: 15 });
   await page.mouse.up();
 
-  await expect(names).toHaveText(["Charlie", "Alpha", "Bravo"]);
+  await expect(names).toHaveText([last, first, second]);
   await expect
     .poll(() =>
       page.evaluate(() =>
         game.combat!.turns.map((combatant) => combatant.name),
       ),
     )
-    .toEqual(["Charlie", "Alpha", "Bravo"]);
+    .toEqual([last, first, second]);
 });
 
 test("the tracker follows turns and initiative changed elsewhere", async ({

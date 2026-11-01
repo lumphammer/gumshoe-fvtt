@@ -49,6 +49,8 @@ export const CardDisplay = memo(function CardDisplay({
   draggable,
   onDragStart,
 }: CardDisplayProps) {
+  "use memo";
+
   const theme = useContext(ThemeContext);
   const [descriptionHTML, setDescriptionHTML] = useState("");
   const [effectsHTML, setEffectsHTML] = useState("");

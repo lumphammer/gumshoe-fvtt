@@ -15,6 +15,8 @@ import { AbilitiesColumnMW } from "../AbilitiesColumnMW";
  * so a change to one ability re-renders only its row.
  */
 export const AbilitiesAreaMW = memo(function AbilitiesAreaMW() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const settings = useSettings((s) => s);

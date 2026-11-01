@@ -10,6 +10,8 @@ import { NotesTypeContext } from "../NotesTypeContext";
 
 /** The PC's long notes, read through a snapshot */
 export const NotesArea = memo(function NotesArea() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const longNotesNames = useSettings((s) => s.longNotes);
