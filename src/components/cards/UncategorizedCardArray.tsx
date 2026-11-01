@@ -1,20 +1,22 @@
 import { useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
-import type { CardItem } from "../../module/items/card";
-import { settings } from "../../settings/settings";
+import { useSettings } from "../../hooks/useSettings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { CardArray } from "./CardArray";
+import type { CardLayoutView } from "./functions";
 import { categorizeCards, summarizeCategoryCards } from "./functions";
 
 interface UncategorizedCardArrayProps {
-  cards: CardItem[];
+  /** the cards, in order, from the actor's snapshot */
+  cards: readonly CardLayoutView[];
 }
 
 export const UncategorizedCardArray = ({
   cards,
 }: UncategorizedCardArrayProps) => {
-  const categories = settings.cardCategories.get();
+  "use memo";
+  const categories = useSettings((s) => s.cardCategories);
   const [categorizedCards, uncategorized] = categorizeCards(cards, categories);
   const theme = useContext(ThemeContext);
 

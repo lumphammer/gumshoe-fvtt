@@ -1,16 +1,18 @@
 import { Fragment } from "react";
 
-import type { CardItem } from "../../module/items/card";
-import { settings } from "../../settings/settings";
+import { useSettings } from "../../hooks/useSettings";
 import { CategorizedCardArrayCategory } from "./CategorizedCardArrayCategory";
+import type { CardLayoutView } from "./functions";
 import { categorizeCards } from "./functions";
 
 interface CategorizedCardArrayProps {
-  cards: CardItem[];
+  /** the cards, in order, from the actor's snapshot */
+  cards: readonly CardLayoutView[];
 }
 
 export const CategorizedCardArray = ({ cards }: CategorizedCardArrayProps) => {
-  const categories = settings.cardCategories.get();
+  "use memo";
+  const categories = useSettings((s) => s.cardCategories);
   const [categoriesMap, uncategorized] = categorizeCards(cards, categories);
 
   return (

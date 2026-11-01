@@ -2,7 +2,6 @@ import type { CardCategory } from "@lumphammer/investigator-fvtt-types";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { getById } from "../../functions/utilities";
-import type { CardItem } from "../../module/items/card";
 import { settings } from "../../settings/settings";
 import type { CardCategoryMembership } from "../../types";
 
@@ -47,10 +46,26 @@ export function summarizeCategoryMemberships(
 }
 
 /**
+ * What the card lists need of a card to group, count and sort it: from a
+ * snapshot (or a live card).
+ */
+export type CardLayoutView = {
+  id: string;
+  name: string;
+  system: {
+    active: boolean;
+    cardCategoryMemberships: readonly Readonly<CardCategoryMembership>[];
+  };
+};
+
+/**
  * Count the number of cards, taking into account their "worth" in the given
  * category.
  */
-export function countCards(cards: CardItem[], categoryId: string): number {
+export function countCards(
+  cards: readonly CardLayoutView[],
+  categoryId: string,
+): number {
   return cards.reduce((acc, card) => {
     if (!card.system.active) {
       return acc;
@@ -74,8 +89,8 @@ export function countCards(cards: CardItem[], categoryId: string): number {
  * * "3/4" (when there is a goal or limit of 4)
  */
 export function summarizeCategoryCards(
-  cards: CardItem[],
-  category: CardCategory | null,
+  cards: readonly CardLayoutView[],
+  category: Readonly<CardCategory> | null,
 ): [string, boolean, boolean] {
   if (category === null) {
     return [cards.length.toString(), false, false];
@@ -115,10 +130,10 @@ export function summarizeCategoryCards(
  * Given a list of cards and a list of categories, produce a map of category
  * id to cards for each category.
  */
-export function categorizeCards(
-  cards: CardItem[],
-  categories: CardCategory[],
-): [Record<string, CardItem[]>, CardItem[]] {
+export function categorizeCards<T extends CardLayoutView>(
+  cards: readonly T[],
+  categories: readonly Readonly<CardCategory>[],
+): [Record<string, T[]>, T[]] {
   const categoriesMap = Object.fromEntries(
     categories.map((cat) => [
       cat.id,

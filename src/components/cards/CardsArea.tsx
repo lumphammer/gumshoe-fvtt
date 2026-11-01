@@ -6,11 +6,9 @@ import { getTranslated } from "../../functions/getTranslated";
 import { sortEntitiesByName } from "../../functions/utilities";
 import * as c from "../../constants";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
-import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
-import type { CardItem } from "../../module/items/card";
 import { absoluteCover } from "../absoluteCover";
 import { ToolbarButton } from "../inputs/Button";
 import { ArrowLink } from "../nestedPanels/ArrowLink";
@@ -18,6 +16,7 @@ import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute
 import { CardsAreaSettingsSheet } from "./CardsAreaSettings";
 import { CategorizedCardArray } from "./CategorizedCardArray";
 import { CardsAreaSettingsContext } from "./contexts";
+import type { CardLayoutView } from "./functions";
 import type { CardsAreaSettings } from "./types";
 import { UncategorizedCardArray } from "./UncategorizedCardArray";
 
@@ -27,25 +26,27 @@ const settingsDirection = createDirection("settings");
  * The PC's cards. Reads the actor through a snapshot, selecting what decides
  * the layout and the categories' counts (each card's name, whether it's
  * active, and its categories), and the tab's own settings. Each card reads
- * its own data (`CardArrayCard`).
+ * its own data (`CardArrayCard`), and the lists read the categories.
  */
 export const CardsArea = memo(function CardsArea() {
+  "use memo";
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const { cardIds, savedSettings } = useActorSnapshot(actor, (snapshot) => {
+  const { allCards, savedSettings } = useActorSnapshot(actor, (snapshot) => {
     const cards = (snapshot?.items ?? []).filter(
       (item) => item.type === c.card,
     );
     return {
-      // the live cards are looked up from these; the rest is selected so this
-      // re-renders (and recategorises) when it changes
-      cardIds: cards.map((item) => item._id ?? ""),
-      layout: cards.map((item) => {
-        const system = item.system as {
-          active: boolean;
-          cardCategoryMemberships: unknown;
+      allCards: cards.map((item): CardLayoutView => {
+        const system = item.system as CardLayoutView["system"];
+        return {
+          id: item._id ?? "",
+          name: item.name,
+          system: {
+            active: system.active,
+            cardCategoryMemberships: system.cardCategoryMemberships,
+          },
         };
-        return [item.name, system.active, system.cardCategoryMemberships];
       }),
       savedSettings:
         (
@@ -54,12 +55,6 @@ export const CardsArea = memo(function CardsArea() {
             | undefined
         )?.cardsAreaSettings ?? actor.system.cardsAreaSettings,
     };
-  });
-  // the categories, which the arrays group by
-  useSettings((s) => s.cardCategories);
-  const allCards = cardIds.flatMap((id) => {
-    const item = actor.items.get(id) as CardItem | undefined;
-    return item ? [item] : [];
   });
   const methods = useSystemMethods(actor);
 
