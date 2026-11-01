@@ -36,6 +36,8 @@ export const AbilityConfig = memo(function AbilityConfig({
   item,
   ability,
 }: AbilityConfigProps) {
+  "use memo";
+
   const isEditable = useIsEditable();
   const isGeneral = isGeneralAbilitySnapshot(ability);
   const system = ability.system;

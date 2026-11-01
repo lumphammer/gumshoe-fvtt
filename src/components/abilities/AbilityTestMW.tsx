@@ -22,6 +22,8 @@ export const AbilityTestMW = memo(function AbilityTestMW({
   item,
   pool,
 }: AbilityTestMWProps) {
+  "use memo";
+
   const { mwTestAbility, mWWallop, mWNegateIllustrious } = useSystemMethods(
     item as GeneralAbilityItem,
   );

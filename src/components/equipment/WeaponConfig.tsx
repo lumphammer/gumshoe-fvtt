@@ -40,6 +40,8 @@ export const WeaponConfig = memo(function WeaponConfig({
   item,
   weapon,
 }: WeaponConfigProps) {
+  "use memo";
+
   const system = weapon.system;
   const methods = useSystemMethods(item);
   const generalAbilityNames = useActorSnapshot(item.actor, (actor) =>

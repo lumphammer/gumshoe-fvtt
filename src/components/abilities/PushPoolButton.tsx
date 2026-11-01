@@ -14,6 +14,8 @@ export const PushPoolButton = memo(function PushPoolButton({
   /** Only to write through */
   item: AbilityItem;
 }) {
+  "use memo";
+
   const theme = useContext(ThemeContext);
   const { push } = useSystemMethods(item);
 
