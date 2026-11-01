@@ -19,7 +19,6 @@ import { AbilitiesAreaEdit } from "./AbilitiesAreaEdit";
 import { AbilitiesAreaPlay } from "./AbilitiesAreaPlay";
 import { EditModeToggle } from "./EditModeToggle";
 import { EquipmentArea } from "./Equipment/EquipmentArea";
-import { LiveActorIsland } from "./LiveActorIsland";
 import { AbilitiesAreaMW } from "./MoribundWorld/AbilitiesAreaMW";
 import { MwItemArea } from "./MoribundWorld/MwItemArea";
 import { NotesArea } from "./NotesArea";
@@ -136,7 +135,7 @@ export const PCSheetFull = memo(function PCSheetFull() {
             s.useCards && {
               id: "cards",
               label: "Cards",
-              content: <LiveActorIsland component={CardsArea} />,
+              content: <CardsArea />,
             },
             s.mwUseAlternativeItemTypes
               ? {

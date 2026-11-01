@@ -1,12 +1,16 @@
 import { createDirection, Router } from "@lumphammer/minirouter";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import { sortEntitiesByName } from "../../functions/utilities";
+import * as c from "../../constants";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
-import { isCardItem } from "../../module/items/card";
+import type { CardItem } from "../../module/items/card";
 import { absoluteCover } from "../absoluteCover";
 import { ToolbarButton } from "../inputs/Button";
 import { ArrowLink } from "../nestedPanels/ArrowLink";
@@ -19,30 +23,65 @@ import { UncategorizedCardArray } from "./UncategorizedCardArray";
 
 const settingsDirection = createDirection("settings");
 
-export const CardsArea = () => {
+/**
+ * The PC's cards. Reads the actor through a snapshot, selecting what decides
+ * the layout and the categories' counts (each card's name, whether it's
+ * active, and its categories), and the tab's own settings. Each card reads
+ * its own data (`CardArrayCard`).
+ */
+export const CardsArea = memo(function CardsArea() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const allCards = actor.items.filter((item) => isCardItem(item));
+  const { cardIds, savedSettings } = useActorSnapshot(actor, (snapshot) => {
+    const cards = (snapshot?.items ?? []).filter(
+      (item) => item.type === c.card,
+    );
+    return {
+      // the live cards are looked up from these; the rest is selected so this
+      // re-renders (and recategorises) when it changes
+      cardIds: cards.map((item) => item._id ?? ""),
+      layout: cards.map((item) => {
+        const system = item.system as {
+          active: boolean;
+          cardCategoryMemberships: unknown;
+        };
+        return [item.name, system.active, system.cardCategoryMemberships];
+      }),
+      savedSettings:
+        (
+          snapshot?.system as
+            | { cardsAreaSettings: CardsAreaSettings }
+            | undefined
+        )?.cardsAreaSettings ?? actor.system.cardsAreaSettings,
+    };
+  });
+  // the categories, which the arrays group by
+  useSettings((s) => s.cardCategories);
+  const allCards = cardIds.flatMap((id) => {
+    const item = actor.items.get(id) as CardItem | undefined;
+    return item ? [item] : [];
+  });
+  const methods = useSystemMethods(actor);
 
   // local settings state for rapid updates
   const [cardsAreaSettings, setCardsAreaSettings] = useState<CardsAreaSettings>(
-    actor.system.cardsAreaSettings,
+    () => ({ ...savedSettings }),
   );
 
   // keep local state in sync with the actor
   useEffect(() => {
     // eslint-disable-next-line react/set-state-in-effect
     setCardsAreaSettings({
-      category: actor.system.cardsAreaSettings.category,
-      sortOrder: actor.system.cardsAreaSettings.sortOrder,
-      viewMode: actor.system.cardsAreaSettings.viewMode,
-      columnWidth: actor.system.cardsAreaSettings.columnWidth,
+      category: savedSettings.category,
+      sortOrder: savedSettings.sortOrder,
+      viewMode: savedSettings.viewMode,
+      columnWidth: savedSettings.columnWidth,
     });
   }, [
-    actor.system.cardsAreaSettings.category,
-    actor.system.cardsAreaSettings.sortOrder,
-    actor.system.cardsAreaSettings.viewMode,
-    actor.system.cardsAreaSettings.columnWidth,
+    savedSettings.category,
+    savedSettings.sortOrder,
+    savedSettings.viewMode,
+    savedSettings.columnWidth,
   ]);
 
   // update local state and the actor
@@ -54,16 +93,16 @@ export const CardsArea = () => {
           ...update,
         };
         // update the actor in the background
-        void actor.system.setCardsAreaSettings(newSettings);
+        void methods.setCardsAreaSettings(newSettings);
         return newSettings;
       });
     },
-    [actor],
+    [methods],
   );
 
   const handleClickCreateCard = useCallback(() => {
-    void actor.system.createCard();
-  }, [actor]);
+    void methods.createCard();
+  }, [methods]);
 
   const handleClickEndScenario = useCallback(async () => {
     const cardsCount = actor.system.getNonContinuityCards().length;
@@ -79,15 +118,15 @@ export const CardsArea = () => {
       },
     });
     if (yes) {
-      void actor.system.endScenario();
+      void methods.endScenario();
     }
-  }, [actor]);
+  }, [actor, methods]);
 
   let cards =
     cardsAreaSettings.sortOrder === "atoz" ||
     cardsAreaSettings.sortOrder === "ztoa"
       ? sortEntitiesByName(allCards)
-      : allCards;
+      : [...allCards];
 
   if (
     cardsAreaSettings.sortOrder === "newest" ||
@@ -157,5 +196,5 @@ export const CardsArea = () => {
       </Router>
     </CardsAreaSettingsContext.Provider>
   );
-};
+});
 //

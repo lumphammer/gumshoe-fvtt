@@ -444,6 +444,33 @@ test("PC sheet, Bonds tab", async ({ page }) => {
   await setSettings(page, { useBonds: false });
 });
 
+test("PC sheet, Cards tab", async ({ page }) => {
+  await setSettings(page, { useCards: true });
+  const { selector, tab } = await openFixturePC(page);
+  await page.evaluate(async (selector) => {
+    const id = selector.match(/Actor-(\w+)/)![1];
+    const actor = game.actors.get(id)!;
+    const cards = await actor.createEmbeddedDocuments(
+      "Item",
+      Array.from({ length: 8 }, (_, i) => ({
+        name: `Card ${i + 1}`,
+        type: "card" as const,
+      })),
+    );
+    globalThis.renderBench.ops["card subtitle"] = (i) =>
+      cards[0].update({ system: { subtitle: `Subtitle ${i}` } });
+  }, selector);
+  await tab("Cards");
+  await record(page, "PC, Cards tab: ability pool", "ability pool", selector);
+  await record(
+    page,
+    "PC, Cards tab: a card's subtitle",
+    "card subtitle",
+    selector,
+  );
+  await setSettings(page, { useCards: false });
+});
+
 test("NPC sheet", async ({ page }) => {
   const actorId = await page.evaluate(async () => {
     const actor = (await Actor.create({ name: "Bench NPC", type: "npc" }))!;

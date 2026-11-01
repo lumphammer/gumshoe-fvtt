@@ -283,6 +283,8 @@ Components rendered per change, before and after converting (from
 | PC, MW items tab (island → converted): an item's name    | 139    | 18    |
 | PC, Bonds tab (island → converted): an ability's pool    | 267    | 1     |
 | PC, Bonds tab (island → converted): a Bond's points      | 187    | 20    |
+| PC, Cards tab (island → converted): an ability's pool    | 146    | 1     |
+| PC, Cards tab (island → converted): a card's subtitle    | 148    | 15    |
 | PC, Moribund World Abilities tab: an ability's pool      | 944    | 311   |
 | PC, Moribund World Abilities tab: the actor's Health     | 944    | 283   |
 | PC, Abilities tab, panels memoised: an ability's pool    | 315    | 71    |
@@ -303,17 +305,15 @@ Components rendered per change, before and after converting (from
 | PC, root memoised, Combat tab: an ability's pool         | 30     | 1     |
 | PC, root memoised, Equipment tab: an ability's pool      | 30     | 1     |
 
-The PC sheet's header, stats panel and pools panel are now memoised sections
-(`PCSheetPanels.tsx`), and the pool trackers read snapshots. Most of what
-was left was the trackers' checkboxes. The 33 left on the Abilities tab is
-the sheet's shell (`PCSheetFull`, `TabContainer`, the edit-mode toggle),
-which Foundry re-renders on every change. Its root can only be memoised once
-every tab reads snapshots. Still to do:
+Every part of the PC and NPC sheets now reads snapshots, and both roots
+(`PCSheetFull`, `NPCSheetFull`) are memoised, so Foundry's re-render stops
+at `PCSheet`/`NPCSheet`. The header and side panels are memoised sections
+(`PCSheetPanels.tsx`, `NPCSheetPanels.tsx`). On the way, the tabs not yet
+converted sat in a `LiveActorIsland`, which re-rendered them on any change
+to the actor, so the root could be memoised first. The Establish Bond and
+Team Crisis panels still subscribe to the whole actor snapshot (as well as
+their own item hooks): they show other actors' data too. Still to do:
 
-- the Cards tab. For now
-  each sits in a `LiveActorIsland`, which re-renders it on any change to the
-  actor or the settings (as Foundry's re-render of the sheet did), so that
-  `PCSheetFull` can be memoised. Converting them means replacing the island;
 - a new round in a turn-passing combat (535 components, then 69 for each
   combatant's turns): every row's turns remaining change, so most of it is
   real, but each row's menus re-render with it.
