@@ -76,7 +76,13 @@ translations, adding fields and settings, releases).
   "annotation"`). Foundry's data is mutable, so the rest of the UI relies on
   full re-renders: the compiler caches on identity, and a document keeps its
   identity when it changes. Only mark code which reads its data through
-  snapshots (below). Only oxlint's `preserve-manual-memoization` rule is on:
+  snapshots (below); the PC and NPC sheets are marked. A compiled component
+  passes an unchanged child its cached element, so every child of one must
+  keep itself current (as if memoised), not rely on its parent re-rendering.
+  A call during render is cached on its arguments: one which reads global
+  state (`settings.foo.get()`, `game.user.targets`) with no changing
+  arguments would never run again, so read through `useSettings` or a hook
+  that isn't compiled. Only oxlint's `preserve-manual-memoization` rule is on:
   avoid `useMemo`/`useCallback` over values that change every render; plain
   functions are fine.
 - Sheets are being converted to read immutable **snapshots**, so they can be
