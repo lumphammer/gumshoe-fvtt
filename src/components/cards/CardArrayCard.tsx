@@ -14,32 +14,33 @@ interface CardArrayCardProps {
 }
 
 /**
- * A card in the Cards tab. Memoised: it reads its card through a snapshot,
- * and the card categories, so it re-renders when either changes.
- * `CardDisplay`, below, reads the live card (it's shared with the card's
- * sheet), and re-renders with this.
+ * A card in the Cards tab. Memoised: it reads only what it shows itself
+ * (whether the card's active, and its category's hover style) through
+ * snapshots. `CardDisplay`, below, is memoised too, and reads the rest.
  */
 export const CardArrayCard = memo(function CardArrayCard({
   card,
   className,
 }: CardArrayCardProps) {
-  const data = useItemSelector(card, (snapshot) => ({
-    name: snapshot.name,
-    system: snapshot.system as {
+  const data = useItemSelector(card, (snapshot) => {
+    const system = snapshot.system as {
       active: boolean;
       styleKeyCategoryId: string | null;
-    },
-  }));
-  const categories = useSettings((s) => s.cardCategories);
+    };
+    return {
+      active: system.active,
+      styleKeyCategoryId: system.styleKeyCategoryId,
+    };
+  });
+  const styleKey = useSettings(
+    (s) =>
+      s.cardCategories.find((cat) => cat.id === data.styleKeyCategoryId)
+        ?.styleKey,
+  );
   const theme = useContext(ThemeContext);
   const app = useContext(FoundryAppContext);
 
   const { viewMode } = useContext(CardsAreaSettingsContext);
-
-  const category =
-    data.system.styleKeyCategoryId === null
-      ? undefined
-      : categories.find((cat) => cat.id === data.system.styleKeyCategoryId);
 
   const handleDragStart = useCallback(
     (e: React.DragEvent<HTMLElement>) => {
@@ -50,16 +51,14 @@ export const CardArrayCard = memo(function CardArrayCard({
     [app],
   );
 
-  const categoryTheme = category?.styleKey
-    ? theme.cards.categories[category?.styleKey]
-    : null;
+  const categoryTheme = styleKey ? theme.cards.categories[styleKey] : null;
 
   return (
     // opacity has to be applied on a wrapper otherwise we break transform-style
     // (if used.) See https://stackoverflow.com/a/70627306/212676
     <div
       css={{
-        opacity: data.system.active ? 1 : 0.5,
+        opacity: data.active ? 1 : 0.5,
         transition: "opacity 0.2s ease-in-out",
         containerType: "inline-size",
       }}

@@ -96,3 +96,43 @@ test("the Cards tab follows cards changed elsewhere", async ({ page }) => {
   await createOwnedItem(page, actorId, { name: "Calm", type: "card" });
   await expect(sheet).toContainText("Calm");
 });
+
+test("cards follow their category being renamed", async ({ page }) => {
+  const stress = {
+    id: "stress",
+    singleName: "Stress",
+    pluralName: "Stresses",
+    styleKey: "stress",
+    threshold: 3,
+    thresholdType: "limit",
+  };
+  await setSettings(page, { useCards: true, cardCategories: [stress] });
+  const actorId = await createActor(page, { name: "Dealer", type: "pc" });
+  const cardId = await createOwnedItem(page, actorId, {
+    name: "Rattled",
+    type: "card",
+    system: {
+      cardCategoryMemberships: [
+        { categoryId: "stress", nonlethal: false, worth: 1 },
+      ],
+      styleKeyCategoryId: "stress",
+    },
+  });
+  const actorSheet = await openSheet(page, `Actor.${actorId}`);
+  await actorSheet.locator(".tab-strip > label", { hasText: "Cards" }).click();
+  const cardSheet = await openSheet(page, `Actor.${actorId}.Item.${cardId}`);
+  const supertitles = page.locator(".investigator-card-display .supertitle");
+  await expect(supertitles).toHaveText(["Stress", "Stress"]);
+
+  // the card reads its categories through a snapshot: an unconverted sheet
+  // (the card's own) isn't re-rendered by a settings change
+  await setSettings(page, {
+    cardCategories: [{ ...stress, singleName: "Strain" }],
+  });
+  await expect(
+    actorSheet.locator(".investigator-card-display .supertitle"),
+  ).toHaveText("Strain");
+  await expect(
+    cardSheet.locator(".investigator-card-display .supertitle"),
+  ).toHaveText("Strain");
+});

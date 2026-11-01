@@ -465,7 +465,18 @@ test("PC sheet, Bonds tab", async ({ page }) => {
 });
 
 test("PC sheet, Cards tab", async ({ page }) => {
-  await setSettings(page, { useCards: true });
+  const category = (id: string, name: string) => ({
+    id,
+    singleName: name,
+    pluralName: `${name}s`,
+    styleKey: id,
+    threshold: 3,
+    thresholdType: "none",
+  });
+  await setSettings(page, {
+    useCards: true,
+    cardCategories: [category("a", "Stress"), category("b", "Injury")],
+  });
   const { selector, tab } = await openFixturePC(page);
   await page.evaluate(async (selector) => {
     const id = selector.match(/Actor-(\w+)/)![1];
@@ -477,8 +488,29 @@ test("PC sheet, Cards tab", async ({ page }) => {
         type: "card" as const,
       })),
     );
-    globalThis.renderBench.ops["card subtitle"] = (i) =>
+    const ops = globalThis.renderBench.ops;
+    ops["card subtitle"] = (i) =>
       cards[0].update({ system: { subtitle: `Subtitle ${i}` } });
+    // rename a category: "a" has every card (new cards start in the first
+    // category), "b" has none
+    const renameCategory = (id: string, i: number) =>
+      game.settings.set(
+        "investigator",
+        "cardCategories" as never,
+        (
+          game.settings.get(
+            "investigator",
+            "cardCategories" as never,
+          ) as unknown as {
+            id: string;
+            singleName: string;
+          }[]
+        ).map((cat) =>
+          cat.id === id ? { ...cat, singleName: `${id} ${i}` } : cat,
+        ) as never,
+      );
+    ops["category with cards"] = (i) => renameCategory("a", i);
+    ops["category without cards"] = (i) => renameCategory("b", i);
   }, selector);
   await tab("Cards");
   await record(page, "PC, Cards tab: ability pool", "ability pool", selector);
@@ -488,7 +520,19 @@ test("PC sheet, Cards tab", async ({ page }) => {
     "card subtitle",
     selector,
   );
-  await setSettings(page, { useCards: false });
+  await record(
+    page,
+    "PC, Cards tab: renaming a category with every card",
+    "category with cards",
+    selector,
+  );
+  await record(
+    page,
+    "PC, Cards tab: renaming a category with no cards",
+    "category without cards",
+    selector,
+  );
+  await setSettings(page, { useCards: false, cardCategories: [] });
 });
 
 test("NPC sheet", async ({ page }) => {

@@ -1,11 +1,19 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated } from "../../functions/getTranslated";
 import { cleanAndEnrichHtml } from "../../functions/textFunctions";
 import { isNullOrEmptyString } from "../../functions/utilities";
 import type { CardItem } from "../../module/items/card";
-import { settings } from "../../settings/settings";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
+import { useSettings } from "../../hooks/useSettings";
+import type { CardCategoryMembership } from "../../types";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { summarizeCategoryMemberships } from "./functions";
 import type { CardsViewMode } from "./types";
@@ -18,19 +26,47 @@ interface CardDisplayProps {
   onDragStart?: (event: React.DragEvent<HTMLElement>) => void;
 }
 
-export const CardDisplay = ({
+type CardSystem = {
+  active: boolean;
+  cardCategoryMemberships: CardCategoryMembership[];
+  continuity: boolean;
+  description: string;
+  effects: string;
+  styleKeyCategoryId: string | null;
+  subtitle: string;
+  supertitle: string;
+};
+
+/**
+ * A card, as shown in the Cards tab and on its own sheet. Memoised: it reads
+ * the card, and what it shows from the card categories, through snapshots,
+ * so it re-renders only when what it shows changes.
+ */
+export const CardDisplay = memo(function CardDisplay({
   card,
   className,
   viewMode,
   draggable,
   onDragStart,
-}: CardDisplayProps) => {
+}: CardDisplayProps) {
   const theme = useContext(ThemeContext);
   const [descriptionHTML, setDescriptionHTML] = useState("");
   const [effectsHTML, setEffectsHTML] = useState("");
-  const categoryText = summarizeCategoryMemberships(
-    card.system.cardCategoryMemberships,
-  );
+  const data = useItemSelector(card, (snapshot) => ({
+    name: snapshot.name,
+    system: snapshot.system as CardSystem,
+  }));
+  const system = data.system;
+  // only what this card shows from the categories, so changing another
+  // category doesn't re-render it
+  const { categoryText, styleKey } = useSettings((s) => ({
+    categoryText: summarizeCategoryMemberships(
+      system.cardCategoryMemberships,
+      s.cardCategories,
+    ),
+    styleKey: s.cardCategories.find((c) => c.id === system.styleKeyCategoryId)
+      ?.styleKey,
+  }));
 
   const sheet = card.sheet;
   assertApplicationV2(sheet);
@@ -41,29 +77,24 @@ export const CardDisplay = ({
   const showText = viewMode === "full";
 
   useEffect(() => {
-    void cleanAndEnrichHtml(card.system.description).then(setDescriptionHTML);
-  }, [card.system.description]);
+    void cleanAndEnrichHtml(system.description).then(setDescriptionHTML);
+  }, [system.description]);
 
   useEffect(() => {
-    void cleanAndEnrichHtml(card.system.effects).then(setEffectsHTML);
-  }, [card.system.effects]);
+    void cleanAndEnrichHtml(system.effects).then(setEffectsHTML);
+  }, [system.effects]);
 
-  const styleKey = settings.cardCategories
-    .get()
-    .find((c) => c.id === card.system.styleKeyCategoryId)?.styleKey;
   const categoryTheme = styleKey ? theme.cards.categories[styleKey] : null;
 
   const supertitleText = [
     // category name
     categoryText,
     // active
-    !card.system.active ? getTranslated("Inactive") : null,
+    !system.active ? getTranslated("Inactive") : null,
     // continuity
-    card.system.continuity ? getTranslated("Continuity") : null,
+    system.continuity ? getTranslated("Continuity") : null,
     // supertitle text
-    !isNullOrEmptyString(card.system.supertitle)
-      ? card.system.supertitle
-      : null,
+    !isNullOrEmptyString(system.supertitle) ? system.supertitle : null,
   ]
     .filter(Boolean)
     .join(" / ");
@@ -99,9 +130,9 @@ export const CardDisplay = ({
           ...categoryTheme?.titleStyle,
         }}
       >
-        {card.name}
+        {data.name}
       </h2>
-      {!isNullOrEmptyString(card.system.subtitle) && (
+      {!isNullOrEmptyString(system.subtitle) && (
         <p
           className="subtitle"
           css={{
@@ -109,7 +140,7 @@ export const CardDisplay = ({
             ...categoryTheme?.subtitleStyle,
           }}
         >
-          {card.system.subtitle}
+          {system.subtitle}
         </p>
       )}
       {showText && !isNullOrEmptyString(descriptionHTML) && (
@@ -134,6 +165,6 @@ export const CardDisplay = ({
       )}
     </div>
   );
-};
+});
 
 CardDisplay.displayName = "CardDisplay";

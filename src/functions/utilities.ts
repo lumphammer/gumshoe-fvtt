@@ -445,7 +445,7 @@ export function throttle<T extends (...args: any[]) => any>(
  * @returns the item, or undefined if not found
  */
 export function getById<T extends { id: string }>(
-  items: T[],
+  items: readonly T[],
   id: string,
 ): T | undefined {
   return items.find((item) => item.id === id);
