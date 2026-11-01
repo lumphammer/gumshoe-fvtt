@@ -142,7 +142,7 @@ export const PCSheetFull = memo(function PCSheetFull() {
               ? {
                   id: "items",
                   label: "MWItems",
-                  content: <LiveActorIsland component={MwItemArea} />,
+                  content: <MwItemArea />,
                 }
               : {
                   id: "equipment",

@@ -279,6 +279,8 @@ Components rendered per change, before and after converting (from
 | turn-passing tracker (12): pass turn                     | 571    | 131   |
 | PC, Contacts tab (island → converted): an ability's pool | 183    | 1     |
 | PC, Contacts tab (island → converted): a contact's pool  | 183    | 42    |
+| PC, MW items tab (island → converted): an ability's pool | 139    | 1     |
+| PC, MW items tab (island → converted): an item's name    | 139    | 18    |
 | PC, Moribund World Abilities tab: an ability's pool      | 944    | 311   |
 | PC, Moribund World Abilities tab: the actor's Health     | 944    | 283   |
 | PC, Abilities tab, panels memoised: an ability's pool    | 315    | 71    |
@@ -303,7 +305,7 @@ Both sheet roots (`PCSheetFull`, `NPCSheetFull`) are memoised, so Foundry's
 re-render stops at `PCSheet`/`NPCSheet`. The header and side panels are
 memoised sections (`PCSheetPanels.tsx`, `NPCSheetPanels.tsx`). Still to do:
 
-- the Bonds and Cards tabs, and Moribund World's items. For now
+- the Bonds and Cards tabs. For now
   each sits in a `LiveActorIsland`, which re-renders it on any change to the
   actor or the settings (as Foundry's re-render of the sheet did), so that
   `PCSheetFull` can be memoised. Converting them means replacing the island;
