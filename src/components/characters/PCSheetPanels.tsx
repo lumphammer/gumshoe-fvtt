@@ -26,9 +26,7 @@ import { TrackersArea } from "./TrackersArea";
 
 // The PC sheet's header and side panels. Each is memoised, and reads the actor
 // and settings through snapshots, so Foundry's re-render of the sheet stops
-// here, and a change re-renders only the panel that shows it. The children
-// that still read the live actor (`ImagePickle`, `PersonalDetailField`,
-// `StatField`) re-render with their panel, which selects what they show.
+// here, and a change re-renders only the panel that shows it.
 
 /** The personal detail items, as shown in the header and stats panel */
 const usePersonalDetails = () => {
@@ -78,8 +76,8 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
           onChangeSubText={occupation?.setName}
         />
       </div>
-      {/* reads the live actor's image: re-renders with `header.img` */}
       <ImagePickle
+        img={header.img}
         css={{
           gridArea: "image",
           transform: "rotateZ(2deg)",
@@ -105,9 +103,6 @@ export const PCSheetStats = memo(function PCSheetStats() {
       hiddenShortNotes: system?.hiddenShortNotes ?? [],
     };
   });
-  // `PersonalDetailField` reads them from the live actor: selected here so
-  // this re-renders when they change
-  usePersonalDetails();
   const { personalDetails, shortHiddenNotesNames, occupationLabel } =
     useSettings((s) => ({
       personalDetails: s.personalDetails,
@@ -189,15 +184,11 @@ export const PCSheetPools = memo(function PCSheetPools() {
   const pools = useActorSnapshot(actor, (snapshot) => {
     const system = snapshot?.system as
       | {
-          stats: Record<string, number>;
           initiativeAbility: string;
           mwInjuryStatus: typeof actor.system.mwInjuryStatus;
         }
       | undefined;
     return {
-      // `StatField` reads them from the live actor: selected here so this
-      // re-renders when they change
-      stats: system?.stats ?? {},
       initiativeAbility: system?.initiativeAbility ?? "",
       mwInjuryStatus: system?.mwInjuryStatus ?? actor.system.mwInjuryStatus,
       generalAbilityNames: (snapshot?.items ?? [])

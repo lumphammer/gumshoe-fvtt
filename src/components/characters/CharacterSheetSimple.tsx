@@ -31,8 +31,6 @@ export const CharacterSheetSimple = ({
   // read through a snapshot: Foundry's render of the sheet doesn't reach here
   const data = useActorSnapshot(actor, (snapshot) => ({
     name: snapshot?.name ?? "",
-    // `ImagePickle` reads it from the live actor: selected so this re-renders
-    // when it changes
     img: snapshot?.img,
     sheetTheme:
       (snapshot?.system as { sheetTheme?: string | null } | undefined)
@@ -90,6 +88,7 @@ export const CharacterSheetSimple = ({
           }}
         >
           <ImagePickle
+            img={data.img}
             css={{
               width: "100%",
               height: "auto",

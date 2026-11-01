@@ -22,8 +22,6 @@ export const BondRow = memo(function BondRow({
   /** The live Bond: the row reads it through a snapshot */
   bond: BondItem;
 }) {
-  // `BondBadges` reads the live Bond: what it shows is selected here, so the
-  // row re-renders when it changes
   const row = useItemSelector(bond, (snapshot) => {
     const system = snapshot.system as { points: number; isDeltaGreen: boolean };
     return {
@@ -97,7 +95,7 @@ export const BondRow = memo(function BondRow({
             gap: "0.5em",
           }}
         >
-          <BondBadges bond={bond} />
+          <BondBadges isDeltaGreen={row.isDeltaGreen} isBroken={row.isBroken} />
         </div>
         {/* right-aligned, so the numbers line up under the header */}
         <div data-testid="bond-rating" css={{ textAlign: "end" }}>

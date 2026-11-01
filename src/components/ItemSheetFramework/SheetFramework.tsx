@@ -80,6 +80,7 @@ export const ItemSheetFramework = ({
 
         {/* Image */}
         <ImagePickle
+          img={item.img}
           css={{
             gridArea: "image",
             transform: "rotateZ(-2deg)",

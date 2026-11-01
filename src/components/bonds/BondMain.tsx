@@ -74,7 +74,10 @@ export const BondMain = () => {
       )}
       {hasBadges && (
         <GridField noLabel>
-          <BondBadges bond={item} />
+          <BondBadges
+            isDeltaGreen={item.system.isDeltaGreen}
+            isBroken={item.system.isBroken}
+          />
         </GridField>
       )}
       {canRebuild && (

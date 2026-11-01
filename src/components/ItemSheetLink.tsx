@@ -1,10 +1,20 @@
 import { assertApplicationV2 } from "../functions/assertApplicationV2";
+import { useItemSelector } from "../hooks/useItemSnapshot";
 
 /** An item's name, as a link which opens its sheet */
-export const ItemSheetLink = ({ item }: { item: Item }) => {
-  const sheet = item.sheet;
-  assertApplicationV2(sheet);
-  return <a onClick={() => sheet.render({ force: true })}>{item.name}</a>;
+export const ItemSheetLink = ({ item }: { item: Item.Implementation }) => {
+  const name = useItemSelector(item, (snapshot) => snapshot.name);
+  return (
+    <a
+      onClick={() => {
+        const sheet = item.sheet;
+        assertApplicationV2(sheet);
+        void sheet.render({ force: true });
+      }}
+    >
+      {name}
+    </a>
+  );
 };
 
 ItemSheetLink.displayName = "ItemSheetLink";

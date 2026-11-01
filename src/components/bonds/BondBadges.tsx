@@ -1,11 +1,11 @@
 import { useContext } from "react";
 
-import type { BondItem } from "../../module/items/bond";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 
 type BondBadgesProps = {
-  bond: BondItem;
+  isDeltaGreen: boolean;
+  isBroken: boolean;
   className?: string;
 };
 
@@ -14,7 +14,11 @@ type BondBadgesProps = {
  * rather than being crossed out, which would make them hard to read. The
  * styles go on a wrapper because `Translate` sets its own inline background.
  */
-export const BondBadges = ({ bond, className }: BondBadgesProps) => {
+export const BondBadges = ({
+  isDeltaGreen,
+  isBroken,
+  className,
+}: BondBadgesProps) => {
   const theme = useContext(ThemeContext);
   const badge = {
     fontSize: "0.9em",
@@ -30,7 +34,7 @@ export const BondBadges = ({ bond, className }: BondBadgesProps) => {
       // never wrapped, so a column of badges is always wide enough for both
       css={{ display: "inline-flex", flexWrap: "nowrap", gap: "0.25em" }}
     >
-      {bond.system.isDeltaGreen && (
+      {isDeltaGreen && (
         <span
           css={{
             ...badge,
@@ -42,7 +46,7 @@ export const BondBadges = ({ bond, className }: BondBadgesProps) => {
           <Translate>Delta Green</Translate>
         </span>
       )}
-      {bond.system.isBroken && (
+      {isBroken && (
         <span
           css={{
             ...badge,

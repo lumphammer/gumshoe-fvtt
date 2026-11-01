@@ -1,6 +1,7 @@
 import type { Stat } from "@lumphammer/investigator-fvtt-types";
 import { useCallback } from "react";
 
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertActiveCharacterActor } from "../../module/actors/types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
@@ -13,6 +14,12 @@ interface StatFieldProps {
 export const StatField = ({ stat, id }: StatFieldProps) => {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
+  const value = useActorSnapshot(
+    actor,
+    (snapshot) =>
+      (snapshot?.system as { stats?: Record<string, number> } | undefined)
+        ?.stats?.[id],
+  );
   const onChange = useCallback(
     (newVal: number) => {
       void actor.update({
@@ -28,7 +35,7 @@ export const StatField = ({ stat, id }: StatFieldProps) => {
       <AsyncNumberInput
         min={stat.min ?? 0}
         max={stat.max}
-        value={actor.system.stats[id] ?? stat.default}
+        value={value ?? stat.default}
         onChange={onChange}
       />
     </div>

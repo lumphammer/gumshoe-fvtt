@@ -1,12 +1,12 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import React, { useCallback, useContext } from "react";
 
-import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { ThemeContext } from "../../themes/ThemeContext";
 
 interface SlugProps {
   onClick?: () => void;
-  item?: InvestigatorItem;
+  /** the item it stands for (e.g. from a snapshot): its id, for dragging, and its image */
+  item?: { id: string | null; img: string | null };
   children?: React.ReactNode;
 }
 

@@ -20,9 +20,14 @@ const transitionTime = "0.3s";
 
 type ImagePickleProps = {
   className?: string;
+  /**
+   * The document's image. Passed in, rather than read from the document here,
+   * so a sheet which reads its document through snapshots can keep it current.
+   */
+  img: string | null | undefined;
 };
 
-export const ImagePickle = ({ className }: ImagePickleProps) => {
+export const ImagePickle = ({ className, img }: ImagePickleProps) => {
   const { doc, app } = useDocumentSheetContext();
   if (!(doc instanceof Actor || doc instanceof Item)) {
     throw new Error("ImagePickle must be used within an Actor or Item");
@@ -44,7 +49,7 @@ export const ImagePickle = ({ className }: ImagePickleProps) => {
     } else {
       const fp = new FilePicker.implementation({
         type: "image",
-        current: doc.img ?? undefined,
+        current: img ?? undefined,
         callback: (path: string) => {
           void doc.update({
             img: path,
@@ -56,19 +61,19 @@ export const ImagePickle = ({ className }: ImagePickleProps) => {
         },
         window: {},
       });
-      return fp.browse(doc.img ?? "");
+      return fp.browse(img ?? "");
     }
-  }, [app.position.left, app.position.top, doc]);
+  }, [app.position.left, app.position.top, doc, img]);
 
   const showImage = useCallback(() => {
     const ip = new ImagePopout({
       window: {
-        title: doc.img ?? "",
+        title: img ?? "",
       },
-      src: doc.img ?? "",
+      src: img ?? "",
     });
     void ip.render({ force: true });
-  }, [doc.img]);
+  }, [img]);
 
   const onClickShow = useCallback(() => {
     setShowOverlay(false);
@@ -114,7 +119,7 @@ export const ImagePickle = ({ className }: ImagePickleProps) => {
         <div
           css={{
             ...cover,
-            backgroundImage: `url("${doc.img}")`,
+            backgroundImage: `url("${img}")`,
             backgroundSize: "cover",
             backgroundPosition: "center top",
             filter: showOverlay ? "blur(0.7em)" : undefined,
