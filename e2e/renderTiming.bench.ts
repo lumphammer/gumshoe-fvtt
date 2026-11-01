@@ -30,6 +30,7 @@ import {
   test,
 } from "./foundry.ts";
 import { installCommitRecorder } from "./renderTiming/commitRecorder.ts";
+import { stabilityRulesOn } from "./stabilitySettings.ts";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const label = process.env["RENDER_BENCH_LABEL"] ?? "run";
@@ -418,6 +419,29 @@ test("PC sheet, Moribund World items", async ({ page }) => {
     selector,
   );
   await setSettings(page, { mwUseAlternativeItemTypes: false });
+});
+
+test("PC sheet, Bonds tab", async ({ page }) => {
+  await setSettings(page, { ...stabilityRulesOn, useBonds: true });
+  const { selector, tab } = await openFixturePC(page);
+  await page.evaluate(async (selector) => {
+    const id = selector.match(/Actor-(\w+)/)![1];
+    const actor = game.actors.get(id)!;
+    const bonds = await actor.createEmbeddedDocuments(
+      "Item",
+      Array.from({ length: 6 }, (_, i) => ({
+        name: `Bond ${i + 1}`,
+        type: "bond" as const,
+        system: { points: 5 },
+      })),
+    );
+    globalThis.renderBench.ops["bond points"] = (i) =>
+      bonds[0].update({ system: { points: 3 + (i % 3) } });
+  }, selector);
+  await tab("Bonds");
+  await record(page, "PC, Bonds tab: ability pool", "ability pool", selector);
+  await record(page, "PC, Bonds tab: a Bond's points", "bond points", selector);
+  await setSettings(page, { useBonds: false });
 });
 
 test("NPC sheet", async ({ page }) => {

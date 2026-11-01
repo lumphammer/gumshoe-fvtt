@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import type { PCActor } from "../../module/actors/pc";
 import {
@@ -40,6 +41,9 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
   const { navigate } = useNavigationContext();
   // the choices refer to other items, which can change under us
   useRefreshOnActorItemChanges(actor);
+  // and the actor's own data: the Bonds tab above is memoised, so Foundry's
+  // re-render of the sheet no longer reaches this
+  useActorSnapshot(actor, (snapshot) => snapshot);
   const [whoId, setWhoId] = useState(someoneNew);
   const [name, setName] = useState("");
   const [abilityId, setAbilityId] = useState<string | null>(null);
