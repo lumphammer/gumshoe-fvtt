@@ -498,3 +498,59 @@ test("combat tracker", async ({ page }) => {
     await Combat.deleteDocuments(game.combats.map((combat) => combat.id));
   });
 });
+
+test("turn-passing combat tracker", async ({ page }) => {
+  await setSettings(page, { useTurnPassingInitiative: true });
+  await page.evaluate(async () => {
+    const actors = await Actor.createDocuments(
+      Array.from({ length: 12 }, (_, i) => ({
+        name: `Combatant ${i + 1}`,
+        type: "npc" as const,
+      })),
+    );
+    const combat = (await Combat.create({
+      active: true,
+      type: "turnPassing",
+    }))!;
+    const combatants = await combat.createEmbeddedDocuments(
+      "Combatant",
+      actors.map((actor) => ({ actorId: actor.id })),
+    );
+    await combat.startCombat();
+    const ops = globalThis.renderBench.ops;
+    // a combatant's turns go down, then back up
+    ops["passing turns"] = (i) => {
+      const system = combatants[0].system as unknown as {
+        addPassingTurn: () => Promise<void>;
+        removePassingTurn: () => Promise<void>;
+      };
+      return i % 2 ? system.addPassingTurn() : system.removePassingTurn();
+    };
+    ops["next round"] = () => combat.nextRound();
+    // the turn passes to another combatant
+    ops["pass turn"] = (i) => combat.update({ turn: (i + 1) % 12 });
+    ui.sidebar.changeTab("combat", "primary");
+  });
+  await record(
+    page,
+    "turn-passing tracker (12): pass turn",
+    "pass turn",
+    "#combat",
+  );
+  await record(
+    page,
+    "turn-passing tracker (12): a combatant's turns",
+    "passing turns",
+    "#combat",
+  );
+  await record(
+    page,
+    "turn-passing tracker (12): next round",
+    "next round",
+    "#combat",
+  );
+  await page.evaluate(async () => {
+    await Combat.deleteDocuments(game.combats.map((combat) => combat.id));
+  });
+  await setSettings(page, { useTurnPassingInitiative: false });
+});

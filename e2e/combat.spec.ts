@@ -157,6 +157,11 @@ test("a player takes their turn in a turn-passing combat", async ({
   // the GM's client carries out the turn pass
   await expect.poll(() => getCombat(page)).toMatchObject({ current: "Hero" });
   await expect(heroRow).toContainText("0/1");
+  // the rows are memoised: whose turn it is reaches them through their own
+  // context, so the GM's tracker shows it (a play icon) on Hero's row only
+  const gmRow = (name: string) => tracker.locator("li", { hasText: name });
+  await expect(gmRow("Hero").locator(".fa-play")).toHaveCount(1);
+  await expect(gmRow("Villain").locator(".fa-play")).toHaveCount(0);
 });
 
 test("in turn-passing, everyone acts, then a new round gives turns back", async ({
