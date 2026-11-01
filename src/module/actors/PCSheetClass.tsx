@@ -51,4 +51,7 @@ export const PCSheetClass = ReactApplicationV2Mixin(
   "PCSheetClass",
   OverrideAutoDisableMixin(PCSheetClassBase),
   render,
+  // the sheet reads everything through snapshots, ownership included
+  // (docs/immutable-data.md), so Foundry's re-renders needn't reach React
+  { rerenderOnFoundryRender: false },
 );

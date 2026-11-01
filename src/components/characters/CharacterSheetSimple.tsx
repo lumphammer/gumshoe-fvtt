@@ -1,3 +1,5 @@
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
 import { isActiveCharacterActor } from "../../module/actors/types";
@@ -26,8 +28,18 @@ export const CharacterSheetSimple = ({
   if (!isActiveCharacterActor(actor)) {
     throw new Error("CharacterSheetSimple needs a PC or NPC");
   }
-  const themeName = actor.system.getSheetThemeName();
-  const theme = useTheme(themeName);
+  // read through a snapshot: Foundry's render of the sheet doesn't reach here
+  const data = useActorSnapshot(actor, (snapshot) => ({
+    name: snapshot?.name ?? "",
+    // `ImagePickle` reads it from the live actor: selected so this re-renders
+    // when it changes
+    img: snapshot?.img,
+    sheetTheme:
+      (snapshot?.system as { sheetTheme?: string | null } | undefined)
+        ?.sheetTheme ?? null,
+  }));
+  const defaultThemeName = useSettings((s) => s.defaultThemeName);
+  const theme = useTheme(data.sheetTheme || defaultThemeName);
   const hasNotes = notes.length > 0;
 
   return (
@@ -49,7 +61,7 @@ export const CharacterSheetSimple = ({
       }}
     >
       <LogoEditable
-        mainText={actor.name ?? ""}
+        mainText={data.name}
         subText={subText}
         onChangeMainText={actor.setName}
         css={{
