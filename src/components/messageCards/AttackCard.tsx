@@ -5,7 +5,7 @@ import { isAttackMessage } from "../../module/attacks/attackTargets";
 import { formatLethality } from "../../module/attacks/lethality";
 import type { FireMode } from "../../module/attacks/rules";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import { settings } from "../../settings/settings";
+import { useSettings } from "../../hooks/useSettings";
 import { Translate } from "../Translate";
 import { AttackTargets } from "./AttackTargets";
 import { DiceTerms } from "./DiceTerms";
@@ -27,6 +27,8 @@ interface AttackCardProps {
 export const AttackCard = React.memo(
   ({ msg, rangeName, weapon, name, imageUrl }: AttackCardProps) => {
     const sheet = weapon?.sheet;
+    const lethalityOn = useSettings((s) => s.useLethalityAndAutofire);
+    const damageApplicationOn = useSettings((s) => s.useDamageApplication);
 
     const onClickWeaponName = useCallback(() => {
       if (!sheet) return;
@@ -42,9 +44,7 @@ export const AttackCard = React.memo(
     const damageRoll = poolRolls[1];
 
     const lethality =
-      isAttackMessage(msg) && settings.useLethalityAndAutofire.get()
-        ? msg.system.lethality
-        : null;
+      isAttackMessage(msg) && lethalityOn ? msg.system.lethality : null;
 
     const fireMode = isAttackMessage(msg) ? msg.system.fireMode : "single";
     const isShotDry = isAttackMessage(msg) && msg.system.isShotDry;
@@ -54,7 +54,7 @@ export const AttackCard = React.memo(
     // older attack messages don't have targets at all
     const showTargets =
       isAttackMessage(msg) &&
-      (settings.useDamageApplication.get() || msg.system.targets.length > 0);
+      (damageApplicationOn || msg.system.targets.length > 0);
 
     return (
       <>

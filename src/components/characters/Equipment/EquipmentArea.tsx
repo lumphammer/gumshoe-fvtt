@@ -32,7 +32,9 @@ export const EquipmentArea = memo(function EquipmentArea() {
     for (const item of equipment) {
       const categoryId = (item.system as { categoryId: string }).categoryId;
       const key = categoryId in categories ? categoryId : "";
-      (result[key] ??= []).push(item._id ?? "");
+      const ids = result[key] ?? [];
+      ids.push(item._id ?? "");
+      result[key] = ids;
     }
     return result;
   });

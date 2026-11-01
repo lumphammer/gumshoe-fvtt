@@ -99,12 +99,10 @@ export const RebuildBondPanel = ({ bond }: { bond: BondItem }) => {
           >
             <SpendButtons
               value={abilitySpends[ability.id ?? ""] ?? 0}
-              onChange={(spend) =>
-                setAbilitySpends((current) => ({
-                  ...current,
-                  [ability.id ?? ""]: spend,
-                }))
-              }
+              onChange={(spend) => {
+                const id = ability.id ?? "";
+                setAbilitySpends((current) => ({ ...current, [id]: spend }));
+              }}
               max={ability.system.pool}
               // listed even when spent, so it's clear it's empty
               disabled={ability.system.pool <= 0}

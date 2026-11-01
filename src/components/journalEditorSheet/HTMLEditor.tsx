@@ -40,35 +40,43 @@ function getDragEventData(event: DragEvent): object | null {
 }
 
 /**
+ * A debounced save for a page, which keeps the page's revision memory between
+ * saves. (Outside the component, so React Compiler doesn't see a ref passed
+ * to `debounce` during render.)
+ */
+const makePageSaver = (page: any) => {
+  let memory: DocumentMemory | undefined;
+  return debounce(async (content: string) => {
+    try {
+      memory = await savePage(page, content, memory);
+    } catch (error) {
+      notifyJournalSaveError(error);
+    }
+  }, SAVE_DEBOUNCE_MS);
+};
+
+/**
+ * Format the editor's document. (Outside the component: React Compiler can't
+ * yet compile a `try` holding `?.`.)
+ */
+const formatDocument = async (editor: IStandalonCodeEditor | null) => {
+  try {
+    await editor?.getAction("editor.action.formatDocument")?.run();
+  } catch (e: any) {
+    ui.notifications?.error(`<pre>${e.message}<pre>`);
+  }
+};
+
+/**
  * The actual Monaco-based HTML editor.
  */
 export const HTMLEditor = ({ page }: HTMLEditorProps) => {
   const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<IStandalonCodeEditor | null>(null);
 
-  const doFormat = useCallback(async () => {
-    try {
-      await editorRef.current?.getAction("editor.action.formatDocument")?.run();
-    } catch (e: any) {
-      ui.notifications?.error(`<pre>${e.message}<pre>`);
-    }
-  }, []);
+  const doFormat = useCallback(() => formatDocument(editorRef.current), []);
 
-  const memoryRef = useRef<DocumentMemory | undefined>(undefined);
-
-  // a debounced save function
-  const handleSaveContent = useMemo(
-    () =>
-      // eslint-disable-next-line react/refs -- false positive
-      debounce(async (content: string) => {
-        try {
-          memoryRef.current = await savePage(page, content, memoryRef.current);
-        } catch (error) {
-          notifyJournalSaveError(error);
-        }
-      }, SAVE_DEBOUNCE_MS),
-    [page],
-  );
+  const handleSaveContent = useMemo(() => makePageSaver(page), [page]);
 
   // event handler
   const handleChange = useCallback(
