@@ -333,6 +333,11 @@ Components rendered per change, before and after converting (from
 | NPC, compiled: an ability's pool                            | 33             | 9             |
 | Cards tab compiled: renaming a category, every card         | 85             | 50            |
 | Cards tab compiled: renaming a category, no cards           | 45             | 10            |
+| equipment sheet compiled: a field                           | 100            | 57            |
+| equipment sheet compiled: its notes                         | 69             | 32            |
+| weapon sheet compiled: its notes                            | 48             | 29            |
+| ability sheet compiled: its own pool                        | 141            | 88            |
+| ability sheet compiled: its notes                           | 115            | 35            |
 
 The PC and NPC sheets' own components, and the islands they use, are
 compiled by React Compiler (they're marked `"use memo"`). A compiled
@@ -346,7 +351,12 @@ from the snapshot (`CardLayoutView`), and its lists read the categories
 through `useSettings`; only `CardArray` looks the live cards up, to hand to
 `CardArrayCard`. (Before, it re-rendered for the snapshot and sorted the live
 cards. Compiled, that only kept working because the compiler happened not to
-cache the sorted list.) Not compiled yet: `TeamCrisisPanel` (it lists other
+cache the sorted list.) The equipment, weapon and ability sheets are compiled too. The item sheets'
+shared `ItemSheetFramework` reads the item's name, image and permissions
+through snapshots itself, so it's current in the unconverted item sheets as
+well. Their second commit on each change is Foundry's own render: one sheet
+class serves every item type, so it can't pass `rerenderOnFoundryRender: false`
+until they're all converted. Not compiled yet: `TeamCrisisPanel` (it lists other
 actors, read live), and the shared inputs, `Translate` and the like. Wall
 times barely change (they were around a millisecond already).
 
