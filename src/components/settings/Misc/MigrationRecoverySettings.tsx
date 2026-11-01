@@ -16,15 +16,13 @@ export const MigrationRecoverySettings = () => {
 
   const retryMigrations = async () => {
     setIsRetryingMigrations(true);
-    try {
-      await retryFailedMigrations();
-    } catch (e: unknown) {
+    // (no try/finally: React Compiler can't compile one yet)
+    await retryFailedMigrations().catch((e: unknown) => {
       const message = e instanceof Error ? e.message : String(e);
       ui.notifications?.error(`Migration retry failed: ${message}`);
-    } finally {
-      setLastMigrationError(systemSettings.migrationLastError.get());
-      setIsRetryingMigrations(false);
-    }
+    });
+    setLastMigrationError(systemSettings.migrationLastError.get());
+    setIsRetryingMigrations(false);
   };
 
   return (

@@ -46,15 +46,12 @@ export const WalkingFireActions = ({
       return;
     }
     setBusy(true);
-    try {
-      await editAttack(msg, {
-        kind: "walkFire",
-        tokenUuid: token.uuid,
-        payment,
-      });
-    } finally {
-      setBusy(false);
-    }
+    // (no try/finally: React Compiler can't compile one yet)
+    await editAttack(msg, {
+      kind: "walkFire",
+      tokenUuid: token.uuid,
+      payment,
+    }).finally(() => setBusy(false));
   };
 
   return (

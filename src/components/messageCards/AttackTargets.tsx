@@ -28,7 +28,7 @@ import {
   shotDryMaxTargets,
 } from "../../module/attacks/rules";
 import type { AttackData, AttackTargetData } from "../../module/attacks/types";
-import { settings } from "../../settings/settings";
+import { useSettings } from "../../hooks/useSettings";
 import { Translate } from "../Translate";
 import { WalkingFireActions } from "./WalkingFireActions";
 
@@ -129,15 +129,15 @@ const AttackTargetRow = ({
   // second request - but not forever, in case the GM never answers.
   const runEdit = async (edit: AttackEdit) => {
     setBusy(true);
-    let outcome: Awaited<ReturnType<typeof editAttack>> = "failed";
-    try {
-      outcome = await editAttack(msg, edit);
-    } finally {
-      if (outcome === "requested") {
-        setTimeout(() => setBusy(false), gmRequestTimeoutMs);
-      } else {
-        setBusy(false);
-      }
+    // (no try/finally: React Compiler can't compile one yet)
+    const outcome = await editAttack(msg, edit).catch((e: unknown) => {
+      setBusy(false);
+      throw e;
+    });
+    if (outcome === "requested") {
+      setTimeout(() => setBusy(false), gmRequestTimeoutMs);
+    } else {
+      setBusy(false);
     }
   };
 
@@ -523,6 +523,9 @@ type AttackTargetsProps = {
 export const AttackTargets = ({ msg }: AttackTargetsProps) => {
   assertGame(game);
   useRefreshOnDocumentChanges();
+  const walkingFireOn = useSettings(
+    (s) => s.useLethalityAndAutofire && s.useWalkingFire,
+  );
   const attack = getAttackData(msg);
   const canAct = canUserActOnAttack(game.user, msg) && msg.isOwner;
 
@@ -548,8 +551,7 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
   const isMultiTarget = isMultiTargetFireMode(attack.fireMode);
   const canWalkFire =
     canAct &&
-    settings.useLethalityAndAutofire.get() &&
-    settings.useWalkingFire.get() &&
+    walkingFireOn &&
     canWalkFireFrom(attack.fireMode) &&
     attack.targets.length > 0;
 

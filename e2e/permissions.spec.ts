@@ -259,10 +259,10 @@ test.describe("ownership changes", () => {
     joinAs,
   }) => {
     const pcId = await createActor(page, { name: "Dr Ellery", type: "pc" });
-    const playerId = await createPlayer(page, "Promoted");
+    const playerId = await createPlayer(page, "Shifting Ownership");
     await giveOwnership(page, pcId, playerId, "OBSERVER");
 
-    const player = await joinAs("Promoted");
+    const player = await joinAs("Shifting Ownership");
     const sheet = await openSheet(player, `Actor.${pcId}`);
     const name = sheet.getByRole("textbox", { name: "Name" }).first();
     await expect(name).toBeVisible();
