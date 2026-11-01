@@ -83,6 +83,42 @@ test("the GM runs a classic combat from the tracker", async ({ page }) => {
     .toMatchObject({ round: 2, current: "Fast" });
 });
 
+test("the GM reorders a classic combat by dragging a row", async ({ page }) => {
+  await setSettings(page, { useTurnPassingInitiative: false });
+  const tracker = await openCombatTracker(page);
+  await tracker.getByRole("button", { name: "Create Combat" }).click();
+  await expect.poll(() => getCombat(page)).toMatchObject({ type: "classic" });
+  const ids: string[] = [];
+  for (const name of ["Alpha", "Bravo", "Charlie"]) {
+    ids.push(await createActor(page, { name, type: "pc" }));
+  }
+  await addCombatants(page, ids);
+  const names = tracker.locator("li.combatant .name");
+  await expect(names).toHaveText(["Alpha", "Bravo", "Charlie"]);
+
+  // the row's drag wiring goes through its context (so its context menu's
+  // root doesn't re-render): drag Charlie's grip above Alpha
+  const grip = tracker
+    .locator("li.combatant", { hasText: "Charlie" })
+    .locator(".drag-handle");
+  const target = tracker.locator("li.combatant", { hasText: "Alpha" });
+  const from = (await grip.boundingBox())!;
+  const to = (await target.boundingBox())!;
+  await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(from.x + from.width / 2, to.y + 2, { steps: 15 });
+  await page.mouse.up();
+
+  await expect(names).toHaveText(["Charlie", "Alpha", "Bravo"]);
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        game.combat!.turns.map((combatant) => combatant.name),
+      ),
+    )
+    .toEqual(["Charlie", "Alpha", "Bravo"]);
+});
+
 test("the tracker follows turns and initiative changed elsewhere", async ({
   page,
 }) => {
@@ -211,6 +247,39 @@ test("in turn-passing, everyone acts, then a new round gives turns back", async 
   for (const row of await inactive.all()) {
     await expect(row).toHaveCSS("opacity", "0.7");
   }
+});
+
+test("in turn-passing, the GM adds and removes turns from a row's menus", async ({
+  page,
+}) => {
+  await setSettings(page, { useTurnPassingInitiative: true });
+  const heroId = await createActor(page, { name: "Hero", type: "pc" });
+  const villainId = await createActor(page, { name: "Villain", type: "npc" });
+  await page.evaluate(async () => {
+    const combat = await Combat.implementation.create({ type: "turnPassing" });
+    await combat!.activate();
+  });
+  await addCombatants(page, [heroId, villainId]);
+  const tracker = await openCombatTracker(page);
+  await tracker.getByRole("button", { name: "Start Combat" }).click();
+  await expect.poll(() => getCombat(page)).toMatchObject({ round: 1 });
+
+  const hero = tracker.locator("li", { hasText: "Hero" });
+  await expect(hero).toContainText("1/1");
+  // the dropdown (the menu is memoised apart from the row)
+  await hero.locator('button[aria-haspopup="menu"]').click();
+  await page.getByRole("menuitem", { name: "Add a turn" }).click();
+  await expect(hero).toContainText("2/1");
+  // and the same menu on right-click
+  await hero.click({ button: "right" });
+  await page.getByRole("menuitem", { name: "Remove a turn" }).click();
+  await expect(hero).toContainText("1/1");
+  await hero.click({ button: "right" });
+  await page.getByRole("menuitem", { name: "Remove a turn" }).click();
+  await expect(hero).toContainText("0/1");
+  await expect(tracker.locator("li", { hasText: "Villain" })).toContainText(
+    "1/1",
+  );
 });
 
 test("a player can't take a turn for a combatant they don't own", async ({
