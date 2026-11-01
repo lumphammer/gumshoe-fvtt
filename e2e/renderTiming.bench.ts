@@ -386,6 +386,40 @@ test("PC sheet, Contacts tab", async ({ page }) => {
   await setSettings(page, { useNetworkContacts: false });
 });
 
+test("PC sheet, Moribund World items", async ({ page }) => {
+  await setSettings(page, { mwUseAlternativeItemTypes: true });
+  const { selector, tab } = await openFixturePC(page);
+  await page.evaluate(async (selector) => {
+    const id = selector.match(/Actor-(\w+)/)![1];
+    const actor = game.actors.get(id)!;
+    const types = ["tweak", "spell", "cantrap", "manse", "retainer"] as const;
+    const items = await actor.createEmbeddedDocuments(
+      "Item",
+      Array.from({ length: 10 }, (_, i) => ({
+        name: `Thing ${i + 1}`,
+        type: "mwItem" as const,
+        system: { mwType: types[i % types.length] },
+      })),
+    );
+    globalThis.renderBench.ops["mw item name"] = (i) =>
+      items[0].update({ name: `Thing 1 (${i})` });
+  }, selector);
+  await tab("Items");
+  await record(
+    page,
+    "PC, MW items tab: ability pool",
+    "ability pool",
+    selector,
+  );
+  await record(
+    page,
+    "PC, MW items tab: an item's name",
+    "mw item name",
+    selector,
+  );
+  await setSettings(page, { mwUseAlternativeItemTypes: false });
+});
+
 test("NPC sheet", async ({ page }) => {
   const actorId = await page.evaluate(async () => {
     const actor = (await Actor.create({ name: "Bench NPC", type: "npc" }))!;

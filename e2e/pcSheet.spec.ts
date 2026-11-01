@@ -3,6 +3,7 @@ import {
   createOwnedItem,
   expect,
   openSheet,
+  setSettings,
   test,
   updateAbility,
 } from "./foundry.ts";
@@ -117,4 +118,56 @@ test("the Notes and Settings tabs follow changes made elsewhere", async ({
     { actorId, otherTheme },
   );
   await expect(themeSelect).toHaveValue(otherTheme);
+});
+
+test("Moribund World's items tab follows items changed elsewhere", async ({
+  page,
+}) => {
+  await setSettings(page, { mwUseAlternativeItemTypes: true });
+  try {
+    const actorId = await createActor(page, { name: "Magus", type: "pc" });
+    const spellId = await createOwnedItem(page, actorId, {
+      name: "Excellent Prismatic Spray",
+      type: "mwItem",
+      system: { mwType: "spell" },
+    });
+    const sheet = await openSheet(page, `Actor.${actorId}`);
+    await sheet.locator(".tab-strip > label", { hasText: "Items" }).click();
+    const spells = sheet
+      .locator("h1", { hasText: "Spells" })
+      .locator("xpath=../..");
+    await expect(spells).toContainText("Excellent Prismatic Spray");
+
+    await page.evaluate(
+      async ({ actorId, spellId }) => {
+        await game.actors
+          .get(actorId)!
+          .items.get(spellId)!
+          .update({ name: "Phandaal's Gyrator" });
+      },
+      { actorId, spellId },
+    );
+    await expect(spells).toContainText("Phandaal's Gyrator");
+
+    await createOwnedItem(page, actorId, {
+      name: "Coat of Rigor",
+      type: "mwItem",
+      system: { mwType: "tweak" },
+    });
+    await expect(sheet).toContainText("Coat of Rigor");
+
+    // clicking an item opens its sheet
+    await sheet.getByText("Phandaal's Gyrator", { exact: true }).click();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          ({ actorId, spellId }) =>
+            game.actors.get(actorId)!.items.get(spellId)!.sheet!.rendered,
+          { actorId, spellId },
+        ),
+      )
+      .toBe(true);
+  } finally {
+    await setSettings(page, { mwUseAlternativeItemTypes: false });
+  }
 });

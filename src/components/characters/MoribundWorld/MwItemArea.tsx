@@ -1,11 +1,35 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import React, { useCallback, useContext } from "react";
+import React, { memo, useCallback, useContext } from "react";
 
+import { mwItem } from "../../../constants";
+import { sortEntitiesByName } from "../../../functions/utilities";
+import { useActorSnapshot } from "../../../hooks/useActorSnapshot";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { assertPCActor } from "../../../module/actors/pc";
+import type { MwType } from "../../../types";
+import type { MwItemSummary } from "./MwItemGroup";
 import { MwItemGroup } from "./MwItemGroup";
 
-export const MwItemArea = () => {
+const groups: { name: string; mwType: MwType }[] = [
+  { name: "Tweaks", mwType: "tweak" },
+  { name: "Cantraps", mwType: "cantrap" },
+  { name: "Spells", mwType: "spell" },
+  { name: "EnchantedItems", mwType: "enchantedItem" },
+  { name: "Melee Weapons", mwType: "meleeWeapon" },
+  { name: "Missile Weapons", mwType: "missileWeapon" },
+  { name: "Manses", mwType: "manse" },
+  { name: "Sandestins", mwType: "sandestin" },
+  { name: "Retainers", mwType: "retainer" },
+];
+
+const noItems: MwItemSummary[] = [];
+
+/**
+ * Moribund World's items, by type. Reads the actor through a snapshot,
+ * selecting each item's id and name, by type, sorted by name (as
+ * `getMwItems` groups them).
+ */
+export const MwItemArea = memo(function MwItemArea() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const app = useContext(FoundryAppContext);
@@ -19,63 +43,29 @@ export const MwItemArea = () => {
     [app],
   );
 
-  const items = actor.system.getMwItems();
+  const byType = useActorSnapshot(actor, (snapshot) => {
+    const result: Partial<Record<MwType, MwItemSummary[]>> = {};
+    const items = sortEntitiesByName(
+      (snapshot?.items ?? []).filter((item) => item.type === mwItem),
+    );
+    for (const item of items) {
+      const mwType = (item.system as { mwType: MwType }).mwType;
+      (result[mwType] ??= []).push({ id: item._id ?? "", name: item.name });
+    }
+    return result;
+  });
+
   return (
     <div>
-      <MwItemGroup
-        name="Tweaks"
-        mwType="tweak"
-        items={items.tweak}
-        onDragStart={onDragStart}
-      />
-      <MwItemGroup
-        name="Cantraps"
-        mwType="cantrap"
-        items={items.cantrap}
-        onDragStart={onDragStart}
-      />
-      <MwItemGroup
-        name="Spells"
-        mwType="spell"
-        items={items.spell}
-        onDragStart={onDragStart}
-      />
-      <MwItemGroup
-        name="EnchantedItems"
-        mwType="enchantedItem"
-        items={items.enchantedItem}
-        onDragStart={onDragStart}
-      />
-      <MwItemGroup
-        name="Melee Weapons"
-        mwType="meleeWeapon"
-        items={items.meleeWeapon}
-        onDragStart={onDragStart}
-      />
-      <MwItemGroup
-        name="Missile Weapons"
-        mwType="missileWeapon"
-        items={items.missileWeapon}
-        onDragStart={onDragStart}
-      />
-      <MwItemGroup
-        name="Manses"
-        mwType="manse"
-        items={items.manse}
-        onDragStart={onDragStart}
-      />
-      <MwItemGroup
-        name="Sandestins"
-        mwType="sandestin"
-        items={items.sandestin}
-        onDragStart={onDragStart}
-      />
-      <MwItemGroup
-        name="Retainers"
-        mwType="retainer"
-        items={items.retainer}
-        onDragStart={onDragStart}
-      />
+      {groups.map(({ name, mwType }) => (
+        <MwItemGroup
+          key={mwType}
+          name={name}
+          mwType={mwType}
+          items={byType[mwType] ?? noItems}
+          onDragStart={onDragStart}
+        />
+      ))}
     </div>
   );
-};
+});
