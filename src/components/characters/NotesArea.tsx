@@ -1,21 +1,31 @@
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
-import { settings } from "../../settings/settings";
 import { IndexedRichTextEditor } from "../inputs/IndexedRichTextEditor";
 import { NotesTypeContext } from "../NotesTypeContext";
 
-export const NotesArea = () => {
+/** The PC's long notes, read through a snapshot */
+export const NotesArea = memo(function NotesArea() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const longNotesNames = settings.longNotes.get();
+  const longNotesNames = useSettings((s) => s.longNotes);
+  const longNotes = useActorSnapshot(
+    actor,
+    (snapshot) =>
+      (snapshot?.system as { longNotes?: string[] } | undefined)?.longNotes ??
+      [],
+  );
+  const { setLongNote } = useSystemMethods(actor);
 
   const updateLongNote = useCallback(
     (value: string, index: number) => {
-      void actor.system.setLongNote(index, value);
+      void setLongNote(index, value);
     },
-    [actor.system],
+    [setLongNote],
   );
 
   return (
@@ -28,7 +38,7 @@ export const NotesArea = () => {
         gap: "0.5em",
       }}
     >
-      {longNotesNames.map((name: string, i: number) => {
+      {longNotesNames.map((name, i) => {
         return (
           <NotesTypeContext.Provider key={`${name}--${i}`} value="pcNote">
             <h3>{name}</h3>
@@ -42,7 +52,7 @@ export const NotesArea = () => {
               <IndexedRichTextEditor
                 name="longNotes"
                 index={i}
-                html={actor.system.longNotes[i] ?? ""}
+                html={longNotes[i] ?? ""}
                 onSave={updateLongNote}
               />
             </div>
@@ -51,4 +61,4 @@ export const NotesArea = () => {
       })}
     </div>
   );
-};
+});

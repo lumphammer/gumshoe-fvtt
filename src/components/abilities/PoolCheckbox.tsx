@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { memo, useCallback, useContext } from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
 import { ThemeContext } from "../../themes/ThemeContext";
@@ -9,11 +9,11 @@ type PoolCheckboxProps = {
   onClick: (value: number) => void;
 };
 
-export const PoolCheckbox = ({
+export const PoolCheckbox = memo(function PoolCheckbox({
   value,
   selected,
   onClick: onClickProp,
-}: PoolCheckboxProps) => {
+}: PoolCheckboxProps) {
   const onClick = useCallback(() => {
     onClickProp(value);
   }, [onClickProp, value]);
@@ -41,4 +41,4 @@ export const PoolCheckbox = ({
       {value}
     </a>
   );
-};
+});

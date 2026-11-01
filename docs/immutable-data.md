@@ -266,25 +266,45 @@ PC (76 items).
 Components rendered per change, before and after converting (from
 `e2e/renderTiming.bench.ts`; the PC is the 76-item fixture):
 
-| Change                                      | Before | After |
-| ------------------------------------------- | ------ | ----- |
-| weapon sheet: another ability on the actor  | 37     | 0     |
-| weapon sheet: its notes                     | 85     | 48    |
-| ability sheet: another ability on the actor | 34     | 0     |
-| ability sheet: its notes                    | 146    | 115   |
-| PC, Abilities tab: an ability's pool        | 1128   | 315   |
-| PC, Abilities tab: the actor's Health       | 1125   | 277   |
-| combat tracker (12 combatants): next turn   | 402    | 112   |
-| combat tracker, header on props: next turn  | 112    | 48    |
-| turn-passing tracker (12): pass turn        | 571    | 131   |
+| Change                                                 | Before | After |
+| ------------------------------------------------------ | ------ | ----- |
+| weapon sheet: another ability on the actor             | 37     | 0     |
+| weapon sheet: its notes                                | 85     | 48    |
+| ability sheet: another ability on the actor            | 34     | 0     |
+| ability sheet: its notes                               | 146    | 115   |
+| PC, Abilities tab: an ability's pool                   | 1128   | 315   |
+| PC, Abilities tab: the actor's Health                  | 1125   | 277   |
+| combat tracker (12 combatants): next turn              | 402    | 112   |
+| combat tracker, header on props: next turn             | 112    | 48    |
+| turn-passing tracker (12): pass turn                   | 571    | 131   |
+| PC, Moribund World Abilities tab: an ability's pool    | 944    | 311   |
+| PC, Moribund World Abilities tab: the actor's Health   | 944    | 283   |
+| PC, Abilities tab, panels memoised: an ability's pool  | 315    | 71    |
+| PC, Abilities tab, panels memoised: the actor's Health | 277    | 33    |
+| PC, Combat tab, panels memoised: an ability's pool     | 410    | 166   |
+| PC, Equipment tab, panels memoised: an ability's pool  | 486    | 242   |
+| PC, Combat tab, weapons converted: an ability's pool   | 166    | 30    |
+| PC, Equipment tab, converted: an ability's pool        | 242    | 30    |
+| PC, Equipment tab, converted: an item's name           | 242    | 50    |
+| NPC (12 abilities), panels memoised: an ability's pool | 129    | 67    |
+| NPC, panels memoised: the actor's notes                | 96     | 34    |
+| NPC, Combat tab, panels memoised: an ability's pool    | 100    | 38    |
+| NPC, root memoised: an ability's pool                  | 67     | 35    |
+| NPC, root memoised: the actor's notes                  | 34     | 2     |
+| NPC, root memoised, Combat tab: an ability's pool      | 38     | 2     |
+| PC, root memoised, Abilities tab: an ability's pool    | 71     | 39    |
+| PC, root memoised, Abilities tab: the actor's Health   | 33     | 1     |
+| PC, root memoised, Combat tab: an ability's pool       | 30     | 1     |
+| PC, root memoised, Equipment tab: an ability's pool    | 30     | 1     |
 
-On the Abilities tab, the 277 left is the rest of the PC sheet (header,
-personal details, pools panel, tab strip), which Foundry still re-renders on
-every change; the memoised areas stop it at their edge. Still to do:
+Both sheet roots (`PCSheetFull`, `NPCSheetFull`) are memoised, so Foundry's
+re-render stops at `PCSheet`/`NPCSheet`. The header and side panels are
+memoised sections (`PCSheetPanels.tsx`, `NPCSheetPanels.tsx`). Still to do:
 
-- the rest of the PC sheet, then memoising its root;
-- the Combat and Equipment tabs (410 and 486 components per change);
-- the NPC sheet beyond its Abilities tab, and Moribund World's ability area;
+- the Bonds, Contacts and Cards tabs, and Moribund World's items. For now
+  each sits in a `LiveActorIsland`, which re-renders it on any change to the
+  actor or the settings (as Foundry's re-render of the sheet did), so that
+  `PCSheetFull` can be memoised. Converting them means replacing the island;
 - a new round in a turn-passing combat (535 components, then 69 for each
   combatant's turns): every row's turns remaining change, so most of it is
   real, but each row's menus re-render with it.

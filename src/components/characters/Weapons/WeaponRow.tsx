@@ -1,26 +1,46 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import type React from "react";
-import { useContext } from "react";
+import { memo, useContext } from "react";
 
 import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import { getTranslated } from "../../../functions/getTranslated";
-import type { WeaponItem } from "../../../module/items/weapon";
+import { useItemSelector } from "../../../hooks/useItemSnapshot";
+import type { ItemSnapshot } from "../../../module/snapshots/documentStores";
+import type {
+  WeaponItem,
+  WeaponSystemData,
+} from "../../../module/items/weapon";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { Toggle } from "../../inputs/Toggle";
 import { ItemNameWithIcon } from "../ItemNameWithIcon";
 
 type WeaponRowProps = {
+  /** The live weapon: the row reads it through a snapshot */
   weapon: WeaponItem;
   isReady: boolean;
-  setReady: (ready: boolean) => void;
+  setReady: (weapon: WeaponItem, ready: boolean) => void;
 };
 
 /**
  * A weapon in the Combat tab's table: click it to open its sheet, or delete it
  * with the button at the end
  */
-export const WeaponRow = ({ weapon, isReady, setReady }: WeaponRowProps) => {
+export const WeaponRow = memo(function WeaponRow({
+  weapon,
+  isReady,
+  setReady,
+}: WeaponRowProps) {
+  const row = useItemSelector(
+    weapon,
+    (snapshot: ItemSnapshot<WeaponSystemData>) => ({
+      name: snapshot.name,
+      img: snapshot.img,
+      usesAmmo: snapshot.system.usesAmmo,
+      ammo: snapshot.system.ammo,
+      ability: snapshot.system.ability,
+    }),
+  );
   const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
 
@@ -42,9 +62,9 @@ export const WeaponRow = ({ weapon, isReady, setReady }: WeaponRowProps) => {
       >
         <Toggle
           checked={isReady}
-          onChange={setReady}
+          onChange={(ready) => setReady(weapon, ready)}
           label={getTranslated("ReadyWeaponName", {
-            WeaponName: weapon.name,
+            WeaponName: row.name,
           })}
         />
       </div>
@@ -80,17 +100,15 @@ export const WeaponRow = ({ weapon, isReady, setReady }: WeaponRowProps) => {
           }
         }}
       >
-        <ItemNameWithIcon item={weapon} css={{ color: theme.colors.accent }} />
+        <ItemNameWithIcon item={row} css={{ color: theme.colors.accent }} />
         <span css={{ textAlign: "center" }}>
-          {weapon.system.usesAmmo
-            ? `${weapon.system.ammo.value}/${weapon.system.ammo.max}`
-            : "—"}
+          {row.usesAmmo ? `${row.ammo.value}/${row.ammo.max}` : "—"}
         </span>
         <span css={{ overflow: "hidden", textOverflow: "ellipsis" }}>
-          {weapon.system.ability}
+          {row.ability}
         </span>
       </div>
       <DeleteItemButton item={weapon} />
     </>
   );
-};
+});

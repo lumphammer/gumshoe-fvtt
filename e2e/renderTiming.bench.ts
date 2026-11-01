@@ -263,7 +263,12 @@ test("equipment sheet", async ({ page }) => {
   await record(page, "equipment: notes", "equipment notes", selector);
 });
 
-test("PC sheet", async ({ page }) => {
+/**
+ * Create the fixture PC, and the ops "ability pool" (an ability a weapon
+ * uses) and "actor health". Open its sheet; returns a selector for it, and a
+ * function to switch tabs.
+ */
+async function openFixturePC(page: Page) {
   const fixture = JSON.parse(
     fs.readFileSync(path.join(dirname, "fixtures/pc.json"), "utf8"),
   );
@@ -283,6 +288,9 @@ test("PC sheet", async ({ page }) => {
     )!;
     const ops = globalThis.renderBench.ops;
     ops["ability pool"] = (i) => ability.update({ system: { pool: i % 3 } });
+    const equipment = actor.items.find((item) => item.type === "equipment");
+    ops["equipment name"] = (i) =>
+      equipment ? equipment.update({ name: `Kit ${i}` }) : Promise.resolve();
     ops["actor health"] = (i) =>
       actor.update({ system: { resources: { health: { value: i % 10 } } } });
     return actor.id;
@@ -291,7 +299,11 @@ test("PC sheet", async ({ page }) => {
   const selector = `[id="${await sheet.getAttribute("id")}"]`;
   const tab = (name: string) =>
     sheet.locator(".tab-strip > label", { hasText: name }).first().click();
+  return { selector, tab };
+}
 
+test("PC sheet", async ({ page }) => {
+  const { selector, tab } = await openFixturePC(page);
   await tab("Abilities");
   await record(
     page,
@@ -314,6 +326,70 @@ test("PC sheet", async ({ page }) => {
     "ability pool",
     selector,
   );
+  await record(
+    page,
+    "PC, Equipment tab: an item's name",
+    "equipment name",
+    selector,
+  );
+});
+
+test("PC sheet, Moribund World abilities", async ({ page }) => {
+  await setSettings(page, { useMwStyleAbilities: true });
+  const { selector, tab } = await openFixturePC(page);
+  await tab("Abilities");
+  await record(
+    page,
+    "PC, MW Abilities tab: ability pool",
+    "ability pool",
+    selector,
+  );
+  await record(
+    page,
+    "PC, MW Abilities tab: actor health",
+    "actor health",
+    selector,
+  );
+  await setSettings(page, { useMwStyleAbilities: false });
+});
+
+test("NPC sheet", async ({ page }) => {
+  const actorId = await page.evaluate(async () => {
+    const actor = (await Actor.create({ name: "Bench NPC", type: "npc" }))!;
+    const [ability] = await actor.createEmbeddedDocuments(
+      "Item",
+      Array.from({ length: 12 }, (_, i) => ({
+        name: `Ability ${i + 1}`,
+        type: "generalAbility" as const,
+        system: { rating: 3, pool: 3 },
+      })),
+    );
+    const ops = globalThis.renderBench.ops;
+    ops["ability pool"] = (i) =>
+      ability ? ability.update({ system: { pool: i % 3 } }) : Promise.resolve();
+    ops["actor notes"] = (i) =>
+      actor.update({ system: { notes: `Note ${i}` } });
+    return actor.id;
+  });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const selector = `[id="${await sheet.getAttribute("id")}"]`;
+  await record(
+    page,
+    "NPC, Abilities tab: ability pool",
+    "ability pool",
+    selector,
+  );
+  await record(
+    page,
+    "NPC, Abilities tab: actor notes",
+    "actor notes",
+    selector,
+  );
+  await sheet
+    .locator(".tab-strip > label", { hasText: "Combat" })
+    .first()
+    .click();
+  await record(page, "NPC, Combat tab: ability pool", "ability pool", selector);
 });
 
 test("weapon sheet", async ({ page }) => {
