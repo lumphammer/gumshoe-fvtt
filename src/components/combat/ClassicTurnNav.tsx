@@ -28,6 +28,8 @@ export const ClassicTurnNav = memo(function ClassicTurnNav({
   turnCount,
   isActiveUser,
 }: ClassicTurnNavProps) {
+  "use memo";
+
   assertGame(game);
 
   const handleNextRound = useCallback(() => {

@@ -15,8 +15,10 @@ import { useCombatantContext } from "./CombatantContext";
 import { useInititative } from "./useInititative";
 
 export const ClassicInitiative = memo(function ClassicInitiative() {
+  "use memo";
+
   assertGame(game);
-  const { combatant } = useCombatantContext();
+  const { combatant, combatantState } = useCombatantContext();
   assertClassicCombatant(combatant);
   const combat = combatant.combat;
   if (combat === null) {
@@ -111,7 +113,7 @@ export const ClassicInitiative = memo(function ClassicInitiative() {
       {game.user.isGM && (
         <>
           <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
-            <NativeMenuLabel>{combatant.name}</NativeMenuLabel>
+            <NativeMenuLabel>{combatantState.name}</NativeMenuLabel>
             <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
               {localize("COMBAT.CombatantUpdate")}
             </NativeMenuItem>

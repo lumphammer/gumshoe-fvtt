@@ -7,7 +7,6 @@ import { createContext, memo, useContext } from "react";
 
 import { assertGame } from "../../../functions/isGame";
 import type { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
-import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import {
   NativeContextMenuTrigger,
   NativeContextMenuWrapper,
@@ -18,7 +17,7 @@ import {
 } from "./CombatantContext";
 import {
   CombatantActiveContext,
-  CombatRoundContext,
+  usePassingTurns,
 } from "./CombatantTurnContext";
 import { Content } from "./Content";
 
@@ -60,6 +59,8 @@ const RowShellContext = createContext<RowShell | null>(null);
  * constant element) doesn't re-render when the row does.
  */
 const RowListItem = () => {
+  "use memo";
+
   const shell = useContext(RowShellContext);
   if (shell === null) {
     throw new Error("RowListItem must be rendered inside a CombatantRow");
@@ -97,6 +98,8 @@ const RowListItem = () => {
 const rowListItem = <RowListItem />;
 
 export const CombatantRow = memo(({ combatant, active }: CombatantRowProps) => {
+  "use memo";
+
   const {
     attributes,
     listeners,
@@ -130,10 +133,8 @@ export const CombatantRow = memo(({ combatant, active }: CombatantRowProps) => {
   // turns remaining depend on the round, which a memoised row would
   // otherwise miss (going back to a round already played updates no
   // combatants)
-  useContext(CombatRoundContext);
-  const depleted =
-    isTurnPassingCombatant(combatant) &&
-    combatant.system.passingTurnsRemaining <= 0;
+  const passingTurns = usePassingTurns(combatant);
+  const depleted = passingTurns !== null && passingTurns.remaining <= 0;
 
   const shell: RowShell = {
     id,

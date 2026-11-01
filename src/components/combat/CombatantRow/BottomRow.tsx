@@ -5,6 +5,8 @@ import { assertGame } from "../../../functions/isGame";
 import { useCombatantContext } from "./CombatantContext";
 
 export const BottomRow = memo(function BottomRow() {
+  "use memo";
+
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
 

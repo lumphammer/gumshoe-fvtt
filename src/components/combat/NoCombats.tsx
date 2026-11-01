@@ -5,6 +5,8 @@ import { assertGame } from "../../functions/isGame";
 import { localize } from "./functions";
 
 export const NoCombats = memo(function NoCombats() {
+  "use memo";
+
   assertGame(game);
   return (
     <div
