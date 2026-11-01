@@ -79,7 +79,7 @@ translations, adding fields and settings, releases).
   memoised (`docs/immutable-data.md`). Converted so far: the equipment, weapon
   and ability sheets, the PC/NPC sheets' Abilities tab (including Moribund
   World's), and the whole PC and NPC sheets (`PCSheetFull` and
-  `NPCSheetFull` are memoised), except the PC's Bonds and Cards tabs. Those sit in a `LiveActorIsland`, which
+  `NPCSheetFull` are memoised), except the PC's Cards tab. Those sit in a `LiveActorIsland`, which
   re-renders an unconverted part on any change to the actor or settings. In a
   converted tree:
   - Read data only from `useItemSnapshot`/`useItemSelector`,

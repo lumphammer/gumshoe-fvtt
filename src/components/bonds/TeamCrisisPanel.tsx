@@ -3,6 +3,7 @@ import { FaHeartCrack } from "react-icons/fa6";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import type { PCActor } from "../../module/actors/pc";
 import type { CrisisChange } from "../../module/bonds/crisis";
@@ -56,6 +57,9 @@ export const TeamCrisisPanel = ({
 }: TeamCrisisPanelProps) => {
   // the choices refer to other items and actors, which can change under us
   useRefreshOnActorItemChanges(actor);
+  // and the actor's own data: the Bonds tab above is memoised, so Foundry's
+  // re-render of the sheet no longer reaches this
+  useActorSnapshot(actor, (snapshot) => snapshot);
   const [selected, setSelected] = useState<string[]>(() =>
     initialTeammateUuids.slice(0, maxCrisisTeammates),
   );

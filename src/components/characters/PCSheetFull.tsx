@@ -126,7 +126,7 @@ export const PCSheetFull = memo(function PCSheetFull() {
               id: "bonds",
               // adaptations without Bonds
               label: s.bondsOn ? "Bonds" : "Adapted to",
-              content: <LiveActorIsland component={BondsArea} />,
+              content: <BondsArea />,
             },
             s.useNetworkContacts && {
               id: "contacts",

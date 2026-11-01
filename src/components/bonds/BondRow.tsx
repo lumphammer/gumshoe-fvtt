@@ -1,8 +1,10 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import type React from "react";
-import { useCallback, useContext } from "react";
+import { memo, useCallback, useContext } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
+import { isBondBroken } from "../../module/bonds/rules";
 import type { BondItem } from "../../module/items/bond";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { ItemNameWithIcon } from "../characters/ItemNameWithIcon";
@@ -14,7 +16,24 @@ import { BondBadges } from "./BondBadges";
  * The rest of the row opens the Bond's sheet (where it can be edited and
  * burned), and drags the Bond.
  */
-export const BondRow = ({ bond }: { bond: BondItem }) => {
+export const BondRow = memo(function BondRow({
+  bond,
+}: {
+  /** The live Bond: the row reads it through a snapshot */
+  bond: BondItem;
+}) {
+  // `BondBadges` reads the live Bond: what it shows is selected here, so the
+  // row re-renders when it changes
+  const row = useItemSelector(bond, (snapshot) => {
+    const system = snapshot.system as { points: number; isDeltaGreen: boolean };
+    return {
+      name: snapshot.name,
+      img: snapshot.img,
+      points: system.points,
+      isDeltaGreen: system.isDeltaGreen,
+      isBroken: isBondBroken(system.points),
+    };
+  });
   const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
   const onDragStart = useCallback(
@@ -25,8 +44,11 @@ export const BondRow = ({ bond }: { bond: BondItem }) => {
     },
     [app],
   );
-  const sheet = bond.sheet;
-  assertApplicationV2(sheet);
+  const openSheet = () => {
+    const sheet = bond.sheet;
+    assertApplicationV2(sheet);
+    void sheet.render({ force: true });
+  };
 
   return (
     // a subgrid, so the cells line up with the headers, and the row can be
@@ -53,15 +75,15 @@ export const BondRow = ({ bond }: { bond: BondItem }) => {
           "&&:hover": { textDecoration: "none" },
           "& > *": { paddingInline: "0.25em" },
         }}
-        onClick={() => sheet.render({ force: true })}
+        onClick={openSheet}
         data-item-id={bond.id}
         onDragStart={onDragStart}
         draggable="true"
       >
         <ItemNameWithIcon
-          item={bond}
+          item={row}
           data-testid="bond-name"
-          title={bond.name ?? ""}
+          title={row.name}
           // up to half the table (cqw: the table is the container), then cut
           // off
           css={{ maxWidth: "50cqw" }}
@@ -79,12 +101,12 @@ export const BondRow = ({ bond }: { bond: BondItem }) => {
         </div>
         {/* right-aligned, so the numbers line up under the header */}
         <div data-testid="bond-rating" css={{ textAlign: "end" }}>
-          {bond.system.points}
+          {row.points}
         </div>
       </a>
       <DeleteItemButton item={bond} />
     </div>
   );
-};
+});
 
 BondRow.displayName = "BondRow";

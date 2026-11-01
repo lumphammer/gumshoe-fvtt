@@ -281,6 +281,8 @@ Components rendered per change, before and after converting (from
 | PC, Contacts tab (island → converted): a contact's pool  | 183    | 42    |
 | PC, MW items tab (island → converted): an ability's pool | 139    | 1     |
 | PC, MW items tab (island → converted): an item's name    | 139    | 18    |
+| PC, Bonds tab (island → converted): an ability's pool    | 267    | 1     |
+| PC, Bonds tab (island → converted): a Bond's points      | 187    | 20    |
 | PC, Moribund World Abilities tab: an ability's pool      | 944    | 311   |
 | PC, Moribund World Abilities tab: the actor's Health     | 944    | 283   |
 | PC, Abilities tab, panels memoised: an ability's pool    | 315    | 71    |
@@ -308,7 +310,7 @@ the sheet's shell (`PCSheetFull`, `TabContainer`, the edit-mode toggle),
 which Foundry re-renders on every change. Its root can only be memoised once
 every tab reads snapshots. Still to do:
 
-- the Bonds and Cards tabs. For now
+- the Cards tab. For now
   each sits in a `LiveActorIsland`, which re-renders it on any change to the
   actor or the settings (as Foundry's re-render of the sheet did), so that
   `PCSheetFull` can be memoised. Converting them means replacing the island;
