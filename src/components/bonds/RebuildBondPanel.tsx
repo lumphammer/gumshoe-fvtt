@@ -74,7 +74,10 @@ export const RebuildBondPanel = ({ bond }: { bond: BondItem }) => {
           RebuildBondHint
         </Translate>
       </p>
-      <BondCapNote actor={actor} />
+      <BondCapNote
+        adaptedTo={actor.system.getAdaptedTraumaNames((type) => type.capsBonds)}
+        cap={actor.system.getBondCap()}
+      />
       <InputGrid>
         {/* noLabel: a label would pass clicks on the link to the buttons */}
         <GridField

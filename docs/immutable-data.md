@@ -287,6 +287,8 @@ Components rendered per change, before and after converting (from
 | PC, MW items tab (island → converted): an item's name     | 139    | 18    |
 | PC, Bonds tab (island → converted): an ability's pool     | 267    | 1     |
 | PC, Bonds tab (island → converted): a Bond's points       | 187    | 20    |
+| PC, Bonds tab, Establish Bond panel: an ability's pool    | 41     | 1     |
+| PC, Bonds tab, Team Crisis panel: an ability's pool       | 109    | 1     |
 | PC, Cards tab (island → converted): an ability's pool     | 146    | 1     |
 | PC, Cards tab (island → converted): a card's subtitle     | 148    | 15    |
 | PC, Moribund World Abilities tab: an ability's pool       | 944    | 311   |
@@ -314,11 +316,16 @@ Every part of the PC and NPC sheets now reads snapshots, and both roots
 at `PCSheet`/`NPCSheet`. The header and side panels are memoised sections
 (`PCSheetPanels.tsx`, `NPCSheetPanels.tsx`). On the way, the tabs not yet
 converted sat in a `LiveActorIsland`, which re-rendered them on any change
-to the actor, so the root could be memoised first. Still to do:
+to the actor, so the root could be memoised first. The Establish Bond and
+Team Crisis panels select what they show from the actor's snapshot, through
+pure getters (`getReformableBondsIn`, `getRebuildSpendAbilitiesIn`,
+`getBondCapIn` and the like), and plan a crisis with `planCrisis` itself. A
+Bond's points still re-render a whole panel (they show them). Team Crisis's
+teammates are other actors, read live (`getCrisisTeammateCandidates`):
+there's no store for the world's actors.
 
-- the Establish Bond and Team Crisis panels subscribe to the whole actor
-  snapshot and all settings (as well as their own item hooks), because they
-  show other actors' data too;
+Still to do:
+
 - `CardDisplay` reads card categories from the live settings.
 
 A new round in a turn-passing combat still renders 583 components (247 for

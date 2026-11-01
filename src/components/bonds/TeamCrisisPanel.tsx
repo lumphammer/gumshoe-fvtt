@@ -5,22 +5,29 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
-import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import type { PCActor } from "../../module/actors/pc";
-import type { CrisisChange } from "../../module/bonds/crisis";
+import type { CrisisBond, CrisisChange } from "../../module/bonds/crisis";
 import {
   crisisDifficulty,
   getBondAfterLoss,
   getTotalLosses,
   maxCrisisTeammates,
+  planCrisis,
 } from "../../module/bonds/crisis";
 import { getMaxBondSpend, isBondBroken } from "../../module/bonds/rules";
 import {
   getCrisisTeammateCandidates,
-  planTeamCrisis,
   teamCrisis,
+  toCrisisTeammate,
 } from "../../module/bonds/teamCrisis";
-import { BondCapNote } from "./BondCapNote";
+import {
+  getBondPointsOf,
+  getBondsIn,
+  getStabilityAbilityIn,
+  getStabilityTestDifficultyIn,
+} from "../../module/actors/pcDerived";
+import { isBondItem } from "../../module/items/bond";
+import { BondCapNote, getBondCapOf } from "./BondCapNote";
 import { Button } from "../inputs/Button";
 import { Checkbox } from "../inputs/Checkbox";
 import { GridField } from "../inputs/GridField";
@@ -56,14 +63,42 @@ export const TeamCrisisPanel = ({
   initialTeammateUuids = [],
   onDone,
 }: TeamCrisisPanelProps) => {
-  // the choices refer to other items and actors, which can change under us
-  useRefreshOnActorItemChanges(actor);
-  // and the actor's own data: the Bonds tab above is memoised, so Foundry's
-  // re-render of the sheet no longer reaches this
-  useActorSnapshot(actor, (snapshot) => snapshot);
-  // and the settings its rules read (the spend category, trauma rules and
-  // the Bond cap), which the memoised tab doesn't pass on either
-  useSettings((s) => s);
+  const settings = useSettings((s) => s);
+  // the actor's own data: the Bonds tab above is memoised, so this reads
+  // what it shows itself. (The teammates are other actors, read live below.)
+  const view = useActorSnapshot(actor, (snapshot) => {
+    const items = snapshot?.items ?? [];
+    const pc = { system: snapshot?.system, items };
+    const stability = getStabilityAbilityIn(items, settings);
+    return {
+      stability: stability
+        ? {
+            id: stability._id ?? "",
+            name: stability.name,
+            pool: (stability.system as { pool: number }).pool,
+          }
+        : null,
+      bonds: getBondsIn(items).map(
+        (bond): CrisisBond & { isBroken: boolean } => {
+          const system = bond.system as {
+            isDeltaGreen: boolean;
+            actorUuid?: string | null;
+          };
+          const { points, isBroken } = getBondPointsOf(bond);
+          return {
+            id: bond._id ?? "",
+            name: bond.name,
+            points,
+            isBroken,
+            isDeltaGreen: system.isDeltaGreen,
+            actorUuid: system.actorUuid ?? null,
+          };
+        },
+      ),
+      difficulty: getStabilityTestDifficultyIn(pc, crisisDifficulty, settings),
+      bondCap: getBondCapOf(pc, settings),
+    };
+  });
   const [selected, setSelected] = useState<string[]>(() =>
     initialTeammateUuids.slice(0, maxCrisisTeammates),
   );
@@ -72,12 +107,22 @@ export const TeamCrisisPanel = ({
   const [bondSpends, setBondSpends] = useState<Record<string, number>>({});
   const [losses, setLosses] = useState<Record<string, number>>({});
 
-  const stability = actor.system.getStabilityAbility();
-  const bonds = actor.system.getBonds();
+  const { stability, bonds } = view;
+  // the live documents, for links and to write to
+  const liveStability = stability ? actor.items.get(stability.id) : undefined;
+  const liveBond = (id: string) => {
+    const bond = actor.items.get(id);
+    return isBondItem(bond) ? bond : undefined;
+  };
   const candidates = getCrisisTeammateCandidates(actor);
   const teammates = candidates.filter((c) => selected.includes(c.uuid ?? ""));
   // what each Bond can lose depends on what's spent from it first
-  const plan = planTeamCrisis(actor, teammates, bondSpends);
+  const plan = planCrisis(
+    bonds,
+    teammates.map(toCrisisTeammate),
+    view.bondCap.cap,
+    bondSpends,
+  );
   const changesByUuid = new Map(plan.changes.map((c) => [c.teammate.uuid, c]));
   // only losses from Bonds which can still pay, and no more than they can
   // (which a spend can lower)
@@ -90,7 +135,7 @@ export const TeamCrisisPanel = ({
   const allocated = getTotalLosses(currentLosses);
 
   const blocker =
-    stability === undefined
+    stability === null
       ? getTranslated("NoAbilityToBurnBondsFor")
       : teammates.length === 0
         ? getTranslated("ChooseTheTeammatesPresent")
@@ -114,10 +159,10 @@ export const TeamCrisisPanel = ({
     // a spend breaks a Bond for sure; a loss only if the test fails
     const breaking = bonds.filter((bond) => {
       const after = getBondAfterLoss(
-        bond.system.points - (bondSpends[bond.id ?? ""] ?? 0),
-        currentLosses[bond.id ?? ""] ?? 0,
+        bond.points - (bondSpends[bond.id] ?? 0),
+        currentLosses[bond.id] ?? 0,
       );
-      return !bond.system.isBroken && isBondBroken(after);
+      return !bond.isBroken && isBondBroken(after);
     });
     if (breaking.length > 0) {
       const yes = await confirmADoodleDo({
@@ -128,7 +173,7 @@ export const TeamCrisisPanel = ({
         resolveFalseOnCancel: true,
         values: {
           BondNames: new Intl.ListFormat(game.i18n?.lang).format(
-            breaking.map((bond) => bond.name ?? ""),
+            breaking.map((bond) => bond.name),
           ),
         },
       });
@@ -139,10 +184,10 @@ export const TeamCrisisPanel = ({
     await teamCrisis(actor, {
       teammates,
       stabilitySpend,
-      bondSpends: bonds.map((bond) => ({
-        bond,
-        spend: bondSpends[bond.id ?? ""] ?? 0,
-      })),
+      bondSpends: bonds.flatMap((bond) => {
+        const live = liveBond(bond.id);
+        return live ? [{ bond: live, spend: bondSpends[bond.id] ?? 0 }] : [];
+      }),
       losses: currentLosses,
     });
     // the result is in chat, and on the Bonds tab
@@ -159,16 +204,14 @@ export const TeamCrisisPanel = ({
         <Translate
           values={{
             AbilityName: stability?.name ?? "",
-            Difficulty: String(
-              actor.system.getStabilityTestDifficulty(crisisDifficulty),
-            ),
+            Difficulty: String(view.difficulty),
             Max: String(maxCrisisTeammates),
           }}
         >
           TeamCrisisHint
         </Translate>
       </p>
-      <BondCapNote actor={actor} />
+      <BondCapNote {...view.bondCap} />
       <h3>
         <Translate>Teammates present</Translate>
       </h3>
@@ -221,7 +264,7 @@ export const TeamCrisisPanel = ({
           )}
           <InputGrid>
             {plan.candidates.map(({ bond, maxLoss }) => {
-              const item = bonds.find((b) => b.id === bond.id);
+              const item = liveBond(bond.id);
               const loss = currentLosses[bond.id] ?? 0;
               return (
                 <GridField
@@ -256,47 +299,59 @@ export const TeamCrisisPanel = ({
       </h3>
       <InputGrid>
         {stability && (
-          <GridField label={<ItemSheetLink item={stability} />} noLabel>
-            <SpendButtons
-              value={stabilitySpend}
-              onChange={setStabilitySpend}
-              max={stability.system.pool}
-              disabled={stability.system.pool <= 0}
-            />
-          </GridField>
-        )}
-        {bonds.map((bond) => (
           <GridField
-            key={bond.id}
             label={
-              <>
-                <ItemSheetLink item={bond} />
-                {bond.system.isBroken && (
-                  <>
-                    {" "}
-                    <FaHeartCrack
-                      title={getTranslated("Broken")}
-                      css={{ verticalAlign: "middle" }}
-                    />
-                  </>
-                )}
-              </>
+              liveStability ? (
+                <ItemSheetLink item={liveStability} />
+              ) : (
+                stability.name
+              )
             }
             noLabel
           >
             <SpendButtons
-              value={bondSpends[bond.id ?? ""] ?? 0}
-              onChange={(spend) =>
-                setBondSpends((current) => ({
-                  ...current,
-                  [bond.id ?? ""]: spend,
-                }))
-              }
-              max={getMaxBondSpend(bond.system.points)}
-              disabled={bond.system.isBroken}
+              value={stabilitySpend}
+              onChange={setStabilitySpend}
+              max={stability.pool}
+              disabled={stability.pool <= 0}
             />
           </GridField>
-        ))}
+        )}
+        {bonds.map((bond) => {
+          const item = liveBond(bond.id);
+          return (
+            <GridField
+              key={bond.id}
+              label={
+                <>
+                  {item ? <ItemSheetLink item={item} /> : bond.name}
+                  {bond.isBroken && (
+                    <>
+                      {" "}
+                      <FaHeartCrack
+                        title={getTranslated("Broken")}
+                        css={{ verticalAlign: "middle" }}
+                      />
+                    </>
+                  )}
+                </>
+              }
+              noLabel
+            >
+              <SpendButtons
+                value={bondSpends[bond.id] ?? 0}
+                onChange={(spend) =>
+                  setBondSpends((current) => ({
+                    ...current,
+                    [bond.id]: spend,
+                  }))
+                }
+                max={getMaxBondSpend(bond.points)}
+                disabled={bond.isBroken}
+              />
+            </GridField>
+          );
+        })}
         <GridFieldStacked>
           <Button
             onClick={onTest}
