@@ -509,6 +509,24 @@ test("establishing a new Bond", async ({ page }) => {
   expect(await getPool(page, actorId, "Reassurance")).toBe(1);
 });
 
+test("the Establish Bond panel follows the spend category setting", async ({
+  page,
+}) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Charmer", type: "pc" });
+  await updateAbility(page, actorId, "Reassurance", { rating: 2, pool: 2 });
+
+  const panel = await openEstablishPanel(page, actorId);
+  await panel.getByLabel("Name", { exact: true }).fill("Ruth");
+  const button = panel.getByRole("button", { name: "Establish Bond" });
+  await expect(button).toBeEnabled();
+
+  // the Bonds tab is memoised: the panel subscribes to the settings itself
+  await setSettings(page, { bondRebuildSpendCategory: "Academic" });
+  await expect(panel).toContainText("No Academic points left to spend");
+  await expect(button).toBeDisabled();
+});
+
 test("a new Bond rejected, with no Bond to neglect", async ({ page }) => {
   await setSettings(page, { useBonds: true });
   const actorId = await createActor(page, { name: "Loner", type: "pc" });
@@ -1334,4 +1352,47 @@ test("adaptation shows without Bonds, on its own tab", async ({ page }) => {
   await expect(
     actorSheet.getByRole("button", { name: "Add Bond" }),
   ).toHaveCount(0);
+});
+
+test("the Bonds tab follows Bonds and adaptations changed elsewhere", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    ...stabilityRulesOn,
+    useBonds: true,
+    traumaTypes: fodgTraumaTypes(["Reassurance"]),
+  });
+  const actorId = await createActor(page, { name: "Agent", type: "pc" });
+  const bondId = await createOwnedItem(page, actorId, {
+    name: "Sister",
+    type: "bond",
+    system: { points: 4 },
+  });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  await sheet.locator(".tab-strip > label", { hasText: "Bonds" }).click();
+  const area = sheet.getByTestId("bonds-area");
+  await expect(area.getByTestId("bond-name")).toHaveText("Sister");
+  await expect(area.getByTestId("bond-rating")).toHaveText("4");
+
+  // renamed and broken elsewhere: the badge shows
+  await page.evaluate(
+    async ({ actorId, bondId }) => {
+      await game.actors
+        .get(actorId)!
+        .items.get(bondId)!
+        .update({ name: "Estranged sister", system: { points: -1 } });
+    },
+    { actorId, bondId },
+  );
+  await expect(area.getByTestId("bond-name")).toHaveText("Estranged sister");
+  await expect(area.getByTestId("bond-rating")).toHaveText("-1");
+  await expect(area).toContainText("Broken");
+
+  // adapted elsewhere
+  await page.evaluate(async (actorId) => {
+    await game.actors
+      .get(actorId)!
+      .update({ system: { adaptations: { violence: 3 } } });
+  }, actorId);
+  await expect(area.getByTestId("adapted-violence")).toBeVisible();
 });

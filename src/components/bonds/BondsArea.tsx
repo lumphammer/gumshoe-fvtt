@@ -1,12 +1,17 @@
 import { Router } from "@lumphammer/minirouter";
-import { useContext } from "react";
+import { memo, useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import { getBondsIn } from "../../module/actors/pcDerived";
 import { assertPCActor } from "../../module/actors/pc";
+import type { BondItem } from "../../module/items/bond";
 import {
   areBondsOn,
-  getAdaptableTraumaTypes,
+  getAdaptableTraumaTypesFrom,
 } from "../../module/stability/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
@@ -25,13 +30,25 @@ import { NestedTeamCrisisPanel } from "./NestedTeamCrisisPanel";
  * The Bonds tab on the PC sheet (Fall of DELTA GREEN, p. 045), with
  * adaptations to trauma. Either can be on without the other.
  */
-export const BondsArea = () => {
+export const BondsArea = memo(function BondsArea() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const bonds = actor.system.getBonds();
+  // the Bonds' ids, in order (as `getBonds` sorts them): each row reads its
+  // own Bond
+  const ids = useActorSnapshot(actor, (snapshot) =>
+    getBondsIn(snapshot?.items ?? []).map((item) => item._id ?? ""),
+  );
+  const bonds = ids.flatMap((id) => {
+    const item = actor.items.get(id) as BondItem | undefined;
+    return item ? [item] : [];
+  });
+  const { showBonds, showAdaptations } = useSettings((s) => ({
+    showBonds: areBondsOn(s),
+    showAdaptations: getAdaptableTraumaTypesFrom(s).length > 0,
+  }));
+  const { createBond } = useSystemMethods(actor);
   const theme = useContext(ThemeContext);
   const addBondTooltip = getTranslated("AddBondTooltip");
-  const showBonds = areBondsOn();
 
   return (
     <Router>
@@ -56,7 +73,7 @@ export const BondsArea = () => {
               </h2>
               <Button
                 css={{ flexBasis: "max-content", alignSelf: "flex-start" }}
-                onClick={actor.system.createBond}
+                onClick={createBond}
                 title={addBondTooltip}
               >
                 <i className="fa fa-plus" />
@@ -120,9 +137,7 @@ export const BondsArea = () => {
             )}
           </>
         )}
-        {getAdaptableTraumaTypes().length > 0 && (
-          <AdaptationTracker actor={actor} />
-        )}
+        {showAdaptations && <AdaptationTracker actor={actor} />}
       </div>
       <SlideInNestedPanelRoute direction={establish}>
         <EstablishBondPanel actor={actor} />
@@ -132,6 +147,6 @@ export const BondsArea = () => {
       </SlideInNestedPanelRoute>
     </Router>
   );
-};
+});
 
 BondsArea.displayName = "BondsArea";

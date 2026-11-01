@@ -19,7 +19,6 @@ import { AbilitiesAreaEdit } from "./AbilitiesAreaEdit";
 import { AbilitiesAreaPlay } from "./AbilitiesAreaPlay";
 import { EditModeToggle } from "./EditModeToggle";
 import { EquipmentArea } from "./Equipment/EquipmentArea";
-import { LiveActorIsland } from "./LiveActorIsland";
 import { AbilitiesAreaMW } from "./MoribundWorld/AbilitiesAreaMW";
 import { MwItemArea } from "./MoribundWorld/MwItemArea";
 import { NotesArea } from "./NotesArea";
@@ -126,23 +125,23 @@ export const PCSheetFull = memo(function PCSheetFull() {
               id: "bonds",
               // adaptations without Bonds
               label: s.bondsOn ? "Bonds" : "Adapted to",
-              content: <LiveActorIsland component={BondsArea} />,
+              content: <BondsArea />,
             },
             s.useNetworkContacts && {
               id: "contacts",
               label: "Contacts",
-              content: <LiveActorIsland component={NetworkContactsArea} />,
+              content: <NetworkContactsArea />,
             },
             s.useCards && {
               id: "cards",
               label: "Cards",
-              content: <LiveActorIsland component={CardsArea} />,
+              content: <CardsArea />,
             },
             s.mwUseAlternativeItemTypes
               ? {
                   id: "items",
                   label: "MWItems",
-                  content: <LiveActorIsland component={MwItemArea} />,
+                  content: <MwItemArea />,
                 }
               : {
                   id: "equipment",

@@ -30,6 +30,7 @@ import {
   test,
 } from "./foundry.ts";
 import { installCommitRecorder } from "./renderTiming/commitRecorder.ts";
+import { stabilityRulesOn } from "./stabilitySettings.ts";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const label = process.env["RENDER_BENCH_LABEL"] ?? "run";
@@ -351,6 +352,123 @@ test("PC sheet, Moribund World abilities", async ({ page }) => {
     selector,
   );
   await setSettings(page, { useMwStyleAbilities: false });
+});
+
+test("PC sheet, Contacts tab", async ({ page }) => {
+  await setSettings(page, { useNetworkContacts: true });
+  const { selector, tab } = await openFixturePC(page);
+  await page.evaluate(async (selector) => {
+    const id = selector.match(/Actor-(\w+)/)![1];
+    const actor = game.actors.get(id)!;
+    const contacts = await actor.createEmbeddedDocuments(
+      "Item",
+      Array.from({ length: 8 }, (_, i) => ({
+        name: `Contact ${i + 1}`,
+        type: "networkContact" as const,
+        system: { pool: 2 },
+      })),
+    );
+    globalThis.renderBench.ops["contact pool"] = (i) =>
+      contacts[0].update({ system: { pool: i % 3 } });
+  }, selector);
+  await tab("Contacts");
+  await record(
+    page,
+    "PC, Contacts tab: ability pool",
+    "ability pool",
+    selector,
+  );
+  await record(
+    page,
+    "PC, Contacts tab: a contact's pool",
+    "contact pool",
+    selector,
+  );
+  await setSettings(page, { useNetworkContacts: false });
+});
+
+test("PC sheet, Moribund World items", async ({ page }) => {
+  await setSettings(page, { mwUseAlternativeItemTypes: true });
+  const { selector, tab } = await openFixturePC(page);
+  await page.evaluate(async (selector) => {
+    const id = selector.match(/Actor-(\w+)/)![1];
+    const actor = game.actors.get(id)!;
+    const types = ["tweak", "spell", "cantrap", "manse", "retainer"] as const;
+    const items = await actor.createEmbeddedDocuments(
+      "Item",
+      Array.from({ length: 10 }, (_, i) => ({
+        name: `Thing ${i + 1}`,
+        type: "mwItem" as const,
+        system: { mwType: types[i % types.length] },
+      })),
+    );
+    globalThis.renderBench.ops["mw item name"] = (i) =>
+      items[0].update({ name: `Thing 1 (${i})` });
+  }, selector);
+  await tab("Items");
+  await record(
+    page,
+    "PC, MW items tab: ability pool",
+    "ability pool",
+    selector,
+  );
+  await record(
+    page,
+    "PC, MW items tab: an item's name",
+    "mw item name",
+    selector,
+  );
+  await setSettings(page, { mwUseAlternativeItemTypes: false });
+});
+
+test("PC sheet, Bonds tab", async ({ page }) => {
+  await setSettings(page, { ...stabilityRulesOn, useBonds: true });
+  const { selector, tab } = await openFixturePC(page);
+  await page.evaluate(async (selector) => {
+    const id = selector.match(/Actor-(\w+)/)![1];
+    const actor = game.actors.get(id)!;
+    const bonds = await actor.createEmbeddedDocuments(
+      "Item",
+      Array.from({ length: 6 }, (_, i) => ({
+        name: `Bond ${i + 1}`,
+        type: "bond" as const,
+        system: { points: 5 },
+      })),
+    );
+    globalThis.renderBench.ops["bond points"] = (i) =>
+      bonds[0].update({ system: { points: 3 + (i % 3) } });
+  }, selector);
+  await tab("Bonds");
+  await record(page, "PC, Bonds tab: ability pool", "ability pool", selector);
+  await record(page, "PC, Bonds tab: a Bond's points", "bond points", selector);
+  await setSettings(page, { useBonds: false });
+});
+
+test("PC sheet, Cards tab", async ({ page }) => {
+  await setSettings(page, { useCards: true });
+  const { selector, tab } = await openFixturePC(page);
+  await page.evaluate(async (selector) => {
+    const id = selector.match(/Actor-(\w+)/)![1];
+    const actor = game.actors.get(id)!;
+    const cards = await actor.createEmbeddedDocuments(
+      "Item",
+      Array.from({ length: 8 }, (_, i) => ({
+        name: `Card ${i + 1}`,
+        type: "card" as const,
+      })),
+    );
+    globalThis.renderBench.ops["card subtitle"] = (i) =>
+      cards[0].update({ system: { subtitle: `Subtitle ${i}` } });
+  }, selector);
+  await tab("Cards");
+  await record(page, "PC, Cards tab: ability pool", "ability pool", selector);
+  await record(
+    page,
+    "PC, Cards tab: a card's subtitle",
+    "card subtitle",
+    selector,
+  );
+  await setSettings(page, { useCards: false });
 });
 
 test("NPC sheet", async ({ page }) => {

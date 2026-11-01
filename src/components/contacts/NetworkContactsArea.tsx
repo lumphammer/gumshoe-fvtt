@@ -1,9 +1,13 @@
-import { useContext } from "react";
+import { memo, useContext } from "react";
 
+import * as c from "../../constants";
 import { getTranslated } from "../../functions/getTranslated";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
-import { settings } from "../../settings/settings";
+import type { NetworkContactItem } from "../../module/items/networkContact";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
@@ -14,13 +18,40 @@ import { NetworkContactRow } from "./NetworkContactRow";
  * The Contacts tab on the PC sheet (Fall of DELTA GREEN, p. 068): what's left
  * in Network, and the contacts it's been given to.
  */
-export const NetworkContactsArea = () => {
+export const NetworkContactsArea = memo(function NetworkContactsArea() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const theme = useContext(ThemeContext);
-  const contacts = actor.system.getNetworkContacts();
-  const network = actor.system.getNetworkAbility();
-  const networkName = settings.networkAbility.get();
+  const networkName = useSettings((s) => s.networkAbility);
+  // the contacts' ids, by name; the Network ability's pool and rating; and
+  // the points the contacts hold (as `getNetworkContacts`,
+  // `getNetworkAbility` and `getContactPoints` work them out)
+  const { ids, network, held } = useActorSnapshot(actor, (snapshot) => {
+    const items = snapshot?.items ?? [];
+    const contacts = items
+      .filter((item) => item.type === c.networkContact)
+      .toSorted((a, b) => a.name.localeCompare(b.name));
+    const ability = items.find(
+      (item) => item.type === c.generalAbility && item.name === networkName,
+    );
+    const system = ability?.system as
+      | { pool: number; rating: number }
+      | undefined;
+    return {
+      ids: contacts.map((item) => item._id ?? ""),
+      network: system && { pool: system.pool, rating: system.rating },
+      held: contacts.reduce(
+        (total, item) => total + (item.system as { pool: number }).pool,
+        0,
+      ),
+    };
+  });
+  // the live contacts, only to pass to the rows
+  const contacts = ids.flatMap((id) => {
+    const item = actor.items.get(id) as NetworkContactItem | undefined;
+    return item ? [item] : [];
+  });
+  const { createNetworkContact } = useSystemMethods(actor);
   const newContactTooltip = getTranslated("NewContactTooltip", {
     AbilityName: networkName,
   });
@@ -43,7 +74,7 @@ export const NetworkContactsArea = () => {
         </h2>
         <Button
           css={{ flexBasis: "max-content" }}
-          onClick={actor.system.createNetworkContact}
+          onClick={createNetworkContact}
           title={newContactTooltip}
         >
           <i className="fa fa-plus" />
@@ -61,9 +92,9 @@ export const NetworkContactsArea = () => {
           <Translate
             values={{
               AbilityName: networkName,
-              Pool: String(network.system.pool),
-              Rating: String(network.system.rating),
-              Held: String(actor.system.getContactPoints()),
+              Pool: String(network.pool),
+              Rating: String(network.rating),
+              Held: String(held),
             }}
           >
             NetworkSummary
@@ -114,6 +145,6 @@ export const NetworkContactsArea = () => {
       )}
     </div>
   );
-};
+});
 
 NetworkContactsArea.displayName = "NetworkContactsArea";

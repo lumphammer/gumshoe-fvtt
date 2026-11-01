@@ -1,14 +1,21 @@
 import type { TraumaType } from "@lumphammer/investigator-fvtt-types";
-import { Fragment, useContext } from "react";
+import { Fragment, memo, useContext } from "react";
 
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { PCActor } from "../../module/actors/pc";
+import {
+  getStabilityAbilityIn,
+  isAdaptedToIn,
+} from "../../module/actors/pcDerived";
 import {
   adaptationThreshold,
   adaptedRatingCap,
   getBondCap,
   getProgressAfterClick,
 } from "../../module/bonds/adaptation";
-import { getAdaptableTraumaTypes } from "../../module/stability/settings";
+import { getAdaptableTraumaTypesFrom } from "../../module/stability/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Checkbox } from "../inputs/Checkbox";
 import { Translate } from "../Translate";
@@ -48,8 +55,35 @@ const getEffects = (type: TraumaType) => {
  * Progress towards adapting to trauma (Fall of DELTA GREEN, p. 120), boxes
  * ticked as on the paper sheet. Trauma tests tick them too.
  */
-export const AdaptationTracker = ({ actor }: { actor: PCActor }) => {
+export const AdaptationTracker = memo(function AdaptationTracker({
+  actor,
+}: {
+  actor: PCActor;
+}) {
   const theme = useContext(ThemeContext);
+  const settings = useSettings((s) => s);
+  const types = getAdaptableTraumaTypesFrom(settings) as TraumaType[];
+  // the Stability ability's name, and each type's progress and whether it's
+  // adapted to (as `getAdaptationProgress` and `isAdaptedTo` work them out)
+  const { stabilityName, progress, adapted } = useActorSnapshot(
+    actor,
+    (snapshot) => {
+      const pc = { system: snapshot?.system, items: snapshot?.items ?? [] };
+      const adaptations =
+        (snapshot?.system as { adaptations?: Record<string, number> })
+          ?.adaptations ?? {};
+      return {
+        stabilityName: getStabilityAbilityIn(pc.items, settings)?.name ?? "",
+        progress: Object.fromEntries(
+          types.map((type) => [type.id, adaptations[type.id] ?? 0]),
+        ),
+        adapted: Object.fromEntries(
+          types.map((type) => [type.id, isAdaptedToIn(pc, type.id, settings)]),
+        ),
+      };
+    },
+  );
+  const { setAdaptationProgress } = useSystemMethods(actor);
   const boxes = Array.from({ length: adaptationThreshold }, (_, i) => i + 1);
 
   return (
@@ -60,7 +94,7 @@ export const AdaptationTracker = ({ actor }: { actor: PCActor }) => {
       <p css={{ fontSize: "0.9em" }}>
         <Translate
           values={{
-            AbilityName: actor.system.getStabilityAbility()?.name ?? "",
+            AbilityName: stabilityName,
             Count: String(adaptationThreshold),
           }}
         >
@@ -76,9 +110,9 @@ export const AdaptationTracker = ({ actor }: { actor: PCActor }) => {
           alignItems: "center",
         }}
       >
-        {getAdaptableTraumaTypes().map((type) => {
-          const progress = actor.system.getAdaptationProgress(type.id);
-          const adapted = actor.system.isAdaptedTo(type.id);
+        {types.map((type) => {
+          const typeProgress = progress[type.id] ?? 0;
+          const isAdapted = adapted[type.id] ?? false;
           const effects = getEffects(type);
           return (
             <Fragment key={type.id}>
@@ -90,24 +124,24 @@ export const AdaptationTracker = ({ actor }: { actor: PCActor }) => {
                 {boxes.map((box) => (
                   <Checkbox
                     key={box}
-                    checked={progress >= box}
+                    checked={typeProgress >= box}
                     onChange={() =>
-                      void actor.system.setAdaptationProgress(
+                      void setAdaptationProgress(
                         type.id,
-                        getProgressAfterClick(progress, box),
+                        getProgressAfterClick(typeProgress, box),
                       )
                     }
                   />
                 ))}
               </div>
               <div>
-                {adapted && (
+                {isAdapted && (
                   <b data-testid={`adapted-${type.id}`}>
                     <Translate>Adapted</Translate>
                   </b>
                 )}
               </div>
-              {adapted && effects.length > 0 && (
+              {isAdapted && effects.length > 0 && (
                 <div
                   css={{
                     gridColumn: "1/-1",
@@ -129,6 +163,6 @@ export const AdaptationTracker = ({ actor }: { actor: PCActor }) => {
       </div>
     </div>
   );
-};
+});
 
 AdaptationTracker.displayName = "AdaptationTracker";
