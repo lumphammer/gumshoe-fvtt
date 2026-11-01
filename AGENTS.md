@@ -77,11 +77,11 @@ translations, adding fields and settings, releases).
   functions are fine.
 - Sheets are being converted to read immutable **snapshots**, so they can be
   memoised (`docs/immutable-data.md`). Converted so far: the equipment, weapon
-  and ability sheets, the combat tracker's rows and header, and the whole PC
-  and NPC sheets (`PCSheetFull` and `NPCSheetFull` are memoised), except the
-  PC's Bonds, Contacts, Cards and Moribund World items tabs. Those sit in a
-  `LiveActorIsland`, which re-renders an unconverted part on any change to
-  the actor or settings. In a
+  and ability sheets, the PC/NPC sheets' Abilities tab (including Moribund
+  World's), and the whole PC and NPC sheets (`PCSheetFull` and
+  `NPCSheetFull` are memoised), except the PC's Bonds, Cards and Moribund
+  World items tabs. Those sit in a `LiveActorIsland`, which
+  re-renders an unconverted part on any change to the actor or settings. In a
   converted tree:
   - Read data only from `useItemSnapshot`/`useItemSelector`,
     `useActorSnapshot(actor, selector)` and `useSettings(selector)`.
