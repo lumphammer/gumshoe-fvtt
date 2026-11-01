@@ -14,6 +14,8 @@ interface ContentProps {
 
 export const Content = memo(
   ({ setActivatorNodeRef, listeners }: ContentProps) => {
+    "use memo";
+
     assertGame(game);
     const { combatantState } = useCombatantContext();
 

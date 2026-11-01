@@ -338,6 +338,10 @@ Components rendered per change, before and after converting (from
 | weapon sheet compiled: its notes                            | 48             | 29            |
 | ability sheet compiled: its own pool                        | 141            | 88            |
 | ability sheet compiled: its notes                           | 115            | 35            |
+| turn-passing tracker compiled: next round                   | 583            | 158           |
+| turn-passing tracker compiled: pass turn                    | 49             | 45            |
+| turn-passing tracker compiled: a combatant's turns          | 28             | 22            |
+| combat tracker compiled: next turn                          | 39             | 35            |
 
 The PC and NPC sheets' own components, and the islands they use, are
 compiled by React Compiler (they're marked `"use memo"`). A compiled
@@ -379,10 +383,15 @@ card's sheet follows a category being renamed too. Renaming a category with
 no cards re-renders `CardsArea` (it shows the categories) and the
 `AbilityBadges`, but none of the cards.
 
-A new round in a turn-passing combat still renders 583 components (247 for
-the round, then 28 for each combatant's turns), but every row's turns
-remaining really do change: most of what's left is Emotion's wrappers for
-the elements that change.
+A new round in a turn-passing combat rendered 583 components (247 for the
+round, then 28 for each combatant's turns): every row's turns remaining
+really do change, and most of it was Emotion's wrappers for the elements
+that change. Compiled, it's 158 (62, then 8 per combatant), as the compiler
+keeps the parts of each row that didn't change. The tracker's components are
+compiled apart from `Tracker` itself and its context (they read `game.combat`
+and `game.combats`). The turns remaining come from `usePassingTurns`, a hook
+which isn't compiled, so it reads the live combatant on every render; the
+active row comes from the tracker's state, not the live combat.
 
 The combat tracker's rows were already memoised, but the keyboard sensor's
 options were a new object on every render: that made new sensors, so every

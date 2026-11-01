@@ -21,6 +21,8 @@ export const EncounterNav = memo(
     prevCombatId: string | undefined | null;
     nextCombatId: string | undefined | null;
   }) => {
+    "use memo";
+
     assertGame(game);
 
     const Icon = isTurnPassingCombat(combat) ? LuPopcorn : LuSwords;
