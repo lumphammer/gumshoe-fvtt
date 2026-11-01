@@ -1,9 +1,9 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import React, { useCallback, useContext } from "react";
+import React, { memo, useCallback, useContext } from "react";
 
-import { getById } from "../../functions/utilities";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import type { CardItem } from "../../module/items/card";
-import { settings } from "../../settings/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { CardDisplay } from "./CardDisplay";
 import { CardsAreaSettingsContext } from "./contexts";
@@ -13,16 +13,33 @@ interface CardArrayCardProps {
   className?: string;
 }
 
-export const CardArrayCard = ({ card, className }: CardArrayCardProps) => {
+/**
+ * A card in the Cards tab. Memoised: it reads its card through a snapshot,
+ * and the card categories, so it re-renders when either changes.
+ * `CardDisplay`, below, reads the live card (it's shared with the card's
+ * sheet), and re-renders with this.
+ */
+export const CardArrayCard = memo(function CardArrayCard({
+  card,
+  className,
+}: CardArrayCardProps) {
+  const data = useItemSelector(card, (snapshot) => ({
+    name: snapshot.name,
+    system: snapshot.system as {
+      active: boolean;
+      styleKeyCategoryId: string | null;
+    },
+  }));
+  const categories = useSettings((s) => s.cardCategories);
   const theme = useContext(ThemeContext);
   const app = useContext(FoundryAppContext);
 
   const { viewMode } = useContext(CardsAreaSettingsContext);
 
   const category =
-    card.system.styleKeyCategoryId === null
+    data.system.styleKeyCategoryId === null
       ? undefined
-      : getById(settings.cardCategories.get(), card.system.styleKeyCategoryId);
+      : categories.find((cat) => cat.id === data.system.styleKeyCategoryId);
 
   const handleDragStart = useCallback(
     (e: React.DragEvent<HTMLElement>) => {
@@ -42,7 +59,7 @@ export const CardArrayCard = ({ card, className }: CardArrayCardProps) => {
     // (if used.) See https://stackoverflow.com/a/70627306/212676
     <div
       css={{
-        opacity: card.system.active ? 1 : 0.5,
+        opacity: data.system.active ? 1 : 0.5,
         transition: "opacity 0.2s ease-in-out",
         containerType: "inline-size",
       }}
@@ -65,6 +82,6 @@ export const CardArrayCard = ({ card, className }: CardArrayCardProps) => {
       />
     </div>
   );
-};
+});
 
 CardArrayCard.displayName = "CardArrayCard";
