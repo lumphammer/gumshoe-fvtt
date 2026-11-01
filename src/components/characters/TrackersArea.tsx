@@ -41,6 +41,8 @@ const getTrackerIdsIn = (items: readonly ItemView[]) =>
  * snapshot, selecting only which abilities: each tracker reads its own.
  */
 export const TrackersArea = memo(function TrackersArea() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const ids = useActorSnapshot(actor, (snapshot) =>

@@ -11,6 +11,8 @@ interface SlugProps {
 }
 
 export const Slug = ({ onClick, item, children }: SlugProps) => {
+  "use memo";
+
   const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
   const onDragStart = useCallback(

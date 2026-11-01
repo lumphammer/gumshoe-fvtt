@@ -20,6 +20,8 @@ export const NetworkContactRow = memo(function NetworkContactRow({
   /** The live contact: the row reads it through a snapshot */
   contact: NetworkContactItem;
 }) {
+  "use memo";
+
   const row = useItemSelector(contact, (snapshot) => ({
     name: snapshot.name,
     img: snapshot.img,

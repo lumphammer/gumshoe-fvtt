@@ -14,6 +14,8 @@ export const PoolCheckbox = memo(function PoolCheckbox({
   selected,
   onClick: onClickProp,
 }: PoolCheckboxProps) {
+  "use memo";
+
   const onClick = useCallback(() => {
     onClickProp(value);
   }, [onClickProp, value]);

@@ -9,6 +9,8 @@ type ItemNameWithIconProps = ComponentProps<"div"> & {
  * be), for the first cell of a row in a list of items
  */
 export const ItemNameWithIcon = ({ item, ...rest }: ItemNameWithIconProps) => {
+  "use memo";
+
   return (
     <div
       css={{

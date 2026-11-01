@@ -12,6 +12,8 @@ export const MwInjuryStatusWidget = ({
   status,
   setStatus,
 }: MwInjuryStatusWidgetProps) => {
+  "use memo";
+
   assertGame(game);
 
   const isEditable = useIsEditable();

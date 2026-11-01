@@ -30,6 +30,8 @@ const noItems: MwItemSummary[] = [];
  * `getMwItems` groups them).
  */
 export const MwItemArea = memo(function MwItemArea() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const app = useContext(FoundryAppContext);

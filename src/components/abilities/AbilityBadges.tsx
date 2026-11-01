@@ -48,6 +48,8 @@ export const AbilityBadges = memo(function AbilityBadges({
   ability: item,
   className,
 }: UnlockBadgesProps) {
+  "use memo";
+
   // only what the badges show
   const ability = useItemSelector(item, (snapshot: AbilitySnapshot) => ({
     _id: snapshot._id,

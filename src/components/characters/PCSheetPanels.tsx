@@ -45,6 +45,8 @@ const usePersonalDetails = () => {
 
 /** The name and occupation, and the portrait */
 export const PCSheetHeader = memo(function PCSheetHeader() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const header = useActorSnapshot(actor, (snapshot) => ({
@@ -89,6 +91,8 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
 
 /** Name, occupation, personal details and short notes */
 export const PCSheetStats = memo(function PCSheetStats() {
+  "use memo";
+
   assertGame(game);
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
@@ -178,6 +182,8 @@ export const PCSheetStats = memo(function PCSheetStats() {
 
 /** Refreshes, pool trackers, stats and the initiative ability */
 export const PCSheetPools = memo(function PCSheetPools() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const theme = useContext(ThemeContext);

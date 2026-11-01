@@ -43,6 +43,8 @@ const toRows = (abilities: Record<string, ItemView[]>) =>
 export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
   flipLeftRight,
 }: AbilitiesAreaPlayProps) {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const theme = useContext(ThemeContext);

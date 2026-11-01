@@ -17,6 +17,8 @@ export const SituationalModifierBadge = memo(function SituationalModifierBadge({
   isActive,
   ability,
 }: SituationalModifierBadgeProps) {
+  "use memo";
+
   const theme = useContext(ThemeContext);
   return (
     <a

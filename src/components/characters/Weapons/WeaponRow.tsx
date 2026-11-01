@@ -31,6 +31,8 @@ export const WeaponRow = memo(function WeaponRow({
   isReady,
   setReady,
 }: WeaponRowProps) {
+  "use memo";
+
   const row = useItemSelector(
     weapon,
     (snapshot: ItemSnapshot<WeaponSystemData>) => ({

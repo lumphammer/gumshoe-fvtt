@@ -10,19 +10,22 @@ interface PersonalDetailSlugProps {
 export const PersonalDetailSlug = ({
   actor,
   detail,
-}: PersonalDetailSlugProps) => (
-  <Slug
-    item={detail}
-    onClick={() => {
-      // the live item, only when it's clicked
-      const sheet = actor.items.get(detail.id)?.sheet;
-      if (!sheet) return;
-      assertApplicationV2(sheet);
-      void sheet.render({ force: true });
-    }}
-  >
-    {detail.name}
-  </Slug>
-);
+}: PersonalDetailSlugProps) => {
+  "use memo";
+  return (
+    <Slug
+      item={detail}
+      onClick={() => {
+        // the live item, only when it's clicked
+        const sheet = actor.items.get(detail.id)?.sheet;
+        if (!sheet) return;
+        assertApplicationV2(sheet);
+        void sheet.render({ force: true });
+      }}
+    >
+      {detail.name}
+    </Slug>
+  );
+};
 
 PersonalDetailSlug.displayName = "PersonalDetailSlug";

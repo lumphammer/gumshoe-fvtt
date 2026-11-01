@@ -26,6 +26,8 @@ const NPCNotesTab = memo(function NPCNotesTab({
 }: {
   field: "notes" | "gmNotes";
 }) {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   const html = useActorSnapshot(
@@ -61,6 +63,8 @@ const NPCNotesTab = memo(function NPCNotesTab({
  * `NPCSheet`, above, provides `IsEditableContext`.
  */
 export const NPCSheetFull = memo(function NPCSheetFull() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   assertGame(game);

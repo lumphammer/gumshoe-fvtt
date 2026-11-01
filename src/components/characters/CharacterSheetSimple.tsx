@@ -23,6 +23,8 @@ export const CharacterSheetSimple = ({
   subText,
   notes = "",
 }: CharacterSheetSimpleProps) => {
+  "use memo";
+
   const { actor } = useActorSheetContext();
 
   if (!isActiveCharacterActor(actor)) {

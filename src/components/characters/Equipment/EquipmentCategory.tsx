@@ -33,6 +33,8 @@ export const EquipmentCategory = memo(function EquipmentCategory({
   draggedItem,
   setDraggedItem,
 }: EquipmentCategoryProps) {
+  "use memo";
+
   const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
   const { createEquipment } = useSystemMethods(actor);

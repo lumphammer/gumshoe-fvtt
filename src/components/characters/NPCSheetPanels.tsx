@@ -24,6 +24,8 @@ import { TrackersArea } from "./TrackersArea";
 
 /** The name, and the portrait */
 export const NPCSheetHeader = memo(function NPCSheetHeader() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   const header = useActorSnapshot(actor, (snapshot) => ({
@@ -72,6 +74,8 @@ type NPCSidebarSystem = {
 
 /** Refresh, combat bonuses, stats, pool trackers and initiative */
 export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
+  "use memo";
+
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   const theme = useContext(ThemeContext);

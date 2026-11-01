@@ -23,6 +23,8 @@ export const getBondCapOf = (pc: PCView, s?: SettingsView): BondCap => ({
  * Violence), that their Bonds won't go above the cap.
  */
 export const BondCapNote = ({ adaptedTo, cap }: BondCap) => {
+  "use memo";
+
   if (adaptedTo.length === 0) {
     return null;
   }

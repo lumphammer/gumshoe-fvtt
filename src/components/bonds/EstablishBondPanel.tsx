@@ -46,6 +46,8 @@ const someoneNew = "";
  * panel on the Bonds tab.
  */
 export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
+  "use memo";
+
   const { navigate } = useNavigationContext();
   const settings = useSettings((s) => s);
   // the Bonds tab above is memoised, so this reads what it shows itself
