@@ -24,6 +24,8 @@ export const SituationalModifiersEditor = memo(
     item,
     situationalModifiers,
   }: SituationalModifiersEditorProps) {
+    "use memo";
+
     const methods = useSystemMethods(item);
     const transitionedSituationalModifiers = useListShowHideTransition(
       situationalModifiers,

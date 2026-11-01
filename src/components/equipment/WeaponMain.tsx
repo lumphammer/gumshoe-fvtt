@@ -16,6 +16,8 @@ export const WeaponMain = memo(function WeaponMain({
   item,
   notes,
 }: WeaponMainProps) {
+  "use memo";
+
   const { setNotes } = useSystemMethods(item);
   return (
     <div css={{ ...absoluteCover, display: "flex", flexDirection: "column" }}>

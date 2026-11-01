@@ -24,6 +24,8 @@ import { EquipmentMain } from "./EquipmentMain";
  * here: the snapshots have already brought in any change.
  */
 export const EquipmentSheet = memo(function EquipmentSheet() {
+  "use memo";
+
   const { item } = useItemSheetContext();
 
   assertEquipmentItem(item);

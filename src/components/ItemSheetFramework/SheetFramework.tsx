@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
-import { useIsDocumentLimited } from "../../hooks/useIsDocumentLimited";
 import { useIsEditable } from "../../hooks/useIsEditable";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
+import { useSheetPermissions } from "../../hooks/useSheetPermissions";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { ImagePickle } from "../ImagePickle";
 import { ModeContext } from "./modeContext";
@@ -15,19 +16,27 @@ type ItemSheetFrameworkProps = PropsWithChildren<{
 }>;
 
 /**
- * A framework for item sheets.
+ * A framework for item sheets. Reads the item's name, image and permissions
+ * itself, through snapshots, so it's current whether or not the sheet around
+ * it re-renders.
  */
 export const ItemSheetFramework = ({
   supertitle,
   children,
 }: ItemSheetFrameworkProps) => {
+  "use memo";
+
   const { item, app } = useItemSheetContext();
 
+  const header = useItemSelector(item, (snapshot) => ({
+    name: snapshot.name,
+    img: snapshot.img,
+  }));
   const { contentEditableRef, onBlur, onFocus, onInput, onKeyDown, onPaste } =
-    useAsyncUpdate(item.name ?? "", item.setName);
+    useAsyncUpdate(header.name, item.setName);
 
   const [configMode, setConfigMode] = useState(false);
-  const isLimited = useIsDocumentLimited();
+  const { isLimited } = useSheetPermissions(item);
   const isEditable = useIsEditable();
 
   assertApplicationV2(app);
@@ -80,7 +89,7 @@ export const ItemSheetFramework = ({
 
         {/* Image */}
         <ImagePickle
-          img={item.img}
+          img={header.img}
           css={{
             gridArea: "image",
             transform: "rotateZ(-2deg)",

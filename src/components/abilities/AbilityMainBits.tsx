@@ -33,6 +33,8 @@ export const AbilityMainBits = memo(function AbilityMainBits({
   item,
   ability,
 }: AbilityMainBitsProps) {
+  "use memo";
+
   const system = ability.system;
   const methods = useSystemMethods(item);
   const settings = useSettings((s) => s);

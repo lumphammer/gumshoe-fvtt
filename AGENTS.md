@@ -76,7 +76,8 @@ translations, adding fields and settings, releases).
   "annotation"`). Foundry's data is mutable, so the rest of the UI relies on
   full re-renders: the compiler caches on identity, and a document keeps its
   identity when it changes. Only mark code which reads its data through
-  snapshots (below); the PC and NPC sheets are marked. A compiled component
+  snapshots (below); the PC and NPC sheets, and the equipment,
+  weapon and ability sheets, are marked. A compiled component
   passes an unchanged child its cached element, so every child of one must
   keep itself current (as if memoised), not rely on its parent re-rendering.
   A call during render is cached on its arguments: one which reads global
