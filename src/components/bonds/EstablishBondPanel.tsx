@@ -4,6 +4,7 @@ import { useState } from "react";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import type { PCActor } from "../../module/actors/pc";
 import {
@@ -44,6 +45,9 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
   // and the actor's own data: the Bonds tab above is memoised, so Foundry's
   // re-render of the sheet no longer reaches this
   useActorSnapshot(actor, (snapshot) => snapshot);
+  // and the settings its rules read (the spend category, trauma rules and
+  // the Bond cap), which the memoised tab doesn't pass on either
+  useSettings((s) => s);
   const [whoId, setWhoId] = useState(someoneNew);
   const [name, setName] = useState("");
   const [abilityId, setAbilityId] = useState<string | null>(null);

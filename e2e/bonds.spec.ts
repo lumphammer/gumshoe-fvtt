@@ -509,6 +509,24 @@ test("establishing a new Bond", async ({ page }) => {
   expect(await getPool(page, actorId, "Reassurance")).toBe(1);
 });
 
+test("the Establish Bond panel follows the spend category setting", async ({
+  page,
+}) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Charmer", type: "pc" });
+  await updateAbility(page, actorId, "Reassurance", { rating: 2, pool: 2 });
+
+  const panel = await openEstablishPanel(page, actorId);
+  await panel.getByLabel("Name", { exact: true }).fill("Ruth");
+  const button = panel.getByRole("button", { name: "Establish Bond" });
+  await expect(button).toBeEnabled();
+
+  // the Bonds tab is memoised: the panel subscribes to the settings itself
+  await setSettings(page, { bondRebuildSpendCategory: "Academic" });
+  await expect(panel).toContainText("No Academic points left to spend");
+  await expect(button).toBeDisabled();
+});
+
 test("a new Bond rejected, with no Bond to neglect", async ({ page }) => {
   await setSettings(page, { useBonds: true });
   const actorId = await createActor(page, { name: "Loner", type: "pc" });
