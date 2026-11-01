@@ -2,12 +2,16 @@ import type { AnimateLayoutChanges } from "@dnd-kit/sortable";
 import { defaultAnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
-import { memo, useContext } from "react";
+import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
+import { createContext, memo, useContext } from "react";
 
 import { assertGame } from "../../../functions/isGame";
 import type { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
-import { NativeContextMenuWrapper } from "../../inputs/NativeMenu/NativeContextMenuWrapper";
+import {
+  NativeContextMenuTrigger,
+  NativeContextMenuWrapper,
+} from "../../inputs/NativeMenu/NativeContextMenuWrapper";
 import {
   CombatantContextProvider,
   useCombatantContextValue,
@@ -32,6 +36,65 @@ const customTransition = {
   duration: 400,
   easing: "linear",
 };
+
+/** What the row's `<li>` shows, which changes as the row does */
+type RowShell = {
+  id: string;
+  active: boolean;
+  hidden: boolean;
+  defeated: boolean;
+  depleted: boolean;
+  setNodeRef: (node: HTMLElement | null) => void;
+  setActivatorNodeRef: (node: HTMLElement | null) => void;
+  attributes: ReturnType<typeof useSortable>["attributes"];
+  listeners: SyntheticListenerMap | undefined;
+  transform: string | undefined;
+  transition: string | undefined;
+};
+
+const RowShellContext = createContext<RowShell | null>(null);
+
+/**
+ * The row's `<li>`, which is also its context menu's trigger. It reads the
+ * row from `RowShellContext`, so the menu's root above it (given this as a
+ * constant element) doesn't re-render when the row does.
+ */
+const RowListItem = () => {
+  const shell = useContext(RowShellContext);
+  if (shell === null) {
+    throw new Error("RowListItem must be rendered inside a CombatantRow");
+  }
+  const { setNodeRef, setActivatorNodeRef, attributes, listeners } = shell;
+  return (
+    <NativeContextMenuTrigger asChild>
+      <li
+        ref={setNodeRef}
+        className={cx("combatant", {
+          active: shell.active,
+          hide: shell.hidden,
+          defeated: shell.defeated,
+        })}
+        {...attributes}
+        data-combatant-id={shell.id}
+        style={{
+          transform: shell.transform,
+          transition: shell.transition,
+          opacity: shell.depleted && !shell.active ? 0.7 : 1,
+        }}
+        css={{ alignItems: "start" }}
+      >
+        {/* the row content is pushed down so it can memoise even if the
+        draggable hook is updating very frequently */}
+        <Content
+          setActivatorNodeRef={setActivatorNodeRef}
+          listeners={listeners}
+        />
+      </li>
+    </NativeContextMenuTrigger>
+  );
+};
+
+const rowListItem = <RowListItem />;
 
 export const CombatantRow = memo(({ combatant, active }: CombatantRowProps) => {
   const {
@@ -72,34 +135,26 @@ export const CombatantRow = memo(({ combatant, active }: CombatantRowProps) => {
     isTurnPassingCombatant(combatant) &&
     combatant.system.passingTurnsRemaining <= 0;
 
+  const shell: RowShell = {
+    id,
+    active,
+    hidden: combatantContextValue.combatantState.hidden ?? false,
+    defeated: combatantContextValue.combatantState.defeated ?? false,
+    depleted,
+    setNodeRef,
+    setActivatorNodeRef,
+    attributes,
+    listeners,
+    transform: CSS.Translate.toString(transform),
+    transition,
+  };
+
   return (
     <CombatantContextProvider value={combatantContextValue}>
       <CombatantActiveContext.Provider value={active}>
-        <NativeContextMenuWrapper>
-          <li
-            ref={setNodeRef}
-            className={cx("combatant", {
-              active,
-              hide: combatantContextValue.combatantState.hidden,
-              defeated: combatantContextValue.combatantState.defeated,
-            })}
-            {...attributes}
-            data-combatant-id={combatant.id}
-            style={{
-              transform: CSS.Translate.toString(transform),
-              transition,
-              opacity: depleted && !active ? 0.7 : 1,
-            }}
-            css={{ alignItems: "start" }}
-          >
-            {/* the row content is pushed down so it can memoise even if the draggable
-          hook is updating very frequently */}
-            <Content
-              setActivatorNodeRef={setActivatorNodeRef}
-              listeners={listeners}
-            />
-          </li>
-        </NativeContextMenuWrapper>
+        <RowShellContext.Provider value={shell}>
+          <NativeContextMenuWrapper>{rowListItem}</NativeContextMenuWrapper>
+        </RowShellContext.Provider>
       </CombatantActiveContext.Provider>
     </CombatantContextProvider>
   );

@@ -6,7 +6,7 @@ import { HiDocumentText } from "react-icons/hi";
 import { getTranslated } from "../../../functions/getTranslated";
 import { assertGame } from "../../../functions/isGame";
 import { requestTurnPass } from "../../../functions/utilities";
-import { assertTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
+import type { TurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import { NativeMenuItem } from "../../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../../inputs/NativeMenu/NativeDualFunctionMenu";
 import { NativeMenuLabel } from "../../inputs/NativeMenu/NativeMenuLabel";
@@ -27,12 +27,60 @@ const scrollBg = keyframes({
   },
 });
 
+/**
+ * The GM's menu for a combatant (also its context menu). Memoised, and given
+ * only what it shows: its items are new elements on every render, so
+ * otherwise each change to the combatant, or a new round, re-renders every
+ * row's menus.
+ */
+const TurnPassingMenu = memo(function TurnPassingMenu({
+  combatant,
+  name,
+}: {
+  combatant: TurnPassingCombatant;
+  name: string;
+}) {
+  assertGame(game);
+  const localize = game.i18n.localize.bind(game.i18n);
+  const { onConfigureCombatant, onRemoveCombatant, openSheet } =
+    useInititative(combatant);
+
+  const onAddTurn = useCallback(() => {
+    void combatant.system.addPassingTurn();
+  }, [combatant]);
+
+  const onRemoveTurn = useCallback(() => {
+    void combatant.system.removePassingTurn();
+  }, [combatant]);
+
+  return (
+    <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
+      <NativeMenuLabel>{name}</NativeMenuLabel>
+      <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
+        {localize("COMBAT.CombatantUpdate")}
+      </NativeMenuItem>
+      <NativeMenuItem icon={<FaPlus />} onSelect={onAddTurn}>
+        {localize("investigator.AddTurn")}
+      </NativeMenuItem>
+      <NativeMenuItem icon={<FaMinus />} onSelect={onRemoveTurn}>
+        {localize("investigator.RemoveTurn")}
+      </NativeMenuItem>
+      <NativeMenuItem icon={<HiDocumentText />} onSelect={openSheet}>
+        {localize("investigator.OpenCharacterSheet")}
+      </NativeMenuItem>
+      <NativeMenuItem icon={<FaTrash />} onSelect={onRemoveCombatant}>
+        {localize("COMBAT.CombatantRemove")}
+      </NativeMenuItem>
+    </NativeDualFunctionMenu>
+  );
+});
+
 export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
   assertGame(game);
   const { combatant, combatantState } = useTurnPassingCombatantContext();
-  // not the tracker's context, which changes on every combat update
-  // the round, only so this re-renders when it changes: the turns remaining
-  // below depend on it
+  // not the tracker's context, which changes on every combat update. It also
+  // reads the round, only so this re-renders when it changes: the turns
+  // remaining below depend on it
   const { active: isActive } = useCombatantTurn();
   const combat = combatant.combat;
   if (combat === null || combatantState === null) {
@@ -41,9 +89,6 @@ export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
     );
   }
 
-  const { onConfigureCombatant, onRemoveCombatant, localize, openSheet } =
-    useInititative(combatant);
-
   const onTakeTurn = useCallback(() => {
     assertGame(game);
 
@@ -51,16 +96,6 @@ export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
     // this up and perform the turn pass
     requestTurnPass(combatant.id);
   }, [combatant.id]);
-
-  const onAddTurn = useCallback(() => {
-    assertTurnPassingCombatant(combatant);
-    void combatant.system.addPassingTurn();
-  }, [combatant]);
-
-  const onRemoveTurn = useCallback(() => {
-    assertTurnPassingCombatant(combatant);
-    void combatant.system.removePassingTurn();
-  }, [combatant]);
 
   const depleted = combatant.system.passingTurnsRemaining <= 0;
 
@@ -109,24 +144,10 @@ export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
       </div>
 
       {game.user.isGM && (
-        <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
-          <NativeMenuLabel>{combatant.name}</NativeMenuLabel>
-          <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
-            {localize("COMBAT.CombatantUpdate")}
-          </NativeMenuItem>
-          <NativeMenuItem icon={<FaPlus />} onSelect={onAddTurn}>
-            {localize("investigator.AddTurn")}
-          </NativeMenuItem>
-          <NativeMenuItem icon={<FaMinus />} onSelect={onRemoveTurn}>
-            {localize("investigator.RemoveTurn")}
-          </NativeMenuItem>
-          <NativeMenuItem icon={<HiDocumentText />} onSelect={openSheet}>
-            {localize("investigator.OpenCharacterSheet")}
-          </NativeMenuItem>
-          <NativeMenuItem icon={<FaTrash />} onSelect={onRemoveCombatant}>
-            {localize("COMBAT.CombatantRemove")}
-          </NativeMenuItem>
-        </NativeDualFunctionMenu>
+        <TurnPassingMenu
+          combatant={combatant}
+          name={combatantState.name ?? ""}
+        />
       )}
     </>
   );
