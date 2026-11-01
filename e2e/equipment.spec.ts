@@ -75,6 +75,10 @@ test("an open equipment sheet shows changes made elsewhere", async ({
   await expect(sheet.getByLabel("Name", { exact: true })).toHaveValue(
     "Cultes des Goules (2nd ed.)",
   );
+  // the title, from the item sheets' shared framework
+  await expect(sheet.locator("h1 [contenteditable]")).toHaveText(
+    "Cultes des Goules (2nd ed.)",
+  );
   await expect(sheet.getByLabel("Mythos Bonus")).toHaveValue("4");
   // unchanged fields are still there
   await expect(sheet.getByLabel("Language")).toHaveValue("French");
@@ -118,9 +122,12 @@ test("a player's open equipment sheet hides fields when they drop to Limited", a
   const player = await joinAs("Dropped");
   const sheet = await openSheet(player, `Item.${itemId}`);
   await expect(sheet).toContainText("Mythos Bonus");
+  // the config cog, from the item sheets' shared framework
+  await expect(sheet.locator(".fa-cog")).toHaveCount(1);
 
   await setOwnership(page, itemId, playerId, "LIMITED");
   await expect(sheet).not.toContainText("Mythos Bonus");
+  await expect(sheet.locator(".fa-cog")).toHaveCount(0);
   await expect(sheet.getByLabel("Language")).toHaveValue("French");
 });
 
