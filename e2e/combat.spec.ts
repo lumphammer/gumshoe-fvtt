@@ -196,6 +196,21 @@ test("in turn-passing, everyone acts, then a new round gives turns back", async 
   await expect.poll(() => getCombat(page)).toMatchObject({ round: 2 });
   await expect(hero).toContainText("1/1");
   await expect(villain).toContainText("1/1");
+
+  // going back to round 1 updates no combatants (their turns there are
+  // already recorded): the rows still follow the round, and the inactive
+  // ones are shaded as depleted again
+  await page.evaluate(async () => {
+    await game.combat!.previousRound();
+  });
+  await expect.poll(() => getCombat(page)).toMatchObject({ round: 1 });
+  await expect(hero).toContainText("0/1");
+  await expect(villain).toContainText("0/1");
+  const inactive = tracker.locator("li.combatant:not(.active)");
+  await expect(inactive).not.toHaveCount(0);
+  for (const row of await inactive.all()) {
+    await expect(row).toHaveCSS("opacity", "0.7");
+  }
 });
 
 test("a player can't take a turn for a combatant they don't own", async ({

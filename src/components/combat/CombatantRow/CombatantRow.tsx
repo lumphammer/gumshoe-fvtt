@@ -2,7 +2,7 @@ import type { AnimateLayoutChanges } from "@dnd-kit/sortable";
 import { defaultAnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
-import { memo } from "react";
+import { memo, useContext } from "react";
 
 import { assertGame } from "../../../functions/isGame";
 import type { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
@@ -12,7 +12,10 @@ import {
   CombatantContextProvider,
   useCombatantContextValue,
 } from "./CombatantContext";
-import { CombatantActiveContext } from "./CombatantTurnContext";
+import {
+  CombatantActiveContext,
+  CombatRoundContext,
+} from "./CombatantTurnContext";
 import { Content } from "./Content";
 
 interface CombatantRowProps {
@@ -61,6 +64,10 @@ export const CombatantRow = memo(({ combatant, active }: CombatantRowProps) => {
 
   const combatantContextValue = useCombatantContextValue(combatant);
 
+  // turns remaining depend on the round, which a memoised row would
+  // otherwise miss (going back to a round already played updates no
+  // combatants)
+  useContext(CombatRoundContext);
   const depleted =
     isTurnPassingCombatant(combatant) &&
     combatant.system.passingTurnsRemaining <= 0;
