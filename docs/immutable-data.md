@@ -236,10 +236,13 @@ per-commit counts show what happens on each update:
   time**.
 
 **Once a sheet reads everything through snapshots, Foundry's re-render is
-redundant, and it should be stopped.** Either make the mixin's
-`_renderHTML` skip `root.render` after the first render for converted sheets,
-or memoise at the root so the re-render goes no further. Until then, the
-outer shell renders twice per change.
+redundant.** `ReactApplicationV2Mixin` takes `{ rerenderOnFoundryRender:
+false }` for such apps: it renders the React root once each time the app
+opens, and ignores Foundry's later renders. The PC and NPC sheets use it
+(their roots follow ownership through `useActorSheetPermissions`, and the
+Limited views read snapshots too). The item sheets don't yet: their outer
+shell (`ItemSheet`, `ItemSheetFramework`) is shared with unconverted item
+types, and still reads the live item.
 
 ### Baseline for unconverted sheets
 
@@ -266,53 +269,58 @@ PC (76 items).
 Components rendered per change, before and after converting (from
 `e2e/renderTiming.bench.ts`; the PC is the 76-item fixture):
 
-| Change                                                    | Before | After |
-| --------------------------------------------------------- | ------ | ----- |
-| weapon sheet: another ability on the actor                | 37     | 0     |
-| weapon sheet: its notes                                   | 85     | 48    |
-| ability sheet: another ability on the actor               | 34     | 0     |
-| ability sheet: its notes                                  | 146    | 115   |
-| PC, Abilities tab: an ability's pool                      | 1128   | 315   |
-| PC, Abilities tab: the actor's Health                     | 1125   | 277   |
-| combat tracker (12 combatants): next turn                 | 402    | 112   |
-| combat tracker, header on props: next turn                | 112    | 48    |
-| turn-passing tracker (12): pass turn                      | 571    | 131   |
-| turn-passing tracker, menus memoised: pass turn           | 131    | 49    |
-| turn-passing tracker, menus memoised: a combatant's turns | 69     | 28    |
-| turn-passing tracker, menus memoised: next round          | 1567   | 583   |
-| combat tracker, menus memoised: next turn                 | 48     | 39    |
-| PC, Contacts tab (island → converted): an ability's pool  | 183    | 1     |
-| PC, Contacts tab (island → converted): a contact's pool   | 183    | 42    |
-| PC, MW items tab (island → converted): an ability's pool  | 139    | 1     |
-| PC, MW items tab (island → converted): an item's name     | 139    | 18    |
-| PC, Bonds tab (island → converted): an ability's pool     | 267    | 1     |
-| PC, Bonds tab (island → converted): a Bond's points       | 187    | 20    |
-| PC, Bonds tab, Establish Bond panel: an ability's pool    | 41     | 1     |
-| PC, Bonds tab, Team Crisis panel: an ability's pool       | 109    | 1     |
-| PC, Cards tab (island → converted): an ability's pool     | 146    | 1     |
-| PC, Cards tab (island → converted): a card's subtitle     | 148    | 15    |
-| PC, Cards tab, `CardDisplay` converted: a card's subtitle | 15     | 10    |
-| PC, Cards tab: renaming a category with every card        | 162    | 112   |
-| PC, Cards tab: renaming a category with no cards          | 162    | 54    |
-| PC, Moribund World Abilities tab: an ability's pool       | 944    | 311   |
-| PC, Moribund World Abilities tab: the actor's Health      | 944    | 283   |
-| PC, Abilities tab, panels memoised: an ability's pool     | 315    | 71    |
-| PC, Abilities tab, panels memoised: the actor's Health    | 277    | 33    |
-| PC, Combat tab, panels memoised: an ability's pool        | 410    | 166   |
-| PC, Equipment tab, panels memoised: an ability's pool     | 486    | 242   |
-| PC, Combat tab, weapons converted: an ability's pool      | 166    | 30    |
-| PC, Equipment tab, converted: an ability's pool           | 242    | 30    |
-| PC, Equipment tab, converted: an item's name              | 242    | 50    |
-| NPC (12 abilities), panels memoised: an ability's pool    | 129    | 67    |
-| NPC, panels memoised: the actor's notes                   | 96     | 34    |
-| NPC, Combat tab, panels memoised: an ability's pool       | 100    | 38    |
-| NPC, root memoised: an ability's pool                     | 67     | 35    |
-| NPC, root memoised: the actor's notes                     | 34     | 2     |
-| NPC, root memoised, Combat tab: an ability's pool         | 38     | 2     |
-| PC, root memoised, Abilities tab: an ability's pool       | 71     | 39    |
-| PC, root memoised, Abilities tab: the actor's Health      | 33     | 1     |
-| PC, root memoised, Combat tab: an ability's pool          | 30     | 1     |
-| PC, root memoised, Equipment tab: an ability's pool       | 30     | 1     |
+| Change                                                      | Before         | After         |
+| ----------------------------------------------------------- | -------------- | ------------- |
+| weapon sheet: another ability on the actor                  | 37             | 0             |
+| weapon sheet: its notes                                     | 85             | 48            |
+| ability sheet: another ability on the actor                 | 34             | 0             |
+| ability sheet: its notes                                    | 146            | 115           |
+| PC, Abilities tab: an ability's pool                        | 1128           | 315           |
+| PC, Abilities tab: the actor's Health                       | 1125           | 277           |
+| combat tracker (12 combatants): next turn                   | 402            | 112           |
+| combat tracker, header on props: next turn                  | 112            | 48            |
+| turn-passing tracker (12): pass turn                        | 571            | 131           |
+| turn-passing tracker, menus memoised: pass turn             | 131            | 49            |
+| turn-passing tracker, menus memoised: a combatant's turns   | 69             | 28            |
+| turn-passing tracker, menus memoised: next round            | 1567           | 583           |
+| combat tracker, menus memoised: next turn                   | 48             | 39            |
+| PC, Contacts tab (island → converted): an ability's pool    | 183            | 1             |
+| PC, Contacts tab (island → converted): a contact's pool     | 183            | 42            |
+| PC, MW items tab (island → converted): an ability's pool    | 139            | 1             |
+| PC, MW items tab (island → converted): an item's name       | 139            | 18            |
+| PC, Bonds tab (island → converted): an ability's pool       | 267            | 1             |
+| PC, Bonds tab (island → converted): a Bond's points         | 187            | 20            |
+| PC, Bonds tab, Establish Bond panel: an ability's pool      | 41             | 1             |
+| PC, Bonds tab, Team Crisis panel: an ability's pool         | 109            | 1             |
+| PC, Cards tab (island → converted): an ability's pool       | 146            | 1             |
+| PC, Cards tab (island → converted): a card's subtitle       | 148            | 15            |
+| PC, Cards tab, `CardDisplay` converted: a card's subtitle   | 15             | 10            |
+| PC, Cards tab: renaming a category with every card          | 162            | 112           |
+| PC, Cards tab: renaming a category with no cards            | 162            | 54            |
+| PC, Moribund World Abilities tab: an ability's pool         | 944            | 311           |
+| PC, Moribund World Abilities tab: the actor's Health        | 944            | 283           |
+| PC, Abilities tab, panels memoised: an ability's pool       | 315            | 71            |
+| PC, Abilities tab, panels memoised: the actor's Health      | 277            | 33            |
+| PC, Combat tab, panels memoised: an ability's pool          | 410            | 166           |
+| PC, Equipment tab, panels memoised: an ability's pool       | 486            | 242           |
+| PC, Combat tab, weapons converted: an ability's pool        | 166            | 30            |
+| PC, Equipment tab, converted: an ability's pool             | 242            | 30            |
+| PC, Equipment tab, converted: an item's name                | 242            | 50            |
+| NPC (12 abilities), panels memoised: an ability's pool      | 129            | 67            |
+| NPC, panels memoised: the actor's notes                     | 96             | 34            |
+| NPC, Combat tab, panels memoised: an ability's pool         | 100            | 38            |
+| NPC, root memoised: an ability's pool                       | 67             | 35            |
+| NPC, root memoised: the actor's notes                       | 34             | 2             |
+| NPC, root memoised, Combat tab: an ability's pool           | 38             | 2             |
+| PC, root memoised, Abilities tab: an ability's pool         | 71             | 39            |
+| PC, root memoised, Abilities tab: the actor's Health        | 33             | 1             |
+| PC, root memoised, Combat tab: an ability's pool            | 30             | 1             |
+| PC, root memoised, Equipment tab: an ability's pool         | 30             | 1             |
+| PC, re-render off, Abilities tab: an ability's pool         | 39 (2 commits) | 38 (1 commit) |
+| PC, re-render off, Abilities tab: the actor's Health        | 1              | 0             |
+| PC, re-render off, Combat/Equipment tabs: an ability's pool | 1              | 0             |
+| NPC, re-render off: an ability's pool                       | 35 (2 commits) | 33 (1 commit) |
+| NPC, re-render off: the actor's notes                       | 2              | 0             |
 
 Every part of the PC and NPC sheets now reads snapshots, and both roots
 (`PCSheetFull`, `NPCSheetFull`) are memoised, so Foundry's re-render stops

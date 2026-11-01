@@ -13,6 +13,17 @@ type RenderOptions = foundry.applications.api.ApplicationV2.RenderOptions;
 // so Constructor<Application> is any class which is an Application
 type ApplicationV2Constructor = Constructor<ApplicationV2>;
 
+export type ReactApplicationV2Options = {
+  /**
+   * Re-render the React tree from its root every time Foundry renders the
+   * app (e.g. when its document changes). On by default, for apps whose
+   * components read live documents and rely on that to stay current. Turn it
+   * off for an app whose components keep themselves current (e.g. through
+   * snapshots): then the tree is rendered once each time the app opens.
+   */
+  rerenderOnFoundryRender?: boolean;
+};
+
 /**
  * Wrap an existing Foundry Application class in this Mixin to override the
  * normal rendering behaviour and and use React instead.
@@ -34,6 +45,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
    * Render method - should return some JSX.
    */
   render: () => ReactNode,
+  { rerenderOnFoundryRender = true }: ReactApplicationV2Options = {},
 ): TBase {
   class Reactified extends Base {
     // PROPERTIES
@@ -50,6 +62,9 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
      */
     protected serial = 0;
 
+    /** Whether the current React root has been rendered into yet */
+    protected reactRootRendered = false;
+
     // METHODS
 
     // From Atropos: _renderFrame only occurs once and is the most natural point
@@ -61,6 +76,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
         : element;
       if (target) {
         this.reactRoot = createRoot(target);
+        this.reactRootRendered = false;
       }
       return element;
     }
@@ -90,6 +106,11 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
     // _renderHTML is the semantically appropriate place to render updates to
     // the HTML of the app... or in our case, to ask to react to refresh.
     override _renderHTML() {
+      // the tree keeps itself current: only the first render (each time the
+      // app opens, with a new root) is needed
+      if (!rerenderOnFoundryRender && this.reactRootRendered) {
+        return Promise.resolve();
+      }
       const content = (
         <StrictMode>
           <FoundryAppContext.Provider
@@ -102,6 +123,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
       );
 
       this.reactRoot?.render(content);
+      this.reactRootRendered = this.reactRoot !== undefined;
       this.serial += 1;
       // types expect a promise but we don't need to wait for the render to
       // complete

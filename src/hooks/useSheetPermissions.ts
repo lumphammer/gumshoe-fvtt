@@ -31,3 +31,25 @@ export function useSheetPermissions(item: Item.Implementation): {
     ),
   };
 }
+
+/**
+ * What the user may do with an actor, for the root of a sheet which reads it
+ * through snapshots (as `useSheetPermissions` does for items). Re-renders
+ * when the actor's ownership changes.
+ */
+export function useActorSheetPermissions(actor: Actor.Implementation): {
+  isEditable: boolean;
+  isLimited: boolean;
+} {
+  assertGame(game);
+  useActorSnapshot(actor, (snapshot) => snapshot?.ownership ?? null);
+  const app = useContext(FoundryAppContext);
+  return {
+    isEditable: getIsEditable(app),
+    isLimited: actor.testUserPermission(
+      game.user,
+      CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED,
+      { exact: true },
+    ),
+  };
+}

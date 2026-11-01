@@ -95,6 +95,11 @@ translations, adding fields and settings, releases).
     which follows the item's and its actor's ownership): inputs read
     `useIsEditable`, and a memoised parent would otherwise hide a permission
     change from them.
+  - Once everything in an app keeps itself current (including its
+    permissions: `useActorSheetPermissions` for actor sheets), pass
+    `{ rerenderOnFoundryRender: false }` to `ReactApplicationV2Mixin`, so
+    Foundry's renders don't re-render it from the root at all. The PC and NPC
+    sheets do.
   - Components shared with unconverted sheets (`WeaponAttackPanel`,
     `AbilityBadges`, `SpecialityList`, the ability rows) are islands: they
     take the live document and read their own snapshots.

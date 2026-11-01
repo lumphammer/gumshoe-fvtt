@@ -229,6 +229,55 @@ test("with Limited permission, players see a character's name and picture, not t
   const npcSheet = await openSheet(player, `Actor.${npcId}`);
   await expect(npcSheet).toContainText("Knows more than he says");
   await expect(npcSheet).not.toContainText("Secretly a ghoul");
+
+  // Foundry's re-render doesn't reach these sheets' React trees: they follow
+  // changes made elsewhere themselves
+  await page.evaluate(
+    async ({ pcId, npcId }) => {
+      const pc = game.actors.get(pcId)!;
+      await pc.update({ name: "Professor Ellery" });
+      await pc.items
+        .find((i) => i.type === "personalDetail")!
+        .update({ name: "Archivist" });
+      await game.actors
+        .get(npcId)!
+        .update({ system: { notes: "<p>Knows everything</p>" } });
+    },
+    { pcId, npcId },
+  );
+  await expect(pcSheet).toContainText("Professor Ellery");
+  await expect(pcSheet).toContainText("Archivist");
+  await expect(npcSheet).toContainText("Knows everything");
+});
+
+test.describe("ownership changes", () => {
+  // changing ownership with a player logged in needs the canvas (see above)
+  test.use({ canvas: true });
+
+  test("an open PC sheet follows the player's ownership changing", async ({
+    page,
+    joinAs,
+  }) => {
+    const pcId = await createActor(page, { name: "Dr Ellery", type: "pc" });
+    const playerId = await createPlayer(page, "Promoted");
+    await giveOwnership(page, pcId, playerId, "OBSERVER");
+
+    const player = await joinAs("Promoted");
+    const sheet = await openSheet(player, `Actor.${pcId}`);
+    const name = sheet.getByRole("textbox", { name: "Name" }).first();
+    await expect(name).toBeVisible();
+    await expect(name).not.toBeEditable();
+
+    // the sheet's React tree isn't re-rendered by Foundry: it follows the
+    // actor's ownership itself
+    await giveOwnership(page, pcId, playerId, "OWNER");
+    await expect(name).toBeEditable();
+    await giveOwnership(page, pcId, playerId, "LIMITED");
+    await expect(sheet.locator(".tab-strip")).toHaveCount(0);
+    await expect(sheet).toContainText("Dr Ellery");
+    await giveOwnership(page, pcId, playerId, "OBSERVER");
+    await expect(sheet.locator(".tab-strip")).toHaveCount(1);
+  });
 });
 
 test("with Limited permission, players don't see equipment fields hidden from them", async ({

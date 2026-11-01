@@ -1,7 +1,8 @@
-import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
+import * as c from "../../constants";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPCActor } from "../../module/actors/pc";
-import { settings } from "../../settings/settings";
 import { CharacterSheetSimple } from "./CharacterSheetSimple";
 
 /**
@@ -11,11 +12,19 @@ import { CharacterSheetSimple } from "./CharacterSheetSimple";
 export const PCSheetSimple = () => {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  // the occupation is an item, which can change without the actor changing
-  useRefreshOnActorItemChanges(actor);
-  const occupation =
-    actor.system.getOccupations()[0]?.name ?? settings.genericOccupation.get();
-  return <CharacterSheetSimple subText={occupation} />;
+  // the occupation is an item: the first in the occupation slot
+  const occupation = useActorSnapshot(
+    actor,
+    (snapshot) =>
+      (snapshot?.items ?? []).find(
+        (item) =>
+          item.type === c.personalDetail &&
+          (item.system as { slotIndex: number }).slotIndex ===
+            c.occupationSlotIndex,
+      )?.name,
+  );
+  const genericOccupation = useSettings((s) => s.genericOccupation);
+  return <CharacterSheetSimple subText={occupation ?? genericOccupation} />;
 };
 
 PCSheetSimple.displayName = "PCSheetSimple";
