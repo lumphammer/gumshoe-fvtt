@@ -1,15 +1,18 @@
 import { useContext } from "react";
 
+import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import type { CardItem } from "../../module/items/card";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Masonry } from "../Masonry";
 import { Translate } from "../Translate";
 import { CardArrayCard } from "./CardArrayCard";
 import { CardsAreaSettingsContext } from "./contexts";
+import type { CardLayoutView } from "./functions";
 import type { CardsColumnWidth } from "./types";
 
 interface CardArrayProps {
-  cards: CardItem[];
+  /** the cards, in order, from the actor's snapshot */
+  cards: readonly CardLayoutView[];
 }
 
 const columndWidths: Record<CardsColumnWidth, string> = {
@@ -19,6 +22,8 @@ const columndWidths: Record<CardsColumnWidth, string> = {
 };
 
 export const CardArray = ({ cards }: CardArrayProps) => {
+  "use memo";
+  const { actor } = useActorSheetContext();
   const theme = useContext(ThemeContext);
   const { columnWidth: columnWidthSetting } = useContext(
     CardsAreaSettingsContext,
@@ -54,9 +59,11 @@ export const CardArray = ({ cards }: CardArrayProps) => {
         marginRight: theme.cards.area.horizontalSpacing,
       }}
     >
-      {cards.map((card) => (
-        <CardArrayCard key={card.id} card={card} />
-      ))}
+      {cards.map(({ id }) => {
+        // the live card, for the memoised card to read its own snapshot
+        const card = actor.items.get(id) as CardItem | undefined;
+        return card ? <CardArrayCard key={id} card={card} /> : null;
+      })}
     </Masonry>
   );
 };

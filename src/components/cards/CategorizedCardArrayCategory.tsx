@@ -2,20 +2,21 @@ import type { CardCategory } from "@lumphammer/investigator-fvtt-types";
 import { useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
-import type { CardItem } from "../../module/items/card";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { CardArray } from "./CardArray";
+import type { CardLayoutView } from "./functions";
 import { summarizeCategoryCards } from "./functions";
 
 interface CategorizedCardArrayCategoryProps {
-  category: CardCategory | null;
-  cards: CardItem[];
+  category: Readonly<CardCategory> | null;
+  cards: readonly CardLayoutView[];
 }
 
 export const CategorizedCardArrayCategory = ({
   category,
   cards,
 }: CategorizedCardArrayCategoryProps) => {
+  "use memo";
   const theme = useContext(ThemeContext);
   const [summary, isOverGoal, isOverLimit] = summarizeCategoryCards(
     cards,

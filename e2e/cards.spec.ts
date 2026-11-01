@@ -136,3 +136,89 @@ test("cards follow their category being renamed", async ({ page }) => {
     cardSheet.locator(".investigator-card-display .supertitle"),
   ).toHaveText("Strain");
 });
+
+test("the Cards tab re-sorts and regroups cards changed elsewhere", async ({
+  page,
+}) => {
+  const stress = {
+    id: "stress",
+    singleName: "Stress",
+    pluralName: "Stresses",
+    styleKey: "stress",
+    threshold: 3,
+    thresholdType: "limit",
+  };
+  const injury = {
+    id: "injury",
+    singleName: "Injury",
+    pluralName: "Injuries",
+    styleKey: "injury",
+    threshold: 2,
+    thresholdType: "limit",
+  };
+  await setSettings(page, { useCards: true, cardCategories: [stress, injury] });
+  const actorId = await createActor(page, {
+    name: "Sorter",
+    type: "pc",
+    system: {
+      // one column, so the cards are in order on the page
+      cardsAreaSettings: {
+        category: "categorized",
+        sortOrder: "atoz",
+        columnWidth: "full",
+        viewMode: "short",
+      },
+    },
+  });
+  const inStress = {
+    cardCategoryMemberships: [
+      { categoryId: "stress", nonlethal: false, worth: 1 },
+    ],
+  };
+  const bravoId = await createOwnedItem(page, actorId, {
+    name: "Bravo",
+    type: "card",
+    system: inStress,
+  });
+  const deltaId = await createOwnedItem(page, actorId, {
+    name: "Delta",
+    type: "card",
+    system: inStress,
+  });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  await sheet.locator(".tab-strip > label", { hasText: "Cards" }).click();
+  // the categories' headings, in the list of cards
+  const headings = sheet.locator(".container-ref-haver > h2");
+  const titles = sheet.locator(".investigator-card-display .title");
+  await expect(headings).toHaveText(["Stresses (2/3)", "Injuries (0/2)"]);
+  await expect(titles).toHaveText(["Bravo", "Delta"]);
+
+  const updateCard = (id: string, data: object) =>
+    page.evaluate(
+      async ({ actorId, id, data }) => {
+        await game.actors.get(actorId)!.items.get(id)!.update(data);
+      },
+      { actorId, id, data },
+    );
+
+  // renamed elsewhere: sorted again
+  await updateCard(deltaId, { name: "Alpha" });
+  await expect(titles).toHaveText(["Alpha", "Bravo"]);
+
+  // moved to another category elsewhere: grouped and counted again
+  await updateCard(bravoId, {
+    system: {
+      cardCategoryMemberships: [
+        { categoryId: "injury", nonlethal: false, worth: 1 },
+      ],
+    },
+  });
+  await expect(headings).toHaveText(["Stresses (1/3)", "Injuries (1/2)"]);
+  await expect(titles).toHaveText(["Alpha", "Bravo"]);
+
+  // a category renamed: its heading follows
+  await setSettings(page, {
+    cardCategories: [stress, { ...injury, pluralName: "Wounds" }],
+  });
+  await expect(headings).toHaveText(["Stresses (1/3)", "Wounds (1/2)"]);
+});
