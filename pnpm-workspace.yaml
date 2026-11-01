@@ -7,8 +7,9 @@ catalog:
   "@types/react": ^19.3.0
   fvtt-types: 14.366.0-beta.20261009164208
   tsx: ^4.23.15
-  "@swc/plugin-emotion": 10.0.3
-  "@vitejs/plugin-react-swc": 3.11.0
+  "@vitejs/plugin-react": 6.1.2
+  # plugin-react 6.1 wants ^0.152.0, which for 0.x means 0.152 only
+  oxc-transform-react: 0.152.0
   less: 4.4.1
   typescript: 7.0.2
   react-dom: ^19.3.1
@@ -20,8 +21,8 @@ overrides:
   "@types/react": "catalog:"
   fvtt-types: "catalog:"
   tsx: "catalog:"
-  "@swc/plugin-emotion": "catalog:"
-  "@vitejs/plugin-react-swc": "catalog:"
+  "@vitejs/plugin-react": "catalog:"
+  oxc-transform-react: "catalog:"
   less: "catalog:"
   typescript: "catalog:"
   react-dom: "catalog:"
@@ -33,7 +34,6 @@ peerDependencyRules:
     meow: "13"
 allowBuilds:
   "@league-of-foundry-developers/foundry-vtt-types": true
-  "@swc/core": true
   classic-level: true
   esbuild: true
 blockExoticSubdeps: false

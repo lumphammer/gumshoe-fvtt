@@ -1,7 +1,6 @@
 blockExoticSubdeps: false
 
 allowBuilds:
-  '@swc/core': true
   classic-level: true
   esbuild: true
 
@@ -9,11 +8,12 @@ allowBuilds:
 # monorepo, pnpm ignores this file and uses the root catalog instead, so keep
 # these in step with it.
 catalog:
-  '@swc/plugin-emotion': 10.0.3
   '@types/react': ^19.3.0
-  '@vitejs/plugin-react-swc': 3.11.0
+  '@vitejs/plugin-react': 6.1.2
   fvtt-types: 14.366.0-beta.20261009164208
   happy-dom: ^21.0.4
+  # plugin-react 6.1 wants ^0.152.0, which for 0.x means 0.152 only
+  oxc-transform-react: 0.152.0
   react: ^19.3.1
   react-dom: ^19.3.1
   tsx: ^4.23.15
@@ -23,11 +23,11 @@ catalog:
 
 # Force one copy of each (e.g. vitest 3 would otherwise bring its own vite).
 overrides:
-  '@swc/plugin-emotion': 'catalog:'
   '@types/react': 'catalog:'
-  '@vitejs/plugin-react-swc': 'catalog:'
+  '@vitejs/plugin-react': 'catalog:'
   fvtt-types: 'catalog:'
   happy-dom: 'catalog:'
+  oxc-transform-react: 'catalog:'
   react: 'catalog:'
   react-dom: 'catalog:'
   tsx: 'catalog:'

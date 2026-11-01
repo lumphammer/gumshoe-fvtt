@@ -1,5 +1,5 @@
 /// <reference types="vitest/config" />
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import fs from "fs";
 import path from "path";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -14,23 +14,14 @@ function kebabCaseToCamelCase(str: string) {
   return str.replace(/-([a-z0-9])/g, (g) => g[1].toUpperCase());
 }
 
-// this is lifted from
-// https://github.com/vitejs/vite-plugin-react-swc/blob/21eef9eefd7ff3d46dc0a3132dac83d9bb49f980/src/index.ts
-// if it breaks with a future @vitejs/vite-plugin-react-swc update, we'll need
-// to update it or change behaviour to match the upstream.
-const preambleCode = `
-    import { injectIntoGlobalHook } from "__PATH__";
-    injectIntoGlobalHook(window);
-    window.$RefreshReg$ = () => {};
-    window.$RefreshSig$ = () => (type) => type;`;
-
 /**
  * Create a vite config for a Foundry VTT package.
  *
  * original guide to using Vite for Foundry from the Lancer devs:
  * https://foundryvtt.wiki/en/development/guides/vite
  *
- * Supports React with HMR, SVGR, and dev server proxying to local Foundry.
+ * Supports React with HMR (and optionally React Compiler), SVGR, and dev
+ * server proxying to local Foundry.
  *
  * You will need to import this by relative path, e.g.
  * `./packages/shared-fvtt-bits/dotfiles/createFvttViteConfig` because vite
@@ -43,6 +34,7 @@ export function createViteUserConfig({
   port = 40000,
   sourceMap = false,
   includeReact = true,
+  reactCompiler = false,
   plugins = [],
   allowedHosts,
   mode,
@@ -51,9 +43,10 @@ export function createViteUserConfig({
   // setup
   //
 
-  const customizedPreambleCode = preambleCode.replace(
-    "__PATH__",
-    `/${packageType}s/${foundryPackageId}/@react-refresh`,
+  // plugin-react's own, pointed at where our package is served from
+  const customizedPreambleCode = react.preambleCode.replace(
+    "__BASE__",
+    `/${packageType}s/${foundryPackageId}/`,
   );
   const preambleHtml =
     '\n<script type="module">\n' + customizedPreambleCode + "\n</script>\n";
@@ -194,14 +187,8 @@ export function createViteUserConfig({
       includeReact &&
         react({
           jsxImportSource: "@emotion/react",
-          plugins: [
-            [
-              "@swc/plugin-emotion",
-              {
-                autoLabel: "always",
-              },
-            ],
-          ],
+          // Oxc's port of React Compiler (needs `oxc-transform-react`)
+          compiler: reactCompiler,
         }),
       // svgr plugin uses SVGR to import SVGs as React components
       svgr({
