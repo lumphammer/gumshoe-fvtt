@@ -48,6 +48,8 @@ type Sample = {
   rendered: number;
   /** Per commit: ms from the hook, components rendered, React ms. */
   perCommit: { atMs: number; rendered: number; reactMs: number | null }[];
+  /** How many of each component rendered, across the commits. */
+  byComponent: Record<string, number>;
 };
 
 /**
@@ -97,6 +99,12 @@ async function measure(page: Page, op: string, selector: string) {
             rendered: c.rendered,
             reactMs: c.renderMs ?? null,
           })),
+          byComponent: commits.reduce<Record<string, number>>((acc, c) => {
+            for (const [name, n] of Object.entries(c.byComponent)) {
+              acc[name] = (acc[name] ?? 0) + n;
+            }
+            return acc;
+          }, {}),
         });
       }
       return samples;
@@ -130,6 +138,8 @@ function summarise(samples: Sample[]) {
     rendered: mean(samples.map((s) => s.rendered)),
     /** Components rendered in each commit, for the first sample. */
     renderedPerCommit: samples[0]?.perCommit.map((c) => c.rendered) ?? [],
+    /** Which components rendered, for the first sample. */
+    byComponent: samples[0]?.byComponent ?? {},
     samples,
   };
 }
@@ -208,6 +218,13 @@ test.afterEach(() => {
     `${JSON.stringify({ label, results: report.results }, null, 2)}\n`,
   );
   console.log(formatResults(results));
+  // RENDER_BENCH_NAMES=1 lists which components rendered
+  if (process.env["RENDER_BENCH_NAMES"]) {
+    for (const [name, r] of Object.entries(results)) {
+      const top = Object.entries(r.byComponent).sort((a, b) => b[1] - a[1]);
+      console.log(`${name}:\n${top.map(([c, n]) => `  ${n} ${c}`).join("\n")}`);
+    }
+  }
   for (const key of Object.keys(results)) delete results[key];
 });
 
@@ -404,4 +421,60 @@ test("combat tracker", async ({ page }) => {
   await page.evaluate(async () => {
     await Combat.deleteDocuments(game.combats.map((combat) => combat.id));
   });
+});
+
+test("turn-passing combat tracker", async ({ page }) => {
+  await setSettings(page, { useTurnPassingInitiative: true });
+  await page.evaluate(async () => {
+    const actors = await Actor.createDocuments(
+      Array.from({ length: 12 }, (_, i) => ({
+        name: `Combatant ${i + 1}`,
+        type: "npc" as const,
+      })),
+    );
+    const combat = (await Combat.create({
+      active: true,
+      type: "turnPassing",
+    }))!;
+    const combatants = await combat.createEmbeddedDocuments(
+      "Combatant",
+      actors.map((actor) => ({ actorId: actor.id })),
+    );
+    await combat.startCombat();
+    const ops = globalThis.renderBench.ops;
+    // a combatant's turns go down, then back up
+    ops["passing turns"] = (i) => {
+      const system = combatants[0].system as unknown as {
+        addPassingTurn: () => Promise<void>;
+        removePassingTurn: () => Promise<void>;
+      };
+      return i % 2 ? system.addPassingTurn() : system.removePassingTurn();
+    };
+    ops["next round"] = () => combat.nextRound();
+    // the turn passes to another combatant
+    ops["pass turn"] = (i) => combat.update({ turn: (i + 1) % 12 });
+    ui.sidebar.changeTab("combat", "primary");
+  });
+  await record(
+    page,
+    "turn-passing tracker (12): pass turn",
+    "pass turn",
+    "#combat",
+  );
+  await record(
+    page,
+    "turn-passing tracker (12): a combatant's turns",
+    "passing turns",
+    "#combat",
+  );
+  await record(
+    page,
+    "turn-passing tracker (12): next round",
+    "next round",
+    "#combat",
+  );
+  await page.evaluate(async () => {
+    await Combat.deleteDocuments(game.combats.map((combat) => combat.id));
+  });
+  await setSettings(page, { useTurnPassingInitiative: false });
 });

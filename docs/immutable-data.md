@@ -44,7 +44,7 @@ date from the document hooks.
   `produce`. This is what the combat tracker does today.
 - **fresh-and-share, whole actor:** on any hook, copy the whole actor
   (`toObject()`) and share the unchanged parts with the previous snapshot.
-- **fresh-and-share, per document:** use only *which* document the hook is
+- **fresh-and-share, per document:** use only _which_ document the hook is
   for. Copy just that document and share the unchanged parts. The **prepared**
   variant copies prepared data (`toObject(false)`, or `system.toObject(false)`
   for the actor) instead of source.
@@ -83,11 +83,11 @@ the list doesn't give a new identity to every item after it.
 
 All strategies replace exactly the same objects:
 
-| Change | Objects replaced |
-|---|---|
-| an actor field | 5 (the path to the field) |
-| one item | 5 |
-| deleting an item from the middle of the list | 2 |
+| Change                                       | Objects replaced          |
+| -------------------------------------------- | ------------------------- |
+| an actor field                               | 5 (the path to the field) |
+| one item                                     | 5                         |
+| deleting an item from the middle of the list | 2                         |
 
 So the choice between them comes down to speed and robustness, not render
 cost.
@@ -96,15 +96,15 @@ cost.
 
 Times are ms per step: one update, or one bulk or create + delete operation.
 
-| Step | diff-merge | whole actor | per document | per document, prepared |
-|---|---|---|---|---|
-| actor field (76 items) | 0.054 | 0.62 | 0.028 | 0.025 |
-| one item (76 items) | 0.20\* | 1.0 | 0.022 | 0.054 |
-| one item (228 items) | 0.042 | 1.3 | 0.007 | 0.011 |
-| create + delete item (228 items) | 0.096 | 3.4 | 0.021 | 0.017 |
-| every ability, one hook each (76 items) | 6.3 | 74 | 1.7 | 2.2 |
-| every ability, one hook each (228 items) | 10.2 | **287** | 2.4 | 2.3 |
-| every ability, coalesced (228 items) | 3.9 | 16 | 2.0 | 2.0 |
+| Step                                     | diff-merge | whole actor | per document | per document, prepared |
+| ---------------------------------------- | ---------- | ----------- | ------------ | ---------------------- |
+| actor field (76 items)                   | 0.054      | 0.62        | 0.028        | 0.025                  |
+| one item (76 items)                      | 0.20\*     | 1.0         | 0.022        | 0.054                  |
+| one item (228 items)                     | 0.042      | 1.3         | 0.007        | 0.011                  |
+| create + delete item (228 items)         | 0.096      | 3.4         | 0.021        | 0.017                  |
+| every ability, one hook each (76 items)  | 6.3        | 74          | 1.7          | 2.2                    |
+| every ability, one hook each (228 items) | 10.2       | **287**     | 2.4          | 2.3                    |
+| every ability, coalesced (228 items)     | 3.9        | 16          | 2.0          | 2.0                    |
 
 \* The 76-item runs come first in the page, so they include JIT warm-up.
 
@@ -218,12 +218,12 @@ treat them as a rough indication.
 
 ### Equipment sheet, before and after snapshots
 
-| Change | Wall | React | Components rendered (per commit) |
-|---|---|---|---|
-| a field, before | 2.3–3.5 ms | 1.0–1.2 ms | 116 (102, then 14) |
-| a field, after | 2.7–3.4 ms | 1.0–1.4 ms | 127 (77, then 50) |
-| notes, before | 2.0–2.7 ms | 0.7–1.0 ms | 91 (88, then 3) |
-| notes, after | 2.1–3.5 ms | 0.8–1.3 ms | 96 (57, then 39) |
+| Change          | Wall       | React      | Components rendered (per commit) |
+| --------------- | ---------- | ---------- | -------------------------------- |
+| a field, before | 2.3–3.5 ms | 1.0–1.2 ms | 116 (102, then 14)               |
+| a field, after  | 2.7–3.4 ms | 1.0–1.4 ms | 127 (77, then 50)                |
+| notes, before   | 2.0–2.7 ms | 0.7–1.0 ms | 91 (88, then 3)                  |
+| notes, after    | 2.1–3.5 ms | 0.8–1.3 ms | 96 (57, then 39)                 |
 
 As expected, a sheet this small shows no difference in time. The
 per-commit counts show what happens on each update:
@@ -246,14 +246,14 @@ outer shell renders twice per change.
 These are from two runs of the current code. The PC sheet uses the fixture
 PC (76 items).
 
-| Scenario | Wall | React | Components rendered |
-|---|---|---|---|
-| PC, Abilities tab: ability pool | 12–28 ms | 10–23 ms | 1212 |
-| PC, Abilities tab: actor health | 21–28 ms | 17–23 ms | 1212 |
-| PC, Combat tab: ability pool | 5–11 ms | 4–8 ms | 422 |
-| PC, Equipment tab: ability pool | 5 ms | 4 ms | 498 |
-| combat tracker, 12 combatants: initiative | 0.5 ms | 0.1 ms | 2 |
-| combat tracker, 12 combatants: next turn | 4 ms | 3 ms | 402 |
+| Scenario                                  | Wall     | React    | Components rendered |
+| ----------------------------------------- | -------- | -------- | ------------------- |
+| PC, Abilities tab: ability pool           | 12–28 ms | 10–23 ms | 1212                |
+| PC, Abilities tab: actor health           | 21–28 ms | 17–23 ms | 1212                |
+| PC, Combat tab: ability pool              | 5–11 ms  | 4–8 ms   | 422                 |
+| PC, Equipment tab: ability pool           | 5 ms     | 4 ms     | 498                 |
+| combat tracker, 12 combatants: initiative | 0.5 ms   | 0.1 ms   | 2                   |
+| combat tracker, 12 combatants: next turn  | 4 ms     | 3 ms     | 402                 |
 
 - **The PC sheet redraws all 1,212 components on its Abilities tab for one
   pool change.** That's where snapshots have the most to gain.
@@ -266,14 +266,17 @@ PC (76 items).
 Components rendered per change, before and after converting (from
 `e2e/renderTiming.bench.ts`; the PC is the 76-item fixture):
 
-| Change | Before | After |
-|---|---|---|
-| weapon sheet: another ability on the actor | 37 | 0 |
-| weapon sheet: its notes | 85 | 48 |
-| ability sheet: another ability on the actor | 34 | 0 |
-| ability sheet: its notes | 146 | 115 |
-| PC, Abilities tab: an ability's pool | 1128 | 315 |
-| PC, Abilities tab: the actor's Health | 1125 | 277 |
+| Change                                      | Before | After |
+| ------------------------------------------- | ------ | ----- |
+| weapon sheet: another ability on the actor  | 37     | 0     |
+| weapon sheet: its notes                     | 85     | 48    |
+| ability sheet: another ability on the actor | 34     | 0     |
+| ability sheet: its notes                    | 146    | 115   |
+| PC, Abilities tab: an ability's pool        | 1128   | 315   |
+| PC, Abilities tab: the actor's Health       | 1125   | 277   |
+| combat tracker (12 combatants): next turn   | 402    | 112   |
+| combat tracker, header on props: next turn  | 112    | 48    |
+| turn-passing tracker (12): pass turn        | 571    | 131   |
 
 On the Abilities tab, the 277 left is the rest of the PC sheet (header,
 personal details, pools panel, tab strip), which Foundry still re-renders on
@@ -282,6 +285,22 @@ every change; the memoised areas stop it at their edge. Still to do:
 - the rest of the PC sheet, then memoising its root;
 - the Combat and Equipment tabs (410 and 486 components per change);
 - the NPC sheet beyond its Abilities tab, and Moribund World's ability area;
-- the combat tracker, where "next turn" re-renders every row (402
-  components), probably through dnd-kit's sortable context or rows reading
-  `combat.turn` from the live document.
+- a new round in a turn-passing combat (535 components, then 69 for each
+  combatant's turns): every row's turns remaining change, so most of it is
+  real, but each row's menus re-render with it.
+
+The combat tracker's rows were already memoised, but the keyboard sensor's
+options were a new object on every render: that made new sensors, so every
+row got new drag listeners and re-rendered its contents. With the options
+hoisted, only the two rows whose turn changed re-render: the row is told
+whether it's active by the list, rather than reading `combat.turn` itself
+(which a memoised row would miss). The classic header's parts
+(`EncounterNav`, `ClassicTurnNav`, `ClassicToolsRow`) take props from
+`Tracker`, not the context (which changes on every update), so a new turn
+in the same round doesn't re-render them. `TurnPassingTurnNav` does the
+same. In turn-passing rows, `TurnPassingInitiative` read the tracker's
+context only to know whether it was the combatant's turn, so every row
+re-rendered on every combat update. It now reads `CombatantActiveContext`
+(per row) and `CombatRoundContext` (the round, which its turns remaining
+depend on). `RENDER_BENCH_NAMES=1` lists which
+components rendered (build with `--minify false` for readable names).

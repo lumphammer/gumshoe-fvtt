@@ -4,8 +4,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { assertGame } from "../../functions/isGame";
 import { systemLogger } from "../../functions/utilities";
 import { useRefStash } from "../../hooks/useRefStash";
-import { isClassicCombat } from "../../module/combat/classicCombat";
-import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { isKnownCombat } from "../../module/combat/types";
 import { registerHookHandler } from "./registerHookHandler";
 
@@ -35,27 +33,6 @@ const TrackerContext = createContext<TrackerContextValue>(defaultTrackerValue);
 export const useTrackerContext = () => {
   return useContext(TrackerContext);
 };
-
-export const useClassicTrackerContext = (): TrackerContextValue<"classic"> => {
-  const context = useContext(TrackerContext);
-  if (isClassicCombat(context.combat)) {
-    return context as TrackerContextValue<"classic">;
-  } else {
-    throw new Error("useClassicTrackerContext used with non-classic combat");
-  }
-};
-
-export const useTurnPassingTrackerContext =
-  (): TrackerContextValue<"turnPassing"> => {
-    const context = useContext(TrackerContext);
-    if (isTurnPassingCombat(context.combat)) {
-      return context as TrackerContextValue<"turnPassing">;
-    } else {
-      throw new Error(
-        "useTurnPassingTrackerContext used with non-turn-passing combat",
-      );
-    }
-  };
 
 /**
  * Extracts the relevant combat state from a Combat document.

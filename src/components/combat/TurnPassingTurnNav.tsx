@@ -1,14 +1,13 @@
 import { keyframes } from "@emotion/react";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback } from "react";
 import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
 import { LuSwords } from "react-icons/lu";
 
 import { assertGame } from "../../functions/isGame";
 import { CombatTrackerConfig } from "../../fvtt-exports";
-import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { format, localize } from "./functions";
-import { useTurnPassingTrackerContext } from "./TrackerContext";
+import type { TrackerContextValue } from "./TrackerContext";
 
 const throbbingBg = keyframes({
   "0%": {
@@ -20,27 +19,26 @@ const throbbingBg = keyframes({
   },
 });
 
-export const TurnPassingTurnNav = memo(function TurnPassingTurnNav() {
+type TurnPassingTurnNavProps = {
+  combat: TrackerContextValue<"turnPassing">["combat"];
+  /** The round, or 0 before the combat starts */
+  round: number;
+  turnCount: number;
+  /** Whether every combatant has used up their turns this round */
+  allTurnsDone: boolean;
+};
+
+/**
+ * The round controls for a turn-passing combat. Takes props, not the
+ * tracker's context, so it only re-renders when what it shows changes.
+ */
+export const TurnPassingTurnNav = memo(function TurnPassingTurnNav({
+  combat,
+  round,
+  turnCount,
+  allTurnsDone,
+}: TurnPassingTurnNavProps) {
   assertGame(game);
-  const { combatState, turnIds, combat } = useTurnPassingTrackerContext();
-
-  if (combat === null || combatState === null) {
-    throw new Error("TurnPassingTurnNav must be rendered with a combat.");
-  }
-
-  const allTurnsDone = useMemo(() => {
-    return (
-      (turnIds.length ?? 0) > 0 &&
-      turnIds.every((turnId) => {
-        const turn = combat.turns.find((c) => c.id === turnId);
-        if (isTurnPassingCombatant(turn)) {
-          // @ts-expect-error system is `never`
-          return turn.system.passingTurnsRemaining <= 0;
-        }
-        return false;
-      })
-    );
-  }, [combat.turns, turnIds]);
 
   const handleNextRound = useCallback(() => {
     void combat.nextRound();
@@ -58,7 +56,7 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav() {
     <nav className="combat-controls">
       {game.user.isGM ? (
         <>
-          {combatState?.round ? (
+          {round ? (
             <>
               <button
                 type="button"
@@ -80,7 +78,7 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav() {
                   label={
                     <>
                       {format("COMBAT.Round", {
-                        round: combatState.round.toString(),
+                        round: round.toString(),
                       })}
                       <FaChevronDown />
                     </>
@@ -150,9 +148,9 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav() {
               type="button"
               className="combat-control combat-control-lg"
               onClick={handleStartCombat}
-              disabled={(turnIds.length ?? 0) === 0}
+              disabled={turnCount === 0}
               css={{
-                cursor: (turnIds.length ?? 0) === 0 ? "not-allowed" : "pointer",
+                cursor: turnCount === 0 ? "not-allowed" : "pointer",
               }}
             >
               <LuSwords />
@@ -170,9 +168,9 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav() {
               color: "var(--color-text-primary)",
             }}
           >
-            {combatState?.round
+            {round
               ? format("COMBAT.Round", {
-                  round: combatState?.round.toString(),
+                  round: round.toString(),
                 })
               : localize("COMBAT.NotStarted")}
           </strong>

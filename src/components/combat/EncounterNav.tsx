@@ -7,20 +7,21 @@ import { DialogV2 } from "../../fvtt-exports";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { localize } from "./functions";
-import { useTrackerContext } from "./TrackerContext";
 
 export const EncounterNav = memo(
   ({
+    combat,
     combatIndex,
     prevCombatId,
     nextCombatId,
   }: {
+    /** Props, not context, so a new turn doesn't re-render this */
+    combat: Combat.Implementation | null;
     combatIndex: number;
     prevCombatId: string | undefined | null;
     nextCombatId: string | undefined | null;
   }) => {
     assertGame(game);
-    const { combat } = useTrackerContext();
 
     const Icon = isTurnPassingCombat(combat) ? LuPopcorn : LuSwords;
 

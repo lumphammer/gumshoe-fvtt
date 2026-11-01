@@ -2,7 +2,7 @@ import type { AnimateLayoutChanges } from "@dnd-kit/sortable";
 import { defaultAnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cx } from "@emotion/css";
-import { memo } from "react";
+import { memo, useContext } from "react";
 
 import { assertGame } from "../../../functions/isGame";
 import type { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
@@ -12,11 +12,16 @@ import {
   CombatantContextProvider,
   useCombatantContextValue,
 } from "./CombatantContext";
+import {
+  CombatantActiveContext,
+  CombatRoundContext,
+} from "./CombatantTurnContext";
 import { Content } from "./Content";
 
 interface CombatantRowProps {
   combatant: InvestigatorCombatant;
-  index: number;
+  /** Whether it's this combatant's turn. */
+  active: boolean;
 }
 
 // https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
@@ -28,7 +33,7 @@ const customTransition = {
   easing: "linear",
 };
 
-export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
+export const CombatantRow = memo(({ combatant, active }: CombatantRowProps) => {
   const {
     attributes,
     listeners,
@@ -59,40 +64,43 @@ export const CombatantRow = memo(({ combatant, index }: CombatantRowProps) => {
 
   const combatantContextValue = useCombatantContextValue(combatant);
 
-  const activeCombatantId =
-    combat.turn !== null ? (combat.turns[combat.turn]?.id ?? null) : null;
-  const active = activeCombatantId === combatant.id;
+  // turns remaining depend on the round, which a memoised row would
+  // otherwise miss (going back to a round already played updates no
+  // combatants)
+  useContext(CombatRoundContext);
   const depleted =
     isTurnPassingCombatant(combatant) &&
     combatant.system.passingTurnsRemaining <= 0;
 
   return (
     <CombatantContextProvider value={combatantContextValue}>
-      <NativeContextMenuWrapper>
-        <li
-          ref={setNodeRef}
-          className={cx("combatant", {
-            active: combat.turn === index,
-            hide: combatantContextValue.combatantState.hidden,
-            defeated: combatantContextValue.combatantState.defeated,
-          })}
-          {...attributes}
-          data-combatant-id={combatant.id}
-          style={{
-            transform: CSS.Translate.toString(transform),
-            transition,
-            opacity: depleted && !active ? 0.7 : 1,
-          }}
-          css={{ alignItems: "start" }}
-        >
-          {/* the row content is pushed down so it can memoise even if the draggable
+      <CombatantActiveContext.Provider value={active}>
+        <NativeContextMenuWrapper>
+          <li
+            ref={setNodeRef}
+            className={cx("combatant", {
+              active,
+              hide: combatantContextValue.combatantState.hidden,
+              defeated: combatantContextValue.combatantState.defeated,
+            })}
+            {...attributes}
+            data-combatant-id={combatant.id}
+            style={{
+              transform: CSS.Translate.toString(transform),
+              transition,
+              opacity: depleted && !active ? 0.7 : 1,
+            }}
+            css={{ alignItems: "start" }}
+          >
+            {/* the row content is pushed down so it can memoise even if the draggable
           hook is updating very frequently */}
-          <Content
-            setActivatorNodeRef={setActivatorNodeRef}
-            listeners={listeners}
-          />
-        </li>
-      </NativeContextMenuWrapper>
+            <Content
+              setActivatorNodeRef={setActivatorNodeRef}
+              listeners={listeners}
+            />
+          </li>
+        </NativeContextMenuWrapper>
+      </CombatantActiveContext.Provider>
     </CombatantContextProvider>
   );
 });

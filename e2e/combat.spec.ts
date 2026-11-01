@@ -83,6 +83,54 @@ test("the GM runs a classic combat from the tracker", async ({ page }) => {
     .toMatchObject({ round: 2, current: "Fast" });
 });
 
+test("the tracker follows turns and initiative changed elsewhere", async ({
+  page,
+}) => {
+  // the rows' contents are memoised: only what changed should re-render, but
+  // the highlight and the numbers must still follow
+  await setSettings(page, { useTurnPassingInitiative: false });
+  const tracker = await openCombatTracker(page);
+  const ids = [
+    await createActor(page, { name: "First", type: "pc" }),
+    await createActor(page, { name: "Second", type: "pc" }),
+    await createActor(page, { name: "Third", type: "pc" }),
+  ];
+  await page.evaluate(async () => {
+    await Combat.create({ active: true, type: "classic" });
+  });
+  await addCombatants(page, ids);
+  await page.evaluate(async () => {
+    await game.combat!.startCombat();
+  });
+  const active = tracker.locator("li.combatant.active");
+  await expect(active).toHaveCount(1);
+  const first = (await getCombat(page))!.current!;
+  await expect(active).toContainText(first);
+
+  await page.evaluate(async () => {
+    await game.combat!.nextTurn();
+  });
+  const second = (await getCombat(page))!.current!;
+  expect(second).not.toBe(first);
+  await expect(active).toHaveCount(1);
+  await expect(active).toContainText(second);
+
+  await page.evaluate(async () => {
+    const combatant = game.combat!.combatants.find((c) => c.name === "Third")!;
+    await combatant.update({ system: { initiative: 7 } });
+  });
+  const third = tracker.locator("li.combatant", { hasText: "Third" });
+  await expect(third.locator("input")).toHaveValue("7");
+
+  // the header takes the round as a prop: it follows a new round
+  const header = tracker.locator(".combat-tracker-header");
+  await expect(header).toContainText("Round 1");
+  await page.evaluate(async () => {
+    await game.combat!.nextRound();
+  });
+  await expect(header).toContainText("Round 2");
+});
+
 test("a player takes their turn in a turn-passing combat", async ({
   page,
   joinAs,
@@ -109,6 +157,11 @@ test("a player takes their turn in a turn-passing combat", async ({
   // the GM's client carries out the turn pass
   await expect.poll(() => getCombat(page)).toMatchObject({ current: "Hero" });
   await expect(heroRow).toContainText("0/1");
+  // the rows are memoised: whose turn it is reaches them through their own
+  // context, so the GM's tracker shows it (a play icon) on Hero's row only
+  const gmRow = (name: string) => tracker.locator("li", { hasText: name });
+  await expect(gmRow("Hero").locator(".fa-play")).toHaveCount(1);
+  await expect(gmRow("Villain").locator(".fa-play")).toHaveCount(0);
 });
 
 test("in turn-passing, everyone acts, then a new round gives turns back", async ({
@@ -143,6 +196,21 @@ test("in turn-passing, everyone acts, then a new round gives turns back", async 
   await expect.poll(() => getCombat(page)).toMatchObject({ round: 2 });
   await expect(hero).toContainText("1/1");
   await expect(villain).toContainText("1/1");
+
+  // going back to round 1 updates no combatants (their turns there are
+  // already recorded): the rows still follow the round, and the inactive
+  // ones are shaded as depleted again
+  await page.evaluate(async () => {
+    await game.combat!.previousRound();
+  });
+  await expect.poll(() => getCombat(page)).toMatchObject({ round: 1 });
+  await expect(hero).toContainText("0/1");
+  await expect(villain).toContainText("0/1");
+  const inactive = tracker.locator("li.combatant:not(.active)");
+  await expect(inactive).not.toHaveCount(0);
+  for (const row of await inactive.all()) {
+    await expect(row).toHaveCSS("opacity", "0.7");
+  }
 });
 
 test("a player can't take a turn for a combatant they don't own", async ({

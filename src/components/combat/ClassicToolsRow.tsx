@@ -1,14 +1,19 @@
 import { memo, useCallback } from "react";
 
 import { localize } from "./functions";
-import { useClassicTrackerContext } from "./TrackerContext";
+import type { TrackerContextValue } from "./TrackerContext";
 
-export const ClassicToolsRow = memo(function ToolsRow() {
-  const { combat, turnIds } = useClassicTrackerContext();
-  if (combat === null) {
-    throw new Error("No active combat found");
-  }
-
+/**
+ * The GM's tools. Takes props, not the tracker's context, so a new turn
+ * doesn't re-render it.
+ */
+export const ClassicToolsRow = memo(function ToolsRow({
+  combat,
+  turnCount,
+}: {
+  combat: TrackerContextValue<"classic">["combat"];
+  turnCount: number;
+}) {
   const handleSortCombatants = useCallback(() => {
     void combat.system.sortCombatants();
   }, [combat]);
@@ -24,7 +29,7 @@ export const ClassicToolsRow = memo(function ToolsRow() {
     >
       <button
         type="button"
-        disabled={turnIds.length < 2}
+        disabled={turnCount < 2}
         className=""
         onClick={handleSortCombatants}
         data-tooltip=""
