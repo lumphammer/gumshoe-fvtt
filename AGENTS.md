@@ -71,8 +71,12 @@ translations, adding fields and settings, releases).
 
 ## React
 
-- React Compiler is **not** used. Foundry's data is mutable, so the UI relies
-  on full re-renders. Only oxlint's `preserve-manual-memoization` rule is on:
+- React Compiler (Oxc's port, through `@vitejs/plugin-react`'s `compiler`)
+  only compiles functions marked `"use memo"` (`compilationMode:
+  "annotation"`). Foundry's data is mutable, so the rest of the UI relies on
+  full re-renders: the compiler caches on identity, and a document keeps its
+  identity when it changes. Only mark code which reads its data through
+  snapshots (below). Only oxlint's `preserve-manual-memoization` rule is on:
   avoid `useMemo`/`useCallback` over values that change every render; plain
   functions are fine.
 - Sheets are being converted to read immutable **snapshots**, so they can be
