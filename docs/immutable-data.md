@@ -291,6 +291,9 @@ Components rendered per change, before and after converting (from
 | PC, Bonds tab, Team Crisis panel: an ability's pool       | 109    | 1     |
 | PC, Cards tab (island → converted): an ability's pool     | 146    | 1     |
 | PC, Cards tab (island → converted): a card's subtitle     | 148    | 15    |
+| PC, Cards tab, `CardDisplay` converted: a card's subtitle | 15     | 10    |
+| PC, Cards tab: renaming a category with every card        | 162    | 112   |
+| PC, Cards tab: renaming a category with no cards          | 162    | 54    |
 | PC, Moribund World Abilities tab: an ability's pool       | 944    | 311   |
 | PC, Moribund World Abilities tab: the actor's Health      | 944    | 283   |
 | PC, Abilities tab, panels memoised: an ability's pool     | 315    | 71    |
@@ -324,9 +327,11 @@ Bond's points still re-render a whole panel (they show them). Team Crisis's
 teammates are other actors, read live (`getCrisisTeammateCandidates`):
 there's no store for the world's actors.
 
-Still to do:
-
-- `CardDisplay` reads card categories from the live settings.
+`CardDisplay` (shared with the card's own sheet) is memoised, and reads its
+card and what it shows from the card categories through snapshots, so the
+card's sheet follows a category being renamed too. Renaming a category with
+no cards re-renders `CardsArea` (it shows the categories) and the
+`AbilityBadges`, but none of the cards.
 
 A new round in a turn-passing combat still renders 583 components (247 for
 the round, then 28 for each combatant's turns), but every row's turns

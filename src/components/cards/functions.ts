@@ -17,12 +17,12 @@ import type { CardCategoryMembership } from "../../types";
  * * "Shock (2), Injury (2)"
  */
 export function summarizeCategoryMemberships(
-  memberships: CardCategoryMembership[],
+  memberships: readonly Readonly<CardCategoryMembership>[],
+  allCategories: readonly Readonly<CardCategory>[] = settings.cardCategories.get(),
 ): string {
   if (memberships.length === 0) {
     return getTranslated("Uncategorized");
   }
-  const allCategories = settings.cardCategories.get();
   const text = memberships
     .map((m) => {
       const name = getById(allCategories, m.categoryId)?.singleName;
