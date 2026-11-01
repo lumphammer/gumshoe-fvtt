@@ -527,6 +527,43 @@ test("the Establish Bond panel follows the spend category setting", async ({
   await expect(button).toBeDisabled();
 });
 
+test("the Establish Bond panel follows changes made elsewhere", async ({
+  page,
+}) => {
+  await setSettings(page, { useBonds: true });
+  const actorId = await createActor(page, { name: "Charmer", type: "pc" });
+  await updateAbility(page, actorId, "Reassurance", { rating: 2, pool: 2 });
+  const momId = await createOwnedItem(page, actorId, {
+    name: "Mom",
+    type: "bond",
+    system: { points: 3 },
+  });
+
+  const panel = await openEstablishPanel(page, actorId);
+  await panel.getByLabel("Name", { exact: true }).fill("Ruth");
+  const neglect = panel.getByLabel("Neglect").locator("option");
+  await expect(neglect).toHaveText(["Mom (3 → 2)"]);
+
+  // the Bonds tab is memoised: the panel reads the actor's snapshot itself
+  await page.evaluate(
+    async ({ actorId, momId }) => {
+      await game.actors
+        .get(actorId)!
+        .items.get(momId)!
+        .update({ name: "Mother", system: { points: 4 } });
+    },
+    { actorId, momId },
+  );
+  await expect(neglect).toHaveText(["Mother (4 → 3)"]);
+  await updateAbility(page, actorId, "Reassurance", { pool: 0 });
+  await expect(panel).toContainText("No Interpersonal points left to spend");
+  await expect(
+    panel.getByRole("button", { name: "Establish Bond" }),
+  ).toBeDisabled();
+  // the name typed in is kept
+  await expect(panel.getByLabel("Name", { exact: true })).toHaveValue("Ruth");
+});
+
 test("a new Bond rejected, with no Bond to neglect", async ({ page }) => {
   await setSettings(page, { useBonds: true });
   const actorId = await createActor(page, { name: "Loner", type: "pc" });
@@ -940,6 +977,40 @@ test("a team crisis that holds together", async ({ page }) => {
     .poll(() => getBonds(page, actorId))
     .toEqual([{ name: "Mom", points: 2, isDeltaGreen: false }]);
   expect(await getPool(page, actorId, "Stability")).toBe(5);
+});
+
+test("the Team Crisis panel follows changes made elsewhere", async ({
+  page,
+}) => {
+  await setSettings(page, { useBonds: true, useStabilityStates: true });
+  const { actorId } = await createTeam(page, "Steady Eddie", ["Fran"]);
+  await updateAbility(page, actorId, "Stability", { rating: 6, pool: 6 });
+  const momId = await createOwnedItem(page, actorId, {
+    name: "Mom",
+    type: "bond",
+    system: { points: 3 },
+  });
+
+  const panel = await openTeamCrisisPanel(page, actorId);
+  await pickTeammate(panel, "Fran");
+  await expect(panel).toContainText("test at Difficulty 4");
+  await expect(panelRow(panel, "Mom")).toHaveCount(2);
+
+  // the panel reads the actor's snapshot itself. Shaken: +1 Difficulty
+  await updateAbility(page, actorId, "Stability", { pool: 0 });
+  await expect(panel).toContainText("test at Difficulty 5");
+  await page.evaluate(
+    async ({ actorId, momId }) => {
+      await game.actors
+        .get(actorId)!
+        .items.get(momId)!
+        .update({ name: "Mother" });
+    },
+    { actorId, momId },
+  );
+  await expect(panelRow(panel, "Mother")).toHaveCount(2);
+  // the teammate ticked is kept
+  await expect(panel.getByTestId("crisis-teammate")).toContainText("New (2)");
 });
 
 test("a team crisis re-forms a broken Bond, and asks before breaking one", async ({

@@ -9,8 +9,14 @@ import type { SettingsView } from "../../settings/settingsView";
 import type { ItemView, PCView } from "./pcDerived";
 import {
   findHealthAbilityIn,
+  getAdaptedTraumaNamesIn,
+  getBondCapIn,
   getBondPointsOf,
   getBondsIn,
+  getNeglectableBondsIn,
+  getRebuildSpendAbilitiesIn,
+  getReformableBondsIn,
+  getStabilityTestDifficultyIn,
   getRatingCapIn,
   getRatingCapsIn,
   getStabilityStateIn,
@@ -128,6 +134,99 @@ describe("Bonds", () => {
       points: -1,
       isBroken: true,
     });
+  });
+});
+
+describe("establishing a Bond", () => {
+  const items = [
+    item("bond", "Zoe", { points: 5, isDeltaGreen: false }),
+    item("bond", "Handler", { points: 5, isDeltaGreen: true }),
+    item("bond", "Alex", { points: -1, isDeltaGreen: false }),
+    item("bond", "Old Handler", { points: -1, isDeltaGreen: true }),
+    item("investigativeAbility", "Reassurance", {
+      categoryId: "Interpersonal",
+      rating: 2,
+    }),
+    item("investigativeAbility", "Flattery", {
+      categoryId: "Interpersonal",
+      rating: 1,
+    }),
+    item("investigativeAbility", "Bureaucracy", {
+      categoryId: "Interpersonal",
+      rating: 0,
+    }),
+    item("investigativeAbility", "Accounting", {
+      categoryId: "Academic",
+      rating: 3,
+    }),
+  ];
+  const names = (list: ItemView[]) => list.map((i) => i.name);
+
+  it("neglects ordinary Bonds that aren't broken", () => {
+    expect(names(getNeglectableBondsIn(items))).toEqual(["Zoe"]);
+  });
+
+  it("re-forms ordinary Bonds that are broken", () => {
+    expect(names(getReformableBondsIn(items))).toEqual(["Alex"]);
+  });
+
+  it("spends abilities rated in the setting's category, by name", () => {
+    const s = { bondRebuildSpendCategory: "Interpersonal" } as SettingsView;
+    expect(names(getRebuildSpendAbilitiesIn(items, s))).toEqual([
+      "Flattery",
+      "Reassurance",
+    ]);
+    expect(
+      names(
+        getRebuildSpendAbilitiesIn(items, {
+          bondRebuildSpendCategory: "Academic",
+        } as SettingsView),
+      ),
+    ).toEqual(["Accounting"]);
+  });
+});
+
+describe("adaptations and the Bond cap", () => {
+  const capping = {
+    ...violence,
+    id: "helplessness",
+    name: "Helplessness",
+    capsBonds: true,
+  };
+  const s = { ...settings, traumaTypes: [violence, capping] } as SettingsView;
+
+  it("names what the Agent has adapted to", () => {
+    const adapted = pc([], { violence: 3, helplessness: 3 });
+    expect(getAdaptedTraumaNamesIn(adapted, undefined, s)).toEqual([
+      "Violence",
+      "Helplessness",
+    ]);
+    expect(
+      getAdaptedTraumaNamesIn(adapted, (type) => type.capsBonds, s),
+    ).toEqual(["Helplessness"]);
+    expect(
+      getAdaptedTraumaNamesIn(pc([], { violence: 2 }), undefined, s),
+    ).toEqual([]);
+  });
+
+  it("caps Bonds at 2 when adapted to something that caps them", () => {
+    expect(getBondCapIn(pc([], { helplessness: 3 }), s)).toBe(2);
+    expect(getBondCapIn(pc([], { violence: 3 }), s)).toBeGreaterThan(2);
+  });
+});
+
+describe("getStabilityTestDifficultyIn", () => {
+  it("is 1 more while Shaken or worse", () => {
+    const stability = (pool: number) =>
+      pc([item("generalAbility", "Stability", { pool })]);
+    expect(getStabilityTestDifficultyIn(stability(5), 4, settings)).toBe(4);
+    expect(getStabilityTestDifficultyIn(stability(0), 4, settings)).toBe(5);
+    expect(
+      getStabilityTestDifficultyIn(stability(0), 4, {
+        ...settings,
+        useStabilityStates: false,
+      }),
+    ).toBe(4);
   });
 });
 

@@ -5,16 +5,23 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
-import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
 import type { PCActor } from "../../module/actors/pc";
+import {
+  getBondPointsOf,
+  getNeglectableBondsIn,
+  getRebuildSpendAbilitiesIn,
+  getReformableBondsIn,
+  getStabilityAbilityIn,
+} from "../../module/actors/pcDerived";
+import { isBondItem } from "../../module/items/bond";
+import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
 import {
   establishCost,
   getNeglectedBondPoints,
 } from "../../module/bonds/establish";
 import { establishBond } from "../../module/bonds/establishBond";
 import { isBondBroken } from "../../module/bonds/rules";
-import { settings } from "../../settings/settings";
-import { BondCapNote } from "./BondCapNote";
+import { BondCapNote, getBondCapOf } from "./BondCapNote";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -40,39 +47,50 @@ const someoneNew = "";
  */
 export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
   const { navigate } = useNavigationContext();
-  // the choices refer to other items, which can change under us
-  useRefreshOnActorItemChanges(actor);
-  // and the actor's own data: the Bonds tab above is memoised, so Foundry's
-  // re-render of the sheet no longer reaches this
-  useActorSnapshot(actor, (snapshot) => snapshot);
-  // and the settings its rules read (the spend category, trauma rules and
-  // the Bond cap), which the memoised tab doesn't pass on either
-  useSettings((s) => s);
+  const settings = useSettings((s) => s);
+  // the Bonds tab above is memoised, so this reads what it shows itself
+  const view = useActorSnapshot(actor, (snapshot) => {
+    const items = snapshot?.items ?? [];
+    const pc = { system: snapshot?.system, items };
+    const bondOf = (bond: (typeof items)[number]) => ({
+      id: bond._id ?? "",
+      name: bond.name,
+      points: getBondPointsOf(bond).points,
+    });
+    return {
+      reformable: getReformableBondsIn(items).map(bondOf),
+      neglectable: getNeglectableBondsIn(items).map(bondOf),
+      abilities: getRebuildSpendAbilitiesIn(items, settings).map((a) => ({
+        id: a._id ?? "",
+        name: a.name,
+        pool: (a.system as { pool: number }).pool,
+      })),
+      stabilityName: getStabilityAbilityIn(items, settings)?.name ?? "",
+      bondCap: getBondCapOf(pc, settings),
+    };
+  });
   const [whoId, setWhoId] = useState(someoneNew);
   const [name, setName] = useState("");
   const [abilityId, setAbilityId] = useState<string | null>(null);
   const [neglectId, setNeglectId] = useState<string | null>(null);
 
-  const reformable = actor.system.getReformableBonds();
-  const abilities = actor.system.getRebuildSpendAbilities();
-  const neglectable = actor.system.getNeglectableBonds();
+  const { reformable, abilities, neglectable } = view;
 
   // until something's chosen (or if the choice has gone), take the first
   // that will do
   const reform = reformable.find((bond) => bond.id === whoId) ?? null;
   const ability =
-    abilities.find(
-      (a) => a.id === abilityId && a.system.pool >= establishCost,
-    ) ?? abilities.find((a) => a.system.pool >= establishCost);
+    abilities.find((a) => a.id === abilityId && a.pool >= establishCost) ??
+    abilities.find((a) => a.pool >= establishCost);
   const neglect =
     neglectable.find((bond) => bond.id === neglectId) ?? neglectable[0] ?? null;
 
-  const bondName = reform ? (reform.name ?? "") : name.trim();
+  const bondName = reform ? reform.name : name.trim();
   const canEstablish = bondName !== "" && ability !== undefined;
   const noPointsMessage =
     ability === undefined
       ? getTranslated("NoCategoryPointsToEstablishBond", {
-          Category: settings.bondRebuildSpendCategory.get(),
+          Category: settings.bondRebuildSpendCategory,
         })
       : undefined;
 
@@ -82,7 +100,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
     }
     if (
       neglect !== null &&
-      isBondBroken(getNeglectedBondPoints(neglect.system.points))
+      isBondBroken(getNeglectedBondPoints(neglect.points))
     ) {
       const yes = await confirmADoodleDo({
         message: "NeglectBreaksBondConfirm",
@@ -90,16 +108,27 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
         cancelText: "Cancel",
         confirmIconClass: "fa-dice",
         resolveFalseOnCancel: true,
-        values: { BondName: neglect.name ?? "" },
+        values: { BondName: neglect.name },
       });
       if (!yes) {
         return;
       }
     }
+    // the live items, to write to
+    const liveReform = reform && actor.items.get(reform.id);
+    const liveAbility = actor.items.get(ability.id);
+    const liveNeglect = neglect && actor.items.get(neglect.id);
+    if (
+      !isInvestigativeAbilityItem(liveAbility) ||
+      (liveReform !== null && !isBondItem(liveReform)) ||
+      (liveNeglect !== null && !isBondItem(liveNeglect))
+    ) {
+      return;
+    }
     await establishBond(actor, {
-      who: reform ? { reform } : { name },
-      ability,
-      neglect,
+      who: liveReform ? { reform: liveReform } : { name },
+      ability: liveAbility,
+      neglect: liveNeglect,
     });
     // the result is in chat, and on the Bonds tab
     navigate("here", "up");
@@ -114,14 +143,14 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
       <p>
         <Translate
           values={{
-            Category: settings.bondRebuildSpendCategory.get(),
-            AbilityName: actor.system.getStabilityAbility()?.name ?? "",
+            Category: settings.bondRebuildSpendCategory,
+            AbilityName: view.stabilityName,
           }}
         >
           EstablishBondHint
         </Translate>
       </p>
-      <BondCapNote actor={actor} />
+      <BondCapNote {...view.bondCap} />
       <InputGrid>
         {reformable.length > 0 && (
           <GridField label="Who">
@@ -132,9 +161,9 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
             >
               <option value={someoneNew}>{getTranslated("Someone new")}</option>
               {reformable.map((bond) => (
-                <option key={bond.id} value={bond.id ?? ""}>
+                <option key={bond.id} value={bond.id}>
                   {getTranslated("BondNameBroken", {
-                    BondName: bond.name ?? "",
+                    BondName: bond.name,
                   })}
                 </option>
               ))}
@@ -156,11 +185,11 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
             {abilities.map((a) => (
               <option
                 key={a.id}
-                value={a.id ?? ""}
+                value={a.id}
                 // listed even when spent, so it's clear it's empty
-                disabled={a.system.pool < establishCost}
+                disabled={a.pool < establishCost}
               >
-                {a.name} ({a.system.pool})
+                {a.name} ({a.pool})
               </option>
             ))}
           </Select>
@@ -173,13 +202,13 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
           ) : (
             <Select
               css={selectCss}
-              value={neglect.id ?? ""}
+              value={neglect.id}
               onChange={(e) => setNeglectId(e.currentTarget.value)}
             >
               {neglectable.map((bond) => (
-                <option key={bond.id} value={bond.id ?? ""}>
-                  {bond.name} ({bond.system.points} →{" "}
-                  {getNeglectedBondPoints(bond.system.points)})
+                <option key={bond.id} value={bond.id}>
+                  {bond.name} ({bond.points} →{" "}
+                  {getNeglectedBondPoints(bond.points)})
                 </option>
               ))}
             </Select>

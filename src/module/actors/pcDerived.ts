@@ -6,6 +6,8 @@
 
 import type { TraumaType } from "@lumphammer/investigator-fvtt-types";
 
+import type { DeepReadonly } from "../snapshots/createSnapshotStore";
+
 import * as c from "../../constants";
 import { getTranslated } from "../../functions/getTranslated";
 import type { SettingsView } from "../../settings/settingsView";
@@ -13,6 +15,7 @@ import { liveSettings } from "../../settings/settingsView";
 import {
   adaptedRatingCap,
   getAdaptedTypes,
+  getBondCap,
   isAdapted,
 } from "../bonds/adaptation";
 import { compareBonds, isBondBroken } from "../bonds/rules";
@@ -24,8 +27,12 @@ import {
   isSanityOn,
 } from "../stability/settings";
 import type { StabilityState } from "../stability/states";
-import { getStabilityState } from "../stability/states";
-import { getTraumaDifficulty, getTraumaState } from "../stability/trauma";
+import { getStabilityState, isShakenOrWorse } from "../stability/states";
+import {
+  getTraumaDifficulty,
+  getTraumaState,
+  shakenDifficultyPenalty,
+} from "../stability/trauma";
 
 /** An item, as a snapshot or a live document */
 export type ItemView = {
@@ -79,6 +86,22 @@ export function getStabilityStateIn(
 const adaptationsOf = (pc: PCView): Readonly<Record<string, number>> =>
   (pc.system as { adaptations?: Record<string, number> }).adaptations ?? {};
 
+/**
+ * A Stability test's Difficulty, from its base: +1 while Shaken or worse
+ * (Fall of DELTA GREEN, p. 113)
+ */
+export function getStabilityTestDifficultyIn(
+  pc: PCView,
+  base: number,
+  s: SettingsView = liveSettings,
+): number {
+  const state = getStabilityStateIn(pc, s);
+  return (
+    base +
+    (state !== null && isShakenOrWorse(state) ? shakenDifficultyPenalty : 0)
+  );
+}
+
 /** Whether the Agent has adapted to a trauma type */
 export function isAdaptedToIn(
   pc: PCView,
@@ -90,6 +113,29 @@ export function isAdaptedToIn(
       type.id === traumaTypeId &&
       isAdapted(adaptationsOf(pc)[traumaTypeId] ?? 0),
   );
+}
+
+/** The trauma types the Agent has adapted to */
+const adaptedTypesOf = (pc: PCView, s: SettingsView) =>
+  getAdaptedTypes(getAdaptableTraumaTypesFrom(s), adaptationsOf(pc));
+
+/** The names of the trauma types the Agent has adapted to */
+export function getAdaptedTraumaNamesIn(
+  pc: PCView,
+  filter: (type: DeepReadonly<TraumaType>) => boolean = () => true,
+  s: SettingsView = liveSettings,
+): string[] {
+  return adaptedTypesOf(pc, s)
+    .filter(filter)
+    .map((type) => type.name);
+}
+
+/** The highest a Bond can be raised to: 2 when adapted to something */
+export function getBondCapIn(
+  pc: PCView,
+  s: SettingsView = liveSettings,
+): number {
+  return getBondCap(adaptedTypesOf(pc, s).some((type) => type.capsBonds));
 }
 
 /** The highest Sanity's rating can go, or null if Sanity rules are off */
@@ -119,10 +165,7 @@ export function getRatingCapsIn(
   s: SettingsView = liveSettings,
 ): { cap: number; reason: string }[] {
   const caps: { cap: number; reason: string }[] = [];
-  const adaptedTo = getAdaptedTypes(
-    getAdaptableTraumaTypesFrom(s),
-    adaptationsOf(pc),
-  )
+  const adaptedTo = adaptedTypesOf(pc, s)
     .filter(({ cappedAbilities }) => cappedAbilities.includes(abilityName))
     .map((type) => type.name);
   if (adaptedTo.length > 0) {
@@ -157,16 +200,17 @@ export function getRatingCapIn(
   return caps.length > 0 ? Math.min(...caps) : null;
 }
 
+const isDeltaGreenBond = (bond: ItemView) =>
+  (bond.system as { isDeltaGreen?: boolean }).isDeltaGreen ?? false;
+
 /** Bonds in display order: ordinary first, then DELTA GREEN, by name */
 export function getBondsIn<T extends ItemView>(items: readonly T[]): T[] {
-  const isDeltaGreen = (bond: T) =>
-    (bond.system as { isDeltaGreen?: boolean }).isDeltaGreen ?? false;
   return items
     .filter((item) => item.type === c.bond)
     .toSorted((a, b) =>
       compareBonds(
-        { name: a.name, isDeltaGreen: isDeltaGreen(a) },
-        { name: b.name, isDeltaGreen: isDeltaGreen(b) },
+        { name: a.name, isDeltaGreen: isDeltaGreenBond(a) },
+        { name: b.name, isDeltaGreen: isDeltaGreenBond(b) },
       ),
     );
 }
@@ -178,6 +222,50 @@ export function getBondPointsOf(bond: ItemView): {
 } {
   const points = numberOf(bond, "points");
   return { points, isBroken: isBondBroken(points) };
+}
+
+/**
+ * Bonds that can be neglected for a new one (p. 129): ordinary ones that
+ * aren't broken
+ */
+export function getNeglectableBondsIn<T extends ItemView>(
+  items: readonly T[],
+): T[] {
+  return getBondsIn(items).filter(
+    (bond) => !isDeltaGreenBond(bond) && !getBondPointsOf(bond).isBroken,
+  );
+}
+
+/**
+ * Broken Bonds which a new Bond can re-form (p. 046: "rebuild it from
+ * scratch"). DELTA GREEN Bonds form their own way.
+ */
+export function getReformableBondsIn<T extends ItemView>(
+  items: readonly T[],
+): T[] {
+  return getBondsIn(items).filter(
+    (bond) => !isDeltaGreenBond(bond) && getBondPointsOf(bond).isBroken,
+  );
+}
+
+/**
+ * Abilities whose points can go on the test to rebuild or establish a Bond
+ * (p. 128): Interpersonal ones by default, that the character has. Some may
+ * have no points left.
+ */
+export function getRebuildSpendAbilitiesIn<T extends ItemView>(
+  items: readonly T[],
+  s: SettingsView = liveSettings,
+): T[] {
+  return items
+    .filter(
+      (item) =>
+        item.type === c.investigativeAbility &&
+        (item.system as { categoryId?: string }).categoryId ===
+          s.bondRebuildSpendCategory &&
+        numberOf(item, "rating") >= 1,
+    )
+    .toSorted((a, b) => a.name.localeCompare(b.name));
 }
 
 const healthResourceId = "health";

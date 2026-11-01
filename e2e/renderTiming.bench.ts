@@ -441,6 +441,26 @@ test("PC sheet, Bonds tab", async ({ page }) => {
   await tab("Bonds");
   await record(page, "PC, Bonds tab: ability pool", "ability pool", selector);
   await record(page, "PC, Bonds tab: a Bond's points", "bond points", selector);
+  const sheet = page.locator(selector);
+  for (const [panel, opener] of [
+    ["Establish Bond", "open-establish-bond"],
+    ["Team Crisis", "open-team-crisis"],
+  ] as const) {
+    await sheet.getByTestId(opener).click();
+    await record(
+      page,
+      `PC, Bonds tab, ${panel} panel: ability pool`,
+      "ability pool",
+      selector,
+    );
+    await record(
+      page,
+      `PC, Bonds tab, ${panel} panel: a Bond's points`,
+      "bond points",
+      selector,
+    );
+    await sheet.getByText("Back", { exact: true }).click();
+  }
   await setSettings(page, { useBonds: false });
 });
 

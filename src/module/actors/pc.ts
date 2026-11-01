@@ -18,9 +18,16 @@ import {
 import { settings } from "../../settings/settings";
 import type { AbilityType, MwRefreshGroup, MwType } from "../../types";
 import type { AdaptationEffects } from "../bonds/adaptation";
+import type { DeepReadonly } from "../snapshots/createSnapshotStore";
 import type { PCView } from "./pcDerived";
 import {
+  getAdaptedTraumaNamesIn,
+  getBondCapIn,
   getBondsIn,
+  getNeglectableBondsIn,
+  getRebuildSpendAbilitiesIn,
+  getReformableBondsIn,
+  getStabilityTestDifficultyIn,
   getRatingCapIn,
   getRatingCapsIn,
   getSanityCapIn,
@@ -32,7 +39,6 @@ import {
   adaptationThreshold,
   adaptedRatingCap,
   getAdaptationEffects,
-  getAdaptedTypes,
   getBondCap,
   getRefreshedPool,
   isAdapted,
@@ -63,9 +69,8 @@ import {
   getStabilityThresholds,
 } from "../stability/settings";
 import type { StabilityState } from "../stability/states";
-import { isShakenOrWorse } from "../stability/states";
 import type { LastTraumaTest } from "../stability/trauma";
-import { getBurnRefund, shakenDifficultyPenalty } from "../stability/trauma";
+import { getBurnRefund } from "../stability/trauma";
 import { isPersonalDetailItem } from "../items/personalDetail";
 import { resizeSpecialities } from "../items/resizeSpecialities";
 import { createActiveCharacterSchema } from "../schemaFields";
@@ -410,11 +415,9 @@ export class PCModel extends ActiveCharacterModel<
 
   /** The names of the trauma types the character has adapted to */
   getAdaptedTraumaNames(
-    filter: (type: TraumaType) => boolean = () => true,
+    filter: (type: DeepReadonly<TraumaType>) => boolean = () => true,
   ): string[] {
-    return getAdaptedTypes(getAdaptableTraumaTypes(), this.adaptations)
-      .filter(filter)
-      .map((type) => type.name);
+    return getAdaptedTraumaNamesIn(this.view(), filter);
   }
 
   /** What everything the character has adapted to does, together */
@@ -424,7 +427,7 @@ export class PCModel extends ActiveCharacterModel<
 
   /** The highest a Bond can be raised to: 2 when adapted to something */
   getBondCap(): number {
-    return getBondCap(this.getAdaptationEffects().capsBonds);
+    return getBondCapIn(this.view());
   }
 
   /**
@@ -560,11 +563,7 @@ export class PCModel extends ActiveCharacterModel<
    * worse, like any General test (Fall of DELTA GREEN, p. 113)
    */
   getStabilityTestDifficulty(base: number): number {
-    const state = this.getStabilityState();
-    return (
-      base +
-      (state !== null && isShakenOrWorse(state) ? shakenDifficultyPenalty : 0)
-    );
+    return getStabilityTestDifficultyIn(this.view(), base);
   }
 
   /**
@@ -613,18 +612,9 @@ export class PCModel extends ActiveCharacterModel<
    * points left.
    */
   getRebuildSpendAbilities(): InvestigativeAbilityItem[] {
-    const category = settings.bondRebuildSpendCategory.get();
-    return this.parent.items
-      .filter(
-        (
-          item,
-        ): item is InvestigativeAbilityItem &
-          Item.Stored<"investigativeAbility"> =>
-          isInvestigativeAbilityItem(item) &&
-          item.system.categoryId === category &&
-          item.system.rating >= 1,
-      )
-      .toSorted((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+    return getRebuildSpendAbilitiesIn(this.parent.items.contents).filter(
+      (item) => isInvestigativeAbilityItem(item),
+    );
   }
 
   /**
@@ -644,9 +634,7 @@ export class PCModel extends ActiveCharacterModel<
    * aren't broken.
    */
   getNeglectableBonds(): BondItem[] {
-    return this.getBonds().filter(
-      (bond) => !bond.system.isDeltaGreen && !bond.system.isBroken,
-    );
+    return getNeglectableBondsIn(this.getBonds());
   }
 
   /**
@@ -654,9 +642,7 @@ export class PCModel extends ActiveCharacterModel<
    * scratch"). DELTA GREEN Bonds form their own way.
    */
   getReformableBonds(): BondItem[] {
-    return this.getBonds().filter(
-      (bond) => !bond.system.isDeltaGreen && bond.system.isBroken,
-    );
+    return getReformableBondsIn(this.getBonds());
   }
 
   /** Ask first: burning permanently damages the Bond */
