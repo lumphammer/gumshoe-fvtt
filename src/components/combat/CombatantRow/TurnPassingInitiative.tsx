@@ -11,7 +11,7 @@ import { NativeMenuItem } from "../../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../../inputs/NativeMenu/NativeDualFunctionMenu";
 import { NativeMenuLabel } from "../../inputs/NativeMenu/NativeMenuLabel";
 import { useTurnPassingCombatantContext } from "./CombatantContext";
-import { useCombatantTurn } from "./CombatantTurnContext";
+import { useCombatantTurn, usePassingTurns } from "./CombatantTurnContext";
 import { useInititative } from "./useInititative";
 
 const playButtonGradientWidth = "3em";
@@ -40,6 +40,8 @@ const TurnPassingMenu = memo(function TurnPassingMenu({
   combatant: TurnPassingCombatant;
   name: string;
 }) {
+  "use memo";
+
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
   const { onConfigureCombatant, onRemoveCombatant, openSheet } =
@@ -76,12 +78,14 @@ const TurnPassingMenu = memo(function TurnPassingMenu({
 });
 
 export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
+  "use memo";
+
   assertGame(game);
   const { combatant, combatantState } = useTurnPassingCombatantContext();
-  // not the tracker's context, which changes on every combat update. It also
-  // reads the round, only so this re-renders when it changes: the turns
-  // remaining below depend on it
+  // not the tracker's context, which changes on every combat update
   const { active: isActive } = useCombatantTurn();
+  // (follows the round, which they depend on)
+  const passingTurns = usePassingTurns(combatant);
   const combat = combatant.combat;
   if (combat === null || combatantState === null) {
     throw new Error(
@@ -97,13 +101,12 @@ export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
     requestTurnPass(combatant.id);
   }, [combatant.id]);
 
-  const depleted = combatant.system.passingTurnsRemaining <= 0;
+  const depleted = (passingTurns?.remaining ?? 0) <= 0;
 
   return (
     <>
       <div css={{ flex: 0, padding: "0.3em 01em 0 0" }}>
-        {combatant.system.passingTurnsRemaining}/
-        {combatant.system.defaultPassingTurns}
+        {passingTurns?.remaining}/{passingTurns?.total}
       </div>
 
       <div css={{ flex: 0 }}>

@@ -58,6 +58,8 @@ export function CombatantContextProvider({
   children: ReactNode;
   value: CombatantContextValue;
 }) {
+  "use memo";
+
   return (
     <CombatantContext.Provider value={value}>
       {children}

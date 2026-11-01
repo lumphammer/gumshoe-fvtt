@@ -38,6 +38,8 @@ const keyboardSensorOptions = {
 };
 
 export const CombatantList = memo(function CombatantList() {
+  "use memo";
+
   const { combat, combatState, turnIds } = useTrackerContext();
 
   if (combat === null) {
@@ -59,8 +61,10 @@ export const CombatantList = memo(function CombatantList() {
     setIds(turnIds);
   }, [turnIds]);
 
-  const activeId =
-    combat.turn !== null ? (combat.turns[combat.turn]?.id ?? null) : null;
+  // from the tracker's state, not the live combat (the same object when the
+  // turn changes)
+  const turn = combatState?.turn ?? null;
+  const activeId = turn !== null ? (turnIds[turn] ?? null) : null;
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {

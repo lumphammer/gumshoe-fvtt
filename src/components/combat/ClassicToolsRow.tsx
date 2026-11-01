@@ -14,6 +14,8 @@ export const ClassicToolsRow = memo(function ToolsRow({
   combat: TrackerContextValue<"classic">["combat"];
   turnCount: number;
 }) {
+  "use memo";
+
   const handleSortCombatants = useCallback(() => {
     void combat.system.sortCombatants();
   }, [combat]);

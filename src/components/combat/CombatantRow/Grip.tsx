@@ -7,6 +7,8 @@ interface GripProps {
   listeners: SyntheticListenerMap | undefined;
 }
 export const Grip = memo(({ listeners, setActivatorNodeRef }: GripProps) => {
+  "use memo";
+
   return (
     <div
       className="drag-handle"

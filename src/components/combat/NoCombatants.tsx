@@ -4,6 +4,8 @@ import { PiEmptyLight } from "react-icons/pi";
 import { localize } from "./functions";
 
 export const NoCombatants = memo(function NoCombatants() {
+  "use memo";
+
   return (
     <div
       css={{
