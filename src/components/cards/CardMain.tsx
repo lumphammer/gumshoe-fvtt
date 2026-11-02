@@ -2,8 +2,6 @@ import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { CardItem } from "../../module/items/card";
-import type { DeepReadonly } from "../../module/snapshots/createSnapshotStore";
-import type { CardSystemData } from "../../types";
 import { absoluteCover } from "../absoluteCover";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
@@ -21,10 +19,10 @@ import { summarizeCategoryMemberships } from "./functions";
 export const CardMain = ({ item }: { item: CardItem }) => {
   "use memo";
 
-  const view = useItemSelector<
-    { name: string; system: DeepReadonly<CardSystemData> },
-    CardSystemData
-  >(item, (snapshot) => ({ name: snapshot.name, system: snapshot.system }));
+  const view = useItemSelector(item, (snapshot) => ({
+    name: snapshot.name,
+    system: snapshot.system,
+  }));
   const { system } = view;
   const methods = useSystemMethods(item);
   const categories = useSettings((s) => s.cardCategories);

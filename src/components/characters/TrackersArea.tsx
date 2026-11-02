@@ -46,7 +46,7 @@ export const TrackersArea = memo(function TrackersArea() {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const ids = useActorSnapshot(actor, (snapshot) =>
-    getTrackerIdsIn(snapshot?.items ?? []),
+    getTrackerIdsIn(snapshot.items),
   );
 
   return (

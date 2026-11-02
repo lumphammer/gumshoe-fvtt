@@ -19,12 +19,9 @@ export const PersonalDetailField = ({
 
   // as `actor.system.getPersonalDetailsInSlotIndex`, from the snapshot
   const personalDetails = useActorSnapshot(actor, (snapshot) =>
-    (snapshot?.items ?? [])
-      .filter(
-        (item) =>
-          item.type === c.personalDetail &&
-          (item.system as { slotIndex: number }).slotIndex === slotIndex,
-      )
+    snapshot.items
+      .filter((item) => item.type === c.personalDetail)
+      .filter((item) => item.system.slotIndex === slotIndex)
       .map((item) => ({ id: item._id ?? "", name: item.name, img: item.img })),
   );
   const isEditable = useIsEditable();

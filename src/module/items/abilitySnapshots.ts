@@ -1,15 +1,12 @@
 import * as c from "../../constants";
 import type { ItemSnapshot } from "../snapshots/documentStores";
-import type { GeneralAbilitySystemData } from "./generalAbility";
-import type { InvestigativeAbilitySystemData } from "./investigativeAbility";
 import { getSpecialitiesCount, resizeSpecialities } from "./resizeSpecialities";
 
 // Snapshots of abilities (see docs/immutable-data.md), and what's worked out
 // from them: the pure counterparts of `AbilityModel`'s getters.
 
-export type GeneralAbilitySnapshot = ItemSnapshot<GeneralAbilitySystemData>;
-export type InvestigativeAbilitySnapshot =
-  ItemSnapshot<InvestigativeAbilitySystemData>;
+export type GeneralAbilitySnapshot = ItemSnapshot<"generalAbility">;
+export type InvestigativeAbilitySnapshot = ItemSnapshot<"investigativeAbility">;
 export type AbilitySnapshot =
   | GeneralAbilitySnapshot
   | InvestigativeAbilitySnapshot;

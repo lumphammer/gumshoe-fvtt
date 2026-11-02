@@ -5,9 +5,7 @@ import { useItemSelector } from "../../../hooks/useItemSnapshot";
 import type {
   EquipmentCategoriesSnapshot,
   EquipmentItem,
-  EquipmentSystemData,
 } from "../../../module/items/equipment";
-import type { ItemSnapshot } from "../../../module/snapshots/documentStores";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { ItemNameWithIcon } from "../ItemNameWithIcon";
@@ -31,14 +29,11 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
 }: EquipmentItemRowProps) {
   "use memo";
 
-  const row = useItemSelector(
-    item,
-    (snapshot: ItemSnapshot<EquipmentSystemData>) => ({
-      name: snapshot.name,
-      img: snapshot.img,
-      fields: snapshot.system.fields,
-    }),
-  );
+  const row = useItemSelector(item, (snapshot) => ({
+    name: snapshot.name,
+    img: snapshot.img,
+    fields: snapshot.system.fields,
+  }));
   const theme = useContext(ThemeContext);
   const [hover, setHover] = useState(false);
   const handleMouseOver = useCallback((e: React.MouseEvent<HTMLElement>) => {

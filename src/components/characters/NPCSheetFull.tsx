@@ -30,12 +30,7 @@ const NPCNotesTab = memo(function NPCNotesTab({
 
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
-  const html = useActorSnapshot(
-    actor,
-    (snapshot) =>
-      (snapshot?.system as Record<typeof field, string> | undefined)?.[field] ??
-      "",
-  );
+  const html = useActorSnapshot(actor, (snapshot) => snapshot.system[field]);
   const { setNotes, setGMNotes } = useSystemMethods(actor);
 
   return (
@@ -70,9 +65,7 @@ export const NPCSheetFull = memo(function NPCSheetFull() {
   assertGame(game);
   const sheetTheme = useActorSnapshot(
     actor,
-    (snapshot) =>
-      (snapshot?.system as { sheetTheme?: string | null } | undefined)
-        ?.sheetTheme ?? null,
+    (snapshot) => snapshot.system.sheetTheme,
   );
   const defaultThemeName = useSettings((s) => s.defaultThemeName);
   const theme = useTheme(sheetTheme || defaultThemeName);

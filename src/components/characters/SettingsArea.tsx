@@ -26,22 +26,12 @@ export const SettingArea = memo(function SettingArea() {
   const { actor } = useActorSheetContext();
   assertGame(game);
   assertPCActor(actor);
-  const pc = useActorSnapshot(actor, (snapshot) => {
-    const system = snapshot?.system as
-      | {
-          sheetTheme: string | null;
-          initiativePassingTurns: number;
-          isHuman: boolean;
-          immuneToLethality: boolean;
-        }
-      | undefined;
-    return {
-      sheetTheme: system?.sheetTheme ?? null,
-      initiativePassingTurns: system?.initiativePassingTurns ?? 0,
-      isHuman: system?.isHuman ?? false,
-      immuneToLethality: system?.immuneToLethality ?? false,
-    };
-  });
+  const pc = useActorSnapshot(actor, ({ system }) => ({
+    sheetTheme: system.sheetTheme,
+    initiativePassingTurns: system.initiativePassingTurns,
+    isHuman: system.isHuman,
+    immuneToLethality: system.immuneToLethality,
+  }));
   const s = useSettings((s) => ({
     useTurnPassing: s.useTurnPassingInitiative,
     showIsHuman: s.useDamageApplication && s.useGunfireOnHumans,

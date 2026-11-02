@@ -48,10 +48,10 @@ export const MwItemArea = memo(function MwItemArea() {
   const byType = useActorSnapshot(actor, (snapshot) => {
     const result: Partial<Record<MwType, MwItemSummary[]>> = {};
     const items = sortEntitiesByName(
-      (snapshot?.items ?? []).filter((item) => item.type === mwItem),
+      snapshot.items.filter((item) => item.type === mwItem),
     );
     for (const item of items) {
-      const mwType = (item.system as { mwType: MwType }).mwType;
+      const mwType = item.system.mwType;
       const group = result[mwType] ?? [];
       group.push({ id: item._id ?? "", name: item.name });
       result[mwType] = group;

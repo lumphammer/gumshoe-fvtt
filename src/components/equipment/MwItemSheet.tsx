@@ -6,7 +6,6 @@ import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
-import type { MwItemSystemData } from "../../module/items/mwItem";
 import { assertMwItem } from "../../module/items/mwItem";
 import type { MwType } from "../../types";
 import { absoluteCover } from "../absoluteCover";
@@ -30,7 +29,7 @@ export const MwItemSheet = memo(function MwItemSheet() {
   const { item } = useItemSheetContext();
 
   assertMwItem(item);
-  const snapshot = useItemSnapshot<MwItemSystemData>(item);
+  const snapshot = useItemSnapshot(item);
   const { system } = snapshot;
   const methods = useSystemMethods(item);
 

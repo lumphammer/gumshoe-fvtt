@@ -32,13 +32,13 @@ import { TrackersArea } from "./TrackersArea";
 const usePersonalDetails = () => {
   const { actor } = useActorSheetContext();
   return useActorSnapshot(actor, (snapshot) =>
-    (snapshot?.items ?? [])
+    snapshot.items
       .filter((item) => item.type === c.personalDetail)
       .map((item) => ({
         id: item._id ?? "",
         name: item.name,
         img: item.img,
-        slotIndex: (item.system as { slotIndex: number }).slotIndex,
+        slotIndex: item.system.slotIndex,
       })),
   );
 };
@@ -50,8 +50,8 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const header = useActorSnapshot(actor, (snapshot) => ({
-    name: snapshot?.name ?? "",
-    img: snapshot?.img,
+    name: snapshot.name,
+    img: snapshot.img,
   }));
   const genericOccupation = useSettings((s) => s.genericOccupation);
   const occupationData = usePersonalDetails().find(
@@ -97,16 +97,11 @@ export const PCSheetStats = memo(function PCSheetStats() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const theme = useContext(ThemeContext);
-  const stats = useActorSnapshot(actor, (snapshot) => {
-    const system = snapshot?.system as
-      | { shortNotes: string[]; hiddenShortNotes: string[] }
-      | undefined;
-    return {
-      name: snapshot?.name ?? "",
-      shortNotes: system?.shortNotes ?? [],
-      hiddenShortNotes: system?.hiddenShortNotes ?? [],
-    };
-  });
+  const stats = useActorSnapshot(actor, (snapshot) => ({
+    name: snapshot.name,
+    shortNotes: snapshot.system.shortNotes,
+    hiddenShortNotes: snapshot.system.hiddenShortNotes,
+  }));
   const { personalDetails, shortHiddenNotesNames, occupationLabel } =
     useSettings((s) => ({
       personalDetails: s.personalDetails,
@@ -187,21 +182,13 @@ export const PCSheetPools = memo(function PCSheetPools() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const theme = useContext(ThemeContext);
-  const pools = useActorSnapshot(actor, (snapshot) => {
-    const system = snapshot?.system as
-      | {
-          initiativeAbility: string;
-          mwInjuryStatus: typeof actor.system.mwInjuryStatus;
-        }
-      | undefined;
-    return {
-      initiativeAbility: system?.initiativeAbility ?? "",
-      mwInjuryStatus: system?.mwInjuryStatus ?? actor.system.mwInjuryStatus,
-      generalAbilityNames: (snapshot?.items ?? [])
-        .filter((item) => item.type === c.generalAbility)
-        .map((item) => item.name),
-    };
-  });
+  const pools = useActorSnapshot(actor, (snapshot) => ({
+    initiativeAbility: snapshot.system.initiativeAbility,
+    mwInjuryStatus: snapshot.system.mwInjuryStatus,
+    generalAbilityNames: snapshot.items
+      .filter((item) => item.type === c.generalAbility)
+      .map((item) => item.name),
+  }));
   const { useMwStyleAbilities, useMwInjuryStatus, pcStats, combatAbilities } =
     useSettings((s) => ({
       useMwStyleAbilities: s.useMwStyleAbilities,

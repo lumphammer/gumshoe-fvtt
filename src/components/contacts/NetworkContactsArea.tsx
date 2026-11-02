@@ -1,5 +1,6 @@
 import { memo, useContext } from "react";
 
+import { findGeneralAbilityIn } from "../../module/items/findGeneralAbility";
 import * as c from "../../constants";
 import { getTranslated } from "../../functions/getTranslated";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
@@ -29,23 +30,18 @@ export const NetworkContactsArea = memo(function NetworkContactsArea() {
   // the points the contacts hold (as `getNetworkContacts`,
   // `getNetworkAbility` and `getContactPoints` work them out)
   const { ids, network, held } = useActorSnapshot(actor, (snapshot) => {
-    const items = snapshot?.items ?? [];
+    const items = snapshot.items;
     const contacts = items
       .filter((item) => item.type === c.networkContact)
       .toSorted((a, b) => a.name.localeCompare(b.name));
-    const ability = items.find(
-      (item) => item.type === c.generalAbility && item.name === networkName,
-    );
-    const system = ability?.system as
-      | { pool: number; rating: number }
-      | undefined;
+    const ability = findGeneralAbilityIn(items, networkName);
     return {
       ids: contacts.map((item) => item._id ?? ""),
-      network: system && { pool: system.pool, rating: system.rating },
-      held: contacts.reduce(
-        (total, item) => total + (item.system as { pool: number }).pool,
-        0,
-      ),
+      network: ability && {
+        pool: ability.system.pool,
+        rating: ability.system.rating,
+      },
+      held: contacts.reduce((total, item) => total + item.system.pool, 0),
     };
   });
   // the live contacts, only to pass to the rows

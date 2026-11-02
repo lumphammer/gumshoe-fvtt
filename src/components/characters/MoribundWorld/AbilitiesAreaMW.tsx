@@ -1,8 +1,7 @@
 import { memo } from "react";
 
 import { sortEntitiesByName } from "../../../functions/utilities";
-import { useActorSnapshot } from "../../../hooks/useActorSnapshot";
-import { useSettings } from "../../../hooks/useSettings";
+import { useActorAndSettings } from "../../../hooks/useActorSnapshot";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { getCategorizedAbilitiesIn } from "../../../module/actors/abilitiesDerived";
 import { assertPCActor } from "../../../module/actors/pc";
@@ -19,11 +18,9 @@ export const AbilitiesAreaMW = memo(function AbilitiesAreaMW() {
 
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const settings = useSettings((s) => s);
-
-  const generalAbilities = useActorSnapshot(actor, (snapshot) => {
+  const generalAbilities = useActorAndSettings(actor, (snapshot, settings) => {
     const { generalAbilities } = getCategorizedAbilitiesIn(
-      snapshot?.items ?? [],
+      snapshot.items,
       { hideZeroRated: true, hidePushPool: false },
       settings,
     );

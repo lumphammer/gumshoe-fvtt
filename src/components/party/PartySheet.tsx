@@ -30,11 +30,9 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
   "use memo";
 
   const header = useActorSnapshot(party, (snapshot) => ({
-    name: snapshot?.name ?? "",
-    img: snapshot?.img ?? null,
-    actorIds:
-      (snapshot?.system as { actorIds?: readonly string[] } | undefined)
-        ?.actorIds ?? [],
+    name: snapshot.name,
+    img: snapshot.img ?? null,
+    actorIds: snapshot.system.actorIds,
   }));
   const defaultThemeName = useSettings((s) => s.defaultThemeName);
   const theme =

@@ -4,12 +4,10 @@ import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
 import {
   isGeneralAbilitySnapshot,
   isPushOrQuickShock,
 } from "../../module/items/abilitySnapshots";
-import type { AbilitySystemData } from "../../module/items/exports";
 import { assertAbilityItem } from "../../module/items/exports";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
@@ -35,7 +33,7 @@ export const AbilitySheet = memo(function AbilitySheet() {
 
   const { item } = useItemSheetContext();
   assertAbilityItem(item);
-  const ability = useItemSnapshot<AbilitySystemData>(item) as AbilitySnapshot;
+  const ability = useItemSnapshot(item);
   const useMwStyleAbilities = useSettings((s) => s.useMwStyleAbilities);
   const actorName = useActorSnapshot(item.actor, (actor) => actor?.name);
 

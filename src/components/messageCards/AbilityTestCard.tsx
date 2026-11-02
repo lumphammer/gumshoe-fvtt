@@ -1,14 +1,12 @@
 import React from "react";
 
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { useMaybeItemSelector } from "../../hooks/useItemSnapshot";
 import type { BondSpendRecord } from "../../module/bonds/bondSpends";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import type { StabilityState } from "../../module/stability/states";
-import { useSettings } from "../../hooks/useSettings";
-import { getStabilityStateName } from "../../module/stability/settings";
+import { useStabilityStateName } from "../../hooks/useStabilityStateName";
 import { shakenDifficultyPenalty } from "../../module/stability/trauma";
 import { Translate } from "../Translate";
+import { useAbilityCardHeader } from "./useAbilityCardHeader";
 import { DiceTerms } from "./DiceTerms";
 import type { AbilityCardMode } from "./types";
 
@@ -36,19 +34,9 @@ export const AbilityTestCard = React.memo(
   }: AbilityTestCardProps) => {
     "use memo";
 
-    // for the Stability states' names
-    const settings = useSettings((s) => s);
-    // the ability's own name and picture, as they are now
-    const header = useMaybeItemSelector(ability, (snapshot) =>
-      snapshot ? { name: snapshot.name, img: snapshot.img ?? null } : null,
-    );
-
-    const onClickAbilityName = () => {
-      const sheet = ability?.sheet;
-      if (!sheet) return;
-      assertApplicationV2(sheet);
-      void sheet.render({ force: true });
-    };
+    const stateName = useStabilityStateName(stabilityState);
+    const { header, openSheet: onClickAbilityName } =
+      useAbilityCardHeader(ability);
 
     return (
       <div
@@ -117,7 +105,7 @@ export const AbilityTestCard = React.memo(
                 <div data-testid="shaken-reminder">
                   <Translate
                     values={{
-                      State: getStabilityStateName(stabilityState, settings),
+                      State: stateName,
                       Penalty: String(shakenDifficultyPenalty),
                     }}
                   >

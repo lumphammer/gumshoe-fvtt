@@ -1,13 +1,10 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import React, { Fragment, memo, useCallback, useContext } from "react";
 
-import * as c from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
-import { useSettings } from "../../hooks/useSettings";
+import { useRatingCap } from "../../hooks/useRatingCaps";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
-import { getRatingCapIn } from "../../module/actors/pcDerived";
 import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
 import { getSpecialitiesCountOf } from "../../module/items/abilitySnapshots";
 import type { AbilityItem } from "../../module/items/exports";
@@ -36,11 +33,8 @@ export const AbilitySlugEdit = memo(function AbilitySlugEdit({
     hasSpecialities: snapshot.system.hasSpecialities,
     specialitiesCount: getSpecialitiesCountOf(snapshot.system),
   }));
-  const settings = useSettings((s) => s);
   // a PC's adaptations and Sanity's cap
-  const ratingCap = useActorSnapshot(ability.actor, (actor) =>
-    actor?.type === c.pc ? getRatingCapIn(actor, row.name, settings) : null,
-  );
+  const ratingCap = useRatingCap(ability).cap;
   const { setRatingAndRefreshPool, setOccupational } =
     useSystemMethods(ability);
   const app = useContext(FoundryAppContext);

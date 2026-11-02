@@ -514,16 +514,19 @@ few causes, listed here with what to do about each, in the order to do them.
    the ability, equipment and weapon sheets and the framework no longer work
    it out again. Other checks are `useDocumentPermission` (now behind
    `useIsDocumentOwner`) or, in a list's selector, `canUser`.
-4. **Untyped snapshots.** An actor snapshot's `system` is `unknown` unless the
-   caller says otherwise, so components cast it inline (45 casts), and nearly
-   every actor selector starts with `snapshot?.items ?? []`, because the hook
-   allows a null actor. Typed snapshots for each actor type, a hook for an
-   actor that's there, and a hook for the sheet's own actor (which components
-   now get from the context, assert the type of, and pass in) would remove
-   most of that. Selectors used in several places become hooks of their own:
-   an ability's rating cap, a PC's Stability ability, a chat card's ability
-   header (copied into four cards), and the Stability states' names (the
-   reason most of the 14 `useSettings((s) => s)` subscriptions exist).
+4. **Untyped snapshots.** _Done._ Snapshots are typed by document type
+   (`snapshotTypes.ts`): an actor's `system` from its type, and its items as a
+   union by item type, so `item.type === c.bond` narrows `item.system`. The
+   hooks infer the type from the document they're given (`useActorSnapshot`
+   on a `PCActor` hands the selector a PC's snapshot, not null), and the pure
+   finders narrow theirs (`OfType`), so the casts and `snapshot?.items ?? []`
+   guards are gone (the few left are in pure helpers over a plain
+   `ItemView`). `useActorAndSettings` selects from an actor and the settings
+   together, which replaced every `useSettings((s) => s)`. Repeated
+   selectors became `useRatingCap`, `getStabilityViewIn`,
+   `useStabilityStateName` and the chat cards' `useAbilityCardHeader`. A
+   hook for the sheet's own actor didn't seem worth it: getting it from the
+   context and asserting its type is two explicit lines.
 5. **Rules not yet moved.** The PC model delegates to `pcDerived.ts`, but
    `AbilityModel`'s unlocks, situational modifiers and specialities getters
    duplicate `abilitySnapshots.ts`; the tracker abilities' order is only in

@@ -46,9 +46,7 @@ export const PCSheetFull = memo(function PCSheetFull() {
 
   const sheetTheme = useActorSnapshot(
     actor,
-    (snapshot) =>
-      (snapshot?.system as { sheetTheme?: string | null } | undefined)
-        ?.sheetTheme ?? null,
+    (snapshot) => snapshot.system.sheetTheme,
   );
   const s = useSettings((s) => ({
     defaultThemeName: s.defaultThemeName,

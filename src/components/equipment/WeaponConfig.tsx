@@ -8,7 +8,7 @@ import type { ItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { getGeneralAbilityNamesIn } from "../../module/items/findGeneralAbility";
-import type { WeaponItem, WeaponSystemData } from "../../module/items/weapon";
+import type { WeaponItem } from "../../module/items/weapon";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -33,7 +33,7 @@ const weaponFireModesText: Record<WeaponFireModes, string> = {
 interface WeaponConfigProps {
   /** Only to write through: read from `weapon`. */
   item: WeaponItem;
-  weapon: ItemSnapshot<WeaponSystemData>;
+  weapon: ItemSnapshot<"weapon">;
 }
 
 export const WeaponConfig = memo(function WeaponConfig({

@@ -29,10 +29,10 @@ export const EquipmentArea = memo(function EquipmentArea() {
   const idsByCategory = useActorSnapshot(actor, (snapshot) => {
     const result: Record<string, string[]> = {};
     const equipment = sortEntitiesByName(
-      (snapshot?.items ?? []).filter((item) => item.type === c.equipment),
+      snapshot.items.filter((item) => item.type === c.equipment),
     );
     for (const item of equipment) {
-      const categoryId = (item.system as { categoryId: string }).categoryId;
+      const categoryId = item.system.categoryId;
       const key = categoryId in categories ? categoryId : "";
       const ids = result[key] ?? [];
       ids.push(item._id ?? "");

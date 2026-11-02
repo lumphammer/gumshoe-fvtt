@@ -1,20 +1,19 @@
 import { memo, type ReactNode, useCallback, useContext, useState } from "react";
 
+import * as c from "../../constants";
 import { getTranslated, getTranslatedOr } from "../../functions/getTranslated";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
-import type { ItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { useUserTargets } from "../../hooks/useUserTargets";
 import { isPCActor } from "../../module/actors/pc";
-import { isActiveCharacterActor } from "../../module/actors/types";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import {
   findGeneralAbilityIn,
   getPoolOf,
 } from "../../module/items/findGeneralAbility";
-import type { WeaponItem, WeaponSystemData } from "../../module/items/weapon";
+import type { WeaponItem } from "../../module/items/weapon";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button, ToolbarButton } from "../inputs/Button";
@@ -120,13 +119,10 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
   const theme = useContext(ThemeContext);
 
   // everything but the notes, which the panel doesn't show
-  const weapon = useItemSelector(
-    item,
-    (snapshot: ItemSnapshot<WeaponSystemData>) => {
-      const { notes: _notes, ...system } = snapshot.system;
-      return { name: snapshot.name, system };
-    },
-  );
+  const weapon = useItemSelector(item, (snapshot) => {
+    const { notes: _notes, ...system } = snapshot.system;
+    return { name: snapshot.name, system };
+  });
   const system = weapon.system;
   const { clearJam, setAmmo, reload } = useSystemMethods(item);
   const settings = useSettings((s) => ({
@@ -173,10 +169,10 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
       fullAutoAbilities: needsExtraAbilities
         ? settings.fullAutoSpendAbilities.flatMap((name) => find(name) ?? [])
         : [],
-      initiativeAbility: isActiveCharacterActor(weaponActor)
-        ? ((actor?.system as { initiativeAbility?: string } | undefined)
-            ?.initiativeAbility ?? "")
-        : "",
+      initiativeAbility:
+        actor?.type === c.pc || actor?.type === c.npc
+          ? actor.system.initiativeAbility
+          : "",
     };
   });
   const ability = fromActor.ability;

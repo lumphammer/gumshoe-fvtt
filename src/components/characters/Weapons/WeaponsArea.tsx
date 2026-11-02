@@ -39,11 +39,8 @@ export const WeaponsArea = memo(function WeaponsArea({
   assertActiveCharacterActor(actor);
   const theme = useContext(ThemeContext);
   const { ids, readyId, readyName } = useActorSnapshot(actor, (snapshot) => {
-    const weapons = (snapshot?.items ?? []).filter(
-      (item) => item.type === weapon,
-    );
-    const readyWeaponId = (snapshot?.system as { readyWeaponId?: string })
-      ?.readyWeaponId;
+    const weapons = snapshot.items.filter((item) => item.type === weapon);
+    const readyWeaponId = snapshot.system.readyWeaponId;
     const ready = weapons.find((item) => item._id === readyWeaponId);
     return {
       ids: sortEntitiesByName(weapons).map((item) => item._id ?? ""),

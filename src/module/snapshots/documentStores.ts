@@ -12,6 +12,13 @@ import type {
   SnapshotStore,
 } from "./createSnapshotStore";
 import { createSnapshotStore } from "./createSnapshotStore";
+import type {
+  ActorType,
+  ItemType,
+  TypedActorData,
+  TypedActorSnapshot,
+  TypedItemSnapshot,
+} from "./snapshotTypes";
 import type { HookWatch, Off } from "./hookStores";
 import {
   cachedPer,
@@ -26,21 +33,15 @@ import {
 export type ItemData<TSystem = unknown> = Omit<Item.Source, "system"> & {
   system: TSystem;
 };
-export type ItemSnapshot<TSystem = unknown> = DeepReadonly<ItemData<TSystem>>;
 
-/**
- * An actor's prepared data, with its items and effects, its system data as
- * `TSystem`.
- */
-export type ActorData<TSystem = unknown> = Omit<
-  Actor.Source,
-  "system" | "items" | "effects"
-> & {
-  system: TSystem;
-  items: ItemData[];
-  effects: ActiveEffect.Source[];
-};
-export type ActorSnapshot<TSystem = unknown> = DeepReadonly<ActorData<TSystem>>;
+/** An item's snapshot, typed by item type (any, by default) */
+export type ItemSnapshot<T extends ItemType = ItemType> = TypedItemSnapshot<T>;
+
+/** An actor's prepared data, with its items and effects */
+export type ActorData = TypedActorData;
+/** An actor's snapshot, typed by actor type (any, by default) */
+export type ActorSnapshot<T extends ActorType = ActorType> =
+  TypedActorSnapshot<T>;
 
 export type SettingsSnapshot = DeepReadonly<SettingsDict>;
 
@@ -290,10 +291,10 @@ const createActorStore = (actor: Actor.Implementation) =>
 const actorStores = cachedPer(createActorStore);
 
 /** The store of an actor (see `createActorStore`) */
-export function getActorStore<TSystem>(
+export function getActorStore(
   actor: Actor.Implementation,
-): SnapshotStore<ActorData<TSystem>> {
-  return actorStores(actor) as SnapshotStore<ActorData<TSystem>>;
+): SnapshotStore<ActorData> {
+  return actorStores(actor);
 }
 
 // ---------------------------------------------------------------------------

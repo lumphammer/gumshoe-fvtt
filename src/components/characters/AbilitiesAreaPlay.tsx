@@ -1,7 +1,7 @@
 import { Fragment, memo, useContext } from "react";
 
 import { sortEntitiesByName } from "../../functions/utilities";
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import {
@@ -48,11 +48,10 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const theme = useContext(ThemeContext);
-  const settings = useSettings((s) => s);
-  const showEmpty = settings.showEmptyInvestigativeCategories;
+  const showEmpty = useSettings((s) => s.showEmptyInvestigativeCategories);
 
-  const layout = useActorSnapshot(actor, (snapshot) => {
-    const items = snapshot?.items ?? [];
+  const layout = useActorAndSettings(actor, (snapshot, settings) => {
+    const items = snapshot.items;
     const { investigativeAbilities, generalAbilities } =
       getCategorizedAbilitiesIn(
         items,

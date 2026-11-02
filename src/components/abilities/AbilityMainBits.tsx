@@ -4,7 +4,7 @@ import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import * as c from "../../constants";
-import { getRatingCapIn } from "../../module/actors/pcDerived";
+import { useRatingCap } from "../../hooks/useRatingCaps";
 import { isActiveCharacterActor } from "../../module/actors/types";
 import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
 import {
@@ -37,19 +37,19 @@ export const AbilityMainBits = memo(function AbilityMainBits({
 
   const system = ability.system;
   const methods = useSystemMethods(item);
-  const settings = useSettings((s) => s);
-  const itemActor = item.actor;
-  const fromActor = useActorSnapshot(itemActor, (actor) => ({
-    initiativeAbility: isActiveCharacterActor(itemActor)
-      ? (actor?.system as { initiativeAbility?: string } | undefined)
-          ?.initiativeAbility
-      : undefined,
-    // rating caps come from a PC's adaptations, or Sanity's cap
-    ratingCap:
-      actor?.type === c.pc
-        ? getRatingCapIn(actor, ability.name, settings)
-        : null,
+  const settings = useSettings((s) => ({
+    combatAbilities: s.combatAbilities,
+    useMwStyleAbilities: s.useMwStyleAbilities,
+    useBoost: s.useBoost,
   }));
+  const itemActor = item.actor;
+  const initiativeAbility = useActorSnapshot(itemActor, (actor) =>
+    actor?.type === c.pc || actor?.type === c.npc
+      ? actor.system.initiativeAbility
+      : undefined,
+  );
+  // rating caps come from a PC's adaptations, or Sanity's cap
+  const ratingCap = useRatingCap(item).cap;
 
   const onClickRefresh = useCallback(() => {
     void methods.refreshPool();
@@ -58,7 +58,7 @@ export const AbilityMainBits = memo(function AbilityMainBits({
   const isCombatAbility = settings.combatAbilities.includes(ability.name);
 
   const itemName = ability.name;
-  const isAbilityUsed = fromActor.initiativeAbility === itemName;
+  const isAbilityUsed = initiativeAbility === itemName;
   const onClickUseForInitiative = useCallback(() => {
     if (!isActiveCharacterActor(itemActor)) return;
     void itemActor.update({
@@ -134,7 +134,7 @@ export const AbilityMainBits = memo(function AbilityMainBits({
           <GridField label="Rating">
             <AsyncNumberInput
               min={0}
-              max={fromActor.ratingCap ?? undefined}
+              max={ratingCap ?? undefined}
               value={system.rating}
               onChange={methods.setRating}
             />

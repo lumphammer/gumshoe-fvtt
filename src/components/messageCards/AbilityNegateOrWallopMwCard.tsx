@@ -1,10 +1,9 @@
 import React from "react";
 
 import * as constants from "../../constants";
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { useMaybeItemSelector } from "../../hooks/useItemSnapshot";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
+import { useAbilityCardHeader } from "./useAbilityCardHeader";
 import { MwButton } from "./MwButton";
 import { MwCostSlug } from "./MwCostSlug";
 import type { MWResult } from "./types";
@@ -36,17 +35,8 @@ export const AbilityNegateOrWallopMwCard = React.memo(
   ({ msg, ability, pool, mode, name }: AbilityNegateOrWallopMwCardProps) => {
     "use memo";
 
-    // the ability's own name and picture, as they are now
-    const header = useMaybeItemSelector(ability, (snapshot) =>
-      snapshot ? { name: snapshot.name, img: snapshot.img ?? null } : null,
-    );
-
-    const onClickAbilityName = () => {
-      const sheet = ability?.sheet;
-      if (!sheet) return;
-      assertApplicationV2(sheet);
-      void sheet.render({ force: true });
-    };
+    const { header, openSheet: onClickAbilityName } =
+      useAbilityCardHeader(ability);
 
     const costFactor =
       mode === constants.htmlDataModeMwNegate ? (

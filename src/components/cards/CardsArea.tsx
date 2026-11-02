@@ -32,30 +32,19 @@ export const CardsArea = memo(function CardsArea() {
   "use memo";
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const { allCards, savedSettings } = useActorSnapshot(actor, (snapshot) => {
-    const cards = (snapshot?.items ?? []).filter(
-      (item) => item.type === c.card,
-    );
-    return {
-      allCards: cards.map((item): CardLayoutView => {
-        const system = item.system as CardLayoutView["system"];
-        return {
-          id: item._id ?? "",
-          name: item.name,
-          system: {
-            active: system.active,
-            cardCategoryMemberships: system.cardCategoryMemberships,
-          },
-        };
-      }),
-      savedSettings:
-        (
-          snapshot?.system as
-            | { cardsAreaSettings: CardsAreaSettings }
-            | undefined
-        )?.cardsAreaSettings ?? actor.system.cardsAreaSettings,
-    };
-  });
+  const { allCards, savedSettings } = useActorSnapshot(actor, (snapshot) => ({
+    allCards: snapshot.items
+      .filter((item) => item.type === c.card)
+      .map((item): CardLayoutView => ({
+        id: item._id ?? "",
+        name: item.name,
+        system: {
+          active: item.system.active,
+          cardCategoryMemberships: item.system.cardCategoryMemberships,
+        },
+      })),
+    savedSettings: snapshot.system.cardsAreaSettings,
+  }));
   const methods = useSystemMethods(actor);
 
   // local settings state for rapid updates

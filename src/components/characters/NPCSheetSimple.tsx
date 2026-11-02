@@ -9,11 +9,7 @@ export const NPCSheetSimple = () => {
 
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
-  const notes = useActorSnapshot(
-    actor,
-    (snapshot) =>
-      (snapshot?.system as { notes?: string } | undefined)?.notes ?? "",
-  );
+  const notes = useActorSnapshot(actor, (snapshot) => snapshot.system.notes);
   return <CharacterSheetSimple notes={notes} />;
 };
 

@@ -3,15 +3,14 @@ import { useState } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import type { PCActor } from "../../module/actors/pc";
 import {
-  getBondPointsOf,
   getNeglectableBondsIn,
   getRebuildSpendAbilitiesIn,
   getReformableBondsIn,
-  getStabilityAbilityIn,
+  getStabilityViewIn,
 } from "../../module/actors/pcDerived";
 import { isBondItem } from "../../module/items/bond";
 import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
@@ -49,25 +48,27 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
   "use memo";
 
   const { navigate } = useNavigationContext();
-  const settings = useSettings((s) => s);
+  const rebuildCategory = useSettings((s) => s.bondRebuildSpendCategory);
   // the Bonds tab above is memoised, so this reads what it shows itself
-  const view = useActorSnapshot(actor, (snapshot) => {
-    const items = snapshot?.items ?? [];
-    const pc = { system: snapshot?.system, items };
-    const bondOf = (bond: (typeof items)[number]) => ({
+  const view = useActorAndSettings(actor, (pc, settings) => {
+    const bondOf = (bond: {
+      _id: string | null;
+      name: string;
+      system: { points: number };
+    }) => ({
       id: bond._id ?? "",
       name: bond.name,
-      points: getBondPointsOf(bond).points,
+      points: bond.system.points,
     });
     return {
-      reformable: getReformableBondsIn(items).map(bondOf),
-      neglectable: getNeglectableBondsIn(items).map(bondOf),
-      abilities: getRebuildSpendAbilitiesIn(items, settings).map((a) => ({
+      reformable: getReformableBondsIn(pc.items).map(bondOf),
+      neglectable: getNeglectableBondsIn(pc.items).map(bondOf),
+      abilities: getRebuildSpendAbilitiesIn(pc.items, settings).map((a) => ({
         id: a._id ?? "",
         name: a.name,
-        pool: (a.system as { pool: number }).pool,
+        pool: a.system.pool,
       })),
-      stabilityName: getStabilityAbilityIn(items, settings)?.name ?? "",
+      stabilityName: getStabilityViewIn(pc.items, settings)?.name ?? "",
       bondCap: getBondCapOf(pc, settings),
     };
   });
@@ -92,7 +93,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
   const noPointsMessage =
     ability === undefined
       ? getTranslated("NoCategoryPointsToEstablishBond", {
-          Category: settings.bondRebuildSpendCategory,
+          Category: rebuildCategory,
         })
       : undefined;
 
@@ -145,7 +146,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
       <p>
         <Translate
           values={{
-            Category: settings.bondRebuildSpendCategory,
+            Category: rebuildCategory,
             AbilityName: view.stabilityName,
           }}
         >

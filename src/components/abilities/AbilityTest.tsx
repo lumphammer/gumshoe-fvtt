@@ -1,9 +1,10 @@
 import { memo, useCallback, useContext, useState } from "react";
 import { FaHeartCrack } from "react-icons/fa6";
 
+import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { isPCActor } from "../../module/actors/pc";
@@ -51,7 +52,6 @@ export const AbilityTest = memo(function AbilityTest({
 
   const theme = useContext(ThemeContext);
   const methods = useSystemMethods(item);
-  const settings = useSettings((s) => s);
   const [spend, setSpend] = useState(0);
   // points to spend from each Bond, by id
   const [bondSpends, setBondSpends] = useState<Record<string, number>>({});
@@ -63,16 +63,15 @@ export const AbilityTest = memo(function AbilityTest({
   const isGeneral = isGeneralAbilitySnapshot(ability);
   const actor = item.actor;
   // Fall of DELTA GREEN: Stability tests against trauma (pp. 115–121)
-  const traumaTypes = getTraumaTypesFrom(settings);
+  const traumaTypes = useSettings((s) => getTraumaTypesFrom(s));
   // the type may have gone from settings since it was picked
   const pickedTrauma = traumaTypes.find(({ id }) => id === traumaId);
 
   // Bonds live on the actor, not this item
-  const fromActor = useActorSnapshot(actor, (snapshot) => {
+  const fromActor = useActorAndSettings(actor, (snapshot, settings) => {
     const isStability =
       isGeneral &&
-      snapshot !== null &&
-      isPCActor(actor) &&
+      snapshot?.type === c.pc &&
       getStabilityAbilityIn(snapshot.items, settings)?._id === ability._id;
     return {
       isStability,

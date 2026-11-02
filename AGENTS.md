@@ -97,7 +97,11 @@ translations, adding fields and settings, releases).
   - Read data only from `useItemSnapshot`/`useItemSelector`,
     `useActorSnapshot(actor, selector)` and `useSettings(selector)`.
     Selector results are structurally shared, so they can build objects; select
-    only what's shown, so other changes don't re-render. There's one cached
+    only what's shown, so other changes don't re-render. Snapshots are typed
+    from the document passed in (`snapshotTypes.ts`), and an actor's items
+    narrow by `type`, so don't cast `system`. To work something out from an
+    actor and the settings, use `useActorAndSettings`, not
+    `useSettings((s) => s)`. There's one cached
     store per document (`documentStores.ts`), so many components can read the
     same actor cheaply. For several actors by id (a party's members), use
     `useActorsSnapshot(ids, selector)`.

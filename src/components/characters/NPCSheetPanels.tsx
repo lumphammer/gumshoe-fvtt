@@ -29,8 +29,8 @@ export const NPCSheetHeader = memo(function NPCSheetHeader() {
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   const header = useActorSnapshot(actor, (snapshot) => ({
-    name: snapshot?.name ?? "",
-    img: snapshot?.img,
+    name: snapshot.name,
+    img: snapshot.img,
   }));
 
   return (
@@ -62,16 +62,6 @@ export const NPCSheetHeader = memo(function NPCSheetHeader() {
   );
 });
 
-type NPCSidebarSystem = {
-  mwInjuryStatus: unknown;
-  combatBonus: number;
-  damageBonus: number;
-  isHuman: boolean;
-  immuneToLethality: boolean;
-  initiativeAbility: string;
-  initiativePassingTurns: number;
-};
-
 /** Refresh, combat bonuses, stats, pool trackers and initiative */
 export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
   "use memo";
@@ -79,22 +69,18 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   const theme = useContext(ThemeContext);
-  const npc = useActorSnapshot(actor, (snapshot) => {
-    const system = snapshot?.system as NPCSidebarSystem | undefined;
-    return {
-      mwInjuryStatus: (system?.mwInjuryStatus ??
-        actor.system.mwInjuryStatus) as typeof actor.system.mwInjuryStatus,
-      combatBonus: system?.combatBonus ?? 0,
-      damageBonus: system?.damageBonus ?? 0,
-      isHuman: system?.isHuman ?? false,
-      immuneToLethality: system?.immuneToLethality ?? false,
-      initiativeAbility: system?.initiativeAbility ?? "",
-      initiativePassingTurns: system?.initiativePassingTurns ?? 0,
-      generalAbilityNames: (snapshot?.items ?? [])
-        .filter((item) => item.type === c.generalAbility)
-        .map((item) => item.name),
-    };
-  });
+  const npc = useActorSnapshot(actor, ({ system, items }) => ({
+    mwInjuryStatus: system.mwInjuryStatus,
+    combatBonus: system.combatBonus,
+    damageBonus: system.damageBonus,
+    isHuman: system.isHuman,
+    immuneToLethality: system.immuneToLethality,
+    initiativeAbility: system.initiativeAbility,
+    initiativePassingTurns: system.initiativePassingTurns,
+    generalAbilityNames: items
+      .filter((item) => item.type === c.generalAbility)
+      .map((item) => item.name),
+  }));
   const s = useSettings((s) => ({
     useMwInjuryStatus: s.useMwInjuryStatus,
     useNpcCombatBonuses: s.useNpcCombatBonuses,

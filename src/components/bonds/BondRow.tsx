@@ -24,16 +24,13 @@ export const BondRow = memo(function BondRow({
 }) {
   "use memo";
 
-  const row = useItemSelector(bond, (snapshot) => {
-    const system = snapshot.system as { points: number; isDeltaGreen: boolean };
-    return {
-      name: snapshot.name,
-      img: snapshot.img,
-      points: system.points,
-      isDeltaGreen: system.isDeltaGreen,
-      isBroken: isBondBroken(system.points),
-    };
-  });
+  const row = useItemSelector(bond, ({ name, img, system }) => ({
+    name,
+    img,
+    points: system.points,
+    isDeltaGreen: system.isDeltaGreen,
+    isBroken: isBondBroken(system.points),
+  }));
   const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
   const onDragStart = useCallback(

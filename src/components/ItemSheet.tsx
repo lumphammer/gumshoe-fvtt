@@ -43,7 +43,7 @@ export const ItemSheet = () => {
   const permissions = useSheetPermissions(item);
   const ownerTheme = useActorSnapshot(item.actor, (actor) =>
     actor?.type === constants.pc || actor?.type === constants.npc
-      ? ((actor.system as { sheetTheme?: string | null }).sheetTheme ?? null)
+      ? actor.system.sheetTheme
       : null,
   );
   const defaultThemeName = useSettings((s) => s.defaultThemeName);
