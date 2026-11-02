@@ -133,3 +133,100 @@ test("loading the world removes members that no longer exist", async ({
     )
     .toEqual([ginaId]);
 });
+
+test("an open party sheet follows its members, changed elsewhere", async ({
+  page,
+}) => {
+  const partyId = await createActor(page, {
+    name: "Watched Party",
+    type: "party",
+  });
+  const ivyId = await createActor(page, { name: "Ivy", type: "pc" });
+  const jackId = await createActor(page, { name: "Jack", type: "pc" });
+  await updateAbility(page, ivyId, "Athletics", { rating: 2, pool: 2 });
+  await updateAbility(page, jackId, "Athletics", { rating: 3, pool: 3 });
+  await page.evaluate(
+    async ({ partyId, ivyId }) => {
+      const party = game.actors.get(partyId)! as unknown as {
+        system: { addActorIds: (ids: string[]) => Promise<unknown> };
+      };
+      await party.system.addActorIds([ivyId]);
+    },
+    { partyId, ivyId },
+  );
+  const partySheet = await openSheet(page, `Actor.${partyId}`);
+  await expect(partySheet).toContainText(/Athletics\s*2\s*2/);
+
+  // a member's ability, and name
+  await updateAbility(page, ivyId, "Athletics", { rating: 4 });
+  await expect(partySheet).toContainText(/Athletics\s*4\s*4/);
+  await page.evaluate(async (id) => {
+    await game.actors.get(id)!.update({ name: "Ivy Renamed" });
+  }, ivyId);
+  await expect(partySheet).toContainText("Ivy Renamed");
+
+  // a new member
+  await page.evaluate(
+    async ({ partyId, jackId }) => {
+      const party = game.actors.get(partyId)! as unknown as {
+        system: { addActorIds: (ids: string[]) => Promise<unknown> };
+      };
+      await party.system.addActorIds([jackId]);
+    },
+    { partyId, jackId },
+  );
+  await expect(partySheet).toContainText(/Athletics\s*4\s*3\s*7/);
+
+  // the party's own name
+  await page.evaluate(async (id) => {
+    await game.actors.get(id)!.update({ name: "Renamed Party" });
+  }, partyId);
+  await expect(partySheet.getByRole("textbox").first()).toHaveValue(
+    "Renamed Party",
+  );
+
+  // a member deleted
+  await page.evaluate(async (id) => {
+    await game.actors.get(id)!.delete();
+  }, ivyId);
+  await expect(partySheet).not.toContainText("Ivy Renamed");
+  await expect(partySheet).toContainText(/Athletics\s*3\s*3/);
+});
+
+test("a party sheet offers to add an ability a member hasn't got", async ({
+  page,
+}) => {
+  const partyId = await createActor(page, {
+    name: "Lacking Party",
+    type: "party",
+  });
+  const kimId = await createActor(page, { name: "Kim", type: "pc" });
+  await page.evaluate(
+    async ({ partyId, kimId }) => {
+      const kim = game.actors.get(kimId)!;
+      const athletics = kim.items.find((item) => item.name === "Athletics");
+      await athletics?.delete();
+      const party = game.actors.get(partyId)! as unknown as {
+        system: { addActorIds: (ids: string[]) => Promise<unknown> };
+      };
+      await party.system.addActorIds([kimId]);
+    },
+    { partyId, kimId },
+  );
+  const partySheet = await openSheet(page, `Actor.${partyId}`);
+  await expect(partySheet).toContainText(/Athletics\s*–\s*0/);
+
+  await partySheet.getByText("–", { exact: true }).first().click();
+  await page.getByRole("button", { name: "Yes please!" }).click();
+  // Kim gets one (and its sheet opens), and the sheet shows it
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (id) =>
+          game.actors.get(id)!.items.some((item) => item.name === "Athletics"),
+        kimId,
+      ),
+    )
+    .toBe(true);
+  await expect(partySheet).toContainText(/Athletics\s*0\s*0/);
+});

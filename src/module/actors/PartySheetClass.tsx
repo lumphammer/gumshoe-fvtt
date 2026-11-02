@@ -38,4 +38,7 @@ export const PartySheetClass = ReactApplicationV2Mixin(
   "PartySheetClass",
   OverrideAutoDisableMixin(PartySheetClassBase),
   render,
+  // the sheet reads the party and its members through snapshots, ownership
+  // included (docs/immutable-data.md), so Foundry's re-renders needn't reach React
+  { rerenderOnFoundryRender: false },
 );

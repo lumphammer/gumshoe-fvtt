@@ -391,8 +391,17 @@ Team Crisis panels select what they show from the actor's snapshot, through
 pure getters (`getReformableBondsIn`, `getRebuildSpendAbilitiesIn`,
 `getBondCapIn` and the like), and plan a crisis with `planCrisis` itself. A
 Bond's points still re-render a whole panel (they show them). Team Crisis's
-teammates are other actors, read live (`getCrisisTeammateCandidates`):
-there's no store for the world's actors.
+teammates are other actors, read live (`getCrisisTeammateCandidates`).
+
+The party sheet reads its members with `useActorsSnapshot(ids, selector)`,
+which subscribes to each member's store, and to `getWorldActorsStore` (the
+ids of the world's actors, which changes when one is created or deleted), so
+it follows members being deleted, or created after the party listed them. It
+works out its rows (`buildRowData`) from plain views of the members and of
+the packs' abilities (`PartyMemberView`, `PartyAbilityView`), each ability
+known by its uuid, which its cells look up to open or copy it. It's compiled,
+and passes `rerenderOnFoundryRender: false`. Before, it followed its members
+by listening for item hooks itself, so it missed a member being renamed.
 
 `CardDisplay` (shared with the card's own sheet) is memoised, and reads its
 card and what it shows from the card categories through snapshots, so the

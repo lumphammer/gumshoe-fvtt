@@ -241,3 +241,34 @@ export function getSettingsStore() {
   settingsStore ??= createSettingsStore();
   return settingsStore;
 }
+
+let worldActorsStore: ReturnType<typeof createWorldActorsStore> | null = null;
+
+/** The ids of the world's actors (not tokens' or compendiums'), in order. */
+function createWorldActorsStore() {
+  const isWorldActor = (actor: Actor.Implementation) =>
+    !actor.isToken && !actor.pack;
+  return createSnapshotStore<string[]>(
+    () =>
+      (game as foundry.Game).actors?.contents.flatMap((actor) =>
+        actor.id === null ? [] : [actor.id],
+      ) ?? [],
+    (onChange) => {
+      const onActor = (actor: Actor.Implementation) => {
+        if (isWorldActor(actor)) onChange();
+      };
+      const offs = [on("createActor", onActor), on("deleteActor", onActor)];
+      return () => offs.forEach((off) => off());
+    },
+  );
+}
+
+/**
+ * The one store of which actors the world has: it changes when one is created
+ * or deleted, so anything that looks actors up by id (`useActorsSnapshot`)
+ * can follow them coming and going.
+ */
+export function getWorldActorsStore() {
+  worldActorsStore ??= createWorldActorsStore();
+  return worldActorsStore;
+}

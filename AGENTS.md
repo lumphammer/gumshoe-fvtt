@@ -77,8 +77,9 @@ translations, adding fields and settings, releases).
   full re-renders: the compiler caches on identity, and a document keeps its
   identity when it changes. Only mark code which reads its data through
   snapshots (below); the PC and NPC sheets, the equipment,
-  weapon and ability sheets, the combat tracker (but `Tracker`), and the
-  shared inputs, `Translate` and `ImagePickle` are marked. A compiled component
+  weapon and ability sheets, the party sheet, the combat tracker (but
+  `Tracker`), and the shared inputs, `Translate` and `ImagePickle` are
+  marked. A compiled component
   passes an unchanged child its cached element, so every child of one must
   keep itself current (as if memoised), not rely on its parent re-rendering.
   A call during render is cached on its arguments: one which reads global
@@ -97,7 +98,8 @@ translations, adding fields and settings, releases).
     Selector results are structurally shared, so they can build objects; select
     only what's shown, so other changes don't re-render. There's one cached
     store per document (`documentStores.ts`), so many components can read the
-    same actor cheaply.
+    same actor cheaply. For several actors by id (a party's members), use
+    `useActorsSnapshot(ids, selector)`.
   - Use the live document only to write, in event handlers, or through
     `useSystemMethods(doc)`: `doc.system` is replaced on update, so
     `doc.system.setFoo` isn't stable. To render a list from a snapshot, select

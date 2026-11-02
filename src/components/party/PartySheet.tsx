@@ -1,18 +1,19 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import * as constants from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated } from "../../functions/getTranslated";
+import { useActorSheetPermissions } from "../../hooks/useSheetPermissions";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useActorsSnapshot } from "../../hooks/useActorsSnapshot";
+import { IsEditableContext } from "../../hooks/useIsEditable";
+import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import type { PartyActor } from "../../module/actors/party";
 import { assertPartyActor } from "../../module/actors/party";
-import { isPCActor } from "../../module/actors/pc";
 import { callTeamCrisis } from "../../module/bonds/callTeamCrisis";
-import type { AbilityItem } from "../../module/items/exports";
-import { isAbilityItem } from "../../module/items/exports";
-import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import { runtimeConfig } from "../../runtime";
 import { areBondsOn } from "../../module/stability/settings";
-import { settings } from "../../settings/settings";
+import { runtimeConfig } from "../../runtime";
 import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
@@ -21,83 +22,56 @@ import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 import { AbilityRow } from "./AbilityRow";
-import { buildRowData, getSystemAbilities } from "./functions";
-import type { RowData } from "./types";
+import { buildRowData, getSystemAbilities, toMemberView } from "./functions";
+import type { PartyAbilityView } from "./types";
 import { isCategoryHeader, isTypeHeader } from "./types";
 
-export const PartySheet = () => {
-  const { actor: party } = useActorSheetContext();
-  assertPartyActor(party);
+const PartySheetBody = ({ party }: { party: PartyActor }) => {
+  "use memo";
 
+  const header = useActorSnapshot(party, (snapshot) => ({
+    name: snapshot?.name ?? "",
+    img: snapshot?.img ?? null,
+    actorIds:
+      (snapshot?.system as { actorIds?: readonly string[] } | undefined)
+        ?.actorIds ?? [],
+  }));
+  const defaultThemeName = useSettings((s) => s.defaultThemeName);
   const theme =
-    runtimeConfig.themes[settings.defaultThemeName.get()] ||
-    runtimeConfig.themes["tealTheme"];
-  const [abilities, setAbilities] = useState<AbilityItem[]>([]);
-  const [rowData, setRowData] = useState<RowData[]>([]);
-  const actorIds = party.system.getActorIds();
+    runtimeConfig.themes[defaultThemeName] || runtimeConfig.themes["tealTheme"];
+  const bondsOn = useSettings((s) => areBondsOn(s));
+  const packIds = useSettings((s) => s.newPCPacks);
+  // the PCs among the members, in order (any that are missing are skipped)
+  const actors = useActorsSnapshot(header.actorIds, (snapshots) =>
+    snapshots.flatMap((snapshot) => {
+      const view = toMemberView(snapshot);
+      return view ? [view] : [];
+    }),
+  );
+  const isGM = game.user?.isGM ?? false;
   const callTeamCrisisTooltip = getTranslated("CallTeamCrisisTooltip");
 
-  const actors = useMemo(
-    () =>
-      actorIds.map((id) => game.actors?.get(id) as unknown).filter(isPCActor),
-    [actorIds],
-  );
-
-  // effect 1: keep our "abilityTuples" in sync with system setting for
-  // "newPCPacks"
+  // the abilities in the packs for new PCs, which every row is drawn from
+  const [abilities, setAbilities] = useState<PartyAbilityView[]>([]);
   useEffect(() => {
-    void getSystemAbilities().then(setAbilities);
-
-    const onNewPCPacksUpdated = async (newPacks: string[]) => {
-      setAbilities(await getSystemAbilities());
-    };
-
-    const onUpdateDeleteCreateItem = async (item: InvestigatorItem) => {
-      if (
-        isAbilityItem(item) &&
-        item.isOwned &&
-        party.system.actorIds.includes(item.actor?.id ?? "")
-      ) {
-        setAbilities(await getSystemAbilities());
-      }
-    };
-
-    // newPCPacksUpdated is a custom hook
-    Hooks.on(constants.newPCPacksUpdated, onNewPCPacksUpdated);
-    // standard hooks
-    Hooks.on("updateItem", onUpdateDeleteCreateItem);
-    Hooks.on("deleteItem", onUpdateDeleteCreateItem);
-    Hooks.on("createItem", onUpdateDeleteCreateItem);
-
+    let current = true;
+    void getSystemAbilities(packIds).then((abilities) => {
+      if (current) setAbilities(abilities);
+    });
     return () => {
-      Hooks.off(constants.newPCPacksUpdated, onNewPCPacksUpdated);
-      Hooks.off("updateItem", onUpdateDeleteCreateItem);
-      Hooks.off("deleteItem", onUpdateDeleteCreateItem);
-      Hooks.off("createItem", onUpdateDeleteCreateItem);
+      current = false;
     };
-  }, [party]);
+  }, [packIds]);
 
-  // effect 2: keep our row data in sync with abilities and actors
-  useEffect(() => {
-    const getAbs = () => {
-      const rowData = buildRowData(abilities, actors);
-      // setting row data is slow - presumably this includes rendering time
-      setRowData(rowData);
-    };
-    getAbs();
-  }, [abilities, actors]);
+  const rowData = buildRowData(abilities, actors);
 
-  // callback for removing an actor
-  const onClickRemoveActor = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      const actorId = e.currentTarget.dataset["actorId"];
-      if (actorId !== undefined) {
-        void party.system.removeActorId(actorId);
-      }
-    },
-    [party],
-  );
+  const onClickRemoveActor = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const actorId = e.currentTarget.dataset["actorId"];
+    if (actorId !== undefined) {
+      void party.system.removeActorId(actorId);
+    }
+  };
 
   return (
     <CSSReset
@@ -113,7 +87,7 @@ export const PartySheet = () => {
         flexDirection: "column",
       }}
     >
-      {party.system.actorIds.length === 0 && (
+      {header.actorIds.length === 0 && (
         <div
           style={{
             position: "absolute",
@@ -146,11 +120,11 @@ export const PartySheet = () => {
           <div css={{ display: "flex", gap: "0.5em" }}>
             <AsyncTextInput
               css={{ flex: 1 }}
-              value={party.name || ""}
+              value={header.name}
               onChange={party.setName}
             />
             {/* Fall of DELTA GREEN: the GM calls a crisis for those present */}
-            {areBondsOn() && game.user?.isGM && (
+            {bondsOn && isGM && (
               <Button
                 data-testid="call-team-crisis"
                 css={{ width: "auto", margin: 0, whiteSpace: "nowrap" }}
@@ -193,7 +167,7 @@ export const PartySheet = () => {
           }}
         >
           <ImagePickle
-            img={party.img}
+            img={header.img}
             css={{
               height: "5em",
               width: "4em",
@@ -207,7 +181,7 @@ export const PartySheet = () => {
         {actors.map((actor, j) => {
           return (
             <div
-              key={actor?.id || `missing-${j}`}
+              key={actor.id}
               css={{
                 gridRow: 1,
                 gridColumn: j + 2,
@@ -233,7 +207,8 @@ export const PartySheet = () => {
                 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  const sheet = actor.sheet;
+                  const sheet = game.actors?.get(actor.id)?.sheet;
+                  if (!sheet) return;
                   assertApplicationV2(sheet);
                   void sheet.render({ force: true });
                 }}
@@ -248,7 +223,7 @@ export const PartySheet = () => {
                     margin: "0 auto",
                   }}
                 />
-                {actor?.name ?? "Missing"}
+                {actor.name}
               </a>
               <div css={{ height: "1.5em" }} />
               <div
@@ -268,7 +243,7 @@ export const PartySheet = () => {
                       width: "auto",
                     },
                   }}
-                  data-actor-id={actor._id ?? ""}
+                  data-actor-id={actor.id}
                   onClick={onClickRemoveActor}
                 >
                   <Translate>REMOVE</Translate>
@@ -344,25 +319,23 @@ export const PartySheet = () => {
                     <Translate>Investigative</Translate>
                   )}
                 </h1>
-                {actors.map((actor, j) =>
-                  actor?.id == null ? null : (
-                    <div
-                      key={actor.id}
-                      css={{
-                        gridRow: i + 2,
-                        gridColumn: j + 2,
-                        background: theme.colors.backgroundSecondary,
-                        padding: "0.5em",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {data.actorTotals[actor.id] ?? 0}
-                    </div>
-                  ),
-                )}
+                {actors.map((actor, j) => (
+                  <div
+                    key={actor.id}
+                    css={{
+                      gridRow: i + 2,
+                      gridColumn: j + 2,
+                      background: theme.colors.backgroundSecondary,
+                      padding: "0.5em",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {data.actorTotals[actor.id] ?? 0}
+                  </div>
+                ))}
                 <div
                   css={{
                     gridRow: i + 2,
@@ -403,16 +376,36 @@ export const PartySheet = () => {
             // Actual Abilities
             return (
               <AbilityRow
-                key={data.abilityItem.id}
+                key={data.ability.uuid}
                 abilityRowData={data}
                 index={i}
                 actors={actors}
+                theme={theme}
               />
             );
           }
         })}
       </div>
     </CSSReset>
+  );
+};
+
+PartySheetBody.displayName = "PartySheetBody";
+
+/**
+ * The party sheet. It reads the party and its members through snapshots, so
+ * it follows them (and their ownership) without Foundry re-rendering it.
+ */
+export const PartySheet = () => {
+  "use memo";
+
+  const { actor: party } = useActorSheetContext();
+  assertPartyActor(party);
+  const { isEditable } = useActorSheetPermissions(party);
+  return (
+    <IsEditableContext.Provider value={isEditable}>
+      <PartySheetBody party={party} />
+    </IsEditableContext.Provider>
   );
 };
 
