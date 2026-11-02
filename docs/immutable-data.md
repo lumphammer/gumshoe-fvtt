@@ -464,3 +464,12 @@ attacker, and a target's token being deleted shows it as missing. The rules
 for what a target is (`getTargetActorInfoIn`) and how walking fire can be
 paid for (`getWalkingFirePaymentsIn`) work on snapshots or the live actor,
 so the GM's side checks the same rules.
+
+The system settings screens are compiled as well. The settings they edit are a
+working copy, the state of an immer reducer (`useSettingsState`), handed down
+through `StateContext`, so they were already immutable. What they read live
+is in hooks: which Misc pages show (`useVisibleMiscPages`: dev mode, a
+migration error), the usage stats report (`useReport`), the presets and
+themes installed (`useRuntimeRegistries`), and the Item compendiums
+(`useItemPacks`, shared with the personal detail sheet, which follows the
+compendium sidebar's renders).

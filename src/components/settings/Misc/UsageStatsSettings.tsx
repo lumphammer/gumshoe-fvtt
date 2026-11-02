@@ -22,15 +22,24 @@ import {
 import { SettingsNote } from "../SettingsNote";
 
 /**
+ * The report as it would be sent now. A hook, which isn't compiled, so it's
+ * worked out again on every render (e.g. after resetting the install ID).
+ */
+const useReport = () => formatReport(usageStatsConfig);
+
+/**
  * Whether this world shares anonymous usage stats. These take effect straight
  * away, rather than with the rest of the settings when you save.
  */
 export const UsageStatsSettings = () => {
+  "use memo";
+
   const [state, setState] = useState(() =>
     getUsageStatsState(usageStatsConfig),
   );
   const refresh = () => setState(getUsageStatsState(usageStatsConfig));
   const sharing = state.consent === "yes";
+  const report = useReport();
 
   const handleShare = async (share: boolean) => {
     await setSharing(usageStatsConfig, share);
@@ -78,9 +87,7 @@ export const UsageStatsSettings = () => {
             <summary>
               <Translate>UsageStatsShowReport</Translate>
             </summary>
-            <pre css={{ userSelect: "text" }}>
-              {formatReport(usageStatsConfig)}
-            </pre>
+            <pre css={{ userSelect: "text" }}>{report}</pre>
           </details>
         </SettingsGridFieldStacked>
       </InputGrid>

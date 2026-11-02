@@ -7,6 +7,8 @@ import { InputGrid } from "../../inputs/InputGrid";
 import { SettingsGridField } from "../SettingsGridField";
 
 export const MigrationRecoverySettings = () => {
+  "use memo";
+
   const [isRetryingMigrations, setIsRetryingMigrations] = useState(false);
   // read live rather than from the form state: migrations can run while this
   // dialog is open, and these settings aren't managed by the form anyway.

@@ -9,6 +9,8 @@ import type { Setters } from "../types";
 
 /** Bonds are spent on the Stability ability, so that's set a page up */
 export const BondsSettings = ({ setters }: { setters: Setters }) => {
+  "use memo";
+
   const { settings } = useContext(StateContext);
 
   return (

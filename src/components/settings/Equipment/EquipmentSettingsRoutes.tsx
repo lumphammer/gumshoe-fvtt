@@ -9,6 +9,8 @@ import { EquipmentFieldSettings } from "./EquipmentFieldSettings";
  * area.
  */
 export const EquipmentSettingsRoutes = () => {
+  "use memo";
+
   return (
     <SlideInNestedPanelRoute
       direction={equipmentCategory}

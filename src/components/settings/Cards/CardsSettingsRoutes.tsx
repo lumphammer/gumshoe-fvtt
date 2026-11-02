@@ -8,6 +8,8 @@ import { cardCategory } from "./directions";
  * settings area.
  */
 export const CardsSettingsRoutes = () => {
+  "use memo";
+
   return (
     <SlideInNestedPanelRoute direction={cardCategory} margin="0em">
       <CardCategorySettings />

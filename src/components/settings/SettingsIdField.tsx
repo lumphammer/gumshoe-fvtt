@@ -21,6 +21,8 @@ export const SettingsIdField = ({
   warning,
   onChange,
 }: SettingsIdFieldProps) => {
+  "use memo";
+
   const handleClickEdit = () => {
     const newId = prompt(
       `Change ID string for "${name}"\n\n⚠️ Careful! ${warning}`,

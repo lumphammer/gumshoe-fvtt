@@ -30,6 +30,8 @@ const parseSettingsFile = (
 };
 
 export const ImportExportSettings = () => {
+  "use memo";
+
   const dispatch = useContext(DispatchContext);
   const { settings: settingsState } = useContext(StateContext);
   const isDirty = useContext(DirtyContext);

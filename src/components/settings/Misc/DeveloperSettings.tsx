@@ -7,6 +7,8 @@ import { SettingsGridField } from "../SettingsGridField";
 import type { Setters } from "../types";
 
 export const DeveloperSettings = ({ setters }: { setters: Setters }) => {
+  "use memo";
+
   const { settings } = useContext(StateContext);
 
   return (

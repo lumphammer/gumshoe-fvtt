@@ -7,6 +7,8 @@ import { SettingsGridField } from "../SettingsGridField";
 import type { Setters } from "../types";
 
 export const CustomThemesSettings = ({ setters }: { setters: Setters }) => {
+  "use memo";
+
   const { settings } = useContext(StateContext);
 
   return (

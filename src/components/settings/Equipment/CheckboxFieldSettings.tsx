@@ -17,6 +17,8 @@ export const CheckboxFieldSettings = ({
   categoryId,
   fieldId,
 }: CheckboxFieldSettingsProps) => {
+  "use memo";
+
   const dispatch = useContext(DispatchContext);
 
   const handleChangeDefault = useCallback(

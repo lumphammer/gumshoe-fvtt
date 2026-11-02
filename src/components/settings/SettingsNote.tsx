@@ -12,6 +12,8 @@ export const SettingsNote = ({
   children,
   mode = "warn",
 }: PropsWithChildren<{ mode?: "warn" | "info" }>) => {
+  "use memo";
+
   const theme = useContext(ThemeContext);
 
   const Icon = mode === "warn" ? FaTriangleExclamation : FaCircleInfo;

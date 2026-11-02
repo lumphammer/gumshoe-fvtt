@@ -19,6 +19,8 @@ export const NumberFieldSettings = ({
   categoryId,
   fieldId,
 }: NumberFieldSettingsProps) => {
+  "use memo";
+
   const dispatch = useContext(DispatchContext);
   const fieldStash = useRefStash(field);
 

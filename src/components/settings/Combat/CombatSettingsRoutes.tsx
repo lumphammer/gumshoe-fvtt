@@ -20,6 +20,8 @@ import {
  * settings area.
  */
 export const CombatSettingsRoutes = ({ setters }: { setters: Setters }) => {
+  "use memo";
+
   const { settings } = useContext(StateContext);
 
   return (

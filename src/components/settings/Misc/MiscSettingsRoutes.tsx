@@ -21,6 +21,8 @@ import { UsageStatsSettings } from "./UsageStatsSettings";
  * over the whole settings area.
  */
 export const MiscSettingsRoutes = ({ setters }: { setters: Setters }) => {
+  "use memo";
+
   return (
     <>
       <SlideInNestedPanelRoute direction={customThemes} margin="0em">
