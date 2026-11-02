@@ -3,6 +3,7 @@ import type {
   ThemeSeedV1,
 } from "@lumphammer/investigator-fvtt-types";
 
+import * as constants from "../constants";
 import { getCallingModuleId } from "../functions/getCallingModuleId";
 import { assertNotNull } from "../functions/utilities";
 import { runtimeConfig, type InstallSource } from "../runtime";
@@ -34,6 +35,7 @@ export const installTheme = (
 ) => {
   runtimeConfig.themes[id] = themeFactory(seed);
   setSource(runtimeConfig.themeSources, id, source);
+  Hooks.callAll(constants.runtimeConfigChanged);
 };
 
 export const injectGlobalHelper = () => {
@@ -46,6 +48,7 @@ export const injectGlobalHelper = () => {
       assertNotNull(CONFIG.Investigator, "CONFIG.Investigator");
       runtimeConfig.presets[id] = preset;
       setSource(runtimeConfig.presetSources, id, getCallerSource());
+      Hooks.callAll(constants.runtimeConfigChanged);
     },
   };
 };

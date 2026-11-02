@@ -496,18 +496,16 @@ few causes, listed here with what to do about each, in the order to do them.
 1. **Dead code.** _Done._ `InvestigatorActor` kept an immutable copy of
    itself (`registerImmutableDataUpdateHandler`), merged with immer on every
    update, which nothing read.
-2. **Stores and live reads written by hand.** The journal entry store repeats
-   the actor store's shape (a document's own data, plus embedded lists
-   patched by id), and each store repeats the same get-or-create cache. A
-   generic store over a parent and its embedded collections would cover the
-   actor, journal and (later) combat stores. Separately, several hooks
-   re-render when some Foundry hook fires, each in its own way: a forced
-   update in the attack cards (`useTokenActorChanges`) and the journal sheet
-   (`useCompendiumConfigChanges`), JSON strings for a stable identity in
-   `useItemPacks`, and fresh copies on every render in
-   `useRuntimeRegistries` (which defeats memoisation in its caller). One
-   helper, a store of a value read when given hooks fire and structurally
-   shared, would cover all of them.
+2. **Stores and live reads written by hand.** _Done._ The actor and journal
+   stores are both `createParentStore` (a document's own data, plus embedded
+   lists patched by id), the item, settings and world actors stores are
+   `createHookStore` (a value read again when given hooks fire), and
+   `cachedPer` and `once` replace the get-or-create caches
+   (`hookStores.ts`). What used to force a re-render on a hook is a store in
+   `gameStores.ts`: the Item compendiums, the installed presets and themes
+   (installing one now calls `investigator.runtimeConfigChanged`), the
+   user's targets (as names), and counters for compendium configuration and
+   tokens' actors, for what can't be copied.
 3. **Permissions checked in many places.** The trick (read the live
    document's permission in a selector, so it runs again on every change) is
    written out by hand in `useSheetPermissions`, `useIsDocumentOwner`, the

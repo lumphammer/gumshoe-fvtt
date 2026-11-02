@@ -79,6 +79,7 @@ declare module "fvtt-types/configuration" {
       [constants.settingsCloseAttempted]: () => void;
       [constants.newNPCPacksUpdated]: (newPacks: string[]) => void;
       [constants.themeHMR]: (themeName: string) => void;
+      [constants.runtimeConfigChanged]: () => void;
       [constants.nextTurn]: (requestingUserId: string) => void;
       [constants.editAttack]: (
         args: EditAttackArgs,

@@ -124,6 +124,10 @@ translations, adding fields and settings, releases).
     `SettingsView` (`pcDerived.ts`, `abilitiesDerived.ts`,
     `abilitySnapshots.ts`); settings helpers take `s = liveSettings`. The
     model's methods call the pure ones, so each rule lives once.
+- Anything else read from Foundry (the game's state, a hook that says
+  something changed) comes from a store too: `createHookStore` (a value read
+  again when given hooks fire) or `createHookCounter` (`hookStores.ts`), with
+  the shared ones in `gameStores.ts`. Don't force re-renders from hooks.
 - To show data from another document, read its snapshot too (e.g. the Bond
   sheet reads its PC's with `useActorSnapshot(item.actor, …)`), or several
   actors' with `useActorsSnapshot`: Foundry only re-renders a sheet for its

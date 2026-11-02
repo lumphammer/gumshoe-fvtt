@@ -12,6 +12,15 @@ import type {
   SnapshotStore,
 } from "./createSnapshotStore";
 import { createSnapshotStore } from "./createSnapshotStore";
+import type { HookWatch, Off } from "./hookStores";
+import {
+  cachedPer,
+  createHookStore,
+  on,
+  onHook,
+  once,
+  watchHooks,
+} from "./hookStores";
 
 /** An item's prepared data (`toObject(false)`), its system data as `TSystem`. */
 export type ItemData<TSystem = unknown> = Omit<Item.Source, "system"> & {
@@ -35,38 +44,174 @@ export type ActorSnapshot<TSystem = unknown> = DeepReadonly<ActorData<TSystem>>;
 
 export type SettingsSnapshot = DeepReadonly<SettingsDict>;
 
-type Off = () => void;
+/** The hooks for creating, updating and deleting a kind of document */
+const lifecycleHooks = (
+  documentName: string,
+  when: (doc: { parent: unknown }) => boolean,
+): HookWatch[] =>
+  ["create", "update", "delete"].map((verb) =>
+    onHook(
+      `${verb}${documentName}` as Hooks.HookName,
+      ((doc: { parent: unknown }) => when(doc)) as never,
+    ),
+  );
 
-/** Listen to a hook until the returned function is called. */
-function on<K extends Hooks.HookName>(hook: K, fn: Hooks.Function<K>): Off {
-  const id = Hooks.on(hook, fn);
-  return () => Hooks.off(hook, id);
+// ---------------------------------------------------------------------------
+// A document with embedded documents (an actor's items, a journal's pages)
+
+type EmbeddedDoc = { id: string | null; parent: unknown };
+
+/** Which of a parent's embedded documents a store holds, under `key` */
+type Collection = {
+  /** the documents' name, as in their hooks (`createItem`): "Item" */
+  documentName: string;
+  /** the parent's documents of this kind, now */
+  contents: () => readonly EmbeddedDoc[];
+  /** a document's data, as the store holds it (a fresh copy) */
+  toData: (doc: never) => unknown;
+};
+
+/**
+ * Change (or add, or remove) one embedded document in a list, keeping the
+ * others as they were. `null` removes it.
+ */
+export type RefreshEmbedded = (
+  key: string,
+  id: string | null,
+  data: unknown,
+) => void;
+
+/**
+ * Replace (or add, or remove) one embedded document in a list, keeping the
+ * others as they were.
+ */
+function withDocument<T extends { readonly _id: string | null }>(
+  docs: readonly T[],
+  id: string,
+  doc: T | null,
+): T[] {
+  const index = docs.findIndex((d) => d._id === id);
+  if (doc === null) return docs.filter((d) => d._id !== id);
+  return index === -1 ? [...docs, doc] : docs.with(index, doc);
 }
+
+/**
+ * A store of a document's own data and its embedded documents, which follows
+ * changes to any of them. Only the document that changed is copied (and the
+ * parent's own data, which can be derived from its embedded documents).
+ *
+ * @param ownData the parent's own data, without its embedded documents (a
+ * fresh copy)
+ * @param updateHook the hook for updates to the parent
+ * @param collections the embedded documents to hold, by key
+ * @param watchMore anything else to follow, given a way to replace one
+ * embedded document, and to read everything again
+ */
+export function createParentStore<TData>(
+  parent: unknown,
+  {
+    ownData,
+    updateHook,
+    collections,
+    watchMore,
+  }: {
+    ownData: () => object;
+    updateHook: Hooks.HookName;
+    collections: Record<string, Collection>;
+    watchMore?: (refresh: RefreshEmbedded, readAll: () => void) => Off[];
+  },
+): SnapshotStore<TData> {
+  const entries = Object.entries(collections);
+  return createSnapshotStore<TData>(
+    () =>
+      ({
+        ...ownData(),
+        ...Object.fromEntries(
+          entries.map(([key, c]) => [
+            key,
+            c.contents().map((doc) => c.toData(doc as never)),
+          ]),
+        ),
+      }) as TData,
+    (onChange: OnChange<TData>) => {
+      const refresh = (
+        key: string | null,
+        id?: string | null,
+        data?: unknown,
+      ) =>
+        onChange((previous) => {
+          const next = {
+            ...(previous as Record<string, unknown>),
+            ...ownData(),
+          };
+          if (key !== null && id) {
+            next[key] = withDocument(
+              previous[key as keyof typeof previous] as readonly {
+                _id: string | null;
+              }[],
+              id,
+              (data ?? null) as { _id: string | null } | null,
+            );
+          }
+          return next as TData;
+        });
+      const isOurs = (doc: { parent: unknown }) => doc.parent === parent;
+      const offs: Off[] = [
+        on(updateHook, ((doc: unknown) => {
+          if (doc === parent) refresh(null);
+        }) as Hooks.Function<typeof updateHook>),
+      ];
+      for (const [key, c] of entries) {
+        const onDoc = (deleted: boolean) => (doc: EmbeddedDoc) => {
+          if (isOurs(doc)) {
+            refresh(key, doc.id, deleted ? null : c.toData(doc as never));
+          }
+        };
+        offs.push(
+          on(
+            `create${c.documentName}` as Hooks.HookName,
+            onDoc(false) as never,
+          ),
+          on(
+            `update${c.documentName}` as Hooks.HookName,
+            onDoc(false) as never,
+          ),
+          on(`delete${c.documentName}` as Hooks.HookName, onDoc(true) as never),
+        );
+      }
+      offs.push(...(watchMore?.(refresh, () => onChange()) ?? []));
+      return () => offs.forEach((off) => off());
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Items
 
 const itemData = (item: Item.Implementation) =>
   item.toObject(false) as unknown as ItemData;
 
 /** A store of one item, which follows changes to it and its effects. */
-function createItemStore<TSystem>(item: Item.Implementation) {
-  return createSnapshotStore<ItemData<TSystem>>(
-    () => itemData(item) as ItemData<TSystem>,
-    (onChange) => {
-      const onItem = (doc: Item.Implementation) => {
-        if (doc === item) onChange();
-      };
-      const onEffect = (effect: ActiveEffect.Implementation) => {
-        if (effect.parent === item) onChange();
-      };
-      const offs = [
-        on("updateItem", onItem),
-        on("createActiveEffect", onEffect),
-        on("updateActiveEffect", onEffect),
-        on("deleteActiveEffect", onEffect),
-      ];
-      return () => offs.forEach((off) => off());
-    },
+const createItemStore = (item: Item.Implementation) =>
+  createHookStore(
+    () => itemData(item),
+    [
+      onHook("updateItem", (doc) => doc === item),
+      ...lifecycleHooks("ActiveEffect", (effect) => effect.parent === item),
+    ],
   );
+
+const itemStores = cachedPer(createItemStore);
+
+/** The store of an item (see `createItemStore`) */
+export function getItemStore<TSystem>(
+  item: Item.Implementation,
+): SnapshotStore<ItemData<TSystem>> {
+  return itemStores(item) as SnapshotStore<ItemData<TSystem>>;
 }
+
+// ---------------------------------------------------------------------------
+// Actors
 
 /** An actor's own prepared data, without its items and effects. */
 function actorOnlyData(actor: Actor.Implementation) {
@@ -86,187 +231,92 @@ function actorOnlyData(actor: Actor.Implementation) {
   };
 }
 
-function actorData(actor: Actor.Implementation) {
-  return {
-    ...actorOnlyData(actor),
-    items: actor.items.contents.map(itemData),
-    effects: actor.effects.contents.map((effect) => effect.toObject(false)),
-  } as unknown as ActorData;
-}
-
-/**
- * Replace (or add, or remove) one embedded document in a list, keeping the
- * others as they were.
- */
-function withDocument<T extends { readonly _id: string | null }>(
-  docs: readonly T[],
-  id: string,
-  doc: T | null,
-): T[] {
-  const index = docs.findIndex((d) => d._id === id);
-  if (doc === null) return docs.filter((d) => d._id !== id);
-  return index === -1 ? [...docs, doc] : docs.with(index, doc);
-}
-
 /**
  * A store of an actor with its items and effects, which follows changes to
- * any of them. Only the document that changed is copied (and the actor's own
- * data, which can be derived from its items).
+ * any of them (and to its base actor's, for an unlinked token's).
  */
-function createActorStore<TSystem>(actor: Actor.Implementation) {
-  return createSnapshotStore<ActorData<TSystem>>(
-    () => actorData(actor) as ActorData<TSystem>,
-    (onChange: OnChange<ActorData<TSystem>>) => {
-      const refresh = (
-        collection: "items" | "effects" | null,
-        id?: string | null,
-        doc?: unknown,
-      ) => {
-        onChange((previous) => {
-          const next = {
-            ...(previous as ActorData<TSystem>),
-            ...actorOnlyData(actor),
-          } as ActorData<TSystem>;
-          if (collection && id) {
-            (next[collection] as unknown[]) = withDocument(
-              previous[collection] as readonly { _id: string | null }[],
-              id,
-              (doc ?? null) as { _id: string | null } | null,
-            );
-          }
-          return next;
-        });
-      };
-
-      const isOurs = (doc: { parent: unknown }) => doc.parent === actor;
-      const onItem = (item: Item.Implementation) => {
-        if (isOurs(item)) refresh("items", item.id, itemData(item));
-      };
-      const onDeleteItem = (item: Item.Implementation) => {
-        if (isOurs(item)) refresh("items", item.id, null);
-      };
-      const onEffect = (effect: ActiveEffect.Implementation) => {
-        if (isOurs(effect)) {
-          refresh("effects", effect.id, effect.toObject(false));
-        } else if (effect.parent instanceof Item && isOurs(effect.parent)) {
-          // an item's own effect: the item's copy includes it
-          const item = effect.parent;
+const createActorStore = (actor: Actor.Implementation) =>
+  createParentStore<ActorData>(actor, {
+    ownData: () => actorOnlyData(actor),
+    updateHook: "updateActor",
+    collections: {
+      items: {
+        documentName: "Item",
+        contents: () => actor.items.contents,
+        toData: itemData,
+      },
+      effects: {
+        documentName: "ActiveEffect",
+        contents: () => actor.effects.contents,
+        toData: (effect: ActiveEffect.Implementation) => effect.toObject(false),
+      },
+    },
+    watchMore: (refresh, readAll) => {
+      // an item's own effect: the item's copy includes it
+      const onItemEffect = (effect: ActiveEffect.Implementation) => {
+        const item = effect.parent;
+        if (item instanceof Item && item.parent === actor) {
           refresh("items", item.id, itemData(item));
         }
       };
-      const onDeleteEffect = (effect: ActiveEffect.Implementation) => {
-        if (isOurs(effect)) refresh("effects", effect.id, null);
-        else onEffect(effect);
-      };
-
+      const offs = [
+        on("createActiveEffect", onItemEffect),
+        on("updateActiveEffect", onItemEffect),
+        on("deleteActiveEffect", onItemEffect),
+      ];
       // An unlinked token's actor inherits from its base actor: Foundry
       // updates it in place when that changes, without a hook of its own, so
       // read it all again (once Foundry has: hence the microtask)
       const baseActor = actor.isToken ? actor.token?.baseActor : null;
-      const isBase = (doc: { parent: unknown }) =>
-        baseActor != null &&
-        (doc.parent === baseActor ||
-          (doc.parent instanceof Item && doc.parent.parent === baseActor));
-      const onBase = (doc: { parent: unknown }) => {
-        if (isBase(doc)) queueMicrotask(() => onChange());
-      };
-
-      const offs = [
-        on("updateActor", (doc) => {
-          if (doc === actor) {
-            refresh(null);
-          } else if (baseActor != null && doc === baseActor) {
-            queueMicrotask(() => onChange());
-          }
-        }),
-        on("createItem", onItem),
-        on("updateItem", onItem),
-        on("deleteItem", onDeleteItem),
-        on("createActiveEffect", onEffect),
-        on("updateActiveEffect", onEffect),
-        on("deleteActiveEffect", onDeleteEffect),
-        ...(baseActor == null
-          ? []
-          : [
-              on("createItem", onBase),
-              on("updateItem", onBase),
-              on("deleteItem", onBase),
-              on("createActiveEffect", onBase),
-              on("updateActiveEffect", onBase),
-              on("deleteActiveEffect", onBase),
-            ]),
-      ];
-      return () => offs.forEach((off) => off());
+      if (baseActor != null) {
+        const isBase = (doc: { parent: unknown }) =>
+          doc.parent === baseActor ||
+          (doc.parent instanceof Item && doc.parent.parent === baseActor);
+        offs.push(
+          watchHooks(
+            [
+              onHook("updateActor", (doc) => doc === baseActor),
+              ...lifecycleHooks("Item", isBase),
+              ...lifecycleHooks("ActiveEffect", isBase),
+            ],
+            () => queueMicrotask(readAll),
+          ),
+        );
+      }
+      return offs;
     },
-  );
-}
+  });
 
-// One store per document, shared by everything that reads it (e.g. the
-// badges on every ability row of a PC sheet share the PC's store). Weak, so a
-// store goes when its document does; and a store only listens to hooks while
-// something is subscribed to it.
-const itemStores = new WeakMap<
-  Item.Implementation,
-  ReturnType<typeof createItemStore>
->();
-const actorStores = new WeakMap<
-  Actor.Implementation,
-  ReturnType<typeof createActorStore>
->();
-
-/** The store of an item (see `createItemStore`) */
-export function getItemStore<TSystem>(
-  item: Item.Implementation,
-): SnapshotStore<ItemData<TSystem>> {
-  let store = itemStores.get(item);
-  if (!store) {
-    store = createItemStore(item);
-    itemStores.set(item, store);
-  }
-  return store as SnapshotStore<ItemData<TSystem>>;
-}
+const actorStores = cachedPer(createActorStore);
 
 /** The store of an actor (see `createActorStore`) */
 export function getActorStore<TSystem>(
   actor: Actor.Implementation,
 ): SnapshotStore<ActorData<TSystem>> {
-  let store = actorStores.get(actor);
-  if (!store) {
-    store = createActorStore(actor);
-    actorStores.set(actor, store);
-  }
-  return store as SnapshotStore<ActorData<TSystem>>;
+  return actorStores(actor) as SnapshotStore<ActorData<TSystem>>;
 }
 
-let settingsStore: ReturnType<typeof createSettingsStore> | null = null;
-
-function createSettingsStore() {
-  return createSnapshotStore<SettingsDict>(
-    () => foundry.utils.deepClone(getSettingsDict()),
-    (onChange) => {
-      const prefix = `${systemId}.`;
-      // world (and user) settings are Setting documents; client settings
-      // live in localStorage and have their own hook
-      const onDocument = (doc: Setting.Implementation) => {
-        if (doc.key.startsWith(prefix)) onChange();
-      };
-      const offs = [
-        on("createSetting", onDocument),
-        on("updateSetting", onDocument),
-        on("clientSettingChanged", (key) => {
-          if (key.startsWith(prefix)) onChange();
-        }),
-      ];
-      return () => offs.forEach((off) => off());
-    },
-  );
-}
+// ---------------------------------------------------------------------------
+// Settings
 
 /** The one store of all our settings. */
-export function getSettingsStore() {
-  settingsStore ??= createSettingsStore();
-  return settingsStore;
-}
+export const getSettingsStore = once(() => {
+  const prefix = `${systemId}.`;
+  // world (and user) settings are Setting documents; client settings live in
+  // localStorage and have their own hook
+  const isOurs = (doc: Setting.Implementation) => doc.key.startsWith(prefix);
+  return createHookStore(
+    () => foundry.utils.deepClone(getSettingsDict()),
+    [
+      onHook("createSetting", isOurs),
+      onHook("updateSetting", isOurs),
+      onHook("clientSettingChanged", (key) => key.startsWith(prefix)),
+    ],
+  );
+});
+
+// ---------------------------------------------------------------------------
+// The world's actors
 
 /**
  * What's known of each of the world's actors without subscribing to it: enough
@@ -298,41 +348,31 @@ export const toWorldActorEntry = (
   };
 };
 
-let worldActorsStore: ReturnType<typeof createWorldActorsStore> | null = null;
-
-/** The world's actors (not tokens' or compendiums'), in order. */
-function createWorldActorsStore() {
+/**
+ * The one store of the world's actors (not tokens' or compendiums'), in
+ * order, as `WorldActorEntry`s: it changes when one is created, deleted, or
+ * updated (only what the entries hold is copied, and they're structurally
+ * shared). For anything that looks actors up by id (`useActorsSnapshot`), or
+ * needs to know who's in which party.
+ */
+export const getWorldActorsStore = once(() => {
   const isWorldActor = (actor: Actor.Implementation) =>
     !actor.isToken && !actor.pack;
-  return createSnapshotStore<WorldActorEntry[]>(
+  return createHookStore<WorldActorEntry[]>(
     () =>
       (game as foundry.Game).actors?.contents.flatMap((actor) =>
         actor.id === null ? [] : [toWorldActorEntry(actor)],
       ) ?? [],
-    (onChange) => {
-      const onActor = (actor: Actor.Implementation) => {
-        if (isWorldActor(actor)) onChange();
-      };
-      const offs = [
-        on("createActor", onActor),
-        on("updateActor", onActor),
-        on("deleteActor", onActor),
-      ];
-      return () => offs.forEach((off) => off());
-    },
+    [
+      onHook("createActor", isWorldActor),
+      onHook("updateActor", isWorldActor),
+      onHook("deleteActor", isWorldActor),
+    ],
   );
-}
+});
 
-/**
- * The one store of the world's actors, as `WorldActorEntry`s: it changes
- * when one is created, deleted, or updated (only what the entries hold is
- * copied, and they're structurally shared). For anything that looks actors up
- * by id (`useActorsSnapshot`), or needs to know who's in which party.
- */
-export function getWorldActorsStore() {
-  worldActorsStore ??= createWorldActorsStore();
-  return worldActorsStore;
-}
+// ---------------------------------------------------------------------------
+// Journal entries
 
 /**
  * What's read of a journal page: its prepared data (`toObject(false)`), loosely
@@ -360,9 +400,6 @@ export type JournalEntryData = {
 };
 export type JournalEntrySnapshot = DeepReadonly<JournalEntryData>;
 
-const journalPageData = (page: JournalEntryPage.Implementation) =>
-  page.toObject(false) as unknown as JournalPageData;
-
 /**
  * A journal entry's own data, without its pages (from its source, so its pages
  * aren't copied only to be thrown away)
@@ -374,65 +411,21 @@ function journalEntryOnlyData(entry: JournalEntry.Implementation) {
   return foundry.utils.deepClone(rest);
 }
 
-/**
- * A store of a journal entry with its pages, which follows changes to either.
- * Only the page that changed is copied (and the entry's own data).
- */
-function createJournalEntryStore(entry: JournalEntry.Implementation) {
-  return createSnapshotStore<JournalEntryData>(
-    () => ({
-      ...journalEntryOnlyData(entry),
-      pages: entry.pages.contents.map(journalPageData),
-    }),
-    (onChange) => {
-      const refresh = (id?: string | null, page?: JournalPageData | null) => {
-        onChange((previous) => {
-          const next = {
-            ...(previous as JournalEntryData),
-            ...journalEntryOnlyData(entry),
-          };
-          if (id) {
-            next.pages = withDocument(
-              previous.pages as JournalPageData[],
-              id,
-              page ?? null,
-            );
-          }
-          return next;
-        });
-      };
-      const isOurs = (page: { parent: unknown }) => page.parent === entry;
-      const onPage = (page: JournalEntryPage.Implementation) => {
-        if (isOurs(page)) refresh(page.id, journalPageData(page));
-      };
-      const offs = [
-        on("updateJournalEntry", (doc) => {
-          if (doc === entry) refresh();
-        }),
-        on("createJournalEntryPage", onPage),
-        on("updateJournalEntryPage", onPage),
-        on("deleteJournalEntryPage", (page) => {
-          if (isOurs(page)) refresh(page.id, null);
-        }),
-      ];
-      return () => offs.forEach((off) => off());
+/** A store of a journal entry with its pages, which follows changes to either. */
+const createJournalEntryStore = (entry: JournalEntry.Implementation) =>
+  createParentStore<JournalEntryData>(entry, {
+    ownData: () => journalEntryOnlyData(entry),
+    updateHook: "updateJournalEntry",
+    collections: {
+      pages: {
+        documentName: "JournalEntryPage",
+        contents: () => entry.pages.contents,
+        toData: (page: JournalEntryPage.Implementation) => page.toObject(false),
+      },
     },
-  );
-}
-
-const journalEntryStores = new WeakMap<
-  JournalEntry.Implementation,
-  ReturnType<typeof createJournalEntryStore>
->();
+  });
 
 /** The store of a journal entry (see `createJournalEntryStore`) */
-export function getJournalEntryStore(
+export const getJournalEntryStore: (
   entry: JournalEntry.Implementation,
-): SnapshotStore<JournalEntryData> {
-  let store = journalEntryStores.get(entry);
-  if (!store) {
-    store = createJournalEntryStore(entry);
-    journalEntryStores.set(entry, store);
-  }
-  return store;
-}
+) => SnapshotStore<JournalEntryData> = cachedPer(createJournalEntryStore);
