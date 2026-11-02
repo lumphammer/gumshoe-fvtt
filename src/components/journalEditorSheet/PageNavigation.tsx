@@ -3,6 +3,7 @@ import { BsImage, BsSortNumericDown } from "react-icons/bs";
 import { FaBarsStaggered, FaImage } from "react-icons/fa6";
 import { VscOutput } from "react-icons/vsc";
 
+import { useJournalEntrySnapshot } from "../../hooks/useJournalEntrySnapshot";
 import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
 import { absoluteCover } from "../absoluteCover";
@@ -60,12 +61,23 @@ export const PageNavigation = ({
   onNavigate,
   activePageId,
 }: PageNavigationProps) => {
+  "use memo";
+
   const { app } = useDocumentSheetContext();
   const theme = useTheme();
 
-  const pages = Array.from(journalEntry.pages.values()).sort((a, b) => {
-    return a.sort - b.sort;
-  });
+  // what's shown of each page, in order
+  const pages = useJournalEntrySnapshot(journalEntry, (entry) =>
+    entry.pages
+      .map((page) => ({
+        id: page._id,
+        name: page.name,
+        type: page.type,
+        level: page.title.level,
+        sort: page.sort,
+      }))
+      .toSorted((a, b) => a.sort - b.sort),
+  );
 
   const handlePageClick = useCallback(
     (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -187,7 +199,7 @@ export const PageNavigation = ({
                     ? theme.colors.backgroundButton
                     : "transparent",
                 border: "1px solid transparent",
-                marginLeft: `${(page.title.level - 1) * 1.5}em`,
+                marginLeft: `${(page.level - 1) * 1.5}em`,
                 "&:hover": {
                   border: `1px solid ${theme.colors.accent}`,
                 },

@@ -473,3 +473,14 @@ migration error), the usage stats report (`useReport`), the presets and
 themes installed (`useRuntimeRegistries`), and the Item compendiums
 (`useItemPacks`, shared with the personal detail sheet, which follows the
 compendium sidebar's renders).
+
+The journal editor is compiled too, and passes `rerenderOnFoundryRender:
+false`. It reads its entry and pages through `useJournalEntrySnapshot`, over
+one store per entry (`getJournalEntryStore`, which copies only the page that
+changed): the entry's name and CSS classes, which pages there are and their
+order and indents, and each page's name, CSS classes, image and caption. It
+looks a page up live only to hand to its editor, to write through. The HTML
+editor (Monaco) is uncontrolled: it reads the page's content once, when it's
+mounted, as before. Ownership comes from the snapshot's selector too, provided
+through `IsEditableContext`; it re-renders when compendiums are configured,
+since locking the compendium an entry is in changes a setting, not the entry.

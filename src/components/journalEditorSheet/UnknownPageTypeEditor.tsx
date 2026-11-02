@@ -4,15 +4,19 @@ import { Button } from "../inputs/Button";
 
 interface UnknownPageTypeEditorProps {
   page: any;
+  /** the page's type, from its snapshot */
+  type: string;
 }
 
 /**
  * Display for a  page type we don't handle (PDF or video, at the time of
  * writing.) Just displays a link to open Foundry's native editor.
  */
-export const UnknownPageTypeEditor = ({ page }: UnknownPageTypeEditorProps) => {
-  const sheet = page.sheet;
-  assertApplicationV2(sheet);
+export const UnknownPageTypeEditor = ({
+  page,
+  type,
+}: UnknownPageTypeEditorProps) => {
+  "use memo";
 
   return (
     <div
@@ -27,9 +31,13 @@ export const UnknownPageTypeEditor = ({ page }: UnknownPageTypeEditorProps) => {
     >
       <Button
         css={{ width: "auto" }}
-        onClick={() => sheet.render({ force: true })}
+        onClick={() => {
+          const sheet = page.sheet;
+          assertApplicationV2(sheet);
+          void sheet.render({ force: true });
+        }}
       >
-        Open {page.type} page
+        Open {type} page
       </Button>
     </div>
   );

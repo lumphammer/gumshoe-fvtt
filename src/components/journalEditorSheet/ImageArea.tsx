@@ -1,6 +1,7 @@
 import { useCallback, useContext } from "react";
 
 import { FilePicker } from "../../fvtt-exports";
+import { useJournalEntrySnapshot } from "../../hooks/useJournalEntrySnapshot";
 import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
@@ -15,9 +16,14 @@ interface ImageAreaProps {
  * lifting.
  */
 export const ImageArea = ({ page }: ImageAreaProps) => {
-  const theme = useContext(ThemeContext);
+  "use memo";
 
+  const theme = useContext(ThemeContext);
   const { app } = useDocumentSheetContext();
+  const src = useJournalEntrySnapshot(
+    page.parent,
+    (entry) => entry.pages.find((p) => p._id === page.id)?.src ?? null,
+  );
 
   const handleClickImage = useCallback(
     (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -25,7 +31,7 @@ export const ImageArea = ({ page }: ImageAreaProps) => {
       event.stopPropagation();
       const fp = new FilePicker({
         type: "image",
-        current: page.src ?? undefined,
+        current: src ?? undefined,
         callback: (path: string) => {
           void page.update({
             src: path,
@@ -36,9 +42,9 @@ export const ImageArea = ({ page }: ImageAreaProps) => {
           left: (app.position.left ?? 0) + 10,
         },
       });
-      return fp.browse(page.src ?? "");
+      return fp.browse(src ?? "");
     },
-    [app.position.left, app.position.top, page],
+    [app.position.left, app.position.top, page, src],
   );
 
   return (
@@ -56,7 +62,7 @@ export const ImageArea = ({ page }: ImageAreaProps) => {
         }}
         onClick={handleClickImage}
       >
-        {page.src ? (
+        {src ? (
           <img
             css={{
               cursor: "pointer",
@@ -66,7 +72,7 @@ export const ImageArea = ({ page }: ImageAreaProps) => {
               maxWidth: "100%",
               maxHeight: "100%",
             }}
-            src={page.src}
+            src={src}
           />
         ) : (
           <div

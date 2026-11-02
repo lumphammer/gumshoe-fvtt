@@ -27,6 +27,8 @@ export const HTMLHistory = ({
   saveDocument,
   cancelHistoryMode,
 }: HTMLHistoryProps) => {
+  "use memo";
+
   const memory = useMemo(() => {
     const storedBarememory = getStoredDocumentMemory(page);
     if (storedBarememory) {

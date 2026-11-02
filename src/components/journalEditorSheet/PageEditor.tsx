@@ -4,6 +4,7 @@ import { BsIndent, BsTrash, BsUnindent } from "react-icons/bs";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { systemLogger } from "../../functions/utilities";
+import { useJournalEntrySnapshot } from "../../hooks/useJournalEntrySnapshot";
 import { useRefStash } from "../../hooks/useRefStash";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { HTMLPage } from "./HTMLPage";
@@ -23,6 +24,8 @@ interface PageEditorProps {
  * the content type.
  */
 export const PageEditor = ({ page }: PageEditorProps) => {
+  "use memo";
+
   // optimize toolbar rendering by putting page in a ref so the callbacks are
   // all stable
   const pageRef = useRefStash(page);
@@ -123,15 +126,23 @@ export const PageEditor = ({ page }: PageEditorProps) => {
     ]);
   }, [pageRef]);
 
-  const pages = page.parent.pages.contents.sort((a: any, b: any) => {
-    return a.sort - b.sort;
+  // the page as it is now, and where it is among the others
+  const view = useJournalEntrySnapshot(page.parent, (entry) => {
+    const pages = entry.pages.toSorted((a, b) => a.sort - b.sort);
+    const thisIndex = pages.findIndex((p) => p._id === page.id);
+    const self = pages[thisIndex];
+    return {
+      name: self?.name ?? "",
+      type: self?.type ?? "",
+      level: self?.title.level ?? MIN_INDENT,
+      canMoveUp: thisIndex > 0,
+      canMoveDown: thisIndex !== -1 && thisIndex < pages.length - 1,
+    };
   });
-  const thisIndex = pages.findIndex((p: any) => p._id === page._id);
 
-  const canMoveUp = thisIndex > 0;
-  const canMoveDown = thisIndex < pages.length - 1;
-  const canIndent = page.title.level < MAX_INDENT;
-  const canOutdent = page.title.level > MIN_INDENT;
+  const { canMoveUp, canMoveDown } = view;
+  const canIndent = view.level < MAX_INDENT;
+  const canOutdent = view.level > MIN_INDENT;
 
   useToolbarContent(
     "Page",
@@ -208,7 +219,7 @@ export const PageEditor = ({ page }: PageEditorProps) => {
       }}
     >
       <div data-testid="name">
-        <AsyncTextInput value={page.name} onChange={handleRename} />
+        <AsyncTextInput value={view.name} onChange={handleRename} />
       </div>
       <div
         data-testid="main-area"
@@ -217,12 +228,12 @@ export const PageEditor = ({ page }: PageEditorProps) => {
           position: "relative",
         }}
       >
-        {page.type === "image" ? (
+        {view.type === "image" ? (
           <ImageEditor page={page} key={page.id} />
-        ) : page.type === "text" ? (
+        ) : view.type === "text" ? (
           <HTMLPage page={page} key={page.id} />
         ) : (
-          <UnknownPageTypeEditor page={page} key={page.id} />
+          <UnknownPageTypeEditor page={page} type={view.type} key={page.id} />
         )}
       </div>
     </div>
