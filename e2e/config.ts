@@ -27,3 +27,10 @@ export const worldId = "investigator-e2e";
 
 /** Where global setup saves the Gamemaster's logged-in session. */
 export const gmStorageStatePath = path.join(dirname, ".auth", "gm.json");
+
+/**
+ * Chromium's launch arguments. Headless Chromium can open the sound card
+ * directly through ALSA, taking it from PipeWire and silencing the desktop
+ * until WirePlumber restarts (#1504); no test needs sound.
+ */
+export const browserArgs = ["--disable-audio-output"];

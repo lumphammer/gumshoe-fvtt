@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 import {
+  browserArgs,
   foundryDataPath,
   foundryUrl,
   gmStorageStatePath,
@@ -36,5 +37,6 @@ export default defineConfig({
     viewport: { width: 1600, height: 1000 },
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
+    launchOptions: { args: browserArgs },
   },
 });
