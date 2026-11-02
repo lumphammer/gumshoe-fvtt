@@ -26,12 +26,12 @@ export const installDropActorSheetDataHandler = () => {
       !isPartyActor(actor) ||
       !game.user.isGM ||
       !("uuid" in data) ||
-      typeof data.uuid !== "string"
+      typeof data["uuid"] !== "string"
     ) {
       return;
     }
     // (only world actors: party members are kept by id)
-    const dropped = fromUuidSync(data.uuid);
+    const dropped = fromUuidSync(data["uuid"]);
     const actorIds =
       dropped instanceof Actor && dropped.pack === null
         ? [dropped.id ?? ""]

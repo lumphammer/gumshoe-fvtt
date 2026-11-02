@@ -1,7 +1,6 @@
 import { assertGame } from "../../functions/isGame";
 import { assertNotNull } from "../../functions/utilities";
 import { isClassicCombat } from "../../module/combat/classicCombat";
-import type { InvestigatorCombat } from "../../module/combat/InvestigatorCombat";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { isTurnPassingCombatant } from "../../module/combat/turnPassingCombatant";
 import { assertKnownCombat } from "../../module/combat/types";
@@ -42,7 +41,7 @@ export const Tracker = () => {
 
   // STATE & DERIVED DATA
 
-  const combat = game.combat as InvestigatorCombat | null;
+  const combat = game.combat;
 
   assertKnownCombat(combat);
   const trackerContextValue = useTrackerContextValue(combat);

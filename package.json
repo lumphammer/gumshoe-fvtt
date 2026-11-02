@@ -89,12 +89,12 @@
     "immer": "^11.2.9",
     "jest-diff": "^30.5.2",
     "json5": "^2.2.3",
-    "knip": "^6.43.0",
+    "knip": "^6.44.1",
     "less": "catalog:",
     "nanoid": "^6.0.2",
     "oxc-transform-react": "catalog:",
-    "oxfmt": "^0.74.0",
-    "oxlint": "^1.89.0",
+    "oxfmt": "^0.75.0",
+    "oxlint": "^1.90.0",
     "oxlint-tsgolint": "^7.0.2005",
     "prettier": "^3.9.10",
     "react": "catalog:",
@@ -120,7 +120,7 @@
     },
     "packageManager": {
       "name": "pnpm",
-      "version": "12.15.0",
+      "version": "12.16.1",
       "onFail": "download"
     }
   }
