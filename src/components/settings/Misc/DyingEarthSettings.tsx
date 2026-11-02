@@ -9,6 +9,8 @@ import { SettingsStringList } from "../SettingsStringList";
 import type { Setters } from "../types";
 
 export const DyingEarthSettings = ({ setters }: { setters: Setters }) => {
+  "use memo";
+
   const { settings } = useContext(StateContext);
   return (
     <InputGrid>

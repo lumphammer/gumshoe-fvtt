@@ -59,7 +59,7 @@ import {
 import { EquipmentSettings } from "./Equipment/EquipmentSettings";
 import { EquipmentSettingsRoutes } from "./Equipment/EquipmentSettingsRoutes";
 import { useSettingsState } from "./hooks";
-import { getVisibleMiscPages, miscPages } from "./Misc/miscPages";
+import { miscPages, useVisibleMiscPages } from "./Misc/miscPages";
 import { MiscSettingsRoutes } from "./Misc/MiscSettingsRoutes";
 import { SettingsBreadcrumbs } from "./SettingsBreadcrumbs";
 import { SettingsMenu } from "./SettingsMenu";
@@ -68,6 +68,8 @@ import { StabilitySettings } from "./Stability/StabilitySettings";
 import { StabilitySettingsRoutes } from "./Stability/StabilitySettingsRoutes";
 
 export const Settings = () => {
+  "use memo";
+
   assertGame(game);
   const foundryApplication = useContext(FoundryAppContext);
   if (foundryApplication === null) {
@@ -83,6 +85,7 @@ export const Settings = () => {
     modify,
   } = useSettingsState();
   const theme = useTheme(tempState.settings.defaultThemeName);
+  const visibleMiscPages = useVisibleMiscPages();
 
   const handleClose = useCallback(async () => {
     let aye = !isDirty();
@@ -193,7 +196,7 @@ export const Settings = () => {
       label: "Miscellaneous",
       description: "MiscellaneousDescription",
       icon: <FaEllipsis />,
-      content: <SettingsMenu pages={getVisibleMiscPages()} />,
+      content: <SettingsMenu pages={visibleMiscPages} />,
       subPages: miscPages,
       childRoutes: <MiscSettingsRoutes setters={setters} />,
     },

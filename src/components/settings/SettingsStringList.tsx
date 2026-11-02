@@ -33,6 +33,8 @@ export const SettingsStringList = ({
   emptyMessage = "Nothing here yet.",
   className,
 }: SettingsStringListProps) => {
+  "use memo";
+
   const containerRef = useRef<HTMLDivElement>(null);
   // index of a row whose input should grab focus after the next render
   const focusIndexRef = useRef<number | null>(null);

@@ -2,7 +2,7 @@ import React, { useCallback, useContext } from "react";
 
 import * as constants from "../../constants";
 import { assertGame } from "../../functions/isGame";
-import { runtimeConfig } from "../../runtime";
+import { useRuntimeRegistries } from "../../hooks/useRuntimeRegistries";
 import { InputGrid } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
 import { DispatchContext, StateContext } from "./contexts";
@@ -15,7 +15,9 @@ interface CoreSettingsProps {
 }
 
 export const CoreSettings = ({ setters }: CoreSettingsProps) => {
-  const presets = runtimeConfig.presets;
+  "use memo";
+
+  const { presets, themes } = useRuntimeRegistries();
   const { settings } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
 
@@ -63,9 +65,9 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
             setters.defaultThemeName(e.currentTarget.value);
           }}
         >
-          {Object.keys(runtimeConfig.themes).map((themeName: string) => (
+          {Object.keys(themes).map((themeName: string) => (
             <option key={themeName} value={themeName}>
-              {runtimeConfig.themes[themeName].displayName}
+              {themes[themeName].displayName}
             </option>
           ))}
         </Select>

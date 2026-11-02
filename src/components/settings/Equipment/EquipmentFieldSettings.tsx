@@ -22,6 +22,8 @@ import { NumberFieldSettings } from "./NumberFieldSettings";
 import { StringFieldSettings } from "./StringFieldSettings";
 
 export const EquipmentFieldSettings = () => {
+  "use memo";
+
   const categoryIndex = useParams(equipmentCategory);
   const index = useParams(equipmentField);
   const dispatch = useContext(DispatchContext);

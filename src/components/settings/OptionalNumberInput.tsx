@@ -19,6 +19,8 @@ export const OptionalNumberInput = ({
   min,
   max,
 }: OptionalNumberInputProps) => {
+  "use memo";
+
   return (
     <div
       css={{

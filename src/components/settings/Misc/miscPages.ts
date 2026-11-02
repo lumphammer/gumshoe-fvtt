@@ -64,3 +64,9 @@ export const getVisibleMiscPages = () =>
     }
     return true;
   });
+
+/**
+ * `getVisibleMiscPages`, as a hook: hooks aren't compiled, so it looks again
+ * on every render (React Compiler would keep the first answer).
+ */
+export const useVisibleMiscPages = () => getVisibleMiscPages();

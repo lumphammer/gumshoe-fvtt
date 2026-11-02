@@ -33,6 +33,8 @@ export const SettingsBreadcrumbs = ({
   pages,
   className,
 }: SettingsBreadcrumbsProps) => {
+  "use memo";
+
   const theme = useContext(ThemeContext);
   const { settings } = useContext(StateContext);
   const { currentStep, childSteps } = useNavigationContext();

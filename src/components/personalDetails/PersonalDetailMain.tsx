@@ -1,8 +1,6 @@
-import { useMemo, useSyncExternalStore } from "react";
-
 import { occupationSlotIndex } from "../../constants";
-import { assertGame } from "../../functions/isGame";
 import { padLength } from "../../functions/utilities";
+import { useItemPacks } from "../../hooks/useItemPacks";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type {
   PersonalDetailItem,
@@ -14,38 +12,6 @@ import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Select } from "../inputs/Select";
-
-// The Item compendiums, as "id\tlabel" lines: a string, so it only changes
-// when they do
-const readItemPacks = () => {
-  assertGame(game);
-  return game.packs
-    .filter((pack) => pack.metadata.type === "Item")
-    .map((pack) => `${pack.collection}\t${pack.metadata.label}`)
-    .join("\n");
-};
-
-// Foundry re-renders the compendium sidebar whenever a compendium is created,
-// deleted, renamed or reconfigured
-const subscribeToPacks = (onChange: () => void) => {
-  const id = Hooks.on("renderCompendiumDirectory", onChange);
-  return () => Hooks.off("renderCompendiumDirectory", id);
-};
-
-/** The Item compendiums, following them being created, deleted or renamed */
-const useItemPacks = () => {
-  const packs = useSyncExternalStore(subscribeToPacks, readItemPacks);
-  return useMemo(
-    () =>
-      packs === ""
-        ? []
-        : packs.split("\n").map((line) => {
-            const [id = "", label = ""] = line.split("\t");
-            return { id, label };
-          }),
-    [packs],
-  );
-};
 
 type PersonalDetailMainProps = {
   /** only to write through */

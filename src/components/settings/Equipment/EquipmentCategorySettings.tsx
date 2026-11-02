@@ -15,6 +15,8 @@ import { store } from "../store";
 import { equipmentCategory, equipmentField } from "./directions";
 
 export const EquipmentCategorySettings = () => {
+  "use memo";
+
   const index = useParams(equipmentCategory);
   const dispatch = useContext(DispatchContext);
   const { navigate } = useNavigationContext();

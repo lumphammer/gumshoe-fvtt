@@ -24,6 +24,8 @@ import {
  * whole settings area.
  */
 export const AbilitySettingsRoutes = ({ setters }: { setters: Setters }) => {
+  "use memo";
+
   const { settings } = useContext(StateContext);
 
   return (

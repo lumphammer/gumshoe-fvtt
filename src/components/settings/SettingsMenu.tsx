@@ -33,6 +33,8 @@ export const SettingsMenu = ({
   className,
   "data-testid": testId,
 }: SettingsMenuProps) => {
+  "use memo";
+
   const { settings } = useContext(StateContext);
   return (
     <nav className={className} data-testid={testId}>

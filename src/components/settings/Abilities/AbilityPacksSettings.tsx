@@ -1,6 +1,8 @@
 import { useContext, useId, useState } from "react";
 
 import { assertGame } from "../../../functions/isGame";
+import type { ItemPackView } from "../../../hooks/useItemPacks";
+import { useItemPacks } from "../../../hooks/useItemPacks";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { IdContext } from "../../IdContext";
 import { Toggle } from "../../inputs/Toggle";
@@ -10,15 +12,12 @@ import { StateContext } from "../contexts";
 import { SettingsEmptyState } from "../SettingsEmptyState";
 import type { Setters } from "../types";
 
-type Pack = ReturnType<NonNullable<typeof game.packs>["filter"]>[number];
-
 /**
  * Where a pack comes from: the system itself, the world, or a module (by
  * its title.)
  */
-const getPackSource = (pack: Pack): string => {
+const getPackSource = ({ packageType, packageName }: ItemPackView): string => {
   assertGame(game);
-  const { packageType, packageName } = pack.metadata;
   if (packageType === "system") {
     return getTranslated("Built in");
   }
@@ -57,26 +56,26 @@ export const AbilityPacksSettings = ({
   which,
   setters,
 }: AbilityPacksSettingsProps) => {
-  assertGame(game);
+  "use memo";
+
   const { settings } = useContext(StateContext);
   const theme = useContext(ThemeContext);
   const selectedPacks = settings[which];
   const setSelectedPacks = setters[which];
 
+  const itemPacks = useItemPacks();
   const packs = [
-    ...game.packs
-      .filter((pack) => pack.metadata.type === "Item")
-      .map((pack) => ({
-        collection: pack.collection,
-        label: pack.metadata.label,
-        source: getPackSource(pack),
-        missing: false,
-      })),
+    ...itemPacks.map((pack) => ({
+      collection: pack.id,
+      label: pack.label,
+      source: getPackSource(pack),
+      missing: false,
+    })),
     // selected packs which don't exist (deleted, or from an inactive module)
     // are listed so they can be unticked, rather than pruned, because an
     // inactive module's packs will come back
     ...selectedPacks
-      .filter((collection) => !game.packs.has(collection))
+      .filter((collection) => !itemPacks.some((pack) => pack.id === collection))
       .map((collection) => ({
         collection,
         label: collection,

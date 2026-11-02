@@ -21,6 +21,8 @@ export const useStabilityNames = (): { Stability: string; Sanity: string } => {
  * configured names
  */
 export const NamedTranslate = ({ children }: { children: string }) => {
+  "use memo";
+
   const names = useStabilityNames();
   return <Translate values={names}>{children}</Translate>;
 };

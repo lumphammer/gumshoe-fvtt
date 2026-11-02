@@ -13,6 +13,8 @@ import type { Setters } from "../types";
 import { traumaType } from "./directions";
 
 export const TraumaTypesSettings = ({ setters }: { setters: Setters }) => {
+  "use memo";
+
   const { settings } = useContext(StateContext);
   const modify = useContext(ModifyContext);
   const { navigate } = useNavigationContext();

@@ -22,6 +22,8 @@ import { NamedTranslate } from "./NamedTranslate";
  * stays the same.
  */
 export const StabilityStatesSettings = ({ setters }: { setters: Setters }) => {
+  "use memo";
+
   const { settings } = useContext(StateContext);
   const modify = useContext(ModifyContext);
 
