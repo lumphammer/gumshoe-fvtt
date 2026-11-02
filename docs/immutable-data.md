@@ -527,13 +527,15 @@ few causes, listed here with what to do about each, in the order to do them.
    `useStabilityStateName` and the chat cards' `useAbilityCardHeader`. A
    hook for the sheet's own actor didn't seem worth it: getting it from the
    context and asserting its type is two explicit lines.
-5. **Rules not yet moved.** The PC model delegates to `pcDerived.ts`, but
-   `AbilityModel`'s unlocks, situational modifiers and specialities getters
-   duplicate `abilitySnapshots.ts`; the tracker abilities' order is only in
-   `TrackersArea`; and network contacts, contact points, adaptation progress,
-   and whether a Bond can be burned or rebuilt are worked out again in
-   selectors (each with a comment naming the model method it copies). Each
-   rule should live once, with the model calling it.
+5. **Rules not yet moved.** _Done._ The rules components copied are pure
+   functions now, which the models call: network contacts and their points,
+   the Network ability, adaptation progress and personal details by slot
+   (`pcDerived.ts`), the trackers' order (`abilitiesDerived.ts`), and whether
+   a Bond can be rebuilt and how high it can go (`bonds/rules.ts`).
+   `AbilityModel` delegates its specialities to `abilitySnapshots.ts`, and the
+   model getters nothing called any more (an ability's unlocks, visible
+   modifiers and speciality count, a character's tracker abilities and
+   contact points, an item's theme) are gone.
 6. **Small repeats.** `toRows` is in both abilities areas; the clickable,
    draggable item name is copied into the ability, Bond and card rows (13
    `_onDragStart` handlers); looking live items up from selected ids is

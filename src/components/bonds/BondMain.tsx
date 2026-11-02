@@ -5,8 +5,9 @@ import { useSystemMethods } from "../../hooks/useSystemMethods";
 import {
   brokenBondPoints,
   canBurnBond,
+  getMaxBondPoints,
   isBondBroken,
-  maxBondPoints,
+  isBondRebuildable,
 } from "../../module/bonds/rules";
 import type { BondItem, BondSystemData } from "../../module/items/bond";
 import { absoluteCover } from "../absoluteCover";
@@ -50,7 +51,7 @@ export const BondMain = ({ item, name, system, owner }: BondMainProps) => {
   const hasBadges = system.isDeltaGreen || isBroken;
   // only Bonds on a PC can be burned
   const canHaveBurn = owner !== null;
-  // as `PCModel#canBurnBond` and `canRebuildBond` work them out
+  // a Bond is burned for, and rebuilt with, the PC's Stability
   const stability = owner?.stability ?? null;
   const canBurn =
     stability !== null &&
@@ -59,9 +60,8 @@ export const BondMain = ({ item, name, system, owner }: BondMainProps) => {
       stabilityPool: stability.pool,
       stabilityRating: stability.rating,
     });
-  const canRebuild = stability !== null && !system.isDeltaGreen && !isBroken;
-  // as `BondModel#getMaxPoints`: the PC's cap, or its points if above that
-  const maxPoints = Math.max(owner?.bondCap ?? maxBondPoints, system.points);
+  const canRebuild = stability !== null && isBondRebuildable(system);
+  const maxPoints = getMaxBondPoints(system.points, owner?.bondCap);
   const autoRows =
     4 + (hasBadges ? 1 : 0) + (canHaveBurn ? 1 : 0) + (canRebuild ? 1 : 0);
 

@@ -33,8 +33,7 @@ import { ThrowError } from "./ThrowError";
  *
  * Every sheet below reads its item (and anything else it shows) through
  * snapshots, so Foundry's renders don't reach React (the sheet class passes
- * `rerenderOnFoundryRender: false`). The theme follows the owner's, as
- * `InvestigatorItem#getThemeName` does.
+ * `rerenderOnFoundryRender: false`). The theme follows the owner's.
  */
 export const ItemSheet = () => {
   "use memo";

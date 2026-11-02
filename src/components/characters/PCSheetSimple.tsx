@@ -1,4 +1,5 @@
 import * as c from "../../constants";
+import { getPersonalDetailsInSlotIn } from "../../module/actors/pcDerived";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
@@ -18,9 +19,8 @@ export const PCSheetSimple = () => {
   const occupation = useActorSnapshot(
     actor,
     (snapshot) =>
-      snapshot.items
-        .filter((item) => item.type === c.personalDetail)
-        .find((item) => item.system.slotIndex === c.occupationSlotIndex)?.name,
+      getPersonalDetailsInSlotIn(snapshot.items, c.occupationSlotIndex)[0]
+        ?.name,
   );
   const genericOccupation = useSettings((s) => s.genericOccupation);
   return <CharacterSheetSimple subText={occupation ?? genericOccupation} />;

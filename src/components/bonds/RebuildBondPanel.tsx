@@ -13,7 +13,7 @@ import {
 } from "../../module/actors/pcDerived";
 import { rebuildDifficulty } from "../../module/bonds/rebuild";
 import { rebuildBond } from "../../module/bonds/rebuildBond";
-import { isBondBroken } from "../../module/bonds/rules";
+import { isBondRebuildable } from "../../module/bonds/rules";
 import type { BondItem } from "../../module/items/bond";
 import { isInvestigativeAbilityItem } from "../../module/items/investigativeAbility";
 import { BondCapNote, getBondCapOf } from "./BondCapNote";
@@ -44,8 +44,7 @@ export const RebuildBondPanel = ({ bond }: { bond: BondItem }) => {
   const rebuildCategory = useSettings((s) => s.bondRebuildSpendCategory);
   const view = useItemSelector(bond, ({ name, system }) => ({
     name,
-    // only ordinary Bonds that aren't broken (`PCModel#canRebuildBond`)
-    isRebuildable: !system.isDeltaGreen && !isBondBroken(system.points),
+    isRebuildable: isBondRebuildable(system),
   }));
   // the PC's: the spend rows show other items' pools
   const pc = useActorAndSettings(bond.actor, (actor, settings) =>

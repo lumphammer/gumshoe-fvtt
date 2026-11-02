@@ -81,3 +81,22 @@ export function addBondPoints(
   const after = clampBondPoints(points + change);
   return change > 0 ? Math.max(points, Math.min(cap, after)) : after;
 }
+
+/**
+ * Whether a Bond can be rebuilt (p. 128): only ordinary Bonds (DELTA GREEN
+ * Bonds have their own rules, p. 046), and a broken Bond is gone for good
+ */
+export function isBondRebuildable(bond: {
+  isDeltaGreen: boolean;
+  points: number;
+}): boolean {
+  return !bond.isDeltaGreen && !isBondBroken(bond.points);
+}
+
+/**
+ * The most points a Bond can be given: its Agent's cap, or its points if
+ * they're already above that
+ */
+export function getMaxBondPoints(points: number, cap = maxBondPoints): number {
+  return Math.max(cap, points);
+}

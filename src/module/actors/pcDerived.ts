@@ -341,3 +341,51 @@ export function getTraumaTestDifficultyIn(
     ),
   });
 }
+
+/** Progress towards adapting to a trauma type */
+export function getAdaptationProgressIn(
+  pc: PCView,
+  traumaTypeId: string,
+): number {
+  return adaptationsOf(pc)[traumaTypeId] ?? 0;
+}
+
+/** The personal details in a slot (e.g. the occupation's), in order */
+export function getPersonalDetailsInSlotIn<T extends ItemView>(
+  items: readonly T[],
+  slotIndex: number,
+): OfType<T, typeof c.personalDetail>[] {
+  return items.filter(
+    (item) =>
+      item.type === c.personalDetail &&
+      numberOf(item, "slotIndex") === slotIndex,
+  ) as OfType<T, typeof c.personalDetail>[];
+}
+
+/** The Network ability, which contacts' points come from */
+export function getNetworkAbilityIn<T extends ItemView>(
+  items: readonly T[],
+  s: SettingsView = liveSettings,
+): OfType<T, typeof c.generalAbility> | undefined {
+  return findGeneralAbilityIn(items, s.networkAbility);
+}
+
+/** Network contacts (Fall of DELTA GREEN, p. 068), by name */
+export function getNetworkContactsIn<T extends ItemView>(
+  items: readonly T[],
+): OfType<T, typeof c.networkContact>[] {
+  return (
+    items.filter((item) => item.type === c.networkContact) as OfType<
+      T,
+      typeof c.networkContact
+    >[]
+  ).toSorted((a, b) => a.name.localeCompare(b.name));
+}
+
+/** The Network points contacts still hold */
+export function getContactPointsIn(items: readonly ItemView[]): number {
+  return getNetworkContactsIn(items).reduce(
+    (total, contact) => total + numberOf(contact, "pool"),
+    0,
+  );
+}

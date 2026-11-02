@@ -1,12 +1,12 @@
 import { memo } from "react";
 
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import * as constants from "../../constants";
 import { assertNetworkContactItem } from "../../module/items/networkContact";
-import { findGeneralAbilityIn } from "../../module/items/findGeneralAbility";
+import { getNetworkAbilityIn } from "../../module/actors/pcDerived";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
 import { ItemSheetMode } from "../ItemSheetFramework/types";
@@ -29,11 +29,14 @@ export const NetworkContactSheet = memo(function NetworkContactSheet() {
   }));
   const networkName = useSettings((s) => s.networkAbility);
   // only a PC's contacts can be given points, from its Network ability
-  const owner = useActorSnapshot(item.actor, (actor) => {
-    if (actor?.type !== constants.pc) return null;
-    const network = findGeneralAbilityIn(actor.items, networkName);
-    return { networkPool: network?.system.pool ?? null };
-  });
+  const owner = useActorAndSettings(item.actor, (actor, settings) =>
+    actor?.type === constants.pc
+      ? {
+          networkPool:
+            getNetworkAbilityIn(actor.items, settings)?.system.pool ?? null,
+        }
+      : null,
+  );
 
   return (
     <ItemSheetFramework>
