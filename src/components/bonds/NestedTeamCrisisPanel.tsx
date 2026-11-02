@@ -5,6 +5,8 @@ import { TeamCrisisPanel } from "./TeamCrisisPanel";
 
 /** The Team Crisis panel as a nested route on the Bonds tab */
 export const NestedTeamCrisisPanel = ({ actor }: { actor: PCActor }) => {
+  "use memo";
+
   const { navigate } = useNavigationContext();
   return (
     <TeamCrisisPanel actor={actor} onDone={() => navigate("here", "up")} />

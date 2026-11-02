@@ -6,9 +6,7 @@ import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent
 import { getTranslated } from "../../functions/getTranslated";
 import { isDefaultActorImage } from "../../functions/isDefaultActorImage";
 import { assertGame } from "../../functions/isGame";
-import { isPartyActor } from "../actors/party";
 import type { PCActor } from "../actors/pc";
-import { isPCActor } from "../actors/pc";
 import type { ActiveCharacterActor } from "../actors/types";
 import { isActiveCharacterActor } from "../actors/types";
 import type { BondItem } from "../items/bond";
@@ -21,12 +19,14 @@ import type {
 } from "./crisis";
 import {
   areCrisisLossesValid,
+  getCrisisTeammateCandidatesIn,
   crisisDifficulty,
   getBondAfterLoss,
   maxCrisisTeammates,
   planCrisis,
   serializeCrisisRecord,
 } from "./crisis";
+import { toWorldActorEntry } from "../snapshots/documentStores";
 import { addBondPoints, clampBondPoints, getMaxBondSpend } from "./rules";
 
 export function toCrisisBond(bond: BondItem): CrisisBond {
@@ -44,26 +44,22 @@ export function toCrisisTeammate(actor: Actor): CrisisTeammate {
 }
 
 /**
- * Who could have been there: the other members of the Agent's parties, or,
- * if they're not in one, every other PC.
+ * Who could have been there (see `getCrisisTeammateCandidatesIn`), as the
+ * live actors.
  */
 export function getCrisisTeammateCandidates(
   actor: PCActor,
 ): ActiveCharacterActor[] {
   assertGame(game);
   const actors = game.actors?.contents ?? [];
-  const partyMembers = actors
-    .flatMap((a) => (isPartyActor(a) ? [a] : []))
-    .filter((party) => party.system.getActorIds().includes(actor.id ?? ""))
-    .flatMap((party) => party.system.getActors())
-    .flatMap((a) => (isActiveCharacterActor(a) ? [a] : []));
-  const candidates: ActiveCharacterActor[] =
-    partyMembers.length > 0
-      ? partyMembers
-      : actors.flatMap((a) => (isPCActor(a) ? [a] : []));
-  return [...new Set(candidates)]
-    .filter((candidate) => candidate !== actor)
-    .toSorted((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+  const byUuid = new Map(actors.map((a) => [a.uuid, a]));
+  return getCrisisTeammateCandidatesIn(
+    actors.flatMap((a) => (a.id === null ? [] : [toWorldActorEntry(a)])),
+    actor.id ?? "",
+  ).flatMap(({ uuid }) => {
+    const candidate = byUuid.get(uuid);
+    return isActiveCharacterActor(candidate) ? [candidate] : [];
+  });
 }
 
 /** `spends`: Bond points to be spent on the test, by Bond id */

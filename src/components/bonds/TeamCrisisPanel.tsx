@@ -5,21 +5,24 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
+import { useSnapshotSelector } from "../../hooks/useSnapshot";
 import type { PCActor } from "../../module/actors/pc";
-import type { CrisisBond, CrisisChange } from "../../module/bonds/crisis";
+import type {
+  CrisisBond,
+  CrisisChange,
+  CrisisTeammate,
+} from "../../module/bonds/crisis";
 import {
   crisisDifficulty,
+  getCrisisTeammateCandidatesIn,
   getBondAfterLoss,
   getTotalLosses,
   maxCrisisTeammates,
   planCrisis,
 } from "../../module/bonds/crisis";
 import { getMaxBondSpend, isBondBroken } from "../../module/bonds/rules";
-import {
-  getCrisisTeammateCandidates,
-  teamCrisis,
-  toCrisisTeammate,
-} from "../../module/bonds/teamCrisis";
+import { teamCrisis } from "../../module/bonds/teamCrisis";
+import { getWorldActorsStore } from "../../module/snapshots/documentStores";
 import {
   getBondPointsOf,
   getBondsIn,
@@ -63,9 +66,11 @@ export const TeamCrisisPanel = ({
   initialTeammateUuids = [],
   onDone,
 }: TeamCrisisPanelProps) => {
+  "use memo";
+
   const settings = useSettings((s) => s);
   // the actor's own data: the Bonds tab above is memoised, so this reads
-  // what it shows itself. (The teammates are other actors, read live below.)
+  // what it shows itself
   const view = useActorSnapshot(actor, (snapshot) => {
     const items = snapshot?.items ?? [];
     const pc = { system: snapshot?.system, items };
@@ -114,15 +119,14 @@ export const TeamCrisisPanel = ({
     const bond = actor.items.get(id);
     return isBondItem(bond) ? bond : undefined;
   };
-  const candidates = getCrisisTeammateCandidates(actor);
-  const teammates = candidates.filter((c) => selected.includes(c.uuid ?? ""));
-  // what each Bond can lose depends on what's spent from it first
-  const plan = planCrisis(
-    bonds,
-    teammates.map(toCrisisTeammate),
-    view.bondCap.cap,
-    bondSpends,
+  // who could have been there: other actors, from the world's
+  const actorId = actor.id ?? "";
+  const candidates = useSnapshotSelector(getWorldActorsStore(), (actors) =>
+    getCrisisTeammateCandidatesIn(actors, actorId),
   );
+  const teammates = candidates.filter((c) => selected.includes(c.uuid));
+  // what each Bond can lose depends on what's spent from it first
+  const plan = planCrisis(bonds, teammates, view.bondCap.cap, bondSpends);
   const changesByUuid = new Map(plan.changes.map((c) => [c.teammate.uuid, c]));
   // only losses from Bonds which can still pay, and no more than they can
   // (which a spend can lower)
@@ -182,7 +186,10 @@ export const TeamCrisisPanel = ({
       }
     }
     await teamCrisis(actor, {
-      teammates,
+      teammates: teammates.flatMap(({ uuid }: CrisisTeammate) => {
+        const teammate = fromUuidSync(uuid);
+        return teammate instanceof Actor ? [teammate] : [];
+      }),
       stabilitySpend,
       bondSpends: bonds.flatMap((bond) => {
         const live = liveBond(bond.id);
@@ -224,13 +231,9 @@ export const TeamCrisisPanel = ({
           </GridFieldStacked>
         )}
         {candidates.map((candidate) => {
-          const change = changesByUuid.get(candidate.uuid ?? "");
+          const change = changesByUuid.get(candidate.uuid);
           return (
-            <GridField
-              key={candidate.uuid}
-              label={candidate.name ?? ""}
-              noTranslate
-            >
+            <GridField key={candidate.uuid} label={candidate.name} noTranslate>
               <div
                 data-testid="crisis-teammate"
                 css={{ display: "flex", gap: "0.5em", alignItems: "center" }}
@@ -238,7 +241,7 @@ export const TeamCrisisPanel = ({
                 <Checkbox
                   checked={change !== undefined}
                   onChange={(checked) =>
-                    toggleTeammate(candidate.uuid ?? "", checked)
+                    toggleTeammate(candidate.uuid, checked)
                   }
                 />
                 {change && <span>{describeChange(change)}</span>}

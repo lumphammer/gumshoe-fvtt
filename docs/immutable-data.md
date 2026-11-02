@@ -364,8 +364,7 @@ shared `ItemSheetFramework` reads the item's name, image and permissions
 through snapshots itself, so it's current in the unconverted item sheets as
 well. Their second commit on each change is Foundry's own render: one sheet
 class serves every item type, so it can't pass `rerenderOnFoundryRender: false`
-until they're all converted. Not compiled yet: `TeamCrisisPanel` (it lists other
-actors, read live). Wall times barely change (they were around a
+until they're all converted. Wall times barely change (they were around a
 millisecond already).
 
 The shared components these sheets use (the inputs in `components/inputs`,
@@ -391,11 +390,16 @@ Team Crisis panels select what they show from the actor's snapshot, through
 pure getters (`getReformableBondsIn`, `getRebuildSpendAbilitiesIn`,
 `getBondCapIn` and the like), and plan a crisis with `planCrisis` itself. A
 Bond's points still re-render a whole panel (they show them). Team Crisis's
-teammates are other actors, read live (`getCrisisTeammateCandidates`).
+teammates are other actors: the panel (compiled) works them out with
+`getCrisisTeammateCandidatesIn` (in `crisis.ts`) from `getWorldActorsStore`,
+so it follows them being created, renamed, or added to the Agent's party.
+(`getCrisisTeammateCandidates`, which checks the choice on the GM's side,
+runs the same rule over the live actors.)
 
 The party sheet reads its members with `useActorsSnapshot(ids, selector)`,
-which subscribes to each member's store, and to `getWorldActorsStore` (the
-ids of the world's actors, which changes when one is created or deleted), so
+which subscribes to each member's store, and to `getWorldActorsStore` (an
+entry for each of the world's actors: its id, uuid, type, name, and a party's
+members), so
 it follows members being deleted, or created after the party listed them. It
 works out its rows (`buildRowData`) from plain views of the members and of
 the packs' abilities (`PartyMemberView`, `PartyAbilityView`), each ability
