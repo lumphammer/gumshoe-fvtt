@@ -1,7 +1,7 @@
 import type { CardCategory } from "@lumphammer/investigator-fvtt-types";
-import { useCallback } from "react";
 
 import type { CardItem } from "../../module/items/card";
+import type { CardCategoryMembership } from "../../types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -9,46 +9,39 @@ import { Toggle } from "../inputs/Toggle";
 
 interface CategoryMembershipRowProps {
   category: CardCategory;
+  /** only to write through */
   card: CardItem;
+  /** the card's membership of the category, if it's in it */
+  membership: Readonly<CardCategoryMembership> | undefined;
   index: number;
 }
 
 export const CategoryMembershipRow = ({
   category,
   card,
+  membership,
   index,
 }: CategoryMembershipRowProps) => {
-  const membership = card.system.cardCategoryMemberships.find(
-    (m) => m.categoryId === category.id,
-  );
+  "use memo";
 
-  const handleToggleActive = useCallback(
-    async (active: boolean) => {
-      if (active) {
-        await card.system.addCardCategoryMembership(category.id);
-      } else {
-        await card.system.removeCardCategoryMembership(category.id);
-      }
-    },
-    [card, category.id],
-  );
+  const handleToggleActive = async (active: boolean) => {
+    if (active) {
+      await card.system.addCardCategoryMembership(category.id);
+    } else {
+      await card.system.removeCardCategoryMembership(category.id);
+    }
+  };
 
-  const handleToggleNonlethal = useCallback(
-    async (nonlethal: boolean) => {
-      await card.system.setCardCategoryMembershipNonlethal(
-        category.id,
-        nonlethal,
-      );
-    },
-    [card, category.id],
-  );
+  const handleToggleNonlethal = async (nonlethal: boolean) => {
+    await card.system.setCardCategoryMembershipNonlethal(
+      category.id,
+      nonlethal,
+    );
+  };
 
-  const handleSetWorth = useCallback(
-    async (worth: number) => {
-      await card.system.setCardCategoryMembershipWorth(category.id, worth);
-    },
-    [card, category.id],
-  );
+  const handleSetWorth = async (worth: number) => {
+    await card.system.setCardCategoryMembershipWorth(category.id, worth);
+  };
 
   return (
     <>

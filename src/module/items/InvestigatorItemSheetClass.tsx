@@ -37,4 +37,7 @@ export const ItemSheetClass = ReactApplicationV2Mixin(
   "ItemSheetClass",
   OverrideAutoDisableMixin(ItemSheetClassBase),
   render,
+  // every item sheet reads everything through snapshots, ownership included
+  // (docs/immutable-data.md), so Foundry's re-renders needn't reach React
+  { rerenderOnFoundryRender: false },
 );

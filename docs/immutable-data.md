@@ -240,9 +240,9 @@ redundant.** `ReactApplicationV2Mixin` takes `{ rerenderOnFoundryRender:
 false }` for such apps: it renders the React root once each time the app
 opens, and ignores Foundry's later renders. The PC and NPC sheets use it
 (their roots follow ownership through `useActorSheetPermissions`, and the
-Limited views read snapshots too). The item sheets don't yet: their outer
-shell (`ItemSheet`, `ItemSheetFramework`) is shared with unconverted item
-types, and still reads the live item.
+Limited views read snapshots too), and so do the party sheet and, once every
+item type was converted, the item sheets (`ItemSheet` follows ownership
+through `useSheetPermissions`).
 
 ### Baseline for unconverted sheets
 
@@ -361,10 +361,16 @@ through `useSettings`; only `CardArray` looks the live cards up, to hand to
 cards. Compiled, that only kept working because the compiler happened not to
 cache the sorted list.) The equipment, weapon and ability sheets are compiled too. The item sheets'
 shared `ItemSheetFramework` reads the item's name, image and permissions
-through snapshots itself, so it's current in the unconverted item sheets as
-well. Their second commit on each change is Foundry's own render: one sheet
-class serves every item type, so it can't pass `rerenderOnFoundryRender: false`
-until they're all converted. Wall times barely change (they were around a
+through snapshots itself. Now every item sheet reads snapshots (the Bond,
+contact, personal detail, card and Moribund World item sheets too), so the
+item sheet class passes `rerenderOnFoundryRender: false`, and `ItemSheet`
+works out the theme (from the owner's snapshot) and provides
+`IsEditableContext` for them all. Before, each change was committed twice:
+once for the snapshots, then again for Foundry's own render. The Bond sheet
+reads what it needs from its PC (their Stability ability, for burning and
+rebuilding, and their Bond cap) and its linked actor's name (from
+`getWorldActorsStore`) through snapshots; the contact sheet, its PC's
+Network pool. Wall times barely change (they were around a
 millisecond already).
 
 The shared components these sheets use (the inputs in `components/inputs`,

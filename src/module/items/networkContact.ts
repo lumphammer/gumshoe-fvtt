@@ -1,3 +1,4 @@
+import type { SourceData } from "../../fvtt-exports";
 import { NumberField, StringField, TypeDataModel } from "../../fvtt-exports";
 import { InvestigatorItem } from "./InvestigatorItem";
 
@@ -53,3 +54,5 @@ export function assertNetworkContactItem(
     throw new Error("Item is not a Network contact");
   }
 }
+
+export type NetworkContactSystemData = SourceData<typeof networkContactSchema>;
