@@ -493,9 +493,9 @@ compiled), for boilerplate and duplication. The core (`createSnapshotStore`,
 sound. Most of the boilerplate is in the components that use it, and has a
 few causes, listed here with what to do about each, in the order to do them.
 
-1. **Dead code.** `InvestigatorActor` still keeps an immutable copy of
+1. **Dead code.** _Done._ `InvestigatorActor` kept an immutable copy of
    itself (`registerImmutableDataUpdateHandler`), merged with immer on every
-   update. Nothing registers a handler. Delete it.
+   update, which nothing read.
 2. **Stores and live reads written by hand.** The journal entry store repeats
    the actor store's shape (a document's own data, plus embedded lists
    patched by id), and each store repeats the same get-or-create cache. A

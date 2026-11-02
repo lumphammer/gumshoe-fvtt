@@ -2,8 +2,6 @@
 // that seem to come out here
 /* eslint "@typescript-eslint/explicit-function-return-type": "error" */
 
-import { produce } from "immer";
-
 import type { SourceData } from "../../fvtt-exports";
 import { getEditedBarValue } from "../tokenBars";
 import { isCombatantEffectShown } from "./isCombatantEffectShown";
@@ -120,43 +118,6 @@ export class InvestigatorActor<
   protected override _onEmbeddedDocumentChange(): void {
     super._onEmbeddedDocumentChange();
     this._updateCombatantEffectsData();
-  }
-
-  // ***************************************************************************
-  // IMMUTABLE UPDATE HANDLERS
-
-  protected _currentImmutableData = this.toJSON();
-
-  protected _immutableDataUpdateHandlers: Set<
-    (data: SourceData<Actor.Schema>) => void
-  > = new Set();
-
-  registerImmutableDataUpdateHandler(
-    handler: (data: SourceData<Actor.Schema>) => void,
-  ): () => void {
-    this._immutableDataUpdateHandlers.add(handler);
-    handler(this._currentImmutableData);
-    return () => this._immutableDataUpdateHandlers.delete(handler);
-  }
-
-  protected _updateImmutableData(changed: Actor.UpdateData): void {
-    const newImmutableData = produce(this._currentImmutableData, (draft) => {
-      foundry.utils.mergeObject(draft, changed);
-    });
-    if (newImmutableData === this._currentImmutableData) return;
-    this._currentImmutableData = newImmutableData;
-    for (const handler of this._immutableDataUpdateHandlers.values()) {
-      handler(this._currentImmutableData);
-    }
-  }
-
-  protected override _onUpdate(
-    changed: Actor.UpdateData,
-    options: Actor.Database.OnUpdateOperation,
-    userId: string,
-  ): void {
-    super._onUpdate(changed, options, userId);
-    this._updateImmutableData(changed);
   }
 
   /**
