@@ -536,10 +536,12 @@ few causes, listed here with what to do about each, in the order to do them.
    model getters nothing called any more (an ability's unlocks, visible
    modifiers and speciality count, a character's tracker abilities and
    contact points, an item's theme) are gone.
-6. **Small repeats.** `toRows` is in both abilities areas; the clickable,
-   draggable item name is copied into the ability, Bond and card rows (13
-   `_onDragStart` handlers); looking live items up from selected ids is
-   written out 15 times; reading a pool is done three ways.
+6. **Small repeats.** _Done._ `openSheet` (22 copies), `useDragStart` (13),
+   and `liveItems`/`liveItem`, which look live items up by id with a type
+   guard instead of a cast (15). The ability rows share `AbilityNameLink`,
+   and the abilities areas `getAbilityRowsIn` and friends
+   (`abilitiesDerived.ts`). Pools are read from typed snapshots, so
+   `getPoolOf` is gone.
 7. **The combat tracker** still keeps its own immer diff-merge state
    (`TrackerContext`, `CombatantContext`, `ClassicInitiative`) and the
    hand-rolled effect and resource handlers on the actor and combatant

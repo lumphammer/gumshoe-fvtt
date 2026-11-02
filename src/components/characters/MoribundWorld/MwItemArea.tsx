@@ -1,6 +1,6 @@
-import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import React, { memo, useCallback, useContext } from "react";
+import React, { memo } from "react";
 
+import { useDragStart } from "../../../hooks/useDragStart";
 import { mwItem } from "../../../constants";
 import { sortEntitiesByName } from "../../../functions/utilities";
 import { useActorSnapshot } from "../../../hooks/useActorSnapshot";
@@ -34,16 +34,8 @@ export const MwItemArea = memo(function MwItemArea() {
 
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const app = useContext(FoundryAppContext);
 
-  const onDragStart = useCallback(
-    (e: React.DragEvent<HTMLAnchorElement>) => {
-      if (app !== null) {
-        (app as any)._onDragStart(e);
-      }
-    },
-    [app],
-  );
+  const onDragStart = useDragStart();
 
   const byType = useActorSnapshot(actor, (snapshot) => {
     const result: Partial<Record<MwType, MwItemSummary[]>> = {};

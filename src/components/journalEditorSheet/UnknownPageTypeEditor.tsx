@@ -1,4 +1,4 @@
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { openSheet } from "../../functions/openSheet";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
 
@@ -32,9 +32,7 @@ export const UnknownPageTypeEditor = ({
       <Button
         css={{ width: "auto" }}
         onClick={() => {
-          const sheet = page.sheet;
-          assertApplicationV2(sheet);
-          void sheet.render({ force: true });
+          openSheet(page);
         }}
       >
         Open {type} page

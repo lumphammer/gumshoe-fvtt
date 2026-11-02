@@ -1,10 +1,11 @@
 import { memo } from "react";
 
+import { liveItem } from "../../functions/liveItems";
+import { isAbilityItem } from "../../module/items/exports";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { getTrackerAbilitiesIn } from "../../module/actors/abilitiesDerived";
 import { assertActiveCharacterActor } from "../../module/actors/types";
-import type { AbilityItem } from "../../module/items/exports";
 import { PoolTracker } from "../abilities/PoolTracker";
 
 /**
@@ -23,7 +24,7 @@ export const TrackersArea = memo(function TrackersArea() {
   return (
     <>
       {ids.map((id) => {
-        const ability = actor.items.get(id) as AbilityItem | undefined;
+        const ability = liveItem(actor, id, isAbilityItem);
         return ability ? <PoolTracker key={id} ability={ability} /> : null;
       })}
     </>

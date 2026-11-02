@@ -9,10 +9,7 @@ import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { useUserTargets } from "../../hooks/useUserTargets";
 import { isPCActor } from "../../module/actors/pc";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import {
-  findGeneralAbilityIn,
-  getPoolOf,
-} from "../../module/items/findGeneralAbility";
+import { findGeneralAbilityIn } from "../../module/items/findGeneralAbility";
 import type { WeaponItem } from "../../module/items/weapon";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
@@ -161,7 +158,7 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
     const find = (name: string): AbilityRef | undefined => {
       const found = actor ? findGeneralAbilityIn(actor.items, name) : undefined;
       return (
-        found && { _id: found._id, name: found.name, pool: getPoolOf(found) }
+        found && { _id: found._id, name: found.name, pool: found.system.pool }
       );
     };
     return {

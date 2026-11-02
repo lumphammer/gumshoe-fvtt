@@ -1,11 +1,12 @@
 import { memo } from "react";
 
+import { liveItems } from "../../../functions/liveItems";
+import { isAbilityItem } from "../../../module/items/exports";
 import { sortEntitiesByName } from "../../../functions/utilities";
 import { useActorAndSettings } from "../../../hooks/useActorSnapshot";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { getCategorizedAbilitiesIn } from "../../../module/actors/abilitiesDerived";
 import { assertPCActor } from "../../../module/actors/pc";
-import type { AbilityItem } from "../../../module/items/exports";
 import { AbilitiesColumnMW } from "../AbilitiesColumnMW";
 
 /**
@@ -34,11 +35,7 @@ export const AbilitiesAreaMW = memo(function AbilitiesAreaMW() {
 
   // the live abilities, only to pass to the rows (which read them through
   // snapshots, and write to them)
-  const getAbilities = (ids: string[]) =>
-    ids.flatMap((id) => {
-      const ability = actor.items.get(id) as AbilityItem | undefined;
-      return ability ? [ability] : [];
-    });
+  const getAbilities = (ids: string[]) => liveItems(actor, ids, isAbilityItem);
 
   return (
     <div

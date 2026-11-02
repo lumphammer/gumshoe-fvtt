@@ -1,8 +1,7 @@
-import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import type React from "react";
-import { memo, useCallback, useContext } from "react";
+import { memo, useContext } from "react";
 
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { useDragStart } from "../../hooks/useDragStart";
+import { openSheet } from "../../functions/openSheet";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import type { NetworkContactItem } from "../../module/items/networkContact";
 import { ThemeContext } from "../../themes/ThemeContext";
@@ -28,20 +27,10 @@ export const NetworkContactRow = memo(function NetworkContactRow({
     location: snapshot.system.location,
     pool: snapshot.system.pool,
   }));
-  const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
-  const onDragStart = useCallback(
-    (e: React.DragEvent<HTMLAnchorElement>) => {
-      if (app !== null) {
-        (app as any)._onDragStart(e);
-      }
-    },
-    [app],
-  );
-  const openSheet = () => {
-    const sheet = contact.sheet;
-    assertApplicationV2(sheet);
-    void sheet.render({ force: true });
+  const onDragStart = useDragStart();
+  const openContactSheet = () => {
+    openSheet(contact);
   };
   const exhausted = row.pool === 0;
 
@@ -75,7 +64,7 @@ export const NetworkContactRow = memo(function NetworkContactRow({
             textOverflow: "ellipsis",
           },
         }}
-        onClick={openSheet}
+        onClick={openContactSheet}
         data-item-id={contact.id}
         data-testid="network-contact-row"
         onDragStart={onDragStart}

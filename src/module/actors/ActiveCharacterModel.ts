@@ -182,9 +182,7 @@ export class ActiveCharacterModel<
   }
 
   getPushPool(): GeneralAbilityItem | undefined {
-    return getPushPoolIn(this.parent.items.contents) as
-      | GeneralAbilityItem
-      | undefined;
+    return getPushPoolIn(this.parent.items.contents);
   }
 
   getPushPoolWarnings(): string[] {

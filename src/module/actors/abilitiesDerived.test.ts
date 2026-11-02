@@ -2,10 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import type { SettingsView } from "../../settings/settingsView";
 import {
+  getAbilityRowsIn,
   getCategorizedAbilitiesIn,
   getPushPoolIn,
   getPushPoolWarningKeysIn,
   getTrackerAbilitiesIn,
+  hasRegularInvestigativeAbilitiesIn,
+  sumRatingsIn,
 } from "./abilitiesDerived";
 import type { ItemView } from "./pcDerived";
 
@@ -105,5 +108,36 @@ describe("getTrackerAbilitiesIn", () => {
       "Cop Talk",
       "Health",
     ]);
+  });
+});
+
+describe("ability rows", () => {
+  const abilities = {
+    Academic: [
+      item("investigativeAbility", "Law", { rating: 2 }),
+      item("investigativeAbility", "Art", { rating: 1, isQuickShock: true }),
+    ],
+    General: [item("generalAbility", "Athletics", { rating: 4 })],
+  };
+
+  it("lists each category's abilities by name", () => {
+    expect(getAbilityRowsIn(abilities)).toEqual({
+      Academic: [
+        { id: "Art", isQuickShock: true },
+        { id: "Law", isQuickShock: false },
+      ],
+      General: [{ id: "Athletics", isQuickShock: false }],
+    });
+  });
+
+  it("adds up their ratings", () => {
+    expect(sumRatingsIn(abilities)).toBe(7);
+  });
+
+  it("knows whether any investigative ability isn't quick-shock", () => {
+    expect(hasRegularInvestigativeAbilitiesIn(abilities.Academic)).toBe(true);
+    expect(
+      hasRegularInvestigativeAbilitiesIn(abilities.Academic.slice(1)),
+    ).toBe(false);
   });
 });

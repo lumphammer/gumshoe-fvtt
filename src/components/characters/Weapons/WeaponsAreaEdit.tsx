@@ -1,12 +1,13 @@
 import { memo } from "react";
 
+import { liveItems } from "../../../functions/liveItems";
+import { isWeaponItem } from "../../../module/items/weapon";
 import { weapon } from "../../../constants";
 import { sortEntitiesByName } from "../../../functions/utilities";
 import { useActorSnapshot } from "../../../hooks/useActorSnapshot";
 import { useSettings } from "../../../hooks/useSettings";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { assertActiveCharacterActor } from "../../../module/actors/types";
-import type { WeaponItem } from "../../../module/items/weapon";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { WeaponRowEdit } from "./WeaponRowEdit";
@@ -26,10 +27,7 @@ export const WeaponsAreaEdit = memo(function WeaponsAreaEdit() {
     ).map((item) => item._id ?? ""),
   );
   // the live weapons, only to pass to the rows
-  const items = ids.flatMap((id) => {
-    const item = actor.items.get(id) as WeaponItem | undefined;
-    return item ? [item] : [];
-  });
+  const items = liveItems(actor, ids, isWeaponItem);
   // an extra column for Extended range
   const useExtendedRange = useSettings((s) => s.useExtendedRange);
   return (

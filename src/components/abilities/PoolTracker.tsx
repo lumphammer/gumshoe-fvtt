@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { openSheet } from "../../functions/openSheet";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
@@ -57,9 +57,7 @@ export const PoolTracker = memo(function PoolTracker({
       <h2 css={{ gridColumn: "start / end" }}>
         <a
           onClick={() => {
-            const sheet = ability.sheet;
-            assertApplicationV2(sheet);
-            void sheet.render({ force: true });
+            openSheet(ability);
           }}
         >
           {tracker.name}

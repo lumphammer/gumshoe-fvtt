@@ -1,17 +1,16 @@
 import { Fragment, memo, useContext } from "react";
 
-import { sortEntitiesByName } from "../../functions/utilities";
+import { liveItem } from "../../functions/liveItems";
+import { isAbilityItem } from "../../module/items/exports";
 import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import {
+  getAbilityRowsIn,
   getCategorizedAbilitiesIn,
   getPushPoolIn,
 } from "../../module/actors/abilitiesDerived";
-import type { ItemView } from "../../module/actors/pcDerived";
 import { assertActiveCharacterActor } from "../../module/actors/types";
-import type { AbilityItem } from "../../module/items/exports";
-import { getPoolOf } from "../../module/items/findGeneralAbility";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AbilitySlugPlayNormal } from "./AbilitySlugPlayNormal";
 import { AbilitySlugPlayQuickShockInvestigative } from "./AbilitySlugPlayQuickShockInvestigative";
@@ -20,20 +19,6 @@ import { NoAbilitiesNote } from "./NoAbilitiesNote";
 type AbilitiesAreaPlayProps = {
   flipLeftRight?: boolean;
 };
-
-/** Each category's abilities, in order, as the rows need them */
-const toRows = (abilities: Record<string, ItemView[]>) =>
-  Object.fromEntries(
-    Object.entries(abilities).map(([cat, items]) => [
-      cat,
-      sortEntitiesByName(items).map((item) => ({
-        id: item._id ?? "",
-        isQuickShock: Boolean(
-          (item.system as { isQuickShock?: boolean }).isQuickShock,
-        ),
-      })),
-    ]),
-  );
 
 /**
  * The character's abilities, to spend and test. Reads the actor through a
@@ -59,17 +44,17 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
         settings,
       );
     return {
-      investigativeAbilities: toRows(investigativeAbilities),
-      generalAbilities: toRows(generalAbilities),
-      pushPoolIsZero: getPoolOf(getPushPoolIn(items)) === 0,
+      investigativeAbilities: getAbilityRowsIn(investigativeAbilities),
+      generalAbilities: getAbilityRowsIn(generalAbilities),
+      // (no push pool counts as an empty one)
+      pushPoolIsZero: (getPushPoolIn(items)?.system.pool ?? 0) === 0,
     };
   });
   const { investigativeAbilities, generalAbilities, pushPoolIsZero } = layout;
 
   // the live abilities, only to pass to the rows (which read them through
   // snapshots, and write to them)
-  const getAbility = (id: string) =>
-    actor.items.get(id) as AbilityItem | undefined;
+  const getAbility = (id: string) => liveItem(actor, id, isAbilityItem);
 
   return (
     <>

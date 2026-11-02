@@ -1,6 +1,8 @@
 import { Router } from "@lumphammer/minirouter";
 import { memo, useContext } from "react";
 
+import { liveItems } from "../../functions/liveItems";
+import { isBondItem } from "../../module/items/bond";
 import { getTranslated } from "../../functions/getTranslated";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
@@ -8,7 +10,6 @@ import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { getBondsIn } from "../../module/actors/pcDerived";
 import { assertPCActor } from "../../module/actors/pc";
-import type { BondItem } from "../../module/items/bond";
 import {
   areBondsOn,
   getAdaptableTraumaTypesFrom,
@@ -40,10 +41,7 @@ export const BondsArea = memo(function BondsArea() {
   const ids = useActorSnapshot(actor, (snapshot) =>
     getBondsIn(snapshot.items).map((item) => item._id ?? ""),
   );
-  const bonds = ids.flatMap((id) => {
-    const item = actor.items.get(id) as BondItem | undefined;
-    return item ? [item] : [];
-  });
+  const bonds = liveItems(actor, ids, isBondItem);
   const { showBonds, showAdaptations } = useSettings((s) => ({
     showBonds: areBondsOn(s),
     showAdaptations: getAdaptableTraumaTypesFrom(s).length > 0,

@@ -1,7 +1,9 @@
 import { memo, useCallback, useContext } from "react";
 
+import { liveItems } from "../../../functions/liveItems";
+import { isWeaponItem } from "../../../module/items/weapon";
+import { openSheet } from "../../../functions/openSheet";
 import { weapon } from "../../../constants";
-import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import { sortEntitiesByName } from "../../../functions/utilities";
 import { useActorSnapshot } from "../../../hooks/useActorSnapshot";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
@@ -49,10 +51,7 @@ export const WeaponsArea = memo(function WeaponsArea({
     };
   });
   // the live weapons, only to pass to the rows and the panel
-  const items = ids.flatMap((id) => {
-    const item = actor.items.get(id) as WeaponItem | undefined;
-    return item ? [item] : [];
-  });
+  const items = liveItems(actor, ids, isWeaponItem);
   const readyWeapon = items.find((item) => item.id === readyId);
   const { setReadyWeapon } = useSystemMethods(actor);
   // only one weapon is ready at a time
@@ -192,9 +191,7 @@ export const WeaponsArea = memo(function WeaponsArea({
                 <Button
                   css={{ flexBasis: "max-content", marginBottom: "0.2em" }}
                   onClick={() => {
-                    const sheet = readyWeapon.sheet;
-                    assertApplicationV2(sheet);
-                    void sheet.render({ force: true });
+                    openSheet(readyWeapon);
                   }}
                 >
                   <i className="fa fa-edit" />

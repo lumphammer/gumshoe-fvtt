@@ -1,6 +1,6 @@
-import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import React, { memo, useCallback, useContext } from "react";
+import React, { memo, useContext } from "react";
 
+import { useDragStart } from "../../hooks/useDragStart";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import type { CardItem } from "../../module/items/card";
@@ -34,18 +34,10 @@ export const CardArrayCard = memo(function CardArrayCard({
         ?.styleKey,
   );
   const theme = useContext(ThemeContext);
-  const app = useContext(FoundryAppContext);
 
   const { viewMode } = useContext(CardsAreaSettingsContext);
 
-  const handleDragStart = useCallback(
-    (e: React.DragEvent<HTMLElement>) => {
-      if (app !== null) {
-        (app as any)._onDragStart(e);
-      }
-    },
-    [app],
-  );
+  const handleDragStart = useDragStart();
 
   const categoryTheme = styleKey ? theme.cards.categories[styleKey] : null;
 
