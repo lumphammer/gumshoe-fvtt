@@ -13,6 +13,8 @@ import { memo } from "react";
 export const NativeContextMenuWrapper = memo(function NativeContextMenuWrapper({
   children,
 }: PropsWithChildren) {
+  "use memo";
+
   return <ContextMenu.Root>{children}</ContextMenu.Root>;
 });
 

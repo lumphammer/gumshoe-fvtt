@@ -76,6 +76,8 @@ export const TabContainer = ({
   selected: controlledSelected,
   onSelect,
 }: TabContainerProps) => {
+  "use memo";
+
   const [uncontrolledSelected, setSelected] = useState(defaultTab);
   const selected = controlledSelected ?? uncontrolledSelected;
   const [optimistic, setOptimistic] = useState(defaultTab);

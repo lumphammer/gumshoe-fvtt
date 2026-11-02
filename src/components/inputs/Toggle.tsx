@@ -27,6 +27,8 @@ export const Toggle = memo<ToggleProps>(
     label,
     alwaysEnabled = false,
   }: ToggleProps) => {
+    "use memo";
+
     const id = useContext(IdContext);
     const isEditable = useIsEditable();
     const theme = useContext(ThemeContext);

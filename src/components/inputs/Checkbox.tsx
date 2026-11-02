@@ -18,6 +18,8 @@ type CheckboxProps = {
  */
 export const Checkbox = React.memo<CheckboxProps>(
   ({ checked, onChange, className, title }) => {
+    "use memo";
+
     const id = useContext(IdContext);
     const isEditable = useIsEditable();
     const theme = useContext(ThemeContext);

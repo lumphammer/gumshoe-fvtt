@@ -15,10 +15,19 @@ type TranslateProps = {
   rich?: boolean;
 };
 
+/**
+ * Whether to highlight translations. A hook, which isn't compiled, so it reads
+ * the setting on every render: React Compiler would cache a call made in
+ * `Translate` itself for good, because it has no arguments.
+ */
+const useDebugTranslations = () =>
+  settings.debugTranslations.get() && getDevMode();
+
 export const Translate = React.memo<TranslateProps>(
   ({ children, values, title, className, block, rich }) => {
-    assertGame(game);
-    const debug = settings.debugTranslations.get() && getDevMode();
+    "use memo";
+
+    const debug = useDebugTranslations();
     const pascal = useMemo(() => Case.pascal(children), [children]);
     const prefixed = `${systemId}.${pascal}`;
     const local = useMemo(() => {

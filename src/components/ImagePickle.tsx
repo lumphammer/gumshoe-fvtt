@@ -28,6 +28,8 @@ type ImagePickleProps = {
 };
 
 export const ImagePickle = ({ className, img }: ImagePickleProps) => {
+  "use memo";
+
   const { doc, app } = useDocumentSheetContext();
   if (!(doc instanceof Actor || doc instanceof Item)) {
     throw new Error("ImagePickle must be used within an Actor or Item");
@@ -103,6 +105,7 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
   return (
     <div
       className={className}
+      data-testid="image-pickle"
       css={{
         borderRadius: "0.2em",
         boxShadow: "0em 0em 0.5em 0.1em rgba(0,0,0,0.5)",

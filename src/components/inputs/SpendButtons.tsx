@@ -20,17 +20,20 @@ export const SpendButtons = ({
   onChange,
   max,
   disabled = false,
-}: SpendButtonsProps) => (
-  <CheckButtons
-    size={1}
-    onChange={onChange}
-    selected={value}
-    options={spendValues.map((spend) => ({
-      label: spend.toString(),
-      value: spend,
-      enabled: !disabled && (spend === 0 || spend <= max),
-    }))}
-  />
-);
+}: SpendButtonsProps) => {
+  "use memo";
+  return (
+    <CheckButtons
+      size={1}
+      onChange={onChange}
+      selected={value}
+      options={spendValues.map((spend) => ({
+        label: spend.toString(),
+        value: spend,
+        enabled: !disabled && (spend === 0 || spend <= max),
+      }))}
+    />
+  );
+};
 
 SpendButtons.displayName = "SpendButtons";

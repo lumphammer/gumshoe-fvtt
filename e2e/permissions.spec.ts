@@ -272,6 +272,9 @@ test.describe("ownership changes", () => {
     // actor's ownership itself
     await giveOwnership(page, pcId, playerId, "OWNER");
     await expect(name).toBeEditable();
+    // the portrait offers to change the picture, now they own it
+    await sheet.getByTestId("image-pickle").click();
+    await expect(sheet.getByText("Edit", { exact: true })).toBeVisible();
     await giveOwnership(page, pcId, playerId, "LIMITED");
     await expect(sheet.locator(".tab-strip")).toHaveCount(0);
     await expect(sheet).toContainText("Dr Ellery");
