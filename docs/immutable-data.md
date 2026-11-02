@@ -371,7 +371,11 @@ millisecond already).
 The shared components these sheets use (the inputs in `components/inputs`,
 `Translate`, `ImagePickle`, `TabContainer`, `Masonry` and the like) are
 compiled too. The unconverted sheets use them as well, but they only take
-props, so they re-render whenever those change. `Translate` reads its debug
+props, so they re-render whenever those change. But an input inside another
+(`TextInput` in `AsyncTextInput`) gets its cached element, and the
+unconverted sheets don't provide `IsEditableContext`: there, `useIsEditable`
+reads `app.isEditable` itself, and reads `FoundryRenderSerialContext` (which
+the mixin changes on every Foundry render) so it re-renders with Foundry. `Translate` reads its debug
 setting in a hook (`useDebugTranslations`), which isn't compiled.
 `useIsDocumentOwner` (for `ImagePickle` and `NotesDisplay`) checks the
 ownership in a snapshot selector: it was a `useMemo` on the document, so

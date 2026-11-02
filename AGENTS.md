@@ -106,7 +106,9 @@ translations, adding fields and settings, releases).
     there, and provide `IsEditableContext` from it (`useSheetPermissions`,
     which follows the item's and its actor's ownership): inputs read
     `useIsEditable`, and a memoised parent would otherwise hide a permission
-    change from them.
+    change from them. (Without the context, `useIsEditable` reads
+    `app.isEditable` and follows Foundry's renders through
+    `FoundryRenderSerialContext`, for the unconverted sheets.)
   - Once everything in an app keeps itself current (including its
     permissions: `useActorSheetPermissions` for actor sheets), pass
     `{ rerenderOnFoundryRender: false }` to `ReactApplicationV2Mixin`, so

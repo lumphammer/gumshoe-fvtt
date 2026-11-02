@@ -281,6 +281,31 @@ test.describe("ownership changes", () => {
     await giveOwnership(page, pcId, playerId, "OBSERVER");
     await expect(sheet.locator(".tab-strip")).toHaveCount(1);
   });
+
+  test("an open party sheet follows the player's ownership changing", async ({
+    page,
+    joinAs,
+  }) => {
+    const partyId = await createActor(page, {
+      name: "The Unchanging",
+      type: "party",
+    });
+    const playerId = await createPlayer(page, "Party Promoted");
+    await giveOwnership(page, partyId, playerId, "OBSERVER");
+
+    const player = await joinAs("Party Promoted");
+    const sheet = await openSheet(player, `Actor.${partyId}`);
+    // its name is a compiled input inside another (`AsyncTextInput`), in a
+    // sheet which doesn't provide `IsEditableContext`
+    const name = sheet.getByRole("textbox").first();
+    await expect(name).toHaveValue("The Unchanging");
+    await expect(name).not.toBeEditable();
+
+    await giveOwnership(page, partyId, playerId, "OWNER");
+    await expect(name).toBeEditable();
+    await giveOwnership(page, partyId, playerId, "OBSERVER");
+    await expect(name).not.toBeEditable();
+  });
 });
 
 test("with Limited permission, players don't see equipment fields hidden from them", async ({
