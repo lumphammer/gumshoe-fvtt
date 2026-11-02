@@ -29,7 +29,8 @@ import {
   toggleActiveSituationalModifier,
 } from "./activeSituationalModifiers";
 import { migrateCategoryToCategoryId } from "./migrateCategoryToCategoryId";
-import { getSpecialitiesCount, resizeSpecialities } from "./resizeSpecialities";
+import { getSpecialitiesOf } from "./abilitySnapshots";
+import { resizeSpecialities } from "./resizeSpecialities";
 
 /**
  * AbilityModel
@@ -393,21 +394,7 @@ export abstract class AbilityModel<
     await this.parent.update({ system: { refreshesDaily } });
   };
 
-  getSpecialities = (): string[] => {
-    return resizeSpecialities(this.specialities, {
-      hasSpecialities: this.hasSpecialities,
-      rating: this.rating,
-      specialitiesMode: this.specialitiesMode,
-    });
-  };
-
-  getSpecialitesCount = (): number => {
-    return getSpecialitiesCount({
-      hasSpecialities: this.hasSpecialities,
-      rating: this.rating,
-      specialitiesMode: this.specialitiesMode,
-    });
-  };
+  getSpecialities = (): string[] => getSpecialitiesOf(this);
 
   setSpecialities = async (newSpecs: string[]): Promise<void> => {
     await this.parent.update({
@@ -472,18 +459,6 @@ export abstract class AbilityModel<
 
   setHideIfZeroRated = async (hideIfZeroRated: boolean): Promise<void> => {
     await this.parent.update({ system: { hideIfZeroRated } });
-  };
-
-  getActiveUnlocks = (): Unlock[] => {
-    return this.unlocks.filter(({ rating: targetRating, description }) => {
-      return this.rating >= targetRating && description !== "";
-    });
-  };
-
-  getVisibleSituationalModifiers = (): SituationalModifier[] => {
-    return this.situationalModifiers.filter(({ situation }) => {
-      return situation !== "";
-    });
   };
 
   toggleSituationalModifier = (id: string): void => {

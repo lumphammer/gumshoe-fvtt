@@ -11,6 +11,7 @@ import type { PCModel } from "../actors/pc";
 import {
   brokenBondPoints,
   clampBondPoints,
+  getMaxBondPoints,
   isBondBroken,
   maxBondPoints,
 } from "../bonds/rules";
@@ -71,7 +72,7 @@ export class BondModel extends TypeDataModel<typeof bondSchema, BondItem> {
       actor?.type === constants.pc
         ? (actor.system as PCModel).getBondCap()
         : maxBondPoints;
-    return Math.max(cap, this.points);
+    return getMaxBondPoints(this.points, cap);
   }
 
   setPoints = async (points: number): Promise<void> => {

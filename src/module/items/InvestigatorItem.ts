@@ -2,9 +2,6 @@
 // that seem to come out here
 /* eslint "@typescript-eslint/explicit-function-return-type": "error" */
 
-import { settings } from "../../settings/settings";
-import { isActiveCharacterActor } from "../actors/types";
-
 /**
  * Extend the basic Item with some very simple modifications.
  * @extends {Item}
@@ -17,14 +14,4 @@ export class InvestigatorItem<
       name,
     });
   };
-
-  getThemeName(): string {
-    const systemThemeName = settings.defaultThemeName.get();
-    const actor = this.actor;
-    if (this.isOwned && actor && isActiveCharacterActor(actor)) {
-      return actor.system.getSheetThemeName() || systemThemeName;
-    } else {
-      return systemThemeName;
-    }
-  }
 }

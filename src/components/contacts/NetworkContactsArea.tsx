@@ -1,13 +1,16 @@
 import { memo, useContext } from "react";
 
-import { findGeneralAbilityIn } from "../../module/items/findGeneralAbility";
-import * as c from "../../constants";
 import { getTranslated } from "../../functions/getTranslated";
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
+import {
+  getContactPointsIn,
+  getNetworkAbilityIn,
+  getNetworkContactsIn,
+} from "../../module/actors/pcDerived";
 import type { NetworkContactItem } from "../../module/items/networkContact";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
@@ -27,23 +30,21 @@ export const NetworkContactsArea = memo(function NetworkContactsArea() {
   const theme = useContext(ThemeContext);
   const networkName = useSettings((s) => s.networkAbility);
   // the contacts' ids, by name; the Network ability's pool and rating; and
-  // the points the contacts hold (as `getNetworkContacts`,
-  // `getNetworkAbility` and `getContactPoints` work them out)
-  const { ids, network, held } = useActorSnapshot(actor, (snapshot) => {
-    const items = snapshot.items;
-    const contacts = items
-      .filter((item) => item.type === c.networkContact)
-      .toSorted((a, b) => a.name.localeCompare(b.name));
-    const ability = findGeneralAbilityIn(items, networkName);
-    return {
-      ids: contacts.map((item) => item._id ?? ""),
-      network: ability && {
-        pool: ability.system.pool,
-        rating: ability.system.rating,
-      },
-      held: contacts.reduce((total, item) => total + item.system.pool, 0),
-    };
-  });
+  // the points the contacts hold
+  const { ids, network, held } = useActorAndSettings(
+    actor,
+    ({ items }, settings) => {
+      const ability = getNetworkAbilityIn(items, settings);
+      return {
+        ids: getNetworkContactsIn(items).map((item) => item._id ?? ""),
+        network: ability && {
+          pool: ability.system.pool,
+          rating: ability.system.rating,
+        },
+        held: getContactPointsIn(items),
+      };
+    },
+  );
   // the live contacts, only to pass to the rows
   const contacts = ids.flatMap((id) => {
     const item = actor.items.get(id) as NetworkContactItem | undefined;

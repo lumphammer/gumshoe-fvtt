@@ -1,6 +1,6 @@
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { getPersonalDetailsInSlotIn } from "../../module/actors/pcDerived";
 import { useIsEditable } from "../../hooks/useIsEditable";
-import * as c from "../../constants";
 import type { PCActor } from "../../module/actors/pc";
 import { GridField } from "../inputs/GridField";
 import { PersonalDetailSlug } from "./PersonalDetailSlug";
@@ -17,12 +17,12 @@ export const PersonalDetailField = ({
 }) => {
   "use memo";
 
-  // as `actor.system.getPersonalDetailsInSlotIndex`, from the snapshot
   const personalDetails = useActorSnapshot(actor, (snapshot) =>
-    snapshot.items
-      .filter((item) => item.type === c.personalDetail)
-      .filter((item) => item.system.slotIndex === slotIndex)
-      .map((item) => ({ id: item._id ?? "", name: item.name, img: item.img })),
+    getPersonalDetailsInSlotIn(snapshot.items, slotIndex).map((item) => ({
+      id: item._id ?? "",
+      name: item.name,
+      img: item.img,
+    })),
   );
   const isEditable = useIsEditable();
 

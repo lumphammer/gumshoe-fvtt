@@ -9,6 +9,12 @@ import type { SettingsView } from "../../settings/settingsView";
 import type { ItemView, PCView } from "./pcDerived";
 import {
   findHealthAbilityIn,
+  getAdaptationProgressIn,
+  getContactPointsIn,
+  getNetworkAbilityIn,
+  getNetworkContactsIn,
+  getPersonalDetailsInSlotIn,
+  getStabilityViewIn,
   getAdaptedTraumaNamesIn,
   getBondCapIn,
   getBondPointsOf,
@@ -52,6 +58,7 @@ const settings = {
   sanityAbility: "Sanity",
   sanityCapBase: 10,
   sanityCapAbility: "Cthulhu Mythos",
+  networkAbility: "Network",
 } as unknown as SettingsView;
 
 const item = (
@@ -261,5 +268,64 @@ describe("getTraumaTestDifficultyIn", () => {
       getTraumaTestDifficultyIn(pc([stability(0)]), violence, settings),
     ).toBe(4);
     expect(getTraumaTestDifficultyIn(pc([]), violence, settings)).toBeNull();
+  });
+});
+
+describe("getStabilityViewIn", () => {
+  it("shows the Stability ability's points, or null with none", () => {
+    expect(
+      getStabilityViewIn(
+        [item("generalAbility", "Stability", { pool: 4, rating: 9 })],
+        settings,
+      ),
+    ).toEqual({ id: "Stability", name: "Stability", pool: 4, rating: 9 });
+    expect(getStabilityViewIn([], settings)).toBeNull();
+  });
+});
+
+describe("getAdaptationProgressIn", () => {
+  it("is the progress so far, or 0", () => {
+    expect(getAdaptationProgressIn(pc([], { violence: 2 }), "violence")).toBe(
+      2,
+    );
+    expect(getAdaptationProgressIn(pc([]), "violence")).toBe(0);
+  });
+});
+
+describe("getPersonalDetailsInSlotIn", () => {
+  it("finds the personal details in a slot, in order", () => {
+    const items = [
+      item("personalDetail", "Spy", { slotIndex: 0 }),
+      item("personalDetail", "Pilot", { slotIndex: 1 }),
+      item("equipment", "Hat", { slotIndex: 0 }),
+      item("personalDetail", "Thief", { slotIndex: 0 }),
+    ];
+    expect(
+      getPersonalDetailsInSlotIn(items, 0).map((detail) => detail.name),
+    ).toEqual(["Spy", "Thief"]);
+  });
+});
+
+describe("network contacts", () => {
+  const items = [
+    item("generalAbility", "Network", { pool: 3, rating: 6 }),
+    item("networkContact", "Zed", { pool: 2 }),
+    item("networkContact", "Alice", { pool: 1 }),
+    item("investigativeAbility", "Network", { pool: 9 }),
+  ];
+
+  it("finds the Network ability, a general ability", () => {
+    expect(getNetworkAbilityIn(items, settings)).toBe(items[0]);
+  });
+
+  it("lists the contacts by name", () => {
+    expect(getNetworkContactsIn(items).map((c) => c.name)).toEqual([
+      "Alice",
+      "Zed",
+    ]);
+  });
+
+  it("adds up the points the contacts hold", () => {
+    expect(getContactPointsIn(items)).toBe(3);
   });
 });

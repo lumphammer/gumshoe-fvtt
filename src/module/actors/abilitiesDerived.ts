@@ -83,3 +83,26 @@ export function getPushPoolWarningKeysIn(items: readonly ItemView[]): string[] {
   );
   return getPushPoolWarningKeys(pools.length, quickShock.length);
 }
+
+const isAbility = (item: ItemView) =>
+  item.type === c.generalAbility || item.type === c.investigativeAbility;
+
+const isPushPool = (item: ItemView) =>
+  item.type === c.generalAbility && Boolean(systemOf(item).isPushPool);
+
+/** The abilities with pool trackers: the push pool, then by name */
+export function getTrackerAbilitiesIn<T extends ItemView>(
+  items: readonly T[],
+): T[] {
+  return items
+    .filter(
+      (item) =>
+        isAbility(item) &&
+        Boolean((item.system as { showTracker?: boolean }).showTracker),
+    )
+    .toSorted(
+      (a, b) =>
+        Number(isPushPool(b)) - Number(isPushPool(a)) ||
+        a.name.localeCompare(b.name),
+    );
+}

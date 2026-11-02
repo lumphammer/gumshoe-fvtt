@@ -84,13 +84,6 @@ export class ActiveCharacterModel<
     });
   };
 
-  getTrackerAbilities(): AbilityItem[] {
-    return this.getAbilities().filter(
-      (item): item is AbilityItem =>
-        isAbilityItem(item) && item.system.showTracker,
-    );
-  }
-
   shouldBroadcastRefreshes(): boolean {
     assertGame(game);
     return !game.user.isGM;

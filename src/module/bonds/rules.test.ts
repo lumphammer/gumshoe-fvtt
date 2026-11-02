@@ -6,8 +6,10 @@ import {
   clampBondPoints,
   compareBonds,
   doesSpendBreakBond,
+  getMaxBondPoints,
   getMaxBondSpend,
   isBondBroken,
+  isBondRebuildable,
 } from "./rules";
 
 describe("clampBondPoints", () => {
@@ -112,5 +114,21 @@ describe("addBondPoints", () => {
     [0, -3, 2, -1],
   ])("%i %+i (cap %i) makes %i", (points, change, cap, expected) => {
     expect(addBondPoints(points, change, cap)).toBe(expected);
+  });
+});
+
+describe("isBondRebuildable", () => {
+  it("is only ordinary Bonds which aren't broken", () => {
+    expect(isBondRebuildable({ isDeltaGreen: false, points: 1 })).toBe(true);
+    expect(isBondRebuildable({ isDeltaGreen: true, points: 1 })).toBe(false);
+    expect(isBondRebuildable({ isDeltaGreen: false, points: -1 })).toBe(false);
+  });
+});
+
+describe("getMaxBondPoints", () => {
+  it("is the cap, or the points if above it", () => {
+    expect(getMaxBondPoints(1)).toBe(4);
+    expect(getMaxBondPoints(1, 2)).toBe(2);
+    expect(getMaxBondPoints(3, 2)).toBe(3);
   });
 });

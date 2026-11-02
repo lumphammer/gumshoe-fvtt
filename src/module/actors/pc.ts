@@ -21,7 +21,11 @@ import type { AdaptationEffects } from "../bonds/adaptation";
 import type { DeepReadonly } from "../snapshots/createSnapshotStore";
 import type { PCView } from "./pcDerived";
 import {
+  getAdaptationProgressIn,
   getAdaptedTraumaNamesIn,
+  getNetworkAbilityIn,
+  getNetworkContactsIn,
+  getPersonalDetailsInSlotIn,
   getBondCapIn,
   getBondsIn,
   getNeglectableBondsIn,
@@ -48,6 +52,7 @@ import {
   canBurnBond,
   clampBondPoints,
   isBondBroken,
+  isBondRebuildable,
 } from "../bonds/rules";
 import type { BondItem } from "../items/bond";
 import { isBondItem } from "../items/bond";
@@ -400,7 +405,7 @@ export class PCModel extends ActiveCharacterModel<
 
   /** Progress towards adapting to a trauma type */
   getAdaptationProgress(traumaTypeId: string): number {
-    return this.adaptations[traumaTypeId] ?? 0;
+    return getAdaptationProgressIn(this.view(), traumaTypeId);
   }
 
   /** This PC's data, as the functions in `pcDerived.ts` take it */
@@ -623,9 +628,7 @@ export class PCModel extends ActiveCharacterModel<
    */
   canRebuildBond(bond: BondItem): boolean {
     return (
-      !bond.system.isDeltaGreen &&
-      !bond.system.isBroken &&
-      this.getStabilityAbility() !== undefined
+      isBondRebuildable(bond.system) && this.getStabilityAbility() !== undefined
     );
   }
 
@@ -790,25 +793,14 @@ export class PCModel extends ActiveCharacterModel<
 
   /** The Network ability, which contacts' points come from */
   getNetworkAbility(): GeneralAbilityItem | undefined {
-    const name = settings.networkAbility.get();
-    return this.parent.items.find(
-      (item): item is GeneralAbilityItem & Item.Stored<"generalAbility"> =>
-        isGeneralAbilityItem(item) && item.name === name,
-    );
+    const ability = getNetworkAbilityIn(this.parent.items.contents);
+    return isGeneralAbilityItem(ability) ? ability : undefined;
   }
 
   /** Network contacts (Fall of DELTA GREEN, p. 068), by name */
   getNetworkContacts(): NetworkContactItem[] {
-    return this.parent.items
-      .filter((item) => isNetworkContactItem(item))
-      .toSorted((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
-  }
-
-  /** The Network points contacts still hold */
-  getContactPoints(): number {
-    return this.getNetworkContacts().reduce(
-      (total, contact) => total + contact.system.pool,
-      0,
+    return getNetworkContactsIn(this.parent.items.contents).filter((item) =>
+      isNetworkContactItem(item),
     );
   }
 
@@ -868,12 +860,10 @@ export class PCModel extends ActiveCharacterModel<
     return this.getPersonalDetailsInSlotIndex(c.occupationSlotIndex);
   };
 
-  getPersonalDetailsInSlotIndex = (slotIndex: number): PersonalDetailItem[] => {
-    const personalDetailItems = this.getPersonalDetails().filter((item) => {
-      return item.system.slotIndex === slotIndex;
-    });
-    return personalDetailItems;
-  };
+  getPersonalDetailsInSlotIndex = (slotIndex: number): PersonalDetailItem[] =>
+    getPersonalDetailsInSlotIn(this.parent.items.contents, slotIndex).filter(
+      (item) => isPersonalDetailItem(item),
+    );
 
   setSheetTheme = async (sheetTheme: string | null): Promise<void> => {
     await this.parent.update({ system: { sheetTheme } });

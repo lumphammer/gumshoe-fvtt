@@ -5,6 +5,7 @@ import {
   getCategorizedAbilitiesIn,
   getPushPoolIn,
   getPushPoolWarningKeysIn,
+  getTrackerAbilitiesIn,
 } from "./abilitiesDerived";
 import type { ItemView } from "./pcDerived";
 
@@ -87,5 +88,22 @@ describe("push pools", () => {
     expect(getPushPoolWarningKeysIn([pool, quickShock])).toEqual([]);
     expect(getPushPoolWarningKeysIn([quickShock])).not.toEqual([]);
     expect(getPushPoolWarningKeysIn([pool, pool])).not.toEqual([]);
+  });
+});
+
+describe("getTrackerAbilitiesIn", () => {
+  it("lists abilities with trackers, the push pool first, then by name", () => {
+    const items = [
+      item("generalAbility", "Health", { showTracker: true }),
+      item("generalAbility", "Athletics", { showTracker: false }),
+      item("investigativeAbility", "Cop Talk", { showTracker: true }),
+      item("generalAbility", "Push", { showTracker: true, isPushPool: true }),
+      item("equipment", "Torch", { showTracker: true }),
+    ];
+    expect(getTrackerAbilitiesIn(items).map((i) => i.name)).toEqual([
+      "Push",
+      "Cop Talk",
+      "Health",
+    ]);
   });
 });

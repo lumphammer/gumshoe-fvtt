@@ -7,6 +7,7 @@ import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { PCActor } from "../../module/actors/pc";
 import {
   getStabilityViewIn,
+  getAdaptationProgressIn,
   isAdaptedToIn,
 } from "../../module/actors/pcDerived";
 import {
@@ -67,13 +68,13 @@ export const AdaptationTracker = memo(function AdaptationTracker({
     (s) => getAdaptableTraumaTypesFrom(s) as TraumaType[],
   );
   // the Stability ability's name, and each type's progress and whether it's
-  // adapted to (as `getAdaptationProgress` and `isAdaptedTo` work them out)
+  // adapted to
   const { stabilityName, progress, adapted } = useActorAndSettings(
     actor,
     (pc, settings) => ({
       stabilityName: getStabilityViewIn(pc.items, settings)?.name ?? "",
       progress: Object.fromEntries(
-        types.map((type) => [type.id, pc.system.adaptations[type.id] ?? 0]),
+        types.map((type) => [type.id, getAdaptationProgressIn(pc, type.id)]),
       ),
       adapted: Object.fromEntries(
         types.map((type) => [type.id, isAdaptedToIn(pc, type.id, settings)]),
