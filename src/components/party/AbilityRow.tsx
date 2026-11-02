@@ -3,27 +3,81 @@ import type { ReactNode } from "react";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
-import type { InvestigatorActor } from "../../module/actors/InvestigatorActor";
 import type { AbilityItem } from "../../module/items/exports";
 import { isAbilityItem } from "../../module/items/exports";
-import { runtimeConfig } from "../../runtime";
-import { settings } from "../../settings/settings";
-import type { AbilityRowData } from "./types";
+import type { ThemeV1 } from "../../themes/types";
+import type { AbilityRowData, PartyMemberView } from "./types";
 
 type AbilityRowProps = {
   abilityRowData: AbilityRowData;
   index: number;
-  actors: InvestigatorActor[];
+  actors: readonly PartyMemberView[];
+  theme: ThemeV1;
+};
+
+/** Open a document's sheet, if it (still) exists */
+const openSheet = (doc: { sheet: unknown } | null | undefined) => {
+  const sheet = doc?.sheet;
+  if (!sheet) return;
+  assertApplicationV2(sheet);
+  void sheet.render({ force: true });
+};
+
+/**
+ * Open the member's copy of the ability, or offer to give them one (copied
+ * from the row's ability) if they haven't got it.
+ */
+const openOrAddAbility = async (
+  abilityRowData: AbilityRowData,
+  actorId: string,
+  abilityUuid: string | undefined,
+) => {
+  if (abilityUuid) {
+    openSheet(fromUuidSync(abilityUuid) as { sheet: unknown } | null);
+    return;
+  }
+  const actor = game.actors?.get(actorId);
+  if (!actor) return;
+  const confirmed = await confirmADoodleDo({
+    message: "{ActorName} does not have {AbilityName}. Add it now?",
+    confirmText: "Yes please!",
+    cancelText: "No thanks",
+    confirmIconClass: "fa-check",
+    resolveFalseOnCancel: true,
+    values: {
+      ActorName: actor.name ?? "",
+      AbilityName: abilityRowData.ability.name,
+    },
+  });
+  if (!confirmed) {
+    return;
+  }
+  const original = await fromUuid(abilityRowData.ability.uuid);
+  if (!isAbilityItem(original)) {
+    return;
+  }
+  const source = original.toJSON();
+  if (abilityRowData.isExtra) {
+    // the representative for an extra row is another PC's own copy, so start
+    // the new one from scratch rather than carrying that PC's rating and pool
+    // across
+    source.system = { ...source.system, rating: 0, pool: 0 };
+  }
+  const newAbility = (
+    await actor.createEmbeddedDocuments("Item", [source])
+  )?.[0] as AbilityItem;
+  if (isAbilityItem(newAbility)) {
+    openSheet(newAbility);
+  }
 };
 
 export const AbilityRow = ({
   abilityRowData,
   index,
   actors,
+  theme,
 }: AbilityRowProps) => {
-  const theme =
-    runtimeConfig.themes[settings.defaultThemeName.get()] ||
-    runtimeConfig.themes["tealTheme"];
+  "use memo";
 
   const zero = abilityRowData.total === 0;
   const odd = index % 2 === 0;
@@ -62,59 +116,22 @@ export const AbilityRow = ({
           fontStyle: abilityRowData.isExtra ? "italic" : undefined,
         }}
       >
-        {abilityRowData.abilityItem.name}
+        {abilityRowData.ability.name}
       </div>
 
       {/* Ability scores */}
       {actors.map<ReactNode>((actor, j) => {
-        if (actor === undefined || actor.id === null) {
-          return null;
-        }
         const actorInfo = abilityRowData.actorInfo[actor.id];
         return (
           <a
             key={actor.id}
-            onClick={async (e) => {
+            onClick={(e) => {
               e.preventDefault();
-              const ability = actorInfo.abilityId
-                ? actor.items.get(actorInfo.abilityId)
-                : undefined;
-              if (ability) {
-                const sheet = ability.sheet;
-                assertApplicationV2(sheet);
-                void sheet.render({ force: true });
-              } else {
-                const confirmed = await confirmADoodleDo({
-                  message:
-                    "{ActorName} does not have {AbilityName}. Add it now?",
-                  confirmText: "Yes please!",
-                  cancelText: "No thanks",
-                  confirmIconClass: "fa-check",
-                  resolveFalseOnCancel: true,
-                  values: {
-                    ActorName: actor.name ?? "",
-                    AbilityName: abilityRowData.abilityItem.name ?? "",
-                  },
-                });
-                if (!confirmed) {
-                  return;
-                }
-                const source = abilityRowData.abilityItem.toJSON();
-                if (abilityRowData.isExtra) {
-                  // the representative for an extra row is another PC's own
-                  // copy, so start the new one from scratch rather than
-                  // carrying that PC's rating and pool across
-                  source.system = { ...source.system, rating: 0, pool: 0 };
-                }
-                const newAbility = (
-                  await actor.createEmbeddedDocuments("Item", [source])
-                )?.[0] as AbilityItem;
-                if (isAbilityItem(newAbility)) {
-                  const sheet = newAbility.sheet;
-                  assertApplicationV2(sheet);
-                  void sheet.render({ force: true });
-                }
-              }
+              void openOrAddAbility(
+                abilityRowData,
+                actor.id,
+                actorInfo?.abilityUuid,
+              );
             }}
             css={{
               background: bg,
@@ -145,5 +162,5 @@ export const AbilityRow = ({
         {abilityRowData.total}
       </div>
     </>
-  ); //
+  );
 };

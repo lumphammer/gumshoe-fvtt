@@ -1,9 +1,30 @@
-import type { AbilityItem } from "../../module/items/exports";
 import type { AbilityType } from "../../types";
 
 export const typeHeaderKey = "typeHeader";
 export const categoryHeaderKey = "categoryHeader";
 export const abilityRowKey = "abilityRowString";
+
+/**
+ * What the party sheet shows of an ability: a pack's, or a member's own.
+ * Plain data, so the sheet can be worked out from snapshots and memoised.
+ */
+export type PartyAbilityView = {
+  /** where to find the ability, to open or copy it */
+  uuid: string;
+  type: AbilityType;
+  name: string;
+  categoryId: string;
+  rating: number;
+};
+
+/** What the party sheet shows of one of its members */
+export type PartyMemberView = {
+  id: string;
+  name: string;
+  img: string | null;
+  abilities: readonly PartyAbilityView[];
+};
+
 export type TypeHeaderData = {
   rowType: typeof typeHeaderKey;
   abilityType: AbilityType;
@@ -20,16 +41,17 @@ export type CategoryHeaderData = {
 };
 export type ActorAbilityInfo = {
   actorId: string;
-  abilityId: string | undefined;
+  /** the member's own copy of the ability, if they have it */
+  abilityUuid: string | undefined;
   rating: number | undefined;
 };
 export type AbilityRowData = {
   rowType: typeof abilityRowKey;
-  abilityItem: AbilityItem;
+  ability: PartyAbilityView;
   /**
    * true when this ability isn't in any of the configured PC packs, and the
    * row only exists because one of the party's actors owns it. in that case
-   * `abilityItem` is that actor's own copy rather than a pack original.
+   * `ability` is that actor's own copy rather than a pack original.
    */
   isExtra: boolean;
   actorInfo: {
