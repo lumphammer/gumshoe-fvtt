@@ -76,10 +76,9 @@ translations, adding fields and settings, releases).
   "annotation"`). Foundry's data is mutable, so the rest of the UI relies on
   full re-renders: the compiler caches on identity, and a document keeps its
   identity when it changes. Only mark code which reads its data through
-  snapshots (below); the PC and NPC sheets, the equipment,
-  weapon and ability sheets, the party sheet, the combat tracker (but
-  `Tracker`), and the shared inputs, `Translate` and `ImagePickle` are
-  marked. A compiled component
+  snapshots (below); the PC, NPC and party sheets, every item sheet, the
+  combat tracker (but `Tracker`), and the shared inputs, `Translate` and
+  `ImagePickle` are marked. A compiled component
   passes an unchanged child its cached element, so every child of one must
   keep itself current (as if memoised), not rely on its parent re-rendering.
   A call during render is cached on its arguments: one which reads global
@@ -89,10 +88,10 @@ translations, adding fields and settings, releases).
   avoid `useMemo`/`useCallback` over values that change every render; plain
   functions are fine.
 - Sheets are being converted to read immutable **snapshots**, so they can be
-  memoised (`docs/immutable-data.md`). Converted so far: the equipment, weapon
-  and ability sheets, the whole PC and NPC sheets (`PCSheetFull` and
-  `NPCSheetFull` are memoised), and the combat tracker's rows and header. In a
-  converted tree:
+  memoised (`docs/immutable-data.md`). Converted so far: every item sheet
+  (`ItemSheet` provides `IsEditableContext` for them all), the PC, NPC and
+  party sheets (`PCSheetFull` and `NPCSheetFull` are memoised), and the
+  combat tracker's rows and header. In a converted tree:
   - Read data only from `useItemSnapshot`/`useItemSelector`,
     `useActorSnapshot(actor, selector)` and `useSettings(selector)`.
     Selector results are structurally shared, so they can build objects; select
@@ -123,9 +122,10 @@ translations, adding fields and settings, releases).
     `SettingsView` (`pcDerived.ts`, `abilitiesDerived.ts`,
     `abilitySnapshots.ts`); settings helpers take `s = liveSettings`. The
     model's methods call the pure ones, so each rule lives once.
-- An unconverted sheet only re-renders when its own document changes. If it
-  shows data from another document, subscribe to hooks yourself: see
-  `src/hooks/useRefreshOnActorItemChanges.ts`.
+- To show data from another document, read its snapshot too (e.g. the Bond
+  sheet reads its PC's with `useActorSnapshot(item.actor, …)`), or several
+  actors' with `useActorsSnapshot`: Foundry only re-renders a sheet for its
+  own document.
 - For text inputs which save as you type, use `useAsyncUpdate` (or
   `AsyncTextInput`/`AsyncNumberInput`): it throttles saves and ignores echoes
   while focused, so a late save can't overwrite newer typing.

@@ -1,5 +1,9 @@
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertCardItem } from "../../module/items/card";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
+import { useSettings } from "../../hooks/useSettings";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import type { CardItem } from "../../module/items/card";
+import type { DeepReadonly } from "../../module/snapshots/createSnapshotStore";
+import type { CardSystemData } from "../../types";
 import { absoluteCover } from "../absoluteCover";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
@@ -13,12 +17,21 @@ import { editCategoryMemberships } from "./directions";
 import { EditCategoryMemberships } from "./EditCategoryMemberships";
 import { summarizeCategoryMemberships } from "./functions";
 
-export const CardMain = () => {
-  const { item } = useItemSheetContext();
-  assertCardItem(item);
+/** Editing a card: it reads the card and its categories through snapshots */
+export const CardMain = ({ item }: { item: CardItem }) => {
+  "use memo";
+
+  const view = useItemSelector<
+    { name: string; system: DeepReadonly<CardSystemData> },
+    CardSystemData
+  >(item, (snapshot) => ({ name: snapshot.name, system: snapshot.system }));
+  const { system } = view;
+  const methods = useSystemMethods(item);
+  const categories = useSettings((s) => s.cardCategories);
 
   const categoryText = summarizeCategoryMemberships(
-    item.system.cardCategoryMemberships,
+    system.cardCategoryMemberships,
+    categories,
   );
 
   return (
@@ -31,25 +44,25 @@ export const CardMain = () => {
           </ArrowLink>
         </GridField>
         <GridField label="Item Name">
-          <AsyncTextInput value={item.name ?? ""} onChange={item.setName} />
+          <AsyncTextInput value={view.name} onChange={item.setName} />
         </GridField>
         <GridField label="Supertitle">
           <AsyncTextInput
-            value={item.system.supertitle}
-            onChange={item.system.setSupertitle}
+            value={system.supertitle}
+            onChange={methods.setSupertitle}
           />
         </GridField>
         <GridField label="Subtitle">
           <AsyncTextInput
-            value={item.system.subtitle}
-            onChange={item.system.setSubtitle}
+            value={system.subtitle}
+            onChange={methods.setSubtitle}
           />
         </GridField>
 
         <GridField label="Continuity">
           <Toggle
-            checked={item.system.continuity}
-            onChange={item.system.setContinuity}
+            checked={system.continuity}
+            onChange={methods.setContinuity}
           />
         </GridField>
       </InputGrid>
@@ -77,9 +90,9 @@ export const CardMain = () => {
                 >
                   <RichTextEditor
                     name="description"
-                    html={item.system.description}
+                    html={system.description}
                     className=""
-                    onSave={item.system.setDescription}
+                    onSave={methods.setDescription}
                   />
                 </InputGrid>
               ),
@@ -97,9 +110,9 @@ export const CardMain = () => {
                 >
                   <RichTextEditor
                     name="effects"
-                    html={item.system.effects}
+                    html={system.effects}
                     className=""
-                    onSave={item.system.setEffects}
+                    onSave={methods.setEffects}
                   />
                 </InputGrid>
               ),
@@ -108,7 +121,12 @@ export const CardMain = () => {
         />
       </div>
       <SlideInNestedPanelRoute direction={editCategoryMemberships}>
-        <EditCategoryMemberships card={item} />
+        <EditCategoryMemberships
+          card={item}
+          memberships={system.cardCategoryMemberships}
+          styleKeyCategoryId={system.styleKeyCategoryId}
+          categories={categories}
+        />
       </SlideInNestedPanelRoute>
     </>
   );

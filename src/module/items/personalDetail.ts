@@ -1,3 +1,4 @@
+import type { SourceData } from "../../fvtt-exports";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
 import { NumberField, StringField, TypeDataModel } from "../../fvtt-exports";
@@ -59,3 +60,5 @@ export function assertPersonalDetailItem(
     throw new Error("Item is not a personalDetail");
   }
 }
+
+export type PersonalDetailSystemData = SourceData<typeof personalDetailSchema>;

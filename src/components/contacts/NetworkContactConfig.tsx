@@ -1,25 +1,30 @@
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { assertNetworkContactItem } from "../../module/items/networkContact";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import type { NetworkContactItem } from "../../module/items/networkContact";
 import { BondConfig } from "../bonds/BondConfig";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { GridField } from "../inputs/GridField";
+
+type NetworkContactConfigProps = {
+  /** only to write through */
+  item: NetworkContactItem;
+  pool: number;
+};
 
 /**
  * The contact's settings: fixing the pool by hand (without touching Network),
  * and deleting the contact
  */
-export const NetworkContactConfig = () => {
-  const { item } = useItemSheetContext();
-  assertNetworkContactItem(item);
+export const NetworkContactConfig = ({
+  item,
+  pool,
+}: NetworkContactConfigProps) => {
+  "use memo";
 
+  const methods = useSystemMethods(item);
   return (
-    <BondConfig>
+    <BondConfig item={item}>
       <GridField label="Manually adjust pool">
-        <AsyncNumberInput
-          value={item.system.pool}
-          onChange={item.system.setPool}
-          min={0}
-        />
+        <AsyncNumberInput value={pool} onChange={methods.setPool} min={0} />
       </GridField>
     </BondConfig>
   );

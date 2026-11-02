@@ -1,17 +1,17 @@
 import { useState } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
-import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { isPCActor } from "../../module/actors/pc";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
 import {
   assignNetworkPoints,
   tapContact,
   testContact,
 } from "../../module/contacts/contactActions";
 import { getMaxAssignablePoints } from "../../module/contacts/rules";
-import { assertNetworkContactItem } from "../../module/items/networkContact";
-import { settings } from "../../settings/settings";
+import type {
+  NetworkContactItem,
+  NetworkContactSystemData,
+} from "../../module/items/networkContact";
 import { absoluteCover } from "../absoluteCover";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { Button } from "../inputs/Button";
@@ -28,23 +28,38 @@ import { Translate } from "../Translate";
  * information.
  */
 /** a line across the sheet, between who the contact is and what they do */
-const Divider = () => (
-  <hr css={{ gridColumn: "1/-1", width: "100%", margin: "0.25em 0" }} />
-);
+const Divider = () => {
+  "use memo";
 
-export const NetworkContactMain = () => {
-  const { item } = useItemSheetContext();
-  assertNetworkContactItem(item);
-  // what can be given depends on Network, another item
-  useRefreshOnActorItemChanges(item.actor);
+  return <hr css={{ gridColumn: "1/-1", width: "100%", margin: "0.25em 0" }} />;
+};
+
+type NetworkContactMainProps = {
+  /** only to write through, and to act on */
+  item: NetworkContactItem;
+  name: string;
+  system: NetworkContactSystemData;
+  /** only a PC's contacts can be given points, tested or tapped */
+  isOnPC: boolean;
+  /** the PC's Network pool, or null if they have no Network ability */
+  networkPool: number | null;
+  networkName: string;
+};
+
+export const NetworkContactMain = ({
+  item,
+  name,
+  system,
+  isOnPC,
+  networkPool,
+  networkName,
+}: NetworkContactMainProps) => {
+  "use memo";
+
+  const methods = useSystemMethods(item);
   const [give, setGive] = useState(0);
   const [spend, setSpend] = useState(0);
-
-  const actor = item.actor;
-  const isOnPC = isPCActor(actor);
-  const network = isOnPC ? actor.system.getNetworkAbility() : undefined;
-  const networkName = settings.networkAbility.get();
-  const pool = item.system.pool;
+  const pool = system.pool;
 
   return (
     <InputGrid
@@ -56,26 +71,26 @@ export const NetworkContactMain = () => {
       }}
     >
       <GridField label="Name">
-        <AsyncTextInput value={item.name ?? ""} onChange={item.setName} />
+        <AsyncTextInput value={name} onChange={item.setName} />
       </GridField>
       <GridField label="Location">
         <AsyncTextInput
-          value={item.system.location}
-          onChange={item.system.setLocation}
+          value={system.location}
+          onChange={methods.setLocation}
         />
       </GridField>
       <Divider />
       <GridField label="Pool">
         <span data-testid="contact-pool">
           {pool}
-          {network !== undefined && (
+          {networkPool !== null && (
             <>
               {" "}
               (
               <Translate
                 values={{
                   AbilityName: networkName,
-                  Pool: String(network.system.pool),
+                  Pool: String(networkPool),
                 }}
               >
                 AbilityNamePoolLeft
@@ -93,7 +108,7 @@ export const NetworkContactMain = () => {
             })}
             noTranslate
           >
-            {network === undefined ? (
+            {networkPool === null ? (
               <i>
                 <Translate values={{ AbilityName: networkName }}>
                   NoAbilityNameAbility
@@ -107,7 +122,7 @@ export const NetworkContactMain = () => {
                 <SpendButtons
                   value={give}
                   onChange={setGive}
-                  max={getMaxAssignablePoints(network.system.pool)}
+                  max={getMaxAssignablePoints(networkPool)}
                 />
                 <Button
                   data-testid="give-network-points"
@@ -165,8 +180,8 @@ export const NetworkContactMain = () => {
       )}
       <div css={{ position: "relative", gridColumn: "1/-1" }}>
         <RichTextEditor
-          html={item.system.notes}
-          onSave={item.system.setNotes}
+          html={system.notes}
+          onSave={methods.setNotes}
           name="notes"
         />
       </div>

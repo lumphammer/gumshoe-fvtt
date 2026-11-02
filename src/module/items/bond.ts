@@ -1,3 +1,4 @@
+import type { SourceData } from "../../fvtt-exports";
 import {
   BooleanField,
   NumberField,
@@ -122,3 +123,5 @@ export function assertBondItem(x: unknown): asserts x is BondItem {
     throw new Error("Item is not a bond");
   }
 }
+
+export type BondSystemData = SourceData<typeof bondSchema>;

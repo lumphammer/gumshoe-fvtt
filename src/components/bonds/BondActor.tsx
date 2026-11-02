@@ -3,9 +3,14 @@ import { useContext, useState } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated } from "../../functions/getTranslated";
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useSnapshotSelector } from "../../hooks/useSnapshot";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import { InvestigatorActor } from "../../module/actors/InvestigatorActor";
 import type { ActiveCharacterActor } from "../../module/actors/types";
 import { isActiveCharacterActor } from "../../module/actors/types";
 import type { BondItem } from "../../module/items/bond";
+import { getWorldActorsStore } from "../../module/snapshots/documentStores";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { parseFoundryDragData } from "../inputs/parseFoundryDragData";
 import { Translate } from "../Translate";
@@ -22,15 +27,46 @@ function canLinkTo(
 }
 
 /**
+ * The name of the actor with this uuid, or null if there isn't one. A world
+ * actor's comes from the world's actors' snapshot, so it follows renames and
+ * deletions; any other (a token's) from its own snapshot, so it follows
+ * renames.
+ */
+const useActorName = (uuid: string | null): string | null => {
+  const worldName = useSnapshotSelector(getWorldActorsStore(), (actors) =>
+    uuid === null
+      ? null
+      : (actors.find((actor) => actor.uuid === uuid)?.name ?? null),
+  );
+  // (looked up on every render: this hook isn't compiled)
+  const other = uuid !== null && worldName === null ? fromUuidSync(uuid) : null;
+  const otherName = useActorSnapshot(
+    other instanceof InvestigatorActor ? other : null,
+    (actor): string | null => actor?.name ?? null,
+  );
+  return uuid === null ? null : (worldName ?? otherName);
+};
+
+/**
  * The actor a Bond is with: drop one here to link it. For a DELTA GREEN Bond
  * that's the teammate (p. 046), so a team crisis strengthens this Bond rather
  * than forming another; for others it might be an NPC. The name opens their
  * sheet.
  */
-export const BondActor = ({ bond }: { bond: BondItem }) => {
+type BondActorProps = {
+  /** only to write through */
+  bond: BondItem;
+  /** the linked actor's uuid (`system.actorUuid`), if any */
+  actorUuid: string | null;
+};
+
+export const BondActor = ({ bond, actorUuid }: BondActorProps) => {
+  "use memo";
+
   const theme = useContext(ThemeContext);
   const [isDragOver, setIsDragOver] = useState(false);
-  const linked = bond.system.linkedActor;
+  const methods = useSystemMethods(bond);
+  const linkedName = useActorName(actorUuid);
 
   const onDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -56,7 +92,7 @@ export const BondActor = ({ bond }: { bond: BondItem }) => {
       ui.notifications?.warn(getTranslated("CantLinkBondToThat"));
       return;
     }
-    await bond.system.linkActor(actor);
+    await methods.linkActor(actor);
   };
 
   return (
@@ -76,26 +112,28 @@ export const BondActor = ({ bond }: { bond: BondItem }) => {
         backgroundColor: isDragOver ? theme.colors.backgroundButton : undefined,
       }}
     >
-      {linked ? (
+      {actorUuid !== null && linkedName !== null ? (
         <a
           css={{ flex: 1 }}
           onClick={() => {
+            const linked = fromUuidSync(actorUuid);
+            if (!(linked instanceof Actor)) return;
             const sheet = linked.sheet;
             assertApplicationV2(sheet);
             void sheet.render({ force: true });
           }}
         >
-          {linked.name}
+          {linkedName}
         </a>
       ) : (
         <i css={{ flex: 1 }}>
           <Translate>
-            {bond.system.actorUuid ? "Actor not found" : "Drag an actor here"}
+            {actorUuid ? "Actor not found" : "Drag an actor here"}
           </Translate>
         </i>
       )}
-      {bond.system.actorUuid && (
-        <a title={getTranslated("Unlink")} onClick={bond.system.unlinkActor}>
+      {actorUuid && (
+        <a title={getTranslated("Unlink")} onClick={methods.unlinkActor}>
           <i className="fa fa-unlink" />
         </a>
       )}

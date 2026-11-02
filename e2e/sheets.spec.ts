@@ -255,3 +255,99 @@ for (const type of itemTypes) {
     await visitEveryTab(await openSheet(page, `Actor.${actorId}`));
   });
 }
+
+// the item sheets don't re-render with Foundry: each follows its item itself
+const followedFields = {
+  mwItem: { notes: "<p>Changed notes</p>" },
+  personalDetail: { notes: "<p>Changed notes</p>" },
+  bond: { notes: "<p>Changed notes</p>" },
+  networkContact: { notes: "<p>Changed notes</p>" },
+  card: { description: "<p>Changed notes</p>" },
+} as const;
+
+for (const [type, system] of Object.entries(followedFields)) {
+  test(`an open ${type} sheet follows its item changed elsewhere`, async ({
+    page,
+  }) => {
+    await setSettings(page, { useBonds: true, useNetworkContacts: true });
+    const actorId = await createActor(page, { name: "Follower", type: "pc" });
+    const itemId = await createOwnedItem(page, actorId, {
+      name: "Before",
+      type,
+    });
+    const sheet = await openSheet(page, `Actor.${actorId}.Item.${itemId}`);
+    await expect(sheet).toContainText("Before");
+    const update = (data: object) =>
+      page.evaluate(
+        async ({ actorId, itemId, data }) => {
+          await game.actors.get(actorId)!.items.get(itemId)!.update(data);
+        },
+        { actorId, itemId, data },
+      );
+
+    // one at a time, so neither can bring the other in
+    await update({ system });
+    await expect(sheet).toContainText("Changed notes");
+    await update({ name: "After" });
+    await expect(sheet).toContainText("After");
+  });
+}
+
+test("a Moribund World item's range keeps the others, changed elsewhere", async ({
+  page,
+}) => {
+  const itemId = await page.evaluate(async () => {
+    const item = await Item.create({
+      name: "Bow",
+      type: "mwItem",
+      system: { mwType: "missileWeapon" },
+    });
+    return item!.id;
+  });
+  const sheet = await openSheet(page, `Item.${itemId}`);
+  // the name, then the four ranges
+  const inputs = sheet.locator("input");
+  await expect(inputs).toHaveCount(5);
+  const range = (n: number) => inputs.nth(n + 1);
+
+  await page.evaluate(async (id) => {
+    await game.items.get(id)!.update({ system: { ranges: [1, 2, 3, 4] } });
+  }, itemId);
+  await expect(range(3)).toHaveValue("4");
+  // the setter starts from the ranges as they are now, not when it opened
+  await range(0).fill("9");
+  await range(0).blur();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (id) =>
+          (game.items.get(id)!.system as unknown as { ranges: number[] })
+            .ranges,
+        itemId,
+      ),
+    )
+    .toEqual([9, 2, 3, 4]);
+});
+
+test("a personal detail's sheet follows Item compendiums being created", async ({
+  page,
+}) => {
+  const itemId = await page.evaluate(async () => {
+    const item = await Item.create({ name: "Detail", type: "personalDetail" });
+    return item!.id;
+  });
+  const sheet = await openSheet(page, `Item.${itemId}`);
+  const packs = sheet.getByRole("combobox").last();
+  await expect(packs.locator("option", { hasText: "Fresh Pack" })).toHaveCount(
+    0,
+  );
+  await page.evaluate(async () => {
+    await foundry.documents.collections.CompendiumCollection.createCompendium({
+      type: "Item",
+      label: "Fresh Pack",
+    });
+  });
+  await expect(packs.locator("option", { hasText: "Fresh Pack" })).toHaveCount(
+    1,
+  );
+});

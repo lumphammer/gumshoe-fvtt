@@ -1,9 +1,12 @@
-import React, { useCallback } from "react";
+import React, { memo } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/isGame";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
+import { useItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import type { MwItemSystemData } from "../../module/items/mwItem";
 import { assertMwItem } from "../../module/items/mwItem";
 import type { MwType } from "../../types";
 import { absoluteCover } from "../absoluteCover";
@@ -17,16 +20,29 @@ import { Select } from "../inputs/Select";
 import { TextInput } from "../inputs/TextInput";
 import { Translate } from "../Translate";
 
-export const MwItemSheet = () => {
+/**
+ * Reads the item through its snapshot (the item itself only to write
+ * through). Memoised (it has no props).
+ */
+export const MwItemSheet = memo(function MwItemSheet() {
+  "use memo";
+
   const { item } = useItemSheetContext();
 
   assertMwItem(item);
+  const snapshot = useItemSnapshot<MwItemSystemData>(item);
+  const { system } = snapshot;
+  const methods = useSystemMethods(item);
 
   const { contentEditableRef, onBlur, onFocus, onInput, onKeyDown, onPaste } =
-    useAsyncUpdate(item.name || "", item.setName);
-  const nameInput = useAsyncUpdate(item.name || "", item.setName);
+    useAsyncUpdate(snapshot.name, item.setName);
+  const nameInput = useAsyncUpdate(snapshot.name, item.setName);
+  // `setRange(n)` makes a setter from the system data it's called on, so
+  // make it when the value's set, from the system data at the time
+  const setRange = (range: 0 | 1 | 2 | 3) => (value: number) =>
+    item.system.setRange(range)(value);
 
-  const onClickDelete = useCallback(async () => {
+  const onClickDelete = async () => {
     assertGame(game);
     const message = item.actor
       ? "DeleteActorNamesEquipmentName"
@@ -46,14 +62,11 @@ export const MwItemSheet = () => {
     if (aye) {
       await item.delete();
     }
-  }, [item]);
+  };
 
-  const onChangeType = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      void item.system.setMwType(e.currentTarget.value as MwType);
-    },
-    [item],
-  );
+  const onChangeType = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    void methods.setMwType(e.currentTarget.value as MwType);
+  };
 
   return (
     <div
@@ -88,7 +101,7 @@ export const MwItemSheet = () => {
 
       {/* Image */}
       <ImagePickle
-        img={item.img}
+        img={snapshot.img}
         css={{
           gridArea: "image",
           transform: "rotateZ(-2deg)",
@@ -128,7 +141,7 @@ export const MwItemSheet = () => {
         </GridField>
         <GridField label="MwType">
           <Select
-            value={item.system.mwType}
+            value={system.mwType}
             onChange={onChangeType}
             css={{
               width: "100%",
@@ -154,8 +167,8 @@ export const MwItemSheet = () => {
         >
           <RichTextEditor
             name="notes"
-            html={item.system.notes}
-            onSave={item.system.setNotes}
+            html={system.notes}
+            onSave={methods.setNotes}
             css={{
               height: "100%",
               "&&": {
@@ -176,16 +189,16 @@ export const MwItemSheet = () => {
             }}
           />
         </GridFieldStacked> */}
-        {item.system.mwType === "enchantedItem" && (
+        {system.mwType === "enchantedItem" && (
           <GridField label="Charges">
             <AsyncNumberInput
-              onChange={item.system.setCharges}
-              value={item.system.charges}
+              onChange={methods.setCharges}
+              value={system.charges}
               min={0}
             />
           </GridField>
         )}
-        {item.system.mwType === "missileWeapon" && (
+        {system.mwType === "missileWeapon" && (
           <GridFieldStacked label="Ranges">
             <div
               css={{
@@ -195,15 +208,15 @@ export const MwItemSheet = () => {
             >
               <GridFieldStacked label="Short" css={{ flex: 1 }}>
                 <AsyncNumberInput
-                  onChange={item.system.setRange(0)}
-                  value={item.system.getRange(0)}
+                  onChange={setRange(0)}
+                  value={system.ranges[0]}
                   min={0}
                 />
               </GridFieldStacked>
               <GridFieldStacked label="Medium" css={{ flex: 1 }}>
                 <AsyncNumberInput
-                  onChange={item.system.setRange(1)}
-                  value={item.system.getRange(1)}
+                  onChange={setRange(1)}
+                  value={system.ranges[1]}
                   min={0}
                 />
               </GridFieldStacked>
@@ -216,15 +229,15 @@ export const MwItemSheet = () => {
             >
               <GridFieldStacked label="Long" css={{ flex: 1 }}>
                 <AsyncNumberInput
-                  onChange={item.system.setRange(2)}
-                  value={item.system.getRange(2)}
+                  onChange={setRange(2)}
+                  value={system.ranges[2]}
                   min={0}
                 />
               </GridFieldStacked>
               <GridFieldStacked label="Extreme" css={{ flex: 1 }}>
                 <AsyncNumberInput
-                  onChange={item.system.setRange(3)}
-                  value={item.system.getRange(3)}
+                  onChange={setRange(3)}
+                  value={system.ranges[3]}
                   min={0}
                 />
               </GridFieldStacked>
@@ -234,4 +247,4 @@ export const MwItemSheet = () => {
       </InputGrid>
     </div>
   );
-};
+});

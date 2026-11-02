@@ -1,16 +1,19 @@
-import { useCallback } from "react";
-
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/isGame";
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import type { PersonalDetailItem } from "../../module/items/personalDetail";
 import { Button } from "../inputs/Button";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 
-export const PersonalDetailConfig = () => {
-  const { item } = useItemSheetContext();
-  const onClickDelete = useCallback(async () => {
+export const PersonalDetailConfig = ({
+  item,
+}: {
+  item: PersonalDetailItem;
+}) => {
+  "use memo";
+
+  const onClickDelete = async () => {
     assertGame(game);
     const message = item.actor
       ? "DeleteActorNamesEquipmentName"
@@ -30,7 +33,7 @@ export const PersonalDetailConfig = () => {
     if (aye) {
       await item.delete();
     }
-  }, [item]);
+  };
 
   return (
     <InputGrid>

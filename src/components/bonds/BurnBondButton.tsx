@@ -5,7 +5,12 @@ import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
 
 type BurnBondButtonProps = {
+  /** only to burn */
   bond: BondItem;
+  /** whether it can be burned now (`PCModel#canBurnBond`) */
+  canBurn: boolean;
+  /** the PC's Stability ability's name */
+  stabilityName: string;
   className?: string;
 };
 
@@ -13,20 +18,26 @@ type BurnBondButtonProps = {
  * Burn a Bond: 2 of its points for 1 Stability (Fall of DELTA GREEN, p. 120).
  * Only for Bonds on a PC.
  */
-export const BurnBondButton = ({ bond, className }: BurnBondButtonProps) => {
-  const actor = bond.actor;
-  if (!isPCActor(actor)) {
-    return null;
-  }
+export const BurnBondButton = ({
+  bond,
+  canBurn,
+  stabilityName,
+  className,
+}: BurnBondButtonProps) => {
+  "use memo";
+
   const tooltip = getTranslated("BurnBondTooltip", {
-    AbilityName: actor.system.getStabilityAbility()?.name ?? "",
+    AbilityName: stabilityName,
   });
   return (
     <Button
       className={className}
       css={{ whiteSpace: "nowrap" }}
-      disabled={!actor.system.canBurnBond(bond)}
-      onClick={() => actor.system.confirmBurnBond(bond)}
+      disabled={!canBurn}
+      onClick={() => {
+        const actor = bond.actor;
+        if (isPCActor(actor)) void actor.system.confirmBurnBond(bond);
+      }}
       title={tooltip}
     >
       <i className="fa fa-fire" />

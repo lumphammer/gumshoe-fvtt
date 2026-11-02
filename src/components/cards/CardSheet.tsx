@@ -1,9 +1,11 @@
 import { Router } from "@lumphammer/minirouter";
-import { useCallback } from "react";
+import { memo } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
+import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertCardItem } from "../../module/items/card";
+import type { CardSystemData } from "../../types";
 import { absoluteCover } from "../absoluteCover";
 import { ToolbarButton } from "../inputs/Button";
 import { ArrowLink } from "../nestedPanels/ArrowLink";
@@ -13,12 +15,24 @@ import { CardDisplay } from "./CardDisplay";
 import { CardMain } from "./CardMain";
 import { edit } from "./directions";
 
-export const CardSheet = () => {
+/**
+ * Reads the card through snapshots (`CardDisplay` and `CardMain` read their
+ * own), the item itself only to write through. Memoised (it has no props).
+ */
+export const CardSheet = memo(function CardSheet() {
+  "use memo";
+
   const { item } = useItemSheetContext();
 
   assertCardItem(item);
+  const active = useItemSelector<boolean, CardSystemData>(
+    item,
+    (snapshot) => snapshot.system.active,
+  );
+  // a card can't move between actors, so this never changes
+  const isOwned = item.actor !== null;
 
-  const handleClickDiscard = useCallback(async () => {
+  const handleClickDiscard = async () => {
     const message = item.actor
       ? "DiscardActorNamesCardNameCard"
       : "DeleteCardName";
@@ -39,15 +53,15 @@ export const CardSheet = () => {
     if (yes) {
       void item.delete();
     }
-  }, [item]);
+  };
 
-  const handleClickDeactivate = useCallback(async () => {
+  const handleClickDeactivate = async () => {
     await item.update({ system: { active: false } });
-  }, [item]);
+  };
 
-  const handleClickActivate = useCallback(async () => {
+  const handleClickActivate = async () => {
     await item.update({ system: { active: true } });
-  }, [item]);
+  };
 
   return (
     <Router>
@@ -67,9 +81,9 @@ export const CardSheet = () => {
           }}
         >
           <ToolbarButton onClick={handleClickDiscard}>
-            <Translate>{item.actor ? "Discard" : "Delete"}</Translate>
+            <Translate>{isOwned ? "Discard" : "Delete"}</Translate>
           </ToolbarButton>{" "}
-          {item.system.active ? (
+          {active ? (
             <ToolbarButton onClick={handleClickDeactivate}>
               <Translate>Deactivate</Translate>
             </ToolbarButton>
@@ -84,7 +98,7 @@ export const CardSheet = () => {
         <div
           css={{
             flex: 1,
-            opacity: item.system.active ? 1 : 0.5,
+            opacity: active ? 1 : 0.5,
             transition: "opacity 200ms ease-in-out",
             display: "flex",
             flexDirection: "column",
@@ -109,9 +123,9 @@ export const CardSheet = () => {
             flexDirection: "column",
           }}
         >
-          <CardMain />
+          <CardMain item={item} />
         </div>
       </SlideInNestedPanelRoute>
     </Router>
   );
-};
+});

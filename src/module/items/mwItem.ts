@@ -1,3 +1,4 @@
+import type { SourceData } from "../../fvtt-exports";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
 import {
@@ -87,3 +88,5 @@ export function assertMwItem(x: unknown): asserts x is MwItem {
     throw new Error("Item is not a mwItem");
   }
 }
+
+export type MwItemSystemData = SourceData<typeof mwItemSchema>;

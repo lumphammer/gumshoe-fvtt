@@ -1,11 +1,14 @@
 import { useNavigationContext } from "@lumphammer/minirouter";
 
 import { getTranslated } from "../../functions/getTranslated";
-import { useRefreshOnActorItemChanges } from "../../hooks/useRefreshOnActorItemChanges";
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import { brokenBondPoints } from "../../module/bonds/rules";
-import { isPCActor } from "../../module/actors/pc";
-import { assertBondItem } from "../../module/items/bond";
+import { useSystemMethods } from "../../hooks/useSystemMethods";
+import {
+  brokenBondPoints,
+  canBurnBond,
+  isBondBroken,
+  maxBondPoints,
+} from "../../module/bonds/rules";
+import type { BondItem, BondSystemData } from "../../module/items/bond";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
@@ -21,17 +24,44 @@ import { BondActor } from "./BondActor";
 import { BurnBondButton } from "./BurnBondButton";
 import { rebuild } from "./directions";
 
-export const BondMain = () => {
-  const { item } = useItemSheetContext();
-  assertBondItem(item);
+/** What a Bond's sheet needs from the PC it's on */
+export type BondOwner = {
+  /** their Stability ability, which Bonds are burned for and rebuilt with */
+  stability: { name: string; pool: number; rating: number } | null;
+  /** the most a Bond can have (2 when Adapted to Violence) */
+  bondCap: number;
+};
+
+type BondMainProps = {
+  /** only to write through */
+  item: BondItem;
+  name: string;
+  system: BondSystemData;
+  /** the PC it's on, or null if it isn't on one */
+  owner: BondOwner | null;
+};
+
+export const BondMain = ({ item, name, system, owner }: BondMainProps) => {
+  "use memo";
+
   const { navigate } = useNavigationContext();
-  // whether it can be burned depends on Stability, another item
-  useRefreshOnActorItemChanges(item.actor);
-  const hasBadges = item.system.isDeltaGreen || item.system.isBroken;
+  const methods = useSystemMethods(item);
+  const isBroken = isBondBroken(system.points);
+  const hasBadges = system.isDeltaGreen || isBroken;
   // only Bonds on a PC can be burned
-  const canHaveBurn = isPCActor(item.actor);
-  const actor = item.actor;
-  const canRebuild = isPCActor(actor) && actor.system.canRebuildBond(item);
+  const canHaveBurn = owner !== null;
+  // as `PCModel#canBurnBond` and `canRebuildBond` work them out
+  const stability = owner?.stability ?? null;
+  const canBurn =
+    stability !== null &&
+    canBurnBond({
+      bondPoints: system.points,
+      stabilityPool: stability.pool,
+      stabilityRating: stability.rating,
+    });
+  const canRebuild = stability !== null && !system.isDeltaGreen && !isBroken;
+  // as `BondModel#getMaxPoints`: the PC's cap, or its points if above that
+  const maxPoints = Math.max(owner?.bondCap ?? maxBondPoints, system.points);
   const autoRows =
     4 + (hasBadges ? 1 : 0) + (canHaveBurn ? 1 : 0) + (canRebuild ? 1 : 0);
 
@@ -46,38 +76,39 @@ export const BondMain = () => {
       }}
     >
       <GridField label="Person Name">
-        <AsyncTextInput value={item.name ?? ""} onChange={item.setName} />
+        <AsyncTextInput value={name} onChange={item.setName} />
       </GridField>
       <GridField label="Points">
         <AsyncNumberInput
-          value={item.system.points}
-          onChange={item.system.setPoints}
+          value={system.points}
+          onChange={methods.setPoints}
           min={brokenBondPoints}
-          max={item.system.getMaxPoints()}
+          max={maxPoints}
         />
       </GridField>
       {/* "DELTA GREEN" shares the badge's translation; the "?" goes outside it */}
       <GridField label={`${getTranslated("Delta Green")}?`} noTranslate>
         <Toggle
-          checked={item.system.isDeltaGreen}
-          onChange={item.system.setIsDeltaGreen}
+          checked={system.isDeltaGreen}
+          onChange={methods.setIsDeltaGreen}
         />
       </GridField>
       <GridField label="Actor">
-        <BondActor bond={item} />
+        <BondActor bond={item} actorUuid={system.actorUuid ?? null} />
       </GridField>
       {/* on its own row, so the points above don't read as "how many to burn" */}
       {canHaveBurn && (
         <GridFieldStacked>
-          <BurnBondButton bond={item} />
+          <BurnBondButton
+            bond={item}
+            canBurn={canBurn}
+            stabilityName={stability?.name ?? ""}
+          />
         </GridFieldStacked>
       )}
       {hasBadges && (
         <GridField noLabel>
-          <BondBadges
-            isDeltaGreen={item.system.isDeltaGreen}
-            isBroken={item.system.isBroken}
-          />
+          <BondBadges isDeltaGreen={system.isDeltaGreen} isBroken={isBroken} />
         </GridField>
       )}
       {canRebuild && (
@@ -98,8 +129,8 @@ export const BondMain = () => {
         }}
       >
         <RichTextEditor
-          html={item.system.notes}
-          onSave={item.system.setNotes}
+          html={system.notes}
+          onSave={methods.setNotes}
           name="notes"
         />
       </div>

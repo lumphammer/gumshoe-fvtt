@@ -11,6 +11,8 @@ export const ImagePickerLink = ({
   onClick,
   children,
 }: ImagePickerLinkProps) => {
+  "use memo";
+
   const theme = useContext(ThemeContext);
 
   const onClickCb = useCallback(

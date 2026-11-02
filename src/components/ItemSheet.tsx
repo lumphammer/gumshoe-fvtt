@@ -1,6 +1,11 @@
 import type { CSSObject } from "@emotion/react";
 
+import * as constants from "../constants";
+import { useActorSnapshot } from "../hooks/useActorSnapshot";
+import { IsEditableContext } from "../hooks/useIsEditable";
+import { useSettings } from "../hooks/useSettings";
 import { useItemSheetContext } from "../hooks/useSheetContexts";
+import { useSheetPermissions } from "../hooks/useSheetPermissions";
 import { useTheme } from "../hooks/useTheme";
 import { isBondItem } from "../module/items/bond";
 import { isNetworkContactItem } from "../module/items/networkContact";
@@ -25,12 +30,24 @@ import { ThrowError } from "./ThrowError";
 /**
  * We only register one "Item" sheet with foundry and then dispatch based on
  * type here.
+ *
+ * Every sheet below reads its item (and anything else it shows) through
+ * snapshots, so Foundry's renders don't reach React (the sheet class passes
+ * `rerenderOnFoundryRender: false`). The theme follows the owner's, as
+ * `InvestigatorItem#getThemeName` does.
  */
 export const ItemSheet = () => {
-  const { item } = useItemSheetContext();
+  "use memo";
 
-  const themeName = item.getThemeName();
-  const theme = useTheme(themeName);
+  const { item } = useItemSheetContext();
+  const { isEditable } = useSheetPermissions(item);
+  const ownerTheme = useActorSnapshot(item.actor, (actor) =>
+    actor?.type === constants.pc || actor?.type === constants.npc
+      ? ((actor.system as { sheetTheme?: string | null }).sheetTheme ?? null)
+      : null,
+  );
+  const defaultThemeName = useSettings((s) => s.defaultThemeName);
+  const theme = useTheme(ownerTheme || defaultThemeName);
 
   const style: CSSObject =
     isAbilityItem(item) || isMwItem(item)
@@ -47,27 +64,31 @@ export const ItemSheet = () => {
 
   return (
     <CSSReset theme={theme} mode="small" css={style}>
-      <NotesTypeContext.Provider value="itemNote">
-        {isAbilityItem(item) ? (
-          <AbilitySheet />
-        ) : isEquipmentItem(item) ? (
-          <EquipmentSheet />
-        ) : isWeaponItem(item) ? (
-          <WeaponSheet />
-        ) : isMwItem(item) ? (
-          <MwItemSheet />
-        ) : isPersonalDetailItem(item) ? (
-          <PersonalDetailSheet />
-        ) : isCardItem(item) ? (
-          <CardSheet />
-        ) : isBondItem(item) ? (
-          <BondSheet />
-        ) : isNetworkContactItem(item) ? (
-          <NetworkContactSheet />
-        ) : (
-          <ThrowError message={`No sheet defined for item type ${item.type}`} />
-        )}
-      </NotesTypeContext.Provider>
+      <IsEditableContext.Provider value={isEditable}>
+        <NotesTypeContext.Provider value="itemNote">
+          {isAbilityItem(item) ? (
+            <AbilitySheet />
+          ) : isEquipmentItem(item) ? (
+            <EquipmentSheet />
+          ) : isWeaponItem(item) ? (
+            <WeaponSheet />
+          ) : isMwItem(item) ? (
+            <MwItemSheet />
+          ) : isPersonalDetailItem(item) ? (
+            <PersonalDetailSheet />
+          ) : isCardItem(item) ? (
+            <CardSheet />
+          ) : isBondItem(item) ? (
+            <BondSheet />
+          ) : isNetworkContactItem(item) ? (
+            <NetworkContactSheet />
+          ) : (
+            <ThrowError
+              message={`No sheet defined for item type ${item.type}`}
+            />
+          )}
+        </NotesTypeContext.Provider>
+      </IsEditableContext.Provider>
     </CSSReset>
   );
 };

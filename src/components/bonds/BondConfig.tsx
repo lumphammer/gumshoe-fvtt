@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { confirmAndDeleteItem } from "../../functions/confirmAndDeleteItem";
-import { useItemSheetContext } from "../../hooks/useSheetContexts";
+import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Button } from "../inputs/Button";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
@@ -11,8 +11,14 @@ import { Translate } from "../Translate";
  * A Delete button, after any `children` (more fields for the same grid). It
  * suits contacts as well as Bonds.
  */
-export const BondConfig = ({ children }: { children?: ReactNode }) => {
-  const { item } = useItemSheetContext();
+export const BondConfig = ({
+  item,
+  children,
+}: {
+  item: InvestigatorItem;
+  children?: ReactNode;
+}) => {
+  "use memo";
 
   return (
     <InputGrid>
