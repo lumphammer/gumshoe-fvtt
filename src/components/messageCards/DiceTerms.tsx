@@ -16,6 +16,8 @@ type DiceTermsProps = {
 
 /** One die, drawn as a slightly askew white cube face */
 export const DieFace = ({ value }: { value: number }) => {
+  "use memo";
+
   // tilt each die a little, once
   const [tilt] = useState(() => Math.random() * 12 - 6);
   return (
@@ -41,6 +43,8 @@ export const DieFace = ({ value }: { value: number }) => {
 };
 
 export const DiceTerms = ({ terms = [], className }: DiceTermsProps) => {
+  "use memo";
+
   return (
     <span
       className={className}

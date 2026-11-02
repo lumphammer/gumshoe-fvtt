@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { useMaybeItemSelector } from "../../hooks/useItemSnapshot";
 import type { AbilityItem } from "../../module/items/exports";
 import type { MWDifficulty } from "../../types";
 import { Translate } from "../Translate";
@@ -56,12 +57,19 @@ export const AbilityTestMwCard = React.memo(
     pool,
     name,
   }: AbilityTestMwCardProps) => {
-    const sheet = ability?.sheet;
-    assertApplicationV2(sheet);
+    "use memo";
 
-    const onClickAbilityName = useCallback(() => {
+    // the ability's own name and picture, as they are now
+    const header = useMaybeItemSelector(ability, (snapshot) =>
+      snapshot ? { name: snapshot.name, img: snapshot.img ?? null } : null,
+    );
+
+    const onClickAbilityName = () => {
+      const sheet = ability?.sheet;
+      if (!sheet) return;
+      assertApplicationV2(sheet);
       void sheet.render({ force: true });
-    }, [sheet]);
+    };
 
     const cappedResult = Math.max(Math.min(msg.rolls?.[0]?.total ?? 1, 6), 1);
     const effectiveResult =
@@ -109,7 +117,7 @@ export const AbilityTestMwCard = React.memo(
         >
           <b>
             <a onClick={onClickAbilityName}>
-              {name ?? ability?.name ?? "Missing"}
+              {name ?? header?.name ?? "Missing"}
             </a>
           </b>{" "}
           <DiceTerms terms={msg.rolls?.[0]?.terms} />

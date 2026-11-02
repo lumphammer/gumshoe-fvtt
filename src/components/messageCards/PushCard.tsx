@@ -1,6 +1,7 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { useMaybeItemSelector } from "../../hooks/useItemSnapshot";
 import { useTheme } from "../../hooks/useTheme";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
@@ -19,13 +20,20 @@ const shadowBlur = "1px";
 
 export const PushCard = React.memo(
   ({ msg, ability, mode, name, imageUrl }: PushCardProps) => {
-    const theme = useTheme();
-    const sheet = ability?.sheet;
-    assertApplicationV2(sheet);
+    "use memo";
 
-    const onClickAbilityName = useCallback(() => {
+    const theme = useTheme();
+    // the ability's own name and picture, as they are now
+    const header = useMaybeItemSelector(ability, (snapshot) =>
+      snapshot ? { name: snapshot.name, img: snapshot.img ?? null } : null,
+    );
+
+    const onClickAbilityName = () => {
+      const sheet = ability?.sheet;
+      if (!sheet) return;
+      assertApplicationV2(sheet);
       void sheet.render({ force: true });
-    }, [sheet]);
+    };
 
     return (
       <div
@@ -79,7 +87,7 @@ export const PushCard = React.memo(
             },
           }}
         >
-          <Translate values={{ AbilityName: ability?.name ?? "" }}>
+          <Translate values={{ AbilityName: header?.name ?? "" }}>
             AbilityNamePush
           </Translate>
         </a>

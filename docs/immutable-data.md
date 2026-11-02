@@ -449,3 +449,18 @@ is given its `<li>` as a constant element (`RowListItem`), which reads the
 row's state from `RowShellContext`: a change re-renders the `<li>` and the
 menu's trigger, not Radix's whole menu tree. `RENDER_BENCH_NAMES=1` lists which
 components rendered (build with `--minify false` for readable names).
+
+The chat cards are compiled too. Each message gets a new React root whenever
+Foundry renders it, which it does whenever the message changes, so a card can
+read its own message (its rolls, an attack's `system`) directly: that can't
+change under it. What else a card shows comes through snapshots: an ability
+card's ability's name and picture (`useMaybeItemSelector`), and an attack
+card's targets (`useTargetViews`, over each target's token actor with
+`useActorListSnapshot`, and tokens coming and going) and the attacker's pools
+for walking fire (`useWalkingFireOptions`). Before, every attack card in the
+log re-rendered on every actor, item and token update in the world (token
+updates include every move); now each follows only its own targets and
+attacker, and a target's token being deleted shows it as missing. The rules
+for what a target is (`getTargetActorInfoIn`) and how walking fire can be
+paid for (`getWalkingFirePaymentsIn`) work on snapshots or the live actor,
+so the GM's side checks the same rules.

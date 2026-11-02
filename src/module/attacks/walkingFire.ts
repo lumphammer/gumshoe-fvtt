@@ -2,8 +2,11 @@ import { getTranslated } from "../../functions/getTranslated";
 import { settings } from "../../settings/settings";
 import type { AbilityItem } from "../items/exports";
 import { isAbilityItem } from "../items/exports";
-import { findGeneralAbility } from "../items/findGeneralAbility";
-import type { InvestigatorItem } from "../items/InvestigatorItem";
+import type { ItemView } from "../actors/pcDerived";
+import {
+  findGeneralAbility,
+  findGeneralAbilityIn,
+} from "../items/findGeneralAbility";
 import type { WeaponItem } from "../items/weapon";
 import { isWeaponItem } from "../items/weapon";
 import { addTarget, keepLoneShotDryTarget, replaceTarget } from "./attackData";
@@ -25,40 +28,59 @@ export function getAttackWeapon(message: AttackMessage): WeaponItem | null {
   return isWeaponItem(weapon) ? weapon : null;
 }
 
-function getPool(ability: InvestigatorItem | undefined): number {
-  return ability && isAbilityItem(ability) ? ability.system.pool : 0;
-}
-
 /**
  * How the attacker can pay to walk their fire, from their pools right now.
  * Null if we can't find the weapon or its ability.
  */
-export function getWalkingFirePaymentsLive(message: AttackMessage): {
+export type WalkingFireOptions = {
   weaponAbilityName: string;
   payments: WalkingFirePayment[];
-} | null {
-  const weapon = getAttackWeapon(message);
-  const actor = weapon?.actor ?? null;
-  if (!weapon || !actor) return null;
-  const weaponAbility = findGeneralAbility(actor, weapon.system.ability);
+};
+
+/**
+ * How the attacker can pay to walk their fire, from their items (a snapshot's
+ * or the live actor's), the weapon's ability, and the other abilities which
+ * can pay (`walkingFireSpendAbilities`). Null if they lack the weapon's
+ * ability.
+ */
+export function getWalkingFirePaymentsIn(
+  items: readonly ItemView[],
+  weaponAbilityName: string,
+  spendAbilityNames: readonly string[],
+): WalkingFireOptions | null {
+  const weaponAbility = findGeneralAbilityIn(items, weaponAbilityName);
   if (!weaponAbility) return null;
-  const otherAbilities = settings.walkingFireSpendAbilities
-    .get()
-    .map((name) => findGeneralAbility(actor, name))
+  const pool = (ability: ItemView) =>
+    (ability.system as { pool?: number }).pool ?? 0;
+  const otherAbilities = spendAbilityNames
+    .map((name) => findGeneralAbilityIn(items, name))
     .filter(
-      (ability): ability is InvestigatorItem =>
+      (ability): ability is ItemView =>
         ability !== undefined && ability !== weaponAbility,
     )
     // in case a name is listed twice
     .filter((ability, i, all) => all.indexOf(ability) === i)
-    .map((ability) => ({ name: ability.name, pool: getPool(ability) }));
+    .map((ability) => ({ name: ability.name, pool: pool(ability) }));
   return {
     weaponAbilityName: weaponAbility.name,
     payments: getWalkingFirePayments({
-      weaponPool: getPool(weaponAbility),
+      weaponPool: pool(weaponAbility),
       otherAbilities,
     }),
   };
+}
+
+export function getWalkingFirePaymentsLive(
+  message: AttackMessage,
+): WalkingFireOptions | null {
+  const weapon = getAttackWeapon(message);
+  const actor = weapon?.actor ?? null;
+  if (!weapon || !actor) return null;
+  return getWalkingFirePaymentsIn(
+    actor.items.contents,
+    weapon.system.ability,
+    settings.walkingFireSpendAbilities.get(),
+  );
 }
 
 type WalkFirePlan = {

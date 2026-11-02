@@ -77,8 +77,8 @@ translations, adding fields and settings, releases).
   full re-renders: the compiler caches on identity, and a document keeps its
   identity when it changes. Only mark code which reads its data through
   snapshots (below); the PC, NPC and party sheets, every item sheet, the
-  combat tracker (but `Tracker`), and the shared inputs, `Translate` and
-  `ImagePickle` are marked. A compiled component
+  chat cards, the combat tracker (but `Tracker`), and the shared inputs,
+  `Translate` and `ImagePickle` are marked. A compiled component
   passes an unchanged child its cached element, so every child of one must
   keep itself current (as if memoised), not rely on its parent re-rendering.
   A call during render is cached on its arguments: one which reads global
@@ -134,6 +134,10 @@ translations, adding fields and settings, releases).
   (`src/startup/installAbilityCardChatWrangler.tsx`). Roots are unmounted when
   Foundry discards their element (`createCardRootTracker`), and
   `installChatLogScrollKeeper` keeps the log pinned when cards change height.
+  Foundry renders a message again (so a new root) whenever it changes, so a
+  card can read its message directly; anything else it shows (the ability,
+  an attack's targets and attacker) comes through snapshots
+  (`useAttackSnapshots.ts`). The cards are compiled.
 
 ## Themes
 

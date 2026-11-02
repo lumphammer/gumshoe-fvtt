@@ -1,6 +1,7 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { useMaybeItemSelector } from "../../hooks/useItemSnapshot";
 import { isAttackMessage } from "../../module/attacks/attackTargets";
 import { formatLethality } from "../../module/attacks/lethality";
 import type { FireMode } from "../../module/attacks/rules";
@@ -26,17 +27,23 @@ interface AttackCardProps {
 
 export const AttackCard = React.memo(
   ({ msg, rangeName, weapon, name, imageUrl }: AttackCardProps) => {
-    const sheet = weapon?.sheet;
+    "use memo";
+
+    // the weapon's own name and picture, as they are now
+    const header = useMaybeItemSelector(weapon, (snapshot) =>
+      snapshot ? { name: snapshot.name, img: snapshot.img ?? null } : null,
+    );
     const lethalityOn = useSettings((s) => s.useLethalityAndAutofire);
     const damageApplicationOn = useSettings((s) => s.useDamageApplication);
 
-    const onClickWeaponName = useCallback(() => {
+    const onClickWeaponName = () => {
+      const sheet = weapon?.sheet;
       if (!sheet) return;
       assertApplicationV2(sheet);
       void sheet.render({ force: true });
-    }, [sheet]);
+    };
 
-    const img = weapon?.img ?? imageUrl;
+    const img = header?.img ?? imageUrl;
 
     // @ts-expect-error fvtt-types
     const poolRolls = msg.rolls?.[0]?.terms[0]?.rolls;
@@ -97,8 +104,8 @@ export const AttackCard = React.memo(
             }}
           >
             <b>
-              {sheet ? (
-                <a onClick={onClickWeaponName}>{name ?? weapon?.name}</a>
+              {header ? (
+                <a onClick={onClickWeaponName}>{name ?? header.name}</a>
               ) : (
                 name
               )}

@@ -1,5 +1,8 @@
 import type { CrisisCall } from "../../module/bonds/crisis";
+import * as constants from "../../constants";
+import { useSnapshotSelector } from "../../hooks/useSnapshot";
 import { isPCActor } from "../../module/actors/pc";
+import { getWorldActorsStore } from "../../module/snapshots/documentStores";
 import { openTeamCrisisWindow } from "../../module/bonds/TeamCrisisApp";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
@@ -15,7 +18,20 @@ type CrisisCallCardProps = {
  * present are ticked as teammates.
  */
 export const CrisisCallCard = ({ call, imageUrl }: CrisisCallCardProps) => {
+  "use memo";
+
   const uuids = call.members.map((member) => member.uuid);
+  // which members this user can test for: Agents they own. (The world's
+  // actors' snapshot changes when one is updated, its ownership included, and
+  // the selector reads the live actor each time.)
+  const canTest = useSnapshotSelector(getWorldActorsStore(), (actors) =>
+    call.members.map((member) => {
+      const entry = actors.find((actor) => actor.uuid === member.uuid);
+      if (entry?.type !== constants.pc) return false;
+      const actor = fromUuidSync(member.uuid);
+      return isPCActor(actor) && actor.isOwner;
+    }),
+  );
   return (
     <div
       data-testid="crisis-call-card"
@@ -48,10 +64,8 @@ export const CrisisCallCard = ({ call, imageUrl }: CrisisCallCardProps) => {
         <p>
           <Translate>CrisisCallHint</Translate>
         </p>
-        {call.members.map((member) => {
-          const actor = fromUuidSync(member.uuid);
+        {call.members.map((member, i) => {
           // only Agents have Bonds, and only their owners can test
-          const canTest = isPCActor(actor) && actor.isOwner;
           return (
             <div
               key={member.uuid}
@@ -64,15 +78,17 @@ export const CrisisCallCard = ({ call, imageUrl }: CrisisCallCardProps) => {
               }}
             >
               <span css={{ flex: 1 }}>{member.name}</span>
-              {canTest && (
+              {canTest[i] && (
                 <Button
                   css={{ width: "auto", margin: 0 }}
-                  onClick={() =>
-                    openTeamCrisisWindow(
+                  onClick={() => {
+                    const actor = fromUuidSync(member.uuid);
+                    if (!isPCActor(actor)) return;
+                    void openTeamCrisisWindow(
                       actor,
                       uuids.filter((uuid) => uuid !== member.uuid),
-                    )
-                  }
+                    );
+                  }}
                 >
                   <Translate>Make the test</Translate>{" "}
                   <i className="fa fa-dice" />

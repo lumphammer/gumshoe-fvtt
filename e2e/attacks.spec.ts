@@ -60,6 +60,53 @@ test("the GM attacks a target, applies the damage, and undoes it", async ({
   ).toBeVisible();
 });
 
+test("an attack card follows its target's actor, changed elsewhere", async ({
+  page,
+}) => {
+  const {
+    pcId,
+    weaponId,
+    npcIds: [npcId],
+    npcTokenIds: [npcTokenId],
+  } = await setUpFight(page, { weapon: knife });
+  await targetTokens(page, [npcTokenId]);
+  await forceDice(page, 6);
+  const weaponSheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
+  await weaponSheet.locator("label", { hasText: /^2$/ }).click();
+  await weaponSheet
+    .getByRole("button", { name: "Attack Cultist 1 with Weapon" })
+    .click();
+  const card = lastChatMessage(page);
+  await expect(card).toContainText("10 → 4");
+
+  // the token's own actor (it isn't linked): the message doesn't change, so
+  // only the card's snapshots of the target can show this
+  await page.evaluate(async (tokenId) => {
+    await canvas!
+      .scene!.tokens.get(tokenId)!
+      .actor!.items.getName("Health")!
+      .update({ system: { pool: 8 } });
+  }, npcTokenId);
+  await expect(card).toContainText("8 → 2");
+
+  // the base actor, which the token's actor inherits its Armor from
+  await page.evaluate(async (id) => {
+    await game.actors.get(id)!.update({ system: { stats: { armor: 2 } } });
+  }, npcId);
+  await expect(card).toContainText("8 → 4");
+
+  // linking the token makes the base actor (Health 10) the target's actor
+  await page.evaluate(async (tokenId) => {
+    await canvas!.scene!.tokens.get(tokenId)!.update({ actorLink: true });
+  }, npcTokenId);
+  await expect(card).toContainText("10 → 6");
+
+  await page.evaluate(async (tokenId) => {
+    await canvas!.scene!.tokens.get(tokenId)!.delete();
+  }, npcTokenId);
+  await expect(card).toContainText("(missing)");
+});
+
 test("a player's damage to a token they don't own goes through the GM", async ({
   page,
   joinAs,
@@ -114,9 +161,7 @@ test("shooting at a costly range takes points that don't add to the roll", async
     sheet.locator("input:disabled + label", { hasText: /^5$/ }),
   ).toHaveCount(1);
   await sheet.locator("label", { hasText: /^1$/ }).click();
-  await sheet
-    .getByRole("button", { name: "Fire Weapon at Cultist 1" })
-    .click();
+  await sheet.getByRole("button", { name: "Fire Weapon at Cultist 1" }).click();
 
   const card = lastChatMessage(page);
   await expect(card).toContainText("Hit roll: 6+1");
