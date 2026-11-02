@@ -7,7 +7,7 @@ import {
   getWorldActorsStore,
 } from "../module/snapshots/documentStores";
 import { replaceEqualDeep } from "../module/snapshots/replaceEqualDeep";
-import { useSnapshot } from "./useSnapshot";
+import { useSnapshotSelector } from "./useSnapshot";
 
 /**
  * Something from the snapshots of several world actors, looked up by id (e.g.
@@ -25,7 +25,9 @@ export function useActorsSnapshot<R, TSystem = unknown>(
 ): R {
   // a new list whenever an actor is created or deleted, so the stores below
   // are looked up again
-  const worldIds = useSnapshot(getWorldActorsStore());
+  const worldIds = useSnapshotSelector(getWorldActorsStore(), (actors) =>
+    actors.map((actor) => actor.id),
+  );
   const key = ids.join("\n");
   const stores = useMemo(
     () =>

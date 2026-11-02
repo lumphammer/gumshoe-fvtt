@@ -25,6 +25,45 @@ export type CrisisBond = {
 
 export type CrisisTeammate = { uuid: string; name: string };
 
+/** What a team crisis needs to know of each of the world's actors */
+export type CrisisActorEntry = {
+  readonly id: string;
+  readonly uuid: string;
+  readonly type: string;
+  readonly name: string;
+  /** a party's members, or null for any other actor */
+  readonly memberIds: readonly string[] | null;
+};
+
+/**
+ * Who could have been there, from the world's actors: the other members of
+ * the Agent's parties, or, if they're not in one, every other PC. Sorted by
+ * name.
+ */
+export function getCrisisTeammateCandidatesIn(
+  actors: readonly CrisisActorEntry[],
+  actorId: string,
+): CrisisTeammate[] {
+  const byId = new Map(actors.map((a) => [a.id, a]));
+  const isCharacter = (a: CrisisActorEntry) =>
+    a.type === "pc" || a.type === "npc";
+  const partyMembers = actors
+    .filter((a) => a.memberIds?.includes(actorId))
+    .flatMap((party) => party.memberIds ?? [])
+    .flatMap((id) => {
+      const member = byId.get(id);
+      return member && isCharacter(member) ? [member] : [];
+    });
+  const candidates =
+    partyMembers.length > 0
+      ? partyMembers
+      : actors.filter((a) => a.type === "pc");
+  return [...new Set(candidates)]
+    .filter((candidate) => candidate.id !== actorId)
+    .toSorted((a, b) => a.name.localeCompare(b.name))
+    .map(({ uuid, name }) => ({ uuid, name }));
+}
+
 /**
  * What a failed test does for one teammate: a new DELTA GREEN Bond, a broken
  * Bond with them re-formed (which counts as new), or an existing Bond

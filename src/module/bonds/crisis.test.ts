@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import type { CrisisBond, CrisisRecord } from "./crisis";
+import type { CrisisActorEntry, CrisisBond, CrisisRecord } from "./crisis";
 import {
   areCrisisLossesValid,
   findBondWith,
+  getCrisisTeammateCandidatesIn,
   getBondAfterLoss,
   getNewDeltaGreenBondRating,
   parseCrisisCall,
@@ -265,5 +266,48 @@ describe("parseCrisisCall", () => {
     ["a bad member", JSON.stringify({ members: [{ uuid: 1 }] })],
   ])("rejects %s", (_, text) => {
     expect(parseCrisisCall(text)).toBeNull();
+  });
+});
+
+describe("getCrisisTeammateCandidatesIn", () => {
+  const entry = (
+    id: string,
+    type: string,
+    memberIds: string[] | null = null,
+  ): CrisisActorEntry => ({
+    id,
+    uuid: `Actor.${id}`,
+    type,
+    name: id,
+    memberIds,
+  });
+
+  it("offers every other PC when the Agent's in no party", () => {
+    const actors = [
+      entry("zed", "pc"),
+      entry("agent", "pc"),
+      entry("amy", "pc"),
+      entry("cultist", "npc"),
+    ];
+    expect(getCrisisTeammateCandidatesIn(actors, "agent")).toEqual([
+      { uuid: "Actor.amy", name: "amy" },
+      { uuid: "Actor.zed", name: "zed" },
+    ]);
+  });
+
+  it("offers the other members of the Agent's parties, NPCs included, once each", () => {
+    const actors = [
+      entry("agent", "pc"),
+      entry("bea", "pc"),
+      entry("handler", "npc"),
+      entry("outsider", "pc"),
+      entry("party1", "party", ["agent", "bea", "missing"]),
+      entry("party2", "party", ["agent", "bea", "handler"]),
+      entry("party3", "party", ["outsider"]),
+    ];
+    expect(getCrisisTeammateCandidatesIn(actors, "agent")).toEqual([
+      { uuid: "Actor.bea", name: "bea" },
+      { uuid: "Actor.handler", name: "handler" },
+    ]);
   });
 });

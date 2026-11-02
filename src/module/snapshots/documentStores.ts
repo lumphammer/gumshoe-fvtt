@@ -242,31 +242,66 @@ export function getSettingsStore() {
   return settingsStore;
 }
 
+/**
+ * What's known of each of the world's actors without subscribing to it: enough
+ * to look actors up by id, and to work out who's in which party.
+ */
+export type WorldActorEntry = {
+  id: string;
+  uuid: string;
+  type: string;
+  name: string;
+  /** a party's members (its `actorIds`), or null for any other actor */
+  memberIds: string[] | null;
+};
+
+/** An actor's `WorldActorEntry` */
+export const toWorldActorEntry = (
+  actor: Actor.Implementation,
+): WorldActorEntry => {
+  const system = actor.system as { actorIds?: unknown };
+  return {
+    id: actor.id ?? "",
+    uuid: actor.uuid ?? "",
+    type: actor.type,
+    name: actor.name ?? "",
+    memberIds:
+      actor.type === "party" && Array.isArray(system.actorIds)
+        ? [...(system.actorIds as string[])]
+        : null,
+  };
+};
+
 let worldActorsStore: ReturnType<typeof createWorldActorsStore> | null = null;
 
-/** The ids of the world's actors (not tokens' or compendiums'), in order. */
+/** The world's actors (not tokens' or compendiums'), in order. */
 function createWorldActorsStore() {
   const isWorldActor = (actor: Actor.Implementation) =>
     !actor.isToken && !actor.pack;
-  return createSnapshotStore<string[]>(
+  return createSnapshotStore<WorldActorEntry[]>(
     () =>
       (game as foundry.Game).actors?.contents.flatMap((actor) =>
-        actor.id === null ? [] : [actor.id],
+        actor.id === null ? [] : [toWorldActorEntry(actor)],
       ) ?? [],
     (onChange) => {
       const onActor = (actor: Actor.Implementation) => {
         if (isWorldActor(actor)) onChange();
       };
-      const offs = [on("createActor", onActor), on("deleteActor", onActor)];
+      const offs = [
+        on("createActor", onActor),
+        on("updateActor", onActor),
+        on("deleteActor", onActor),
+      ];
       return () => offs.forEach((off) => off());
     },
   );
 }
 
 /**
- * The one store of which actors the world has: it changes when one is created
- * or deleted, so anything that looks actors up by id (`useActorsSnapshot`)
- * can follow them coming and going.
+ * The one store of the world's actors, as `WorldActorEntry`s: it changes
+ * when one is created, deleted, or updated (only what the entries hold is
+ * copied, and they're structurally shared). For anything that looks actors up
+ * by id (`useActorsSnapshot`), or needs to know who's in which party.
  */
 export function getWorldActorsStore() {
   worldActorsStore ??= createWorldActorsStore();

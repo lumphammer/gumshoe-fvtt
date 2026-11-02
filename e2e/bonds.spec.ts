@@ -1011,6 +1011,27 @@ test("the Team Crisis panel follows changes made elsewhere", async ({
   await expect(panelRow(panel, "Mother")).toHaveCount(2);
   // the teammate ticked is kept
   await expect(panel.getByTestId("crisis-teammate")).toContainText("New (2)");
+
+  // the teammates are other actors: the panel follows them too
+  const gusId = await createActor(page, { name: "Gus", type: "pc" });
+  await page.evaluate(
+    async ({ actorId, gusId }) => {
+      // (other tests make a "Steady Eddie's team" too)
+      const party = game.actors.find(
+        (a) =>
+          a.type === "party" &&
+          (a.system as { actorIds: string[] }).actorIds.includes(actorId),
+      )!;
+      await party.update({ system: { actorIds: [actorId, gusId] } });
+    },
+    { actorId, gusId },
+  );
+  await expect(panel.locator("label", { hasText: /^Gus$/ })).toHaveCount(1);
+  await expect(panel.locator("label", { hasText: /^Fran$/ })).toHaveCount(0);
+  await page.evaluate(async (id) => {
+    await game.actors.get(id)!.update({ name: "Gussie" });
+  }, gusId);
+  await expect(panel.locator("label", { hasText: /^Gussie$/ })).toHaveCount(1);
 });
 
 test("a team crisis re-forms a broken Bond, and asks before breaking one", async ({

@@ -20,19 +20,23 @@ test("dragging investigators onto a party sheet adds them up", async ({
   await page.evaluate(() => {
     ui.sidebar.changeTab("actors", "primary");
   });
+  const added: string[] = [];
   for (const id of [aliceId, bobId]) {
     await page
       .locator(`#actors [data-entry-id="${id}"]`)
       .dragTo(partySheet.locator(".window-content"));
+    added.push(id);
+    // one at a time: the drop re-renders the sidebar, which could otherwise
+    // replace the next actor's entry while it was being dragged
+    await expect
+      .poll(() =>
+        page.evaluate(
+          (id) => game.actors.get(id)!.system.actorIds as string[],
+          partyId,
+        ),
+      )
+      .toEqual(added);
   }
-  await expect
-    .poll(() =>
-      page.evaluate(
-        (id) => game.actors.get(id)!.system.actorIds as string[],
-        partyId,
-      ),
-    )
-    .toEqual([aliceId, bobId]);
   await expect(partySheet).toContainText("Alice");
   await expect(partySheet).toContainText("Bob");
   // Athletics: 2, 3, and a total of 5
