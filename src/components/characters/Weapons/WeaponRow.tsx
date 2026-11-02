@@ -5,11 +5,7 @@ import { memo, useContext } from "react";
 import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import { getTranslated } from "../../../functions/getTranslated";
 import { useItemSelector } from "../../../hooks/useItemSnapshot";
-import type { ItemSnapshot } from "../../../module/snapshots/documentStores";
-import type {
-  WeaponItem,
-  WeaponSystemData,
-} from "../../../module/items/weapon";
+import type { WeaponItem } from "../../../module/items/weapon";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { Toggle } from "../../inputs/Toggle";
@@ -33,16 +29,13 @@ export const WeaponRow = memo(function WeaponRow({
 }: WeaponRowProps) {
   "use memo";
 
-  const row = useItemSelector(
-    weapon,
-    (snapshot: ItemSnapshot<WeaponSystemData>) => ({
-      name: snapshot.name,
-      img: snapshot.img,
-      usesAmmo: snapshot.system.usesAmmo,
-      ammo: snapshot.system.ammo,
-      ability: snapshot.system.ability,
-    }),
-  );
+  const row = useItemSelector(weapon, (snapshot) => ({
+    name: snapshot.name,
+    img: snapshot.img,
+    usesAmmo: snapshot.system.usesAmmo,
+    ammo: snapshot.system.ammo,
+    ability: snapshot.system.ability,
+  }));
   const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
 

@@ -4,11 +4,7 @@ import { confirmAndDeleteItem } from "../../../functions/confirmAndDeleteItem";
 import { useItemSelector } from "../../../hooks/useItemSnapshot";
 import { useSettings } from "../../../hooks/useSettings";
 import { useSystemMethods } from "../../../hooks/useSystemMethods";
-import type {
-  WeaponItem,
-  WeaponSystemData,
-} from "../../../module/items/weapon";
-import type { ItemSnapshot } from "../../../module/snapshots/documentStores";
+import type { WeaponItem } from "../../../module/items/weapon";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
@@ -41,13 +37,10 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
   "use memo";
 
   const theme = useContext(ThemeContext);
-  const row = useItemSelector(
-    weapon,
-    (snapshot: ItemSnapshot<WeaponSystemData>) => ({
-      name: snapshot.name,
-      system: snapshot.system,
-    }),
-  );
+  const row = useItemSelector(weapon, (snapshot) => ({
+    name: snapshot.name,
+    system: snapshot.system,
+  }));
   const sys = row.system;
   const m = useSystemMethods(weapon);
   const { useExtendedRange, combatAbilities } = useSettings((s) => ({

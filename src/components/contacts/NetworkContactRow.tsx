@@ -25,8 +25,8 @@ export const NetworkContactRow = memo(function NetworkContactRow({
   const row = useItemSelector(contact, (snapshot) => ({
     name: snapshot.name,
     img: snapshot.img,
-    location: (snapshot.system as { location: string }).location,
-    pool: (snapshot.system as { pool: number }).pool,
+    location: snapshot.system.location,
+    pool: snapshot.system.pool,
   }));
   const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);

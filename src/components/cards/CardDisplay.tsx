@@ -13,7 +13,6 @@ import { isNullOrEmptyString } from "../../functions/utilities";
 import type { CardItem } from "../../module/items/card";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
-import type { CardCategoryMembership } from "../../types";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { summarizeCategoryMemberships } from "./functions";
 import type { CardsViewMode } from "./types";
@@ -25,17 +24,6 @@ interface CardDisplayProps {
   draggable?: boolean;
   onDragStart?: (event: React.DragEvent<HTMLElement>) => void;
 }
-
-type CardSystem = {
-  active: boolean;
-  cardCategoryMemberships: CardCategoryMembership[];
-  continuity: boolean;
-  description: string;
-  effects: string;
-  styleKeyCategoryId: string | null;
-  subtitle: string;
-  supertitle: string;
-};
 
 /**
  * A card, as shown in the Cards tab and on its own sheet. Memoised: it reads
@@ -56,7 +44,7 @@ export const CardDisplay = memo(function CardDisplay({
   const [effectsHTML, setEffectsHTML] = useState("");
   const data = useItemSelector(card, (snapshot) => ({
     name: snapshot.name,
-    system: snapshot.system as CardSystem,
+    system: snapshot.system,
   }));
   const system = data.system;
   // only what this card shows from the categories, so changing another

@@ -24,16 +24,10 @@ export const CardArrayCard = memo(function CardArrayCard({
 }: CardArrayCardProps) {
   "use memo";
 
-  const data = useItemSelector(card, (snapshot) => {
-    const system = snapshot.system as {
-      active: boolean;
-      styleKeyCategoryId: string | null;
-    };
-    return {
-      active: system.active,
-      styleKeyCategoryId: system.styleKeyCategoryId,
-    };
-  });
+  const data = useItemSelector(card, ({ system }) => ({
+    active: system.active,
+    styleKeyCategoryId: system.styleKeyCategoryId,
+  }));
   const styleKey = useSettings(
     (s) =>
       s.cardCategories.find((cat) => cat.id === data.styleKeyCategoryId)

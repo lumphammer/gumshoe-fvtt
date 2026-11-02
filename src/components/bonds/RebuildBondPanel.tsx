@@ -2,13 +2,13 @@ import { useNavigationContext } from "@lumphammer/minirouter";
 import { useState } from "react";
 
 import * as constants from "../../constants";
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { isPCActor } from "../../module/actors/pc";
 import {
   getRebuildSpendAbilitiesIn,
-  getStabilityAbilityIn,
+  getStabilityViewIn,
   getStabilityTestDifficultyIn,
 } from "../../module/actors/pcDerived";
 import { rebuildDifficulty } from "../../module/bonds/rebuild";
@@ -41,37 +41,29 @@ export const RebuildBondPanel = ({ bond }: { bond: BondItem }) => {
     {},
   );
 
-  const settings = useSettings((s) => s);
-  const view = useItemSelector(bond, (snapshot) => {
-    const system = snapshot.system as { points: number; isDeltaGreen: boolean };
-    return {
-      name: snapshot.name,
-      // only ordinary Bonds that aren't broken (`PCModel#canRebuildBond`)
-      isRebuildable: !system.isDeltaGreen && !isBondBroken(system.points),
-    };
-  });
+  const rebuildCategory = useSettings((s) => s.bondRebuildSpendCategory);
+  const view = useItemSelector(bond, ({ name, system }) => ({
+    name,
+    // only ordinary Bonds that aren't broken (`PCModel#canRebuildBond`)
+    isRebuildable: !system.isDeltaGreen && !isBondBroken(system.points),
+  }));
   // the PC's: the spend rows show other items' pools
-  const pc = useActorSnapshot(bond.actor, (actor) => {
-    if (actor?.type !== constants.pc) return null;
-    const pc = { system: actor.system, items: actor.items };
-    const pool = (item: { system: unknown }) =>
-      (item.system as { pool: number }).pool;
-    const stability = getStabilityAbilityIn(actor.items, settings);
-    return {
-      stability: stability
-        ? {
-            id: stability._id ?? "",
-            name: stability.name,
-            pool: pool(stability),
-          }
-        : null,
-      abilities: getRebuildSpendAbilitiesIn(actor.items, settings).map(
-        (ability) => ({ id: ability._id ?? "", pool: pool(ability) }),
-      ),
-      difficulty: getStabilityTestDifficultyIn(pc, rebuildDifficulty, settings),
-      bondCap: getBondCapOf(pc, settings),
-    };
-  });
+  const pc = useActorAndSettings(bond.actor, (actor, settings) =>
+    actor?.type === constants.pc
+      ? {
+          stability: getStabilityViewIn(actor.items, settings),
+          abilities: getRebuildSpendAbilitiesIn(actor.items, settings).map(
+            (ability) => ({ id: ability._id ?? "", pool: ability.system.pool }),
+          ),
+          difficulty: getStabilityTestDifficultyIn(
+            actor,
+            rebuildDifficulty,
+            settings,
+          ),
+          bondCap: getBondCapOf(actor, settings),
+        }
+      : null,
+  );
   if (pc === null || pc.stability === null || !view.isRebuildable) {
     return null;
   }
@@ -111,7 +103,7 @@ export const RebuildBondPanel = ({ bond }: { bond: BondItem }) => {
           values={{
             AbilityName: stability.name,
             Difficulty: String(pc.difficulty),
-            Category: settings.bondRebuildSpendCategory,
+            Category: rebuildCategory,
           }}
         >
           RebuildBondHint

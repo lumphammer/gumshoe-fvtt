@@ -1,50 +1,14 @@
-import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useMemo, useState } from "react";
 
-import type { SnapshotStore } from "../module/snapshots/createSnapshotStore";
 import { nullStore } from "../module/snapshots/createSnapshotStore";
 import type { ActorSnapshot } from "../module/snapshots/documentStores";
 import {
   getActorStore,
   getWorldActorsStore,
 } from "../module/snapshots/documentStores";
-import { replaceEqualDeep } from "../module/snapshots/replaceEqualDeep";
-import { useSnapshotSelector } from "./useSnapshot";
+import { useSnapshotSelector, useStoresSelector } from "./useSnapshot";
 
-type ActorsSelector<R, TSystem> = (
-  actors: readonly (ActorSnapshot<TSystem> | null)[],
-) => R;
-
-/**
- * A selection from several stores' snapshots, which re-renders only when the
- * result changes. `stores` must keep its identity while the stores are the
- * same, or it resubscribes on every render.
- */
-function useStoresSelector<R, TSystem>(
-  stores: readonly SnapshotStore<unknown>[],
-  selector: ActorsSelector<R, TSystem>,
-): R {
-  const subscribe = useMemo(
-    () => (listener: () => void) => {
-      const offs = stores.map((store) => store.subscribe(listener));
-      return () => offs.forEach((off) => off());
-    },
-    [stores],
-  );
-  const last = useRef<{ result: R } | null>(null);
-  const getSelection = () => {
-    const result = replaceEqualDeep(
-      last.current?.result,
-      selector(
-        stores.map(
-          (store) => store.getSnapshot() as ActorSnapshot<TSystem> | null,
-        ),
-      ),
-    );
-    last.current = { result };
-    return result;
-  };
-  return useSyncExternalStore(subscribe, getSelection);
-}
+type ActorsSelector<R> = (actors: readonly (ActorSnapshot | null)[]) => R;
 
 /**
  * Something from the snapshots of several world actors, looked up by id (e.g.
@@ -56,9 +20,9 @@ function useStoresSelector<R, TSystem>(
  * The selector can use values from the component (it runs again on every
  * render), but must be a pure function of them and the snapshots.
  */
-export function useActorsSnapshot<R, TSystem = unknown>(
+export function useActorsSnapshot<R>(
   ids: readonly string[],
-  selector: ActorsSelector<R, TSystem>,
+  selector: ActorsSelector<R>,
 ): R {
   // a new list whenever an actor is created or deleted, so the stores below
   // are looked up again
@@ -74,7 +38,9 @@ export function useActorsSnapshot<R, TSystem = unknown>(
       }),
     [key, worldIds],
   );
-  return useStoresSelector(stores, selector);
+  return useStoresSelector(stores, (snapshots) =>
+    selector(snapshots as readonly (ActorSnapshot | null)[]),
+  );
 }
 
 /**
@@ -83,9 +49,9 @@ export function useActorsSnapshot<R, TSystem = unknown>(
  * for actors the caller has looked up itself: it follows their changes, but
  * not which actors they are, so look them up again when that might change.
  */
-export function useActorListSnapshot<R, TSystem = unknown>(
+export function useActorListSnapshot<R>(
   actors: readonly (Actor.Implementation | null)[],
-  selector: ActorsSelector<R, TSystem>,
+  selector: ActorsSelector<R>,
 ): R {
   // the same stores while the actors are the same ones (kept as state, and
   // replaced during render when they change: React allows that)
@@ -102,5 +68,7 @@ export function useActorListSnapshot<R, TSystem = unknown>(
     current = storesFor(actors);
     setCache(current);
   }
-  return useStoresSelector(current.stores, selector);
+  return useStoresSelector(current.stores, (snapshots) =>
+    selector(snapshots as readonly (ActorSnapshot | null)[]),
+  );
 }

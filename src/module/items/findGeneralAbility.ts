@@ -1,4 +1,5 @@
 import { generalAbility } from "../../constants";
+import type { OfType } from "../snapshots/snapshotTypes";
 import type { InvestigatorItem } from "./InvestigatorItem";
 
 type Named = { readonly type: unknown; readonly name: string | null };
@@ -10,10 +11,10 @@ type Named = { readonly type: unknown; readonly name: string | null };
 export function findGeneralAbilityIn<T extends Named>(
   items: readonly T[],
   name: string,
-): T | undefined {
+): OfType<T, typeof generalAbility> | undefined {
   return items.find(
     (item) => item.type === generalAbility && item.name === name,
-  );
+  ) as OfType<T, typeof generalAbility> | undefined;
 }
 
 /** The names of the general abilities in a list of items (or snapshots). */

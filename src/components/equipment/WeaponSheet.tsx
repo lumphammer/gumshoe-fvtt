@@ -2,7 +2,6 @@ import { memo } from "react";
 
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import type { WeaponSystemData } from "../../module/items/weapon";
 import { assertWeaponItem } from "../../module/items/weapon";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
@@ -24,7 +23,7 @@ export const WeaponSheet = memo(function WeaponSheet() {
 
   const { item } = useItemSheetContext();
   assertWeaponItem(item);
-  const weapon = useItemSnapshot<WeaponSystemData>(item);
+  const weapon = useItemSnapshot(item);
 
   return (
     <ItemSheetFramework supertitle={<Translate>Weapon</Translate>}>

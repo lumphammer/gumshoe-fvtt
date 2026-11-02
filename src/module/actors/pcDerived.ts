@@ -7,6 +7,7 @@
 import type { TraumaType } from "@lumphammer/investigator-fvtt-types";
 
 import type { DeepReadonly } from "../snapshots/createSnapshotStore";
+import type { OfType } from "../snapshots/snapshotTypes";
 
 import * as c from "../../constants";
 import { getTranslated } from "../../functions/getTranslated";
@@ -64,8 +65,32 @@ const isAbility = (item: ItemView) =>
 export function getStabilityAbilityIn<T extends ItemView>(
   items: readonly T[],
   s: SettingsView = liveSettings,
-): T | undefined {
+): OfType<T, typeof c.generalAbility> | undefined {
   return findGeneralAbilityIn(items, s.stabilityAbility);
+}
+
+/** What's shown of the Stability ability: which it is, and its points */
+export type StabilityView = {
+  id: string;
+  name: string;
+  pool: number;
+  rating: number;
+};
+
+/** The Stability ability, as shown (see `getStabilityAbilityIn`), if any */
+export function getStabilityViewIn(
+  items: readonly ItemView[],
+  s: SettingsView = liveSettings,
+): StabilityView | null {
+  const stability = getStabilityAbilityIn(items, s);
+  return stability
+    ? {
+        id: stability._id ?? "",
+        name: stability.name,
+        pool: numberOf(stability, "pool"),
+        rating: numberOf(stability, "rating"),
+      }
+    : null;
 }
 
 /**
@@ -204,15 +229,17 @@ const isDeltaGreenBond = (bond: ItemView) =>
   (bond.system as { isDeltaGreen?: boolean }).isDeltaGreen ?? false;
 
 /** Bonds in display order: ordinary first, then DELTA GREEN, by name */
-export function getBondsIn<T extends ItemView>(items: readonly T[]): T[] {
-  return items
-    .filter((item) => item.type === c.bond)
-    .toSorted((a, b) =>
-      compareBonds(
-        { name: a.name, isDeltaGreen: isDeltaGreenBond(a) },
-        { name: b.name, isDeltaGreen: isDeltaGreenBond(b) },
-      ),
-    );
+export function getBondsIn<T extends ItemView>(
+  items: readonly T[],
+): OfType<T, typeof c.bond>[] {
+  return (
+    items.filter((item) => item.type === c.bond) as OfType<T, typeof c.bond>[]
+  ).toSorted((a, b) =>
+    compareBonds(
+      { name: a.name, isDeltaGreen: isDeltaGreenBond(a) },
+      { name: b.name, isDeltaGreen: isDeltaGreenBond(b) },
+    ),
+  );
 }
 
 /** What a Bond shows: its points, and whether they've broken it */
@@ -230,7 +257,7 @@ export function getBondPointsOf(bond: ItemView): {
  */
 export function getNeglectableBondsIn<T extends ItemView>(
   items: readonly T[],
-): T[] {
+): OfType<T, typeof c.bond>[] {
   return getBondsIn(items).filter(
     (bond) => !isDeltaGreenBond(bond) && !getBondPointsOf(bond).isBroken,
   );
@@ -242,7 +269,7 @@ export function getNeglectableBondsIn<T extends ItemView>(
  */
 export function getReformableBondsIn<T extends ItemView>(
   items: readonly T[],
-): T[] {
+): OfType<T, typeof c.bond>[] {
   return getBondsIn(items).filter(
     (bond) => !isDeltaGreenBond(bond) && getBondPointsOf(bond).isBroken,
   );
@@ -256,16 +283,16 @@ export function getReformableBondsIn<T extends ItemView>(
 export function getRebuildSpendAbilitiesIn<T extends ItemView>(
   items: readonly T[],
   s: SettingsView = liveSettings,
-): T[] {
-  return items
-    .filter(
+): OfType<T, typeof c.investigativeAbility>[] {
+  return (
+    items.filter(
       (item) =>
         item.type === c.investigativeAbility &&
         (item.system as { categoryId?: string }).categoryId ===
           s.bondRebuildSpendCategory &&
         numberOf(item, "rating") >= 1,
-    )
-    .toSorted((a, b) => a.name.localeCompare(b.name));
+    ) as OfType<T, typeof c.investigativeAbility>[]
+  ).toSorted((a, b) => a.name.localeCompare(b.name));
 }
 
 const healthResourceId = "health";
@@ -277,11 +304,11 @@ const healthResourceId = "health";
  */
 export function findHealthAbilityIn<T extends ItemView>(
   items: readonly T[],
-): T | undefined {
+): OfType<T, typeof c.generalAbility> | undefined {
   const generalAbilities = items.filter(
     (item) => item.type === c.generalAbility,
-  );
-  const system = (item: T) =>
+  ) as OfType<T, typeof c.generalAbility>[];
+  const system = (item: ItemView) =>
     item.system as { linkToResource?: boolean; resourceId?: string };
   return (
     generalAbilities.find(

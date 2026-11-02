@@ -18,9 +18,7 @@ export const StatField = ({ stat, id }: StatFieldProps) => {
   assertActiveCharacterActor(actor);
   const value = useActorSnapshot(
     actor,
-    (snapshot) =>
-      (snapshot?.system as { stats?: Record<string, number> } | undefined)
-        ?.stats?.[id],
+    (snapshot): number | undefined => snapshot.system.stats[id],
   );
   const onChange = useCallback(
     (newVal: number) => {

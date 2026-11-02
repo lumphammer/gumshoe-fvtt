@@ -18,12 +18,9 @@ export const PCSheetSimple = () => {
   const occupation = useActorSnapshot(
     actor,
     (snapshot) =>
-      (snapshot?.items ?? []).find(
-        (item) =>
-          item.type === c.personalDetail &&
-          (item.system as { slotIndex: number }).slotIndex ===
-            c.occupationSlotIndex,
-      )?.name,
+      snapshot.items
+        .filter((item) => item.type === c.personalDetail)
+        .find((item) => item.system.slotIndex === c.occupationSlotIndex)?.name,
   );
   const genericOccupation = useSettings((s) => s.genericOccupation);
   return <CharacterSheetSimple subText={occupation ?? genericOccupation} />;

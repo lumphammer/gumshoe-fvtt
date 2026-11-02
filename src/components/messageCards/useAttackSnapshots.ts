@@ -2,6 +2,7 @@
 // through snapshots. They aren't compiled, so the live lookups in them (which
 // token a target is, which weapon made the attack) run on every render.
 
+import * as c from "../../constants";
 import { useActorListSnapshot } from "../../hooks/useActorsSnapshot";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
@@ -81,10 +82,11 @@ export function useWalkingFireOptions(
   const spendNames = useSettings((s) => s.walkingFireSpendAbilities);
   return useActorSnapshot(weapon?.actor ?? null, (actor) => {
     if (actor === null || weapon === null) return null;
-    const own = actor.items.find((item) => item._id === weapon.id);
-    const abilityName = (own?.system as { ability?: string } | undefined)
-      ?.ability;
-    if (abilityName === undefined) return null;
+    const own = actor.items
+      .filter((item) => item.type === c.weapon)
+      .find((item) => item._id === weapon.id);
+    if (own === undefined) return null;
+    const abilityName = own.system.ability;
     return getWalkingFirePaymentsIn(actor.items, abilityName, spendNames);
   });
 }

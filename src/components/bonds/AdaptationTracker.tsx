@@ -1,12 +1,12 @@
 import type { TraumaType } from "@lumphammer/investigator-fvtt-types";
 import { Fragment, memo, useContext } from "react";
 
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { PCActor } from "../../module/actors/pc";
 import {
-  getStabilityAbilityIn,
+  getStabilityViewIn,
   isAdaptedToIn,
 } from "../../module/actors/pcDerived";
 import {
@@ -63,27 +63,22 @@ export const AdaptationTracker = memo(function AdaptationTracker({
   "use memo";
 
   const theme = useContext(ThemeContext);
-  const settings = useSettings((s) => s);
-  const types = getAdaptableTraumaTypesFrom(settings) as TraumaType[];
+  const types = useSettings(
+    (s) => getAdaptableTraumaTypesFrom(s) as TraumaType[],
+  );
   // the Stability ability's name, and each type's progress and whether it's
   // adapted to (as `getAdaptationProgress` and `isAdaptedTo` work them out)
-  const { stabilityName, progress, adapted } = useActorSnapshot(
+  const { stabilityName, progress, adapted } = useActorAndSettings(
     actor,
-    (snapshot) => {
-      const pc = { system: snapshot?.system, items: snapshot?.items ?? [] };
-      const adaptations =
-        (snapshot?.system as { adaptations?: Record<string, number> })
-          ?.adaptations ?? {};
-      return {
-        stabilityName: getStabilityAbilityIn(pc.items, settings)?.name ?? "",
-        progress: Object.fromEntries(
-          types.map((type) => [type.id, adaptations[type.id] ?? 0]),
-        ),
-        adapted: Object.fromEntries(
-          types.map((type) => [type.id, isAdaptedToIn(pc, type.id, settings)]),
-        ),
-      };
-    },
+    (pc, settings) => ({
+      stabilityName: getStabilityViewIn(pc.items, settings)?.name ?? "",
+      progress: Object.fromEntries(
+        types.map((type) => [type.id, pc.system.adaptations[type.id] ?? 0]),
+      ),
+      adapted: Object.fromEntries(
+        types.map((type) => [type.id, isAdaptedToIn(pc, type.id, settings)]),
+      ),
+    }),
   );
   const { setAdaptationProgress } = useSystemMethods(actor);
   const boxes = Array.from({ length: adaptationThreshold }, (_, i) => i + 1);

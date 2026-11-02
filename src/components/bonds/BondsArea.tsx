@@ -38,7 +38,7 @@ export const BondsArea = memo(function BondsArea() {
   // the Bonds' ids, in order (as `getBonds` sorts them): each row reads its
   // own Bond
   const ids = useActorSnapshot(actor, (snapshot) =>
-    getBondsIn(snapshot?.items ?? []).map((item) => item._id ?? ""),
+    getBondsIn(snapshot.items).map((item) => item._id ?? ""),
   );
   const bonds = ids.flatMap((id) => {
     const item = actor.items.get(id) as BondItem | undefined;

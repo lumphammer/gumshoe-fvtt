@@ -32,11 +32,9 @@ export const CharacterSheetSimple = ({
   }
   // read through a snapshot: Foundry's render of the sheet doesn't reach here
   const data = useActorSnapshot(actor, (snapshot) => ({
-    name: snapshot?.name ?? "",
-    img: snapshot?.img,
-    sheetTheme:
-      (snapshot?.system as { sheetTheme?: string | null } | undefined)
-        ?.sheetTheme ?? null,
+    name: snapshot.name,
+    img: snapshot.img,
+    sheetTheme: snapshot.system.sheetTheme,
   }));
   const defaultThemeName = useSettings((s) => s.defaultThemeName);
   const theme = useTheme(data.sheetTheme || defaultThemeName);

@@ -5,7 +5,6 @@ import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import * as constants from "../../constants";
-import type { NetworkContactSystemData } from "../../module/items/networkContact";
 import { assertNetworkContactItem } from "../../module/items/networkContact";
 import { findGeneralAbilityIn } from "../../module/items/findGeneralAbility";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
@@ -24,21 +23,16 @@ export const NetworkContactSheet = memo(function NetworkContactSheet() {
 
   const { item } = useItemSheetContext();
   assertNetworkContactItem(item);
-  const view = useItemSelector<
-    { name: string; system: NetworkContactSystemData },
-    NetworkContactSystemData
-  >(item, (snapshot) => ({ name: snapshot.name, system: snapshot.system }));
+  const view = useItemSelector(item, (snapshot) => ({
+    name: snapshot.name,
+    system: snapshot.system,
+  }));
   const networkName = useSettings((s) => s.networkAbility);
   // only a PC's contacts can be given points, from its Network ability
   const owner = useActorSnapshot(item.actor, (actor) => {
     if (actor?.type !== constants.pc) return null;
     const network = findGeneralAbilityIn(actor.items, networkName);
-    return {
-      networkPool:
-        network === undefined
-          ? null
-          : (network.system as { pool: number }).pool,
-    };
+    return { networkPool: network?.system.pool ?? null };
   });
 
   return (

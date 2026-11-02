@@ -3,7 +3,6 @@ import { memo } from "react";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import type { PersonalDetailSystemData } from "../../module/items/personalDetail";
 import { assertPersonalDetailItem } from "../../module/items/personalDetail";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
@@ -20,10 +19,10 @@ export const PersonalDetailSheet = memo(function PersonalDetailSheet() {
 
   const { item } = useItemSheetContext();
   assertPersonalDetailItem(item);
-  const view = useItemSelector<
-    { name: string; system: PersonalDetailSystemData },
-    PersonalDetailSystemData
-  >(item, (snapshot) => ({ name: snapshot.name, system: snapshot.system }));
+  const view = useItemSelector(item, (snapshot) => ({
+    name: snapshot.name,
+    system: snapshot.system,
+  }));
   const detailNames = useSettings((s) =>
     s.personalDetails.map((detail) => detail.name),
   );

@@ -2,7 +2,7 @@ import { Fragment, memo, useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { sortEntitiesByName } from "../../functions/utilities";
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import * as c from "../../constants";
@@ -56,10 +56,10 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const theme = useContext(ThemeContext);
-  const settings = useSettings((s) => s);
+  const mwMode = useSettings((s) => s.useMwStyleAbilities);
 
-  const layout = useActorSnapshot(actor, (snapshot) => {
-    const items = snapshot?.items ?? [];
+  const layout = useActorAndSettings(actor, (snapshot, settings) => {
+    const items = snapshot.items;
     const { investigativeAbilities, generalAbilities } =
       getCategorizedAbilitiesIn(
         items,
@@ -88,7 +88,6 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
   // this is all a bit iffy-elsey, but...
 
   //  in MW mode, we hide the investigative abilities
-  const mwMode = settings.useMwStyleAbilities;
   // we're in "simplified mode" if it's an NPC or we're using MW style
   const simplifiedMode = npcMode || mwMode;
 

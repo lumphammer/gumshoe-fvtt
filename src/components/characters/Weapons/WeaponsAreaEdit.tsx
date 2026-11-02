@@ -22,7 +22,7 @@ export const WeaponsAreaEdit = memo(function WeaponsAreaEdit() {
   assertActiveCharacterActor(actor);
   const ids = useActorSnapshot(actor, (snapshot) =>
     sortEntitiesByName(
-      (snapshot?.items ?? []).filter((item) => item.type === weapon),
+      snapshot.items.filter((item) => item.type === weapon),
     ).map((item) => item._id ?? ""),
   );
   // the live weapons, only to pass to the rows

@@ -5,7 +5,6 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertCardItem } from "../../module/items/card";
-import type { CardSystemData } from "../../types";
 import { absoluteCover } from "../absoluteCover";
 import { ToolbarButton } from "../inputs/Button";
 import { ArrowLink } from "../nestedPanels/ArrowLink";
@@ -25,10 +24,7 @@ export const CardSheet = memo(function CardSheet() {
   const { item } = useItemSheetContext();
 
   assertCardItem(item);
-  const active = useItemSelector<boolean, CardSystemData>(
-    item,
-    (snapshot) => snapshot.system.active,
-  );
+  const active = useItemSelector(item, (snapshot) => snapshot.system.active);
   // a card can't move between actors, so this never changes
   const isOwned = item.actor !== null;
 

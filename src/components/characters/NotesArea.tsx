@@ -17,9 +17,7 @@ export const NotesArea = memo(function NotesArea() {
   const longNotesNames = useSettings((s) => s.longNotes);
   const longNotes = useActorSnapshot(
     actor,
-    (snapshot) =>
-      (snapshot?.system as { longNotes?: string[] } | undefined)?.longNotes ??
-      [],
+    (snapshot) => snapshot.system.longNotes,
   );
   const { setLongNote } = useSystemMethods(actor);
 

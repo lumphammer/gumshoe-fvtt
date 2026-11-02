@@ -3,12 +3,13 @@ import { memo, useContext } from "react";
 
 import * as c from "../../constants";
 import { useActiveSituationalModifiers } from "../../hooks/useActiveSituationalModifiers";
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useActorAndSettings } from "../../hooks/useActorSnapshot";
+import { useRatingCap } from "../../hooks/useRatingCaps";
+import { useStabilityStateName } from "../../hooks/useStabilityStateName";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import {
   findHealthAbilityIn,
-  getRatingCapsIn,
   getStabilityAbilityIn,
   getStabilityStateIn,
 } from "../../module/actors/pcDerived";
@@ -21,7 +22,6 @@ import {
   isGeneralAbilitySnapshot,
 } from "../../module/items/abilitySnapshots";
 import type { AbilityItem } from "../../module/items/exports";
-import { getStabilityStateName } from "../../module/stability/settings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 import { SituationalModifierBadge } from "./SituationalModifierBadge";
@@ -61,34 +61,29 @@ export const AbilityBadges = memo(function AbilityBadges({
     unlocks: getActiveUnlocksOf(snapshot.system),
     situationalModifiers: getVisibleSituationalModifiersOf(snapshot.system),
   }));
-  const settings = useSettings((s) => s);
+  const useWoundStatusEffects = useSettings((s) => s.useWoundStatusEffects);
   const { situationalModifiers, unlocks } = ability;
   const activeModifiers = useActiveSituationalModifiers(item.uuid ?? "");
   const theme = useContext(ThemeContext);
-  // a PC's adaptations and Sanity's cap, Stability and Health
-  const fromActor = useActorSnapshot(item.actor, (actor) => {
-    const isPC = actor?.type === c.pc;
-    const caps =
-      actor && isPC ? getRatingCapsIn(actor, ability.name, settings) : [];
-    return {
-      ratingCap:
-        caps.length > 0 ? Math.min(...caps.map(({ cap }) => cap)) : null,
-      ratingCapReasons: caps.map(({ reason }) => reason),
-      stabilityState:
-        actor &&
-        isPC &&
-        getStabilityAbilityIn(actor.items, settings)?._id === ability._id
-          ? getStabilityStateIn(actor, settings)
-          : null,
-      isHealth:
-        actor !== null && findHealthAbilityIn(actor.items)?._id === ability._id,
-    };
-  });
-  const { ratingCap, stabilityState } = fromActor;
+  // a PC's adaptations and Sanity's cap
+  const { cap: ratingCap, reasons: ratingCapReasons } = useRatingCap(item);
+  // the PC's Stability state, if this is their Stability, and whether this is
+  // the actor's Health
+  const fromActor = useActorAndSettings(item.actor, (actor, settings) => ({
+    stabilityState:
+      actor?.type === c.pc &&
+      getStabilityAbilityIn(actor.items, settings)?._id === ability._id
+        ? getStabilityStateIn(actor, settings)
+        : null,
+    isHealth:
+      actor !== null && findHealthAbilityIn(actor.items)?._id === ability._id,
+  }));
+  const { stabilityState } = fromActor;
+  const stabilityStateName = useStabilityStateName(stabilityState);
   // the owner's wound state, if this is their Health and the statuses are in
   // use. From the pool, so it's right even if a status is toggled by hand.
   const woundState =
-    settings.useWoundStatusEffects && fromActor.isHealth
+    useWoundStatusEffects && fromActor.isHealth
       ? getWoundState(ability.pool)
       : null;
   // styled on a wrapper: Translate sets its own background
@@ -159,7 +154,7 @@ export const AbilityBadges = memo(function AbilityBadges({
       {/* Shaken, Shattered or Gone */}
       {stabilityState !== null && stabilityState !== "steady" && (
         <span data-testid="stability-state-badge" css={stateBadgeStyle}>
-          {getStabilityStateName(stabilityState, settings)}
+          {stabilityStateName}
         </span>
       )}
 
@@ -181,7 +176,7 @@ export const AbilityBadges = memo(function AbilityBadges({
         >
           <Translate
             values={{ Cap: String(ratingCap) }}
-            title={fromActor.ratingCapReasons.join("; ")}
+            title={ratingCapReasons.join("; ")}
           >
             CappedAtCap
           </Translate>

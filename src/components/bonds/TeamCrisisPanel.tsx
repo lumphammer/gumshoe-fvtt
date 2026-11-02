@@ -3,8 +3,7 @@ import { FaHeartCrack } from "react-icons/fa6";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
-import { useSettings } from "../../hooks/useSettings";
+import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useSnapshotSelector } from "../../hooks/useSnapshot";
 import type { PCActor } from "../../module/actors/pc";
 import type {
@@ -26,7 +25,7 @@ import { getWorldActorsStore } from "../../module/snapshots/documentStores";
 import {
   getBondPointsOf,
   getBondsIn,
-  getStabilityAbilityIn,
+  getStabilityViewIn,
   getStabilityTestDifficultyIn,
 } from "../../module/actors/pcDerived";
 import { isBondItem } from "../../module/items/bond";
@@ -68,42 +67,22 @@ export const TeamCrisisPanel = ({
 }: TeamCrisisPanelProps) => {
   "use memo";
 
-  const settings = useSettings((s) => s);
   // the actor's own data: the Bonds tab above is memoised, so this reads
   // what it shows itself
-  const view = useActorSnapshot(actor, (snapshot) => {
-    const items = snapshot?.items ?? [];
-    const pc = { system: snapshot?.system, items };
-    const stability = getStabilityAbilityIn(items, settings);
-    return {
-      stability: stability
-        ? {
-            id: stability._id ?? "",
-            name: stability.name,
-            pool: (stability.system as { pool: number }).pool,
-          }
-        : null,
-      bonds: getBondsIn(items).map(
-        (bond): CrisisBond & { isBroken: boolean } => {
-          const system = bond.system as {
-            isDeltaGreen: boolean;
-            actorUuid?: string | null;
-          };
-          const { points, isBroken } = getBondPointsOf(bond);
-          return {
-            id: bond._id ?? "",
-            name: bond.name,
-            points,
-            isBroken,
-            isDeltaGreen: system.isDeltaGreen,
-            actorUuid: system.actorUuid ?? null,
-          };
-        },
-      ),
-      difficulty: getStabilityTestDifficultyIn(pc, crisisDifficulty, settings),
-      bondCap: getBondCapOf(pc, settings),
-    };
-  });
+  const view = useActorAndSettings(actor, (pc, settings) => ({
+    stability: getStabilityViewIn(pc.items, settings),
+    bonds: getBondsIn(pc.items).map(
+      (bond): CrisisBond & { isBroken: boolean } => ({
+        id: bond._id ?? "",
+        name: bond.name,
+        ...getBondPointsOf(bond),
+        isDeltaGreen: bond.system.isDeltaGreen,
+        actorUuid: bond.system.actorUuid ?? null,
+      }),
+    ),
+    difficulty: getStabilityTestDifficultyIn(pc, crisisDifficulty, settings),
+    bondCap: getBondCapOf(pc, settings),
+  }));
   const [selected, setSelected] = useState<string[]>(() =>
     initialTeammateUuids.slice(0, maxCrisisTeammates),
   );

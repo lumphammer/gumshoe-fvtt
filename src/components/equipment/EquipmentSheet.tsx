@@ -5,7 +5,6 @@ import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import type { EquipmentSystemData } from "../../module/items/equipment";
 import { assertEquipmentItem } from "../../module/items/equipment";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
@@ -29,7 +28,7 @@ export const EquipmentSheet = memo(function EquipmentSheet() {
 
   assertEquipmentItem(item);
   const isLimited = useIsLimited();
-  const snapshot = useItemSnapshot<EquipmentSystemData>(item);
+  const snapshot = useItemSnapshot(item);
   const categories = useSettings((s) => s.equipmentCategories);
   const name = useAsyncUpdate(snapshot.name, item.setName);
 

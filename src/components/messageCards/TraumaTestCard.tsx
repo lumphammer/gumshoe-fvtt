@@ -1,10 +1,10 @@
 import { useContext } from "react";
 
 import { isAdapted } from "../../module/bonds/adaptation";
-import { getStabilityStateName } from "../../module/stability/settings";
 import type { StabilityState } from "../../module/stability/states";
 import type { TraumaTestRecord } from "../../module/stability/trauma";
 import { useSettings } from "../../hooks/useSettings";
+import { useStabilityStateName } from "../../hooks/useStabilityStateName";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
@@ -30,10 +30,11 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
   "use memo";
 
   const theme = useContext(ThemeContext);
-  const settings = useSettings((s) => s);
-  const genericOccupation = settings.genericOccupation;
+  const genericOccupation = useSettings((s) => s.genericOccupation);
   const spendTotal = record.total - record.die;
   const { stateAfter } = record;
+  const shakenName = useStabilityStateName("shaken");
+  const stateAfterName = useStabilityStateName(stateAfter);
 
   return (
     <div
@@ -92,7 +93,7 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
           {record.shaken && (
             <>
               {" ("}
-              {getStabilityStateName("shaken", settings)}
+              {shakenName}
               {" +1)"}
             </>
           )}
@@ -134,7 +135,7 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
             css={{ color: theme.colors.danger, margin: "0.25em 0" }}
           >
             <b>
-              {getStabilityStateName(stateAfter, settings)}
+              {stateAfterName}
               {"! "}
             </b>
             <Translate values={{ GenericOccupation: genericOccupation }}>
