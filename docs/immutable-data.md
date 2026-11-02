@@ -484,3 +484,67 @@ editor (Monaco) is uncontrolled: it reads the page's content once, when it's
 mounted, as before. Ownership comes from the snapshot's selector too, provided
 through `IsEditableContext`; it re-renders when compendiums are configured,
 since locking the compendium an entry is in changes a setting, not the entry.
+
+## Review of the plumbing
+
+A look over the conversion as a whole (after the journal editor was
+compiled), for boilerplate and duplication. The core (`createSnapshotStore`,
+`replaceEqualDeep`, the document stores and the hooks over them) is small and
+sound. Most of the boilerplate is in the components that use it, and has a
+few causes, listed here with what to do about each, in the order to do them.
+
+1. **Dead code.** `InvestigatorActor` still keeps an immutable copy of
+   itself (`registerImmutableDataUpdateHandler`), merged with immer on every
+   update. Nothing registers a handler. Delete it.
+2. **Stores and live reads written by hand.** The journal entry store repeats
+   the actor store's shape (a document's own data, plus embedded lists
+   patched by id), and each store repeats the same get-or-create cache. A
+   generic store over a parent and its embedded collections would cover the
+   actor, journal and (later) combat stores. Separately, several hooks
+   re-render when some Foundry hook fires, each in its own way: a forced
+   update in the attack cards (`useTokenActorChanges`) and the journal sheet
+   (`useCompendiumConfigChanges`), JSON strings for a stable identity in
+   `useItemPacks`, and fresh copies on every render in
+   `useRuntimeRegistries` (which defeats memoisation in its caller). One
+   helper, a store of a value read when given hooks fire and structurally
+   shared, would cover all of them.
+3. **Permissions checked in many places.** The trick (read the live
+   document's permission in a selector, so it runs again on every change) is
+   written out by hand in `useSheetPermissions`, `useIsDocumentOwner`, the
+   journal sheet, the attack targets' Health visibility and the crisis call
+   card. `IsEditableContext` is provided by `ItemSheet` and then again by the
+   ability, equipment and weapon sheets inside it, and the framework works out
+   Limited again for itself. One permission hook, and one provider per sheet
+   root (with Limited in it too), would do.
+4. **Untyped snapshots.** An actor snapshot's `system` is `unknown` unless the
+   caller says otherwise, so components cast it inline (45 casts), and nearly
+   every actor selector starts with `snapshot?.items ?? []`, because the hook
+   allows a null actor. Typed snapshots for each actor type, a hook for an
+   actor that's there, and a hook for the sheet's own actor (which components
+   now get from the context, assert the type of, and pass in) would remove
+   most of that. Selectors used in several places become hooks of their own:
+   an ability's rating cap, a PC's Stability ability, a chat card's ability
+   header (copied into four cards), and the Stability states' names (the
+   reason most of the 14 `useSettings((s) => s)` subscriptions exist).
+5. **Rules not yet moved.** The PC model delegates to `pcDerived.ts`, but
+   `AbilityModel`'s unlocks, situational modifiers and specialities getters
+   duplicate `abilitySnapshots.ts`; the tracker abilities' order is only in
+   `TrackersArea`; and network contacts, contact points, adaptation progress,
+   and whether a Bond can be burned or rebuilt are worked out again in
+   selectors (each with a comment naming the model method it copies). Each
+   rule should live once, with the model calling it.
+6. **Small repeats.** `toRows` is in both abilities areas; the clickable,
+   draggable item name is copied into the ability, Bond and card rows (13
+   `_onDragStart` handlers); looking live items up from selected ids is
+   written out 15 times; reading a pool is done three ways.
+7. **The combat tracker** still keeps its own immer diff-merge state
+   (`TrackerContext`, `CombatantContext`, `ClassicInitiative`) and the
+   hand-rolled effect and resource handlers on the actor and combatant
+   classes: the strategy this document found slower and more fragile. Port it
+   onto the generic store.
+8. **The Team Crisis window** is the last component that reads live document
+   data unmarked.
+9. **Compiling everything.** Then switch React Compiler to compile by
+   default, opting out only what must stay uncompiled (`Tracker`), and remove
+   the `"use memo"` directives, and the `memo()` wrappers in compiled code
+   (85 files have both), in one sweep.
