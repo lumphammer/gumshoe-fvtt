@@ -6,6 +6,8 @@ import { absoluteCover } from "../absoluteCover";
  * Content to display when no page is selected
  */
 export const NoPageSelected = () => {
+  "use memo";
+
   return (
     <div
       css={{

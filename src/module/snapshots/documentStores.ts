@@ -333,3 +333,106 @@ export function getWorldActorsStore() {
   worldActorsStore ??= createWorldActorsStore();
   return worldActorsStore;
 }
+
+/**
+ * What's read of a journal page: its prepared data (`toObject(false)`), loosely
+ * typed, since it depends on the page's type.
+ */
+export type JournalPageData = {
+  _id: string | null;
+  name: string;
+  type: string;
+  sort: number;
+  title: { level: number; show: boolean };
+  src?: string | null;
+  image?: { caption?: string | null };
+  text?: { content?: string | null };
+  flags: Record<string, Record<string, unknown> | undefined>;
+};
+
+/** A journal entry's own data, and its pages */
+export type JournalEntryData = {
+  _id: string | null;
+  name: string;
+  flags: Record<string, Record<string, unknown> | undefined>;
+  ownership: Record<string, number>;
+  pages: JournalPageData[];
+};
+export type JournalEntrySnapshot = DeepReadonly<JournalEntryData>;
+
+const journalPageData = (page: JournalEntryPage.Implementation) =>
+  page.toObject(false) as unknown as JournalPageData;
+
+/**
+ * A journal entry's own data, without its pages (from its source, so its pages
+ * aren't copied only to be thrown away)
+ */
+function journalEntryOnlyData(entry: JournalEntry.Implementation) {
+  const { pages: _pages, ...rest } = entry._source as unknown as {
+    pages: unknown;
+  } & Omit<JournalEntryData, "pages">;
+  return foundry.utils.deepClone(rest);
+}
+
+/**
+ * A store of a journal entry with its pages, which follows changes to either.
+ * Only the page that changed is copied (and the entry's own data).
+ */
+function createJournalEntryStore(entry: JournalEntry.Implementation) {
+  return createSnapshotStore<JournalEntryData>(
+    () => ({
+      ...journalEntryOnlyData(entry),
+      pages: entry.pages.contents.map(journalPageData),
+    }),
+    (onChange) => {
+      const refresh = (id?: string | null, page?: JournalPageData | null) => {
+        onChange((previous) => {
+          const next = {
+            ...(previous as JournalEntryData),
+            ...journalEntryOnlyData(entry),
+          };
+          if (id) {
+            next.pages = withDocument(
+              previous.pages as JournalPageData[],
+              id,
+              page ?? null,
+            );
+          }
+          return next;
+        });
+      };
+      const isOurs = (page: { parent: unknown }) => page.parent === entry;
+      const onPage = (page: JournalEntryPage.Implementation) => {
+        if (isOurs(page)) refresh(page.id, journalPageData(page));
+      };
+      const offs = [
+        on("updateJournalEntry", (doc) => {
+          if (doc === entry) refresh();
+        }),
+        on("createJournalEntryPage", onPage),
+        on("updateJournalEntryPage", onPage),
+        on("deleteJournalEntryPage", (page) => {
+          if (isOurs(page)) refresh(page.id, null);
+        }),
+      ];
+      return () => offs.forEach((off) => off());
+    },
+  );
+}
+
+const journalEntryStores = new WeakMap<
+  JournalEntry.Implementation,
+  ReturnType<typeof createJournalEntryStore>
+>();
+
+/** The store of a journal entry (see `createJournalEntryStore`) */
+export function getJournalEntryStore(
+  entry: JournalEntry.Implementation,
+): SnapshotStore<JournalEntryData> {
+  let store = journalEntryStores.get(entry);
+  if (!store) {
+    store = createJournalEntryStore(entry);
+    journalEntryStores.set(entry, store);
+  }
+  return store;
+}

@@ -44,4 +44,8 @@ export const JournalEntryHTMLEditorSheetClass = ReactApplicationV2Mixin(
   "JournalEntryHTMLEditorSheetClass",
   JournalEntryHTMLEditorSheetClassBase,
   render,
+  // the editor reads the entry and its pages through their snapshot,
+  // ownership included (docs/immutable-data.md), so Foundry's re-renders
+  // needn't reach React
+  { rerenderOnFoundryRender: false },
 );

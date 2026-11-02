@@ -14,6 +14,8 @@ type MagicToolbarProviderProps = PropsWithChildren;
  */
 export const MagicToolbarProvider = React.memo<MagicToolbarProviderProps>(
   ({ children }) => {
+    "use memo";
+
     const [content, setContent] = useState<MagicToolbarContent>({});
 
     const register = useCallback(

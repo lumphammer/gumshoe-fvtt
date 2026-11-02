@@ -78,8 +78,9 @@ translations, adding fields and settings, releases).
   identity when it changes. Only mark code which reads its data through
   snapshots (below); the PC, NPC and party sheets, every item sheet, the
   chat cards, the system settings screens (whose working copy of the settings
-  is an immer reducer's state), the combat tracker (but `Tracker`), and the
-  shared inputs, `Translate` and `ImagePickle` are marked. A compiled component
+  is an immer reducer's state), the journal editor, the combat tracker (but
+  `Tracker`), and the shared inputs, `Translate` and `ImagePickle` are
+  marked. A compiled component
   passes an unchanged child its cached element, so every child of one must
   keep itself current (as if memoised), not rely on its parent re-rendering.
   A call during render is cached on its arguments: one which reads global

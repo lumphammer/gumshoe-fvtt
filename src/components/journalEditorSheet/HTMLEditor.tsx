@@ -9,6 +9,7 @@ import { AiOutlineFormatPainter } from "react-icons/ai";
 import { extraCssClasses, systemId } from "../../constants";
 import { debounce, systemLogger } from "../../functions/utilities";
 import { TextEditor } from "../../fvtt-exports";
+import { useJournalEntrySnapshot } from "../../hooks/useJournalEntrySnapshot";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 // these imports are going around the barrel export because I was getting some
 // weird "SyntaxError: Ambiguous import "DocumentMemory"" errors
@@ -67,10 +68,16 @@ const formatDocument = async (editor: IStandalonCodeEditor | null) => {
   }
 };
 
+/** A flag's value, if it's a string */
+const asString = (value: unknown): string =>
+  typeof value === "string" ? value : "";
+
 /**
  * The actual Monaco-based HTML editor.
  */
 export const HTMLEditor = ({ page }: HTMLEditorProps) => {
+  "use memo";
+
   const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<IStandalonCodeEditor | null>(null);
 
@@ -182,7 +189,13 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
     ),
   );
 
-  const htmlClasses = page.flags[systemId]?.[extraCssClasses] ?? "";
+  const htmlClasses = useJournalEntrySnapshot(page.parent, (entry) =>
+    asString(
+      entry.pages.find((p) => p._id === page.id)?.flags[systemId]?.[
+        extraCssClasses
+      ],
+    ),
+  );
 
   const handleChangeClasses = useCallback(
     (classes: string) => {

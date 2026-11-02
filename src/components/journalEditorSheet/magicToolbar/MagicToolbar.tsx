@@ -22,6 +22,8 @@ export const MagicToolbar = ({
   categories,
   childrenCategory,
 }: MagicToolbarProps) => {
+  "use memo";
+
   // get all the content that's been registered, and group them by category
   const registeredContent = Object.values(
     useContext(MagicToolbarContentContext),

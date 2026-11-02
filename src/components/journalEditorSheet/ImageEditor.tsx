@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 
+import { useJournalEntrySnapshot } from "../../hooks/useJournalEntrySnapshot";
 import { absoluteCover } from "../absoluteCover";
 import { AsyncTextArea } from "../inputs/AsyncTextArea";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -15,6 +16,12 @@ interface ImageEditorProps {
  * lifting.
  */
 export const ImageEditor = ({ page }: ImageEditorProps) => {
+  "use memo";
+
+  const caption = useJournalEntrySnapshot(
+    page.parent,
+    (entry) => entry.pages.find((p) => p._id === page.id)?.image?.caption ?? "",
+  );
   const handleChange = useCallback(
     async (value: string) => {
       await page.update({ image: { caption: value } });
@@ -35,7 +42,7 @@ export const ImageEditor = ({ page }: ImageEditorProps) => {
       <InputGrid css={{ padding: "0.5em", gridTemplateRows: "1fr 1fr" }}>
         <GridFieldStacked label="Caption">
           <AsyncTextArea
-            value={page.image.caption}
+            value={caption}
             onChange={handleChange}
             css={{ flex: 1 }}
           />
