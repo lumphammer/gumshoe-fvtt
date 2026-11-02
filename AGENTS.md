@@ -77,8 +77,8 @@ translations, adding fields and settings, releases).
   full re-renders: the compiler caches on identity, and a document keeps its
   identity when it changes. Only mark code which reads its data through
   snapshots (below); the PC and NPC sheets, the equipment,
-  weapon and ability sheets, and the combat tracker (but `Tracker`) are
-  marked. A compiled component
+  weapon and ability sheets, the combat tracker (but `Tracker`), and the
+  shared inputs, `Translate` and `ImagePickle` are marked. A compiled component
   passes an unchanged child its cached element, so every child of one must
   keep itself current (as if memoised), not rely on its parent re-rendering.
   A call during render is cached on its arguments: one which reads global
@@ -106,7 +106,9 @@ translations, adding fields and settings, releases).
     there, and provide `IsEditableContext` from it (`useSheetPermissions`,
     which follows the item's and its actor's ownership): inputs read
     `useIsEditable`, and a memoised parent would otherwise hide a permission
-    change from them.
+    change from them. (Without the context, `useIsEditable` reads
+    `app.isEditable` and follows Foundry's renders through
+    `FoundryRenderSerialContext`, for the unconverted sheets.)
   - Once everything in an app keeps itself current (including its
     permissions: `useActorSheetPermissions` for actor sheets), pass
     `{ rerenderOnFoundryRender: false }` to `ReactApplicationV2Mixin`, so

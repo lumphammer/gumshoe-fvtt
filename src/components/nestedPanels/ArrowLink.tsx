@@ -16,6 +16,8 @@ export const ArrowLink = ({
   children,
   ...rest
 }: ArrowLinkProps) => {
+  "use memo";
+
   const theme = useContext(ThemeContext);
 
   return (

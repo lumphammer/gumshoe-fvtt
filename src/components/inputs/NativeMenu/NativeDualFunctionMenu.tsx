@@ -13,6 +13,8 @@ export const NativeDualFunctionMenu = ({
   className,
   label,
 }: NativeDualFunctionMenuProps) => {
+  "use memo";
+
   return (
     <>
       <NativeDropdownMenu className={className} label={label}>

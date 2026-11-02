@@ -1,5 +1,8 @@
-import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import { createContext, useContext } from "react";
+import {
+  FoundryAppContext,
+  FoundryRenderSerialContext,
+} from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
+import { createContext, use, useContext } from "react";
 
 /**
  * Whether the sheet is editable, provided by sheets which read their document
@@ -29,6 +32,11 @@ export function getIsEditable(app: unknown): boolean {
  */
 export function useIsEditable(): boolean {
   const provided = useContext(IsEditableContext);
-  const app = useContext(FoundryAppContext);
-  return provided ?? getIsEditable(app);
+  if (provided !== null) return provided;
+  // `app.isEditable` is live, and a compiled parent (e.g. `AsyncTextInput`)
+  // may not re-render us when it changes: following Foundry's renders does.
+  // Read only here, so sheets which provide the context don't re-render with
+  // Foundry.
+  use(FoundryRenderSerialContext);
+  return getIsEditable(use(FoundryAppContext));
 }

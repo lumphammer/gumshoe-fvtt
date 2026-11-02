@@ -342,6 +342,10 @@ Components rendered per change, before and after converting (from
 | turn-passing tracker compiled: pass turn                    | 49             | 45            |
 | turn-passing tracker compiled: a combatant's turns          | 28             | 22            |
 | combat tracker compiled: next turn                          | 39             | 35            |
+| shared inputs compiled: ability sheet, its own pool         | 88             | 68            |
+| shared inputs compiled: Team Crisis panel, a Bond's points  | 118            | 99            |
+| shared inputs compiled: equipment sheet, its notes          | 32             | 27            |
+| shared inputs compiled: weapon sheet, its notes             | 29             | 24            |
 
 The PC and NPC sheets' own components, and the islands they use, are
 compiled by React Compiler (they're marked `"use memo"`). A compiled
@@ -361,8 +365,21 @@ through snapshots itself, so it's current in the unconverted item sheets as
 well. Their second commit on each change is Foundry's own render: one sheet
 class serves every item type, so it can't pass `rerenderOnFoundryRender: false`
 until they're all converted. Not compiled yet: `TeamCrisisPanel` (it lists other
-actors, read live), and the shared inputs, `Translate` and the like. Wall
-times barely change (they were around a millisecond already).
+actors, read live). Wall times barely change (they were around a
+millisecond already).
+
+The shared components these sheets use (the inputs in `components/inputs`,
+`Translate`, `ImagePickle`, `TabContainer`, `Masonry` and the like) are
+compiled too. The unconverted sheets use them as well, but they only take
+props, so they re-render whenever those change. But an input inside another
+(`TextInput` in `AsyncTextInput`) gets its cached element, and the
+unconverted sheets don't provide `IsEditableContext`: there, `useIsEditable`
+reads `app.isEditable` itself, and reads `FoundryRenderSerialContext` (which
+the mixin changes on every Foundry render) so it re-renders with Foundry. `Translate` reads its debug
+setting in a hook (`useDebugTranslations`), which isn't compiled.
+`useIsDocumentOwner` (for `ImagePickle` and `NotesDisplay`) checks the
+ownership in a snapshot selector: it was a `useMemo` on the document, so
+it never noticed the ownership changing.
 
 Every part of the PC and NPC sheets now reads snapshots, and both roots
 (`PCSheetFull`, `NPCSheetFull`) are memoised, so Foundry's re-render stops

@@ -4,7 +4,10 @@ import { StrictMode } from "react";
 import type { Root } from "react-dom/client";
 import { createRoot } from "react-dom/client";
 
-import { FoundryAppContext } from "./FoundryAppContext";
+import {
+  FoundryAppContext,
+  FoundryRenderSerialContext,
+} from "./FoundryAppContext";
 import type { Constructor } from "./types";
 
 import ApplicationV2 = foundry.applications.api.ApplicationV2;
@@ -117,7 +120,9 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
             value={this}
             key={"FoundryAppContextProvider"}
           >
-            {render()}
+            <FoundryRenderSerialContext.Provider value={this.serial}>
+              {render()}
+            </FoundryRenderSerialContext.Provider>
           </FoundryAppContext.Provider>
         </StrictMode>
       );

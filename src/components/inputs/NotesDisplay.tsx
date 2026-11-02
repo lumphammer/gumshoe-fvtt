@@ -20,6 +20,8 @@ export const NotesDisplay = ({
   html: rawHtml,
   toggleSecret,
 }: NotesDisplayProps) => {
+  "use memo";
+
   assertGame(game);
 
   const isOwner = useIsDocumentOwner();

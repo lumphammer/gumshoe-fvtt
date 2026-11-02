@@ -272,11 +272,39 @@ test.describe("ownership changes", () => {
     // actor's ownership itself
     await giveOwnership(page, pcId, playerId, "OWNER");
     await expect(name).toBeEditable();
+    // the portrait offers to change the picture, now they own it
+    await sheet.getByTestId("image-pickle").click();
+    await expect(sheet.getByText("Edit", { exact: true })).toBeVisible();
     await giveOwnership(page, pcId, playerId, "LIMITED");
     await expect(sheet.locator(".tab-strip")).toHaveCount(0);
     await expect(sheet).toContainText("Dr Ellery");
     await giveOwnership(page, pcId, playerId, "OBSERVER");
     await expect(sheet.locator(".tab-strip")).toHaveCount(1);
+  });
+
+  test("an open party sheet follows the player's ownership changing", async ({
+    page,
+    joinAs,
+  }) => {
+    const partyId = await createActor(page, {
+      name: "The Unchanging",
+      type: "party",
+    });
+    const playerId = await createPlayer(page, "Party Promoted");
+    await giveOwnership(page, partyId, playerId, "OBSERVER");
+
+    const player = await joinAs("Party Promoted");
+    const sheet = await openSheet(player, `Actor.${partyId}`);
+    // its name is a compiled input inside another (`AsyncTextInput`), in a
+    // sheet which doesn't provide `IsEditableContext`
+    const name = sheet.getByRole("textbox").first();
+    await expect(name).toHaveValue("The Unchanging");
+    await expect(name).not.toBeEditable();
+
+    await giveOwnership(page, partyId, playerId, "OWNER");
+    await expect(name).toBeEditable();
+    await giveOwnership(page, partyId, playerId, "OBSERVER");
+    await expect(name).not.toBeEditable();
   });
 });
 

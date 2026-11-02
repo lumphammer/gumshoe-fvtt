@@ -22,6 +22,8 @@ export const OtherableDropDown = ({
   pickerValues,
   validValues,
 }: OtherableDropDownProps) => {
+  "use memo";
+
   const theme = useContext(ThemeContext);
 
   const {
