@@ -2,11 +2,10 @@
 // through snapshots. They aren't compiled, so the live lookups in them (which
 // token a target is, which weapon made the attack) run on every render.
 
-import { useEffect, useReducer } from "react";
-
 import { useActorListSnapshot } from "../../hooks/useActorsSnapshot";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
+import { useSnapshot } from "../../hooks/useSnapshot";
 import type { AttackMessage } from "../../module/attacks/attackTargets";
 import { getTargetActor } from "../../module/attacks/attackTargets";
 import type {
@@ -15,6 +14,7 @@ import type {
 } from "../../module/attacks/resolveAttackTarget";
 import { getTargetActorInfoIn } from "../../module/attacks/targetActorInfo";
 import type { AttackTargetData } from "../../module/attacks/types";
+import { getTokenActorsCounter } from "../../module/snapshots/gameStores";
 import type { WalkingFireOptions } from "../../module/attacks/walkingFire";
 import {
   getAttackWeapon,
@@ -31,36 +31,12 @@ export type TargetView = {
   canSeeHealth: boolean;
 };
 
-/**
- * Re-render when a token's actor could have changed: tokens being created or
- * deleted, or one being given another actor, or linked or unlinked. A target
- * is a token, so which actor it is (if any) depends on these. (Not on every
- * token update: that's every move, and their actors' changes come through
- * their snapshots.)
- */
-function useTokenActorChanges() {
-  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
-  useEffect(() => {
-    const ids = [
-      Hooks.on("createToken", forceUpdate),
-      Hooks.on("deleteToken", forceUpdate),
-      Hooks.on("updateToken", (_token, changes) => {
-        if ("actorId" in changes || "actorLink" in changes) forceUpdate();
-      }),
-    ];
-    return () => {
-      Hooks.off("createToken", ids[0]);
-      Hooks.off("deleteToken", ids[1]);
-      Hooks.off("updateToken", ids[2]);
-    };
-  }, []);
-}
-
 /** Each target's actor, as the card shows it, by target id */
 export function useTargetViews(
   targets: readonly AttackTargetData[],
 ): Readonly<Record<string, TargetView>> {
-  useTokenActorChanges();
+  // which actor a target's token has can change without the actor changing
+  useSnapshot(getTokenActorsCounter());
   const actors = targets.map(
     (target) => getTargetActor(target) as Actor.Implementation | null,
   );

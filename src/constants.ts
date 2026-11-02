@@ -73,6 +73,8 @@ export const requestTurnPass = `${systemId}.requestTurnPass`;
 export const socketScope = `system.${systemId}`;
 export const settingsCloseAttempted = `${systemId}.settingsCloseAttempted`;
 export const themeHMR = `${systemId}:themeHMR`;
+/** a theme or preset was installed into `runtimeConfig` */
+export const runtimeConfigChanged = `${systemId}.runtimeConfigChanged`;
 export const nextTurn = `${systemId}.nextTurn`;
 export const editAttack = `${systemId}.editAttack`;
 

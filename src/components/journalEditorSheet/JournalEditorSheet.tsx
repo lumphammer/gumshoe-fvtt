@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MdOutlinePreview } from "react-icons/md";
 
 import { extraCssClasses, systemId } from "../../constants";
 import { getIsEditable, IsEditableContext } from "../../hooks/useIsEditable";
 import { useJournalEntrySnapshot } from "../../hooks/useJournalEntrySnapshot";
+import { useSnapshot } from "../../hooks/useSnapshot";
 import { useJournalEntrySheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
 import { InvestigatorJournalSheet } from "../../module/InvestigatorJournalSheet";
+import { getCompendiumConfigCounter } from "../../module/snapshots/gameStores";
 import { absoluteCover } from "../absoluteCover";
 import { CSSReset } from "../CSSReset";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
@@ -24,28 +26,6 @@ const asString = (value: unknown): string =>
   typeof value === "string" ? value : "";
 
 /**
- * Re-render when compendiums are configured (e.g. locked or unlocked): an entry
- * in a compendium can only be edited while it's unlocked, and that's in a
- * setting, not the entry. (A hook, so it isn't compiled.)
- */
-function useCompendiumConfigChanges() {
-  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
-  useEffect(() => {
-    const onSetting = (setting: { key: string }) => {
-      if (setting.key === "core.compendiumConfiguration") forceUpdate();
-    };
-    const ids = [
-      Hooks.on("createSetting", onSetting),
-      Hooks.on("updateSetting", onSetting),
-    ];
-    return () => {
-      Hooks.off("createSetting", ids[0]);
-      Hooks.off("updateSetting", ids[1]);
-    };
-  }, []);
-}
-
-/**
  * Top-level react component for the journal editor sheet. It reads the entry
  * and its pages through their snapshot, so Foundry's renders don't need to
  * reach it (the sheet class passes `rerenderOnFoundryRender: false`); pages
@@ -55,8 +35,9 @@ export const JournalEditorSheet = () => {
   "use memo";
 
   const { app, journalEntry } = useJournalEntrySheetContext();
-  // editability is read again on every render (in the selector below)
-  useCompendiumConfigChanges();
+  // editability is read again on every render (in the selector below), and
+  // depends on whether the entry's compendium is locked, which is a setting
+  useSnapshot(getCompendiumConfigCounter());
   const view = useJournalEntrySnapshot(journalEntry, (entry) => ({
     name: entry.name,
     globalClasses: asString(entry.flags[systemId]?.[extraCssClasses]),

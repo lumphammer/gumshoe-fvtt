@@ -57,7 +57,7 @@ const fireModeText: Record<FireMode, string> = {
  * short.
  */
 function getTargetsLabel(
-  targets: TokenDocument[],
+  targets: readonly { readonly name: string }[],
   fireMode: FireMode,
 ): string | null {
   const used = isMultiTargetFireMode(fireMode) ? targets : targets.slice(0, 1);

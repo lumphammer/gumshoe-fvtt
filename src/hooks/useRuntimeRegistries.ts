@@ -1,12 +1,13 @@
-import { runtimeConfig } from "../runtime";
+import type { RuntimeConfig } from "../runtime";
+import { getRuntimeRegistriesStore } from "../module/snapshots/gameStores";
+import { useSnapshot } from "./useSnapshot";
 
 /**
- * The installed presets and themes. They're registered by adding to
- * `runtimeConfig`, which keeps its identity, so this hands back copies, read
- * on every render: hooks aren't compiled, and a compiled component reading
- * `runtimeConfig` itself would keep the first answer.
+ * The installed presets and themes, following new ones being installed. (The
+ * registered objects themselves, which aren't copied: only the lists are.)
  */
-export const useRuntimeRegistries = () => ({
-  presets: { ...runtimeConfig.presets },
-  themes: { ...runtimeConfig.themes },
-});
+export const useRuntimeRegistries = () =>
+  useSnapshot(getRuntimeRegistriesStore()) as Pick<
+    RuntimeConfig,
+    "presets" | "themes"
+  >;
