@@ -91,7 +91,7 @@ translations, adding fields and settings, releases).
   functions are fine.
 - Sheets are being converted to read immutable **snapshots**, so they can be
   memoised (`docs/immutable-data.md`). Converted so far: every item sheet
-  (`ItemSheet` provides `IsEditableContext` for them all), the PC, NPC and
+  (`ItemSheet` provides `SheetPermissionsContext` for them all), the PC, NPC and
   party sheets (`PCSheetFull` and `NPCSheetFull` are memoised), and the
   combat tracker's rows and header. In a converted tree:
   - Read data only from `useItemSnapshot`/`useItemSelector`,
@@ -106,14 +106,17 @@ translations, adding fields and settings, releases).
     `doc.system.setFoo` isn't stable. To render a list from a snapshot, select
     ids and look the live items up to pass to memoised rows.
   - Memoise the sheet's root (it has no props), so Foundry's own re-render stops
-    there, and provide `IsEditableContext` from it (`useSheetPermissions`,
-    which follows the item's and its actor's ownership): inputs read
-    `useIsEditable`, and a memoised parent would otherwise hide a permission
-    change from them. (Without the context, `useIsEditable` reads
+    there, and provide `SheetPermissionsContext` from it, once
+    (`useSheetPermissions`, which follows the document's ownership, an item's
+    actor's, and its compendium being locked): inputs read `useIsEditable`,
+    and parts which hide things from Limited users `useIsLimited`, and a
+    memoised parent would otherwise hide a permission change from them. For
+    any other permission check, use `useDocumentPermission`, or `canUser`
+    inside a snapshot selector. (Without the context, `useIsEditable` reads
     `app.isEditable` and follows Foundry's renders through
     `FoundryRenderSerialContext`, for the unconverted sheets.)
   - Once everything in an app keeps itself current (including its
-    permissions: `useActorSheetPermissions` for actor sheets), pass
+    permissions), pass
     `{ rerenderOnFoundryRender: false }` to `ReactApplicationV2Mixin`, so
     Foundry's renders don't re-render it from the root at all. The PC and NPC
     sheets do.

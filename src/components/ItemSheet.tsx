@@ -2,10 +2,10 @@ import type { CSSObject } from "@emotion/react";
 
 import * as constants from "../constants";
 import { useActorSnapshot } from "../hooks/useActorSnapshot";
-import { IsEditableContext } from "../hooks/useIsEditable";
 import { useSettings } from "../hooks/useSettings";
 import { useItemSheetContext } from "../hooks/useSheetContexts";
 import { useSheetPermissions } from "../hooks/useSheetPermissions";
+import { SheetPermissionsContext } from "../hooks/useIsEditable";
 import { useTheme } from "../hooks/useTheme";
 import { isBondItem } from "../module/items/bond";
 import { isNetworkContactItem } from "../module/items/networkContact";
@@ -40,7 +40,7 @@ export const ItemSheet = () => {
   "use memo";
 
   const { item } = useItemSheetContext();
-  const { isEditable } = useSheetPermissions(item);
+  const permissions = useSheetPermissions(item);
   const ownerTheme = useActorSnapshot(item.actor, (actor) =>
     actor?.type === constants.pc || actor?.type === constants.npc
       ? ((actor.system as { sheetTheme?: string | null }).sheetTheme ?? null)
@@ -64,7 +64,7 @@ export const ItemSheet = () => {
 
   return (
     <CSSReset theme={theme} mode="small" css={style}>
-      <IsEditableContext.Provider value={isEditable}>
+      <SheetPermissionsContext value={permissions}>
         <NotesTypeContext.Provider value="itemNote">
           {isAbilityItem(item) ? (
             <AbilitySheet />
@@ -88,7 +88,7 @@ export const ItemSheet = () => {
             />
           )}
         </NotesTypeContext.Provider>
-      </IsEditableContext.Provider>
+      </SheetPermissionsContext>
     </CSSReset>
   );
 };

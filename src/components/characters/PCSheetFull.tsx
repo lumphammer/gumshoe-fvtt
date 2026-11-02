@@ -29,9 +29,8 @@ import { WeaponsArea } from "./Weapons/WeaponsArea";
 
 /**
  * The PC sheet. Memoised (it has no props), so Foundry's own re-render stops
- * here: everything below reads the actor and settings through snapshots, or
- * sits in a `LiveActorIsland` until it does. `PCSheet`, above, provides
- * `IsEditableContext`.
+ * here: everything below reads the actor and settings through snapshots.
+ * `PCSheet`, above, provides `SheetPermissionsContext`.
  */
 export const PCSheetFull = memo(function PCSheetFull() {
   "use memo";

@@ -1,62 +1,82 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import { useContext } from "react";
 
-import { assertGame } from "../functions/isGame";
+import type { PermissionLevel } from "../module/permissions";
+import { canUser, getIsEditable } from "../module/permissions";
+import type { SnapshotStore } from "../module/snapshots/createSnapshotStore";
+import { nullStore } from "../module/snapshots/createSnapshotStore";
+import {
+  getActorStore,
+  getItemStore,
+  getJournalEntryStore,
+} from "../module/snapshots/documentStores";
+import { getCompendiumConfigCounter } from "../module/snapshots/gameStores";
 import { useActorSnapshot } from "./useActorSnapshot";
-import { useItemSelector } from "./useItemSnapshot";
-import { getIsEditable } from "./useIsEditable";
+import type { SheetPermissions } from "./useIsEditable";
+import { useSnapshot, useSnapshotSelector } from "./useSnapshot";
 
-type SheetPermissions = {
-  isEditable: boolean;
-  isLimited: boolean;
+/** A document whose permissions a sheet follows */
+type PermissionDocument =
+  | Actor.Implementation
+  | Item.Implementation
+  | JournalEntry.Implementation;
+
+const storeOf = (doc: PermissionDocument | null): SnapshotStore<unknown> => {
+  switch (doc?.documentName) {
+    case "Item":
+      return getItemStore(doc);
+    case "Actor":
+      return getActorStore(doc);
+    case "JournalEntry":
+      return getJournalEntryStore(doc);
+    default:
+      return nullStore;
+  }
 };
 
-const getSheetPermissions = (
-  doc: Actor.Implementation | Item.Implementation,
-  app: unknown,
-): SheetPermissions => {
-  assertGame(game);
-  return {
-    isEditable: getIsEditable(app),
-    isLimited: doc.testUserPermission(
-      game.user,
-      CONST.DOCUMENT_OWNERSHIP_LEVELS.LIMITED,
-      { exact: true },
-    ),
-  };
-};
-
-// These read the live document, but inside a snapshot selector: that runs
-// again on every change to the document and on every render, so nothing can
-// keep a stale answer. Worked out in the component instead, a memo keyed on
-// the document or the app (such as React Compiler's) would, because neither
-// changes identity when the ownership does.
+// Permissions are read from the live document, but inside a snapshot
+// selector: that runs again on every change to the document and on every
+// render, so nothing keeps a stale answer. Worked out in a component instead, a
+// memo keyed on the document or the app (such as React Compiler's) would,
+// because neither changes identity when the ownership does.
 
 /**
- * What the user may do with an item, for the root of a sheet which reads it
- * through snapshots: whether they can edit it (to provide through
- * `IsEditableContext`), and whether they only have Limited permission.
- *
- * Follows the item's ownership, and its actor's (an item on an actor has the
- * actor's permissions).
+ * Something worked out from a document's permissions, kept current: it follows
+ * the document's ownership, its actor's (an item on an actor has the actor's
+ * permissions), and its compendium being locked or unlocked (a setting).
  */
-export function useSheetPermissions(
-  item: Item.Implementation,
-): SheetPermissions {
-  const app = useContext(FoundryAppContext);
-  // its result is in the item's: this only re-renders when it changes
-  useActorSnapshot(item.actor, (actor) => actor?.ownership ?? null);
-  return useItemSelector(item, () => getSheetPermissions(item, app));
+function usePermissionSelector<R>(
+  doc: PermissionDocument | null,
+  select: () => R,
+): R {
+  // their results are in the document's: these only re-render when they change
+  useActorSnapshot(
+    doc?.documentName === "Item" ? doc.actor : null,
+    (actor) => actor?.ownership ?? null,
+  );
+  useSnapshot(getCompendiumConfigCounter());
+  return useSnapshotSelector(storeOf(doc), select);
 }
 
 /**
- * What the user may do with an actor, for the root of a sheet which reads it
- * through snapshots (as `useSheetPermissions` does for items). Follows the
- * actor's ownership.
+ * Whether the user has at least this permission on a document (false for no
+ * document), kept current.
  */
-export function useActorSheetPermissions(
-  actor: Actor.Implementation,
-): SheetPermissions {
+export function useDocumentPermission(
+  doc: PermissionDocument | null,
+  level: PermissionLevel,
+): boolean {
+  return usePermissionSelector(doc, () => canUser(doc, level));
+}
+
+/**
+ * What the user may do with a sheet's document, for the root of the sheet to
+ * provide through `SheetPermissionsContext`.
+ */
+export function useSheetPermissions(doc: PermissionDocument): SheetPermissions {
   const app = useContext(FoundryAppContext);
-  return useActorSnapshot(actor, () => getSheetPermissions(actor, app));
+  return usePermissionSelector(doc, () => ({
+    isEditable: getIsEditable(app),
+    isLimited: canUser(doc, "LIMITED", { exact: true }),
+  }));
 }

@@ -506,14 +506,14 @@ few causes, listed here with what to do about each, in the order to do them.
    (installing one now calls `investigator.runtimeConfigChanged`), the
    user's targets (as names), and counters for compendium configuration and
    tokens' actors, for what can't be copied.
-3. **Permissions checked in many places.** The trick (read the live
-   document's permission in a selector, so it runs again on every change) is
-   written out by hand in `useSheetPermissions`, `useIsDocumentOwner`, the
-   journal sheet, the attack targets' Health visibility and the crisis call
-   card. `IsEditableContext` is provided by `ItemSheet` and then again by the
-   ability, equipment and weapon sheets inside it, and the framework works out
-   Limited again for itself. One permission hook, and one provider per sheet
-   root (with Limited in it too), would do.
+3. **Permissions checked in many places.** _Done._ `useSheetPermissions`
+   works for any sheet's document (actor, item or journal entry), following
+   its ownership, an item's actor's, and its compendium being locked (which
+   the item sheets used to miss). Each sheet root provides it once, through
+   `SheetPermissionsContext`, which `useIsEditable` and `useIsLimited` read;
+   the ability, equipment and weapon sheets and the framework no longer work
+   it out again. Other checks are `useDocumentPermission` (now behind
+   `useIsDocumentOwner`) or, in a list's selector, `canUser`.
 4. **Untyped snapshots.** An actor snapshot's `system` is `unknown` unless the
    caller says otherwise, so components cast it inline (45 casts), and nearly
    every actor selector starts with `snapshot?.items ?? []`, because the hook

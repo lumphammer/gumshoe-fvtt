@@ -13,6 +13,7 @@ import type {
   TargetActorInfo,
 } from "../../module/attacks/resolveAttackTarget";
 import { getTargetActorInfoIn } from "../../module/attacks/targetActorInfo";
+import { canUser } from "../../module/permissions";
 import type { AttackTargetData } from "../../module/attacks/types";
 import { getTokenActorsCounter } from "../../module/snapshots/gameStores";
 import type { WalkingFireOptions } from "../../module/attacks/walkingFire";
@@ -52,11 +53,7 @@ export function useTargetViews(
             info: getTargetActorInfoIn(snapshot),
             // (the live actor's, but a selector runs again on every change to
             // it, ownership included)
-            canSeeHealth:
-              actors[i]?.testUserPermission(
-                game.user as User.Implementation,
-                "OBSERVER",
-              ) ?? false,
+            canSeeHealth: canUser(actors[i], "OBSERVER"),
           },
         ];
       }),

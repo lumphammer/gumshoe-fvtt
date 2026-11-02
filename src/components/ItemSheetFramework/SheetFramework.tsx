@@ -5,7 +5,7 @@ import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useIsEditable } from "../../hooks/useIsEditable";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
-import { useSheetPermissions } from "../../hooks/useSheetPermissions";
+import { useIsLimited } from "../../hooks/useIsEditable";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { ImagePickle } from "../ImagePickle";
 import { ModeContext } from "./modeContext";
@@ -36,7 +36,7 @@ export const ItemSheetFramework = ({
     useAsyncUpdate(header.name, item.setName);
 
   const [configMode, setConfigMode] = useState(false);
-  const { isLimited } = useSheetPermissions(item);
+  const isLimited = useIsLimited();
   const isEditable = useIsEditable();
 
   assertApplicationV2(app);

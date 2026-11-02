@@ -2,6 +2,7 @@ import type { CrisisCall } from "../../module/bonds/crisis";
 import * as constants from "../../constants";
 import { useSnapshotSelector } from "../../hooks/useSnapshot";
 import { isPCActor } from "../../module/actors/pc";
+import { canUser } from "../../module/permissions";
 import { getWorldActorsStore } from "../../module/snapshots/documentStores";
 import { openTeamCrisisWindow } from "../../module/bonds/TeamCrisisApp";
 import { Button } from "../inputs/Button";
@@ -29,7 +30,7 @@ export const CrisisCallCard = ({ call, imageUrl }: CrisisCallCardProps) => {
       const entry = actors.find((actor) => actor.uuid === member.uuid);
       if (entry?.type !== constants.pc) return false;
       const actor = fromUuidSync(member.uuid);
-      return isPCActor(actor) && actor.isOwner;
+      return isPCActor(actor) && canUser(actor, "OWNER");
     }),
   );
   return (
