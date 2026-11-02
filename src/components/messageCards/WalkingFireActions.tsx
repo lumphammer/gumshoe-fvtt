@@ -1,22 +1,25 @@
 import { useState } from "react";
 
 import type { AttackMessage } from "../../module/attacks/attackTargets";
-import {
-  getBurstBulletsFiredLive,
-  pickSingleTargetToken,
-} from "../../module/attacks/attackTargets";
+import { pickSingleTargetToken } from "../../module/attacks/attackTargets";
+import type {
+  ResolveOptions,
+  TargetActorInfo,
+} from "../../module/attacks/resolveAttackTarget";
+import { getBurstBulletsFired } from "../../module/attacks/resolveAttackTarget";
 import type { WalkingFirePayment } from "../../module/attacks/rules";
-import type { AttackData } from "../../module/attacks/types";
+import type { AttackData, AttackTargetData } from "../../module/attacks/types";
 import { editAttack } from "../../module/attacks/editAttack";
-import {
-  getWalkingFirePaymentsLive,
-  planWalkFire,
-} from "../../module/attacks/walkingFire";
+import { planWalkFire } from "../../module/attacks/walkingFire";
 import { Translate } from "../Translate";
+import { useWalkingFireOptions } from "./useAttackSnapshots";
 
 type WalkingFireActionsProps = {
   msg: AttackMessage;
   attack: AttackData;
+  /** the targets' actors' info, from their snapshots */
+  infoFor: (target: AttackTargetData) => TargetActorInfo;
+  options: ResolveOptions;
 };
 
 /**
@@ -26,14 +29,19 @@ type WalkingFireActionsProps = {
 export const WalkingFireActions = ({
   msg,
   attack,
+  infoFor,
+  options: resolveOptions,
 }: WalkingFireActionsProps) => {
+  "use memo";
+
   const [busy, setBusy] = useState(false);
-  const options = getWalkingFirePaymentsLive(msg);
+  // the attacker's pools, from their snapshot
+  const options = useWalkingFireOptions(msg);
   if (!options) return null;
 
   const noBulletsLeft =
     attack.fireMode === "burst" &&
-    getBurstBulletsFiredLive(attack) >= attack.burstSize;
+    getBurstBulletsFired(attack, infoFor, resolveOptions) >= attack.burstSize;
 
   // the target is whoever this user has targeted, and if it can't be done,
   // they're the one who needs to know why, so check here before asking

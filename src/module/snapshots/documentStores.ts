@@ -159,9 +159,25 @@ function createActorStore<TSystem>(actor: Actor.Implementation) {
         else onEffect(effect);
       };
 
+      // An unlinked token's actor inherits from its base actor: Foundry
+      // updates it in place when that changes, without a hook of its own, so
+      // read it all again (once Foundry has: hence the microtask)
+      const baseActor = actor.isToken ? actor.token?.baseActor : null;
+      const isBase = (doc: { parent: unknown }) =>
+        baseActor != null &&
+        (doc.parent === baseActor ||
+          (doc.parent instanceof Item && doc.parent.parent === baseActor));
+      const onBase = (doc: { parent: unknown }) => {
+        if (isBase(doc)) queueMicrotask(() => onChange());
+      };
+
       const offs = [
         on("updateActor", (doc) => {
-          if (doc === actor) refresh(null);
+          if (doc === actor) {
+            refresh(null);
+          } else if (baseActor != null && doc === baseActor) {
+            queueMicrotask(() => onChange());
+          }
         }),
         on("createItem", onItem),
         on("updateItem", onItem),
@@ -169,6 +185,16 @@ function createActorStore<TSystem>(actor: Actor.Implementation) {
         on("createActiveEffect", onEffect),
         on("updateActiveEffect", onEffect),
         on("deleteActiveEffect", onDeleteEffect),
+        ...(baseActor == null
+          ? []
+          : [
+              on("createItem", onBase),
+              on("updateItem", onBase),
+              on("deleteItem", onBase),
+              on("createActiveEffect", onBase),
+              on("updateActiveEffect", onBase),
+              on("deleteActiveEffect", onBase),
+            ]),
       ];
       return () => offs.forEach((off) => off());
     },

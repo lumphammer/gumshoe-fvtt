@@ -1,4 +1,9 @@
-import type { ItemSnapshot } from "../module/snapshots/documentStores";
+import type { SnapshotStore } from "../module/snapshots/createSnapshotStore";
+import { nullStore } from "../module/snapshots/createSnapshotStore";
+import type {
+  ItemData,
+  ItemSnapshot,
+} from "../module/snapshots/documentStores";
 import { getItemStore } from "../module/snapshots/documentStores";
 import { useSnapshot, useSnapshotSelector } from "./useSnapshot";
 
@@ -30,5 +35,20 @@ export function useItemSelector<R, TSystem = unknown>(
   selector: (item: ItemSnapshot<TSystem>) => R,
 ): R {
   const store = getItemStore<TSystem>(item);
+  return useSnapshotSelector(store, selector);
+}
+
+/**
+ * Like `useItemSelector`, for an item which may not be there (e.g. the
+ * ability a chat card was rolled with, which may have been deleted): the
+ * selector gets null for no item.
+ */
+export function useMaybeItemSelector<R, TSystem = unknown>(
+  item: Item.Implementation | null | undefined,
+  selector: (item: ItemSnapshot<TSystem> | null) => R,
+): R {
+  const store: SnapshotStore<ItemData<TSystem> | null> = item
+    ? getItemStore<TSystem>(item)
+    : nullStore;
   return useSnapshotSelector(store, selector);
 }

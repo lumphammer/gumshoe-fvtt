@@ -4,7 +4,7 @@ import { isAdapted } from "../../module/bonds/adaptation";
 import { getStabilityStateName } from "../../module/stability/settings";
 import type { StabilityState } from "../../module/stability/states";
 import type { TraumaTestRecord } from "../../module/stability/trauma";
-import { settings } from "../../settings/settings";
+import { useSettings } from "../../hooks/useSettings";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
@@ -27,7 +27,11 @@ const reminders: Record<Exclude<StabilityState, "steady">, string> = {
  * record.
  */
 export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
+  "use memo";
+
   const theme = useContext(ThemeContext);
+  const settings = useSettings((s) => s);
+  const genericOccupation = settings.genericOccupation;
   const spendTotal = record.total - record.die;
   const { stateAfter } = record;
 
@@ -88,7 +92,7 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
           {record.shaken && (
             <>
               {" ("}
-              {getStabilityStateName("shaken")}
+              {getStabilityStateName("shaken", settings)}
               {" +1)"}
             </>
           )}
@@ -130,12 +134,10 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
             css={{ color: theme.colors.danger, margin: "0.25em 0" }}
           >
             <b>
-              {getStabilityStateName(stateAfter)}
+              {getStabilityStateName(stateAfter, settings)}
               {"! "}
             </b>
-            <Translate
-              values={{ GenericOccupation: settings.genericOccupation.get() }}
-            >
+            <Translate values={{ GenericOccupation: genericOccupation }}>
               {reminders[stateAfter]}
             </Translate>
           </div>

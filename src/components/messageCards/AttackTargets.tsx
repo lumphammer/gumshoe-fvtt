@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useState } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
@@ -9,16 +9,18 @@ import type {
 } from "../../module/attacks/attackEdits";
 import {
   getAttackData,
-  getTargetActor,
   isAttackMessage,
   pickSingleTargetToken,
   pickTargetTokens,
-  resolveTargetLive,
 } from "../../module/attacks/attackTargets";
 import { editAttack } from "../../module/attacks/editAttack";
-import { getHealth } from "../../module/attacks/health";
 import type { LethalityOutcome } from "../../module/attacks/lethality";
 import { formatLethality } from "../../module/attacks/lethality";
+import type {
+  ResolveOptions,
+  TargetActorInfo,
+} from "../../module/attacks/resolveAttackTarget";
+import { resolveAttackTargetInAttack } from "../../module/attacks/resolveAttackTarget";
 import type { DamageStep } from "../../module/attacks/resolveDamage";
 import type { Cover, WoundState } from "../../module/attacks/rules";
 import {
@@ -29,7 +31,10 @@ import {
 } from "../../module/attacks/rules";
 import type { AttackData, AttackTargetData } from "../../module/attacks/types";
 import { useSettings } from "../../hooks/useSettings";
+import { getTargetActorInfoIn } from "../../module/attacks/targetActorInfo";
 import { Translate } from "../Translate";
+import type { TargetView } from "./useAttackSnapshots";
+import { useResolveOptions, useTargetViews } from "./useAttackSnapshots";
 import { WalkingFireActions } from "./WalkingFireActions";
 
 /** how long to wait for the GM to apply damage before re-enabling buttons */
@@ -48,27 +53,15 @@ const coverText: Record<Cover, string> = {
   full: "CoverFull",
 };
 
-/**
- * Re-render when actors, items, or tokens change, since the card shows live
- * Health, Hit Thresholds etc.
- */
-function useRefreshOnDocumentChanges() {
-  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
-  useEffect(() => {
-    const hookNames = ["updateActor", "updateItem", "updateToken"] as const;
-    const ids = hookNames.map((hookName) => Hooks.on(hookName, forceUpdate));
-    return () => {
-      hookNames.forEach((name, i) => Hooks.off(name, ids[i]));
-    };
-  }, []);
-}
+const GunfireText = ({ step }: { step: DamageStep }) => {
+  "use memo";
 
-const GunfireText = ({ step }: { step: DamageStep }) =>
-  step.gunfireExtra > 0 ? (
+  return step.gunfireExtra > 0 ? (
     <>
       {` + ${step.gunfireExtra} `}(<Translate>GunfireBonus</Translate>)
     </>
   ) : null;
+};
 
 const lethalityOutcomeText: Record<LethalityOutcome, string> = {
   dies: "LethalityDies",
@@ -79,6 +72,8 @@ const lethalityOutcomeText: Record<LethalityOutcome, string> = {
 
 /** e.g. "die 2: Seriously Wounded", or "die 3: 8 − 1" */
 const LethalityStepText = ({ step }: { step: DamageStep }) => {
+  "use memo";
+
   const result = step.lethality;
   if (step.instance.kind !== "lethality" || !result) return null;
   return (
@@ -106,6 +101,11 @@ type AttackTargetRowProps = {
   msg: ChatMessage;
   attack: AttackData;
   target: AttackTargetData;
+  /** the target's actor, from its snapshot */
+  view: TargetView;
+  /** every target's actor info (a burst's bullets are shared between them) */
+  infoFor: (target: AttackTargetData) => TargetActorInfo;
+  options: ResolveOptions;
   canAct: boolean;
 };
 
@@ -113,15 +113,24 @@ const AttackTargetRow = ({
   msg,
   attack,
   target,
+  view,
+  infoFor,
+  options,
   canAct,
 }: AttackTargetRowProps) => {
-  assertGame(game);
-  const actor = getTargetActor(target);
-  const resolved = resolveTargetLive(attack, target);
+  "use memo";
+
+  const resolved = resolveAttackTargetInAttack(
+    attack,
+    target,
+    infoFor,
+    options,
+  );
   const isApplied = target.applied !== null;
   const canEdit = canAct && !isApplied;
-  const canSeeHealth =
-    actor?.testUserPermission(game.user, "OBSERVER") ?? false;
+  const exists = view.exists;
+  const shownName = view.name ?? target.name;
+  const { canSeeHealth } = view;
   const [busy, setBusy] = useState(false);
 
   // when the GM is doing it for us, the card will re-render (and so reset)
@@ -184,15 +193,15 @@ const AttackTargetRow = ({
   const damage = resolved.damage;
   const shownHealth = isApplied
     ? target.applied?.newHealth
-    : actor
-      ? getHealth(actor)
+    : exists
+      ? view.info.health
       : null;
 
   const woundState = isApplied
     ? getWoundState(target.applied?.newHealth ?? 0)
     : (damage?.woundState ?? "ok");
 
-  const action = !actor ? null : resolved.missingRollCount > 0 ? (
+  const action = !exists ? null : resolved.missingRollCount > 0 ? (
     canAct && (
       <button type="button" disabled={busy} onClick={onRollDamage}>
         <i className="fas fa-dice" /> <Translate>Roll damage</Translate>
@@ -231,7 +240,7 @@ const AttackTargetRow = ({
       css={{
         padding: "0.4em 0",
         borderTop: "1px solid #0003",
-        opacity: actor ? 1 : 0.6,
+        opacity: exists ? 1 : 0.6,
       }}
     >
       {/* HEADER */}
@@ -250,8 +259,8 @@ const AttackTargetRow = ({
           css={{ width: "2em", height: "2em", border: "none" }}
         />
         <div>
-          <b>{actor?.name ?? target.name}</b>
-          {!actor && (
+          <b>{shownName}</b>
+          {!exists && (
             <>
               {" "}
               (<Translate>Missing</Translate>)
@@ -296,7 +305,7 @@ const AttackTargetRow = ({
               value={target.cover}
               onChange={onChangeCover}
               aria-label={getTranslated("CoverForTokenName", {
-                TokenName: actor?.name ?? target.name,
+                TokenName: shownName,
               })}
               css={{ width: "100%" }}
             >
@@ -388,7 +397,7 @@ const AttackTargetRow = ({
                   }
                   onChange={onChangeShotDry}
                   aria-label={getTranslated("ShotDryChooseTarget", {
-                    TokenName: actor?.name ?? target.name,
+                    TokenName: shownName,
                   })}
                   css={{ margin: "0 0.4em 0 0", verticalAlign: "middle" }}
                 />
@@ -516,18 +525,35 @@ const AttackTargetRow = ({
   );
 };
 
+const missingTarget: TargetView = {
+  exists: false,
+  name: null,
+  info: getTargetActorInfoIn(null),
+  canSeeHealth: false,
+};
+
 type AttackTargetsProps = {
   msg: ChatMessage;
 };
 
+/**
+ * The attack's targets. The message's own data is fixed for as long as this
+ * is mounted (Foundry renders the card again, with a new root, when it
+ * changes); the targets' actors come through their snapshots.
+ */
 export const AttackTargets = ({ msg }: AttackTargetsProps) => {
+  "use memo";
+
   assertGame(game);
-  useRefreshOnDocumentChanges();
   const walkingFireOn = useSettings(
     (s) => s.useLethalityAndAutofire && s.useWalkingFire,
   );
   const attack = getAttackData(msg);
   const canAct = canUserActOnAttack(game.user, msg) && msg.isOwner;
+  const views = useTargetViews(attack?.targets ?? []);
+  const options = useResolveOptions();
+  const infoFor = (target: AttackTargetData) =>
+    views[target.id]?.info ?? getTargetActorInfoIn(null);
 
   // which tokens are this user's targets, so work that out here
   const onAddTargets = async () => {
@@ -563,6 +589,9 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
           msg={msg}
           attack={attack}
           target={target}
+          view={views[target.id] ?? missingTarget}
+          infoFor={infoFor}
+          options={options}
           canAct={canAct}
         />
       ))}
@@ -593,7 +622,12 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
           </div>
         )}
       {canWalkFire && isAttackMessage(msg) && (
-        <WalkingFireActions msg={msg} attack={attack} />
+        <WalkingFireActions
+          msg={msg}
+          attack={attack}
+          infoFor={infoFor}
+          options={options}
+        />
       )}
     </div>
   );

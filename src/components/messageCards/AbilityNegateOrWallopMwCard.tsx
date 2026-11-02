@@ -1,7 +1,8 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 import * as constants from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { useMaybeItemSelector } from "../../hooks/useItemSnapshot";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
 import { MwButton } from "./MwButton";
@@ -33,12 +34,19 @@ const deets: { [mode in WallopNegateMode]: MWResult } = {
 
 export const AbilityNegateOrWallopMwCard = React.memo(
   ({ msg, ability, pool, mode, name }: AbilityNegateOrWallopMwCardProps) => {
-    const sheet = ability?.sheet;
-    assertApplicationV2(sheet);
+    "use memo";
 
-    const onClickAbilityName = useCallback(() => {
+    // the ability's own name and picture, as they are now
+    const header = useMaybeItemSelector(ability, (snapshot) =>
+      snapshot ? { name: snapshot.name, img: snapshot.img ?? null } : null,
+    );
+
+    const onClickAbilityName = () => {
+      const sheet = ability?.sheet;
+      if (!sheet) return;
+      assertApplicationV2(sheet);
       void sheet.render({ force: true });
-    }, [sheet]);
+    };
 
     const costFactor =
       mode === constants.htmlDataModeMwNegate ? (
@@ -71,7 +79,7 @@ export const AbilityNegateOrWallopMwCard = React.memo(
         >
           <b>
             <a onClick={onClickAbilityName}>
-              {name ?? ability?.name ?? "Missing"}
+              {name ?? header?.name ?? "Missing"}
             </a>
           </b>
         </div>

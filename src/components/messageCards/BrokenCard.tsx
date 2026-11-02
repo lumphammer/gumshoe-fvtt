@@ -18,6 +18,8 @@ interface BrokenCardProps {
  */
 export const BrokenCard = React.memo(
   ({ name, imageUrl, reason }: BrokenCardProps) => {
+    "use memo";
+
     const theme = useTheme();
 
     return (

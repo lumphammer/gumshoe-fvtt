@@ -1,9 +1,11 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { useMaybeItemSelector } from "../../hooks/useItemSnapshot";
 import type { BondSpendRecord } from "../../module/bonds/bondSpends";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import type { StabilityState } from "../../module/stability/states";
+import { useSettings } from "../../hooks/useSettings";
 import { getStabilityStateName } from "../../module/stability/settings";
 import { shakenDifficultyPenalty } from "../../module/stability/trauma";
 import { Translate } from "../Translate";
@@ -32,12 +34,21 @@ export const AbilityTestCard = React.memo(
     bondSpends = [],
     stabilityState = null,
   }: AbilityTestCardProps) => {
-    const sheet = ability?.sheet;
-    assertApplicationV2(sheet);
+    "use memo";
 
-    const onClickAbilityName = useCallback(() => {
+    // for the Stability states' names
+    const settings = useSettings((s) => s);
+    // the ability's own name and picture, as they are now
+    const header = useMaybeItemSelector(ability, (snapshot) =>
+      snapshot ? { name: snapshot.name, img: snapshot.img ?? null } : null,
+    );
+
+    const onClickAbilityName = () => {
+      const sheet = ability?.sheet;
+      if (!sheet) return;
+      assertApplicationV2(sheet);
       void sheet.render({ force: true });
-    }, [sheet]);
+    };
 
     return (
       <div
@@ -58,7 +69,7 @@ export const AbilityTestCard = React.memo(
             height: "4em",
             width: "4em",
             gridArea: "image",
-            backgroundImage: `url(${ability?.img ?? imageUrl})`,
+            backgroundImage: `url(${header?.img ?? imageUrl})`,
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
@@ -76,7 +87,7 @@ export const AbilityTestCard = React.memo(
         >
           <b>
             <a onClick={onClickAbilityName}>
-              {name ?? ability?.name ?? "Missing"}
+              {name ?? header?.name ?? "Missing"}
             </a>
           </b>
         </div>
@@ -106,7 +117,7 @@ export const AbilityTestCard = React.memo(
                 <div data-testid="shaken-reminder">
                   <Translate
                     values={{
-                      State: getStabilityStateName(stabilityState),
+                      State: getStabilityStateName(stabilityState, settings),
                       Penalty: String(shakenDifficultyPenalty),
                     }}
                   >

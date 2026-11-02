@@ -19,6 +19,8 @@ export const NetworkContactCard = ({
   record,
   imageUrl,
 }: NetworkContactCardProps) => {
+  "use memo";
+
   const theme = useContext(ThemeContext);
 
   return (
