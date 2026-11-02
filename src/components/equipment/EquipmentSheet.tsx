@@ -1,6 +1,5 @@
 import { memo } from "react";
-import { IsEditableContext } from "../../hooks/useIsEditable";
-import { useSheetPermissions } from "../../hooks/useSheetPermissions";
+import { useIsLimited } from "../../hooks/useIsEditable";
 
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
@@ -29,32 +28,30 @@ export const EquipmentSheet = memo(function EquipmentSheet() {
   const { item } = useItemSheetContext();
 
   assertEquipmentItem(item);
-  const { isEditable, isLimited } = useSheetPermissions(item);
+  const isLimited = useIsLimited();
   const snapshot = useItemSnapshot<EquipmentSystemData>(item);
   const categories = useSettings((s) => s.equipmentCategories);
   const name = useAsyncUpdate(snapshot.name, item.setName);
 
   return (
-    <IsEditableContext.Provider value={isEditable}>
-      <ItemSheetFramework supertitle={<Translate>Equipment</Translate>}>
-        <ModeSelect mode={ItemSheetMode.Main}>
-          <EquipmentMain
-            item={item}
-            system={snapshot.system}
-            categories={categories}
-            isLimited={isLimited}
-            name={name.display}
-            onChangeName={name.onChange}
-          />
-        </ModeSelect>
-        <ModeSelect mode={ItemSheetMode.Config}>
-          <EquipmentConfig
-            item={item}
-            system={snapshot.system}
-            categories={categories}
-          />
-        </ModeSelect>
-      </ItemSheetFramework>
-    </IsEditableContext.Provider>
+    <ItemSheetFramework supertitle={<Translate>Equipment</Translate>}>
+      <ModeSelect mode={ItemSheetMode.Main}>
+        <EquipmentMain
+          item={item}
+          system={snapshot.system}
+          categories={categories}
+          isLimited={isLimited}
+          name={name.display}
+          onChangeName={name.onChange}
+        />
+      </ModeSelect>
+      <ModeSelect mode={ItemSheetMode.Config}>
+        <EquipmentConfig
+          item={item}
+          system={snapshot.system}
+          categories={categories}
+        />
+      </ModeSelect>
+    </ItemSheetFramework>
   );
 });

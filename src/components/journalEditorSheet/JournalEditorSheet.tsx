@@ -2,13 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { MdOutlinePreview } from "react-icons/md";
 
 import { extraCssClasses, systemId } from "../../constants";
-import { getIsEditable, IsEditableContext } from "../../hooks/useIsEditable";
+import { useSheetPermissions } from "../../hooks/useSheetPermissions";
+import { SheetPermissionsContext } from "../../hooks/useIsEditable";
 import { useJournalEntrySnapshot } from "../../hooks/useJournalEntrySnapshot";
-import { useSnapshot } from "../../hooks/useSnapshot";
 import { useJournalEntrySheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
 import { InvestigatorJournalSheet } from "../../module/InvestigatorJournalSheet";
-import { getCompendiumConfigCounter } from "../../module/snapshots/gameStores";
 import { absoluteCover } from "../absoluteCover";
 import { CSSReset } from "../CSSReset";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
@@ -34,17 +33,12 @@ const asString = (value: unknown): string =>
 export const JournalEditorSheet = () => {
   "use memo";
 
-  const { app, journalEntry } = useJournalEntrySheetContext();
-  // editability is read again on every render (in the selector below), and
-  // depends on whether the entry's compendium is locked, which is a setting
-  useSnapshot(getCompendiumConfigCounter());
+  const { journalEntry } = useJournalEntrySheetContext();
+  const permissions = useSheetPermissions(journalEntry);
   const view = useJournalEntrySnapshot(journalEntry, (entry) => ({
     name: entry.name,
     globalClasses: asString(entry.flags[systemId]?.[extraCssClasses]),
     pageIds: entry.pages.map((page) => page._id),
-    // (from the live app, but a selector runs again on every change to the
-    // entry, its ownership included)
-    isEditable: getIsEditable(app),
   }));
 
   // keepalive - without this, if this journal entry is inside a compendium,
@@ -106,7 +100,7 @@ export const JournalEditorSheet = () => {
   );
 
   return (
-    <IsEditableContext.Provider value={view.isEditable}>
+    <SheetPermissionsContext value={permissions}>
       <MagicToolbarProvider>
         <CSSReset
           theme={theme}
@@ -177,7 +171,7 @@ export const JournalEditorSheet = () => {
           </div>
         </CSSReset>
       </MagicToolbarProvider>
-    </IsEditableContext.Provider>
+    </SheetPermissionsContext>
   );
 };
 

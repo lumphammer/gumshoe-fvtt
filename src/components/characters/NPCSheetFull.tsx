@@ -60,7 +60,7 @@ const NPCNotesTab = memo(function NPCNotesTab({
 /**
  * The NPC sheet. Memoised (it has no props), so Foundry's own re-render stops
  * here: everything below reads the actor and settings through snapshots.
- * `NPCSheet`, above, provides `IsEditableContext`.
+ * `NPCSheet`, above, provides `SheetPermissionsContext`.
  */
 export const NPCSheetFull = memo(function NPCSheetFull() {
   "use memo";

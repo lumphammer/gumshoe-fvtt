@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import * as constants from "../../constants";
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated } from "../../functions/getTranslated";
-import { useActorSheetPermissions } from "../../hooks/useSheetPermissions";
+import { useSheetPermissions } from "../../hooks/useSheetPermissions";
+import { SheetPermissionsContext } from "../../hooks/useIsEditable";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useActorsSnapshot } from "../../hooks/useActorsSnapshot";
-import { IsEditableContext } from "../../hooks/useIsEditable";
 import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import type { PartyActor } from "../../module/actors/party";
@@ -401,11 +401,11 @@ export const PartySheet = () => {
 
   const { actor: party } = useActorSheetContext();
   assertPartyActor(party);
-  const { isEditable } = useActorSheetPermissions(party);
+  const permissions = useSheetPermissions(party);
   return (
-    <IsEditableContext.Provider value={isEditable}>
+    <SheetPermissionsContext value={permissions}>
       <PartySheetBody party={party} />
-    </IsEditableContext.Provider>
+    </SheetPermissionsContext>
   );
 };
 
