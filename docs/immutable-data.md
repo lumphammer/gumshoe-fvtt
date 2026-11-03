@@ -599,7 +599,7 @@ abstraction.
   changes from invalidating the larger panels. This is the clearest
   immediate factoring win. Done: `InitiativeAbilityPicker` owns these subscriptions
   and writes; both panels now delegate to it.
-- [ ] **Preserve type information in derived-rule interfaces.**
+- [x] **Preserve type information in derived-rule interfaces.**
   In `module/actors/pcDerived.ts`, `ItemView.type`, `ItemView.system` and
   `PCView.system` are `unknown`. Helpers recover their shape through
   assertions and string-keyed access such as `numberOf(item, "rating")`;
@@ -609,7 +609,8 @@ abstraction.
   structural views for the data each rule needs, derived from existing
   schema types where practical, which both representations can satisfy.
   This is a maintenance concern, not a finding that the current
-  calculations are wrong.
+  calculations are wrong. Done: schema-derived item views now discriminate by
+  type; rules read checked properties directly, and PC adaptations are typed.
 - [ ] **Check the configuration of `createParentStore`.**
   In `module/snapshots/documentStores.ts`, callers supply `TData`, but
   `ownData` returns only `object`, collections have arbitrary string keys,

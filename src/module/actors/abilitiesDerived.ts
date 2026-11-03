@@ -11,15 +11,6 @@ import { getPushPoolWarningKeys } from "./getPushPoolWarningKeys";
 import type { OfType } from "../snapshots/snapshotTypes";
 import type { ItemView } from "./pcDerived";
 
-const systemOf = (item: ItemView) =>
-  item.system as {
-    categoryId?: string;
-    hideIfZeroRated?: boolean;
-    rating?: number;
-    isPushPool?: boolean;
-    isQuickShock?: boolean;
-  };
-
 export type CategorizedAbilities<T> = {
   investigativeAbilities: Record<string, T[]>;
   generalAbilities: Record<string, T[]>;
@@ -45,15 +36,19 @@ export function getCategorizedAbilitiesIn<T extends ItemView>(
     s.generalAbilityCategories.map((cat) => [cat, []]),
   );
   for (const item of items) {
-    const system = systemOf(item);
     const isInvestigative = item.type === c.investigativeAbility;
     if (!isInvestigative && item.type !== c.generalAbility) {
       continue;
     }
+    const system = item.system;
     if (hideZeroRated && system.hideIfZeroRated && system.rating === 0) {
       continue;
     }
-    if (!isInvestigative && hidePushPool && system.isPushPool) {
+    if (
+      item.type === c.generalAbility &&
+      hidePushPool &&
+      item.system.isPushPool
+    ) {
       continue;
     }
     const categories = isInvestigative
@@ -70,18 +65,17 @@ export function getPushPoolIn<T extends ItemView>(
   items: readonly T[],
 ): OfType<T, typeof c.generalAbility> | undefined {
   return items.find(
-    (item) => item.type === c.generalAbility && systemOf(item).isPushPool,
+    (item) => item.type === c.generalAbility && item.system.isPushPool,
   ) as OfType<T, typeof c.generalAbility> | undefined;
 }
 
 /** What's wrong with how push pools are set up, as translation keys */
 export function getPushPoolWarningKeysIn(items: readonly ItemView[]): string[] {
   const pools = items.filter(
-    (item) => item.type === c.generalAbility && systemOf(item).isPushPool,
+    (item) => item.type === c.generalAbility && item.system.isPushPool,
   );
   const quickShock = items.filter(
-    (item) =>
-      item.type === c.investigativeAbility && systemOf(item).isQuickShock,
+    (item) => item.type === c.investigativeAbility && item.system.isQuickShock,
   );
   return getPushPoolWarningKeys(pools.length, quickShock.length);
 }
@@ -90,18 +84,14 @@ const isAbility = (item: ItemView) =>
   item.type === c.generalAbility || item.type === c.investigativeAbility;
 
 const isPushPool = (item: ItemView) =>
-  item.type === c.generalAbility && Boolean(systemOf(item).isPushPool);
+  item.type === c.generalAbility && Boolean(item.system.isPushPool);
 
 /** The abilities with pool trackers: the push pool, then by name */
 export function getTrackerAbilitiesIn<T extends ItemView>(
   items: readonly T[],
 ): T[] {
   return items
-    .filter(
-      (item) =>
-        isAbility(item) &&
-        Boolean((item.system as { showTracker?: boolean }).showTracker),
-    )
+    .filter((item) => isAbility(item) && Boolean(item.system.showTracker))
     .toSorted(
       (a, b) =>
         Number(isPushPool(b)) - Number(isPushPool(a)) ||
@@ -121,7 +111,9 @@ export function getAbilityRowsIn(
       cat,
       sortEntitiesByName(items).map((item) => ({
         id: item._id ?? "",
-        isQuickShock: Boolean(systemOf(item).isQuickShock),
+        isQuickShock:
+          item.type === c.investigativeAbility &&
+          Boolean(item.system.isQuickShock),
       })),
     ]),
   );
@@ -133,7 +125,11 @@ export function sumRatingsIn(
 ): number {
   return Object.values(abilities)
     .flat()
-    .reduce((total, item) => total + (systemOf(item).rating ?? 0), 0);
+    .reduce(
+      (total, item) =>
+        total + (isAbility(item) ? (item.system.rating ?? 0) : 0),
+      0,
+    );
 }
 
 /** Whether there are investigative abilities other than quick-shock ones */
@@ -141,7 +137,6 @@ export function hasRegularInvestigativeAbilitiesIn(
   items: readonly ItemView[],
 ): boolean {
   return items.some(
-    (item) =>
-      item.type === c.investigativeAbility && !systemOf(item).isQuickShock,
+    (item) => item.type === c.investigativeAbility && !item.system.isQuickShock,
   );
 }

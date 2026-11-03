@@ -50,21 +50,19 @@ export function getWalkingFirePaymentsIn(
 ): WalkingFireOptions | null {
   const weaponAbility = findGeneralAbilityIn(items, weaponAbilityName);
   if (!weaponAbility) return null;
-  const pool = (ability: ItemView) =>
-    (ability.system as { pool?: number }).pool ?? 0;
   const otherAbilities = spendAbilityNames
     .map((name) => findGeneralAbilityIn(items, name))
     .filter(
-      (ability): ability is ItemView =>
+      (ability): ability is NonNullable<typeof ability> =>
         ability !== undefined && ability !== weaponAbility,
     )
     // in case a name is listed twice
     .filter((ability, i, all) => all.indexOf(ability) === i)
-    .map((ability) => ({ name: ability.name, pool: pool(ability) }));
+    .map((ability) => ({ name: ability.name, pool: ability.system.pool ?? 0 }));
   return {
     weaponAbilityName: weaponAbility.name,
     payments: getWalkingFirePayments({
-      weaponPool: pool(weaponAbility),
+      weaponPool: weaponAbility.system.pool ?? 0,
       otherAbilities,
     }),
   };

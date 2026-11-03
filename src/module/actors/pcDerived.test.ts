@@ -61,11 +61,11 @@ const settings = {
   networkAbility: "Network",
 } as unknown as SettingsView;
 
-const item = (
-  type: string,
+const item = <T extends ItemView["type"]>(
+  type: T,
   name: string,
-  system: Record<string, unknown>,
-): ItemView => ({ _id: name, name, type, system });
+  system: Extract<ItemView, { type: T }>["system"],
+) => ({ _id: name, name, type, system }) as Extract<ItemView, { type: T }>;
 
 const pc = (
   items: ItemView[],
