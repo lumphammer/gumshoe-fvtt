@@ -17,9 +17,8 @@ import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { StatField } from "./StatField";
 import { TrackersArea } from "./TrackersArea";
 
-// The NPC sheet's header and sidebar. Each is memoised, and reads the actor
-// and settings through snapshots (as `PCSheetPanels.tsx` does for PCs), so
-// Foundry's re-render of the sheet stops here.
+// The NPC sheet's panels subscribe independently to the data they display.
+// Foundry root re-renders are disabled; descendants keep themselves current.
 
 /** The name, and the portrait */
 export const NPCSheetHeader = memo(function NPCSheetHeader() {

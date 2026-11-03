@@ -1,38 +1,41 @@
-# Immutable document data: snapshot strategies
+# Immutable document data
 
-Findings from exploring #1476: how to turn Foundry's mutable documents into
-immutable, structurally shared data that a React tree can memoise against.
-The benchmark code lives on the `immutable-data-bench` branch (kept for
-reference, not for merging).
+## Current architecture
 
-**Conclusion:** keep a snapshot per document, copied fresh from the
-**prepared** document whenever a hook names it, and structurally shared with
-the previous snapshot (`replaceEqualDeep`). Don't patch snapshots with hook
-diffs, and don't copy the whole actor on every change.
+React Compiler is enabled for all components and hooks. Components subscribe
+independently to immutable snapshots; passing a live document as a prop does
+not make its data reactive. Use it for writes, not render-time reads.
 
-## The problem
+- `documentStores.ts` caches one store per document, shared by its consumers.
+  Stores copy fresh **prepared** data for the changed document and preserve
+  unchanged identities with `replaceEqualDeep`. Hook diffs only identify
+  documents; they are never patched into snapshots.
+- Read through `useActorSnapshot`, `useItemSelector`, `useCombatSnapshot` and
+  `useSettings`, selecting only displayed values. Use `useActorAndSettings`
+  for derived rules and `useActorsSnapshot` for several actors. Domain rules
+  take plain typed views, shared with live model methods.
+- Other Foundry state comes through `createHookStore`/`createHookCounter`
+  (`gameStores.ts` holds shared stores). Every consumer follows its own
+  dependencies, including other documents, permissions and registries.
+- Sheet roots provide `SheetPermissionsContext`. Once every descendant keeps
+  itself current, disable Foundry root re-renders with
+  `rerenderOnFoundryRender: false` (the PC and NPC sheets do this).
+- Write in event handlers through the live document or `useSystemMethods`;
+  Foundry replaces `doc.system` on updates. `useAsyncUpdate` handles typing
+  and late save echoes. A `"use no memo"` escape hatch is not a subscription.
 
-Foundry documents are mutable, so today the UI can't memoise: a sheet
-re-renders in full when its own document changes, and anything it shows from
-other documents (an item's pool on the actor's sheet, a weapon's ability) goes
-stale unless a component subscribes to more hooks by hand
-(`useRefreshOnActorItemChanges`).
+The sections below preserve the experiments and migration record for #1476;
+implementation proposals there describe the stage at which they were written.
+The follow-up checklist at the end tracks the remaining review work.
 
-If a sheet's root is given an immutable snapshot of **everything the tree
-reads**, and the tree reads only that, both problems go away together:
-invalidation is just "the snapshot changed", and memoisation falls out of
-reference equality. This needs no central store; each sheet owns its
-snapshot and subscribes for its own lifetime.
+## Historical strategy investigation
 
-Two conditions make that work:
+Foundry's mutable documents originally required full sheet renders and extra
+hooks for data from other documents. The initial proposal gave each sheet
+root its own snapshot. The implemented architecture instead shares cached
+stores and lets leaves subscribe independently, as described above.
 
-- **Convert a whole tree at a time.** A memoised tree with one component still
-  reading the live document has the old bug in a new form.
-- **Domain getters become pure functions over snapshots.** About 60 component
-  files call methods such as `actor.system.getCategorizedAbilities()`, which
-  walk the live document. They have to become, for example,
-  `getCategorizedAbilities(snapshot)`, like the existing pure rules in
-  `src/module/attacks/`.
+The benchmark code lives on `immutable-data-bench` for reference, not merging.
 
 ## The strategies compared
 
@@ -638,13 +641,15 @@ abstraction.
   fields from automatically becoming rendering dependencies. This is an
   optimization inconsistency, not a correctness bug. Done: the selector names
   the displayed fields, and one range-input loop replaces six repeated inputs.
-- [ ] **Separate current architecture guidance from historical findings.**
+- [x] **Separate current architecture guidance from historical findings.**
   The opening of this document describes root-owned snapshots and says no
   central store is needed; later sections describe shared stores and
   independently subscribing leaves. The comments in `PCSheetPanels.tsx`
   also describe Foundry renders stopping at panels, although those sheets
   now disable root re-renders. Put a short current-architecture section
-  first, label the historical material, and update stale code comments.
+  first, label the historical material, and update stale code comments. Done:
+  current guidance now opens this document and panel comments describe independent
+  subscriptions rather than obsolete Foundry render boundaries.
 
 ### Remaining subscription gaps
 

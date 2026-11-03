@@ -24,9 +24,8 @@ import { PersonalDetailField } from "./PersonalDetailField";
 import { StatField } from "./StatField";
 import { TrackersArea } from "./TrackersArea";
 
-// The PC sheet's header and side panels. Each is memoised, and reads the actor
-// and settings through snapshots, so Foundry's re-render of the sheet stops
-// here, and a change re-renders only the panel that shows it.
+// The PC sheet's panels subscribe independently to the data they display.
+// Foundry root re-renders are disabled; descendants keep themselves current.
 
 /** The personal detail items, as shown in the header and stats panel */
 const usePersonalDetails = () => {
