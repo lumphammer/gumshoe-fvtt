@@ -572,3 +572,106 @@ few causes, listed here with what to do about each, in the order to do them.
    redundant, but a component whose parent isn't compiled (a sheet's root
    under Foundry's render, the combat tracker's list under `Tracker`) still
    needs one to skip a re-render with the same props.
+
+## Follow-up review: maintainability and remaining subscriptions
+
+Review of the aggregate diff from `before-immutability` to `855bb52d`, against
+#1476. The nine plumbing tasks above were marked done at the time of this
+review; the following are additional findings and suggestions, all pending.
+
+The architecture is sound, and the added code largely earns its keep. The
+later consolidation commits already share subscriptions, permissions, sheet
+opening, live-item lookup and domain rules. Keep the small document-specific
+hooks, explicit selectors and model methods that delegate to shared rules.
+The remaining opportunities call for focused extractions and stronger
+interfaces, rather than another store framework or a generic sheet/form
+abstraction.
+
+### Maintainability
+
+- [ ] **Restore a shared, self-subscribing initiative picker.**
+  `PCSheetPanels.tsx` and `NPCSheetPanels.tsx` duplicate the initiative
+  heading/dropdown, settings selection and general-ability filtering. The
+  migration deleted `CharacterCombatAbilityPicker` and distributed its
+  responsibility into these parents. An `InitiativeAbilityPicker` taking
+  the actor could own its selectors and setter, using the existing
+  `getGeneralAbilityNamesIn`. This would also prevent initiative-only
+  changes from invalidating the larger panels. This is the clearest
+  immediate factoring win.
+- [ ] **Preserve type information in derived-rule interfaces.**
+  In `module/actors/pcDerived.ts`, `ItemView.type`, `ItemView.system` and
+  `PCView.system` are `unknown`. Helpers recover their shape through
+  assertions and string-keyed access such as `numberOf(item, "rating")`;
+  `abilitiesDerived.ts` uses a similar approach. This accommodates live
+  documents and snapshots, but a field rename can silently become a
+  zero/default instead of a compiler error. Introduce small typed
+  structural views for the data each rule needs, derived from existing
+  schema types where practical, which both representations can satisfy.
+  This is a maintenance concern, not a finding that the current
+  calculations are wrong.
+- [ ] **Check the configuration of `createParentStore`.**
+  In `module/snapshots/documentStores.ts`, callers supply `TData`, but
+  `ownData` returns only `object`, collections have arbitrary string keys,
+  and serializers return `unknown`. `RefreshEmbedded` likewise accepts any
+  key and data. Connect collection keys and serialized values to the
+  resulting snapshot type, so a misspelled key or incorrect serializer is
+  caught. Keep unavoidable Foundry casts inside the adapter. The shared
+  lifecycle abstraction is useful; strengthen its existing interface.
+- [ ] **Share the ability-list editors' repeated presentation.**
+  `UnlocksEditorRow.tsx` and `SituationalModifiersEditorRow.tsx` repeat the
+  number input, text input, delete button, layout and indexed callbacks.
+  Their parent editors also repeat transition scaffolding. This duplication
+  predates the migration. Extract a small number/text/delete row and, if it
+  stays simple, an animated-list wrapper; keep domain-specific setters in
+  the two editors.
+- [ ] **Narrow the weapon edit row's selector.**
+  `characters/Weapons/WeaponRowEdit.tsx` selects the entire weapon `system`
+  although it displays only part of it. Changes to cost, lethality or fire
+  modes therefore invalidate the row unnecessarily, contrary to AGENTS.md's
+  guidance to select only what is shown. Select the displayed fields
+  explicitly, making its dependencies clear and preventing newly added
+  fields from automatically becoming rendering dependencies. This is an
+  optimization inconsistency, not a correctness bug.
+- [ ] **Separate current architecture guidance from historical findings.**
+  The opening of this document describes root-owned snapshots and says no
+  central store is needed; later sections describe shared stores and
+  independently subscribing leaves. The comments in `PCSheetPanels.tsx`
+  also describe Foundry renders stopping at panels, although those sheets
+  now disable root re-renders. Put a short current-architecture section
+  first, label the historical material, and update stale code comments.
+
+### Remaining subscription gaps
+
+These are code-path findings, not browser-reproduced bugs. Both concern
+#1476's aim of plumbing immutable data through all components: opting out
+of compiler caching does not itself subscribe to changes.
+
+- [ ] **Subscribe to the actor's default turn count.**
+  `combat/CombatantRow/CombatantTurnContext.ts` reads
+  `passingTurnsRemaining` and `defaultPassingTurns` live in
+  `usePassingTurns`. The latter depends on the actor's
+  `initiativePassingTurns`, which the hook does not subscribe to. Changing
+  "Number of turns" on the character sheet can leave the tracker's total
+  stale until another relevant render. Select the combatant's `turnInfo`,
+  the actor's default turns and the round explicitly, then call the
+  existing pure `getPassingTurnsRemaining`. This removes the hidden
+  dependency and the compiler escape hatch. Verify with a regression test
+  that changes the actor's default without advancing combat.
+- [ ] **Finish migrating theme consumers to the registry store.**
+  `characters/SettingsArea.tsx` reads and enumerates `runtimeConfig.themes`
+  directly. Installing or replacing a theme emits `runtimeConfigChanged`,
+  but the component does not subscribe, so choices and display names can
+  remain stale. Use the existing `useRuntimeRegistries`. Related direct
+  lookups remain in `party/PartySheet.tsx` and `Suspense.tsx`; finish a
+  shared, store-backed theme-resolution hook so callers need not know which
+  registry and settings events to follow. Verify installation/replacement
+  while the affected UI is already open.
+
+### Review validation
+
+The review ran 59 passing tests across seven files: `createSnapshotStore`,
+`documentStores`, `hookStores`, `replaceEqualDeep`, `useSnapshot`,
+`pcDerived` and `abilitiesDerived`. Full checks and browser tests were not
+run. The maintenance suggestions above are judgments, except for the narrow
+selector-guidance mismatch; the subscription findings need browser
+regression coverage when addressed.
