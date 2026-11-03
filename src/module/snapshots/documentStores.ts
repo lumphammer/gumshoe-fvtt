@@ -20,6 +20,7 @@ import type {
   TypedCombatData,
   TypedActorSnapshot,
   TypedItemSnapshot,
+  TypedItemData,
 } from "./snapshotTypes";
 import type { HookWatch, Off } from "./hookStores";
 import {
@@ -64,24 +65,31 @@ const lifecycleHooks = (
 
 type EmbeddedDoc = { id: string | null; parent: unknown };
 
-/** Which of a parent's embedded documents a store holds, under `key` */
-type Collection = {
+type EmbeddedData = { readonly _id: string | null };
+type EmbeddedKeys<T> = {
+  [K in keyof T]: T[K] extends readonly EmbeddedData[] ? K : never;
+}[keyof T] &
+  string;
+type ElementOf<T> = T extends readonly (infer E)[] ? E : never;
+
+/** Which of a parent's embedded documents a store holds. */
+type Collection<TData> = {
   /** the documents' name, as in their hooks (`createItem`): "Item" */
   documentName: string;
   /** the parent's documents of this kind, now */
   contents: () => readonly EmbeddedDoc[];
   /** a document's data, as the store holds it (a fresh copy) */
-  toData: (doc: never) => unknown;
+  toData: (doc: never) => TData;
 };
 
 /**
  * Change (or add, or remove) one embedded document in a list, keeping the
  * others as they were. `null` removes it.
  */
-export type RefreshEmbedded = (
-  key: string,
+type RefreshEmbedded<TData, K extends EmbeddedKeys<TData>> = <P extends K>(
+  key: P,
   id: string | null,
-  data: unknown,
+  data: ElementOf<TData[P]> | null,
 ) => void;
 
 /**
@@ -110,7 +118,7 @@ function withDocument<T extends { readonly _id: string | null }>(
  * @param watchMore anything else to follow, given a way to replace one
  * embedded document, and to read everything again
  */
-export function createParentStore<TData>(
+export function createParentStore<TData, K extends EmbeddedKeys<TData>>(
   parent: unknown,
   {
     ownData,
@@ -118,13 +126,20 @@ export function createParentStore<TData>(
     collections,
     watchMore,
   }: {
-    ownData: () => object;
+    ownData: () => Omit<TData, K>;
     updateHook: Hooks.HookName;
-    collections: Record<string, Collection>;
-    watchMore?: (refresh: RefreshEmbedded, readAll: () => void) => Off[];
+    collections: { [P in K]: Collection<ElementOf<TData[P]>> };
+    watchMore?: (
+      refresh: RefreshEmbedded<TData, K>,
+      readAll: () => void,
+    ) => Off[];
   },
 ): SnapshotStore<TData> {
-  const entries = Object.entries(collections);
+  // Object.entries erases mapped keys; keep that assertion inside the adapter.
+  const entries = Object.entries(collections) as [
+    K,
+    Collection<EmbeddedData>,
+  ][];
   return createSnapshotStore<TData>(
     () =>
       ({
@@ -143,7 +158,7 @@ export function createParentStore<TData>(
         data?: unknown,
       ) =>
         onChange((previous) => {
-          const next = {
+          const next: Record<string, unknown> = {
             ...(previous as Record<string, unknown>),
             ...ownData(),
           };
@@ -192,7 +207,7 @@ export function createParentStore<TData>(
 // Items
 
 const itemData = (item: Item.Implementation) =>
-  item.toObject(false) as unknown as ItemData;
+  item.toObject(false) as unknown as TypedItemData;
 
 /** A store of one item, which follows changes to it and its effects. */
 const createItemStore = (item: Item.Implementation) =>
@@ -239,8 +254,8 @@ function actorOnlyData(actor: Actor.Implementation) {
  * any of them (and to its base actor's, for an unlinked token's).
  */
 const createActorStore = (actor: Actor.Implementation) =>
-  createParentStore<ActorData>(actor, {
-    ownData: () => actorOnlyData(actor),
+  createParentStore<ActorData, "items" | "effects">(actor, {
+    ownData: () => actorOnlyData(actor) as Omit<ActorData, "items" | "effects">,
     updateHook: "updateActor",
     collections: {
       items: {
@@ -420,7 +435,7 @@ function journalEntryOnlyData(entry: JournalEntry.Implementation) {
 
 /** A store of a journal entry with its pages, which follows changes to either. */
 const createJournalEntryStore = (entry: JournalEntry.Implementation) =>
-  createParentStore<JournalEntryData>(entry, {
+  createParentStore<JournalEntryData, "pages">(entry, {
     ownData: () => journalEntryOnlyData(entry),
     updateHook: "updateJournalEntry",
     collections: {
@@ -466,7 +481,7 @@ export const combatantData = (combatant: Combatant.Implementation) =>
  * the turn order).
  */
 const createCombatStore = (combat: Combat.Implementation) =>
-  createParentStore<TypedCombatData>(combat, {
+  createParentStore<TypedCombatData, "combatants">(combat, {
     ownData: () => combatOnlyData(combat),
     updateHook: "updateCombat",
     collections: {

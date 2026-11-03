@@ -611,14 +611,16 @@ abstraction.
   This is a maintenance concern, not a finding that the current
   calculations are wrong. Done: schema-derived item views now discriminate by
   type; rules read checked properties directly, and PC adaptations are typed.
-- [ ] **Check the configuration of `createParentStore`.**
+- [x] **Check the configuration of `createParentStore`.**
   In `module/snapshots/documentStores.ts`, callers supply `TData`, but
   `ownData` returns only `object`, collections have arbitrary string keys,
   and serializers return `unknown`. `RefreshEmbedded` likewise accepts any
   key and data. Connect collection keys and serialized values to the
   resulting snapshot type, so a misspelled key or incorrect serializer is
   caught. Keep unavoidable Foundry casts inside the adapter. The shared
-  lifecycle abstraction is useful; strengthen its existing interface.
+  lifecycle abstraction is useful; strengthen its existing interface. Done:
+  collection keys now determine own-data omissions, serializer results and
+  refresh arguments, with compile-time regression checks.
 - [ ] **Share the ability-list editors' repeated presentation.**
   `UnlocksEditorRow.tsx` and `SituationalModifiersEditorRow.tsx` repeat the
   number input, text input, delete button, layout and indexed callbacks.
