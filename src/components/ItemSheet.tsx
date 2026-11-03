@@ -1,12 +1,9 @@
 import type { CSSObject } from "@emotion/react";
 
-import * as constants from "../constants";
-import { useActorSnapshot } from "../hooks/useActorSnapshot";
-import { useSettings } from "../hooks/useSettings";
+import { useActorTheme } from "../hooks/useActorTheme";
 import { useItemSheetContext } from "../hooks/useSheetContexts";
 import { useSheetPermissions } from "../hooks/useSheetPermissions";
 import { SheetPermissionsContext } from "../hooks/useIsEditable";
-import { useTheme } from "../hooks/useTheme";
 import { isBondItem } from "../module/items/bond";
 import { isNetworkContactItem } from "../module/items/networkContact";
 import { isCardItem } from "../module/items/card";
@@ -40,13 +37,7 @@ export const ItemSheet = () => {
 
   const { item } = useItemSheetContext();
   const permissions = useSheetPermissions(item);
-  const ownerTheme = useActorSnapshot(item.actor, (actor) =>
-    actor?.type === constants.pc || actor?.type === constants.npc
-      ? actor.system.sheetTheme
-      : null,
-  );
-  const defaultThemeName = useSettings((s) => s.defaultThemeName);
-  const theme = useTheme(ownerTheme || defaultThemeName);
+  const theme = useActorTheme(item.actor);
 
   const style: CSSObject =
     isAbilityItem(item) || isMwItem(item)

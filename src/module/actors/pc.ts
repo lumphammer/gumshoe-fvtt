@@ -262,10 +262,6 @@ export class PCModel extends ActiveCharacterModel<
     return super.migrateData(source);
   }
 
-  getSheetThemeName(): string | null {
-    return this.sheetTheme || settings.defaultThemeName.get();
-  }
-
   confirm24hRefresh = async (): Promise<void> => {
     const yes = await confirmADoodleDo({
       message:

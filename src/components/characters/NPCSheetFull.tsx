@@ -1,11 +1,10 @@
 import { memo, useState } from "react";
 
+import { useActorTheme } from "../../hooks/useActorTheme";
 import { assertGame } from "../../functions/isGame";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
-import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
-import { useTheme } from "../../hooks/useTheme";
 import { assertNPCActor } from "../../module/actors/npc";
 import { absoluteCover } from "../absoluteCover";
 import { CSSReset } from "../CSSReset";
@@ -63,12 +62,7 @@ export const NPCSheetFull = memo(function NPCSheetFull() {
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   assertGame(game);
-  const sheetTheme = useActorSnapshot(
-    actor,
-    (snapshot) => snapshot.system.sheetTheme,
-  );
-  const defaultThemeName = useSettings((s) => s.defaultThemeName);
-  const theme = useTheme(sheetTheme || defaultThemeName);
+  const theme = useActorTheme(actor);
   // kept while the sheet is open, so looking at another tab doesn't lose it
   const [abilitiesEditMode, setAbilitiesEditMode] = useState(false);
   const [combatEditMode, setCombatEditMode] = useState(false);

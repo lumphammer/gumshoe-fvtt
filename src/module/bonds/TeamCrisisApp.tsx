@@ -24,6 +24,7 @@ const TeamCrisisApp = ReactApplicationV2Mixin(
   "TeamCrisisApp",
   TeamCrisisAppBase,
   () => <TeamCrisisWindow />,
+  { rerenderOnFoundryRender: false },
 );
 
 /** one window per Agent */

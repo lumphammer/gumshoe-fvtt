@@ -1,7 +1,7 @@
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import { useContext } from "react";
 
-import { useTheme } from "../../hooks/useTheme";
+import { useActorTheme } from "../../hooks/useActorTheme";
 import type { PCActor } from "../../module/actors/pc";
 import { CSSReset } from "../CSSReset";
 import { TeamCrisisPanel } from "./TeamCrisisPanel";
@@ -15,11 +15,15 @@ export type TeamCrisisWindowApp = {
 
 /**
  * The Team Crisis panel in a window of its own, opened from a GM's call in
- * chat, in the Agent's theme.
+ * chat, in the Agent's theme. Everything in it reads the Agent and settings
+ * through snapshots, so Foundry's renders don't reach it (the app passes
+ * `rerenderOnFoundryRender: false`).
  */
 export const TeamCrisisWindow = () => {
+  "use memo";
+
   const app = useContext(FoundryAppContext) as unknown as TeamCrisisWindowApp;
-  const theme = useTheme(app.actor.system.getSheetThemeName());
+  const theme = useActorTheme(app.actor);
   return (
     <CSSReset
       theme={theme}

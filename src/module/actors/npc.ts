@@ -2,7 +2,6 @@ import * as c from "../../constants";
 import { maybeNotesObjectToString } from "../../functions/maybeNotesObjectToString";
 import { migrateValue } from "../../functions/migrateValue";
 import { NumberField, StringField } from "../../fvtt-exports";
-import { settings } from "../../settings/settings";
 import { createActiveCharacterSchema } from "../schemaFields";
 import { ActiveCharacterModel } from "./ActiveCharacterModel";
 import { InvestigatorActor } from "./InvestigatorActor";
@@ -28,10 +27,6 @@ export class NPCModel extends ActiveCharacterModel<typeof npcSchema, NPCActor> {
     migrateValue(source, "notes", maybeNotesObjectToString);
     migrateValue(source, "gmNotes", maybeNotesObjectToString);
     return super.migrateData(source);
-  }
-
-  getSheetThemeName(): string | null {
-    return this.sheetTheme || settings.defaultThemeName.get();
   }
 
   setNotes = (notes: string) => {
