@@ -2,9 +2,7 @@
 // that seem to come out here
 /* eslint "@typescript-eslint/explicit-function-return-type": "error" */
 
-import type { SourceData } from "../../fvtt-exports";
 import { getEditedBarValue } from "../tokenBars";
-import { isCombatantEffectShown } from "./isCombatantEffectShown";
 
 export class InvestigatorActor<
   SubType extends Actor.SubType = Actor.SubType,
@@ -60,64 +58,6 @@ export class InvestigatorActor<
       this,
     );
     return allowed !== false ? this.update(updates) : this;
-  }
-
-  // ***************************************************************************
-  // COMBATANT EFFECTS
-  //
-  // These are the effects that need to be shown in the combat tracker
-
-  // the most recent calculated data
-  protected _currentCombatantEffectsData: SourceData<ActiveEffect.Schema>[] =
-    this._getCombatantEffectsData();
-
-  // store of registered handlers
-  protected _combatantEffectsHandlers: Set<
-    (effects: SourceData<ActiveEffect.Schema>[]) => void
-  > = new Set();
-
-  // calculate new data
-  protected _getCombatantEffectsData(): SourceData<ActiveEffect.Schema>[] {
-    const constants = {
-      defeatedStatusId: CONFIG.specialStatusEffects.DEFEATED,
-      showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON,
-    };
-    return this.appliedEffects
-      .filter((e) => isCombatantEffectShown(e, constants))
-      .map((e) => e.toJSON());
-  }
-
-  // add a new handler
-  registerCombatantEffectsHandler(
-    handler: (effects: SourceData<ActiveEffect.Schema>[]) => void,
-  ): () => void {
-    this._combatantEffectsHandlers.add(handler);
-    handler(this._currentCombatantEffectsData);
-    return () => this._combatantEffectsHandlers.delete(handler);
-  }
-
-  /**
-   * This gets called from _onEmbeddedDocumentChange
-   */
-  protected _updateCombatantEffectsData(): void {
-    const latestData = this._getCombatantEffectsData();
-    const same =
-      latestData.length === this._currentCombatantEffectsData.length &&
-      latestData.every(
-        (effect, i) => effect._id === this._currentCombatantEffectsData[i]._id,
-      );
-    if (same) {
-      return;
-    }
-    this._currentCombatantEffectsData = latestData;
-    for (const handler of this._combatantEffectsHandlers.values()) {
-      handler(this._currentCombatantEffectsData);
-    }
-  }
-
-  protected override _onEmbeddedDocumentChange(): void {
-    super._onEmbeddedDocumentChange();
-    this._updateCombatantEffectsData();
   }
 
   /**

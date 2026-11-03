@@ -542,11 +542,18 @@ few causes, listed here with what to do about each, in the order to do them.
    and the abilities areas `getAbilityRowsIn` and friends
    (`abilitiesDerived.ts`). Pools are read from typed snapshots, so
    `getPoolOf` is gone.
-7. **The combat tracker** still keeps its own immer diff-merge state
-   (`TrackerContext`, `CombatantContext`, `ClassicInitiative`) and the
-   hand-rolled effect and resource handlers on the actor and combatant
-   classes: the strategy this document found slower and more fragile. Port it
-   onto the generic store.
+7. **The combat tracker.** _Done._ It reads a combat store
+   (`getCombatStore`, a `createParentStore` of the combat and its combatants,
+   with the turn order), through `useCombatSnapshot`. The tracker's context
+   holds only the round and turn, so a combatant changing doesn't re-render
+   the list; each row selects its own combatant, takes its effects from its
+   actor's snapshot (`getCombatantEffectsOf`), and its resource from
+   `getCombatantResourceStore` (Foundry works the resource out when it
+   prepares the combatant, with no hook, so that store follows the
+   combatant's own callback). The immer diff-merging in `TrackerContext`,
+   `CombatantContext` and `ClassicInitiative`, and the actor's
+   hand-rolled effects handlers, are gone; immer is left only in the system
+   settings screens' reducer.
 8. **The Team Crisis window** is the last component that reads live document
    data unmarked.
 9. **Compiling everything.** Then switch React Compiler to compile by
