@@ -46,6 +46,9 @@ function clientSettings(canvas: boolean) {
   ];
 }
 
+/** The device scale factor for pages with the canvas (see `test`). */
+const canvasDeviceScaleFactor = 0.5;
+
 /** World settings changed by `setSettings`, with their values before. */
 const changedSettings = new WeakMap<Page, Record<string, unknown>>();
 
@@ -108,6 +111,12 @@ export const test = base.extend<{
   joinAs: (userName: string) => Promise<Page>;
 }>({
   canvas: [false, { option: true }],
+  // Software WebGL's cost scales with the canvas's pixels, and at full size
+  // it ties up the page's main thread, slowing every action several times
+  // over. Half the device pixels keeps the same CSS layout.
+  deviceScaleFactor: async ({ canvas }, use) => {
+    await use(canvas ? canvasDeviceScaleFactor : 1);
+  },
   // oxlint-disable-next-line no-empty-pattern -- Playwright needs the pattern
   pageErrors: async ({}, use) => {
     await use([]);
@@ -150,6 +159,7 @@ export const test = base.extend<{
       // loading a second game takes a while, especially with the canvas
       testInfo.slow();
       const context = await browser.newContext({
+        deviceScaleFactor: canvas ? canvasDeviceScaleFactor : 1,
         storageState: {
           cookies: [],
           origins: [
