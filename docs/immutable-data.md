@@ -621,13 +621,14 @@ abstraction.
   lifecycle abstraction is useful; strengthen its existing interface. Done:
   collection keys now determine own-data omissions, serializer results and
   refresh arguments, with compile-time regression checks.
-- [ ] **Share the ability-list editors' repeated presentation.**
+- [x] **Share the ability-list editors' repeated presentation.**
   `UnlocksEditorRow.tsx` and `SituationalModifiersEditorRow.tsx` repeat the
   number input, text input, delete button, layout and indexed callbacks.
   Their parent editors also repeat transition scaffolding. This duplication
   predates the migration. Extract a small number/text/delete row and, if it
   stays simple, an animated-list wrapper; keep domain-specific setters in
-  the two editors.
+  the two editors. Done: both editors share `AbilityListEditor` transitions
+  and `NumberTextEditorRow`; their setters remain explicit.
 - [ ] **Narrow the weapon edit row's selector.**
   `characters/Weapons/WeaponRowEdit.tsx` selects the entire weapon `system`
   although it displays only part of it. Changes to cost, lethality or fire
