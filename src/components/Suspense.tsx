@@ -1,15 +1,12 @@
 import type { PropsWithChildren } from "react";
 import React from "react";
 
-import { useSettings } from "../hooks/useSettings";
-import { runtimeConfig } from "../runtime";
+import { useTheme } from "../hooks/useTheme";
 import { absoluteCover } from "./absoluteCover";
 import { CSSReset } from "./CSSReset";
 
 const Fallback = () => {
-  const defaultThemeName = useSettings((s) => s.defaultThemeName);
-  const theme =
-    runtimeConfig.themes[defaultThemeName] || runtimeConfig.themes["tealTheme"];
+  const theme = useTheme();
   return (
     <CSSReset
       theme={theme}

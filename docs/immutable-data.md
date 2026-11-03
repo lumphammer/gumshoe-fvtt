@@ -580,7 +580,8 @@ few causes, listed here with what to do about each, in the order to do them.
 
 Review of the aggregate diff from `before-immutability` to `855bb52d`, against
 #1476. The nine plumbing tasks above were marked done at the time of this
-review; the following are additional findings and suggestions, all pending.
+review; the following additional findings and suggestions have now been
+addressed in separate commits.
 
 The architecture is sound, and the added code largely earns its keep. The
 later consolidation commits already share subscriptions, permissions, sheet
@@ -653,9 +654,10 @@ abstraction.
 
 ### Remaining subscription gaps
 
-These are code-path findings, not browser-reproduced bugs. Both concern
-#1476's aim of plumbing immutable data through all components: opting out
-of compiler caching does not itself subscribe to changes.
+At review time these were code-path findings, without browser reproduction.
+Both concern #1476's aim of plumbing immutable data through all components:
+opting out of compiler caching does not itself subscribe to changes. The
+fixes now have passing browser regression coverage.
 
 - [x] **Subscribe to the actor's default turn count.**
   `combat/CombatantRow/CombatantTurnContext.ts` reads
@@ -670,7 +672,7 @@ of compiler caching does not itself subscribe to changes.
   that changes the actor's default without advancing combat. Done: the hook
   selects each dependency and calls the pure rule, without a compiler escape
   hatch. Browser coverage checks before and after combat starts.
-- [ ] **Finish migrating theme consumers to the registry store.**
+- [x] **Finish migrating theme consumers to the registry store.**
   `characters/SettingsArea.tsx` reads and enumerates `runtimeConfig.themes`
   directly. Installing or replacing a theme emits `runtimeConfigChanged`,
   but the component does not subscribe, so choices and display names can
@@ -678,7 +680,10 @@ of compiler caching does not itself subscribe to changes.
   lookups remain in `party/PartySheet.tsx` and `Suspense.tsx`; finish a
   shared, store-backed theme-resolution hook so callers need not know which
   registry and settings events to follow. Verify installation/replacement
-  while the affected UI is already open.
+  while the affected UI is already open. Done: `useTheme` resolves through
+  settings and the shared registry store; PC choices, party sheets and Suspense
+  use these subscriptions. Browser coverage installs and replaces a theme
+  with PC settings and a party sheet already open.
 
 ### Review validation
 
@@ -688,3 +693,11 @@ The review ran 59 passing tests across seven files: `createSnapshotStore`,
 run. The maintenance suggestions above are judgments, except for the narrow
 selector-guidance mismatch; the subscription findings need browser
 regression coverage when addressed.
+
+
+Follow-up implementation validation: `pnpm check` passed before every commit;
+the final tree passes 1,208 tests plus typecheck, lint, formatting and build.
+Browser runs passed 32 sheet tests, eight combat tests and 15 theme/tab/logo
+tests, including both new subscription regressions. The changes reduce `src`
+by 138 lines including type tests. Additions establish isolated subscriptions,
+schema-checked rule/store interfaces and current architecture guidance.

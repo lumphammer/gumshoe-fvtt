@@ -8,7 +8,7 @@ import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
-import { runtimeConfig } from "../../runtime";
+import { useRuntimeRegistries } from "../../hooks/useRuntimeRegistries";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
@@ -36,6 +36,7 @@ export const SettingArea = memo(function SettingArea() {
     showImmuneToLethality: s.useDamageApplication && s.useLethalityAndAutofire,
     defaultThemeName: s.defaultThemeName,
   }));
+  const { themes } = useRuntimeRegistries();
   const methods = useSystemMethods(actor);
   const { setSheetTheme } = methods;
   const onSetTheme = useCallback(
@@ -48,8 +49,7 @@ export const SettingArea = memo(function SettingArea() {
   );
   const theme = useContext(ThemeContext);
   const isDevMode = getDevMode();
-  const defaultThemeDisplayName =
-    runtimeConfig.themes[s.defaultThemeName]?.displayName;
+  const defaultThemeDisplayName = themes[s.defaultThemeName]?.displayName;
   return (
     <>
       <InputGrid>
@@ -58,9 +58,9 @@ export const SettingArea = memo(function SettingArea() {
             onChange={onSetTheme}
             value={pc.sheetTheme || defaultThemeIdentifier}
           >
-            {Object.keys(runtimeConfig.themes).map((themeName) => (
+            {Object.keys(themes).map((themeName) => (
               <option key={themeName} value={themeName}>
-                {runtimeConfig.themes[themeName].displayName}
+                {themes[themeName].displayName}
               </option>
             ))}
             <option value={defaultThemeIdentifier}>
