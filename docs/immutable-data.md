@@ -589,7 +589,7 @@ abstraction.
 
 ### Maintainability
 
-- [ ] **Restore a shared, self-subscribing initiative picker.**
+- [x] **Restore a shared, self-subscribing initiative picker.**
   `PCSheetPanels.tsx` and `NPCSheetPanels.tsx` duplicate the initiative
   heading/dropdown, settings selection and general-ability filtering. The
   migration deleted `CharacterCombatAbilityPicker` and distributed its
@@ -597,7 +597,8 @@ abstraction.
   the actor could own its selectors and setter, using the existing
   `getGeneralAbilityNamesIn`. This would also prevent initiative-only
   changes from invalidating the larger panels. This is the clearest
-  immediate factoring win.
+  immediate factoring win. Done: `InitiativeAbilityPicker` owns these subscriptions
+  and writes; both panels now delegate to it.
 - [ ] **Preserve type information in derived-rule interfaces.**
   In `module/actors/pcDerived.ts`, `ItemView.type`, `ItemView.system` and
   `PCView.system` are `unknown`. Helpers recover their shape through

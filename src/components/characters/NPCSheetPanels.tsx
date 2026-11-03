@@ -1,6 +1,5 @@
 import { memo, useContext } from "react";
 
-import * as c from "../../constants";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
@@ -10,9 +9,9 @@ import { ThemeContext } from "../../themes/ThemeContext";
 import { ImagePickle } from "../ImagePickle";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
-import { OtherableDropDown } from "../inputs/OtherableDropDown";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
+import { InitiativeAbilityPicker } from "./InitiativeAbilityPicker";
 import { LogoEditable } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { StatField } from "./StatField";
@@ -65,17 +64,13 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   const theme = useContext(ThemeContext);
-  const npc = useActorSnapshot(actor, ({ system, items }) => ({
+  const npc = useActorSnapshot(actor, ({ system }) => ({
     mwInjuryStatus: system.mwInjuryStatus,
     combatBonus: system.combatBonus,
     damageBonus: system.damageBonus,
     isHuman: system.isHuman,
     immuneToLethality: system.immuneToLethality,
-    initiativeAbility: system.initiativeAbility,
     initiativePassingTurns: system.initiativePassingTurns,
-    generalAbilityNames: items
-      .filter((item) => item.type === c.generalAbility)
-      .map((item) => item.name),
   }));
   const s = useSettings((s) => ({
     useMwInjuryStatus: s.useMwInjuryStatus,
@@ -84,7 +79,6 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
     npcStats: s.npcStats,
     showIsHuman: s.useDamageApplication && s.useGunfireOnHumans,
     showImmuneToLethality: s.useDamageApplication && s.useLethalityAndAutofire,
-    combatAbilities: s.combatAbilities,
   }));
   const methods = useSystemMethods(actor);
 
@@ -160,17 +154,7 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
       <hr />
       <TrackersArea />
       <hr />
-      <div>
-        <h3 css={{ gridColumn: "start / end" }}>
-          <Translate>Initiative</Translate>
-        </h3>
-        <OtherableDropDown
-          value={npc.initiativeAbility}
-          onChange={methods.setInitiativeAbility}
-          pickerValues={s.combatAbilities.toSorted()}
-          validValues={npc.generalAbilityNames}
-        />
-      </div>
+      <InitiativeAbilityPicker actor={actor} />
       {s.useTurnPassingInitiative && (
         <>
           <h4 css={{ width: "8em" }}>
