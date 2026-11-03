@@ -629,14 +629,15 @@ abstraction.
   stays simple, an animated-list wrapper; keep domain-specific setters in
   the two editors. Done: both editors share `AbilityListEditor` transitions
   and `NumberTextEditorRow`; their setters remain explicit.
-- [ ] **Narrow the weapon edit row's selector.**
+- [x] **Narrow the weapon edit row's selector.**
   `characters/Weapons/WeaponRowEdit.tsx` selects the entire weapon `system`
   although it displays only part of it. Changes to cost, lethality or fire
   modes therefore invalidate the row unnecessarily, contrary to AGENTS.md's
   guidance to select only what is shown. Select the displayed fields
   explicitly, making its dependencies clear and preventing newly added
   fields from automatically becoming rendering dependencies. This is an
-  optimization inconsistency, not a correctness bug.
+  optimization inconsistency, not a correctness bug. Done: the selector names
+  the displayed fields, and one range-input loop replaces six repeated inputs.
 - [ ] **Separate current architecture guidance from historical findings.**
   The opening of this document describes root-owned snapshots and says no
   central store is needed; later sections describe shared stores and
