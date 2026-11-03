@@ -23,7 +23,9 @@ translations, adding fields and settings, releases).
   `podman exec fvtt-v14 ... /home/foundry/app/client/...`. Font Awesome 6 is
   available (`/home/foundry/app/public/fonts/fontawesome`).
 - To force dice in testing: `CONFIG.Dice.randomUniform = () => 0.01` (rolls
-  6s), `0.99` (1s); `delete CONFIG.Dice.randomUniform` to undo.
+  6s), `0.99` (1s);
+  `CONFIG.Dice.randomUniform = foundry.dice.MersenneTwister.random` undoes it
+  (deleting it leaves no dice at all).
 
 ## Browser tests
 

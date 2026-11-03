@@ -1,10 +1,10 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig } from "@playwright/test";
 
 import {
   browserArgs,
   foundryDataPath,
   foundryUrl,
-  gmStorageStatePath,
+  gmContextOptions,
 } from "./e2e/config.ts";
 import { takeRunLock } from "./e2e/runLock.ts";
 
@@ -31,10 +31,7 @@ export default defineConfig({
   // suite takes over ten minutes
   globalTimeout: 30 * 60_000,
   use: {
-    ...devices["Desktop Chrome"],
-    baseURL: foundryUrl,
-    storageState: gmStorageStatePath,
-    viewport: { width: 1600, height: 1000 },
+    ...gmContextOptions,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     launchOptions: { args: browserArgs },

@@ -1,3 +1,4 @@
+import { devices } from "@playwright/test";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -27,6 +28,20 @@ export const worldId = "investigator-e2e";
 
 /** Where global setup saves the Gamemaster's logged-in session. */
 export const gmStorageStatePath = path.join(dirname, ".auth", "gm.json");
+
+// a context option only for Playwright's own fixtures
+const { defaultBrowserType: _, ...desktopChrome } = devices["Desktop Chrome"];
+
+/**
+ * The Gamemaster's browser context: a desktop Chrome, big enough for a few
+ * sheets side by side, logged in by global setup.
+ */
+export const gmContextOptions = {
+  ...desktopChrome,
+  baseURL: foundryUrl,
+  storageState: gmStorageStatePath,
+  viewport: { width: 1600, height: 1000 },
+};
 
 /**
  * Chromium's launch arguments. Headless Chromium can open the sound card

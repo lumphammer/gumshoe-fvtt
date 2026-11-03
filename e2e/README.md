@@ -49,7 +49,12 @@ password. If the data folder isn't here, the system must already be installed.
   second run stops straight away rather than trampling the first (logging
   its Gamemaster out, resetting its world, clearing its `test-results/`).
 - Import `test` and `expect` from [`foundry.ts`](foundry.ts): its `page`
-  starts in the game, ready.
+  starts in the game, ready. It's the same page for every test in a worker
+  (loading the game is the slowest part of most tests): after each test it
+  closes windows, puts the dice and settings back, and drops the test's
+  routes and listeners. If a test reloads the page or changes localStorage
+  (e.g. the language), the next test gets a fresh load. A test that fails
+  throws its worker away, so the next one starts from scratch.
 - Set up data through Foundry's API in `page.evaluate` (e.g.
   `Actor.create(...)`), which is fast and doesn't depend on the UI. Use
   locators and clicks for the thing you're actually testing. Code inside
@@ -59,5 +64,4 @@ password. If the data folder isn't here, the system must already be installed.
   on for its own tests only, and checks a pack ability comes out translated
   in a few languages. Its expected values come from `public/lang/babele`, so
   pulling new translations doesn't break it.
-- Force dice with `CONFIG.Dice.randomUniform = () => 0.01` (every die
-  rolls 6) or `0.99` (1s).
+- Force dice with `forceDice`, which lasts until the test ends.

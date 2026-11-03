@@ -1,11 +1,12 @@
 import {
   test as base,
   expect,
+  type Browser,
   type Locator,
   type Page,
 } from "@playwright/test";
 
-import { foundryUrl } from "./config.ts";
+import { foundryUrl, gmContextOptions } from "./config.ts";
 
 /** Where the system sends usage stats (`usageStatsEndpoint`). */
 export const usageStatsEndpointPattern =
@@ -52,23 +53,25 @@ const canvasDeviceScaleFactor = 0.5;
 /** World settings changed by `setSettings`, with their values before. */
 const changedSettings = new WeakMap<Page, Record<string, unknown>>();
 
+/** Where a page's errors go: the current test's `pageErrors`. */
+type ErrorSink = { report: (text: string) => void };
+
 /**
- * Report everything that goes wrong in this page into `errors`, labelled with
- * `who`, then wait for the game to be ready. Call before the page loads the
- * game.
+ * Report everything that goes wrong in this page to `sink`, labelled with
+ * `who`. Call before the page loads the game.
  */
-async function watchForErrors(page: Page, errors: string[], who: string) {
+async function watchForErrors(page: Page, sink: ErrorSink, who: string) {
   page.on("pageerror", (error) => {
-    errors.push(`${who}: Uncaught: ${error.stack ?? error.message}`);
+    sink.report(`${who}: Uncaught: ${error.stack ?? error.message}`);
   });
   page.on("console", (message) => {
     if (message.type() !== "error") return;
     const text = message.text();
     if (ignoredErrors.some((pattern) => pattern.test(text))) return;
-    errors.push(`${who}: Console: ${text}`);
+    sink.report(`${who}: Console: ${text}`);
   });
   await page.exposeFunction("__e2eReportError", (text: string) => {
-    errors.push(`${who}: Notification: ${text}`);
+    sink.report(`${who}: Notification: ${text}`);
   });
 }
 
@@ -94,6 +97,96 @@ async function waitForGameAndWatchNotifications(page: Page) {
   });
 }
 
+/** Never send a test world's usage stats to the real server. */
+async function routeUsageStats(page: Page) {
+  // a test can route them somewhere of its own: later routes win
+  await page.route(usageStatsEndpointPattern, (route) =>
+    route.fulfill({ status: 204 }),
+  );
+}
+
+function readLocalStorage(page: Page) {
+  return page.evaluate(() => JSON.stringify(Object.entries(localStorage)));
+}
+
+/**
+ * The Gamemaster's page, kept open for the tests in a worker: loading the
+ * game takes a second or more, and putting things back between tests is much
+ * quicker.
+ */
+type GMPage = {
+  page: Page;
+  canvas: boolean;
+  sink: ErrorSink;
+  /** Errors between tests, which go to the next one. */
+  strayErrors: string[];
+  /** How many times the page has loaded. */
+  loads: number;
+  /**
+   * The last test reloaded or navigated the page, or changed its
+   * localStorage: whatever it did lives in the page, so load it afresh.
+   */
+  needsReload: boolean;
+};
+
+async function openGMPage(browser: Browser, canvas: boolean) {
+  const context = await browser.newContext({
+    ...gmContextOptions,
+    deviceScaleFactor: canvas ? canvasDeviceScaleFactor : 1,
+  });
+  const page = await context.newPage();
+  const strayErrors: string[] = [];
+  const gmPage: GMPage = {
+    page,
+    canvas,
+    sink: { report: (text) => strayErrors.push(text) },
+    strayErrors,
+    loads: 0,
+    needsReload: false,
+  };
+  page.on("load", () => gmPage.loads++);
+  await page.addInitScript((settings) => {
+    for (const { name, value } of settings) localStorage.setItem(name, value);
+  }, clientSettings(canvas));
+  await watchForErrors(page, gmPage.sink, "GM");
+  await routeUsageStats(page);
+  await page.goto("/game");
+  await waitForGameAndWatchNotifications(page);
+  return gmPage;
+}
+
+/**
+ * A page's event listeners. (Playwright's `Page` is an event emitter, but its
+ * types only show `on` and `off` for each event.)
+ */
+type PageEvents = {
+  eventNames(): string[];
+  listeners(name: string): ((...args: never[]) => unknown)[];
+  off(name: string, listener: (...args: never[]) => unknown): void;
+};
+
+/**
+ * Put the page back how a test found it, as far as a fresh page would have
+ * it: close windows, undo forced dice, drop targets, show the chat.
+ */
+async function tidyPage(page: Page) {
+  await page.evaluate(async () => {
+    // Foundry's own (deleting it would leave none)
+    // oxlint-disable-next-line unbound-method -- it's what Foundry sets, and doesn't use `this`
+    CONFIG.Dice.randomUniform = foundry.dice.MersenneTwister.random;
+    for (const app of [...foundry.applications.instances.values()]) {
+      if (app.hasFrame && app.rendered) await app.close({ animate: false });
+    }
+    for (const app of Object.values(ui.windows)) await app.close();
+    await ui.context?.close({ animate: false, target: undefined as never });
+    if (game.user.targets.size > 0) canvas.tokens?.setTargets([]);
+    ui.notifications.clear();
+    ui.sidebar.changeTab("chat", "primary");
+    ui.sidebar.expand();
+    (document.activeElement as HTMLElement | null)?.blur();
+  });
+}
+
 /**
  * Playwright's `test`, with `page` already in the game as the Gamemaster.
  *
@@ -101,45 +194,72 @@ async function waitForGameAndWatchNotifications(page: Page) {
  * shows an error notification, so every test is also a smoke test of whatever
  * it touches. If a test means to cause an error, it can clear `pageErrors`.
  *
- * The canvas is off unless a test file asks for it with
- * `test.use({ canvas: true })`. Settings changed with `setSettings` go back
- * to how they were after each test. The chat log starts empty.
+ * The page is shared by the tests in a worker, and tidied up after each one
+ * (see `tidyPage`). After a test reloads it (or changes localStorage), the
+ * next test gets it reloaded again. The canvas is off unless a test file (or
+ * describe block) asks for it with `test.use({ canvas: true })`, which gets
+ * a page of its own. Settings changed with `setSettings` go back to how
+ * they were after each test. The chat log starts empty.
  */
-export const test = base.extend<{
-  pageErrors: string[];
-  canvas: boolean;
-  joinAs: (userName: string) => Promise<Page>;
-}>({
-  canvas: [false, { option: true }],
-  // Software WebGL's cost scales with the canvas's pixels, and at full size
-  // it ties up the page's main thread, slowing every action several times
-  // over. Half the device pixels keeps the same CSS layout.
-  deviceScaleFactor: async ({ canvas }, use) => {
-    await use(canvas ? canvasDeviceScaleFactor : 1);
+export const test = base.extend<
+  {
+    pageErrors: string[];
+    canvas: boolean;
+    joinAs: (userName: string) => Promise<Page>;
   },
+  { gmPages: { get: (canvas: boolean) => Promise<GMPage> } }
+>({
+  canvas: [false, { option: true }],
+  gmPages: [
+    async ({ browser }, use) => {
+      // one at a time: a canvas left drawing in the background would slow
+      // everything else down
+      let current: GMPage | undefined;
+      await use({
+        get: async (canvas) => {
+          if (current?.canvas !== canvas) {
+            await current?.page.context().close();
+            current = undefined;
+            current = await openGMPage(browser, canvas);
+          }
+          return current;
+        },
+      });
+      await current?.page.context().close();
+    },
+    { scope: "worker" },
+  ],
   // oxlint-disable-next-line no-empty-pattern -- Playwright needs the pattern
   pageErrors: async ({}, use) => {
     await use([]);
   },
-  page: async ({ page, pageErrors, canvas }, use) => {
-    await page.addInitScript((settings) => {
-      for (const { name, value } of settings) localStorage.setItem(name, value);
-    }, clientSettings(canvas));
-    await watchForErrors(page, pageErrors, "GM");
-    // never send a test world's usage stats to the real server (a test can
-    // route them somewhere of its own: later routes win)
-    await page.route(usageStatsEndpointPattern, (route) =>
-      route.fulfill({ status: 204 }),
+  page: async ({ gmPages, canvas, pageErrors }, use) => {
+    const gmPage = await gmPages.get(canvas);
+    const { page, strayErrors } = gmPage;
+    pageErrors.push(...strayErrors.map((text) => `(before the test) ${text}`));
+    strayErrors.length = 0;
+    gmPage.sink.report = (text) => pageErrors.push(text);
+    if (gmPage.needsReload) {
+      await page.goto("/game");
+      await waitForGameAndWatchNotifications(page);
+      gmPage.needsReload = false;
+    }
+    const loadsBefore = gmPage.loads;
+    const localStorageBefore = await readLocalStorage(page);
+    const events = page as unknown as PageEvents;
+    const listenersBefore = new Map(
+      events.eventNames().map((name) => [name, events.listeners(name)]),
     );
-    await page.goto("/game");
-    await waitForGameAndWatchNotifications(page);
     // the tests share a world, so clear out earlier tests' chat: otherwise
     // `lastChatMessage` can find one of their cards before this test's arrives
     await page.evaluate(async () => {
       await ChatMessage.deleteDocuments([], { deleteAll: true });
     });
+
     await use(page);
+
     const settingsToRestore = changedSettings.get(page);
+    changedSettings.delete(page);
     if (settingsToRestore) {
       await page.evaluate(async (values) => {
         for (const [key, value] of Object.entries(values)) {
@@ -147,6 +267,28 @@ export const test = base.extend<{
         }
       }, settingsToRestore);
     }
+    // drop the test's own listeners and routes
+    for (const name of events.eventNames()) {
+      const before = listenersBefore.get(name) ?? [];
+      for (const listener of events.listeners(name)) {
+        if (!before.includes(listener)) events.off(name, listener);
+      }
+    }
+    await page.unrouteAll({ behavior: "ignoreErrors" });
+    await routeUsageStats(page);
+    if ((await readLocalStorage(page)) !== localStorageBefore) {
+      await page.evaluate(
+        (entries) => {
+          localStorage.clear();
+          for (const [key, value] of entries) localStorage.setItem(key, value);
+        },
+        JSON.parse(localStorageBefore) as [string, string][],
+      );
+      gmPage.needsReload = true;
+    }
+    if (gmPage.loads !== loadsBefore) gmPage.needsReload = true;
+    if (!gmPage.needsReload) await tidyPage(page);
+    gmPage.sink.report = (text) => strayErrors.push(text);
     expect(pageErrors, "errors in the page").toEqual([]);
   },
   /**
@@ -172,7 +314,11 @@ export const test = base.extend<{
       });
       contexts.push(context);
       const page = await context.newPage();
-      await watchForErrors(page, pageErrors, userName);
+      await watchForErrors(
+        page,
+        { report: (text) => pageErrors.push(text) },
+        userName,
+      );
       await page.goto("/join");
       await page.locator('input[name="username"]').fill(userName);
       await page.locator('button[name="join"]').click();
@@ -196,7 +342,7 @@ export async function reloadGame(page: Page) {
 }
 
 /**
- * Every d6 rolls `face` until the page reloads. (Foundry rolls
+ * Every d6 rolls `face` until the test ends. (Foundry rolls
  * `ceil((1 - u) * faces)`, so 1s and 6s come out the same on any die, but the
  * faces in between only on a d6.)
  */
