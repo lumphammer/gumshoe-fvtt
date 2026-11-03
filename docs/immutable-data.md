@@ -554,8 +554,12 @@ few causes, listed here with what to do about each, in the order to do them.
    `CombatantContext` and `ClassicInitiative`, and the actor's
    hand-rolled effects handlers, are gone; immer is left only in the system
    settings screens' reducer.
-8. **The Team Crisis window** is the last component that reads live document
-   data unmarked.
+8. **The Team Crisis window.** _Done._ It's compiled, takes its theme from
+   the Agent's snapshot, and its app passes `rerenderOnFoundryRender: false`
+   (the panel in it already read snapshots). Its theme rule (the
+   character's sheet theme, or else the default) was written out in five
+   places, and is now `useActorTheme`; the models' `getSheetThemeName` is
+   gone.
 9. **Compiling everything.** Then switch React Compiler to compile by
    default, opting out only what must stay uncompiled (`Tracker`), and remove
    the `"use memo"` directives, and the `memo()` wrappers in compiled code

@@ -1,10 +1,9 @@
 import { memo, useState } from "react";
 
+import { useActorTheme } from "../../hooks/useActorTheme";
 import { assertGame } from "../../functions/isGame";
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import { useTheme } from "../../hooks/useTheme";
 import { assertPCActor } from "../../module/actors/pc";
 import {
   areBondsOn,
@@ -44,12 +43,8 @@ export const PCSheetFull = memo(function PCSheetFull() {
   assertGame(game);
   assertPCActor(actor);
 
-  const sheetTheme = useActorSnapshot(
-    actor,
-    (snapshot) => snapshot.system.sheetTheme,
-  );
+  const theme = useActorTheme(actor);
   const s = useSettings((s) => ({
-    defaultThemeName: s.defaultThemeName,
     useMwStyleAbilities: s.useMwStyleAbilities,
     mwUseAlternativeItemTypes: s.mwUseAlternativeItemTypes,
     bondsOn: areBondsOn(s),
@@ -57,7 +52,6 @@ export const PCSheetFull = memo(function PCSheetFull() {
     useNetworkContacts: s.useNetworkContacts,
     useCards: s.useCards,
   }));
-  const theme = useTheme(sheetTheme || s.defaultThemeName);
 
   return (
     <CSSReset

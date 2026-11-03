@@ -1,7 +1,6 @@
+import { useActorTheme } from "../../hooks/useActorTheme";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
-import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import { useTheme } from "../../hooks/useTheme";
 import { isActiveCharacterActor } from "../../module/actors/types";
 import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
@@ -34,10 +33,8 @@ export const CharacterSheetSimple = ({
   const data = useActorSnapshot(actor, (snapshot) => ({
     name: snapshot.name,
     img: snapshot.img,
-    sheetTheme: snapshot.system.sheetTheme,
   }));
-  const defaultThemeName = useSettings((s) => s.defaultThemeName);
-  const theme = useTheme(data.sheetTheme || defaultThemeName);
+  const theme = useActorTheme(actor);
   const hasNotes = notes.length > 0;
 
   return (
