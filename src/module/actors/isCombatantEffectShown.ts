@@ -27,3 +27,24 @@ export function isCombatantEffectShown(
     (effect.showIcon === showIcon.CONDITIONAL && effect.isTemporary)
   );
 }
+
+/** What the combat tracker shows of an effect */
+export type CombatantEffectView = { name: string; img: string | null };
+
+/**
+ * The effects to show on an actor's combatant, from its applied effects (its
+ * own, and its items'). Reads the live actor: call it in a snapshot selector,
+ * which runs again whenever the actor or its items or effects change.
+ */
+export function getCombatantEffectsOf(
+  actor: Actor.Implementation | null,
+): CombatantEffectView[] {
+  if (actor === null) return [];
+  const constants = {
+    defeatedStatusId: CONFIG.specialStatusEffects.DEFEATED,
+    showIcon: CONST.ACTIVE_EFFECT_SHOW_ICON,
+  };
+  return actor.appliedEffects
+    .filter((effect) => isCombatantEffectShown(effect, constants))
+    .map((effect) => ({ name: effect.name, img: effect.img ?? null }));
+}

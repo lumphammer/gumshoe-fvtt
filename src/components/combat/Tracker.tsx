@@ -19,9 +19,13 @@ import { TurnPassingTurnNav } from "./TurnPassingTurnNav";
 /**
  * Whether every combatant in a turn-passing combat has used up their turns.
  * Worked out on every render of the tracker (Foundry re-renders it when a
- * combatant changes), from the live combatants.
+ * combatant changes), from the live combatants: their turns remaining depend
+ * on their actors too.
  */
-const areAllTurnsDone = (combat: Combat.Implementation, turnIds: string[]) =>
+const areAllTurnsDone = (
+  combat: Combat.Implementation,
+  turnIds: readonly string[],
+) =>
   turnIds.length > 0 &&
   turnIds.every((turnId) => {
     const turn = combat.turns.find((c) => c.id === turnId);

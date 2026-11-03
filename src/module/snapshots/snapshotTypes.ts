@@ -5,6 +5,8 @@
 
 import type { SourceData } from "../../fvtt-exports";
 import type { npcSchema } from "../actors/npc";
+import type { classicCombatantSchema } from "../combat/classicCombatant";
+import type { turnPassingCombatantSchema } from "../combat/turnPassingCombatant";
 import type { partySchema } from "../actors/party";
 import type { PCSystemData } from "../actors/pc";
 import type { cardSchema } from "../items/card";
@@ -98,3 +100,37 @@ export type OfType<T, K extends string> = [Extract<T, { type: K }>] extends [
 ]
   ? T
   : Extract<T, { type: K }>;
+
+/** Each combatant type's system data */
+export type CombatantSystems = {
+  classic: SourceData<typeof classicCombatantSchema>;
+  turnPassing: SourceData<typeof turnPassingCombatantSchema>;
+};
+
+/**
+ * A combatant's prepared data, with its name and image as the tracker shows
+ * them (from its token or actor, when it has none of its own): a union by
+ * type, so checking `type` narrows `system`
+ */
+export type TypedCombatantData = {
+  [K in keyof CombatantSystems]: Omit<
+    Combatant.Source,
+    "type" | "system" | "name" | "img"
+  > & {
+    type: K;
+    system: CombatantSystems[K];
+    name: string;
+    img: string | null;
+  };
+}[keyof CombatantSystems];
+
+/**
+ * A combat's own data and its combatants, and the order of its turns (ids,
+ * as `combat.turns` has them)
+ */
+export type TypedCombatData = Omit<Combat.Source, "combatants"> & {
+  combatants: TypedCombatantData[];
+  turnIds: string[];
+};
+export type CombatSnapshot = DeepReadonly<TypedCombatData>;
+export type CombatantSnapshot = DeepReadonly<TypedCombatantData>;

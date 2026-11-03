@@ -1,11 +1,7 @@
-import { produce } from "immer";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useMemo } from "react";
 
 import { assertGame } from "../../functions/isGame";
-import { systemLogger } from "../../functions/utilities";
-import { useRefStash } from "../../hooks/useRefStash";
-import { isKnownCombat } from "../../module/combat/types";
-import { registerHookHandler } from "./registerHookHandler";
+import { useCombatSnapshot } from "../../hooks/useCombatSnapshot";
 
 export type TrackerContextValue<
   SubType extends Combat.ConfiguredSubType | null =
@@ -14,10 +10,9 @@ export type TrackerContextValue<
   combat: SubType extends Combat.ConfiguredSubType
     ? Combat.OfType<SubType>
     : null;
-  combatState: SubType extends Combat.ConfiguredSubType
-    ? Combat.SourceOfType<SubType>
-    : null;
-  turnIds: string[];
+  /** the round and turn, from the combat's snapshot */
+  combatState: { round: number; turn: number | null } | null;
+  turnIds: readonly string[];
   isActiveUser: boolean;
 };
 
@@ -35,120 +30,34 @@ export const useTrackerContext = () => {
 };
 
 /**
- * Extracts the relevant combat state from a Combat document.
+ * What the tracker shows of a combat, from its snapshot, so it follows the
+ * combat and its combatants. Which combat that is (the active one) is read
+ * live by the tracker, which Foundry re-renders when combats are created,
+ * deleted or activated.
  */
-function getCombatStateFromCombat(
+export const useTrackerContextValue = (
   combat: Combat.Known | null,
-): TrackerContextValue {
+): TrackerContextValue => {
   assertGame(game);
-
-  return {
-    combatState: combat?.toJSON() ?? null,
-    combat: combat ?? null,
-    turnIds: combat?.turns.map((c) => c._id).filter((id) => id !== null) ?? [],
-    isActiveUser: combat?.combatant?.players?.includes(game.user) ?? false,
-  };
-}
-
-function getUpdatedTurnIds(oldIds: string[], combat: Combat.Implementation) {
-  const newIds = combat.turns.map((c) => c._id).filter((id) => id !== null);
-  if (
-    newIds.length === oldIds.length &&
-    newIds.every((id, i) => id === oldIds[i])
-  ) {
-    return oldIds;
-  } else {
-    return newIds;
-  }
-}
-
-export const useTrackerContextValue = (combat: Combat.Known | null) => {
-  const [combatData, setCombatData] = useState<TrackerContextValue>(() => {
-    return getCombatStateFromCombat(combat);
+  const user = game.user;
+  const view = useCombatSnapshot(combat, (snapshot) => {
+    if (snapshot === null) return null;
+    return {
+      combatState: { round: snapshot.round, turn: snapshot.turn },
+      turnIds: snapshot.turnIds,
+      // (the live combat's, but a selector runs again on every change to it)
+      isActiveUser: combat?.combatant?.players?.includes(user) ?? false,
+    };
   });
-
-  const combatStash = useRefStash(combat);
-
-  useEffect(() => {
-    return registerHookHandler(
-      "updateCombat",
-      (updatedCombat, changes) => {
-        setCombatData((oldData) => {
-          assertGame(game);
-          if (!isKnownCombat(updatedCombat)) {
-            return oldData;
-          }
-          if (
-            oldData.combatState?._id !== updatedCombat._id &&
-            updatedCombat.active
-          ) {
-            // if a combat is becoming active, we just take its data
-            systemLogger.log("New combat activated");
-            return getCombatStateFromCombat(updatedCombat);
-          } else if (
-            oldData.combatState &&
-            oldData.combatState._id === updatedCombat._id
-          ) {
-            const combatState = produce(oldData.combatState, (draft) => {
-              foundry.utils.mergeObject(draft, changes);
-            });
-            const turnIds = getUpdatedTurnIds(oldData.turnIds, updatedCombat);
-            const result: TrackerContextValue = {
-              combatState,
-              combat: updatedCombat,
-              turnIds,
-              isActiveUser:
-                updatedCombat.combatant?.players?.includes(game.user) ?? false,
-            };
-            return result;
-          } else {
-            return oldData;
-          }
-        });
-      },
-      true,
-    );
-  }, []);
-
-  function updateTurns(combat: Combat.Implementation | null) {
-    setCombatData((oldData) => {
-      if (combat === null || combat?.id !== oldData.combat?.id) return oldData;
-      return {
-        ...oldData,
-        turnIds: getUpdatedTurnIds(oldData.turnIds, combat),
-      };
-    });
-  }
-
-  useEffect(() => {
-    return registerHookHandler("createCombatant", (newCombatant) => {
-      updateTurns(newCombatant.combat);
-    });
-  }, []);
-
-  useEffect(() => {
-    return registerHookHandler("deleteCombatant", (deletedCombatant) => {
-      updateTurns(deletedCombatant.combat);
-    });
-  }, [combatStash]);
-
-  useEffect(() => {
-    return registerHookHandler("createCombat", (newCombat) => {
-      if (newCombat.active && isKnownCombat(newCombat)) {
-        setCombatData(getCombatStateFromCombat(newCombat));
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    return registerHookHandler("deleteCombat", (deletedCombat) => {
-      if (deletedCombat === combat) {
-        setCombatData(() => defaultTrackerValue);
-      }
-    });
-  }, [combat]);
-
-  return combatData;
+  // the same value while the combat and its view are (the view is
+  // structurally shared), so the tracker's other renders don't reach the list
+  return useMemo(
+    () =>
+      combat === null || view === null
+        ? defaultTrackerValue
+        : { combat, ...view },
+    [combat, view],
+  );
 };
 
 export const TrackerContextProvider = TrackerContext.Provider;

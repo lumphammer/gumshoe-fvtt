@@ -16,6 +16,8 @@ import type {
   ActorType,
   ItemType,
   TypedActorData,
+  TypedCombatantData,
+  TypedCombatData,
   TypedActorSnapshot,
   TypedItemSnapshot,
 } from "./snapshotTypes";
@@ -430,3 +432,82 @@ const createJournalEntryStore = (entry: JournalEntry.Implementation) =>
 export const getJournalEntryStore: (
   entry: JournalEntry.Implementation,
 ) => SnapshotStore<JournalEntryData> = cachedPer(createJournalEntryStore);
+
+// ---------------------------------------------------------------------------
+// Combats
+
+/** A combat's own data, without its combatants, and its turn order */
+function combatOnlyData(combat: Combat.Implementation) {
+  const { combatants: _combatants, ...rest } = combat._source;
+  return {
+    ...foundry.utils.deepClone(rest),
+    turnIds: combat.turns.flatMap((turn) =>
+      turn.id === null ? [] : [turn.id],
+    ),
+  };
+}
+
+/** A combatant's data, as its combat's snapshot holds it */
+export const combatantData = (combatant: Combatant.Implementation) =>
+  ({
+    ...combatant.toObject(false),
+    // from its token or actor if it has none of its own
+    name: combatant.name ?? "",
+    img: combatant.img ?? null,
+  }) as unknown as TypedCombatantData;
+
+/**
+ * A store of a combat with its combatants, which follows changes to either.
+ * Only the combatant that changed is copied (and the combat's own data, and
+ * the turn order).
+ */
+const createCombatStore = (combat: Combat.Implementation) =>
+  createParentStore<TypedCombatData>(combat, {
+    ownData: () => combatOnlyData(combat),
+    updateHook: "updateCombat",
+    collections: {
+      combatants: {
+        documentName: "Combatant",
+        contents: () => combat.combatants.contents,
+        toData: combatantData,
+      },
+    },
+  });
+
+/** The store of a combat (see `createCombatStore`) */
+export const getCombatStore: (
+  combat: Combat.Implementation,
+) => SnapshotStore<TypedCombatData> = cachedPer(createCombatStore);
+
+/** A combatant's resource (e.g. Health), as a number (0 for none) */
+const resourceValue = (resource: unknown): number => {
+  if (typeof resource === "number") return resource;
+  if (
+    typeof resource === "object" &&
+    resource !== null &&
+    "value" in resource &&
+    typeof resource.value === "number"
+  ) {
+    return resource.value;
+  }
+  return 0;
+};
+
+type ResourceSource = {
+  resource: unknown;
+  registerResourceHandler: (handler: () => void) => () => void;
+};
+
+/**
+ * A store of a combatant's resource (the attribute the tracker shows). Foundry
+ * works it out from the combatant's actor when it prepares the combatant,
+ * without a hook, so this follows the combatant's own word that it changed.
+ */
+export const getCombatantResourceStore: (
+  combatant: ResourceSource,
+) => SnapshotStore<number> = cachedPer((combatant: ResourceSource) =>
+  createSnapshotStore(
+    () => resourceValue(combatant.resource),
+    (onChange) => combatant.registerResourceHandler(() => onChange()),
+  ),
+);

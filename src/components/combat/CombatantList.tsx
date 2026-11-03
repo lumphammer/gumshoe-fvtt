@@ -58,7 +58,7 @@ export const CombatantList = memo(function CombatantList() {
 
   useEffect(() => {
     // eslint-disable-next-line react/set-state-in-effect
-    setIds(turnIds);
+    setIds([...turnIds]);
   }, [turnIds]);
 
   // from the tracker's state, not the live combat (the same object when the

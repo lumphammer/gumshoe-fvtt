@@ -1,21 +1,30 @@
-import { produce } from "immer";
 import type { ReactNode } from "react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useMemo } from "react";
 
-import type { SourceData } from "../../../fvtt-exports";
+import { useActorSnapshot } from "../../../hooks/useActorSnapshot";
+import { useCombatSnapshot } from "../../../hooks/useCombatSnapshot";
+import { useSnapshot } from "../../../hooks/useSnapshot";
+import type { CombatantEffectView } from "../../../module/actors/isCombatantEffectShown";
+import { getCombatantEffectsOf } from "../../../module/actors/isCombatantEffectShown";
+import {
+  combatantData,
+  getCombatantResourceStore,
+} from "../../../module/snapshots/documentStores";
+import type { CombatantSnapshot } from "../../../module/snapshots/snapshotTypes";
 import type { ClassicCombatant } from "../../../module/combat/classicCombatant";
 import { isClassicCombatant } from "../../../module/combat/classicCombatant";
 import type { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import type { TurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
-import { registerHookHandler } from "../registerHookHandler";
 
 type CombatantContextValue<
   TCombatant extends Combatant.Implementation = Combatant.Implementation,
 > = {
-  combatantState: SourceData<Combatant.Schema>;
+  /** the combatant's data, from its combat's snapshot */
+  combatantState: CombatantSnapshot;
+  /** the live combatant, to write to */
   combatant: TCombatant;
-  effects: SourceData<ActiveEffect.Schema>[];
+  effects: readonly CombatantEffectView[];
   resource: number;
 };
 
@@ -67,68 +76,24 @@ export function CombatantContextProvider({
   );
 }
 
-const getValue = <T,>(resource: T): number => {
-  if (
-    typeof resource === "object" &&
-    resource !== null &&
-    "value" in resource &&
-    typeof resource.value === "number"
-  ) {
-    return resource.value;
-  } else if (typeof resource === "number") {
-    return resource;
-  }
-  return 0;
-};
-
+/**
+ * A combatant's row's data: the combatant from its combat's snapshot, the
+ * effects to show from its actor's, and its resource.
+ */
 export function useCombatantContextValue(
   combatant: InvestigatorCombatant,
 ): CombatantContextValue {
-  // ///////////////////////////////////////////////////////////////////////////
-  // combatant data
-  const [combatantState, setCombatantState] = useState(() => {
-    const data = combatant.toJSON();
-    data.img = combatant.img;
-    data.name = combatant.name;
-    return data;
-  });
-  const [resource, setResource] = useState(() => getValue(combatant.resource));
-  useEffect(() => {
-    return registerHookHandler(
-      "updateCombatant",
-      (
-        updatedCombatant: InvestigatorCombatant,
-        updates: Combatant.UpdateData,
-        _options: Combatant.Database.OnUpdateOptions,
-        _userId: string,
-      ) => {
-        if (updatedCombatant.id !== combatant.id) return;
-        setCombatantState((previousCombatantData) => {
-          const newData = produce(previousCombatantData, (draft) => {
-            foundry.utils.mergeObject(draft, updates);
-            draft.img = updatedCombatant.img;
-            draft.name = updatedCombatant.name;
-          });
-          return newData;
-        });
-        setResource(getValue(updatedCombatant.resource));
-      },
-    );
-  }, [combatant]);
-
-  // effects data
-  const [effects, setEffects] = useState<SourceData<ActiveEffect.Schema>[]>([]);
-  useEffect(() => {
-    return combatant.actor?.registerCombatantEffectsHandler((effects) => {
-      setEffects(effects);
-    });
-  }, [combatant]);
-
-  useEffect(() => {
-    return combatant.registerResourceHandler((resource) => {
-      setResource(getValue(resource));
-    });
-  }, [combatant]);
+  const id = combatant.id;
+  const fromCombat = useCombatSnapshot(
+    combatant.combat,
+    (combat) => combat?.combatants.find((c) => c._id === id) ?? null,
+  );
+  // (only while it's being removed, before the row goes)
+  const combatantState = fromCombat ?? combatantData(combatant);
+  const effects = useActorSnapshot(combatant.actor, () =>
+    getCombatantEffectsOf(combatant.actor),
+  );
+  const resource = useSnapshot(getCombatantResourceStore(combatant));
 
   return useMemo(
     () => ({ combatant, combatantState, effects, resource }),

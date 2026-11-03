@@ -1,5 +1,4 @@
-import { produce } from "immer";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef } from "react";
 import { FaEdit, FaRecycle, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
 
@@ -10,7 +9,6 @@ import {
   NativeMenuItem,
 } from "../../inputs/NativeMenu";
 import { NativeMenuLabel } from "../../inputs/NativeMenu/NativeMenuLabel";
-import { registerHookHandler } from "../registerHookHandler";
 import { useCombatantContext } from "./CombatantContext";
 import { useInititative } from "./useInititative";
 
@@ -26,34 +24,16 @@ export const ClassicInitiative = memo(function ClassicInitiative() {
       "ClassicInitiative must be rendered with a combatant that is in combat.",
     );
   }
-  const [combatantSystemData, setCombatantSystemData] = useState(
-    combatant.system.toJSON(),
-  );
-
-  useEffect(() => {
-    return registerHookHandler(
-      "updateCombatant",
-      (updatedCombatant, changes) => {
-        if (updatedCombatant !== combatant) return;
-        if (!("system" in changes)) return;
-        setCombatantSystemData((oldData) => {
-          const systemChanges = changes.system;
-          const newData = systemChanges
-            ? produce(oldData, (draft) => {
-                foundry.utils.mergeObject(draft, systemChanges);
-              })
-            : oldData;
-          return newData;
-        });
-      },
-    );
-  }, [combatant]);
+  // from the combat's snapshot, so it follows the initiative being changed
+  // anywhere
+  const initiative =
+    combatantState.type === "classic" ? combatantState.system.initiative : 0;
 
   const { onConfigureCombatant, onRemoveCombatant, localize, openSheet } =
     useInititative(combatant);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const initString = (combatantSystemData.initiative ?? 0).toString();
+  const initString = initiative.toString();
 
   useEffect(() => {
     if (inputRef.current && document.activeElement !== inputRef.current) {

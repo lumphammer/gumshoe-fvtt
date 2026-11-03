@@ -103,7 +103,8 @@ translations, adding fields and settings, releases).
     actor and the settings, use `useActorAndSettings`, not
     `useSettings((s) => s)`. There's one cached
     store per document (`documentStores.ts`), so many components can read the
-    same actor cheaply. For several actors by id (a party's members), use
+    same actor cheaply. A combat's (with its combatants) is
+    `useCombatSnapshot`. For several actors by id (a party's members), use
     `useActorsSnapshot(ids, selector)`.
   - Use the live document only to write, in event handlers, or through
     `useSystemMethods(doc)`: `doc.system` is replaced on update, so
