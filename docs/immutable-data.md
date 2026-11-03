@@ -657,7 +657,7 @@ These are code-path findings, not browser-reproduced bugs. Both concern
 #1476's aim of plumbing immutable data through all components: opting out
 of compiler caching does not itself subscribe to changes.
 
-- [ ] **Subscribe to the actor's default turn count.**
+- [x] **Subscribe to the actor's default turn count.**
   `combat/CombatantRow/CombatantTurnContext.ts` reads
   `passingTurnsRemaining` and `defaultPassingTurns` live in
   `usePassingTurns`. The latter depends on the actor's
@@ -667,7 +667,9 @@ of compiler caching does not itself subscribe to changes.
   the actor's default turns and the round explicitly, then call the
   existing pure `getPassingTurnsRemaining`. This removes the hidden
   dependency and the compiler escape hatch. Verify with a regression test
-  that changes the actor's default without advancing combat.
+  that changes the actor's default without advancing combat. Done: the hook
+  selects each dependency and calls the pure rule, without a compiler escape
+  hatch. Browser coverage checks before and after combat starts.
 - [ ] **Finish migrating theme consumers to the registry store.**
   `characters/SettingsArea.tsx` reads and enumerates `runtimeConfig.themes`
   directly. Installing or replacing a theme emits `runtimeConfigChanged`,

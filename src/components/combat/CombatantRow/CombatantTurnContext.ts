@@ -1,7 +1,9 @@
 import { createContext, useContext } from "react";
 
 import type { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
-import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
+import { useActorSnapshot } from "../../../hooks/useActorSnapshot";
+import { useCombatSnapshot } from "../../../hooks/useCombatSnapshot";
+import { getPassingTurnsRemaining } from "../../../module/combat/passingTurnState";
 
 /**
  * Whether it's this combatant's turn, for one combatant's row. The tracker's
@@ -12,7 +14,7 @@ export const CombatantActiveContext = createContext(false);
 
 /**
  * The combat's round. A turn-passing combatant's turns remaining depend on
- * it (read from the live combatant, by `usePassingTurns`), so what shows them
+ * it (selected by `usePassingTurns`), so what shows them
  * re-renders when it changes, without re-rendering whole rows.
  */
 export const CombatRoundContext = createContext(0);
@@ -23,23 +25,26 @@ export const useCombatantTurn = () => ({
   round: useContext(CombatRoundContext),
 });
 
-/**
- * A turn-passing combatant's turns remaining this round, and how many it
- * starts each round with (`null` for other combatants). Read from the live
- * combatant, re-rendering when the round changes; the row's own state brings
- * in changes to the combatant.
- *
- * Not compiled by React Compiler (`"use no memo"`), so it reads them again
- * on every render: the compiled components which call it would otherwise
- * cache them on the combatant, which is the same object when they change.
- */
+/** Turns follow the combatant's recorded state, its actor's default and the round. */
 export const usePassingTurns = (combatant: InvestigatorCombatant) => {
-  "use no memo";
-  useContext(CombatRoundContext);
-  return isTurnPassingCombatant(combatant)
-    ? {
-        remaining: combatant.system.passingTurnsRemaining,
-        total: combatant.system.defaultPassingTurns,
-      }
-    : null;
+  const round = useContext(CombatRoundContext);
+  const turnInfo = useCombatSnapshot(combatant.combat, (combat) => {
+    const state = combat?.combatants.find((c) => c._id === combatant.id);
+    return state?.type === "turnPassing" ? state.system.turnInfo : null;
+  });
+  const total = useActorSnapshot(combatant.actor, (actor) =>
+    actor?.type === "pc" || actor?.type === "npc"
+      ? (actor.system.initiativePassingTurns ?? 1)
+      : 1,
+  );
+  return turnInfo === null
+    ? null
+    : {
+        remaining: getPassingTurnsRemaining(
+          turnInfo,
+          Math.max(0, round - 1),
+          total,
+        ),
+        total,
+      };
 };
