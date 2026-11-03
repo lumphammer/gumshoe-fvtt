@@ -255,11 +255,15 @@ const createActorStore = (actor: Actor.Implementation) =>
       },
     },
     watchMore: (refresh, readAll) => {
-      // an item's own effect: the item's copy includes it
+      // An item's own effect: the item's copy includes it. Its hook fires
+      // once the item is prepared again, but before the actor is (which
+      // happens as Foundry dispatches the change to the item's parent), so
+      // anything derived from it (the actor's prepared data, its applied
+      // effects) would be stale: hence the microtask
       const onItemEffect = (effect: ActiveEffect.Implementation) => {
         const item = effect.parent;
         if (item instanceof Item && item.parent === actor) {
-          refresh("items", item.id, itemData(item));
+          queueMicrotask(() => refresh("items", item.id, itemData(item)));
         }
       };
       const offs = [
@@ -471,6 +475,27 @@ const createCombatStore = (combat: Combat.Implementation) =>
         contents: () => combat.combatants.contents,
         toData: combatantData,
       },
+    },
+    // a combatant's name and image come from its token or actor when it has
+    // none of its own, so follow those changing too
+    watchMore: (refresh) => {
+      const refreshWhere = (
+        uses: (combatant: Combatant.Implementation) => boolean,
+      ) => {
+        for (const combatant of combat.combatants) {
+          if (uses(combatant)) {
+            refresh("combatants", combatant.id, combatantData(combatant));
+          }
+        }
+      };
+      return [
+        on("updateToken", (token) =>
+          refreshWhere((combatant) => combatant.token === token),
+        ),
+        on("updateActor", (actor) =>
+          refreshWhere((combatant) => combatant.actor === actor),
+        ),
+      ];
     },
   });
 
