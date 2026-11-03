@@ -24,8 +24,6 @@ import { Translate } from "../Translate";
  * through). Memoised (it has no props).
  */
 export const MwItemSheet = memo(function MwItemSheet() {
-  "use memo";
-
   const { item } = useItemSheetContext();
 
   assertMwItem(item);

@@ -8,8 +8,6 @@ import { SettingsGridField } from "../SettingsGridField";
 import type { Setters } from "../types";
 
 export const PcOptionsSettings = ({ setters }: { setters: Setters }) => {
-  "use memo";
-
   const { settings } = useContext(StateContext);
   return (
     <InputGrid>

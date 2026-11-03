@@ -65,8 +65,6 @@ export const TeamCrisisPanel = ({
   initialTeammateUuids = [],
   onDone,
 }: TeamCrisisPanelProps) => {
-  "use memo";
-
   // the actor's own data: the Bonds tab above is memoised, so this reads
   // what it shows itself
   const view = useActorAndSettings(actor, (pc, settings) => ({

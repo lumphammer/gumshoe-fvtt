@@ -8,8 +8,6 @@ import { store } from "../store";
 import { cardCategory } from "./directions";
 
 export const Categories = ({ className }: { className?: string }) => {
-  "use memo";
-
   const { settings } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
   const { navigate } = useNavigationContext();

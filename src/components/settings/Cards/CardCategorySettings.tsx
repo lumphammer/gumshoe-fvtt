@@ -17,8 +17,6 @@ import { store } from "../store";
 import { cardCategory } from "./directions";
 
 export const CardCategorySettings = () => {
-  "use memo";
-
   const index = useParams(cardCategory);
   const dispatch = useContext(DispatchContext);
   const modify = useContext(ModifyContext);

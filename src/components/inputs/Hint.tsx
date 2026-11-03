@@ -38,8 +38,6 @@ export const getHintColors = (theme: ThemeV1, severity: HintSeverity) => ({
  * the weapon sheet's attack button), so it doesn't move as hints come and go.
  */
 export const Hint = ({ severity, children, action }: HintProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   return (
     <div

@@ -20,8 +20,6 @@ export const AbilitySlugPlayQuickShockInvestigative = memo(
     ability,
     disabled,
   }: AbilitySlugPlayQuickShockInvestigativeProps) {
-    "use memo";
-
     const row = useItemSelector(ability, (snapshot: AbilitySnapshot) => ({
       name: snapshot.name,
       hasSpecialities: snapshot.system.hasSpecialities,

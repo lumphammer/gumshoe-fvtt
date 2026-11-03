@@ -17,8 +17,6 @@ import { summarizeCategoryMemberships } from "./functions";
 
 /** Editing a card: it reads the card and its categories through snapshots */
 export const CardMain = ({ item }: { item: CardItem }) => {
-  "use memo";
-
   const view = useItemSelector(item, (snapshot) => ({
     name: snapshot.name,
     system: snapshot.system,

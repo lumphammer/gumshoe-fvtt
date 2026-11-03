@@ -8,8 +8,6 @@ type ModeSelectProps = PropsWithChildren<{
 }>;
 
 export const ModeSelect = ({ mode, children }: ModeSelectProps) => {
-  "use memo";
-
   const currentMode = useContext(ModeContext);
   return mode === currentMode ? <>{children}</> : null;
 };

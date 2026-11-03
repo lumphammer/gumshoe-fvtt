@@ -11,7 +11,6 @@ interface CategorizedCardArrayProps {
 }
 
 export const CategorizedCardArray = ({ cards }: CategorizedCardArrayProps) => {
-  "use memo";
   const categories = useSettings((s) => s.cardCategories);
   const [categoriesMap, uncategorized] = categorizeCards(cards, categories);
 

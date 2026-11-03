@@ -15,7 +15,6 @@ interface UncategorizedCardArrayProps {
 export const UncategorizedCardArray = ({
   cards,
 }: UncategorizedCardArrayProps) => {
-  "use memo";
   const categories = useSettings((s) => s.cardCategories);
   const [categorizedCards, uncategorized] = categorizeCards(cards, categories);
   const theme = useContext(ThemeContext);

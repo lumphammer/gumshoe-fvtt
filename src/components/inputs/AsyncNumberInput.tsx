@@ -44,8 +44,6 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
     noPlusMinus = false,
     smallButtons = false,
   }) => {
-    "use memo";
-
     const validate = useCallback(
       (text: string): ValidationResult => {
         const num = Number(text);

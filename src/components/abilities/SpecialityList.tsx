@@ -20,8 +20,6 @@ type SpecialityListProps = {
 export const SpecialityList = memo(function SpecialityList({
   ability: item,
 }: SpecialityListProps) {
-  "use memo";
-
   const { specialities, count, hasSpecialities } = useItemSelector(
     item,
     ({ system }: AbilitySnapshot) => ({

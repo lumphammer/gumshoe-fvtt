@@ -19,8 +19,6 @@ import { NetworkContactMain } from "./NetworkContactMain";
  * Memoised (it has no props).
  */
 export const NetworkContactSheet = memo(function NetworkContactSheet() {
-  "use memo";
-
   const { item } = useItemSheetContext();
   assertNetworkContactItem(item);
   const view = useItemSelector(item, (snapshot) => ({

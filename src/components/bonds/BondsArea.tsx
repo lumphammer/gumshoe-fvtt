@@ -32,8 +32,6 @@ import { NestedTeamCrisisPanel } from "./NestedTeamCrisisPanel";
  * adaptations to trauma. Either can be on without the other.
  */
 export const BondsArea = memo(function BondsArea() {
-  "use memo";
-
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   // the Bonds' ids, in order (as `getBonds` sorts them): each row reads its

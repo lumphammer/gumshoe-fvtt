@@ -19,8 +19,6 @@ type CrisisCallCardProps = {
  * present are ticked as teammates.
  */
 export const CrisisCallCard = ({ call, imageUrl }: CrisisCallCardProps) => {
-  "use memo";
-
   const uuids = call.members.map((member) => member.uuid);
   // which members this user can test for: Agents they own. (The world's
   // actors' snapshot changes when one is updated, its ownership included, and

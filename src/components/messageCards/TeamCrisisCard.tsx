@@ -23,8 +23,6 @@ const changeText: Record<CrisisRecord["changes"][number]["kind"], string> = {
  * record.
  */
 export const TeamCrisisCard = ({ record, imageUrl }: TeamCrisisCardProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   const spendTotal = record.total - record.die;
 

@@ -17,8 +17,6 @@ import { stabilityPages } from "./stabilityPages";
  * them (see docs/stability-settings-plan.md)
  */
 export const StabilitySettings = ({ setters }: { setters: Setters }) => {
-  "use memo";
-
   const { settings } = useContext(StateContext);
 
   return (

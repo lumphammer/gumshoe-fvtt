@@ -38,8 +38,6 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav({
   turnCount,
   allTurnsDone,
 }: TurnPassingTurnNavProps) {
-  "use memo";
-
   assertGame(game);
 
   const handleNextRound = useCallback(() => {

@@ -27,8 +27,6 @@ export const SettingsMenuLink = ({
   summary,
   icon,
 }: SettingsMenuLinkProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   const hoverBg = useListHoverBg();
 

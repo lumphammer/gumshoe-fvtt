@@ -25,8 +25,6 @@ export const SituationalModifiersEditorRow = memo(
       },
       ref,
     ) => {
-      "use memo";
-
       const onChangeRatingCallback = useCallback(
         (newVal: number) => {
           onChangeModifier(index, newVal);

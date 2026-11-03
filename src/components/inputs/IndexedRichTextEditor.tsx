@@ -15,8 +15,6 @@ export const IndexedRichTextEditor = ({
   html: string;
   name: string;
 }) => {
-  "use memo";
-
   const indexedName = `${name}#${index}`;
   const handleSave = useCallback(
     (note: string) => {

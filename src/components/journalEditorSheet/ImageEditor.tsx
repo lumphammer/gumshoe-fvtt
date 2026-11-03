@@ -16,8 +16,6 @@ interface ImageEditorProps {
  * lifting.
  */
 export const ImageEditor = ({ page }: ImageEditorProps) => {
-  "use memo";
-
   const caption = useJournalEntrySnapshot(
     page.parent,
     (entry) => entry.pages.find((p) => p._id === page.id)?.image?.caption ?? "",

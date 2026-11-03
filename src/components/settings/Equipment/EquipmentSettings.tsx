@@ -7,8 +7,6 @@ import { store } from "../store";
 import { equipmentCategory } from "./directions";
 
 export const EquipmentSettings = () => {
-  "use memo";
-
   const dispatch = useContext(DispatchContext);
   const { settings } = useContext(StateContext);
   const { navigate } = useNavigationContext();

@@ -21,7 +21,6 @@ export const SpendButtons = ({
   max,
   disabled = false,
 }: SpendButtonsProps) => {
-  "use memo";
   return (
     <CheckButtons
       size={1}

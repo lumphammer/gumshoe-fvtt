@@ -12,8 +12,6 @@ interface StatFieldProps {
 }
 
 export const StatField = ({ stat, id }: StatFieldProps) => {
-  "use memo";
-
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const value = useActorSnapshot(

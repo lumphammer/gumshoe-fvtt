@@ -21,8 +21,6 @@ export const BondRow = memo(function BondRow({
   /** The live Bond: the row reads it through a snapshot */
   bond: BondItem;
 }) {
-  "use memo";
-
   const row = useItemSelector(bond, ({ name, img, system }) => ({
     name,
     img,

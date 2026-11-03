@@ -560,7 +560,15 @@ few causes, listed here with what to do about each, in the order to do them.
    character's sheet theme, or else the default) was written out in five
    places, and is now `useActorTheme`; the models' `getSheetThemeName` is
    gone.
-9. **Compiling everything.** Then switch React Compiler to compile by
-   default, opting out only what must stay uncompiled (`Tracker`), and remove
-   the `"use memo"` directives, and the `memo()` wrappers in compiled code
-   (85 files have both), in one sweep.
+9. **Compiling everything.** _Done._ React Compiler compiles every
+   component and hook (`compilationMode: "infer"`), and the 259 `"use memo"`
+   directives are gone. Nine functions which read live state during render
+   on purpose are marked `"use no memo"`: `Tracker` (the live
+   `game.combat`), `useIsEditable` (its fallback reads the live app),
+   `usePassingTurns`, the attack cards' `useTargetViews` and
+   `useWalkingFireOptions`, `BondActor`'s `useActorName`, `Translate`'s
+   `useDebugTranslations`, and the settings screens' `useVisibleMiscPages`
+   and `useReport`. The `memo()` wrappers stay: a compiled parent makes them
+   redundant, but a component whose parent isn't compiled (a sheet's root
+   under Foundry's render, the combat tracker's list under `Tracker`) still
+   needs one to skip a re-render with the same props.

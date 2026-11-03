@@ -16,9 +16,10 @@ const config = defineConfig(({ mode }) => {
     packageType: "system",
     importMetaUrl: import.meta.url,
     plugins: [vitePluginFontsource()],
-    // only what's marked `"use memo"`: the rest still relies on re-rendering
-    // to read Foundry's mutable documents (see docs/immutable-data.md)
-    reactCompiler: { compilationMode: "annotation" },
+    // every component and hook, except those marked `"use no memo"`, which
+    // read Foundry's mutable state during render on purpose (see
+    // docs/immutable-data.md)
+    reactCompiler: { compilationMode: "infer" },
   });
   // `pnpm build:profiling`: React's profiling build, which records render
   // durations for the render-timing benchmarks (e2e/renderTiming.bench.ts)

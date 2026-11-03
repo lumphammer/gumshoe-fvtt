@@ -29,8 +29,6 @@ import { PushPoolButton } from "./PushPoolButton";
  * here: the snapshots have already brought in any change.
  */
 export const AbilitySheet = memo(function AbilitySheet() {
-  "use memo";
-
   const { item } = useItemSheetContext();
   assertAbilityItem(item);
   const ability = useItemSnapshot(item);

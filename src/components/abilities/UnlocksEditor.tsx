@@ -23,8 +23,6 @@ export const UnlocksEditor = memo(function UnlocksEditor({
   item,
   unlocks,
 }: UnlocksEditorProps) {
-  "use memo";
-
   const methods = useSystemMethods(item);
   const transitionedUnlocks = useListShowHideTransition(
     unlocks,

@@ -3,8 +3,6 @@ import { useItemSelector } from "../hooks/useItemSnapshot";
 
 /** An item's name, as a link which opens its sheet */
 export const ItemSheetLink = ({ item }: { item: Item.Implementation }) => {
-  "use memo";
-
   const name = useItemSelector(item, (snapshot) => snapshot.name);
   return (
     <a
@@ -32,7 +30,6 @@ export const EmbeddedItemSheetLink = ({
   id: string | null;
   name: string;
 }) => {
-  "use memo";
   return (
     <a
       onClick={() => {

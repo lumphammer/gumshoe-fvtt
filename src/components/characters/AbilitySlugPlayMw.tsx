@@ -16,8 +16,6 @@ type AbilitySlugPlayMwProps = {
 export const AbilitySlugPlayMw = memo(function AbilitySlugPlayMw({
   ability,
 }: AbilitySlugPlayMwProps) {
-  "use memo";
-
   const row = useItemSelector(ability, (snapshot: AbilitySnapshot) => ({
     name: snapshot.name,
     pool: snapshot.system.pool,

@@ -29,7 +29,6 @@ const settingsDirection = createDirection("settings");
  * its own data (`CardArrayCard`), and the lists read the categories.
  */
 export const CardsArea = memo(function CardsArea() {
-  "use memo";
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const { allCards, savedSettings } = useActorSnapshot(actor, (snapshot) => ({

@@ -15,8 +15,6 @@ interface CoreSettingsProps {
 }
 
 export const CoreSettings = ({ setters }: CoreSettingsProps) => {
-  "use memo";
-
   const { presets, themes } = useRuntimeRegistries();
   const { settings } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);

@@ -29,8 +29,6 @@ export const EstablishBondCard = ({
   record,
   imageUrl,
 }: EstablishBondCardProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   const bonded = record.bondPoints !== null;
 

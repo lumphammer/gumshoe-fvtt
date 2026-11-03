@@ -59,8 +59,6 @@ const RowShellContext = createContext<RowShell | null>(null);
  * constant element) doesn't re-render when the row does.
  */
 const RowListItem = () => {
-  "use memo";
-
   const shell = useContext(RowShellContext);
   if (shell === null) {
     throw new Error("RowListItem must be rendered inside a CombatantRow");
@@ -98,8 +96,6 @@ const RowListItem = () => {
 const rowListItem = <RowListItem />;
 
 export const CombatantRow = memo(({ combatant, active }: CombatantRowProps) => {
-  "use memo";
-
   const {
     attributes,
     listeners,

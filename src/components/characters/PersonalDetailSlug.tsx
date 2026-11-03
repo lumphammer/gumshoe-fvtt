@@ -11,7 +11,6 @@ export const PersonalDetailSlug = ({
   actor,
   detail,
 }: PersonalDetailSlugProps) => {
-  "use memo";
   return (
     <Slug
       item={detail}

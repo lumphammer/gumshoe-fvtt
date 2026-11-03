@@ -69,8 +69,6 @@ export const AbilityRow = ({
   actors,
   theme,
 }: AbilityRowProps) => {
-  "use memo";
-
   const zero = abilityRowData.total === 0;
   const odd = index % 2 === 0;
 

@@ -30,8 +30,6 @@ export const TextInput = ({
   placeholder,
   validation,
 }: TextInputProps) => {
-  "use memo";
-
   const id = useContext(IdContext);
   const isEditable = useIsEditable();
 

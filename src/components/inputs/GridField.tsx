@@ -31,8 +31,6 @@ export const GridField = ({
   onDrop,
   labelStyle,
 }: GridFieldProps) => {
-  "use memo";
-
   const id = useMemo(() => nanoid(), []);
   return (
     <IdContext.Provider value={id}>

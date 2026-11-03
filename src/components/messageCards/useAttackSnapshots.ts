@@ -1,6 +1,7 @@
 // Hooks for attack cards, which read the targets' and the attacker's actors
-// through snapshots. They aren't compiled, so the live lookups in them (which
-// token a target is, which weapon made the attack) run on every render.
+// through snapshots. The ones which look things up live (which token a target
+// is, which weapon made the attack) aren't compiled ("use no memo"), so the
+// lookups run on every render.
 
 import * as c from "../../constants";
 import { useActorListSnapshot } from "../../hooks/useActorsSnapshot";
@@ -37,6 +38,7 @@ export type TargetView = {
 export function useTargetViews(
   targets: readonly AttackTargetData[],
 ): Readonly<Record<string, TargetView>> {
+  "use no memo";
   // which actor a target's token has can change without the actor changing
   useSnapshot(getTokenActorsCounter());
   const actors = targets.map(
@@ -78,6 +80,7 @@ export function useResolveOptions(): ResolveOptions {
 export function useWalkingFireOptions(
   msg: AttackMessage,
 ): WalkingFireOptions | null {
+  "use no memo";
   const weapon = getAttackWeapon(msg);
   const spendNames = useSettings((s) => s.walkingFireSpendAbilities);
   return useActorSnapshot(weapon?.actor ?? null, (actor) => {

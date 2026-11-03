@@ -27,8 +27,6 @@ interface AttackCardProps {
 
 export const AttackCard = React.memo(
   ({ msg, rangeName, weapon, name, imageUrl }: AttackCardProps) => {
-    "use memo";
-
     // the weapon's own name and picture, as they are now
     const header = useMaybeItemSelector(weapon, (snapshot) =>
       snapshot ? { name: snapshot.name, img: snapshot.img ?? null } : null,

@@ -16,8 +16,6 @@ interface ImageAreaProps {
  * lifting.
  */
 export const ImageArea = ({ page }: ImageAreaProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   const { app } = useDocumentSheetContext();
   const src = useJournalEntrySnapshot(

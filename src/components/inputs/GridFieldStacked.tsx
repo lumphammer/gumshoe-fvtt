@@ -18,8 +18,6 @@ export const GridFieldStacked = ({
   children,
   noTranslate = false,
 }: GridFieldStackedProps) => {
-  "use memo";
-
   const htmlId = useMemo(() => nanoid(), []);
   return (
     <IdContext.Provider value={htmlId}>

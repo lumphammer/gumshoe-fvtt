@@ -40,8 +40,6 @@ const TurnPassingMenu = memo(function TurnPassingMenu({
   combatant: TurnPassingCombatant;
   name: string;
 }) {
-  "use memo";
-
   assertGame(game);
   const localize = game.i18n.localize.bind(game.i18n);
   const { onConfigureCombatant, onRemoveCombatant, openSheet } =
@@ -78,8 +76,6 @@ const TurnPassingMenu = memo(function TurnPassingMenu({
 });
 
 export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
-  "use memo";
-
   assertGame(game);
   const { combatant, combatantState } = useTurnPassingCombatantContext();
   // not the tracker's context, which changes on every combat update

@@ -9,8 +9,6 @@ import { IdContext } from "../IdContext";
  * label is its label, and is disabled where the user can't edit.
  */
 export const Select = (props: ComponentProps<"select">) => {
-  "use memo";
-
   const id = useContext(IdContext);
   const isEditable = useIsEditable();
   return (

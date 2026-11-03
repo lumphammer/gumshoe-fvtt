@@ -20,8 +20,6 @@ export type TeamCrisisWindowApp = {
  * `rerenderOnFoundryRender: false`).
  */
 export const TeamCrisisWindow = () => {
-  "use memo";
-
   const app = useContext(FoundryAppContext) as unknown as TeamCrisisWindowApp;
   const theme = useActorTheme(app.actor);
   return (

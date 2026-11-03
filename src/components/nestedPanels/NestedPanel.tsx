@@ -16,8 +16,6 @@ type NestedPanelProps = PropsWithChildren<{
 
 export const NestedPanel = memo<NestedPanelProps>(
   ({ children, className, margin = defaultPanelMargin }) => {
-    "use memo";
-
     const theme = useContext(ThemeContext);
     const showBackLink = useContext(ShowBackLinkContext);
     const { navigate, currentStep } = useNavigationContext();

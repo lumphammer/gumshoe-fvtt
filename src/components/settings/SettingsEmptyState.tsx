@@ -7,8 +7,6 @@ import { Translate } from "../Translate";
  * Stands in for a list with nothing in it.
  */
 export const SettingsEmptyState = ({ message }: { message: string }) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   return (
     <div

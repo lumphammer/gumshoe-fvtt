@@ -9,8 +9,6 @@ import type { Setters } from "../types";
 import { personalDetail } from "./directions";
 
 export const PersonalDetailsSettings = ({ setters }: { setters: Setters }) => {
-  "use memo";
-
   const { settings } = useContext(StateContext);
   const modify = useContext(ModifyContext);
   const { navigate } = useNavigationContext();

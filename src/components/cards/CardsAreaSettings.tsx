@@ -19,8 +19,6 @@ export const CardsAreaSettingsSheet = ({
   settings,
   onChangeSettings,
 }: CardsAreaSettingsSheetProps) => {
-  "use memo";
-
   return (
     <InputGrid>
       <GridField label="Categories">

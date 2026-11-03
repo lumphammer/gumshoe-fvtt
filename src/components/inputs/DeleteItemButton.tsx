@@ -14,8 +14,6 @@ type DeleteItemButtonProps = Omit<ComponentProps<"button">, "onClick"> & {
  * item after confirming
  */
 export const DeleteItemButton = ({ item, ...rest }: DeleteItemButtonProps) => {
-  "use memo";
-
   const label = getTranslated("Delete");
   return (
     <Button

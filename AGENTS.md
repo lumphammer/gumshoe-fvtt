@@ -72,28 +72,27 @@ translations, adding fields and settings, releases).
 ## React
 
 - React Compiler (Oxc's port, through `@vitejs/plugin-react`'s `compiler`)
-  only compiles functions marked `"use memo"` (`compilationMode:
-  "annotation"`). Foundry's data is mutable, so the rest of the UI relies on
-  full re-renders: the compiler caches on identity, and a document keeps its
-  identity when it changes. Only mark code which reads its data through
-  snapshots (below); the PC, NPC and party sheets, every item sheet, the
-  chat cards, the system settings screens (whose working copy of the settings
-  is an immer reducer's state), the journal editor, the combat tracker (but
-  `Tracker`), and the shared inputs, `Translate` and `ImagePickle` are
-  marked. A compiled component
-  passes an unchanged child its cached element, so every child of one must
-  keep itself current (as if memoised), not rely on its parent re-rendering.
-  A call during render is cached on its arguments: one which reads global
-  state (`settings.foo.get()`, `game.user.targets`) with no changing
-  arguments would never run again, so read through `useSettings` or a hook
-  that isn't compiled. Only oxlint's `preserve-manual-memoization` rule is on:
-  avoid `useMemo`/`useCallback` over values that change every render; plain
-  functions are fine.
-- Sheets are being converted to read immutable **snapshots**, so they can be
-  memoised (`docs/immutable-data.md`). Converted so far: every item sheet
-  (`ItemSheet` provides `SheetPermissionsContext` for them all), the PC, NPC and
-  party sheets (`PCSheetFull` and `NPCSheetFull` are memoised), and the
-  combat tracker's rows and header. In a converted tree:
+  compiles every component and hook (`compilationMode: "infer"`). It caches
+  on identity, and a Foundry document keeps its identity when it changes, so
+  components read Foundry's data through snapshots and stores (below), never
+  live during render. The few functions which read live state during render
+  on purpose (`Tracker`, `useIsEditable`'s fallback, `usePassingTurns`, and a
+  handful of hooks that look things up live) are marked `"use no memo"`, with
+  a comment saying why; mark any new one the same way. A compiled component
+  passes an unchanged child its cached element, so every child must keep
+  itself current (as if memoised), not rely on its parent re-rendering. A
+  call during render is cached on its arguments: one which reads global state
+  (`settings.foo.get()`, `game.user.targets`) with no changing arguments
+  would never run again, so read through `useSettings` or a store. Only
+  oxlint's `preserve-manual-memoization` rule is on: avoid
+  `useMemo`/`useCallback` over values that change every render; plain
+  functions are fine. `memo()` still matters for a component whose parent
+  isn't compiled (a sheet's root, the combat tracker's list).
+- Everything reads immutable **snapshots**, so it can be memoised
+  (`docs/immutable-data.md`). Every item sheet (`ItemSheet` provides
+  `SheetPermissionsContext` for them all), the PC, NPC and party sheets
+  (`PCSheetFull` and `NPCSheetFull` are memoised), the journal editor, the
+  chat cards and the combat tracker. In a sheet:
   - Read data only from `useItemSnapshot`/`useItemSelector`,
     `useActorSnapshot(actor, selector)` and `useSettings(selector)`.
     Selector results are structurally shared, so they can build objects; select
@@ -151,7 +150,7 @@ translations, adding fields and settings, releases).
   Foundry renders a message again (so a new root) whenever it changes, so a
   card can read its message directly; anything else it shows (the ability,
   an attack's targets and attacker) comes through snapshots
-  (`useAttackSnapshots.ts`). The cards are compiled.
+  (`useAttackSnapshots.ts`).
 
 ## Themes
 

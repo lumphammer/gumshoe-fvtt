@@ -22,8 +22,6 @@ const outcomeText: Record<RebuildOutcome, string> = {
  * all settled when the test is rolled, so it just shows the record.
  */
 export const RebuildBondCard = ({ record, imageUrl }: RebuildBondCardProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   const succeeded =
     record.outcome === "successful6" || record.outcome === "success";

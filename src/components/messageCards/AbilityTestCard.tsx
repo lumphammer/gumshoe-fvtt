@@ -32,8 +32,6 @@ export const AbilityTestCard = React.memo(
     bondSpends = [],
     stabilityState = null,
   }: AbilityTestCardProps) => {
-    "use memo";
-
     const stateName = useStabilityStateName(stabilityState);
     const { header, openSheet: onClickAbilityName } =
       useAbilityCardHeader(ability);

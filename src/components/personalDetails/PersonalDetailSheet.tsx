@@ -15,8 +15,6 @@ import { PersonalDetailMain } from "./PersonalDetailMain";
  * item itself only to write through). Memoised (it has no props).
  */
 export const PersonalDetailSheet = memo(function PersonalDetailSheet() {
-  "use memo";
-
   const { item } = useItemSheetContext();
   assertPersonalDetailItem(item);
   const view = useItemSelector(item, (snapshot) => ({

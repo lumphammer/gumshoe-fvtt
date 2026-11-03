@@ -22,18 +22,19 @@ import {
 import { SettingsNote } from "../SettingsNote";
 
 /**
- * The report as it would be sent now. A hook, which isn't compiled, so it's
- * worked out again on every render (e.g. after resetting the install ID).
+ * The report as it would be sent now. Not compiled, so it's worked out again
+ * on every render (e.g. after resetting the install ID).
  */
-const useReport = () => formatReport(usageStatsConfig);
+const useReport = () => {
+  "use no memo";
+  return formatReport(usageStatsConfig);
+};
 
 /**
  * Whether this world shares anonymous usage stats. These take effect straight
  * away, rather than with the rest of the settings when you save.
  */
 export const UsageStatsSettings = () => {
-  "use memo";
-
   const [state, setState] = useState(() =>
     getUsageStatsState(usageStatsConfig),
   );

@@ -22,8 +22,6 @@ export const CardArrayCard = memo(function CardArrayCard({
   card,
   className,
 }: CardArrayCardProps) {
-  "use memo";
-
   const data = useItemSelector(card, ({ system }) => ({
     active: system.active,
     styleKeyCategoryId: system.styleKeyCategoryId,

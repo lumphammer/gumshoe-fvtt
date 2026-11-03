@@ -22,8 +22,6 @@ export const CategoryMembershipRow = ({
   membership,
   index,
 }: CategoryMembershipRowProps) => {
-  "use memo";
-
   const handleToggleActive = async (active: boolean) => {
     if (active) {
       await card.system.addCardCategoryMembership(category.id);

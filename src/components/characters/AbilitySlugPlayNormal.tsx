@@ -17,8 +17,6 @@ type AbilitySlugPlayNormalProps = {
 export const AbilitySlugPlayNormal = memo(function AbilitySlugPlayNormal({
   ability,
 }: AbilitySlugPlayNormalProps) {
-  "use memo";
-
   const row = useItemSelector(ability, (snapshot: AbilitySnapshot) => ({
     name: snapshot.name,
     pool: snapshot.system.pool,

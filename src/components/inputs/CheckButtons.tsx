@@ -22,8 +22,6 @@ export const CheckButtons = ({
   size = 1.4,
   onChange: onChangeOrig,
 }: CheckButtonsProps) => {
-  "use memo";
-
   const isEditable = useIsEditable();
   const theme = useContext(ThemeContext);
   const onChange = useCallback(

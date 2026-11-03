@@ -24,8 +24,6 @@ export const EditCategoryMemberships = ({
   styleKeyCategoryId,
   categories,
 }: EditCategoryMembershipsProps) => {
-  "use memo";
-
   const handleChangeStyleKeyCategoryId = async (
     e: React.ChangeEvent<HTMLSelectElement>,
   ) => {

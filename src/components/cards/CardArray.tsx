@@ -23,7 +23,6 @@ const columndWidths: Record<CardsColumnWidth, string> = {
 };
 
 export const CardArray = ({ cards }: CardArrayProps) => {
-  "use memo";
   const { actor } = useActorSheetContext();
   const theme = useContext(ThemeContext);
   const { columnWidth: columnWidthSetting } = useContext(

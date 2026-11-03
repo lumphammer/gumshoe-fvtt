@@ -19,8 +19,6 @@ export const AbilityMwExtraFields = memo(function AbilityMwExtraFields({
   trumps,
   trumpedBy,
 }: AbilityMwExtraFieldsProps) {
-  "use memo";
-
   const { setMwTrumps, setMwTrumpedBy } = useSystemMethods(
     item as GeneralAbilityItem,
   );

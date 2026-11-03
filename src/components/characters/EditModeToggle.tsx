@@ -14,8 +14,6 @@ export const EditModeToggle = ({
   editMode,
   setEditMode,
 }: EditModeToggleProps) => {
-  "use memo";
-
   const id = useId();
   return (
     <div

@@ -27,8 +27,6 @@ import { PersonalDetailsSettings } from "./PersonalDetailsSettings";
  * settings area.
  */
 export const ActorSettingsRoutes = ({ setters }: { setters: Setters }) => {
-  "use memo";
-
   const { settings } = useContext(StateContext);
 
   return (

@@ -61,8 +61,6 @@ export const AdaptationTracker = memo(function AdaptationTracker({
 }: {
   actor: PCActor;
 }) {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   const types = useSettings(
     (s) => getAdaptableTraumaTypesFrom(s) as TraumaType[],

@@ -12,8 +12,6 @@ type ButtonProps = ComponentProps<"button"> &
 export const Button = React.memo<ButtonProps>(
   React.forwardRef<HTMLButtonElement, ButtonProps>(
     ({ children, onClick, className, disabled, ...rest }, ref) => {
-      "use memo";
-
       const isEditable = useIsEditable();
       const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -42,8 +40,6 @@ Button.displayName = "Button";
 
 export const ToolbarButton = React.memo<ButtonProps>(
   ({ children, onClick, className, ...rest }) => {
-    "use memo";
-
     return (
       <Button
         {...rest}

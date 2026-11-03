@@ -4,8 +4,6 @@ type InputGridProps = {
 };
 
 export const InputGrid = ({ children, className }: InputGridProps) => {
-  "use memo";
-
   return (
     <div
       css={{

@@ -34,8 +34,6 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
   weapon,
   index,
 }: WeaponRowEditProps) {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   const row = useItemSelector(weapon, (snapshot) => ({
     name: snapshot.name,

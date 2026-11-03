@@ -5,8 +5,6 @@ import { CharacterSheetSimple } from "./CharacterSheetSimple";
 
 /** What people with Limited permission see of an NPC. */
 export const NPCSheetSimple = () => {
-  "use memo";
-
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
   const notes = useActorSnapshot(actor, (snapshot) => snapshot.system.notes);

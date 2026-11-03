@@ -16,8 +16,6 @@ export const ToolbarButton = ({
   icon: Icon,
   disabled = false,
 }: ToolbarButtonProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
 
   // Use props in your component

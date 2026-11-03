@@ -19,8 +19,6 @@ enum Mode {
  * Handle an HTML page - either editor of history mode.
  */
 export const HTMLPage = ({ page }: HTMLPageProps) => {
-  "use memo";
-
   const [mode, setMode] = useState(Mode.Edit);
 
   const setEdit = useCallback(() => setMode(Mode.Edit), []);

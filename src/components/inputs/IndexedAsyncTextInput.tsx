@@ -19,8 +19,6 @@ export const IndexedAsyncTextInput = ({
   onChange,
   ...props
 }: IndexedAsyncTextInputProps) => {
-  "use memo";
-
   const handleChange = useCallback(
     (newValue: string) => {
       onChange(newValue, index);

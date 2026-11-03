@@ -27,8 +27,6 @@ export const EquipmentConfig = memo(function EquipmentConfig({
   system,
   categories,
 }: EquipmentConfigProps) {
-  "use memo";
-
   const onClickDelete = useCallback(async () => {
     assertGame(game);
     const message = item.actor

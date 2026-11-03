@@ -15,8 +15,6 @@ const getColumns = (showSpend: boolean) =>
 
 /** Column headings for the ranges, when they have spends as well as damage */
 export const WeaponRangeHeadings = () => {
-  "use memo";
-
   return (
     <GridField noLabel>
       <div
@@ -56,8 +54,6 @@ export const WeaponRange = memo(function WeaponRange({
   spend,
   setSpend,
 }: WeaponRangeProps) {
-  "use memo";
-
   const showSpend = spend !== undefined && setSpend !== undefined;
   return (
     <GridField label={label}>

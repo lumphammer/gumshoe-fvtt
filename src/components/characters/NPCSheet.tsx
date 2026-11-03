@@ -7,8 +7,6 @@ import { NPCSheetFull } from "./NPCSheetFull";
 import { NPCSheetSimple } from "./NPCSheetSimple";
 
 export const NPCSheet = () => {
-  "use memo";
-
   const { actor } = useActorSheetContext();
 
   assertNPCActor(actor);

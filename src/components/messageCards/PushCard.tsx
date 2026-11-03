@@ -19,8 +19,6 @@ const shadowBlur = "1px";
 
 export const PushCard = React.memo(
   ({ msg, ability, mode, name, imageUrl }: PushCardProps) => {
-    "use memo";
-
     const theme = useTheme();
     const { header, openSheet: onClickAbilityName } =
       useAbilityCardHeader(ability);
