@@ -104,24 +104,25 @@ function setUpCombat() {
     combatants: [] as unknown[],
     turns: [] as { id: string }[],
   };
-  const combatant = (id: string, initiative: number, token: unknown) => ({
-    id,
-    parent: combat,
-    token,
-    actor: null,
-    img: null,
-    get name() {
-      return (token as { name: string } | null)?.name ?? id;
-    },
-    initiative,
-    toObject: () => ({
-      _id: id,
-      type: "classic",
-      system: {
-        initiative: combatantList.find((c) => c.id === id)?.initiative,
+  const combatant = (id: string, initiative: number, token: unknown) => {
+    const fake = {
+      id,
+      parent: combat,
+      token,
+      actor: null,
+      img: null,
+      get name() {
+        return (token as { name: string } | null)?.name ?? id;
       },
-    }),
-  });
+      initiative,
+      toObject: () => ({
+        _id: id,
+        type: "classic",
+        system: { initiative: fake.initiative },
+      }),
+    };
+    return fake;
+  };
   const combatantList = [combatant("a", 3, tokenA), combatant("b", 5, null)];
   combat.combatants = Object.assign([...combatantList], {
     contents: combatantList,
@@ -235,6 +236,7 @@ describe("getActorStore", () => {
     }
     vi.stubGlobal("Item", FakeItem);
     vi.stubGlobal("foundry", { utils: { deepClone: structuredClone } });
+    let applied = 0;
     const actor = {
       _source: { name: "Agent", items: [], effects: [], system: {} },
       // what's derived from the items: here, how many effects they apply
@@ -243,7 +245,6 @@ describe("getActorStore", () => {
       effects: { contents: [] },
       isToken: false,
     };
-    let applied = 0;
     const item = new FakeItem("i", actor, []);
     actor.items.contents.push(item);
     const store = getActorStore(actor as unknown as Actor.Implementation);
