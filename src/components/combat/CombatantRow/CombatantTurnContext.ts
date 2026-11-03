@@ -29,11 +29,12 @@ export const useCombatantTurn = () => ({
  * combatant, re-rendering when the round changes; the row's own state brings
  * in changes to the combatant.
  *
- * Not compiled by React Compiler (hooks aren't marked), so it reads them again
+ * Not compiled by React Compiler (`"use no memo"`), so it reads them again
  * on every render: the compiled components which call it would otherwise
  * cache them on the combatant, which is the same object when they change.
  */
 export const usePassingTurns = (combatant: InvestigatorCombatant) => {
+  "use no memo";
   useContext(CombatRoundContext);
   return isTurnPassingCombatant(combatant)
     ? {

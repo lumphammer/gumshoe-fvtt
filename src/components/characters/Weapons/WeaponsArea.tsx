@@ -35,8 +35,6 @@ type WeaponsAreaProps = {
 export const WeaponsArea = memo(function WeaponsArea({
   fillHeight = false,
 }: WeaponsAreaProps) {
-  "use memo";
-
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const theme = useContext(ThemeContext);

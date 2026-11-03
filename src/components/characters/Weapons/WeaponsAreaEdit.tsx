@@ -17,8 +17,6 @@ import { WeaponRowEdit } from "./WeaponRowEdit";
  * selecting only which weapons there are: each row reads its own.
  */
 export const WeaponsAreaEdit = memo(function WeaponsAreaEdit() {
-  "use memo";
-
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const ids = useActorSnapshot(actor, (snapshot) =>

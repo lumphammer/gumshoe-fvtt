@@ -17,8 +17,6 @@ import { TraumaTypesSettings } from "./TraumaTypesSettings";
  * area.
  */
 export const StabilitySettingsRoutes = ({ setters }: { setters: Setters }) => {
-  "use memo";
-
   return (
     <>
       <SlideInNestedPanelRoute direction={stabilityStates} margin="0em">

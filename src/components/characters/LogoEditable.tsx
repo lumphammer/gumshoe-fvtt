@@ -146,8 +146,6 @@ export const LogoEditable = ({
   onChangeMainText,
   onChangeSubText,
 }: LogoEditableProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
 
   // all the editing logic is done in the hook

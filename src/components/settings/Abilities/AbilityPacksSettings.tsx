@@ -56,8 +56,6 @@ export const AbilityPacksSettings = ({
   which,
   setters,
 }: AbilityPacksSettingsProps) => {
-  "use memo";
-
   const { settings } = useContext(StateContext);
   const theme = useContext(ThemeContext);
   const selectedPacks = settings[which];

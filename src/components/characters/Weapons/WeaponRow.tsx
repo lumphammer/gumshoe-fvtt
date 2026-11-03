@@ -26,8 +26,6 @@ export const WeaponRow = memo(function WeaponRow({
   isReady,
   setReady,
 }: WeaponRowProps) {
-  "use memo";
-
   const row = useItemSelector(weapon, (snapshot) => ({
     name: snapshot.name,
     img: snapshot.img,

@@ -19,8 +19,6 @@ import { edit } from "./directions";
  * own), the item itself only to write through. Memoised (it has no props).
  */
 export const CardSheet = memo(function CardSheet() {
-  "use memo";
-
   const { item } = useItemSheetContext();
 
   assertCardItem(item);

@@ -9,8 +9,6 @@ import type { Setters } from "../types";
 
 /** Contacts, each with a pool taken from the Network ability */
 export const NetworkContactsSettings = ({ setters }: { setters: Setters }) => {
-  "use memo";
-
   const { settings } = useContext(StateContext);
 
   return (

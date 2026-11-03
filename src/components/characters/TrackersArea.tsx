@@ -13,8 +13,6 @@ import { PoolTracker } from "../abilities/PoolTracker";
  * snapshot, selecting only which abilities: each tracker reads its own.
  */
 export const TrackersArea = memo(function TrackersArea() {
-  "use memo";
-
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const ids = useActorSnapshot(actor, (snapshot) =>

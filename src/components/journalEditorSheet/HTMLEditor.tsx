@@ -76,8 +76,6 @@ const asString = (value: unknown): string =>
  * The actual Monaco-based HTML editor.
  */
 export const HTMLEditor = ({ page }: HTMLEditorProps) => {
-  "use memo";
-
   const monacoRef = useRef<Monaco | null>(null);
   const editorRef = useRef<IStandalonCodeEditor | null>(null);
 

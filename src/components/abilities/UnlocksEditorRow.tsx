@@ -25,8 +25,6 @@ export const UnlocksEditorRow = memo(
       },
       ref,
     ) => {
-      "use memo";
-
       const onChangeRatingCallback = useCallback(
         (newVal: number) => {
           onChangeRating(index, newVal);

@@ -18,8 +18,6 @@ export const BondConfig = ({
   item: InvestigatorItem;
   children?: ReactNode;
 }) => {
-  "use memo";
-
   return (
     <InputGrid>
       {children}

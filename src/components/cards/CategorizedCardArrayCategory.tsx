@@ -16,7 +16,6 @@ export const CategorizedCardArrayCategory = ({
   category,
   cards,
 }: CategorizedCardArrayCategoryProps) => {
-  "use memo";
   const theme = useContext(ThemeContext);
   const [summary, isOverGoal, isOverLimit] = summarizeCategoryCards(
     cards,

@@ -68,8 +68,6 @@ import { StabilitySettings } from "./Stability/StabilitySettings";
 import { StabilitySettingsRoutes } from "./Stability/StabilitySettingsRoutes";
 
 export const Settings = () => {
-  "use memo";
-
   assertGame(game);
   const foundryApplication = useContext(FoundryAppContext);
   if (foundryApplication === null) {

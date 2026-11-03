@@ -18,8 +18,6 @@ export const AbilityNameLink = ({
   name,
   className,
 }: AbilityNameLinkProps) => {
-  "use memo";
-
   const onDragStart = useDragStart();
   return (
     <a

@@ -20,8 +20,6 @@ import { NamedTranslate } from "./NamedTranslate";
 
 /** One trauma type: how hard it is, what it costs, and adapting to it */
 export const TraumaTypeSettings = () => {
-  "use memo";
-
   const index = useParams(traumaType);
   const { settings } = useContext(StateContext);
   const modify = useContext(ModifyContext);

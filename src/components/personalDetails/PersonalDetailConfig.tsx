@@ -11,8 +11,6 @@ export const PersonalDetailConfig = ({
 }: {
   item: PersonalDetailItem;
 }) => {
-  "use memo";
-
   const onClickDelete = async () => {
     assertGame(game);
     const message = item.actor

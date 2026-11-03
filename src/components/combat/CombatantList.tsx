@@ -38,8 +38,6 @@ const keyboardSensorOptions = {
 };
 
 export const CombatantList = memo(function CombatantList() {
-  "use memo";
-
   const { combat, combatState, turnIds } = useTrackerContext();
 
   if (combat === null) {

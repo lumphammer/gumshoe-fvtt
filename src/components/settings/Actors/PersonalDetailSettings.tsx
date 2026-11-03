@@ -15,8 +15,6 @@ import { useStateSelector } from "../hooks";
 import { personalDetail } from "./directions";
 
 export const PersonalDetailSettings = () => {
-  "use memo";
-
   const index = useParams(personalDetail);
   const { navigate } = useNavigationContext();
   const modify = useContext(ModifyContext);

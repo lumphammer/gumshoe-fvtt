@@ -19,8 +19,6 @@ export const BondBadges = ({
   isBroken,
   className,
 }: BondBadgesProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   const badge = {
     fontSize: "0.9em",

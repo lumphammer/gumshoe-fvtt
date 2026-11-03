@@ -31,8 +31,6 @@ const asString = (value: unknown): string =>
  * are looked up live only to hand to the page editor, to write through.
  */
 export const JournalEditorSheet = () => {
-  "use memo";
-
   const { journalEntry } = useJournalEntrySheetContext();
   const permissions = useSheetPermissions(journalEntry);
   const view = useJournalEntrySnapshot(journalEntry, (entry) => ({

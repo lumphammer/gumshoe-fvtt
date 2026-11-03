@@ -34,6 +34,9 @@ export const SheetPermissionsContext = createContext<SheetPermissions | null>(
  * controls use inputs too: see `OverrideAutoDisableMixin`.)
  */
 export function useIsEditable(): boolean {
+  // not compiled: without the context it reads the live app, following
+  // Foundry's renders
+  "use no memo";
   const provided = useContext(SheetPermissionsContext);
   if (provided !== null) return provided.isEditable;
   // `app.isEditable` is live, and a compiled parent (e.g. `AsyncTextInput`)

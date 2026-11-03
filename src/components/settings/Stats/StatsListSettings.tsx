@@ -8,8 +8,6 @@ import type { PcOrNpc } from "../types";
 import { stat } from "./directions";
 
 export const StatsListSettings = ({ which }: { which: PcOrNpc }) => {
-  "use memo";
-
   const stats = useContext(StateContext).settings[which];
   const dispatch = useContext(DispatchContext);
   const { navigate } = useNavigationContext();

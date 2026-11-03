@@ -43,8 +43,6 @@ type BondMainProps = {
 };
 
 export const BondMain = ({ item, name, system, owner }: BondMainProps) => {
-  "use memo";
-
   const { navigate } = useNavigationContext();
   const methods = useSystemMethods(item);
   const isBroken = isBondBroken(system.points);

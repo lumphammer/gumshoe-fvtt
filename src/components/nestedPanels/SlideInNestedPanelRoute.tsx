@@ -21,8 +21,6 @@ type SlideInNestedPanelRouteProps = PropsWithChildrenAndDirection<{
 }>;
 
 const BlurPanel = () => {
-  "use memo";
-
   const { navigate } = useNavigationContext();
   return (
     <div
@@ -48,8 +46,6 @@ export const SlideInNestedPanelRoute = React.memo<SlideInNestedPanelRouteProps>(
     closeOnClickOutside,
     childRoutes,
   }) => {
-    "use memo";
-
     return (
       <SlideInRoute
         direction={direction}

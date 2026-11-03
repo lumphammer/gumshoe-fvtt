@@ -32,8 +32,6 @@ export const WalkingFireActions = ({
   infoFor,
   options: resolveOptions,
 }: WalkingFireActionsProps) => {
-  "use memo";
-
   const [busy, setBusy] = useState(false);
   // the attacker's pools, from their snapshot
   const options = useWalkingFireOptions(msg);

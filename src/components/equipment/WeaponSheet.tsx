@@ -19,8 +19,6 @@ import { WeaponMain } from "./WeaponMain";
  * here: the snapshots have already brought in any change.
  */
 export const WeaponSheet = memo(function WeaponSheet() {
-  "use memo";
-
   const { item } = useItemSheetContext();
   assertWeaponItem(item);
   const weapon = useItemSnapshot(item);

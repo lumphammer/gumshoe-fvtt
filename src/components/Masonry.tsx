@@ -53,8 +53,6 @@ export const Masonry = function Masonry({
   columnGap = "0px",
   className,
 }: MasonryProps) {
-  "use memo";
-
   const containerRef = useRef<HTMLDivElement>(null);
   const measurerRef = useRef<HTMLDivElement>(null);
   const [maxColumnHeight, setMaxColumnHeight] = useState(0);

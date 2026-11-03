@@ -32,8 +32,6 @@ import { ItemSheetLink } from "../ItemSheetLink";
  * Bonds that aren't broken.
  */
 export const RebuildBondPanel = ({ bond }: { bond: BondItem }) => {
-  "use memo";
-
   const { navigate } = useNavigationContext();
   const [stabilitySpend, setStabilitySpend] = useState(0);
   // points to spend from each ability, by id

@@ -29,8 +29,6 @@ export const SettingsGridField = ({
   labelStyle,
   ...props
 }: SettingsGridFieldProps) => {
-  "use memo";
-
   const rowStyle = useRowStyle();
   return (
     <div
@@ -56,8 +54,6 @@ type SettingsGridFieldStackedProps = ComponentProps<typeof GridFieldStacked>;
 export const SettingsGridFieldStacked = (
   props: SettingsGridFieldStackedProps,
 ) => {
-  "use memo";
-
   const rowStyle = useRowStyle();
   return (
     <div css={rowStyle}>

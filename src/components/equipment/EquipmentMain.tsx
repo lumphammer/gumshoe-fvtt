@@ -36,8 +36,6 @@ export const EquipmentMain = memo(function EquipmentMain({
   name,
   onChangeName,
 }: EquipmentMainProps) {
-  "use memo";
-
   const { setCategoryId, setNotes } = useSystemMethods(item);
   const categoryMetadata = categories[system.categoryId];
   const isRealCategory = categoryMetadata !== undefined;

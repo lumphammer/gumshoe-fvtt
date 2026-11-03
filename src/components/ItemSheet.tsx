@@ -33,8 +33,6 @@ import { ThrowError } from "./ThrowError";
  * `rerenderOnFoundryRender: false`). The theme follows the owner's.
  */
 export const ItemSheet = () => {
-  "use memo";
-
   const { item } = useItemSheetContext();
   const permissions = useSheetPermissions(item);
   const theme = useActorTheme(item.actor);

@@ -16,8 +16,6 @@ export const UnknownPageTypeEditor = ({
   page,
   type,
 }: UnknownPageTypeEditorProps) => {
-  "use memo";
-
   return (
     <div
       css={{

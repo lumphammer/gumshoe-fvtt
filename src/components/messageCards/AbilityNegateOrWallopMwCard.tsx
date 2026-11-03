@@ -33,8 +33,6 @@ const deets: { [mode in WallopNegateMode]: MWResult } = {
 
 export const AbilityNegateOrWallopMwCard = React.memo(
   ({ msg, ability, pool, mode, name }: AbilityNegateOrWallopMwCardProps) => {
-    "use memo";
-
     const { header, openSheet: onClickAbilityName } =
       useAbilityCardHeader(ability);
 

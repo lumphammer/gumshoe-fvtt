@@ -32,8 +32,6 @@ type AbilitiesAreaEditProps = {
 export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
   npcMode = false,
 }: AbilitiesAreaEditProps) {
-  "use memo";
-
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
   const theme = useContext(ThemeContext);

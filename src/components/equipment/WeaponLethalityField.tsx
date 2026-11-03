@@ -24,8 +24,6 @@ export const WeaponLethalityField = memo(function WeaponLethalityField({
   lethality,
   setLethality,
 }: WeaponLethalityFieldProps) {
-  "use memo";
-
   // stable, so useAsyncUpdate's throttle survives re-renders
   const onChangeText = useCallback(
     (newText: string) => {

@@ -54,8 +54,6 @@ const coverText: Record<Cover, string> = {
 };
 
 const GunfireText = ({ step }: { step: DamageStep }) => {
-  "use memo";
-
   return step.gunfireExtra > 0 ? (
     <>
       {` + ${step.gunfireExtra} `}(<Translate>GunfireBonus</Translate>)
@@ -72,8 +70,6 @@ const lethalityOutcomeText: Record<LethalityOutcome, string> = {
 
 /** e.g. "die 2: Seriously Wounded", or "die 3: 8 − 1" */
 const LethalityStepText = ({ step }: { step: DamageStep }) => {
-  "use memo";
-
   const result = step.lethality;
   if (step.instance.kind !== "lethality" || !result) return null;
   return (
@@ -118,8 +114,6 @@ const AttackTargetRow = ({
   options,
   canAct,
 }: AttackTargetRowProps) => {
-  "use memo";
-
   const resolved = resolveAttackTargetInAttack(
     attack,
     target,
@@ -542,8 +536,6 @@ type AttackTargetsProps = {
  * changes); the targets' actors come through their snapshots.
  */
 export const AttackTargets = ({ msg }: AttackTargetsProps) => {
-  "use memo";
-
   assertGame(game);
   const walkingFireOn = useSettings(
     (s) => s.useLethalityAndAutofire && s.useWalkingFire,

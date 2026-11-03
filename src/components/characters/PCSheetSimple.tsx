@@ -11,8 +11,6 @@ import { CharacterSheetSimple } from "./CharacterSheetSimple";
  * portrait. (Based on an idea by Muwak77, in #819.)
  */
 export const PCSheetSimple = () => {
-  "use memo";
-
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   // the occupation is an item: the first in the occupation slot

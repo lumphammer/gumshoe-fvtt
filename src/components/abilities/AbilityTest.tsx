@@ -48,8 +48,6 @@ export const AbilityTest = memo(function AbilityTest({
   item,
   ability,
 }: AbilityTestProps) {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   const methods = useSystemMethods(item);
   const [spend, setSpend] = useState(0);

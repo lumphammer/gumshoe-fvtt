@@ -61,8 +61,6 @@ export const PageNavigation = ({
   onNavigate,
   activePageId,
 }: PageNavigationProps) => {
-  "use memo";
-
   const theme = useTheme();
 
   // what's shown of each page, in order

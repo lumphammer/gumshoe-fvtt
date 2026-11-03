@@ -103,8 +103,6 @@ type WeaponAttackPanelProps = {
 export const WeaponAttackPanel = memo(function WeaponAttackPanel({
   weapon: item,
 }: WeaponAttackPanelProps) {
-  "use memo";
-
   const [spend, setSpend] = useState(0);
   const [bonusPool, setBonusPool] = useState(0);
   const [fireMode, setFireMode] = useState<FireMode>("single");

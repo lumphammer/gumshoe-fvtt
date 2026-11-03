@@ -30,8 +30,6 @@ export const PersonalDetailMain = ({
   detailNames,
   occupationLabel,
 }: PersonalDetailMainProps) => {
-  "use memo";
-
   const methods = useSystemMethods(item);
   const options = padLength(
     [...detailNames],

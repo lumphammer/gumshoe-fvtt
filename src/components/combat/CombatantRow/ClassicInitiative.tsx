@@ -13,8 +13,6 @@ import { useCombatantContext } from "./CombatantContext";
 import { useInititative } from "./useInititative";
 
 export const ClassicInitiative = memo(function ClassicInitiative() {
-  "use memo";
-
   assertGame(game);
   const { combatant, combatantState } = useCombatantContext();
   assertClassicCombatant(combatant);

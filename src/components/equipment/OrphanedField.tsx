@@ -18,8 +18,6 @@ export const OrphanedField = ({
   fieldValue,
   onDelete,
 }: OrphanedFieldProps) => {
-  "use memo";
-
   return (
     <Fragment key={fieldId}>
       <b

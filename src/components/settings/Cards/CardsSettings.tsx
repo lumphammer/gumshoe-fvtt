@@ -13,8 +13,6 @@ interface CardsSettingsProps {
 }
 
 export const CardsSettings = ({ setters }: CardsSettingsProps) => {
-  "use memo";
-
   const { settings } = useContext(StateContext);
 
   return (

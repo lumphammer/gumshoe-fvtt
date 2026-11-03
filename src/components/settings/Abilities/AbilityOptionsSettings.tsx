@@ -7,8 +7,6 @@ import { SettingsGridField } from "../SettingsGridField";
 import type { Setters } from "../types";
 
 export const AbilityOptionsSettings = ({ setters }: { setters: Setters }) => {
-  "use memo";
-
   const { settings } = useContext(StateContext);
   return (
     <InputGrid>

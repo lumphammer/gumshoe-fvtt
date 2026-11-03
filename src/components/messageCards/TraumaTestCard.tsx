@@ -27,8 +27,6 @@ const reminders: Record<Exclude<StabilityState, "steady">, string> = {
  * record.
  */
 export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   const genericOccupation = useSettings((s) => s.genericOccupation);
   const spendTotal = record.total - record.die;

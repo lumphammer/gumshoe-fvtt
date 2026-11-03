@@ -56,8 +56,6 @@ export const AbilityTestMwCard = React.memo(
     pool,
     name,
   }: AbilityTestMwCardProps) => {
-    "use memo";
-
     const { header, openSheet: onClickAbilityName } =
       useAbilityCardHeader(ability);
 

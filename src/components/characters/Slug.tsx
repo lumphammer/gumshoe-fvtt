@@ -11,7 +11,6 @@ interface SlugProps {
 }
 
 export const Slug = ({ onClick, item, children }: SlugProps) => {
-  "use memo";
   const theme = useContext(ThemeContext);
   const onDragStart = useDragStart();
 

@@ -40,8 +40,6 @@ export const SettingsSortableList = ({
   emptyMessage = "Nothing here yet.",
   className,
 }: SettingsSortableListProps) => {
-  "use memo";
-
   const hoverBg = useListHoverBg();
 
   const handleSetItems = useCallback(

@@ -15,8 +15,6 @@ export const PersonalDetailField = ({
   name: string;
   slotIndex: number;
 }) => {
-  "use memo";
-
   const personalDetails = useActorSnapshot(actor, (snapshot) =>
     getPersonalDetailsInSlotIn(snapshot.items, slotIndex).map((item) => ({
       id: item._id ?? "",

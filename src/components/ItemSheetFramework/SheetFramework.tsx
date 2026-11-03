@@ -24,8 +24,6 @@ export const ItemSheetFramework = ({
   supertitle,
   children,
 }: ItemSheetFrameworkProps) => {
-  "use memo";
-
   const { item, app } = useItemSheetContext();
 
   const header = useItemSelector(item, (snapshot) => ({

@@ -7,8 +7,6 @@ import { useCombatantContext } from "./CombatantContext";
 import { TurnPassingInitiative } from "./TurnPassingInitiative";
 
 export const TopRow = memo(function TopRow() {
-  "use memo";
-
   const { combatant, combatantState } = useCombatantContext();
 
   return (

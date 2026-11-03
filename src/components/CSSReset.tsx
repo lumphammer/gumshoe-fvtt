@@ -43,8 +43,6 @@ export const CSSReset = ({
   mode,
   noStyleAppWindow = false,
 }: CSSResetProps) => {
-  "use memo";
-
   const ref = useRef<HTMLDivElement>(null);
 
   // add app window styles if there's a containing app window

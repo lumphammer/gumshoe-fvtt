@@ -20,8 +20,6 @@ const noFields = {};
  * item.
  */
 export const EquipmentArea = memo(function EquipmentArea() {
-  "use memo";
-
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const categories = useSettings((s) => s.equipmentCategories);

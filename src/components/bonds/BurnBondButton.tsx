@@ -24,8 +24,6 @@ export const BurnBondButton = ({
   stabilityName,
   className,
 }: BurnBondButtonProps) => {
-  "use memo";
-
   const tooltip = getTranslated("BurnBondTooltip", {
     AbilityName: stabilityName,
   });

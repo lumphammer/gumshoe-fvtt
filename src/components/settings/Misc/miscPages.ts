@@ -66,7 +66,10 @@ export const getVisibleMiscPages = () =>
   });
 
 /**
- * `getVisibleMiscPages`, as a hook: hooks aren't compiled, so it looks again
- * on every render (React Compiler would keep the first answer).
+ * `getVisibleMiscPages`, as a hook which isn't compiled, so it looks again on
+ * every render (React Compiler would keep the first answer).
  */
-export const useVisibleMiscPages = () => getVisibleMiscPages();
+export const useVisibleMiscPages = () => {
+  "use no memo";
+  return getVisibleMiscPages();
+};

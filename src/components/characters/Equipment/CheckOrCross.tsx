@@ -5,8 +5,6 @@ interface CheckOrCrossProps {
 }
 
 export const CheckOrCross = ({ checked }: CheckOrCrossProps) => {
-  "use memo";
-
   return checked ? <FaCheck /> : <FaTimes />;
 };
 

@@ -16,8 +16,6 @@ export const AsyncTextInput = ({
   disabled,
   placeholder,
 }: AsyncTextInputProps) => {
-  "use memo";
-
   const { onChange, onFocus, onBlur, display } = useAsyncUpdate(
     value,
     onChangeOrig,

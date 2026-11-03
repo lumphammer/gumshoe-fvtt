@@ -27,8 +27,6 @@ import type { PartyAbilityView } from "./types";
 import { isCategoryHeader, isTypeHeader } from "./types";
 
 const PartySheetBody = ({ party }: { party: PartyActor }) => {
-  "use memo";
-
   const header = useActorSnapshot(party, (snapshot) => ({
     name: snapshot.name,
     img: snapshot.img ?? null,
@@ -392,8 +390,6 @@ PartySheetBody.displayName = "PartySheetBody";
  * it follows them (and their ownership) without Foundry re-rendering it.
  */
 export const PartySheet = () => {
-  "use memo";
-
   const { actor: party } = useActorSheetContext();
   assertPartyActor(party);
   const permissions = useSheetPermissions(party);

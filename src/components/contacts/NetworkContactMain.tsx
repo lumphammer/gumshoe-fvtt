@@ -29,8 +29,6 @@ import { Translate } from "../Translate";
  */
 /** a line across the sheet, between who the contact is and what they do */
 const Divider = () => {
-  "use memo";
-
   return <hr css={{ gridColumn: "1/-1", width: "100%", margin: "0.25em 0" }} />;
 };
 
@@ -54,8 +52,6 @@ export const NetworkContactMain = ({
   networkPool,
   networkName,
 }: NetworkContactMainProps) => {
-  "use memo";
-
   const methods = useSystemMethods(item);
   const [give, setGive] = useState(0);
   const [spend, setSpend] = useState(0);

@@ -4,8 +4,6 @@ type MwCostSlugProps = {
 };
 
 export const MwCostSlug = ({ children }: MwCostSlugProps) => {
-  "use memo";
-
   return (
     <span
       css={{

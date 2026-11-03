@@ -24,8 +24,6 @@ import { NetworkContactRow } from "./NetworkContactRow";
  * in Network, and the contacts it's been given to.
  */
 export const NetworkContactsArea = memo(function NetworkContactsArea() {
-  "use memo";
-
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const theme = useContext(ThemeContext);

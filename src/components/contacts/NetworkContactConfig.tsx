@@ -18,8 +18,6 @@ export const NetworkContactConfig = ({
   item,
   pool,
 }: NetworkContactConfigProps) => {
-  "use memo";
-
   const methods = useSystemMethods(item);
   return (
     <BondConfig item={item}>

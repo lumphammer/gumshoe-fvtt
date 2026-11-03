@@ -40,6 +40,9 @@ const areAllTurnsDone = (
  * The main combat tracker component.
  */
 export const Tracker = () => {
+  // not compiled: it reads the live `game.combat` and `game.combats`, and
+  // Foundry re-renders it when they change
+  "use no memo";
   assertGame(game);
   assertNotNull(game.user, "game.user");
 

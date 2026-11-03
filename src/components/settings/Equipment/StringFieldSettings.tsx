@@ -17,8 +17,6 @@ export const StringFieldSettings = ({
   categoryId,
   fieldId,
 }: StringFieldSettingsProps) => {
-  "use memo";
-
   const dispatch = useContext(DispatchContext);
 
   const handleChangeDefault = useCallback(

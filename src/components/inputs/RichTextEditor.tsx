@@ -31,8 +31,6 @@ const EditableRichTextEditor = ({
   onSave,
   name,
 }: RichTextEditorProps) => {
-  "use memo";
-
   const { doc } = useDocumentSheetContext();
 
   const divRef = useRef<HTMLDivElement>(null);
@@ -154,8 +152,6 @@ const EditableRichTextEditor = ({
 
 /** A rich text editor. Where the user can't edit, it just shows the HTML. */
 export const RichTextEditor = (props: RichTextEditorProps) => {
-  "use memo";
-
   const isEditable = useIsEditable();
   return isEditable ? (
     <EditableRichTextEditor {...props} />

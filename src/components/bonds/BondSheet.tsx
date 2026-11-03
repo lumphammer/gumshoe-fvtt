@@ -26,8 +26,6 @@ import { RebuildBondPanel } from "./RebuildBondPanel";
  * write through). Memoised (it has no props).
  */
 export const BondSheet = memo(function BondSheet() {
-  "use memo";
-
   const { item } = useItemSheetContext();
   assertBondItem(item);
   const view = useItemSelector(item, (snapshot) => ({

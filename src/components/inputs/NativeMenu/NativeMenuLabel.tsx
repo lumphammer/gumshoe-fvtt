@@ -2,7 +2,6 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import type { PropsWithChildren } from "react";
 
 export const NativeMenuLabel = ({ children }: PropsWithChildren) => {
-  "use memo";
   return (
     <DropdownMenu.Label asChild>
       <h3

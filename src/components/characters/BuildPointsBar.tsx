@@ -9,8 +9,6 @@ type BuildPointsCounterProps = {
 };
 
 const BuildPointsCounter = ({ label, total }: BuildPointsCounterProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   return (
     <div
@@ -62,8 +60,6 @@ export const BuildPointsBar = memo(function BuildPointsBar({
   generalTotal,
   showInvestigative,
 }: BuildPointsBarProps) {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   return (
     <div

@@ -33,6 +33,7 @@ function canLinkTo(
  * renames.
  */
 const useActorName = (uuid: string | null): string | null => {
+  "use no memo";
   const worldName = useSnapshotSelector(getWorldActorsStore(), (actors) =>
     uuid === null
       ? null
@@ -61,8 +62,6 @@ type BondActorProps = {
 };
 
 export const BondActor = ({ bond, actorUuid }: BondActorProps) => {
-  "use memo";
-
   const theme = useContext(ThemeContext);
   const [isDragOver, setIsDragOver] = useState(false);
   const methods = useSystemMethods(bond);
