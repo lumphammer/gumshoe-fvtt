@@ -12,9 +12,8 @@ import path from "node:path";
 import {
   browserArgs,
   buildPath,
-  foundryDataPath,
-  foundryUrl,
-  gmStorageStatePath,
+  type FoundryServer,
+  foundryServers,
   worldId,
 } from "./config.ts";
 import { waitForGameReady } from "./foundry.ts";
@@ -89,9 +88,9 @@ async function deleteWorld(api: APIRequestContext) {
  * open at a time, so a Foundry you're developing against can't share them.
  * Call this while no world is running, so the packs are closed.
  */
-function installSystem() {
-  if (!fs.existsSync(foundryDataPath)) return;
-  const systemPath = path.join(foundryDataPath, "Data/systems/investigator");
+function installSystem(dataPath: string) {
+  if (!fs.existsSync(dataPath)) return;
+  const systemPath = path.join(dataPath, "Data/systems/investigator");
   const manifest = (dir: string) =>
     fs.readFileSync(path.join(dir, "system.json"), "utf8");
   if (!fs.existsSync(path.join(buildPath, "system.json"))) {
@@ -114,13 +113,11 @@ function installSystem() {
  * Check the modules the tests use are installed (`scripts/e2e-foundry.sh`
  * installs them when it starts Foundry).
  */
-function checkModules() {
-  if (!fs.existsSync(foundryDataPath)) return;
+function checkModules(dataPath: string) {
+  if (!fs.existsSync(dataPath)) return;
   const missing = ["babele", "lib-wrapper"].filter(
     (id) =>
-      !fs.existsSync(
-        path.join(foundryDataPath, "Data/modules", id, "module.json"),
-      ),
+      !fs.existsSync(path.join(dataPath, "Data/modules", id, "module.json")),
   );
   if (missing.length > 0) {
     throw new Error(
@@ -133,7 +130,8 @@ function checkModules() {
 /**
  * Throw away the test world, create a fresh one, and launch it.
  */
-async function resetWorld(browser: Browser) {
+async function resetWorld(browser: Browser, server: FoundryServer) {
+  const foundryUrl = server.url;
   const api = await request.newContext({
     baseURL: foundryUrl,
     // Foundry rejects cross-site POSTs, so look like one of its own pages
@@ -177,7 +175,7 @@ async function resetWorld(browser: Browser) {
     // deleting the world only succeeds once Foundry has closed its databases,
     // and in practice the packs are closed by then too (copying any earlier
     // made Foundry find them broken and repair them)
-    installSystem();
+    installSystem(server.dataPath);
     await postAction(api, "/create", {
       action: "createWorld",
       id: worldId,
@@ -191,40 +189,63 @@ async function resetWorld(browser: Browser) {
   }
 }
 
+/**
+ * Give a server a fresh world, log in to it as the Gamemaster, and save the
+ * session for the tests to reuse.
+ */
+async function setUpServer(browser: Browser, server: FoundryServer) {
+  await resetWorld(browser, server);
+  const page = await browser.newPage({ baseURL: server.url });
+  await joinAsGamemaster(page);
+  // the system sets up a new world (e.g. its preset's settings) after the
+  // game is ready, and closing the page would cut that short
+  await page.waitForFunction(
+    () => game.settings.get("investigator", "firstRun" as never) === false,
+  );
+  await page.evaluate(async () => {
+    // These are client settings, kept in localStorage, so they're saved in
+    // the storage state with the session cookie.
+    // Mark the welcome tour as finished so it doesn't start. (Tour#complete
+    // waits for the tour to play through.)
+    const welcome = game.tours.get("core.welcome");
+    await game.settings.set("core", "tourProgress", {
+      core: { welcome: welcome?.steps.length ?? 0 },
+    });
+    // No canvas means no WebGL, so no "no hardware acceleration" warning,
+    // and pages load faster.
+    await game.settings.set("core", "noCanvas", true);
+    // A world setting: say no to usage stats, so the offer never opens over
+    // a test. (usageStats.spec.ts asks again.)
+    await game.settings.set(
+      "investigator",
+      "usageStatsConsent" as never,
+      "no" as never,
+    );
+  });
+  await page.context().storageState({ path: server.gmStorageStatePath });
+  await page.close();
+}
+
 export default async function globalSetup(_config: FullConfig) {
-  checkModules();
+  for (const server of foundryServers) checkModules(server.dataPath);
   const browser = await chromium.launch({ args: browserArgs });
   try {
-    await resetWorld(browser);
-    // log in to the new world and save the session for the tests to reuse
-    const page = await browser.newPage({ baseURL: foundryUrl });
-    await joinAsGamemaster(page);
-    // the system sets up a new world (e.g. its preset's settings) after the
-    // game is ready, and closing the page would cut that short
-    await page.waitForFunction(
-      () => game.settings.get("investigator", "firstRun" as never) === false,
+    // all at once, but let them all finish (or fail) before reporting
+    const results = await Promise.allSettled(
+      foundryServers.map((server) => setUpServer(browser, server)),
     );
-    await page.evaluate(async () => {
-      // These are client settings, kept in localStorage, so they're saved in
-      // the storage state with the session cookie.
-      // Mark the welcome tour as finished so it doesn't start. (Tour#complete
-      // waits for the tour to play through.)
-      const welcome = game.tours.get("core.welcome");
-      await game.settings.set("core", "tourProgress", {
-        core: { welcome: welcome?.steps.length ?? 0 },
-      });
-      // No canvas means no WebGL, so no "no hardware acceleration" warning,
-      // and pages load faster.
-      await game.settings.set("core", "noCanvas", true);
-      // A world setting: say no to usage stats, so the offer never opens over
-      // a test. (usageStats.spec.ts asks again.)
-      await game.settings.set(
-        "investigator",
-        "usageStatsConsent" as never,
-        "no" as never,
-      );
-    });
-    await page.context().storageState({ path: gmStorageStatePath });
+    const failures = results.flatMap((result, n) =>
+      result.status === "rejected"
+        ? [{ url: foundryServers[n].url, reason: result.reason as unknown }]
+        : [],
+    );
+    if (failures.length === 0) return;
+    // the same problem everywhere (e.g. no build) only needs saying once
+    const messages = new Set(failures.map(({ reason }) => String(reason)));
+    if (messages.size === 1) throw failures[0].reason;
+    throw new Error(
+      failures.map(({ url, reason }) => `${url}: ${String(reason)}`).join("\n"),
+    );
   } finally {
     await browser.close();
   }

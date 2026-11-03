@@ -6,7 +6,11 @@ import {
   type Page,
 } from "@playwright/test";
 
-import { foundryUrl, gmContextOptions } from "./config.ts";
+import {
+  type FoundryServer,
+  foundryServers,
+  gmContextOptions,
+} from "./config.ts";
 
 /** Where the system sends usage stats (`usageStatsEndpoint`). */
 export const usageStatsEndpointPattern =
@@ -129,9 +133,13 @@ type GMPage = {
   needsReload: boolean;
 };
 
-async function openGMPage(browser: Browser, canvas: boolean) {
+async function openGMPage(
+  browser: Browser,
+  server: FoundryServer,
+  canvas: boolean,
+) {
   const context = await browser.newContext({
-    ...gmContextOptions,
+    ...gmContextOptions(server),
     deviceScaleFactor: canvas ? canvasDeviceScaleFactor : 1,
   });
   const page = await context.newPage();
@@ -207,11 +215,22 @@ export const test = base.extend<
     canvas: boolean;
     joinAs: (userName: string) => Promise<Page>;
   },
-  { gmPages: { get: (canvas: boolean) => Promise<GMPage> } }
+  {
+    foundryServer: FoundryServer;
+    gmPages: { get: (canvas: boolean) => Promise<GMPage> };
+  }
 >({
+  // each worker has a server of its own
+  foundryServer: [
+    // oxlint-disable-next-line no-empty-pattern -- Playwright needs the pattern
+    async ({}, use, workerInfo) => {
+      await use(foundryServers[workerInfo.parallelIndex]);
+    },
+    { scope: "worker" },
+  ],
   canvas: [false, { option: true }],
   gmPages: [
-    async ({ browser }, use) => {
+    async ({ browser, foundryServer }, use) => {
       // one at a time: a canvas left drawing in the background would slow
       // everything else down
       let current: GMPage | undefined;
@@ -220,7 +239,7 @@ export const test = base.extend<
           if (current?.canvas !== canvas) {
             await current?.page.context().close();
             current = undefined;
-            current = await openGMPage(browser, canvas);
+            current = await openGMPage(browser, foundryServer, canvas);
           }
           return current;
         },
@@ -295,18 +314,24 @@ export const test = base.extend<
    * Log another user into the game in a browser of their own, alongside the
    * Gamemaster's `page`. Their errors fail the test too.
    */
-  joinAs: async ({ browser, pageErrors, canvas }, use, testInfo) => {
+  joinAs: async (
+    { browser, foundryServer, pageErrors, canvas },
+    use,
+    testInfo,
+  ) => {
     const contexts: Awaited<ReturnType<typeof browser.newContext>>[] = [];
     await use(async (userName) => {
       // loading a second game takes a while, especially with the canvas
       testInfo.slow();
       const context = await browser.newContext({
+        ...gmContextOptions(foundryServer),
         deviceScaleFactor: canvas ? canvasDeviceScaleFactor : 1,
+        // not logged in
         storageState: {
           cookies: [],
           origins: [
             {
-              origin: new URL(foundryUrl).origin,
+              origin: new URL(foundryServer.url).origin,
               localStorage: clientSettings(canvas),
             },
           ],
