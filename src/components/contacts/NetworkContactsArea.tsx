@@ -1,5 +1,7 @@
 import { memo, useContext } from "react";
 
+import { liveItems } from "../../functions/liveItems";
+import { isNetworkContactItem } from "../../module/items/networkContact";
 import { getTranslated } from "../../functions/getTranslated";
 import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
@@ -11,7 +13,6 @@ import {
   getNetworkAbilityIn,
   getNetworkContactsIn,
 } from "../../module/actors/pcDerived";
-import type { NetworkContactItem } from "../../module/items/networkContact";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
@@ -46,10 +47,7 @@ export const NetworkContactsArea = memo(function NetworkContactsArea() {
     },
   );
   // the live contacts, only to pass to the rows
-  const contacts = ids.flatMap((id) => {
-    const item = actor.items.get(id) as NetworkContactItem | undefined;
-    return item ? [item] : [];
-  });
+  const contacts = liveItems(actor, ids, isNetworkContactItem);
   const { createNetworkContact } = useSystemMethods(actor);
   const newContactTooltip = getTranslated("NewContactTooltip", {
     AbilityName: networkName,

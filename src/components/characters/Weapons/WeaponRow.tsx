@@ -1,8 +1,7 @@
-import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import type React from "react";
 import { memo, useContext } from "react";
 
-import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
+import { useDragStart } from "../../../hooks/useDragStart";
+import { openSheet } from "../../../functions/openSheet";
 import { getTranslated } from "../../../functions/getTranslated";
 import { useItemSelector } from "../../../hooks/useItemSnapshot";
 import type { WeaponItem } from "../../../module/items/weapon";
@@ -36,13 +35,11 @@ export const WeaponRow = memo(function WeaponRow({
     ammo: snapshot.system.ammo,
     ability: snapshot.system.ability,
   }));
-  const app = useContext(FoundryAppContext);
+  const onDragStart = useDragStart();
   const theme = useContext(ThemeContext);
 
-  const openSheet = () => {
-    const sheet = weapon.sheet;
-    assertApplicationV2(sheet);
-    void sheet.render({ force: true });
+  const openWeaponSheet = () => {
+    openSheet(weapon);
   };
 
   return (
@@ -80,20 +77,16 @@ export const WeaponRow = memo(function WeaponRow({
             outline: "none",
           },
         }}
-        onClick={openSheet}
+        onClick={openWeaponSheet}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            openSheet();
+            openWeaponSheet();
           }
         }}
         data-item-id={weapon.id}
         draggable="true"
-        onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
-          if (app !== null) {
-            (app as any)._onDragStart(e);
-          }
-        }}
+        onDragStart={onDragStart}
       >
         <ItemNameWithIcon item={row} css={{ color: theme.colors.accent }} />
         <span css={{ textAlign: "center" }}>

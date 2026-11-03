@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { openSheet } from "../../functions/openSheet";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import type { AbilityItem } from "../../module/items/exports";
@@ -13,14 +13,6 @@ type AbilityRowProps = {
   index: number;
   actors: readonly PartyMemberView[];
   theme: ThemeV1;
-};
-
-/** Open a document's sheet, if it (still) exists */
-const openSheet = (doc: { sheet: unknown } | null | undefined) => {
-  const sheet = doc?.sheet;
-  if (!sheet) return;
-  assertApplicationV2(sheet);
-  void sheet.render({ force: true });
 };
 
 /**

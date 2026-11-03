@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useContext, useState } from "react";
 
-import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
+import { openSheet } from "../../../functions/openSheet";
 import { useItemSelector } from "../../../hooks/useItemSnapshot";
 import type {
   EquipmentCategoriesSnapshot,
@@ -43,10 +43,8 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
     setHover(false);
   }, []);
 
-  const openSheet = () => {
-    const sheet = item.sheet;
-    assertApplicationV2(sheet);
-    void sheet.render({ force: true });
+  const openItemSheet = () => {
+    openSheet(item);
   };
 
   return (
@@ -73,7 +71,7 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
           // so a long name is cut off, rather than widening the table
           minWidth: 0,
         }}
-        onClick={openSheet}
+        onClick={openItemSheet}
         data-item-id={item.id}
         onDragStart={(e) => onDragStart(e, item)}
         onDragEnd={onDragEnd}
@@ -94,7 +92,7 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
             }}
             onMouseOver={handleMouseOver}
             onMouseOut={handleMouseOut}
-            onClick={openSheet}
+            onClick={openItemSheet}
           >
             {field.type === "checkbox" ? (
               <CheckOrCross checked={!!row.fields?.[fieldId]} />

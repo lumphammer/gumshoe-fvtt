@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import {
   findGeneralAbilityIn,
   getGeneralAbilityNamesIn,
-  getPoolOf,
 } from "./findGeneralAbility";
 
 const items = [
@@ -24,13 +23,5 @@ describe("findGeneralAbilityIn", () => {
 describe("getGeneralAbilityNamesIn", () => {
   it("lists the general abilities' names", () => {
     expect(getGeneralAbilityNamesIn(items)).toEqual(["Firearms", "Athletics"]);
-  });
-});
-
-describe("getPoolOf", () => {
-  it("is an ability's pool, or 0", () => {
-    expect(getPoolOf(items[1])).toBe(3);
-    expect(getPoolOf(items[2])).toBe(0);
-    expect(getPoolOf(undefined)).toBe(0);
   });
 });

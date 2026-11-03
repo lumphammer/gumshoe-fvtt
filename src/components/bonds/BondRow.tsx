@@ -1,8 +1,7 @@
-import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import type React from "react";
-import { memo, useCallback, useContext } from "react";
+import { memo, useContext } from "react";
 
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { useDragStart } from "../../hooks/useDragStart";
+import { openSheet } from "../../functions/openSheet";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { isBondBroken } from "../../module/bonds/rules";
 import type { BondItem } from "../../module/items/bond";
@@ -31,20 +30,10 @@ export const BondRow = memo(function BondRow({
     isDeltaGreen: system.isDeltaGreen,
     isBroken: isBondBroken(system.points),
   }));
-  const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
-  const onDragStart = useCallback(
-    (e: React.DragEvent<HTMLAnchorElement>) => {
-      if (app !== null) {
-        (app as any)._onDragStart(e);
-      }
-    },
-    [app],
-  );
-  const openSheet = () => {
-    const sheet = bond.sheet;
-    assertApplicationV2(sheet);
-    void sheet.render({ force: true });
+  const onDragStart = useDragStart();
+  const openBondSheet = () => {
+    openSheet(bond);
   };
 
   return (
@@ -72,7 +61,7 @@ export const BondRow = memo(function BondRow({
           "&&:hover": { textDecoration: "none" },
           "& > *": { paddingInline: "0.25em" },
         }}
-        onClick={openSheet}
+        onClick={openBondSheet}
         data-item-id={bond.id}
         onDragStart={onDragStart}
         draggable="true"

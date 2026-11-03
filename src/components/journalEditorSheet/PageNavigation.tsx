@@ -3,8 +3,8 @@ import { BsImage, BsSortNumericDown } from "react-icons/bs";
 import { FaBarsStaggered, FaImage } from "react-icons/fa6";
 import { VscOutput } from "react-icons/vsc";
 
+import { useDragStart } from "../../hooks/useDragStart";
 import { useJournalEntrySnapshot } from "../../hooks/useJournalEntrySnapshot";
-import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
 import { useTheme } from "../../hooks/useTheme";
 import { absoluteCover } from "../absoluteCover";
 import { useToolbarContent } from "./magicToolbar";
@@ -63,7 +63,6 @@ export const PageNavigation = ({
 }: PageNavigationProps) => {
   "use memo";
 
-  const { app } = useDocumentSheetContext();
   const theme = useTheme();
 
   // what's shown of each page, in order
@@ -90,14 +89,7 @@ export const PageNavigation = ({
     [onNavigate],
   );
 
-  const handleDragStart = useCallback(
-    (e: React.DragEvent<HTMLElement>) => {
-      if (app !== null) {
-        (app as any)._onDragStart(e);
-      }
-    },
-    [app],
-  );
+  const handleDragStart = useDragStart();
 
   const handleAddNewTextPage = useCallback(async () => {
     const newPage = await addPage(journalEntry, "text", "New page");

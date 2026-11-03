@@ -1,18 +1,19 @@
 import { Fragment, memo, useContext } from "react";
 
+import { liveItem } from "../../functions/liveItems";
+import { isAbilityItem } from "../../module/items/exports";
 import { getTranslated } from "../../functions/getTranslated";
-import { sortEntitiesByName } from "../../functions/utilities";
 import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import * as c from "../../constants";
 import {
+  getAbilityRowsIn,
   getCategorizedAbilitiesIn,
   getPushPoolWarningKeysIn,
+  hasRegularInvestigativeAbilitiesIn,
+  sumRatingsIn,
 } from "../../module/actors/abilitiesDerived";
-import type { ItemView } from "../../module/actors/pcDerived";
 import { assertActiveCharacterActor } from "../../module/actors/types";
-import type { AbilityItem } from "../../module/items/exports";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { AbilitySlugEdit } from "./AbilitySlugEdit";
 import { AbilitySlugEditQuickShockInvestigative } from "./AbilitySlugEditQuickShockInvestigative";
@@ -22,26 +23,6 @@ import { NoAbilitiesNote } from "./NoAbilitiesNote";
 type AbilitiesAreaEditProps = {
   npcMode?: boolean;
 };
-
-const systemOf = (item: ItemView) =>
-  item.system as { rating?: number; isQuickShock?: boolean };
-
-/** Each category's abilities, in order, as the rows need them */
-const toRows = (abilities: Record<string, ItemView[]>) =>
-  Object.fromEntries(
-    Object.entries(abilities).map(([cat, items]) => [
-      cat,
-      sortEntitiesByName(items).map((item) => ({
-        id: item._id ?? "",
-        isQuickShock: Boolean(systemOf(item).isQuickShock),
-      })),
-    ]),
-  );
-
-const sumRatings = (abilities: Record<string, ItemView[]>) =>
-  Object.values(abilities)
-    .flat()
-    .reduce((total, item) => total + (systemOf(item).rating ?? 0), 0);
 
 /**
  * The character's abilities, to set their ratings. Reads the actor through a
@@ -67,14 +48,12 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
         settings,
       );
     return {
-      investigativeAbilities: toRows(investigativeAbilities),
-      generalAbilities: toRows(generalAbilities),
-      investigativeTotal: sumRatings(investigativeAbilities),
-      generalTotal: sumRatings(generalAbilities),
-      hasRegularInvestigativeAbilities: items.some(
-        (item) =>
-          item.type === c.investigativeAbility && !systemOf(item).isQuickShock,
-      ),
+      investigativeAbilities: getAbilityRowsIn(investigativeAbilities),
+      generalAbilities: getAbilityRowsIn(generalAbilities),
+      investigativeTotal: sumRatingsIn(investigativeAbilities),
+      generalTotal: sumRatingsIn(generalAbilities),
+      hasRegularInvestigativeAbilities:
+        hasRegularInvestigativeAbilitiesIn(items),
       pushPoolWarningKeys: getPushPoolWarningKeysIn(items),
     };
   });
@@ -82,8 +61,7 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
 
   // the live abilities, only to pass to the rows (which read them through
   // snapshots, and write to them)
-  const getAbility = (id: string) =>
-    actor.items.get(id) as AbilityItem | undefined;
+  const getAbility = (id: string) => liveItem(actor, id, isAbilityItem);
 
   // this is all a bit iffy-elsey, but...
 

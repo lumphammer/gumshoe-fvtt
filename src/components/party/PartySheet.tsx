@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+import { openSheet } from "../../functions/openSheet";
 import * as constants from "../../constants";
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated } from "../../functions/getTranslated";
 import { useSheetPermissions } from "../../hooks/useSheetPermissions";
 import { SheetPermissionsContext } from "../../hooks/useIsEditable";
@@ -205,10 +205,7 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
                 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  const sheet = game.actors?.get(actor.id)?.sheet;
-                  if (!sheet) return;
-                  assertApplicationV2(sheet);
-                  void sheet.render({ force: true });
+                  openSheet(game.actors?.get(actor.id));
                 }}
               >
                 <div

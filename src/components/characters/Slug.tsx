@@ -1,6 +1,6 @@
-import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import React, { useCallback, useContext } from "react";
+import React, { useContext } from "react";
 
+import { useDragStart } from "../../hooks/useDragStart";
 import { ThemeContext } from "../../themes/ThemeContext";
 
 interface SlugProps {
@@ -12,17 +12,8 @@ interface SlugProps {
 
 export const Slug = ({ onClick, item, children }: SlugProps) => {
   "use memo";
-
-  const app = useContext(FoundryAppContext);
   const theme = useContext(ThemeContext);
-  const onDragStart = useCallback(
-    (e: React.DragEvent<HTMLAnchorElement>) => {
-      if (app !== null) {
-        (app as any)._onDragStart(e);
-      }
-    },
-    [app],
-  );
+  const onDragStart = useDragStart();
 
   return (
     <a

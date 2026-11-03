@@ -1,4 +1,4 @@
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { openSheet } from "../../functions/openSheet";
 import { useMaybeItemSelector } from "../../hooks/useItemSnapshot";
 import type { AbilityItem } from "../../module/items/exports";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
@@ -13,11 +13,8 @@ export function useAbilityCardHeader(
   const header = useMaybeItemSelector(ability, (snapshot) =>
     snapshot ? { name: snapshot.name, img: snapshot.img ?? null } : null,
   );
-  const openSheet = () => {
-    const sheet = ability?.sheet;
-    if (!sheet) return;
-    assertApplicationV2(sheet);
-    void sheet.render({ force: true });
+  const openAbilitySheet = () => {
+    openSheet(ability);
   };
-  return { header, openSheet };
+  return { header, openSheet: openAbilitySheet };
 }

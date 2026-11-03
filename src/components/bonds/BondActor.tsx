@@ -1,7 +1,7 @@
 import type React from "react";
 import { useContext, useState } from "react";
 
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { openSheet } from "../../functions/openSheet";
 import { getTranslated } from "../../functions/getTranslated";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSnapshotSelector } from "../../hooks/useSnapshot";
@@ -118,9 +118,7 @@ export const BondActor = ({ bond, actorUuid }: BondActorProps) => {
           onClick={() => {
             const linked = fromUuidSync(actorUuid);
             if (!(linked instanceof Actor)) return;
-            const sheet = linked.sheet;
-            assertApplicationV2(sheet);
-            void sheet.render({ force: true });
+            openSheet(linked);
           }}
         >
           {linkedName}

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { openSheet } from "../../functions/openSheet";
 import { useMaybeItemSelector } from "../../hooks/useItemSnapshot";
 import { isAttackMessage } from "../../module/attacks/attackTargets";
 import { formatLethality } from "../../module/attacks/lethality";
@@ -37,10 +37,7 @@ export const AttackCard = React.memo(
     const damageApplicationOn = useSettings((s) => s.useDamageApplication);
 
     const onClickWeaponName = () => {
-      const sheet = weapon?.sheet;
-      if (!sheet) return;
-      assertApplicationV2(sheet);
-      void sheet.render({ force: true });
+      openSheet(weapon);
     };
 
     const img = header?.img ?? imageUrl;

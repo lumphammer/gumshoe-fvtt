@@ -1,13 +1,6 @@
-import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import React, {
-  Fragment,
-  memo,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import React, { Fragment, memo, useCallback, useState } from "react";
 
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { AbilityNameLink } from "./AbilityNameLink";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
@@ -37,15 +30,6 @@ export const AbilitySlugPlayNormal = memo(function AbilitySlugPlayNormal({
     specialities: snapshot.system.specialities,
   }));
   const { testAbility, confirmSpendAbility } = useSystemMethods(ability);
-  const app = useContext(FoundryAppContext);
-  const onDragStart = useCallback(
-    (e: React.DragEvent<HTMLAnchorElement>) => {
-      if (app !== null) {
-        (app as any)._onDragStart(e);
-      }
-    },
-    [app],
-  );
 
   const [spend, setSpend] = useState(0);
 
@@ -69,23 +53,11 @@ export const AbilitySlugPlayNormal = memo(function AbilitySlugPlayNormal({
 
   return (
     <Fragment key={ability.id}>
-      <a
-        onClick={() => {
-          const sheet = ability.sheet;
-          assertApplicationV2(sheet);
-          void sheet.render({ force: true });
-        }}
-        data-item-id={ability.id}
-        onDragStart={onDragStart}
-        draggable="true"
-        css={{
-          gridColumn: "ability",
-          lineHeight: 0.9,
-          textAlign: "end",
-        }}
-      >
-        {row.name}
-      </a>
+      <AbilityNameLink
+        ability={ability}
+        name={row.name}
+        css={{ lineHeight: 0.9 }}
+      />
       <div css={{ gridColumn: "rating", justifySelf: "right" }}>
         {row.pool}/{row.rating}
       </div>

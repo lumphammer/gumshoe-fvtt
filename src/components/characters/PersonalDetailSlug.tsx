@@ -1,4 +1,4 @@
-import { assertApplicationV2 } from "../../functions/assertApplicationV2";
+import { openSheet } from "../../functions/openSheet";
 import { Slug } from "./Slug";
 
 interface PersonalDetailSlugProps {
@@ -17,10 +17,7 @@ export const PersonalDetailSlug = ({
       item={detail}
       onClick={() => {
         // the live item, only when it's clicked
-        const sheet = actor.items.get(detail.id)?.sheet;
-        if (!sheet) return;
-        assertApplicationV2(sheet);
-        void sheet.render({ force: true });
+        openSheet(actor.items.get(detail.id));
       }}
     >
       {detail.name}

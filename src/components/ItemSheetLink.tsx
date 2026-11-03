@@ -1,4 +1,4 @@
-import { assertApplicationV2 } from "../functions/assertApplicationV2";
+import { openSheet } from "../functions/openSheet";
 import { useItemSelector } from "../hooks/useItemSnapshot";
 
 /** An item's name, as a link which opens its sheet */
@@ -9,9 +9,7 @@ export const ItemSheetLink = ({ item }: { item: Item.Implementation }) => {
   return (
     <a
       onClick={() => {
-        const sheet = item.sheet;
-        assertApplicationV2(sheet);
-        void sheet.render({ force: true });
+        openSheet(item);
       }}
     >
       {name}
@@ -38,10 +36,7 @@ export const EmbeddedItemSheetLink = ({
   return (
     <a
       onClick={() => {
-        const sheet = actor?.items.get(id ?? "")?.sheet;
-        if (!sheet) return;
-        assertApplicationV2(sheet);
-        void sheet.render({ force: true });
+        openSheet(actor?.items.get(id ?? ""));
       }}
     >
       {name}

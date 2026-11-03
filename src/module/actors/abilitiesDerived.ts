@@ -5,8 +5,10 @@
 
 import * as c from "../../constants";
 import type { SettingsView } from "../../settings/settingsView";
+import { sortEntitiesByName } from "../../functions/utilities";
 import { liveSettings } from "../../settings/settingsView";
 import { getPushPoolWarningKeys } from "./getPushPoolWarningKeys";
+import type { OfType } from "../snapshots/snapshotTypes";
 import type { ItemView } from "./pcDerived";
 
 const systemOf = (item: ItemView) =>
@@ -66,10 +68,10 @@ export function getCategorizedAbilitiesIn<T extends ItemView>(
 /** The general ability which is the character's push pool, if any */
 export function getPushPoolIn<T extends ItemView>(
   items: readonly T[],
-): T | undefined {
+): OfType<T, typeof c.generalAbility> | undefined {
   return items.find(
     (item) => item.type === c.generalAbility && systemOf(item).isPushPool,
-  );
+  ) as OfType<T, typeof c.generalAbility> | undefined;
 }
 
 /** What's wrong with how push pools are set up, as translation keys */
@@ -105,4 +107,41 @@ export function getTrackerAbilitiesIn<T extends ItemView>(
         Number(isPushPool(b)) - Number(isPushPool(a)) ||
         a.name.localeCompare(b.name),
     );
+}
+
+/** A row of a character's abilities: which ability, and which kind of row */
+export type AbilityRow = { id: string; isQuickShock: boolean };
+
+/** Each category's abilities, by name, as the rows need them */
+export function getAbilityRowsIn(
+  abilities: Readonly<Record<string, readonly ItemView[]>>,
+): Record<string, AbilityRow[]> {
+  return Object.fromEntries(
+    Object.entries(abilities).map(([cat, items]) => [
+      cat,
+      sortEntitiesByName(items).map((item) => ({
+        id: item._id ?? "",
+        isQuickShock: Boolean(systemOf(item).isQuickShock),
+      })),
+    ]),
+  );
+}
+
+/** The ratings of all these abilities, added up */
+export function sumRatingsIn(
+  abilities: Readonly<Record<string, readonly ItemView[]>>,
+): number {
+  return Object.values(abilities)
+    .flat()
+    .reduce((total, item) => total + (systemOf(item).rating ?? 0), 0);
+}
+
+/** Whether there are investigative abilities other than quick-shock ones */
+export function hasRegularInvestigativeAbilitiesIn(
+  items: readonly ItemView[],
+): boolean {
+  return items.some(
+    (item) =>
+      item.type === c.investigativeAbility && !systemOf(item).isQuickShock,
+  );
 }

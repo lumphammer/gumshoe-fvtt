@@ -1,7 +1,7 @@
 import React, { memo, useContext } from "react";
 
+import { openSheet } from "../../../functions/openSheet";
 import { mwItem } from "../../../constants";
-import { assertApplicationV2 } from "../../../functions/assertApplicationV2";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { ThemeContext } from "../../../themes/ThemeContext";
 import type { MwType } from "../../../types";
@@ -29,11 +29,8 @@ export const MwItemGroup = memo(function MwItemGroup({
 
   const { actor } = useActorSheetContext();
   const theme = useContext(ThemeContext);
-  const openSheet = (id: string) => {
-    const sheet = actor.items.get(id)?.sheet;
-    if (!sheet) return;
-    assertApplicationV2(sheet);
-    void sheet.render({ force: true });
+  const openItemSheet = (id: string) => {
+    openSheet(actor.items.get(id));
   };
 
   return (
@@ -102,7 +99,7 @@ export const MwItemGroup = memo(function MwItemGroup({
               display: "block",
               position: "relative",
             }}
-            onClick={() => openSheet(item.id)}
+            onClick={() => openItemSheet(item.id)}
             data-item-id={item.id}
             onDragStart={onDragStart}
             draggable="true"

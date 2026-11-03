@@ -1,7 +1,9 @@
-import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import type React from "react";
 import { memo, useCallback, useContext, useState } from "react";
 
+import { liveItems } from "../../../functions/liveItems";
+import { isEquipmentItem } from "../../../module/items/equipment";
+import { useDragStart } from "../../../hooks/useDragStart";
 import { useSystemMethods } from "../../../hooks/useSystemMethods";
 import type { PCActor } from "../../../module/actors/pc";
 import type {
@@ -35,24 +37,19 @@ export const EquipmentCategory = memo(function EquipmentCategory({
 }: EquipmentCategoryProps) {
   "use memo";
 
-  const app = useContext(FoundryAppContext);
+  const dragStart = useDragStart();
   const theme = useContext(ThemeContext);
   const { createEquipment } = useSystemMethods(actor);
   // the live items, only to pass to the rows
-  const items = ids.flatMap((id) => {
-    const item = actor.items.get(id) as EquipmentItem | undefined;
-    return item ? [item] : [];
-  });
+  const items = liveItems(actor, ids, isEquipmentItem);
 
   const onDragStart = useCallback(
     (e: React.DragEvent<HTMLElement>, item: EquipmentItem) => {
       // Foundry's drag data, so it can still be dropped on other sheets etc.
-      if (app !== null) {
-        (app as any)._onDragStart(e);
-      }
+      dragStart(e);
       setDraggedItem(item);
     },
-    [app, setDraggedItem],
+    [dragStart, setDraggedItem],
   );
   const onDragEnd = useCallback(() => setDraggedItem(null), [setDraggedItem]);
 

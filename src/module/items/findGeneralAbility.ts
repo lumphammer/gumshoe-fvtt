@@ -25,17 +25,6 @@ export function getGeneralAbilityNamesIn(items: readonly Named[]): string[] {
     .filter((name): name is string => name !== null);
 }
 
-/**
- * An ability's pool, from its snapshot (or 0 for no ability). Abilities are
- * the only items with a pool.
- */
-export function getPoolOf(
-  ability: { readonly system: unknown } | undefined,
-): number {
-  const pool = (ability?.system as { pool?: unknown } | undefined)?.pool;
-  return typeof pool === "number" ? pool : 0;
-}
-
 /** Find one of an actor's general abilities by name */
 export function findGeneralAbility(
   actor: Actor | null,

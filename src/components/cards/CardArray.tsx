@@ -1,7 +1,8 @@
 import { useContext } from "react";
 
+import { liveItem } from "../../functions/liveItems";
+import { isCardItem } from "../../module/items/card";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
-import type { CardItem } from "../../module/items/card";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Masonry } from "../Masonry";
 import { Translate } from "../Translate";
@@ -61,7 +62,7 @@ export const CardArray = ({ cards }: CardArrayProps) => {
     >
       {cards.map(({ id }) => {
         // the live card, for the memoised card to read its own snapshot
-        const card = actor.items.get(id) as CardItem | undefined;
+        const card = liveItem(actor, id, isCardItem);
         return card ? <CardArrayCard key={id} card={card} /> : null;
       })}
     </Masonry>
