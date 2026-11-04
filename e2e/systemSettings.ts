@@ -13,7 +13,9 @@ export async function openSystemSettings(page: Page) {
     return app.id;
   });
   const app = page.locator(`[id="${id}"]`);
-  await expect(app.getByText("Settings Home")).toBeVisible();
+  await expect(
+    app.getByRole("navigation", { name: "Breadcrumbs" }),
+  ).toBeVisible();
   return app;
 }
 

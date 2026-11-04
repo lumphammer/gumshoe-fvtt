@@ -78,7 +78,7 @@ export const SettingsBreadcrumbs = ({
   };
 
   const crumbs = [
-    { key: "home", to: [], label: <Translate>Settings Home</Translate> },
+    { key: "home", to: [], label: <Translate>Settings</Translate> },
     ...path.map((step, i) => ({
       key: step.id,
       to: path.slice(0, i + 1),
@@ -91,12 +91,7 @@ export const SettingsBreadcrumbs = ({
       className={className}
       aria-label={getTranslated("Breadcrumbs")}
       css={{
-        display: "flex",
-        flexDirection: "row",
-        flexWrap: "wrap",
-        alignItems: "center",
-        gap: "0.25em 0.5em",
-        padding: "0.25em 0.5em 0.5em 0.5em",
+        padding: "0.3em 0 0.1em 0",
         font: theme.displayFont,
         textTransform: theme.displayFontTextTransform,
         fontSize: "1.2em",
@@ -107,7 +102,9 @@ export const SettingsBreadcrumbs = ({
         return (
           <Fragment key={key}>
             {i > 0 && (
-              <FaChevronRight css={{ fontSize: "0.7em", opacity: 0.6 }} />
+              <FaChevronRight
+                css={{ fontSize: "0.7em", opacity: 0.6, marginInline: "0.5em" }}
+              />
             )}
             {isCurrent ? (
               <span aria-current="page">{label}</span>
