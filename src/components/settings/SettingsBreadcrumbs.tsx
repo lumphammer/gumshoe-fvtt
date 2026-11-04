@@ -1,6 +1,7 @@
 import {
   type AnyDirection,
   type AnyStep,
+  ButtonLink,
   Link,
   useNavigationContext,
 } from "@lumphammer/minirouter";
@@ -94,7 +95,7 @@ export const SettingsBreadcrumbs = ({
       css={{
         display: "flex",
         flexDirection: "row",
-        flexWrap: "wrap",
+        // flexWrap: "wrap",
         alignItems: "center",
         gap: "0.25em 0.5em",
         padding: "0.25em 0.5em 0.5em 0.5em",
@@ -104,28 +105,40 @@ export const SettingsBreadcrumbs = ({
       }}
     >
       {path.length > 0 && (
-        <Link from="root" to={path.slice(0, -1)} css={{ marginRight: "0.5em" }}>
-          <FaArrowLeft css={{ fontSize: "0.8em", marginRight: "0.3em" }} />
+        <ButtonLink
+          from="root"
+          to={path.slice(0, -1)}
+          css={{ marginRight: "0.5em", width: "auto" }}
+        >
+          <FaArrowLeft
+            css={{
+              fontSize: "0.8em",
+              marginRight: "0.3em",
+              textWrap: "nowrap",
+            }}
+          />
           <Translate>Back</Translate>
-        </Link>
+        </ButtonLink>
       )}
-      {crumbs.map(({ key, to, label }, i) => {
-        const isCurrent = i === crumbs.length - 1;
-        return (
-          <Fragment key={key}>
-            {i > 0 && (
-              <FaChevronRight css={{ fontSize: "0.7em", opacity: 0.6 }} />
-            )}
-            {isCurrent ? (
-              <span aria-current="page">{label}</span>
-            ) : (
-              <Link from="root" to={to}>
-                {label}
-              </Link>
-            )}
-          </Fragment>
-        );
-      })}
+      <div>
+        {crumbs.map(({ key, to, label }, i) => {
+          const isCurrent = i === crumbs.length - 1;
+          return (
+            <Fragment key={key}>
+              {i > 0 && (
+                <FaChevronRight css={{ fontSize: "0.7em", opacity: 0.6 }} />
+              )}
+              {isCurrent ? (
+                <span aria-current="page">{label}</span>
+              ) : (
+                <Link from="root" to={to}>
+                  {label}
+                </Link>
+              )}
+            </Fragment>
+          );
+        })}
+      </div>
     </nav>
   );
 };
