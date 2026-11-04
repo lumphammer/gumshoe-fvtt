@@ -18,8 +18,8 @@ test("every settings page renders", async ({ page }) => {
       });
       visited.push(`${"  ".repeat(depth)}${label}`);
       if (depth < 4) await visitMenu(depth + 1);
-      // back up a level, with the Back link (the first)
-      await crumbs.locator("a").first().click();
+      // back up a level
+      await app.getByRole("link", { name: "Back", exact: true }).click();
     }
   }
 

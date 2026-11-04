@@ -61,6 +61,7 @@ import { EquipmentSettingsRoutes } from "./Equipment/EquipmentSettingsRoutes";
 import { useSettingsState } from "./hooks";
 import { miscPages, useVisibleMiscPages } from "./Misc/miscPages";
 import { MiscSettingsRoutes } from "./Misc/MiscSettingsRoutes";
+import { SettingsBackButton } from "./SettingsBackButton";
 import { SettingsBreadcrumbs } from "./SettingsBreadcrumbs";
 import { SettingsMenu } from "./SettingsMenu";
 import { stabilityPages } from "./Stability/stabilityPages";
@@ -226,19 +227,21 @@ export const Settings = () => {
             >
               <ShowBackLinkContext.Provider value={false}>
                 <Router>
+                  <SettingsBreadcrumbs pages={pages} />
                   <div
                     css={{
                       display: "flex",
                       flexDirection: "row",
-                      alignItems: "baseline",
+                      alignItems: "center",
                       gap: "0.5em",
+                      padding: "0 0.5em 0.5em 0.5em",
                     }}
                   >
-                    <SettingsBreadcrumbs css={{ flex: 1 }} pages={pages} />
+                    <SettingsBackButton />
                     <div
                       role="status"
                       css={{
-                        padding: "0 0.5em",
+                        marginLeft: "auto",
                         whiteSpace: "nowrap",
                         color: theme.colors.accent,
                         visibility: hasChanges ? "visible" : "hidden",

@@ -1,12 +1,11 @@
 import {
   type AnyDirection,
   type AnyStep,
-  ButtonLink,
   Link,
   useNavigationContext,
 } from "@lumphammer/minirouter";
 import { Fragment, type ReactNode, useContext } from "react";
-import { FaArrowLeft, FaChevronRight } from "react-icons/fa6";
+import { FaChevronRight } from "react-icons/fa6";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { ThemeContext } from "../../themes/ThemeContext";
@@ -28,8 +27,7 @@ type SettingsBreadcrumbsProps = {
 
 /**
  * Shows the path to the current settings panel, with a link to each step on
- * the way, and a link back up one step. Must be rendered at the root of the
- * settings router.
+ * the way. Must be rendered at the root of the settings router.
  */
 export const SettingsBreadcrumbs = ({
   pages,
@@ -93,52 +91,31 @@ export const SettingsBreadcrumbs = ({
       className={className}
       aria-label={getTranslated("Breadcrumbs")}
       css={{
-        display: "flex",
-        flexDirection: "row",
-        // flexWrap: "wrap",
-        alignItems: "center",
-        gap: "0.25em 0.5em",
-        padding: "0.25em 0.5em 0.5em 0.5em",
+        padding: "0.25em 0.5em",
         font: theme.displayFont,
         textTransform: theme.displayFontTextTransform,
         fontSize: "1.2em",
       }}
     >
-      {path.length > 0 && (
-        <ButtonLink
-          from="root"
-          to={path.slice(0, -1)}
-          css={{ marginRight: "0.5em", width: "auto" }}
-        >
-          <FaArrowLeft
-            css={{
-              fontSize: "0.8em",
-              marginRight: "0.3em",
-              textWrap: "nowrap",
-            }}
-          />
-          <Translate>Back</Translate>
-        </ButtonLink>
-      )}
-      <div>
-        {crumbs.map(({ key, to, label }, i) => {
-          const isCurrent = i === crumbs.length - 1;
-          return (
-            <Fragment key={key}>
-              {i > 0 && (
-                <FaChevronRight css={{ fontSize: "0.7em", opacity: 0.6 }} />
-              )}
-              {isCurrent ? (
-                <span aria-current="page">{label}</span>
-              ) : (
-                <Link from="root" to={to}>
-                  {label}
-                </Link>
-              )}
-            </Fragment>
-          );
-        })}
-      </div>
+      {crumbs.map(({ key, to, label }, i) => {
+        const isCurrent = i === crumbs.length - 1;
+        return (
+          <Fragment key={key}>
+            {i > 0 && (
+              <FaChevronRight
+                css={{ fontSize: "0.7em", opacity: 0.6, marginInline: "0.5em" }}
+              />
+            )}
+            {isCurrent ? (
+              <span aria-current="page">{label}</span>
+            ) : (
+              <Link from="root" to={to}>
+                {label}
+              </Link>
+            )}
+          </Fragment>
+        );
+      })}
     </nav>
   );
 };
