@@ -34,13 +34,13 @@ async function pokeEverything(
         "[role=switch]",
       ].join(", "),
     );
-  const count = Math.min(await controls.count(), 300);
-  for (let i = 0; i < count; i++) {
+  // count again each time round: poking one control can take others away
+  // (or the tab may still have been swapping in), and `evaluate` would wait
+  // for a control that's gone
+  for (let i = 0; i < Math.min(await controls.count(), 300); i++) {
     const control = controls.nth(i);
-    // disabled controls are what we want, so skip them. Poking one can take
-    // others away (or the tab may still have been swapping in when we
-    // counted), and `evaluate` would wait for them for ever, hence the
-    // timeout.
+    // disabled controls are what we want, so skip them. The timeout is for
+    // a control that goes between counting and looking.
     const state = await control
       .evaluate(
         (e) => ({

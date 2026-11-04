@@ -23,21 +23,26 @@ translations, adding fields and settings, releases).
   `podman exec fvtt-v14 ... /home/foundry/app/client/...`. Font Awesome 6 is
   available (`/home/foundry/app/public/fonts/fontawesome`).
 - To force dice in testing: `CONFIG.Dice.randomUniform = () => 0.01` (rolls
-  6s), `0.99` (1s); `delete CONFIG.Dice.randomUniform` to undo.
+  6s), `0.99` (1s);
+  `CONFIG.Dice.randomUniform = foundry.dice.MersenneTwister.random` undoes it
+  (deleting it leaves no dice at all).
 
 ## Browser tests
 
 - Playwright tests live in `e2e/` (see `e2e/README.md`). They run against
-  `build/` on a separate Foundry (`pnpm e2e:foundry up`, port 30099), never
-  the dev one: global setup deletes and recreates its world on every run.
-  `pnpm build` before `pnpm e2e`.
+  `build/` on separate Foundry servers (`pnpm e2e:foundry up`, ports 30099
+  up), one per worker, never the dev one: global setup deletes and recreates
+  their worlds on every run. `pnpm build` before `pnpm e2e`.
+- A worker's tests share one Gamemaster page, tidied after each test
+  (`tidyPage` in `e2e/foundry.ts`). If a test changes something in the page
+  that a fresh load wouldn't have, and the tidy doesn't undo, add it there.
 - Not part of `pnpm check`. Run `pnpm e2e` when a change touches something a
   test covers.
 - Tests run with the canvas off. Changing an actor's ownership then makes
   Foundry throw on the player's client (cycling tokens) before any hooks fire:
   such tests need `test.use({ canvas: true })`.
-- Only one run at a time per Foundry: if `pnpm e2e` says another run is using
-  it, the user may be running the tests too. Wait, rather than stopping it.
+- Only one run at a time: if `pnpm e2e` says another run is using the
+  servers, the user may be running the tests too. Wait, rather than stopping it.
 
 ## Data models
 
