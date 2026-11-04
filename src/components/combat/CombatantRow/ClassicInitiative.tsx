@@ -93,7 +93,7 @@ export const ClassicInitiative = memo(function ClassicInitiative() {
           <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
             <NativeMenuLabel>{combatantState.name}</NativeMenuLabel>
             <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
-              {localize("COMBAT.CombatantUpdate")}
+              {localize("COMBATANT.ACTIONS.Update")}
             </NativeMenuItem>
             <NativeMenuItem icon={<FaRecycle />} onSelect={onResetInitiative}>
               {localize("investigator.RefreshInitiative")}
@@ -102,7 +102,7 @@ export const ClassicInitiative = memo(function ClassicInitiative() {
               {localize("investigator.OpenCharacterSheet")}
             </NativeMenuItem>
             <NativeMenuItem icon={<FaTrash />} onSelect={onRemoveCombatant}>
-              {localize("COMBAT.CombatantRemove")}
+              {localize("COMBATANT.ACTIONS.Remove")}
             </NativeMenuItem>
           </NativeDualFunctionMenu>
         </>

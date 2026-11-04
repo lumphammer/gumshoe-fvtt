@@ -57,7 +57,7 @@ const TurnPassingMenu = memo(function TurnPassingMenu({
     <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
       <NativeMenuLabel>{name}</NativeMenuLabel>
       <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
-        {localize("COMBAT.CombatantUpdate")}
+        {localize("COMBATANT.ACTIONS.Update")}
       </NativeMenuItem>
       <NativeMenuItem icon={<FaPlus />} onSelect={onAddTurn}>
         {localize("investigator.AddTurn")}
@@ -69,7 +69,7 @@ const TurnPassingMenu = memo(function TurnPassingMenu({
         {localize("investigator.OpenCharacterSheet")}
       </NativeMenuItem>
       <NativeMenuItem icon={<FaTrash />} onSelect={onRemoveCombatant}>
-        {localize("COMBAT.CombatantRemove")}
+        {localize("COMBATANT.ACTIONS.Remove")}
       </NativeMenuItem>
     </NativeDualFunctionMenu>
   );

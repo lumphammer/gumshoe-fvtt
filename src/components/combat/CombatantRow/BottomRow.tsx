@@ -45,7 +45,9 @@ export const BottomRow = memo(function BottomRow() {
             })}
             data-action="toggleHidden"
             data-tooltip=""
-            aria-label={localize("COMBAT.ToggleVis")}
+            aria-label={localize(
+              combatantState.hidden ? "COMBATANT.Show" : "COMBATANT.Hide",
+            )}
           />
           <button
             type="button"
@@ -57,7 +59,11 @@ export const BottomRow = memo(function BottomRow() {
             )}
             data-action="toggleDefeated"
             data-tooltip=""
-            aria-label={localize("COMBAT.ToggleDead")}
+            aria-label={localize(
+              combatantState.defeated
+                ? "COMBATANT.UnmarkDefeated"
+                : "COMBATANT.MarkDefeated",
+            )}
           />
         </>
       )}
@@ -66,7 +72,7 @@ export const BottomRow = memo(function BottomRow() {
         className="inline-control combatant-control icon fa-solid fa-bullseye-arrow"
         data-action="pingCombatant"
         data-tooltip=""
-        aria-label={localize("COMBAT.PingCombatant")}
+        aria-label={localize("COMBATANT.Ping")}
       />
       <div className="token-effects" data-tooltip-html={effectsTooltip}>
         {effects.map(
