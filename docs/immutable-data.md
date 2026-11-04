@@ -1,38 +1,41 @@
-# Immutable document data: snapshot strategies
+# Immutable document data
 
-Findings from exploring #1476: how to turn Foundry's mutable documents into
-immutable, structurally shared data that a React tree can memoise against.
-The benchmark code lives on the `immutable-data-bench` branch (kept for
-reference, not for merging).
+## Current architecture
 
-**Conclusion:** keep a snapshot per document, copied fresh from the
-**prepared** document whenever a hook names it, and structurally shared with
-the previous snapshot (`replaceEqualDeep`). Don't patch snapshots with hook
-diffs, and don't copy the whole actor on every change.
+React Compiler is enabled for all components and hooks. Components subscribe
+independently to immutable snapshots; passing a live document as a prop does
+not make its data reactive. Use it for writes, not render-time reads.
 
-## The problem
+- `documentStores.ts` caches one store per document, shared by its consumers.
+  Stores copy fresh **prepared** data for the changed document and preserve
+  unchanged identities with `replaceEqualDeep`. Hook diffs only identify
+  documents; they are never patched into snapshots.
+- Read through `useActorSnapshot`, `useItemSelector`, `useCombatSnapshot` and
+  `useSettings`, selecting only displayed values. Use `useActorAndSettings`
+  for derived rules and `useActorsSnapshot` for several actors. Domain rules
+  take plain typed views, shared with live model methods.
+- Other Foundry state comes through `createHookStore`/`createHookCounter`
+  (`gameStores.ts` holds shared stores). Every consumer follows its own
+  dependencies, including other documents, permissions and registries.
+- Sheet roots provide `SheetPermissionsContext`. Once every descendant keeps
+  itself current, disable Foundry root re-renders with
+  `rerenderOnFoundryRender: false` (the PC and NPC sheets do this).
+- Write in event handlers through the live document or `useSystemMethods`;
+  Foundry replaces `doc.system` on updates. `useAsyncUpdate` handles typing
+  and late save echoes. A `"use no memo"` escape hatch is not a subscription.
 
-Foundry documents are mutable, so today the UI can't memoise: a sheet
-re-renders in full when its own document changes, and anything it shows from
-other documents (an item's pool on the actor's sheet, a weapon's ability) goes
-stale unless a component subscribes to more hooks by hand
-(`useRefreshOnActorItemChanges`).
+The sections below preserve the experiments and migration record for #1476;
+implementation proposals there describe the stage at which they were written.
+The follow-up checklist at the end tracks the remaining review work.
 
-If a sheet's root is given an immutable snapshot of **everything the tree
-reads**, and the tree reads only that, both problems go away together:
-invalidation is just "the snapshot changed", and memoisation falls out of
-reference equality. This needs no central store; each sheet owns its
-snapshot and subscribes for its own lifetime.
+## Historical strategy investigation
 
-Two conditions make that work:
+Foundry's mutable documents originally required full sheet renders and extra
+hooks for data from other documents. The initial proposal gave each sheet
+root its own snapshot. The implemented architecture instead shares cached
+stores and lets leaves subscribe independently, as described above.
 
-- **Convert a whole tree at a time.** A memoised tree with one component still
-  reading the live document has the old bug in a new form.
-- **Domain getters become pure functions over snapshots.** About 60 component
-  files call methods such as `actor.system.getCategorizedAbilities()`, which
-  walk the live document. They have to become, for example,
-  `getCategorizedAbilities(snapshot)`, like the existing pure rules in
-  `src/module/attacks/`.
+The benchmark code lives on `immutable-data-bench` for reference, not merging.
 
 ## The strategies compared
 
@@ -572,3 +575,129 @@ few causes, listed here with what to do about each, in the order to do them.
    redundant, but a component whose parent isn't compiled (a sheet's root
    under Foundry's render, the combat tracker's list under `Tracker`) still
    needs one to skip a re-render with the same props.
+
+## Follow-up review: maintainability and remaining subscriptions
+
+Review of the aggregate diff from `before-immutability` to `855bb52d`, against
+#1476. The nine plumbing tasks above were marked done at the time of this
+review; the following additional findings and suggestions have now been
+addressed in separate commits.
+
+The architecture is sound, and the added code largely earns its keep. The
+later consolidation commits already share subscriptions, permissions, sheet
+opening, live-item lookup and domain rules. Keep the small document-specific
+hooks, explicit selectors and model methods that delegate to shared rules.
+The remaining opportunities call for focused extractions and stronger
+interfaces, rather than another store framework or a generic sheet/form
+abstraction.
+
+### Maintainability
+
+- [x] **Restore a shared, self-subscribing initiative picker.**
+  `PCSheetPanels.tsx` and `NPCSheetPanels.tsx` duplicate the initiative
+  heading/dropdown, settings selection and general-ability filtering. The
+  migration deleted `CharacterCombatAbilityPicker` and distributed its
+  responsibility into these parents. An `InitiativeAbilityPicker` taking
+  the actor could own its selectors and setter, using the existing
+  `getGeneralAbilityNamesIn`. This would also prevent initiative-only
+  changes from invalidating the larger panels. This is the clearest
+  immediate factoring win. Done: `InitiativeAbilityPicker` owns these subscriptions
+  and writes; both panels now delegate to it.
+- [x] **Preserve type information in derived-rule interfaces.**
+  In `module/actors/pcDerived.ts`, `ItemView.type`, `ItemView.system` and
+  `PCView.system` are `unknown`. Helpers recover their shape through
+  assertions and string-keyed access such as `numberOf(item, "rating")`;
+  `abilitiesDerived.ts` uses a similar approach. This accommodates live
+  documents and snapshots, but a field rename can silently become a
+  zero/default instead of a compiler error. Introduce small typed
+  structural views for the data each rule needs, derived from existing
+  schema types where practical, which both representations can satisfy.
+  This is a maintenance concern, not a finding that the current
+  calculations are wrong. Done: schema-derived item views now discriminate by
+  type; rules read checked properties directly, and PC adaptations are typed.
+- [x] **Check the configuration of `createParentStore`.**
+  In `module/snapshots/documentStores.ts`, callers supply `TData`, but
+  `ownData` returns only `object`, collections have arbitrary string keys,
+  and serializers return `unknown`. `RefreshEmbedded` likewise accepts any
+  key and data. Connect collection keys and serialized values to the
+  resulting snapshot type, so a misspelled key or incorrect serializer is
+  caught. Keep unavoidable Foundry casts inside the adapter. The shared
+  lifecycle abstraction is useful; strengthen its existing interface. Done:
+  collection keys now determine own-data omissions, serializer results and
+  refresh arguments, with compile-time regression checks.
+- [x] **Share the ability-list editors' repeated presentation.**
+  `UnlocksEditorRow.tsx` and `SituationalModifiersEditorRow.tsx` repeat the
+  number input, text input, delete button, layout and indexed callbacks.
+  Their parent editors also repeat transition scaffolding. This duplication
+  predates the migration. Extract a small number/text/delete row and, if it
+  stays simple, an animated-list wrapper; keep domain-specific setters in
+  the two editors. Done: both editors share `AbilityListEditor` transitions
+  and `NumberTextEditorRow`; their setters remain explicit.
+- [x] **Narrow the weapon edit row's selector.**
+  `characters/Weapons/WeaponRowEdit.tsx` selects the entire weapon `system`
+  although it displays only part of it. Changes to cost, lethality or fire
+  modes therefore invalidate the row unnecessarily, contrary to AGENTS.md's
+  guidance to select only what is shown. Select the displayed fields
+  explicitly, making its dependencies clear and preventing newly added
+  fields from automatically becoming rendering dependencies. This is an
+  optimization inconsistency, not a correctness bug. Done: the selector names
+  the displayed fields, and one range-input loop replaces six repeated inputs.
+- [x] **Separate current architecture guidance from historical findings.**
+  The opening of this document describes root-owned snapshots and says no
+  central store is needed; later sections describe shared stores and
+  independently subscribing leaves. The comments in `PCSheetPanels.tsx`
+  also describe Foundry renders stopping at panels, although those sheets
+  now disable root re-renders. Put a short current-architecture section
+  first, label the historical material, and update stale code comments. Done:
+  current guidance now opens this document and panel comments describe independent
+  subscriptions rather than obsolete Foundry render boundaries.
+
+### Remaining subscription gaps
+
+At review time these were code-path findings, without browser reproduction.
+Both concern #1476's aim of plumbing immutable data through all components:
+opting out of compiler caching does not itself subscribe to changes. The
+fixes now have passing browser regression coverage.
+
+- [x] **Subscribe to the actor's default turn count.**
+  `combat/CombatantRow/CombatantTurnContext.ts` reads
+  `passingTurnsRemaining` and `defaultPassingTurns` live in
+  `usePassingTurns`. The latter depends on the actor's
+  `initiativePassingTurns`, which the hook does not subscribe to. Changing
+  "Number of turns" on the character sheet can leave the tracker's total
+  stale until another relevant render. Select the combatant's `turnInfo`,
+  the actor's default turns and the round explicitly, then call the
+  existing pure `getPassingTurnsRemaining`. This removes the hidden
+  dependency and the compiler escape hatch. Verify with a regression test
+  that changes the actor's default without advancing combat. Done: the hook
+  selects each dependency and calls the pure rule, without a compiler escape
+  hatch. Browser coverage checks before and after combat starts.
+- [x] **Finish migrating theme consumers to the registry store.**
+  `characters/SettingsArea.tsx` reads and enumerates `runtimeConfig.themes`
+  directly. Installing or replacing a theme emits `runtimeConfigChanged`,
+  but the component does not subscribe, so choices and display names can
+  remain stale. Use the existing `useRuntimeRegistries`. Related direct
+  lookups remain in `party/PartySheet.tsx` and `Suspense.tsx`; finish a
+  shared, store-backed theme-resolution hook so callers need not know which
+  registry and settings events to follow. Verify installation/replacement
+  while the affected UI is already open. Done: `useTheme` resolves through
+  settings and the shared registry store; PC choices, party sheets and Suspense
+  use these subscriptions. Browser coverage installs and replaces a theme
+  with PC settings and a party sheet already open.
+
+### Review validation
+
+The review ran 59 passing tests across seven files: `createSnapshotStore`,
+`documentStores`, `hookStores`, `replaceEqualDeep`, `useSnapshot`,
+`pcDerived` and `abilitiesDerived`. Full checks and browser tests were not
+run. The maintenance suggestions above are judgments, except for the narrow
+selector-guidance mismatch; the subscription findings need browser
+regression coverage when addressed.
+
+
+Follow-up implementation validation: `pnpm check` passed before every commit;
+the final tree passes 1,208 tests plus typecheck, lint, formatting and build.
+Browser runs passed 32 sheet tests, eight combat tests and 15 theme/tab/logo
+tests, including both new subscription regressions. The changes reduce `src`
+by 138 lines including type tests. Additions establish isolated subscriptions,
+schema-checked rule/store interfaces and current architecture guidance.

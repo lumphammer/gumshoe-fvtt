@@ -16,17 +16,16 @@ import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { IndexedAsyncTextInput } from "../inputs/IndexedAsyncTextInput";
 import { InputGrid } from "../inputs/InputGrid";
-import { OtherableDropDown } from "../inputs/OtherableDropDown";
 import { Translate } from "../Translate";
+import { InitiativeAbilityPicker } from "./InitiativeAbilityPicker";
 import { LogoEditable } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { PersonalDetailField } from "./PersonalDetailField";
 import { StatField } from "./StatField";
 import { TrackersArea } from "./TrackersArea";
 
-// The PC sheet's header and side panels. Each is memoised, and reads the actor
-// and settings through snapshots, so Foundry's re-render of the sheet stops
-// here, and a change re-renders only the panel that shows it.
+// The PC sheet's panels subscribe independently to the data they display.
+// Foundry root re-renders are disabled; descendants keep themselves current.
 
 /** The personal detail items, as shown in the header and stats panel */
 const usePersonalDetails = () => {
@@ -177,19 +176,15 @@ export const PCSheetPools = memo(function PCSheetPools() {
   assertPCActor(actor);
   const theme = useContext(ThemeContext);
   const pools = useActorSnapshot(actor, (snapshot) => ({
-    initiativeAbility: snapshot.system.initiativeAbility,
     mwInjuryStatus: snapshot.system.mwInjuryStatus,
-    generalAbilityNames: snapshot.items
-      .filter((item) => item.type === c.generalAbility)
-      .map((item) => item.name),
   }));
-  const { useMwStyleAbilities, useMwInjuryStatus, pcStats, combatAbilities } =
-    useSettings((s) => ({
+  const { useMwStyleAbilities, useMwInjuryStatus, pcStats } = useSettings(
+    (s) => ({
       useMwStyleAbilities: s.useMwStyleAbilities,
       useMwInjuryStatus: s.useMwInjuryStatus,
       pcStats: s.pcStats,
-      combatAbilities: s.combatAbilities,
-    }));
+    }),
+  );
   const methods = useSystemMethods(actor);
 
   return (
@@ -238,17 +233,7 @@ export const PCSheetPools = memo(function PCSheetPools() {
       {Object.keys(pcStats).map((key) => (
         <StatField key={key} id={key} stat={pcStats[key]} />
       ))}
-      <div>
-        <h3 css={{ gridColumn: "start / end" }}>
-          <Translate>Initiative</Translate>
-        </h3>
-        <OtherableDropDown
-          value={pools.initiativeAbility}
-          onChange={methods.setInitiativeAbility}
-          pickerValues={combatAbilities.toSorted()}
-          validValues={pools.generalAbilityNames}
-        />
-      </div>
+      <InitiativeAbilityPicker actor={actor} />
     </div>
   );
 });

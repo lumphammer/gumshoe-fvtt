@@ -171,3 +171,66 @@ test("Moribund World's items tab follows items changed elsewhere", async ({
     await setSettings(page, { mwUseAlternativeItemTypes: false });
   }
 });
+
+test("open PC and party sheets follow themes installed and replaced at runtime", async ({
+  page,
+}) => {
+  await setSettings(page, { defaultThemeName: "runtimeReviewTheme" });
+  const partyId = await createActor(page, {
+    name: "Themed party",
+    type: "party",
+  });
+  const pcId = await createActor(page, { name: "Themed PC", type: "pc" });
+  const party = await openSheet(page, `Actor.${partyId}`);
+  const pc = await openSheet(page, `Actor.${pcId}`);
+  await pc.locator('[data-action="toggleSheetSettings"]').click();
+  const select = pc
+    .locator("label", { hasText: /^Theme$/ })
+    .locator("xpath=following-sibling::div[1]")
+    .locator("select");
+  const option = select.locator('option[value="runtimeReviewTheme"]');
+  await expect(option).toHaveCount(0);
+  const install = (displayName: string, color: string) =>
+    page.evaluate(
+      ({ displayName, color }) =>
+        CONFIG.Investigator!.installTheme("runtimeReviewTheme", {
+          schemaVersion: "v1",
+          displayName,
+          largeSheetRootStyle: { outlineColor: color },
+          smallSheetRootStyle: { outlineColor: color },
+          logo: {
+            frontTextElementStyle: {},
+            rearTextElementStyle: {},
+            textElementsStyle: {},
+            backdropStyle: {},
+          },
+          colors: {
+            accent: "white",
+            accentContrast: "black",
+            glow: "white",
+            wallpaper: "black",
+            text: "white",
+            backgroundButton: "black",
+            backgroundPrimary: "black",
+            backgroundSecondary: "black",
+          },
+        }),
+      { displayName, color },
+    );
+  for (const [name, color] of [
+    ["Installed Theme", "rgb(12, 34, 56)"],
+    ["Replaced Theme", "rgb(65, 43, 21)"],
+  ]) {
+    await install(name, color);
+    await expect(option).toHaveText(name);
+    await expect(select.locator("option").last()).toContainText(
+      `Default (${name})`,
+    );
+    for (const sheet of [pc, party]) {
+      await expect(sheet.locator(".window-content > div")).toHaveCSS(
+        "outline-color",
+        color,
+      );
+    }
+  }
+});

@@ -76,8 +76,8 @@ translations, adding fields and settings, releases).
   on identity, and a Foundry document keeps its identity when it changes, so
   components read Foundry's data through snapshots and stores (below), never
   live during render. The few functions which read live state during render
-  on purpose (`Tracker`, `useIsEditable`'s fallback, `usePassingTurns`, and a
-  handful of hooks that look things up live) are marked `"use no memo"`, with
+  on purpose (`Tracker`, `useIsEditable`'s fallback, and a handful of hooks
+  that look things up live) are marked `"use no memo"`, with
   a comment saying why; mark any new one the same way. A compiled component
   passes an unchanged child its cached element, so every child must keep
   itself current (as if memoised), not rely on its parent re-rendering. A

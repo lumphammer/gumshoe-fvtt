@@ -5,7 +5,7 @@ import { getTargetActorInfoIn } from "./targetActorInfo";
 const health = (pool: number, extra: object = {}) => ({
   _id: "h",
   name: "Health",
-  type: "generalAbility",
+  type: "generalAbility" as const,
   system: { pool, ...extra },
 });
 
@@ -44,7 +44,7 @@ describe("getTargetActorInfoIn", () => {
     const linked = {
       _id: "l",
       name: "Toughness",
-      type: "generalAbility",
+      type: "generalAbility" as const,
       system: { pool: 3, linkToResource: true, resourceId: "health" },
     };
     expect(

@@ -1,74 +1,36 @@
-import type { ReactNode } from "react";
 import { memo } from "react";
 
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { AbilityItem } from "../../module/items/exports";
-import type { DeepReadonly } from "../../module/snapshots/createSnapshotStore";
 import type { SituationalModifier } from "../../types";
-import { Button } from "../inputs/Button";
-import { useListShowHideTransition } from "../transitions/useListShowHideTransition";
-import { Translate } from "../Translate";
-import { getListTransitionStyles } from "./getListTransitionStyles";
-import { SituationalModifiersEditorRow } from "./SituationalModifiersEditorRow";
-
-const transitionTime = 400;
-
-interface SituationalModifiersEditorProps {
-  /** Only to write through */
-  item: AbilityItem;
-  situationalModifiers: readonly DeepReadonly<SituationalModifier>[];
-}
+import { AbilityListEditor, NumberTextEditorRow } from "./AbilityListEditor";
 
 export const SituationalModifiersEditor = memo(
   function SituationalModifiersEditor({
     item,
     situationalModifiers,
-  }: SituationalModifiersEditorProps) {
+  }: {
+    /** Only to write through */
+    item: AbilityItem;
+    situationalModifiers: readonly Readonly<SituationalModifier>[];
+  }) {
     const methods = useSystemMethods(item);
-    const transitionedSituationalModifiers = useListShowHideTransition(
-      situationalModifiers,
-      (situationalModifier) => situationalModifier.id,
-      transitionTime,
-    );
-
     return (
-      <div
-        css={{
-          marginBottom: "1em",
-        }}
+      <AbilityListEditor
+        entries={situationalModifiers}
+        onAdd={methods.addSituationalModifier}
       >
-        {transitionedSituationalModifiers.map<ReactNode>(
-          ({ item: situationalModifier, isShowing, isEntering, key }, i) => {
-            return (
-              <div
-                key={key}
-                style={getListTransitionStyles(
-                  isShowing,
-                  isEntering,
-                  transitionTime,
-                )}
-              >
-                <SituationalModifiersEditorRow
-                  index={i}
-                  situationalModifier={situationalModifier}
-                  onChangeSituation={methods.setSituationalModifierSituation}
-                  onChangeModifier={methods.setSituationalModifierModifier}
-                  onDelete={methods.deleteSituationalModifier}
-                />
-              </div>
-            );
-          },
+        {(entry, index) => (
+          <NumberTextEditorRow
+            index={index}
+            number={entry.modifier}
+            text={entry.situation}
+            onChangeNumber={methods.setSituationalModifierModifier}
+            onChangeText={methods.setSituationalModifierSituation}
+            onDelete={methods.deleteSituationalModifier}
+          />
         )}
-
-        <Button
-          onClick={methods.addSituationalModifier}
-          css={{
-            margin: 0,
-          }}
-        >
-          <i className="fas fa-plus" /> <Translate>Add item</Translate>
-        </Button>
-      </div>
+      </AbilityListEditor>
     );
   },
 );

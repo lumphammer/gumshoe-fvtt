@@ -13,7 +13,7 @@ import type { PartyActor } from "../../module/actors/party";
 import { assertPartyActor } from "../../module/actors/party";
 import { callTeamCrisis } from "../../module/bonds/callTeamCrisis";
 import { areBondsOn } from "../../module/stability/settings";
-import { runtimeConfig } from "../../runtime";
+import { useTheme } from "../../hooks/useTheme";
 import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
@@ -32,9 +32,7 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
     img: snapshot.img ?? null,
     actorIds: snapshot.system.actorIds,
   }));
-  const defaultThemeName = useSettings((s) => s.defaultThemeName);
-  const theme =
-    runtimeConfig.themes[defaultThemeName] || runtimeConfig.themes["tealTheme"];
+  const theme = useTheme();
   const bondsOn = useSettings((s) => areBondsOn(s));
   const packIds = useSettings((s) => s.newPCPacks);
   // the PCs among the members, in order (any that are missing are skipped)

@@ -21,10 +21,13 @@ function setUp() {
   };
   addPage("a", "A");
   addPage("b", "B");
-  const store = createParentStore<{
-    name: string;
-    pages: { _id: string; name: string }[];
-  }>(parent, {
+  const store = createParentStore<
+    {
+      name: string;
+      pages: { _id: string; name: string }[];
+    },
+    "pages"
+  >(parent, {
     ownData: () => ({ name: parent.name }),
     updateHook: "updateJournalEntry",
     collections: {

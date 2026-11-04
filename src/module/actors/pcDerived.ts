@@ -7,7 +7,8 @@
 import type { TraumaType } from "@lumphammer/investigator-fvtt-types";
 
 import type { DeepReadonly } from "../snapshots/createSnapshotStore";
-import type { OfType } from "../snapshots/snapshotTypes";
+import type { PCSystemData } from "./pc";
+import type { ItemSystems, OfType } from "../snapshots/snapshotTypes";
 
 import * as c from "../../constants";
 import { getTranslated } from "../../functions/getTranslated";
@@ -35,24 +36,47 @@ import {
   shakenDifficultyPenalty,
 } from "../stability/trauma";
 
-/** An item, as a snapshot or a live document */
-export type ItemView = {
-  readonly _id: string | null;
-  readonly name: string;
-  readonly type: unknown;
-  readonly system: unknown;
+/** The rule inputs, linked to the schemas; unrelated items need only their identity. */
+type RuleSystems = {
+  generalAbility: Pick<
+    ItemSystems["generalAbility"],
+    | "pool"
+    | "rating"
+    | "categoryId"
+    | "hideIfZeroRated"
+    | "isPushPool"
+    | "showTracker"
+    | "linkToResource"
+    | "resourceId"
+  >;
+  investigativeAbility: Pick<
+    ItemSystems["investigativeAbility"],
+    | "pool"
+    | "rating"
+    | "categoryId"
+    | "hideIfZeroRated"
+    | "isQuickShock"
+    | "showTracker"
+  >;
+  bond: Pick<ItemSystems["bond"], "points" | "isDeltaGreen">;
+  personalDetail: Pick<ItemSystems["personalDetail"], "slotIndex">;
+  networkContact: Pick<ItemSystems["networkContact"], "pool">;
 };
+export type ItemView = {
+  [K in Item.SubType]: {
+    readonly _id: string | null;
+    readonly name: string;
+    readonly type: K;
+    readonly system: K extends keyof RuleSystems
+      ? DeepReadonly<Partial<RuleSystems[K]>>
+      : object;
+  };
+}[Item.SubType];
 
 /** A PC, as a snapshot or a live actor */
 export type PCView = {
-  readonly system: unknown;
+  readonly system: DeepReadonly<Pick<PCSystemData, "adaptations">>;
   readonly items: readonly ItemView[];
-};
-
-/** A number from an item's system data, or 0 */
-const numberOf = (item: ItemView | undefined, key: string): number => {
-  const value = (item?.system as Record<string, unknown> | undefined)?.[key];
-  return typeof value === "number" ? value : 0;
 };
 
 const isAbility = (item: ItemView) =>
@@ -87,8 +111,8 @@ export function getStabilityViewIn(
     ? {
         id: stability._id ?? "",
         name: stability.name,
-        pool: numberOf(stability, "pool"),
-        rating: numberOf(stability, "rating"),
+        pool: stability.system.pool ?? 0,
+        rating: stability.system.rating ?? 0,
       }
     : null;
 }
@@ -104,12 +128,12 @@ export function getStabilityStateIn(
   const thresholds = getStabilityThresholds(s);
   const stability = getStabilityAbilityIn(pc.items, s);
   return thresholds && stability
-    ? getStabilityState(numberOf(stability, "pool"), thresholds)
+    ? getStabilityState(stability.system.pool ?? 0, thresholds)
     : null;
 }
 
 const adaptationsOf = (pc: PCView): Readonly<Record<string, number>> =>
-  (pc.system as { adaptations?: Record<string, number> }).adaptations ?? {};
+  pc.system.adaptations;
 
 /**
  * A Stability test's Difficulty, from its base: +1 while Shaken or worse
@@ -171,12 +195,12 @@ export function getSanityCapIn(
   if (!isSanityOn(s)) {
     return null;
   }
-  const capAbility = pc.items.find(
-    (item) => isAbility(item) && item.name === s.sanityCapAbility,
-  );
+  const capAbility = pc.items
+    .filter(isAbility)
+    .find((item) => item.name === s.sanityCapAbility);
   return getSanityCap({
     base: s.sanityCapBase,
-    capAbilityRating: numberOf(capAbility, "rating"),
+    capAbilityRating: capAbility?.system.rating ?? 0,
   });
 }
 
@@ -226,7 +250,7 @@ export function getRatingCapIn(
 }
 
 const isDeltaGreenBond = (bond: ItemView) =>
-  (bond.system as { isDeltaGreen?: boolean }).isDeltaGreen ?? false;
+  bond.type === c.bond && (bond.system.isDeltaGreen ?? false);
 
 /** Bonds in display order: ordinary first, then DELTA GREEN, by name */
 export function getBondsIn<T extends ItemView>(
@@ -247,7 +271,7 @@ export function getBondPointsOf(bond: ItemView): {
   points: number;
   isBroken: boolean;
 } {
-  const points = numberOf(bond, "points");
+  const points = bond.type === c.bond ? (bond.system.points ?? 0) : 0;
   return { points, isBroken: isBondBroken(points) };
 }
 
@@ -288,9 +312,8 @@ export function getRebuildSpendAbilitiesIn<T extends ItemView>(
     items.filter(
       (item) =>
         item.type === c.investigativeAbility &&
-        (item.system as { categoryId?: string }).categoryId ===
-          s.bondRebuildSpendCategory &&
-        numberOf(item, "rating") >= 1,
+        item.system.categoryId === s.bondRebuildSpendCategory &&
+        (item.system.rating ?? 0) >= 1,
     ) as OfType<T, typeof c.investigativeAbility>[]
   ).toSorted((a, b) => a.name.localeCompare(b.name));
 }
@@ -308,13 +331,12 @@ export function findHealthAbilityIn<T extends ItemView>(
   const generalAbilities = items.filter(
     (item) => item.type === c.generalAbility,
   ) as OfType<T, typeof c.generalAbility>[];
-  const system = (item: ItemView) =>
-    item.system as { linkToResource?: boolean; resourceId?: string };
   return (
     generalAbilities.find(
       (item) =>
-        system(item).linkToResource &&
-        system(item).resourceId === healthResourceId,
+        item.type === c.generalAbility &&
+        item.system.linkToResource &&
+        item.system.resourceId === healthResourceId,
     ) ??
     generalAbilities.find(
       (item) => item.name.trim().toLowerCase() === healthResourceId,
@@ -336,7 +358,7 @@ export function getTraumaTestDifficultyIn(
     ...trauma,
     adapted: isAdaptedToIn(pc, trauma.id, s),
     state: getTraumaState(
-      numberOf(stability, "pool"),
+      stability.system.pool ?? 0,
       getStabilityThresholds(s),
     ),
   });
@@ -358,7 +380,7 @@ export function getPersonalDetailsInSlotIn<T extends ItemView>(
   return items.filter(
     (item) =>
       item.type === c.personalDetail &&
-      numberOf(item, "slotIndex") === slotIndex,
+      (item.system.slotIndex ?? 0) === slotIndex,
   ) as OfType<T, typeof c.personalDetail>[];
 }
 
@@ -385,7 +407,7 @@ export function getNetworkContactsIn<T extends ItemView>(
 /** The Network points contacts still hold */
 export function getContactPointsIn(items: readonly ItemView[]): number {
   return getNetworkContactsIn(items).reduce(
-    (total, contact) => total + numberOf(contact, "pool"),
+    (total, contact) => total + (contact.system.pool ?? 0),
     0,
   );
 }
