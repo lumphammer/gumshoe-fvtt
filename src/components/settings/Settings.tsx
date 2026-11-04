@@ -68,6 +68,9 @@ import { stabilityPages } from "./Stability/stabilityPages";
 import { StabilitySettings } from "./Stability/StabilitySettings";
 import { StabilitySettingsRoutes } from "./Stability/StabilitySettingsRoutes";
 
+/** the height of the back button and the status, beside the breadcrumbs */
+const headerFloatHeight = "1.75em";
+
 export const Settings = () => {
   assertGame(game);
   const foundryApplication = useContext(FoundryAppContext);
@@ -227,21 +230,30 @@ export const Settings = () => {
             >
               <ShowBackLinkContext.Provider value={false}>
                 <Router>
-                  <SettingsBreadcrumbs pages={pages} />
+                  {/* The back button and status float either side of the
+                  breadcrumbs, which drop below them when they don't fit
+                  between. Floats come first so the breadcrumbs flow around
+                  them. They're the same height, so the breadcrumbs clear both together. */}
                   <div
                     css={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: "0.5em",
-                      padding: "0 0.5em 0.5em 0.5em",
+                      display: "flow-root",
+                      padding: "0 0.5em 0.25em 0.5em",
                     }}
                   >
-                    <SettingsBackButton />
+                    <SettingsBackButton
+                      css={{
+                        float: "left",
+                        height: headerFloatHeight,
+                        margin: "0.25em 0.5em 0.25em 0",
+                      }}
+                    />
                     <div
                       role="status"
                       css={{
-                        marginLeft: "auto",
+                        float: "right",
+                        height: headerFloatHeight,
+                        lineHeight: headerFloatHeight,
+                        margin: "0.25em 0 0.25em 0.5em",
                         whiteSpace: "nowrap",
                         color: theme.colors.accent,
                         visibility: hasChanges ? "visible" : "hidden",
@@ -252,6 +264,10 @@ export const Settings = () => {
                       />{" "}
                       <Translate>Unsaved changes</Translate>
                     </div>
+                    <SettingsBreadcrumbs
+                      css={{ display: "inline-block" }}
+                      pages={pages}
+                    />
                   </div>
                   <div
                     css={{ flex: 1, overflow: "hidden", position: "relative" }}

@@ -91,7 +91,7 @@ export const SettingsBreadcrumbs = ({
       className={className}
       aria-label={getTranslated("Breadcrumbs")}
       css={{
-        padding: "0.25em 0.5em",
+        padding: "0.3em 0 0.1em 0",
         font: theme.displayFont,
         textTransform: theme.displayFontTextTransform,
         fontSize: "1.2em",
