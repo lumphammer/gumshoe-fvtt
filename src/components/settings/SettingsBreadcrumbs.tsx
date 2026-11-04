@@ -5,7 +5,7 @@ import {
   useNavigationContext,
 } from "@lumphammer/minirouter";
 import { Fragment, type ReactNode, useContext } from "react";
-import { FaChevronRight } from "react-icons/fa6";
+import { FaArrowLeft, FaChevronRight } from "react-icons/fa6";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { ThemeContext } from "../../themes/ThemeContext";
@@ -27,7 +27,8 @@ type SettingsBreadcrumbsProps = {
 
 /**
  * Shows the path to the current settings panel, with a link to each step on
- * the way. Must be rendered at the root of the settings router.
+ * the way, and a link back up one step. Must be rendered at the root of the
+ * settings router.
  */
 export const SettingsBreadcrumbs = ({
   pages,
@@ -78,7 +79,7 @@ export const SettingsBreadcrumbs = ({
   };
 
   const crumbs = [
-    { key: "home", to: [], label: <Translate>Settings Home</Translate> },
+    { key: "home", to: [], label: <Translate>Settings</Translate> },
     ...path.map((step, i) => ({
       key: step.id,
       to: path.slice(0, i + 1),
@@ -102,6 +103,12 @@ export const SettingsBreadcrumbs = ({
         fontSize: "1.2em",
       }}
     >
+      {path.length > 0 && (
+        <Link from="root" to={path.slice(0, -1)} css={{ marginRight: "0.5em" }}>
+          <FaArrowLeft css={{ fontSize: "0.8em", marginRight: "0.3em" }} />
+          <Translate>Back</Translate>
+        </Link>
+      )}
       {crumbs.map(({ key, to, label }, i) => {
         const isCurrent = i === crumbs.length - 1;
         return (
