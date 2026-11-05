@@ -8,7 +8,8 @@ import {
 } from "./foundry.ts";
 
 // The catalogue's runtime (docs/theming.md): a theme's override replaces a
-// class's default, and the class's variants and states still apply on top.
+// class's default, and the class's variants and states still apply on top,
+// even when the override replaces the rule the state is in.
 
 const colors = {
   accent: "rgb(1, 2, 3)",
@@ -38,7 +39,12 @@ test("a theme's badge override replaces the default but keeps tone, states and h
       },
       colors,
       // internal: not in the published seed type
-      catalogue: { badge: { fontStyle: "italic", borderRadius: 0 } },
+      catalogue: {
+        badge: { fontStyle: "italic", borderRadius: 0 },
+        "badge--compound__tone_neutral__weight_subtle": {
+          color: "rgb(200, 0, 0)",
+        },
+      },
     };
     CONFIG.Investigator!.installTheme("catalogueReviewTheme", seed);
   }, colors);
@@ -49,9 +55,11 @@ test("a theme's badge override replaces the default but keeps tone, states and h
     situationalModifiers: [
       { id: "dark", situation: "In the dark", modifier: 1 },
     ],
+    unlocks: [{ id: "hide", rating: 0, description: "Hide" }],
   });
   const sheet = await openSheet(page, `Actor.${actorId}`);
   const badge = sheet.locator(".inv-badge", { hasText: "In the dark: +1" });
+  const unlock = sheet.locator(".inv-badge", { hasText: "Hide" });
 
   // the override: its own declarations...
   await expect(badge).toHaveCSS("font-style", "italic");
@@ -60,9 +68,11 @@ test("a theme's badge override replaces the default but keeps tone, states and h
   await expect(badge).toHaveCSS("padding-left", "0px");
   await expect(badge).toHaveCSS("border-top-style", "none");
 
-  // the tone (neutral, subtle) is a compound variant: still there
-  await expect(badge).toHaveCSS("color", colors.text);
-  await expect(badge).toHaveCSS("border-top-color", colors.controlBorder);
+  // replacing the base keeps the tones (compound variants): neutral, strong
+  await expect(unlock).toHaveCSS("background-color", colors.backgroundButton);
+  await expect(unlock).toHaveCSS("color", colors.text);
+  // and a compound can be replaced too
+  await expect(badge).toHaveCSS("color", "rgb(200, 0, 0)");
 
   // hover feedback, from the state layer
   await badge.hover();
@@ -77,4 +87,11 @@ test("a theme's badge override replaces the default but keeps tone, states and h
   await expect(badge).toHaveAttribute("aria-pressed", "true");
   await expect(badge).toHaveCSS("background-color", colors.accent);
   await expect(badge).toHaveCSS("color", colors.accentContrast);
+
+  // and from the keyboard
+  await badge.focus();
+  await page.keyboard.press("Enter");
+  await expect(badge).toHaveAttribute("aria-pressed", "false");
+  await page.keyboard.press(" ");
+  await expect(badge).toHaveAttribute("aria-pressed", "true");
 });

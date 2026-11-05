@@ -19,13 +19,21 @@ export const SituationalModifierBadge = memo(function SituationalModifierBadge({
   isActive,
   ability,
 }: SituationalModifierBadgeProps) {
+  const toggle = () => {
+    ability.system.toggleSituationalModifier(id);
+  };
   return (
     <a
       role="button"
+      tabIndex={0}
       aria-pressed={isActive}
       data-interactive
-      onClick={() => {
-        ability.system.toggleSituationalModifier(id);
+      onClick={toggle}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          toggle();
+        }
       }}
       className={cx(badge(), css({ marginInline: "0.25em" }))}
     >

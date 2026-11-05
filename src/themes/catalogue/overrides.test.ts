@@ -17,6 +17,8 @@ describe("layerOf", () => {
   });
 });
 
+const scope = ':where([data-inv-theme="teal"]) .inv-badge';
+
 describe("catalogueOverridesCss", () => {
   test("replaces the default in its own layer, scoped to the theme", () => {
     expect(
@@ -26,7 +28,7 @@ describe("catalogueOverridesCss", () => {
     ).toBe(
       [
         "@layer system.recipes.base {",
-        '[data-inv-theme="teal"] .inv-badge { all: revert-layer; border-radius: 0; letter-spacing: 0.05em; line-height: 1.2; }',
+        `${scope} { all: revert-layer; border-radius: 0; letter-spacing: 0.05em; line-height: 1.2; }`,
         "}",
       ].join("\n"),
     );
@@ -41,17 +43,11 @@ describe("catalogueOverridesCss", () => {
         "@media (min-width: 40em)": { padding: 4 },
       },
     });
+    expect(css).toContain(`${scope} { all: revert-layer; padding: 2px; }`);
+    expect(css).toContain(`${scope}:hover { color: red; }`);
+    expect(css).toContain(`${scope} > img { width: 1em; }`);
     expect(css).toContain(
-      '[data-inv-theme="teal"] .inv-badge { all: revert-layer; padding: 2px; }',
-    );
-    expect(css).toContain(
-      '[data-inv-theme="teal"] .inv-badge:hover { color: red; }',
-    );
-    expect(css).toContain(
-      '[data-inv-theme="teal"] .inv-badge > img { width: 1em; }',
-    );
-    expect(css).toContain(
-      '@media (min-width: 40em) { [data-inv-theme="teal"] .inv-badge { padding: 4px; } }',
+      `@media (min-width: 40em) { ${scope} { padding: 4px; } }`,
     );
   });
 
@@ -59,5 +55,38 @@ describe("catalogueOverridesCss", () => {
     expect(
       catalogueOverridesCss("teal", { badge: { "--x-y": "1" } }),
     ).toContain("--x-y: 1;");
+  });
+
+  test("splits selector lists only on their top-level commas", () => {
+    const css = catalogueOverridesCss("teal", {
+      badge: { "&:is(:hover, :focus), & img": { color: "red" } },
+    });
+    expect(css).toContain(
+      `${scope}:is(:hover, :focus), ${scope} img { color: red; }`,
+    );
+  });
+
+  test("adds px only where React would", () => {
+    const css = catalogueOverridesCss("teal", {
+      badge: { aspectRatio: 2, scale: 1.1, columnCount: 2, "--n": 3, top: 4 },
+    });
+    expect(css).toContain(
+      "aspect-ratio: 2; scale: 1.1; column-count: 2; --n: 3; top: 4px;",
+    );
+  });
+
+  test("ignores anything that could escape its rule", () => {
+    const css = catalogueOverridesCss("teal", {
+      badge: {
+        color: "red; } } p { color: blue; } /*",
+        background: "url(x) /* y",
+        "} p": { color: "blue" },
+        padding: "1em",
+      },
+      "badge } p {": { color: "blue" },
+    });
+    expect(css).not.toContain(" p ");
+    expect(css).not.toContain("/*");
+    expect(css).toContain("padding: 1em;");
   });
 });
