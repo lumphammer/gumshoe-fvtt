@@ -1,4 +1,3 @@
-import type React from "react";
 import createCache from "@emotion/cache";
 import { css } from "@emotion/css";
 import type { CSSObject } from "@emotion/react";
@@ -183,7 +182,7 @@ export const CSSReset = ({
             // SPIKE (#1532): the theme's values as custom properties, inline,
             // so they go wherever the element goes (a detached window gets a
             // copy of the head's stylesheets, but not Emotion's rules)
-            style={themeToCssVars(theme) as React.CSSProperties}
+            style={themeToCssVars(theme)}
             css={layeredStyles}
           >
             {children}

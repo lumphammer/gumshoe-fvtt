@@ -40,7 +40,7 @@ async function look(locator: Locator) {
   return locator.evaluate((el, props) => {
     const cs = getComputedStyle(el);
     return {
-      className: el.className,
+      className: el.getAttribute("class"),
       ...Object.fromEntries(props.map((p) => [p, cs.getPropertyValue(p)])),
     };
   }, props);
