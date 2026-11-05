@@ -96,8 +96,8 @@ export function catalogueOverridesCss(
   layers: CatalogueLayers,
 ) {
   const scope = `[data-inv-theme="${slug}"]`;
-  const replace = Object.entries(overrides.replace ?? {}).map(
-    ([name, style]) => serialize(`${scope} .inv-${name}`, style, true),
+  const replace = Object.entries(overrides.replace ?? {}).map(([name, style]) =>
+    serialize(`${scope} .inv-${name}`, style, true),
   );
   const merge = Object.entries(overrides.merge ?? {}).map(([sel, style]) =>
     serialize(nestSelector(scope, sel), style, false),
