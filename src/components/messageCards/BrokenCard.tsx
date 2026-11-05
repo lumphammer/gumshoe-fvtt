@@ -1,6 +1,5 @@
 import React from "react";
 
-import { useTheme } from "../../hooks/useTheme";
 import { Translate } from "../Translate";
 
 interface BrokenCardProps {
@@ -18,8 +17,6 @@ interface BrokenCardProps {
  */
 export const BrokenCard = React.memo(
   ({ name, imageUrl, reason }: BrokenCardProps) => {
-    const theme = useTheme();
-
     return (
       <div
         className="dice-roll"
@@ -53,7 +50,6 @@ export const BrokenCard = React.memo(
             css={{
               fontSize: "1.5em",
               fontStyle: "italic",
-              color: theme.colors.accent,
             }}
           >
             {name ?? <Translate>UnknownAbility</Translate>}

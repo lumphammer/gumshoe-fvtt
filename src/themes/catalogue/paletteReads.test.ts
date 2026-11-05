@@ -45,13 +45,6 @@ const notYetConverted = [
   "components/journalEditorSheet/ImageArea.tsx",
   "components/journalEditorSheet/magicToolbar/ToolbarButton.tsx",
   "components/journalEditorSheet/PageNavigation.tsx",
-  "components/messageCards/BrokenCard.tsx",
-  "components/messageCards/EstablishBondCard.tsx",
-  "components/messageCards/NetworkContactCard.tsx",
-  "components/messageCards/PushCard.tsx",
-  "components/messageCards/RebuildBondCard.tsx",
-  "components/messageCards/TeamCrisisCard.tsx",
-  "components/messageCards/TraumaTestCard.tsx",
   "components/nestedPanels/ArrowLink.tsx",
   "components/nestedPanels/NestedPanel.tsx",
   "components/party/AbilityRow.tsx",
@@ -68,9 +61,19 @@ const notYetConverted = [
   "startup/loadCustomThemes.ts",
 ];
 
+// The native world: our parts of Foundry's own UI, which look like Foundry
+// and never read the theme at all, not even its fonts (docs/theming.md).
+const nativeWorld = [
+  /^components\/messageCards\//,
+  /^components\/combat\//,
+  /^components\/native\//,
+  /^components\/inputs\/NativeMenu\//,
+  /^components\/GamePauseBanner\.tsx$/,
+];
+
 const srcDir = join(import.meta.dirname, "../..");
 
-const filesReadingColours = () =>
+const sourceFiles = () =>
   readdirSync(srcDir, { recursive: true, encoding: "utf8" })
     .map((path) => path.replaceAll("\\", "/"))
     .filter(
@@ -79,11 +82,14 @@ const filesReadingColours = () =>
         !/\.test(-d)?\.tsx?$/.test(path) &&
         // themes define colours; styled-system is generated
         !/^(themes|styled-system)\//.test(path),
-    )
-    .filter((path) =>
-      /\.colors\b/.test(readFileSync(join(srcDir, path), "utf8")),
-    )
+    );
+
+const filesMatching = (pattern: RegExp) =>
+  sourceFiles()
+    .filter((path) => pattern.test(readFileSync(join(srcDir, path), "utf8")))
     .sort();
+
+const filesReadingColours = () => filesMatching(/\.colors\b/);
 
 describe("reading theme colours", () => {
   it("happens only in files that haven't been converted yet", () => {
@@ -96,5 +102,15 @@ describe("reading theme colours", () => {
     expect(notYetConverted.filter((path) => !reading.includes(path))).toEqual(
       [],
     );
+  });
+});
+
+describe("the native world", () => {
+  it("never reads the theme", () => {
+    expect(
+      filesMatching(/\b(ThemeContext|useTheme)\b|\.colors\b/).filter((path) =>
+        nativeWorld.some((area) => area.test(path)),
+      ),
+    ).toEqual([]);
   });
 });

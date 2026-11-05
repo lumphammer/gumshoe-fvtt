@@ -1,6 +1,5 @@
 import React from "react";
 
-import { useTheme } from "../../hooks/useTheme";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
 import { useAbilityCardHeader } from "./useAbilityCardHeader";
@@ -19,7 +18,6 @@ const shadowBlur = "1px";
 
 export const PushCard = React.memo(
   ({ msg, ability, mode, name, imageUrl }: PushCardProps) => {
-    const theme = useTheme();
     const { header, openSheet: onClickAbilityName } =
       useAbilityCardHeader(ability);
 
@@ -59,7 +57,6 @@ export const PushCard = React.memo(
           css={{
             gridArea: "headline",
             fontSize: "1.5em",
-            color: theme.colors.accent,
             fontStyle: "italic",
             textShadow: `
             -${shadowOffset} -${shadowOffset} ${shadowBlur} #0007,

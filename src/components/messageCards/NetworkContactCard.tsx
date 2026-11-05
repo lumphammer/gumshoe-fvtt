@@ -1,7 +1,5 @@
-import { useContext } from "react";
-
 import type { ContactRecord } from "../../module/contacts/rules";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
 
@@ -19,8 +17,6 @@ export const NetworkContactCard = ({
   record,
   imageUrl,
 }: NetworkContactCardProps) => {
-  const theme = useContext(ThemeContext);
-
   return (
     <div
       className="dice-roll"
@@ -88,7 +84,10 @@ export const NetworkContactCard = ({
           <Translate>Pool</Translate>: {record.poolBefore} → {record.poolAfter}
         </div>
         {record.poolAfter === 0 && record.kind !== "assign" && (
-          <div css={{ color: theme.colors.warning, fontStyle: "italic" }}>
+          <div
+            className={nativeStatus({ tone: "warning" })}
+            css={{ fontStyle: "italic" }}
+          >
             <Translate>Favors exhausted</Translate>
           </div>
         )}
