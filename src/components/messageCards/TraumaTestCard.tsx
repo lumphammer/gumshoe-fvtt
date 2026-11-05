@@ -1,11 +1,9 @@
-import { useContext } from "react";
-
 import { isAdapted } from "../../module/bonds/adaptation";
 import type { StabilityState } from "../../module/stability/states";
 import type { TraumaTestRecord } from "../../module/stability/trauma";
 import { useSettings } from "../../hooks/useSettings";
 import { useStabilityStateName } from "../../hooks/useStabilityStateName";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
 
@@ -27,7 +25,6 @@ const reminders: Record<Exclude<StabilityState, "steady">, string> = {
  * record.
  */
 export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
-  const theme = useContext(ThemeContext);
   const genericOccupation = useSettings((s) => s.genericOccupation);
   const spendTotal = record.total - record.die;
   const { stateAfter } = record;
@@ -107,13 +104,13 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
         )}
         <div
           data-testid="trauma-outcome"
+          className={nativeStatus({
+            tone: record.succeeded ? "success" : "danger",
+          })}
           css={{
             fontWeight: "bold",
             fontSize: "1.2em",
             margin: "0.25em 0",
-            color: record.succeeded
-              ? theme.colors.success
-              : theme.colors.danger,
           }}
         >
           {record.succeeded ? (
@@ -130,7 +127,8 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
         {record.worsened && stateAfter !== "steady" && (
           <div
             data-testid="trauma-state"
-            css={{ color: theme.colors.danger, margin: "0.25em 0" }}
+            className={nativeStatus({ tone: "danger" })}
+            css={{ margin: "0.25em 0" }}
           >
             <b>
               {stateAfterName}

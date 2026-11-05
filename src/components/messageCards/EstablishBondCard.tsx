@@ -1,12 +1,10 @@
-import { useContext } from "react";
-
 import type {
   EstablishOutcome,
   EstablishRecord,
 } from "../../module/bonds/establish";
 import { establishCost } from "../../module/bonds/establish";
 import { isBondBroken } from "../../module/bonds/rules";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
 
@@ -29,7 +27,6 @@ export const EstablishBondCard = ({
   record,
   imageUrl,
 }: EstablishBondCardProps) => {
-  const theme = useContext(ThemeContext);
   const bonded = record.bondPoints !== null;
 
   return (
@@ -71,11 +68,11 @@ export const EstablishBondCard = ({
         </div>
         <div
           data-testid="establish-outcome"
+          className={nativeStatus({ tone: bonded ? "success" : "danger" })}
           css={{
             fontWeight: "bold",
             fontSize: "1.2em",
             margin: "0.25em 0",
-            color: bonded ? theme.colors.success : theme.colors.danger,
           }}
         >
           <Translate>{outcomeText[record.outcome]}</Translate>
