@@ -1,6 +1,5 @@
-import { useContext } from "react";
-
-import { ThemeContext } from "../../themes/ThemeContext";
+import { css, cx } from "../../styled-system/css";
+import { badge } from "../../styled-system/recipes";
 import { Translate } from "../Translate";
 
 type BondBadgesProps = {
@@ -12,48 +11,28 @@ type BondBadgesProps = {
 /**
  * "DELTA GREEN" and "Broken" badges for a Bond. Broken Bonds get a badge
  * rather than being crossed out, which would make them hard to read. The
- * styles go on a wrapper because `Translate` sets its own inline background.
+ * badges are wrappers because `Translate` sets its own inline background.
  */
 export const BondBadges = ({
   isDeltaGreen,
   isBroken,
   className,
 }: BondBadgesProps) => {
-  const theme = useContext(ThemeContext);
-  const badge = {
-    fontSize: "0.9em",
-    lineHeight: "1",
-    borderRadius: "0.5em",
-    padding: "0.1em 0.5em",
-    whiteSpace: "nowrap",
-  } as const;
-
   return (
     <span
-      className={className}
-      // never wrapped, so a column of badges is always wide enough for both
-      css={{ display: "inline-flex", flexWrap: "nowrap", gap: "0.25em" }}
+      className={cx(
+        // never wrapped, so a column of badges is always wide enough for both
+        css({ display: "inline-flex", flexWrap: "nowrap", gap: "0.25em" }),
+        className,
+      )}
     >
       {isDeltaGreen && (
-        <span
-          css={{
-            ...badge,
-            background: theme.colors.accentContrast,
-            color: theme.colors.accent,
-            outline: `1px solid ${theme.colors.accent}`,
-          }}
-        >
+        <span className={badge()}>
           <Translate>Delta Green</Translate>
         </span>
       )}
       {isBroken && (
-        <span
-          css={{
-            ...badge,
-            background: theme.colors.danger,
-            color: theme.colors.accentContrast,
-          }}
-        >
+        <span className={badge({ tone: "danger", weight: "strong" })}>
           <Translate>Broken</Translate>
         </span>
       )}

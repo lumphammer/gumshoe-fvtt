@@ -2,6 +2,7 @@
 // See docs/theming.md.
 import { defineConfig } from "@pandacss/dev";
 
+import { badge } from "./src/themes/catalogue/badge";
 import { type Palette, paletteVar } from "./src/themes/palette";
 
 type PaletteKey = Exclude<keyof Palette, "polarity">;
@@ -37,8 +38,36 @@ export default defineConfig({
   // its palette and scales would offer colours and sizes that aren't ours
   presets: ["@pandacss/preset-base"],
   preflight: false,
-  // only our tokens: an arbitrary colour needs an explicit escape hatch
+  // only our tokens: an arbitrary colour needs an explicit escape hatch (but
+  // see layout-is-not-tokens below)
   strictTokens: true,
+  plugins: [
+    {
+      // Spacing and sizes aren't tokens (docs/theming.md): they're layout,
+      // so layout properties take any value, even with strictTokens
+      name: "layout-is-not-tokens",
+      hooks: {
+        "config:resolved": ({ config }) => {
+          const layout = new Set(["spacing", "sizes"]);
+          for (const utility of Object.values(config.utilities ?? {})) {
+            const values = utility?.values;
+            // a category, or a function of the theme's categories
+            const asks = new Set<string>();
+            if (typeof values === "string") asks.add(values);
+            if (typeof values === "function") {
+              values((category: string) => {
+                asks.add(category);
+                return {};
+              });
+            }
+            if (utility && [...asks].some((category) => layout.has(category))) {
+              delete utility.values;
+            }
+          }
+        },
+      },
+    },
+  ],
   include: ["./src/**/*.{ts,tsx}"],
   exclude: ["./src/styled-system/**"],
   outdir: "src/styled-system",
@@ -54,7 +83,11 @@ export default defineConfig({
     recipes: "system.recipes",
     utilities: "system.utilities",
   },
+  // every variant of every catalogue class, whether or not a call site
+  // spells it out: themes override them by name
+  staticCss: { recipes: "*" },
   theme: {
+    recipes: { badge },
     tokens: {
       colors: Object.fromEntries(colorKeys.map((key) => [key, v(key)])),
       radii: { standard: v("radius") },

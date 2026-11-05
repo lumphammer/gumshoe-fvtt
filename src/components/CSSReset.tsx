@@ -9,6 +9,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { assertGame } from "../functions/isGame";
 import { ApplicationV2 } from "../fvtt-exports";
 import { irid } from "../irid/irid";
+import { catalogueOverridesCss } from "../themes/catalogue/overrides";
 import { paletteFromV1, paletteStyle, themeSlug } from "../themes/palette";
 import { ThemeContext } from "../themes/ThemeContext";
 import type { ThemeV1 } from "../themes/types";
@@ -287,6 +288,15 @@ export const CSSReset = ({
     }
   }, [styles]);
 
+  const slug = themeSlug(theme);
+  // the theme's replacements for catalogue classes, as a <style> inside the
+  // root, so that it goes wherever the root goes, detached windows included
+  const overridesCss = useMemo(
+    () =>
+      theme.catalogue ? catalogueOverridesCss(slug, theme.catalogue) : null,
+    [slug, theme.catalogue],
+  );
+
   return (
     <ErrorBoundary>
       <EmotionCacheProvider value={cache}>
@@ -296,10 +306,11 @@ export const CSSReset = ({
             ref={ref}
             className={className}
             css={layeredStyles}
-            data-inv-theme={themeSlug(theme)}
+            data-inv-theme={slug}
             style={paletteStyle(paletteFromV1(theme))}
           >
             {children}
+            {overridesCss && <style>{overridesCss}</style>}
           </div>
         </ThemeContext.Provider>
       </EmotionCacheProvider>

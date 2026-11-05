@@ -1,0 +1,13 @@
+/*
+ * State layers: feedback that looks the same on anything, whatever its
+ * catalogue class, so classes don't each draw their own. They come after the
+ * classes (and theme overrides of them), so they always show. See
+ * docs/theming.md.
+ */
+@layer system.states {
+  /* hoverFeedback: anything that does something when clicked */
+  [data-inv-theme] [data-interactive]:hover {
+    cursor: pointer;
+    box-shadow: 0 0 0.5em var(--inv-feedback);
+  }
+}
