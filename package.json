@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Official GUMSHOE support for FoundryVTT. Ships with compatiblity for several settings, and can be customized to work with any other setting.",
   "scripts": {
-    "build": "vite build",
+    "prepare": "panda codegen",
+    "build": "panda codegen && vite build",
     "build:profiling": "PROFILE_REACT=1 vite build",
     "build:dev": "vite build --mode dev",
     "build:watch": "vite build --watch --mode dev",
@@ -65,6 +66,8 @@
     "@lumphammer/minirouter": "workspace:^",
     "@lumphammer/shared-fvtt-bits": "workspace:^",
     "@monaco-editor/react": "^4.7.0",
+    "@pandacss/dev": "2.5.0",
+    "@pandacss/preset-base": "2.5.0",
     "@playwright/test": "^1.64.1",
     "@radix-ui/react-context-menu": "^2.4.1",
     "@radix-ui/react-dropdown-menu": "^2.2.1",

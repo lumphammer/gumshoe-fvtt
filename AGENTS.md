@@ -159,6 +159,13 @@ translations, adding fields and settings, releases).
 
 ## Themes
 
+- Theming is moving from Emotion and V1 themes to Panda CSS and a palette of
+  CSS custom properties (#1532). `docs/theming.md` is the contract: what
+  each palette entry means, and the rules (components apply catalogue
+  classes and write layout; only the catalogue reads the palette). Emotion
+  and Panda run side by side until every component is converted.
+- Our CSS goes in sub-layers of Foundry's `system` layer (`src/panda.css`),
+  never directly in `system`: rules there beat every sub-layer.
 - Theme colours include `danger`, `warning` and `success` (seeded, with
   defaults). Plain CSS `color-mix(...)` is fine for blending; the vendored Irid
   library is legacy.
