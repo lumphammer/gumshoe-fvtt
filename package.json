@@ -123,5 +123,9 @@
       "version": "12.16.1",
       "onFail": "download"
     }
+  },
+  "devDependencies": {
+    "@stylexjs/stylex": "0.19.1",
+    "@stylexjs/unplugin": "0.19.1"
   }
 }

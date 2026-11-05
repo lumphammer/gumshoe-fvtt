@@ -145,121 +145,7 @@ export const CSSReset = ({
       // The downside of controlling specificity this way is that these
       // rules will *not* override Foundry's own styles in some
       // circumstances.
-      ",:where(&) ": {
-        "*": {
-          scrollbarWidth: "thin",
-          userSelect: "auto",
-          boxSizing: "border-box",
-          scrollbarColor: `${theme.colors.accent} ${theme.colors.backgroundButton}`,
-        },
-
-        "h1, h2, h3, h4": {
-          border: "none",
-          margin: "0.3em 0 0 0",
-          marginBottom: "0.3em",
-          padding: 0,
-          fontWeight: "inherit",
-          font: theme.displayFont,
-          textTransform: theme.displayFontTextTransform,
-        },
-        h1: {
-          fontSize: "1.5em",
-        },
-        h2: {
-          fontSize: "1.3em",
-        },
-        h3: {
-          fontSize: "1.1em",
-        },
-        h4: {
-          fontSize: "1em",
-        },
-        "button, input[type=button]": {
-          font: theme.displayFont,
-          textTransform: theme.displayFontTextTransform,
-          color: theme.colors.accent,
-          borderRadius: "5px",
-          // 100% was causing scrollbars in some places
-          width: "99%",
-          "&[disabled]": {
-            opacity: 0.5,
-            color: theme.colors.text,
-            "&:hover": {
-              boxShadow: "none",
-              textShadow: "none",
-            },
-          },
-          "&:hover": {
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-            textShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-          "&:focus": {
-            boxShadow: "none",
-          },
-        },
-        label: {
-          fontWeight: "bold",
-        },
-        "a, label.parp": {
-          color: theme.colors.accent,
-        },
-        "a:hover, a.hover, .hover a, label.parp:hover, label.parp.hover, .hover label.parp":
-          {
-            textDecoration: "underline",
-            textShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-        "input, input[type=text], textarea, select, option": {
-          font: theme.bodyFont,
-          fontVariantLigatures: "none",
-          color: theme.colors.accent,
-          padding: "0.1em 0.3em",
-          borderStyle: "solid",
-          borderWidth: "1px",
-          borderColor: theme.colors.controlBorder,
-          background: theme.colors.backgroundPrimary,
-          resize: "vertical",
-          ":focus": {
-            borderColor: theme.colors.accent,
-            outline: "none",
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-          "&:hover": {
-            borderStyle: "solid",
-            borderWidth: "1px",
-            borderColor: theme.colors.controlBorder,
-          },
-        },
-        select: {
-          color: theme.colors.text,
-          background: theme.colors.bgOpaqueSecondary,
-          option: {
-            background: theme.colors.bgOpaquePrimary,
-            color: theme.colors.text,
-          },
-          ":focus": {
-            borderColor: theme.colors.accent,
-            outline: "none",
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-        },
-        textarea: {
-          lineHeight: 1,
-        },
-        hr: {
-          borderColor: theme.colors.controlBorder,
-          width: "calc(100% - 2em)",
-          borderWidth: 0,
-          height: "2px",
-          backgroundImage: `linear-gradient(
-              90deg,
-              oklch(from ${theme.colors.controlBorder} l c h / 0%) 0%,
-              oklch(from ${theme.colors.controlBorder} l c h / 50%) 50%,
-              oklch(from ${theme.colors.controlBorder} l c h / 0%) 100%)`,
-        },
-        "i.fa:last-child": {
-          margin: 0,
-        },
-      },
+      // SPIKE (#1532): the element defaults are static CSS now (elementDefaults.css)
       ...rootStyle,
     };
 
@@ -278,7 +164,7 @@ export const CSSReset = ({
     assertGame(game);
     if (foundry.utils.isNewerVersion(game.version, "13.0")) {
       return {
-        "@layer system": styles,
+        "@layer system.base": styles,
       };
     } else {
       return styles;

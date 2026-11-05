@@ -1,7 +1,12 @@
-import { useContext } from "react";
+import * as stylex from "@stylexjs/stylex";
 
-import { ThemeContext } from "../../themes/ThemeContext";
+import { badge } from "../../catalogue/catalogue";
 import { Translate } from "../Translate";
+
+// never wrapped, so a column of badges is always wide enough for both
+const layout = stylex.create({
+  row: { display: "inline-flex", flexWrap: "nowrap", gap: "0.25em" },
+});
 
 type BondBadgesProps = {
   isDeltaGreen: boolean;
@@ -19,41 +24,19 @@ export const BondBadges = ({
   isBroken,
   className,
 }: BondBadgesProps) => {
-  const theme = useContext(ThemeContext);
-  const badge = {
-    fontSize: "0.9em",
-    lineHeight: "1",
-    borderRadius: "0.5em",
-    padding: "0.1em 0.5em",
-    whiteSpace: "nowrap",
-  } as const;
-
+  const rowProps = stylex.props(layout.row);
   return (
     <span
-      className={className}
-      // never wrapped, so a column of badges is always wide enough for both
-      css={{ display: "inline-flex", flexWrap: "nowrap", gap: "0.25em" }}
+      {...rowProps}
+      className={`${rowProps.className ?? ""} ${className ?? ""}`}
     >
       {isDeltaGreen && (
-        <span
-          css={{
-            ...badge,
-            background: theme.colors.accentContrast,
-            color: theme.colors.accent,
-            outline: `1px solid ${theme.colors.accent}`,
-          }}
-        >
+        <span {...badge("outline")}>
           <Translate>Delta Green</Translate>
         </span>
       )}
       {isBroken && (
-        <span
-          css={{
-            ...badge,
-            background: theme.colors.danger,
-            color: theme.colors.accentContrast,
-          }}
-        >
+        <span {...badge("danger")}>
           <Translate>Broken</Translate>
         </span>
       )}

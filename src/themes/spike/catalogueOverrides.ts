@@ -30,8 +30,8 @@ export type CatalogueOverrides = {
 };
 
 export type CatalogueLayers = {
-  /** the layer the base rules of catalogue classes live in */
-  base: string;
+  /** the layer the base rules of a catalogue part live in */
+  base: (part: string) => string;
   /** a layer above the catalogue, for merges */
   merge: string;
 };
@@ -97,15 +97,15 @@ export function catalogueOverridesCss(
 ) {
   const scope = `[data-inv-theme="${slug}"]`;
   const replace = Object.entries(overrides.replace ?? {}).map(
-    ([name, style]) => serialize(`${scope} .inv-${name}`, style, true),
+    ([name, style]) =>
+      `@layer ${layers.base(name)} {\n${serialize(`${scope} .inv-${name}`, style, true)}\n}`,
   );
   const merge = Object.entries(overrides.merge ?? {}).map(([sel, style]) =>
     serialize(nestSelector(scope, sel), style, false),
   );
-  return [
-    `@layer ${layers.base} {\n${replace.join("\n")}\n}`,
-    `@layer ${layers.merge} {\n${merge.join("\n")}\n}`,
-  ].join("\n");
+  return [...replace, `@layer ${layers.merge} {\n${merge.join("\n")}\n}`].join(
+    "\n",
+  );
 }
 
 /**
@@ -150,6 +150,9 @@ export const spikeOverrides: Record<string, CatalogueOverrides> = {
         fontStyle: "italic",
         textDecoration: "underline wavy var(--inv-glow)",
       },
+      // the base subtitle is bold; replacing it with only italic must drop
+      // the bold
+      card__subtitle: { fontStyle: "italic" },
     },
   },
 };

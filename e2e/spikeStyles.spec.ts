@@ -31,6 +31,7 @@ const props = [
   "text-decoration-line",
   "text-decoration-style",
   "font-family",
+  "font-weight",
   "border-top",
   "padding",
 ];
@@ -100,7 +101,9 @@ for (const theme of ["tealTheme", "niceThemeDark", "mutantCityBlueTheme"]) {
     await sheet.locator(".tab-strip > label", { hasText: "Bonds" }).click();
     const bondRow = sheet.locator("[data-testid=bond-name]").first();
     await expect(bondRow).toBeVisible();
-    const badges = sheet.locator("span", { hasText: /^(Delta Green|Broken)$/i });
+    const badges = sheet.locator("span", {
+      hasText: /^(Delta Green|Broken)$/i,
+    });
     await expect(badges.first()).toBeVisible();
     const bondBadges: unknown[] = [];
     for (let i = 0; i < (await badges.count()); i++) {

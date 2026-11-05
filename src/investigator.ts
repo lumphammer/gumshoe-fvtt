@@ -1,4 +1,5 @@
 import "./investigator.less";
+import "./themes/spike/elementDefaults.css";
 import "./configuration";
 
 import { systemId } from "./constants";
@@ -34,6 +35,13 @@ import { installStabilityStatusHandler } from "./startup/installStabilityStatusH
 import { installSanityCapHandler } from "./startup/installSanityCapHandler";
 import { installWoundStatusHandler } from "./startup/installWoundStatusHandler";
 import { loadCustomThemes } from "./startup/loadCustomThemes";
+import { runtimeConfig } from "./runtime";
+import {
+  installCatalogueOverrides,
+  spikeOverrides,
+} from "./themes/spike/catalogueOverrides";
+import { themeSlug } from "./themes/spike/themeVars";
+import { v1CardOverrides } from "./themes/spike/v1Compat";
 import { migrateWorldIfNeeded } from "./startup/migrateWorldIfNeeded";
 import { offerTrailOfCthulhuRules } from "./startup/offerTrailOfCthulhuRules";
 import { registerBabele } from "./startup/registerBabele";
@@ -183,4 +191,29 @@ Hooks.once("ready", () => {
       "%s",
     names.join("\n"),
   );
+});
+
+// SPIKE (#1532): every theme's catalogue overrides, as one stylesheet
+Hooks.once("ready", () => {
+  const overrides = Object.fromEntries(
+    Object.values(runtimeConfig.themes).map((theme) => {
+      const slug = themeSlug(theme);
+      const v1 = v1CardOverrides(theme);
+      const spike = spikeOverrides[slug];
+      return [
+        slug,
+        {
+          replace: { ...v1.replace, ...spike?.replace },
+          merge: { ...v1.merge, ...spike?.merge },
+        },
+      ];
+    }),
+  );
+  // StyleX spreads a style's properties over priority layers by property
+  // type, so there's no one layer holding a part's base: overrides can only
+  // go above all of them
+  installCatalogueOverrides(overrides, {
+    base: () => "system.themes",
+    merge: "system.themes",
+  });
 });

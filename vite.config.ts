@@ -1,4 +1,5 @@
 /// <reference types="vitest" />
+import stylex from "@stylexjs/unplugin";
 import { defineConfig } from "vite";
 
 import packageManifest from "./package.json" with { type: "json" };
@@ -15,7 +16,18 @@ const config = defineConfig(({ mode }) => {
     foundryPackageId: systemManifest.id,
     packageType: "system",
     importMetaUrl: import.meta.url,
-    plugins: [vitePluginFontsource()],
+    plugins: [
+      // SPIKE (#1532): StyleX compiles before React (and its compiler) see
+      // the code. Layers nest inside Foundry's `system` layer.
+      stylex.vite({
+        useCSSLayers: { prefix: "system" },
+        enableDevClassNames: mode !== "production",
+        // otherwise it appends to the first CSS asset it finds, which is the
+        // fonts stylesheet
+        cssInjectionTarget: (file) => file.endsWith("investigator.css"),
+      }),
+      vitePluginFontsource(),
+    ],
     // every component and hook, except those marked `"use no memo"`, which
     // read Foundry's mutable state during render on purpose (see
     // docs/immutable-data.md)

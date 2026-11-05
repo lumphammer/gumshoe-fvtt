@@ -1,0 +1,71 @@
+/* SPIKE (#1532): CSSReset's element defaults. StyleX can't style descendants,
+   so these are plain CSS, with no typing on the variable names. */
+@layer system.base {
+  [data-inv-theme] * {
+    scrollbar-width: thin;
+    user-select: auto;
+    box-sizing: border-box;
+    scrollbar-color: var(--inv-accent) var(--inv-bg-button);
+  }
+  [data-inv-theme] :is(h1, h2, h3, h4) {
+    border: none;
+    margin: 0.3em 0 0 0;
+    margin-bottom: 0.3em;
+    padding: 0;
+    font-weight: inherit;
+    font: var(--inv-display-font);
+    text-transform: var(--inv-display-transform);
+  }
+  [data-inv-theme] h1 {
+    font-size: 1.5em;
+  }
+  [data-inv-theme] h2 {
+    font-size: 1.3em;
+  }
+  [data-inv-theme] h3 {
+    font-size: 1.1em;
+  }
+  [data-inv-theme] h4 {
+    font-size: 1em;
+  }
+  [data-inv-theme] :is(button, input[type="button"]) {
+    font: var(--inv-display-font);
+    text-transform: var(--inv-display-transform);
+    color: var(--inv-accent);
+    border-radius: 5px;
+    width: 99%;
+    &[disabled] {
+      opacity: 0.5;
+      color: var(--inv-text);
+      &:hover {
+        box-shadow: none;
+        text-shadow: none;
+      }
+    }
+    &:hover {
+      box-shadow: 0 0 0.5em var(--inv-glow);
+      text-shadow: 0 0 0.5em var(--inv-glow);
+    }
+    &:focus {
+      box-shadow: none;
+    }
+  }
+  [data-inv-theme] label {
+    font-weight: bold;
+  }
+  [data-inv-theme] :is(a, label.parp) {
+    color: var(--inv-accent);
+  }
+  [data-inv-theme]
+    :is(
+      a:hover,
+      a.hover,
+      .hover a,
+      label.parp:hover,
+      label.parp.hover,
+      .hover label.parp
+    ) {
+    text-decoration: underline;
+    text-shadow: 0 0 0.5em var(--inv-glow);
+  }
+}

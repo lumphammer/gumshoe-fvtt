@@ -37,8 +37,6 @@ export const CardArrayCard = memo(function CardArrayCard({
 
   const handleDragStart = useDragStart();
 
-  const categoryTheme = styleKey ? theme.cards.categories[styleKey] : null;
-
   return (
     // opacity has to be applied on a wrapper otherwise we break transform-style
     // (if used.) See https://stackoverflow.com/a/70627306/212676
@@ -58,10 +56,6 @@ export const CardArrayCard = memo(function CardArrayCard({
         css={{
           cursor: "pointer",
           marginBottom: theme.cards.area.verticalSpacing,
-          ":hover": {
-            ...theme.cards.base.hoverStyle,
-            ...categoryTheme?.hoverStyle,
-          },
         }}
         viewMode={viewMode}
       />
