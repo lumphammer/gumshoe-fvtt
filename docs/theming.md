@@ -131,6 +131,7 @@ A short label attached to something, saying what it is or what state it's in:
 "Boosted", "Hurt", "Broken", an unlock, a situational modifier.
 
 - **Not for** messages or warnings (a callout), or links to documents.
+- **Shape**: fully rounded ends, not the palette's `radius`.
 - **Variants**: `tone`, and `weight`: `subtle` (the default) is an outline in
   the tone's colour with no fill; `strong` is filled with the tone's colour
   (`control` for `neutral`), with its `on-` ink.
