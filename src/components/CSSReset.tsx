@@ -10,6 +10,7 @@ import { assertGame } from "../functions/isGame";
 import { ApplicationV2 } from "../fvtt-exports";
 import { irid } from "../irid/irid";
 import { ThemeContext } from "../themes/ThemeContext";
+import { themeSlug, themeToCssVars } from "../themes/spike/themeVars";
 import type { ThemeV1 } from "../themes/types";
 import { ErrorBoundary } from "./ErrorBoundary";
 
@@ -112,6 +113,8 @@ export const CSSReset = ({
         : [groove2.toString(), groove1.toString()];
 
     const styles: CSSObject = {
+      // SPIKE (#1532): the theme's values as custom properties
+      ...themeToCssVars(theme),
       font: theme.bodyFont,
       padding: mode === "none" ? "0" : "0.5em",
       color: theme.colors.text,
@@ -288,7 +291,12 @@ export const CSSReset = ({
       <EmotionCacheProvider value={cache}>
         <ThemeContext.Provider value={theme}>
           <Global styles={theme.global} />
-          <div ref={ref} className={className} css={layeredStyles}>
+          <div
+            ref={ref}
+            className={className}
+            data-inv-theme={themeSlug(theme)}
+            css={layeredStyles}
+          >
             {children}
           </div>
         </ThemeContext.Provider>
