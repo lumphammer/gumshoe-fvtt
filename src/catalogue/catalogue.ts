@@ -16,12 +16,12 @@ const badgeStyles = stylex.create({
     whiteSpace: "nowrap",
   },
   outline: {
-    background: colors.accentContrast,
+    backgroundColor: colors.accentContrast,
     color: colors.accent,
     outline: `1px solid ${colors.accent}`,
   },
-  solid: { background: colors.accent, color: colors.accentContrast },
-  danger: { background: colors.danger, color: colors.accentContrast },
+  solid: { backgroundColor: colors.accent, color: colors.accentContrast },
+  danger: { backgroundColor: colors.danger, color: colors.accentContrast },
 });
 
 export type BadgeTone = "outline" | "solid" | "danger";
