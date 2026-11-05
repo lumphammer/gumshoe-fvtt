@@ -4,11 +4,10 @@ How themes are defined and how components get their look. This is the
 contract: what each palette entry and catalogue class **means**, so that anyone
 writing a component or a theme makes the same choice in the same place.
 
-The system is being built in steps (#1532). Today the palette exists, as
-custom properties on every themed root, and Panda is set up to read it, but no
-components use either yet: everything is still drawn by Emotion from V1
-themes. The catalogue of classes and the rules for using them are agreed
-(#1533) and arrive with the first conversions.
+The system is being built in steps (#1532). The palette exists, as custom
+properties on every themed root, and the catalogue has its first class,
+`badge`. Everything else is still drawn by Emotion from V1 themes, and the
+two run side by side until every component is converted.
 
 ## The pieces
 
@@ -98,12 +97,111 @@ about how anything looks:
 | `bodyFont`, `displayFont`, `displayFontTextTransform` | `bodyFont`, `displayFont`, `displayCase` |
 | (from `text`) | `polarity`: light text means a dark theme |
 
+## Catalogue
+
+Each class is a Panda recipe in `src/themes/catalogue/`, registered in
+`panda.config.ts`. Its CSS class is `inv-` and its name (`inv-badge`), and
+each variant gets its own class (`inv-badge--tone_danger`); compound variants
+too (`inv-badge--compound__tone_danger__weight_strong`). Every variant is
+generated whether a call site uses it or not, because themes override them by
+name.
+
+Call sites import the recipe from `styled-system/recipes` and apply it, with
+layout from `css()` alongside:
+
+```tsx
+<span className={cx(badge({ tone: "danger", weight: "strong" }), css({ marginInline: "0.25em" }))}>
+```
+
+`strictTokens` is on, so a colour in `css()` has to be a palette token (and a
+call site shouldn't be setting one anyway). Spacing and sizes take any value:
+they're layout, not tokens (the `layout-is-not-tokens` plugin in
+`panda.config.ts`).
+
+### `tone`
+
+`neutral | danger | warning | success | info` (`src/themes/catalogue/tones.ts`).
+`neutral` is the default. The status tones mean what the status colours mean.
+There's no `accent` tone: "selected" is a state and "call to action" is a
+kind.
+
+### `badge`
+
+A short label attached to something, saying what it is or what state it's in:
+"Boosted", "Hurt", "Broken", an unlock, a situational modifier.
+
+- **Not for** messages or warnings (a callout), or links to documents.
+- **Shape**: fully rounded ends, not the palette's `radius`.
+- **Variants**: `tone`, and `weight`: `subtle` (the default) is an outline in
+  the tone's colour with no fill; `strong` is filled with the tone's colour
+  (`control` for `neutral`), with its `on-` ink.
+- **States**: a badge that does something when clicked has `data-interactive`.
+  A badge that toggles something has `aria-pressed`, and pressed shows as
+  selected: an `accent` fill with `onAccent` ink, whatever the tone.
+- `Translate` sets an inline `background`, so a badge goes on a wrapper
+  around it, never on the `Translate` itself.
+
+## State layers
+
+Feedback that looks the same on anything, whatever its class, so classes don't
+each draw their own. They're plain CSS in `src/themes/catalogue/states.css`,
+in the `system.states` layer, after the catalogue and theme overrides, so
+they always show.
+
+| Layer | When | Look |
+|---|---|---|
+| `hoverFeedback` | `[data-interactive]:hover` | A `feedback` glow, and a pointer |
+
+Focus rings (`:focus-visible`) and drop targets (`[data-drop-state]`) will
+join it.
+
+## Theme overrides
+
+A theme can replace any catalogue class, variant or slot. `ThemeV1` has an
+internal `catalogue` field for this (not in the published seed type until the
+new theme format settles), keyed by the class name without `inv-`:
+
+```ts
+catalogue: {
+  badge: { borderRadius: 0, fontStyle: "italic" },
+  "badge--compound__tone_danger__weight_strong": { ... },
+}
+```
+
+An override **replaces** the default for that name: none of the default's
+declarations survive, so it has to say everything it wants. The class's other
+parts still apply on top: replacing `badge` keeps its tones and its pressed
+state, and every override keeps the state layers.
+
+How: `CSSReset` renders the theme's overrides as a `<style>` inside the themed
+root (so it travels with the root into a detached window). Each rule goes in
+the same cascade layer as the default it replaces, and starts with
+`all: revert-layer`, which drops everything that layer had for the element
+(`src/themes/catalogue/overrides.ts`). The theme scope is inside `:where()`,
+so an override is exactly as specific as the default and wins by coming
+later. A class's state rules (`:is([aria-pressed=true])` and the like) are
+more specific, so they still apply over an override, even one of the rule
+they're in.
+
+Override values are plain CSS text. Numbers get `px`, as in React's `style`,
+except for unitless properties and custom properties. Anything that could
+end its rule (`{`, `}`, `;`, a comment) is ignored, with a warning.
+
+## Converting a component
+
+`src/themes/catalogue/paletteReads.test.ts` lists the files that still read a
+theme's colours (`.colors`). It fails if a file not on the list starts reading
+them, and if a file on the list stops, so the list only shrinks: when you
+convert one, take it off.
+
 ## Where the CSS goes
 
 Foundry v14 orders its CSS in cascade layers, and a system's styles belong in
 `system`. Ours go in sub-layers of it, in this order (`src/panda.css`):
 `system.reset`, `system.base`, `system.tokens`, `system.recipes`,
-`system.utilities`. **Nothing goes directly in `system`**: rules directly in a
+`system.states`, `system.utilities`. Panda splits `system.recipes` further:
+`base`, `slots` (with its own `base`, `variants` and `compound_variants`),
+`variants`, `compound_variants`. **Nothing goes directly in `system`**: rules directly in a
 layer beat everything in its sub-layers. CSSReset's Emotion rules and
 `investigator.less`'s Foundry fixes are in `system.base`.
 

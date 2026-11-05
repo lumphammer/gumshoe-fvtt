@@ -1,7 +1,11 @@
 /*
  * Panda's output (https://panda-css.com), inside Foundry's `system` layer.
- * This statement fixes the order of our sub-layers, so it's imported before
- * anything else. Nothing should go directly in `system`: rules directly in a
- * layer beat everything in its sub-layers.
+ * The first statement fixes the order of our sub-layers, so this is imported
+ * before anything else; the second is where Panda puts its CSS. Nothing
+ * should go directly in `system`: rules directly in a layer beat everything
+ * in its sub-layers.
+ *
+ * `system.states` is ours, not Panda's: the state layers (states.css).
  */
+@layer system.reset, system.base, system.tokens, system.recipes, system.states, system.utilities;
 @layer system.reset, system.base, system.tokens, system.recipes, system.utilities;
