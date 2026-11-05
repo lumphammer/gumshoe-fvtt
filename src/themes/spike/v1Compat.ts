@@ -17,17 +17,17 @@ const s = (x: unknown) => (x ?? {}) as StyleObject;
 export function v1CardOverrides(theme: ThemeV1): CatalogueOverrides {
   const { base, categories } = theme.cards;
   const replace: Record<string, StyleObject> = {
-    card: s(base.backdropStyle),
+    card__root: s(base.backdropStyle),
   };
   for (const [slot, key] of Object.entries(slots)) {
     replace[`card__${slot}`] = s(base[key]);
   }
   const merge: Record<string, StyleObject> = {
     // only cards in an array light up on hover, as before
-    ".inv-card.investigator-card-array-card:hover": s(base.hoverStyle),
+    ".inv-card__root.investigator-card-array-card:hover": s(base.hoverStyle),
   };
   for (const [category, styles] of Object.entries(categories)) {
-    const root = `.inv-card.${category}`;
+    const root = `.inv-card__root.${category}`;
     merge[root] = s(styles.backdropStyle);
     merge[`${root}.investigator-card-array-card:hover`] = s(styles.hoverStyle);
     for (const [slot, key] of Object.entries(slots)) {

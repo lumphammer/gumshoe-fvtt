@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Official GUMSHOE support for FoundryVTT. Ships with compatiblity for several settings, and can be customized to work with any other setting.",
   "scripts": {
-    "build": "vite build",
+    "build": "panda codegen && vite build",
     "build:profiling": "PROFILE_REACT=1 vite build",
     "build:dev": "vite build --mode dev",
     "build:watch": "vite build --watch --mode dev",
@@ -123,5 +123,9 @@
       "version": "12.16.1",
       "onFail": "download"
     }
+  },
+  "devDependencies": {
+    "@pandacss/dev": "2.5.0",
+    "@pandacss/preset-base": "2.5.0"
   }
 }

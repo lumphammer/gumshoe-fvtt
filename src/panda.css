@@ -1,0 +1,2 @@
+/* SPIKE (#1532): Panda's output, inside Foundry's `system` layer */
+@layer system.reset, system.base, system.tokens, system.recipes, system.utilities;

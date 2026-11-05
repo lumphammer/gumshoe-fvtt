@@ -1,11 +1,11 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import { useDragStart } from "../../hooks/useDragStart";
 import { openSheet } from "../../functions/openSheet";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { isBondBroken } from "../../module/bonds/rules";
 import type { BondItem } from "../../module/items/bond";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { css } from "../../styled-system/css";
 import { ItemNameWithIcon } from "../characters/ItemNameWithIcon";
 import { DeleteItemButton } from "../inputs/DeleteItemButton";
 import { BondBadges } from "./BondBadges";
@@ -28,7 +28,6 @@ export const BondRow = memo(function BondRow({
     isDeltaGreen: system.isDeltaGreen,
     isBroken: isBondBroken(system.points),
   }));
-  const theme = useContext(ThemeContext);
   const onDragStart = useDragStart();
   const openBondSheet = () => {
     openSheet(bond);
@@ -38,27 +37,28 @@ export const BondRow = memo(function BondRow({
     // a subgrid, so the cells line up with the headers, and the row can be
     // one thing to hover
     <div
-      css={{
+      className={css({
         gridColumn: "1/-1",
         display: "grid",
         gridTemplateColumns: "subgrid",
         alignItems: "center",
-        "&:hover": { backgroundColor: theme.colors.backgroundButton },
-      }}
+        _hover: { backgroundColor: "bgButton" },
+      })}
     >
       {/* everything but the delete button, to click and drag */}
       <a
-        css={{
+        className={css({
           gridColumn: "1/-2",
           display: "grid",
           gridTemplateColumns: "subgrid",
           alignItems: "center",
           padding: "0.2em 0",
           cursor: "pointer",
-          // the highlight is enough; no link underline
-          "&&:hover": { textDecoration: "none" },
+          // the highlight is enough; no link underline. No `&&` needed: the
+          // element default for `a:hover` is in a lower layer
+          _hover: { textDecoration: "none" },
           "& > *": { paddingInline: "0.25em" },
-        }}
+        })}
         onClick={openBondSheet}
         data-item-id={bond.id}
         onDragStart={onDragStart}

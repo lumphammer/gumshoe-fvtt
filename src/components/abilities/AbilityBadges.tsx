@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import * as c from "../../constants";
 import { useActiveSituationalModifiers } from "../../hooks/useActiveSituationalModifiers";
@@ -22,7 +22,8 @@ import {
   isGeneralAbilitySnapshot,
 } from "../../module/items/abilitySnapshots";
 import type { AbilityItem } from "../../module/items/exports";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { css, cx } from "../../styled-system/css";
+import { badge } from "../../styled-system/recipes";
 import { Translate } from "../Translate";
 import { SituationalModifierBadge } from "./SituationalModifierBadge";
 
@@ -62,7 +63,6 @@ export const AbilityBadges = memo(function AbilityBadges({
   const useWoundStatusEffects = useSettings((s) => s.useWoundStatusEffects);
   const { situationalModifiers, unlocks } = ability;
   const activeModifiers = useActiveSituationalModifiers(item.uuid ?? "");
-  const theme = useContext(ThemeContext);
   // a PC's adaptations and Sanity's cap
   const { cap: ratingCap, reasons: ratingCapReasons } = useRatingCap(item);
   // the PC's Stability state, if this is their Stability, and whether this is
@@ -84,74 +84,52 @@ export const AbilityBadges = memo(function AbilityBadges({
     useWoundStatusEffects && fromActor.isHealth
       ? getWoundState(ability.pool)
       : null;
-  // styled on a wrapper: Translate sets its own background
-  const stateBadgeStyle = {
-    background: theme.colors.danger,
-    color: theme.colors.accentContrast,
-    fontSize: "0.9em",
-    lineHeight: "1",
-    borderRadius: "0.5em",
-    padding: "0 0.5em",
-    margin: "0 0.24em",
-  };
+  // layout only: the look comes from the catalogue's badge
+  const gap = css({ marginInline: "0.24em" });
   return (
     <div
-      className={className}
-      css={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "end",
-        flexWrap: "wrap",
-        gap: "0.1em",
-        marginBottom: unlocks.length > 0 ? "0.25em" : undefined,
-      }}
+      className={cx(
+        css({
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "end",
+          flexWrap: "wrap",
+          gap: "0.1em",
+          marginBottom: unlocks.length > 0 ? "0.25em" : undefined,
+        }),
+        className,
+      )}
     >
       {/* Boost */}
       {ability.boost && (
-        <Translate
-          css={{
-            background: theme.colors.accentContrast,
-            color: theme.colors.accent,
-            outline: `1px solid ${theme.colors.accent}`,
-            fontSize: "0.9em",
-            lineHeight: "1",
-            borderRadius: "0.5em",
-            padding: "0 0.5em",
-            margin: "0 0.24em",
-          }}
-        >
-          Boosted
-        </Translate>
+        <span className={cx(badge({ tone: "outline" }), gap)}>
+          <Translate>Boosted</Translate>
+        </span>
       )}
 
       {/* Push pool */}
       {ability.isPushPool && (
-        <Translate
-          css={{
-            background: theme.colors.accentContrast,
-            color: theme.colors.accent,
-            outline: `1px solid ${theme.colors.accent}`,
-            fontSize: "0.9em",
-            lineHeight: "1",
-            borderRadius: "0.5em",
-            padding: "0 0.5em",
-            margin: "0 0.24em",
-          }}
-        >
-          Push Pool
-        </Translate>
+        <span className={cx(badge({ tone: "outline" }), gap)}>
+          <Translate>Push Pool</Translate>
+        </span>
       )}
 
       {/* Hurt, Seriously Wounded or Dead */}
       {woundState !== null && woundState !== "ok" && (
-        <span data-testid="wound-state-badge" css={stateBadgeStyle}>
+        <span
+          data-testid="wound-state-badge"
+          className={cx(badge({ tone: "danger" }), gap)}
+        >
           <Translate>{woundStateLabels[woundState]}</Translate>
         </span>
       )}
 
       {/* Shaken, Shattered or Gone */}
       {stabilityState !== null && stabilityState !== "steady" && (
-        <span data-testid="stability-state-badge" css={stateBadgeStyle}>
+        <span
+          data-testid="stability-state-badge"
+          className={cx(badge({ tone: "danger" }), gap)}
+        >
           {stabilityStateName}
         </span>
       )}
@@ -161,16 +139,7 @@ export const AbilityBadges = memo(function AbilityBadges({
         // styled on a wrapper: Translate sets its own background
         <span
           data-testid="rating-cap-badge"
-          css={{
-            background: theme.colors.accentContrast,
-            color: theme.colors.accent,
-            outline: `1px solid ${theme.colors.accent}`,
-            fontSize: "0.9em",
-            lineHeight: "1",
-            borderRadius: "0.5em",
-            padding: "0 0.5em",
-            margin: "0 0.24em",
-          }}
+          className={cx(badge({ tone: "outline" }), gap)}
         >
           <Translate
             values={{ Cap: String(ratingCap) }}
@@ -184,18 +153,7 @@ export const AbilityBadges = memo(function AbilityBadges({
       {/* Unlocks */}
       {unlocks.map<ReactNode>(({ description }, i) => {
         return (
-          <span
-            key={i}
-            css={{
-              background: theme.colors.accent,
-              color: theme.colors.accentContrast,
-              fontSize: "0.9em",
-              lineHeight: "1",
-              borderRadius: "0.5em",
-              padding: "0 0.5em",
-              margin: "0 0.2em",
-            }}
-          >
+          <span key={i} className={cx(badge({ tone: "solid" }), gap)}>
             {description}
           </span>
         );
