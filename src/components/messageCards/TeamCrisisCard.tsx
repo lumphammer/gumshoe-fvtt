@@ -1,8 +1,6 @@
-import { useContext } from "react";
-
 import type { CrisisRecord } from "../../module/bonds/crisis";
 import { isBondBroken } from "../../module/bonds/rules";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
 
@@ -23,7 +21,6 @@ const changeText: Record<CrisisRecord["changes"][number]["kind"], string> = {
  * record.
  */
 export const TeamCrisisCard = ({ record, imageUrl }: TeamCrisisCardProps) => {
-  const theme = useContext(ThemeContext);
   const spendTotal = record.total - record.die;
 
   return (
@@ -76,13 +73,13 @@ export const TeamCrisisCard = ({ record, imageUrl }: TeamCrisisCardProps) => {
         )}
         <div
           data-testid="crisis-outcome"
+          className={nativeStatus({
+            tone: record.succeeded ? "success" : "danger",
+          })}
           css={{
             fontWeight: "bold",
             fontSize: "1.2em",
             margin: "0.25em 0",
-            color: record.succeeded
-              ? theme.colors.success
-              : theme.colors.danger,
           }}
         >
           <Translate>

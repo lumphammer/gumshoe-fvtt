@@ -187,6 +187,23 @@ Override values are plain CSS text. Numbers get `px`, as in React's `style`,
 except for unitless properties and custom properties. Anything that could
 end its rule (`{`, `}`, `;`, a comment) is ignored, with a warning.
 
+## The native world
+
+Some of what we draw lives in Foundry's own UI, not in a themed sheet: chat
+cards, the combat tracker, `NativeMenu`, `GamePauseBanner`. These look like
+Foundry, whatever theme a sheet uses. They use Foundry's markup, classes and
+custom properties, and **never read the theme**: no palette, no catalogue
+classes, no `ThemeContext` or `useTheme` (a chat card isn't inside a themed
+root, so it would get a fallback theme anyway). `paletteReads.test.ts` checks
+this for `components/messageCards/`, `components/combat/`,
+`components/native/`, `components/inputs/NativeMenu/` and `GamePauseBanner`.
+
+Shared definitions for the native world are in `src/components/native/`:
+
+- `nativeStatus({ tone })`: status ink (`danger | warning | success | info`)
+  from Foundry's `--color-level-*`. Those are tuned for Foundry's dark UI, so
+  inside a chat message's parchment they're darkened to stay legible.
+
 ## Converting a component
 
 `src/themes/catalogue/paletteReads.test.ts` lists the files that still read a

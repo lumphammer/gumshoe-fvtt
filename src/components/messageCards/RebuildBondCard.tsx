@@ -1,7 +1,5 @@
-import { useContext } from "react";
-
 import type { RebuildOutcome, RebuildRecord } from "../../module/bonds/rebuild";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
 
@@ -22,7 +20,6 @@ const outcomeText: Record<RebuildOutcome, string> = {
  * all settled when the test is rolled, so it just shows the record.
  */
 export const RebuildBondCard = ({ record, imageUrl }: RebuildBondCardProps) => {
-  const theme = useContext(ThemeContext);
   const succeeded =
     record.outcome === "successful6" || record.outcome === "success";
   const spendTotal = record.total - record.die;
@@ -83,11 +80,11 @@ export const RebuildBondCard = ({ record, imageUrl }: RebuildBondCardProps) => {
         )}
         <div
           data-testid="rebuild-outcome"
+          className={nativeStatus({ tone: succeeded ? "success" : "danger" })}
           css={{
             fontWeight: "bold",
             fontSize: "1.2em",
             margin: "0.25em 0",
-            color: succeeded ? theme.colors.success : theme.colors.danger,
           }}
         >
           <Translate>{outcomeText[record.outcome]}</Translate>
