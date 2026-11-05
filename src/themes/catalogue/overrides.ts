@@ -39,15 +39,55 @@ export function layerOf(name: string) {
   return `system.recipes${slots}.${sub}`;
 }
 
+/**
+ * Properties whose numbers have no unit; any other number is pixels, as in
+ * React's `style`. (React's own list.)
+ */
 const unitless = new Set([
-  "zIndex",
-  "opacity",
-  "lineHeight",
+  "animationIterationCount",
+  "aspectRatio",
+  "borderImageOutset",
+  "borderImageSlice",
+  "borderImageWidth",
+  "boxFlex",
+  "boxFlexGroup",
+  "boxOrdinalGroup",
+  "columnCount",
+  "columns",
   "flex",
   "flexGrow",
+  "flexPositive",
   "flexShrink",
+  "flexNegative",
+  "flexOrder",
+  "gridArea",
+  "gridRow",
+  "gridRowEnd",
+  "gridRowSpan",
+  "gridRowStart",
+  "gridColumn",
+  "gridColumnEnd",
+  "gridColumnSpan",
+  "gridColumnStart",
   "fontWeight",
+  "lineClamp",
+  "lineHeight",
+  "opacity",
   "order",
+  "orphans",
+  "scale",
+  "tabSize",
+  "widows",
+  "zIndex",
+  "zoom",
+  "fillOpacity",
+  "floodOpacity",
+  "stopOpacity",
+  "strokeDasharray",
+  "strokeDashoffset",
+  "strokeMiterlimit",
+  "strokeOpacity",
+  "strokeWidth",
 ]);
 
 const kebab = (key: string) =>
@@ -56,60 +96,111 @@ const kebab = (key: string) =>
     : key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
 
 const cssValue = (key: string, value: string | number) =>
-  typeof value === "number" && value !== 0 && !unitless.has(key)
+  typeof value === "number" &&
+  value !== 0 &&
+  !key.startsWith("--") &&
+  !unitless.has(key)
     ? `${value}px`
     : String(value);
 
-/** `&` stands for the parent; anything else is a descendant. */
-const nest = (parent: string, key: string) =>
-  key
-    .split(",")
-    .map((part) => part.trim())
-    .map((part) =>
-      part.includes("&") ? part.replaceAll("&", parent) : `${parent} ${part}`,
-    )
-    .join(", ");
+/**
+ * Whether a piece of a theme can go into the stylesheet as it is: nothing
+ * that could end the rule it's in, or start a comment that swallows the end.
+ */
+const isSafe = (text: string) => !/[{};]|\/\*|\*\/|<\//.test(text);
 
-function serialize(selector: string, style: OverrideStyle, replace: boolean) {
+/** Split a selector list on its top-level commas. */
+function splitSelectorList(list: string) {
+  const parts: string[] = [];
+  let depth = 0;
+  let quote: string | null = null;
+  let current = "";
+  for (const char of list) {
+    if (quote) {
+      if (char === quote) quote = null;
+    } else if (char === '"' || char === "'") {
+      quote = char;
+    } else if (char === "(" || char === "[") {
+      depth++;
+    } else if (char === ")" || char === "]") {
+      depth--;
+    } else if (char === "," && depth === 0) {
+      parts.push(current);
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+  return [...parts, current].map((part) => part.trim());
+}
+
+/** `&` stands for the parent; anything else is a descendant. */
+const nest = (parents: string[], key: string) =>
+  splitSelectorList(key).flatMap((part) =>
+    parents.map((parent) =>
+      part.includes("&") ? part.replaceAll("&", parent) : `${parent} ${part}`,
+    ),
+  );
+
+function serialize(
+  selectors: string[],
+  style: OverrideStyle,
+  replace: boolean,
+): string[] {
   const declarations = replace ? ["all: revert-layer;"] : [];
   const nested: string[] = [];
   for (const [key, value] of Object.entries(style)) {
     if (value === undefined || value === null) continue;
+    if (!isSafe(key)) {
+      console.warn(`Catalogue override: ignoring "${key}"`);
+      continue;
+    }
     if (typeof value === "object") {
       nested.push(
-        key.startsWith("@")
-          ? `${key} { ${serialize(selector, value, false)} }`
-          : serialize(nest(selector, key), value, false),
+        ...(key.startsWith("@")
+          ? [`${key} { ${serialize(selectors, value, false).join("\n")} }`]
+          : serialize(nest(selectors, key), value, false)),
       );
-    } else {
+    } else if (isSafe(String(value))) {
       declarations.push(`${kebab(key)}: ${cssValue(key, value)};`);
+    } else {
+      console.warn(`Catalogue override: ignoring ${key}: ${value}`);
     }
   }
-  return [`${selector} { ${declarations.join(" ")} }`, ...nested].join("\n");
+  return [`${selectors.join(", ")} { ${declarations.join(" ")} }`, ...nested];
 }
 
 /**
  * The CSS for a theme's overrides, scoped to that theme's roots.
  *
- * Each rule goes in the same cascade layer as the default it replaces, with a
- * higher specificity, and starts with `all: revert-layer`. Inside that layer,
- * `revert-layer` means "as if this layer had nothing for this element", so the
- * default's declarations are all dropped, and the override's own (later in the
- * same rule) apply. Other layers, such as the class's variants, are
- * untouched.
+ * Each rule goes in the same cascade layer as the default it replaces, and
+ * starts with `all: revert-layer`. Inside that layer, `revert-layer` means "as
+ * if this layer had nothing for this element", so the default's declarations
+ * are all dropped, and the override's own (later in the same rule) apply.
+ *
+ * The theme scope is in `:where()`, so an override is exactly as specific as
+ * the default, and wins by coming later (it's rendered inside the themed
+ * root, after our stylesheet). So the class's state rules, which are more
+ * specific (`.inv-badge--...:is([aria-pressed=true])`), still beat it, and so
+ * do its other layers, such as its variants.
  */
 export function catalogueOverridesCss(
   slug: string,
   overrides: CatalogueOverrides,
 ) {
   return Object.entries(overrides)
+    .filter(([name]) => {
+      const ok = /^[a-z0-9_-]+$/.test(name);
+      if (!ok) console.warn(`Catalogue override: no such class "${name}"`);
+      return ok;
+    })
     .map(
       ([name, style]) =>
         `@layer ${layerOf(name)} {\n${serialize(
-          `[data-inv-theme="${slug}"] .inv-${name}`,
+          [`:where([data-inv-theme="${slug}"]) .inv-${name}`],
           style,
           true,
-        )}\n}`,
+        ).join("\n")}\n}`,
     )
     .join("\n");
 }

@@ -175,10 +175,17 @@ state, and every override keeps the state layers.
 
 How: `CSSReset` renders the theme's overrides as a `<style>` inside the themed
 root (so it travels with the root into a detached window). Each rule goes in
-the same cascade layer as the default it replaces, scoped under
-`[data-inv-theme="<slug>"]` so it's more specific, and starts with
+the same cascade layer as the default it replaces, and starts with
 `all: revert-layer`, which drops everything that layer had for the element
-(`src/themes/catalogue/overrides.ts`).
+(`src/themes/catalogue/overrides.ts`). The theme scope is inside `:where()`,
+so an override is exactly as specific as the default and wins by coming
+later. A class's state rules (`:is([aria-pressed=true])` and the like) are
+more specific, so they still apply over an override, even one of the rule
+they're in.
+
+Override values are plain CSS text. Numbers get `px`, as in React's `style`,
+except for unitless properties and custom properties. Anything that could
+end its rule (`{`, `}`, `;`, a comment) is ignored, with a warning.
 
 ## Converting a component
 
