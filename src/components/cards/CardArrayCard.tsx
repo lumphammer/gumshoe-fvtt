@@ -2,7 +2,6 @@ import React, { memo, useContext } from "react";
 
 import { useDragStart } from "../../hooks/useDragStart";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
-import { useSettings } from "../../hooks/useSettings";
 import type { CardItem } from "../../module/items/card";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { CardDisplay } from "./CardDisplay";
@@ -24,13 +23,7 @@ export const CardArrayCard = memo(function CardArrayCard({
 }: CardArrayCardProps) {
   const data = useItemSelector(card, ({ system }) => ({
     active: system.active,
-    styleKeyCategoryId: system.styleKeyCategoryId,
   }));
-  const styleKey = useSettings(
-    (s) =>
-      s.cardCategories.find((cat) => cat.id === data.styleKeyCategoryId)
-        ?.styleKey,
-  );
   const theme = useContext(ThemeContext);
 
   const { viewMode } = useContext(CardsAreaSettingsContext);
