@@ -265,7 +265,7 @@ export const AbilityTest = memo(function AbilityTest({
             <Translate>{isGeneral ? "Simple Spend" : "Spend"}</Translate>
           </Button>
           {isGeneral && (
-            <Button css={{ flex: 1 }} onClick={handleClickTest}>
+            <Button kind="cta" css={{ flex: 1 }} onClick={handleClickTest}>
               <Translate>Test</Translate> <i className="fa fa-dice" />
             </Button>
           )}
