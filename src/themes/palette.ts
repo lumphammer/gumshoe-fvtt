@@ -69,22 +69,63 @@ export interface Palette {
 export const paletteVar = (key: Exclude<keyof Palette, "polarity">) =>
   `--inv-${key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`;
 
-/** Black or white, whichever reads better on `color`. */
-function inkOn(color: string, fallback: string) {
+const channel = (value: string, percent: string, max: number) =>
+  percent ? (Number(value) / 100) * max : Number(value);
+
+/**
+ * A colour's relative luminance (0 is black, 1 is white), or null if we can't
+ * tell. Irid reads hex, named and comma-separated colours; this also reads
+ * space-separated `rgb()`, and the lightness of `oklch()`, `oklab()`, `lch()`
+ * and `lab()`.
+ */
+export function luminanceOf(color: string): number | null {
   try {
-    return irid(color).contrast("#000", "#fff").toHexString();
+    return irid(color).relativeLuminance();
   } catch {
-    return fallback;
+    // not one Irid reads
   }
+  const css = color.trim().toLowerCase();
+  const rgb = /^rgba?\(\s*([\d.]+)(%?)\s+([\d.]+)(%?)\s+([\d.]+)(%?)/.exec(css);
+  if (rgb) {
+    const [r, g, b] = [1, 3, 5].map((i) =>
+      Math.round(channel(rgb[i], rgb[i + 1], 255)),
+    );
+    try {
+      return irid(`rgb(${r}, ${g}, ${b})`).relativeLuminance();
+    } catch {
+      return null;
+    }
+  }
+  const ok = /^okl(?:ch|ab)\(\s*([\d.]+)(%?)/.exec(css);
+  if (ok) {
+    // OKLab's lightness is roughly the cube root of luminance
+    return channel(ok[1], ok[2], 1) ** 3;
+  }
+  const lab = /^l(?:ch|ab)\(\s*([\d.]+)(%?)/.exec(css);
+  if (lab) {
+    // CIE L* to luminance
+    const l = channel(lab[1], lab[2], 100);
+    return l > 8 ? ((l + 16) / 116) ** 3 : l / 903.3;
+  }
+  return null;
 }
 
+/** Whether black reads better than white on a colour of this luminance. */
+const blackReadsBetter = (luminance: number) =>
+  // contrast ratio with black vs with white (WCAG)
+  (luminance + 0.05) / 0.05 > 1.05 / (luminance + 0.05);
+
+/** Black or white, whichever has the higher contrast ratio on `color`. */
+function inkOn(color: string, fallback: string) {
+  const luminance = luminanceOf(color);
+  if (luminance === null) return fallback;
+  return blackReadsBetter(luminance) ? "#000000" : "#ffffff";
+}
+
+/** Light ink means a dark theme. */
 function polarityOf(text: string): Palette["polarity"] {
-  try {
-    // light ink means a dark theme
-    return irid(text).relativeLuminance() > 0.5 ? "dark" : "light";
-  } catch {
-    return "light";
-  }
+  const luminance = luminanceOf(text);
+  return luminance !== null && blackReadsBetter(luminance) ? "dark" : "light";
 }
 
 /**
