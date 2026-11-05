@@ -150,6 +150,9 @@ export const spikeOverrides: Record<string, CatalogueOverrides> = {
         fontStyle: "italic",
         textDecoration: "underline wavy var(--inv-glow)",
       },
+      // the base subtitle is bold; replacing it with only italic must drop
+      // the bold
+      card__subtitle: { fontStyle: "italic" },
     },
   },
 };
