@@ -9,6 +9,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { assertGame } from "../functions/isGame";
 import { ApplicationV2 } from "../fvtt-exports";
 import { irid } from "../irid/irid";
+import { paletteFromV1, paletteStyle, themeSlug } from "../themes/palette";
 import { ThemeContext } from "../themes/ThemeContext";
 import type { ThemeV1 } from "../themes/types";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -269,6 +270,9 @@ export const CSSReset = ({
   // layering system. If we left them outside of a layer they would still work,
   // but they would take priority over other like `modules` and `exceptions` which
   // are supposed to be above `system`.
+  // They go in `system.base`, not `system` itself: rules directly in a layer
+  // beat everything in its sub-layers, which would put them above Panda's
+  // (`src/panda.css`) whatever their specificity.
   // We wouldn't need to do this if we were exporting our CSS into a file and
   // getting Foundry to load it, but see https://github.com/lumphammer/gumshoe-fvtt/issues/928
   // for why we don't do that.
@@ -276,7 +280,7 @@ export const CSSReset = ({
     assertGame(game);
     if (foundry.utils.isNewerVersion(game.version, "13.0")) {
       return {
-        "@layer system": styles,
+        "@layer system.base": styles,
       };
     } else {
       return styles;
@@ -288,7 +292,13 @@ export const CSSReset = ({
       <EmotionCacheProvider value={cache}>
         <ThemeContext.Provider value={theme}>
           <Global styles={theme.global} />
-          <div ref={ref} className={className} css={layeredStyles}>
+          <div
+            ref={ref}
+            className={className}
+            css={layeredStyles}
+            data-inv-theme={themeSlug(theme)}
+            style={paletteStyle(paletteFromV1(theme))}
+          >
             {children}
           </div>
         </ThemeContext.Provider>
