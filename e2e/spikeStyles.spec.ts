@@ -10,7 +10,6 @@ import {
   createOwnedItem,
   expect,
   openSheet,
-  reloadGame,
   setSettings,
   test,
 } from "./foundry.ts";
@@ -46,6 +45,10 @@ async function look(locator: Locator) {
   }, props);
 }
 
+async function lookIfThere(locator: Locator) {
+  return (await locator.count()) > 0 ? look(locator.first()) : null;
+}
+
 async function setUp(page: Page, theme: string) {
   await setSettings(page, {
     ...stabilityRulesOn,
@@ -67,7 +70,7 @@ async function setUp(page: Page, theme: string) {
   await createOwnedItem(page, actorId, {
     name: "Spike Bond",
     type: "bond",
-    system: { isDeltaGreen: true, points: 0 },
+    system: { isDeltaGreen: true, points: -1 },
   });
   await createOwnedItem(page, actorId, {
     name: "Spike Card",
@@ -97,11 +100,13 @@ for (const theme of ["tealTheme", "niceThemeDark", "mutantCityBlueTheme"]) {
     await sheet.locator(".tab-strip > label", { hasText: "Bonds" }).click();
     const bondRow = sheet.locator("[data-testid=bond-name]").first();
     await expect(bondRow).toBeVisible();
-    const badges = sheet.locator("span", { hasText: /^(Delta Green|Broken)$/ });
-    result["bondBadges"] = [
-      await look(badges.nth(0)),
-      await look(badges.nth(1)),
-    ];
+    const badges = sheet.locator("span", { hasText: /^(Delta Green|Broken)$/i });
+    await expect(badges.first()).toBeVisible();
+    const bondBadges: unknown[] = [];
+    for (let i = 0; i < (await badges.count()); i++) {
+      bondBadges.push(await look(badges.nth(i)));
+    }
+    result["bondBadges"] = bondBadges;
     const row = bondRow.locator("xpath=ancestor::a[1]/..");
     await row.hover();
     result["bondRowHover"] = await look(row);
@@ -111,8 +116,8 @@ for (const theme of ["tealTheme", "niceThemeDark", "mutantCityBlueTheme"]) {
     const card = sheet.locator(".investigator-card-display").first();
     await expect(card).toBeVisible();
     result["cardRoot"] = await look(card);
-    result["cardTitle"] = await look(card.locator("h2"));
-    result["cardEffect"] = await look(card.locator(".effects"));
+    result["cardTitle"] = await lookIfThere(card.locator("h2"));
+    result["cardSubtitle"] = await lookIfThere(card.locator(".subtitle"));
     await card.screenshot({ path: path.join(out, `${theme}-card.png`) });
 
     // element defaults: a heading and a button inside the sheet
@@ -160,49 +165,36 @@ test("cascade layers, in priority order", async ({ page }) => {
   save("layers.json", layers);
 });
 
-test("a popped-out sheet keeps its styles", async ({ page, context }) => {
-  const modules = await page.evaluate(() =>
-    game.settings.get("core", "moduleConfiguration"),
-  );
-  await page.evaluate(async (modules) => {
-    await game.settings.set("core", "moduleConfiguration", {
-      ...(modules as object),
-      popout: true,
-    } as never);
-  }, modules);
-  await reloadGame(page);
-  try {
-    const actorId = await setUp(page, "niceThemeDark");
-    await openSheet(page, `Actor.${actorId}`);
-    const popupPromise = context.waitForEvent("page");
-    await page.evaluate((actorId) => {
-      // a class declared by PopOut!'s classic script: global, not on window
-      // eslint-disable-next-line no-eval
-      const PopoutModule = (0, eval)("PopoutModule") as {
-        popoutApp: (app: unknown) => void;
-      };
-      PopoutModule.popoutApp(game.actors.get(actorId)!.sheet);
-    }, actorId);
-    const popup = await popupPromise;
-    await popup.waitForLoadState();
-    const tabs = popup.locator(".tab-strip > label", { hasText: "Bonds" });
-    await expect(tabs).toBeVisible();
-    await tabs.click();
-    const badge = popup.locator("span", { hasText: /^Broken$/ }).first();
-    await expect(badge).toBeVisible();
-    // let any late style insertion happen
-    await popup.waitForTimeout(500);
-    const result = {
-      brokenBadge: await look(badge),
-      h2: await look(popup.locator("h2").first()),
+// PopOut! 2.24 crashes on v14 (it patches app.bringToTop, which ApplicationV2
+// no longer has), so this uses Foundry's own detached windows, which copy the
+// main window's <link> and <style> elements once, when the window opens.
+test("a detached sheet keeps its styles", async ({ page }) => {
+  const actorId = await setUp(page, "niceThemeDark");
+  await openSheet(page, `Actor.${actorId}`);
+  const popupPromise = page.waitForEvent("popup");
+  await page.evaluate(async (actorId) => {
+    const sheet = game.actors.get(actorId)!.sheet as unknown as {
+      detachWindow: () => Promise<void>;
     };
-    await popup.screenshot({ path: path.join(out, `popout.png`) });
-    save("popout.json", result);
-    await popup.close();
-  } finally {
-    await page.evaluate(async (modules) => {
-      await game.settings.set("core", "moduleConfiguration", modules as never);
-    }, modules);
-    await reloadGame(page);
-  }
+    await sheet.detachWindow();
+  }, actorId);
+  const popup = await popupPromise;
+  await popup.waitForLoadState();
+  const tab = popup.locator(".tab-strip > label", { hasText: "Bonds" });
+  await expect(tab).toBeVisible();
+  await tab.click();
+  const badge = popup
+    .locator("span", { hasText: /^(Delta Green|Broken)$/i })
+    .first();
+  await expect(badge).toBeVisible();
+  // let any late style insertion happen
+  await popup.waitForTimeout(500);
+  const result = {
+    brokenBadge: await look(badge),
+    h2: await look(popup.locator("h2").first()),
+    tab: await look(tab),
+  };
+  await popup.screenshot({ path: path.join(out, "detached.png") });
+  save("detached.json", result);
+  await popup.close();
 });
