@@ -2,7 +2,13 @@ import { describe, expect, test } from "vitest";
 
 import { baseThemes } from "./baseThemes";
 import { niceThemeDark } from "./niceThemeDark";
-import { paletteFromV1, paletteStyle, paletteVar, themeSlug } from "./palette";
+import {
+  luminanceOf,
+  paletteFromV1,
+  paletteStyle,
+  paletteVar,
+  themeSlug,
+} from "./palette";
 import { tealTheme } from "./tealTheme";
 
 describe("paletteFromV1", () => {
@@ -36,6 +42,54 @@ describe("paletteFromV1", () => {
     });
     expect(palette.onDanger).toBe("#ffffff");
     expect(palette.onWarning).toBe("#000000");
+  });
+
+  test("picks the ink with the higher contrast ratio, not the brighter difference", () => {
+    // on pure red, black is 5.25:1 and white 4.00:1
+    const palette = paletteFromV1({
+      ...tealTheme,
+      colors: { ...tealTheme.colors, danger: "#f00" },
+    });
+    expect(palette.onDanger).toBe("#000000");
+  });
+
+  test.each([
+    "rgb(255 255 255)",
+    "rgb(100% 100% 100% / 0.9)",
+    "oklch(0.95 0.02 90)",
+    "lch(95% 10 90)",
+  ])("reads light text in %s as a dark theme", (text) => {
+    const palette = paletteFromV1({
+      ...niceThemeDark,
+      colors: { ...niceThemeDark.colors, text },
+    });
+    expect(palette.polarity).toBe("dark");
+  });
+
+  test("falls back to light for colours it can't read", () => {
+    const palette = paletteFromV1({
+      ...niceThemeDark,
+      colors: { ...niceThemeDark.colors, text: "var(--some-text)" },
+    });
+    expect(palette.polarity).toBe("light");
+  });
+});
+
+describe("luminanceOf", () => {
+  test.each([
+    ["#fff", 1],
+    ["black", 0],
+    ["rgb(255 255 255)", 1],
+    ["oklch(1 0 0)", 1],
+    ["oklch(0% 0 0)", 0],
+    ["lab(100 0 0)", 1],
+  ])("%s → %d", (color, expected) => {
+    expect(luminanceOf(color)).toBeCloseTo(expected, 2);
+  });
+
+  test("is null for things that aren't colours it reads", () => {
+    expect(luminanceOf("var(--x)")).toBeNull();
+    expect(luminanceOf("color-mix(in srgb, red, blue)")).toBeNull();
   });
 });
 
