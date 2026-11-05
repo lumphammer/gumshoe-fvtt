@@ -1,8 +1,9 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import type { AbilityItem } from "../../module/items/exports";
-import { ThemeContext } from "../../themes/ThemeContext";
 import type { DeepReadonly } from "../../module/snapshots/createSnapshotStore";
+import { css, cx } from "../../styled-system/css";
+import { badge } from "../../styled-system/recipes";
 import type { SituationalModifier } from "../../types";
 
 interface SituationalModifierBadgeProps {
@@ -12,49 +13,31 @@ interface SituationalModifierBadgeProps {
   ability: AbilityItem;
 }
 
+/** A situational modifier, as a badge that toggles it. Active is pressed. */
 export const SituationalModifierBadge = memo(function SituationalModifierBadge({
   situationalModifier: { situation, modifier, id },
   isActive,
   ability,
 }: SituationalModifierBadgeProps) {
-  const theme = useContext(ThemeContext);
   return (
     <a
+      role="button"
+      aria-pressed={isActive}
+      data-interactive
       onClick={() => {
         ability.system.toggleSituationalModifier(id);
       }}
-      css={{
-        display: "inline-block",
-        position: "relative",
-        background: theme.colors.accentContrast,
-        color: theme.colors.accent,
-        border: `1px solid ${theme.colors.accent}`,
-        fontSize: "0.9em",
-        lineHeight: "1",
-        borderRadius: "0.5em",
-        padding: "0 0.5em",
-        margin: "0 0.25em",
-        boxShadow: isActive ? `0 0 0.7em 0.2em ${theme.colors.glow}` : "none",
-        opacity: isActive ? 1 : 0.5,
-      }}
+      className={cx(badge(), css({ marginInline: "0.25em" }))}
     >
+      {situation}: {modifier >= 0 && "+"}
+      {modifier}
       <span
-        css={{
+        className={css({
           display: "inline-block",
-          position: "relative",
-        }}
-      >
-        {situation}: {modifier >= 0 && "+"}
-        {modifier}
-      </span>
-      <span
-        css={{
-          display: "inline-block",
-          position: "relative",
           paddingLeft: "0.25em",
           width: "1em",
           fontWeight: "bold",
-        }}
+        })}
       >
         {isActive ? "✓" : "✗"}
       </span>
