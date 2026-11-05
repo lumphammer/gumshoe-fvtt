@@ -1,0 +1,7 @@
+/*
+ * Panda's output (https://panda-css.com), inside Foundry's `system` layer.
+ * This statement fixes the order of our sub-layers, so it's imported before
+ * anything else. Nothing should go directly in `system`: rules directly in a
+ * layer beat everything in its sub-layers.
+ */
+@layer system.reset, system.base, system.tokens, system.recipes, system.utilities;

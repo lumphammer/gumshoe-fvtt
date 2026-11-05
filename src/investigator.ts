@@ -1,3 +1,4 @@
+import "./panda.css";
 import "./investigator.less";
 import "./configuration";
 
