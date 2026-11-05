@@ -44,7 +44,8 @@ export const badge = defineRecipe({
     fontSize: "0.9em",
     lineHeight: "1",
     padding: "0.1em 0.5em",
-    borderRadius: "standard",
+    // fully rounded ends, whatever the height
+    borderRadius: "9999px",
     borderWidth: "1px",
     borderStyle: "solid",
     whiteSpace: "nowrap",
