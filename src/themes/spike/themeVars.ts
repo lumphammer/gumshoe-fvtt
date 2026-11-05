@@ -25,5 +25,5 @@ export const themeToCssVars = (theme: ThemeV1): Record<string, string> => ({
   "--inv-success": theme.colors.success,
   "--inv-body-font": theme.bodyFont ?? "inherit",
   "--inv-display-font": theme.displayFont ?? "inherit",
-  "--inv-display-transform": theme.displayFontTextTransform ?? "none",
+  "--inv-display-transform": String(theme.displayFontTextTransform ?? "none"),
 });
