@@ -43,7 +43,6 @@ const notYetConverted = [
   "components/inputs/TextInput.tsx",
   "components/inputs/Toggle.tsx",
   "components/journalEditorSheet/ImageArea.tsx",
-  "components/journalEditorSheet/magicToolbar/ToolbarButton.tsx",
   "components/journalEditorSheet/PageNavigation.tsx",
   "components/nestedPanels/ArrowLink.tsx",
   "components/nestedPanels/NestedPanel.tsx",
@@ -106,6 +105,14 @@ describe("reading theme colours", () => {
 });
 
 describe("the native world", () => {
+  it("never uses the catalogue", () => {
+    expect(
+      filesMatching(/styled-system\/recipes|inputs\/Button"/).filter((path) =>
+        nativeWorld.some((area) => area.test(path)),
+      ),
+    ).toEqual([]);
+  });
+
   it("never reads the theme", () => {
     expect(
       filesMatching(/\b(ThemeContext|useTheme)\b|\.colors\b/).filter((path) =>
