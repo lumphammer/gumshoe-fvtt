@@ -36,4 +36,6 @@ allowBuilds:
   "@league-of-foundry-developers/foundry-vtt-types": true
   classic-level: true
   esbuild: true
+  # Panda's file watcher, for `panda --watch`: it ships prebuilt binaries
+  "@parcel/watcher": false
 blockExoticSubdeps: false
