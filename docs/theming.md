@@ -5,8 +5,7 @@ contract: what each palette entry and catalogue class **means**, so that anyone
 writing a component or a theme makes the same choice in the same place.
 
 The system is being built in steps (#1532). The palette exists, as custom
-properties on every themed root, and the catalogue has its first class,
-`badge`. Everything else is still drawn by Emotion from V1 themes, and the
+properties on every themed root, and the catalogue has `badge` and `button`. Everything else is still drawn by Emotion from V1 themes, and the
 two run side by side until every component is converted.
 
 ## The pieces
@@ -141,6 +140,31 @@ A short label attached to something, saying what it is or what state it's in:
 - `Translate` sets an inline `background`, so a badge goes on a wrapper
   around it, never on the `Translate` itself.
 
+### `button`
+
+Something you click to do something. Use the `Button` component
+(`src/components/inputs/Button.tsx`), which applies the class, marks itself
+`data-interactive`, and is disabled when the sheet isn't editable.
+
+- **Not for** links to documents (a link), or on/off settings (a toggle).
+- **Variants**: `kind`:
+  - `default`: an ordinary action. `control` fill, `line` border, `text` ink,
+    the `display` text style.
+  - `cta`: the call to action: what you're probably about to click if you're
+    looking at this UI, such as the button that commits a panel ("Rebuild
+    Bond", "Establish Bond", "Make the test", the attack button, the ability
+    sheet's "Test"). At most one per panel. `accent` fill, `onAccent` ink.
+  - `toolbar`: compact, for a row of tools. As wide as its content.
+  - `ghost`: no fill or border, just ink: icon buttons such as delete, and
+    the settings Back button.
+- **States**: `:disabled` (half opacity). Hover and focus come from the state
+  layers.
+- `Button`'s layout defaults (full width; content width for `toolbar`) are
+  atomic classes: a call site's own width replaces them.
+
+There's no global button style any more: a `<button>` inside a themed root
+that isn't a `Button` (or doesn't apply the class) looks like Foundry's.
+
 ## State layers
 
 Feedback that looks the same on anything, whatever its class, so classes don't
@@ -150,10 +174,10 @@ they always show.
 
 | Layer | When | Look |
 |---|---|---|
-| `hoverFeedback` | `[data-interactive]:hover` | A `feedback` glow, and a pointer |
+| `hoverFeedback` | `[data-interactive]:hover`, unless disabled | A `feedback` glow, and a pointer |
+| `focusRing` | `:focus-visible`, on anything | A 2px `feedback` outline |
 
-Focus rings (`:focus-visible`) and drop targets (`[data-drop-state]`) will
-join it.
+Drop targets (`[data-drop-state]`) will join them.
 
 ## Theme overrides
 
@@ -195,11 +219,13 @@ Foundry, whatever theme a sheet uses. They use Foundry's markup, classes and
 custom properties, and **never read the theme**: no palette, no catalogue
 classes, no `ThemeContext` or `useTheme` (a chat card isn't inside a themed
 root, so it would get a fallback theme anyway). `paletteReads.test.ts` checks
-this for `components/messageCards/`, `components/combat/`,
+this, and that they never use the catalogue, for `components/messageCards/`, `components/combat/`,
 `components/native/`, `components/inputs/NativeMenu/` and `GamePauseBanner`.
 
 Shared definitions for the native world are in `src/components/native/`:
 
+- `NativeButton`: Foundry's own button, for chat cards and the combat
+  tracker. Never `Button`, which is themed: a chat card has no palette.
 - `nativeStatus({ tone })`: status ink (`danger | warning | success | info`)
   from Foundry's `--color-level-*`. Those are tuned for Foundry's dark UI, so
   inside a chat message's parchment they're darkened to stay legible.

@@ -512,6 +512,7 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
         )}
         <GridFieldStacked>
           <Button
+            kind="cta"
             css={{ lineHeight: 1.5, margin: 0 }}
             disabled={blockers.length > 0}
             title={attackTitle}

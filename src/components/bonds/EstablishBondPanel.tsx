@@ -217,6 +217,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
         </GridField>
         <GridFieldStacked>
           <Button
+            kind="cta"
             onClick={onEstablish}
             disabled={!canEstablish}
             title={noPointsMessage}

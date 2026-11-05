@@ -17,6 +17,7 @@ export const DeleteItemButton = ({ item, ...rest }: DeleteItemButtonProps) => {
   const label = getTranslated("Delete");
   return (
     <Button
+      kind="ghost"
       css={{
         alignSelf: "center",
         "&&": { width: "auto" },

@@ -114,7 +114,7 @@ export const AbilityTestMW = memo(function AbilityTestMW({
         >
           <Translate>Wallop</Translate>
         </Button>
-        <Button css={{ flex: "2" }} onClick={onTest}>
+        <Button kind="cta" css={{ flex: "2" }} onClick={onTest}>
           <Translate>Test</Translate>
         </Button>
       </div>

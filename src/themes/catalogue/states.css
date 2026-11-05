@@ -6,8 +6,15 @@
  */
 @layer system.states {
   /* hoverFeedback: anything that does something when clicked */
-  [data-inv-theme] [data-interactive]:hover {
+  [data-inv-theme]
+    [data-interactive]:not(:disabled, [aria-disabled="true"]):hover {
     cursor: pointer;
     box-shadow: 0 0 0.5em var(--inv-feedback);
+  }
+
+  /* focusRing: anything focused from the keyboard */
+  [data-inv-theme] :focus-visible {
+    outline: 2px solid var(--inv-feedback);
+    outline-offset: 1px;
   }
 }

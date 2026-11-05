@@ -59,14 +59,6 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
 
   const rowData = buildRowData(abilities, actors);
 
-  const onClickRemoveActor = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const actorId = e.currentTarget.dataset["actorId"];
-    if (actorId !== undefined) {
-      void party.system.removeActorId(actorId);
-    }
-  };
-
   return (
     <CSSReset
       mode="small"
@@ -225,20 +217,14 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
                   transform: "translateX(-50%)",
                 }}
               >
-                <button
-                  css={{
-                    "&&": {
-                      fontSize: "0.7em",
-                      padding: "0.1em 0.3em",
-                      border: `1px solid ${theme.colors.text}`,
-                      width: "auto",
-                    },
-                  }}
+                <Button
+                  kind="toolbar"
+                  css={{ fontSize: "0.7em" }}
                   data-actor-id={actor.id}
-                  onClick={onClickRemoveActor}
+                  onClick={() => void party.system.removeActorId(actor.id)}
                 >
                   <Translate>REMOVE</Translate>
-                </button>
+                </Button>
               </div>
             </div>
           );

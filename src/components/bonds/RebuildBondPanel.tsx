@@ -150,7 +150,7 @@ export const RebuildBondPanel = ({ bond }: { bond: BondItem }) => {
           );
         })}
         <GridFieldStacked>
-          <Button onClick={onRebuild}>
+          <Button kind="cta" onClick={onRebuild}>
             <Translate>Rebuild Bond</Translate> <i className="fa fa-dice" />
           </Button>
         </GridFieldStacked>

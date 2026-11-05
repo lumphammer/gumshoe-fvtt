@@ -2,16 +2,20 @@ import type { ComponentProps, PropsWithChildren } from "react";
 import React from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
+import { css, cx } from "../../styled-system/css";
+import { button, type ButtonVariantProps } from "../../styled-system/recipes";
 
 type ButtonProps = ComponentProps<"button"> &
+  ButtonVariantProps &
   PropsWithChildren<{
     onClick: () => void;
     className?: string;
   }>;
 
+/** A themed button (the catalogue's `button`). Disabled when the sheet isn't editable. */
 export const Button = React.memo<ButtonProps>(
   React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ children, onClick, className, disabled, ...rest }, ref) => {
+    ({ children, onClick, className, disabled, kind, ...rest }, ref) => {
       const isEditable = useIsEditable();
       const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -21,13 +25,21 @@ export const Button = React.memo<ButtonProps>(
       return (
         <button
           ref={ref}
+          type="button"
+          data-interactive
           {...rest}
           disabled={(disabled ?? false) || !isEditable}
-          className={className}
+          className={cx(
+            button({ kind }),
+            // layout: toolbar buttons are as wide as their content; the rest
+            // as wide as their container (100% can cause scrollbars). One
+            // atomic class each, so call sites can override them
+            kind === "toolbar"
+              ? css({ display: "block", width: "max-content" })
+              : css({ width: "99%" }),
+            className,
+          )}
           onClick={handleClick}
-          css={{
-            padding: "0.1em 0.3em",
-          }}
         >
           {children}
         </button>
@@ -38,18 +50,11 @@ export const Button = React.memo<ButtonProps>(
 
 Button.displayName = "Button";
 
+/** A compact button that's only as wide as its content. */
 export const ToolbarButton = React.memo<ButtonProps>(
   ({ children, onClick, className, ...rest }) => {
     return (
-      <Button
-        {...rest}
-        className={className}
-        css={{
-          display: "block",
-          width: "max-content",
-        }}
-        onClick={onClick}
-      >
+      <Button kind="toolbar" {...rest} className={className} onClick={onClick}>
         {children}
       </Button>
     );
