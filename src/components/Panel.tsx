@@ -15,7 +15,7 @@ const DepthContext = createContext<Depth>("top");
 
 /**
  * Marks its children as content inside content, so panels in it are
- * `nested`. For a surface that isn't a `<Panel>` (yet), such as a tab's
+ * `nested`. For a surface that isn't a `<Panel>`, such as a tab's
  * content.
  */
 export const OnSurface = ({ children }: PropsWithChildren) => (

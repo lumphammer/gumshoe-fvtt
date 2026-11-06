@@ -11,6 +11,8 @@ import {
   useTransition,
 } from "react";
 
+import { css, cx } from "../styled-system/css";
+import { tabs } from "../styled-system/recipes";
 import { ThemeContext } from "../themes/ThemeContext";
 import { chooseTabColumns } from "./chooseTabColumns";
 import { Translate } from "./Translate";
@@ -144,54 +146,41 @@ export const TabContainer = ({
     }
   }, [fitKey, theme]);
 
+  const classes = tabs();
+
   return (
     <div
-      className="tab-container-outer"
-      key={selected}
-      css={{
-        position: "absolute",
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        display: "flex",
-        flexDirection: "column",
-        ".tab-strip": {
+      className={cx(
+        "tab-container-outer",
+        css({
+          position: "absolute",
+          inset: "0",
           display: "flex",
-          flexDirection: "row",
-          "&[data-measuring]": {
-            width: "min-content",
-          },
-          "&[data-wrapped]": {
-            display: "grid",
-            gridTemplateColumns: "repeat(var(--tab-columns), 1fr)",
-            gap: `${wrappedGapEm}em`,
-            marginBottom: "0.4em",
-            ".tab-spacer": {
-              display: "none",
-            },
-          },
-        },
-        "input[type=radio]": {
-          display: "none",
-          "+label": theme.tabStyle,
-          "&[disabled]+label": {
-            opacity: 0.3,
-            ":hover": {
-              textShadow: "none",
-            },
-          },
-        },
-        ".tab-strip:not([data-wrapped]) input[type=radio]:checked+label":
-          theme.tabActiveStyle,
-        ".tab-strip[data-wrapped] input[type=radio]": {
-          "+label": theme.tabWrappedStyle,
-          "&:checked+label": theme.tabWrappedActiveStyle,
-        },
-        ".tab-strip[data-wrapped]+.tab-content": theme.tabContentWrappedStyle,
-      }}
+          flexDirection: "column",
+          // the hidden radios: the labels after them are the tabs
+          "& input[type=radio]": { display: "none" },
+        }),
+      )}
+      key={selected}
     >
-      <div className="tab-strip" ref={observeStrip}>
+      <div
+        className={cx(
+          "tab-strip",
+          classes.list,
+          css({
+            display: "flex",
+            flexDirection: "row",
+            "&[data-measuring]": { width: "min-content" },
+            "&[data-wrapped]": {
+              display: "grid",
+              gridTemplateColumns: "repeat(var(--tab-columns), 1fr)",
+              gap: `${wrappedGapEm}em`,
+              marginBottom: "0.4em",
+            },
+          }),
+        )}
+        ref={observeStrip}
+      >
         {stripTabDefs.map(({ id, label, translate = true }, index) => {
           const htmlId = nanoid();
           return (
@@ -207,14 +196,20 @@ export const TabContainer = ({
               <label
                 htmlFor={htmlId}
                 tabIndex={0}
-                className={theme.tabClass}
-                css={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  opacity: pending && id === optimistic ? 0.5 : 1,
-                  font: theme.displayFont,
-                  textTransform: theme.displayFontTextTransform,
+                data-interactive={id === selected ? undefined : true}
+                className={cx(
+                  classes.tab,
+                  // a V1 theme's own class, from before the catalogue
+                  theme.tabClass,
+                  css({
+                    flex: "1",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }),
+                )}
+                style={{
+                  opacity: pending && id === optimistic ? 0.5 : undefined,
                 }}
               >
                 {typeof label === "string" ? (
@@ -228,23 +223,21 @@ export const TabContainer = ({
                 )}
               </label>
               {index < stripTabDefs.length - 1 && (
-                <div className="tab-spacer" css={theme.tabSpacerStyle} />
+                <div className={cx("tab-spacer", classes.spacer)} />
               )}
             </Fragment>
           );
         })}
       </div>
       <div
-        className={`tab-content ${theme.panelClass ?? ""}`}
-        css={{
-          flex: 1,
-          position: "relative",
-          overflow: "auto",
-          padding: "0.5em",
-          ...theme.tabContentStyle,
-        }}
+        className={cx(
+          "tab-content",
+          classes.content,
+          theme.panelClass,
+          css({ flex: "1", position: "relative", overflow: "auto" }),
+        )}
       >
-        {/* a surface, so panels in it are nested (until the tabs class) */}
+        {/* a surface, so panels in it are nested */}
         <OnSurface>{activeTabDef?.content}</OnSurface>
       </div>
     </div>
