@@ -191,10 +191,10 @@ with its options on `surfaceSolid`, because they open over other content.
 ### `checkbox`
 
 A box that's ticked or not, for yes/no in a list or table (an occupational
-ability). `Checkbox` hides the real input and applies the class to the span
-after it: the box is its `::before` (`control`, with a `line` border), and
-the tick its `::after`, in `accent`. **Not for** settings that switch
-something on (`toggle`).
+ability). Slots `box` and `tick` (`inv-checkbox__box`, `inv-checkbox__tick`),
+applied by `Checkbox`, which hides the real input just before the box. The
+box is `control` with a `line` border; the tick is `accent`, shown when the
+input is checked. **Not for** settings that switch something on (`toggle`).
 
 ### `toggle`
 
@@ -244,6 +244,10 @@ button).
   button, in one place, so it doesn't move as callouts come and go. Advice
   about the area as a whole (the push-pool warnings) goes at the top of that
   area.
+
+Draw a class's parts with real elements (slots), not `::before`/`::after`:
+an override replaces the rule for the element its name selects, so a
+pseudo-element's defaults would survive it.
 
 ## State layers
 

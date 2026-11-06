@@ -293,3 +293,89 @@ test("a callout takes its tone, and a drop target shows when it's ready and when
   await actorRow.dispatchEvent("dragleave", { dataTransfer });
   await expect(actorRow).toHaveAttribute("data-drop-state", "ready");
 });
+
+test("controls: a checkbox's box can be replaced, check buttons work from the keyboard, toggles and invalid fields take the palette", async ({
+  page,
+}) => {
+  const danger = "rgb(200, 0, 0)";
+  await page.evaluate(
+    ({ colors }) => {
+      const seed = {
+        schemaVersion: "v1" as const,
+        displayName: "Controls Review",
+        largeSheetRootStyle: {},
+        logo: {
+          frontTextElementStyle: {},
+          rearTextElementStyle: {},
+          textElementsStyle: {},
+          backdropStyle: {},
+        },
+        colors,
+        // internal: not in the published seed type
+        catalogue: {
+          checkbox__box: { background: "rgb(0, 160, 0)", width: "2em" },
+        },
+      };
+      CONFIG.Investigator!.installTheme("controlsReviewTheme", seed);
+    },
+    { colors: { ...colors, danger } },
+  );
+  await setSettings(page, { defaultThemeName: "controlsReviewTheme" });
+  const actorId = await createActor(page, { name: "Checked", type: "pc" });
+  await updateAbility(page, actorId, "Athletics", { pool: 3, rating: 3 });
+
+  // the checkbox's box: the override replaces it, border and all
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  await sheet.getByLabel("Edit mode").click();
+  const box = sheet.locator(".inv-checkbox__box").first();
+  await expect(box).toHaveCSS("background-color", "rgb(0, 160, 0)");
+  await expect(box).toHaveCSS("border-top-style", "none");
+  // and the tick shows when it's checked
+  const tick = box.locator(".inv-checkbox__tick");
+  await expect(tick).toHaveCSS("visibility", "hidden");
+  await box.click();
+  await expect(tick).toHaveCSS("visibility", "visible");
+
+  // a toggle that's on: accent track, onAccent thumb
+  const editMode = sheet.locator(".inv-toggle__track", {
+    has: page.locator(".inv-toggle__thumb"),
+  });
+  await expect(editMode.first()).toHaveAttribute("data-state", "checked");
+  await expect(editMode.first()).toHaveCSS("background-color", colors.accent);
+  await expect(editMode.first().locator(".inv-toggle__thumb")).toHaveCSS(
+    "background-color",
+    colors.accentContrast,
+  );
+
+  // check buttons: the chosen one is a pressed toolbar button, and the
+  // arrow keys move it, showing focus on the label
+  const athletics = await page.evaluate(
+    (id) => game.actors.get(id)!.items.getName("Athletics")!.id,
+    actorId,
+  );
+  const ability = await openSheet(
+    page,
+    `Actor.${actorId}.Item.${athletics}`,
+  );
+  const zero = ability.getByRole("radio", { name: "0" });
+  const label = (n: string) =>
+    ability.locator("label.inv-button", { hasText: new RegExp(`^${n}$`) });
+  await expect(zero).toBeChecked();
+  await expect(label("0")).toHaveAttribute("data-pressed", "true");
+  await expect(label("0")).toHaveCSS("background-color", colors.accent);
+  await page.keyboard.press("Shift");
+  await zero.focus();
+  await expect(label("0")).toHaveCSS("outline-style", "solid");
+  await page.keyboard.press("ArrowRight");
+  await expect(ability.getByRole("radio", { name: "1" })).toBeChecked();
+  await expect(label("1")).toHaveAttribute("data-pressed", "true");
+  await expect(label("0")).not.toHaveAttribute("data-pressed");
+  // more than the pool: disabled
+  await expect(label("4")).toHaveAttribute("data-disabled", "true");
+
+  // an invalid field (a rating below 0): a danger border
+  const rating = ability.getByLabel("Rating", { exact: true });
+  await rating.fill("-5");
+  await expect(rating).toHaveAttribute("aria-invalid", "true");
+  await expect(rating).toHaveCSS("border-top-color", danger);
+});
