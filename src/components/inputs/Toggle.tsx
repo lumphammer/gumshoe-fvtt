@@ -3,7 +3,8 @@ import { memo, useContext } from "react";
 
 import { systemLogger } from "../../functions/utilities";
 import { useIsEditable } from "../../hooks/useIsEditable";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { cx } from "../../styled-system/css";
+import { toggle } from "../../styled-system/recipes";
 import { IdContext } from "../IdContext";
 
 type ToggleProps = {
@@ -19,6 +20,7 @@ type ToggleProps = {
   alwaysEnabled?: boolean;
 };
 
+/** An on/off switch (the catalogue's `toggle`). */
 export const Toggle = memo<ToggleProps>(
   ({
     checked,
@@ -29,59 +31,22 @@ export const Toggle = memo<ToggleProps>(
   }: ToggleProps) => {
     const id = useContext(IdContext);
     const isEditable = useIsEditable();
-    const theme = useContext(ThemeContext);
+    const classes = toggle();
     return (
       <Switch.Root
         id={id}
         aria-label={label}
         title={label}
         disabled={!isEditable && !alwaysEnabled}
-        className={className}
-        css={{
-          fontSize: "0.9em",
-          width: "3em",
-          height: "1.5em",
-          padding: 0,
-          margin: 0,
-          backgroundColor: theme.colors.backgroundButton,
-          borderRadius: "9999px",
-          position: "relative",
-          top: "0.1em",
-          boxShadow: `0 0 2px 0 ${theme.colors.text}`,
-          "&:focus": {
-            boxShadow: `0 0 4px 0 ${theme.colors.text}`,
-          },
-          "&[data-state='checked']": {
-            backgroundColor: theme.colors.accent,
-          },
-          "&&": {
-            borderColor: theme.colors.controlBorder,
-            boxShadow: "none",
-          },
-        }}
+        data-interactive
+        className={cx(classes.track, className)}
         checked={checked}
         onCheckedChange={(e) => {
           systemLogger.log("checked", e);
           onChange(e);
         }}
       >
-        <Switch.Thumb
-          css={{
-            display: "block",
-            width: "1em",
-            height: "1em",
-            backgroundColor: theme.colors.text,
-            borderRadius: "9999px",
-            boxShadow: `0 0 2px 0 ${theme.colors.text} inset`,
-            transition: "transform 100ms",
-            transform: "translateX(2px)",
-            willChange: "transform",
-            "&[data-state='checked']": {
-              transform: "translateX(calc(2em - 5px))",
-              backgroundColor: theme.colors.accentContrast,
-            },
-          }}
-        />
+        <Switch.Thumb className={classes.thumb} />
       </Switch.Root>
     );
   },

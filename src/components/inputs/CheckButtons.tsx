@@ -1,8 +1,9 @@
 import { nanoid } from "nanoid";
-import React, { Fragment, useCallback, useContext, useMemo } from "react";
+import React, { Fragment, useCallback, useMemo } from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { css, cx } from "../../styled-system/css";
+import { button } from "../../styled-system/recipes";
 
 type CheckButtonsProps = {
   options: Array<{
@@ -23,7 +24,6 @@ export const CheckButtons = ({
   onChange: onChangeOrig,
 }: CheckButtonsProps) => {
   const isEditable = useIsEditable();
-  const theme = useContext(ThemeContext);
   const onChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = Number(e.currentTarget.value);
@@ -36,53 +36,24 @@ export const CheckButtons = ({
 
   return (
     <div
-      css={{
+      className={css({
         display: "flex",
         flexDirection: "row",
         gap: "0.3em",
-        lineHeight: size,
         position: "relative",
-        "input[type=radio]": {
-          // hidden visually, but still focusable, so the group works from the
-          // keyboard (tab in, arrow keys to change)
+        // hidden visually, but still focusable, so the group works from the
+        // keyboard (tab in, arrow keys to change); the focusRing shows on
+        // the label after it
+        "& input[type=radio]": {
           position: "absolute",
           opacity: 0,
-          width: 1,
-          height: 1,
-          margin: 0,
+          width: "1px",
+          height: "1px",
+          margin: "0",
           pointerEvents: "none",
-          "+label": {
-            padding: "0",
-            flex: 1,
-            textAlign: "center",
-            fontSize: size.toString() + "em",
-            fontWeight: "bold",
-            border: "2px groove white",
-            backgroundColor: theme.colors.backgroundPrimary,
-            paddingBottom: "0.3em",
-            borderRadius: "0.2em",
-            ":hover": {
-              textShadow: `0 0 0.3em ${theme.colors.glow}`,
-            },
-          },
-          "&:focus-visible+label": {
-            outline: `2px solid ${theme.colors.accent}`,
-            outlineOffset: "1px",
-          },
-          "&:checked+label": {
-            border: "2px inset white",
-            backgroundColor: theme.colors.accent,
-            color: theme.colors.accentContrast,
-            textShadow: `0 0 0.3em ${theme.colors.glow}`,
-          },
-          "&[disabled]+label": {
-            opacity: 0.3, //
-            ":hover": {
-              textShadow: "none",
-            },
-          },
         },
-      }}
+      })}
+      style={{ lineHeight: size }}
     >
       {options.map(({ label, value, enabled, hover }) => {
         const id = nanoid();
@@ -97,7 +68,19 @@ export const CheckButtons = ({
               onChange={onChange}
               disabled={!enabled || !isEditable}
             />
-            <label htmlFor={id} title={hover}>
+            {/* a toolbar button each, pressed when it's the one chosen */}
+            <label
+              htmlFor={id}
+              title={hover}
+              data-interactive
+              data-pressed={value === selected || undefined}
+              data-disabled={!enabled || !isEditable || undefined}
+              className={cx(
+                button({ kind: "toolbar" }),
+                css({ flex: "1", textAlign: "center", fontWeight: "bold" }),
+              )}
+              style={{ fontSize: `${size}em` }}
+            >
               {label}
             </label>
           </Fragment>

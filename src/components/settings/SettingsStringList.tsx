@@ -6,6 +6,7 @@ import { Button } from "../inputs/Button";
 import { SortableTable } from "../sortableTable";
 import { Translate } from "../Translate";
 import { SettingsEmptyState } from "./SettingsEmptyState";
+import { input } from "../../styled-system/recipes";
 
 type SettingsStringListProps = {
   value: string[];
@@ -101,6 +102,7 @@ export const SettingsStringList = ({
           }}
         >
           <input
+            className={input()}
             css={{ flex: 1, minWidth: 0 }}
             type="text"
             data-index={index}

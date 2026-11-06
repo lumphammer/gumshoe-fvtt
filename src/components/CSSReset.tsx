@@ -163,43 +163,6 @@ export const CSSReset = ({
             textDecoration: "underline",
             textShadow: `0 0 0.5em ${theme.colors.glow}`,
           },
-        "input, input[type=text], textarea, select, option": {
-          font: theme.bodyFont,
-          fontVariantLigatures: "none",
-          color: theme.colors.accent,
-          padding: "0.1em 0.3em",
-          borderStyle: "solid",
-          borderWidth: "1px",
-          borderColor: theme.colors.controlBorder,
-          background: theme.colors.backgroundPrimary,
-          resize: "vertical",
-          ":focus": {
-            borderColor: theme.colors.accent,
-            outline: "none",
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-          "&:hover": {
-            borderStyle: "solid",
-            borderWidth: "1px",
-            borderColor: theme.colors.controlBorder,
-          },
-        },
-        select: {
-          color: theme.colors.text,
-          background: theme.colors.bgOpaqueSecondary,
-          option: {
-            background: theme.colors.bgOpaquePrimary,
-            color: theme.colors.text,
-          },
-          ":focus": {
-            borderColor: theme.colors.accent,
-            outline: "none",
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-        },
-        textarea: {
-          lineHeight: 1,
-        },
         hr: {
           borderColor: theme.colors.controlBorder,
           width: "calc(100% - 2em)",

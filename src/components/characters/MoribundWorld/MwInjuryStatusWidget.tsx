@@ -2,6 +2,7 @@ import { getTranslated } from "../../../functions/getTranslated";
 import { assertGame } from "../../../functions/isGame";
 import { useIsEditable } from "../../../hooks/useIsEditable";
 import type { MwInjuryStatus } from "../../../types";
+import { select } from "../../../styled-system/recipes";
 
 interface MwInjuryStatusWidgetProps {
   status: MwInjuryStatus;
@@ -41,6 +42,7 @@ export const MwInjuryStatusWidget = ({
         Injury Status
       </div>
       <select
+        className={select()}
         css={{
           width: "100%",
         }}

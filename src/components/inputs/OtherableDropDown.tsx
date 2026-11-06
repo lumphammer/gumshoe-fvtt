@@ -2,7 +2,7 @@ import { getTranslated } from "../../functions/getTranslated";
 import { useIsEditable } from "../../hooks/useIsEditable";
 import { useOtherable } from "../../hooks/useOtherable";
 import { css, cx } from "../../styled-system/css";
-import { badge } from "../../styled-system/recipes";
+import { badge, select } from "../../styled-system/recipes";
 import { Translate } from "../Translate";
 import { AsyncTextInput } from "./AsyncTextInput";
 
@@ -41,6 +41,7 @@ export const OtherableDropDown = ({
       className={className}
     >
       <select
+        className={select()}
         value={effectiveValue}
         onChange={handleChange}
         disabled={!isEditable}
