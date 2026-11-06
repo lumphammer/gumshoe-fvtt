@@ -94,8 +94,8 @@ export default defineConfig({
   // spells it out: themes override them by name
   staticCss: { recipes: "*", slotRecipes: "*" },
   theme: {
-    recipes: { badge, button, callout, checkbox, input, panel, select },
-    slotRecipes: { toggle },
+    recipes: { badge, button, callout, input, panel, select },
+    slotRecipes: { checkbox, toggle },
     tokens: {
       colors: Object.fromEntries(colorKeys.map((key) => [key, v(key)])),
       radii: { standard: v("radius") },

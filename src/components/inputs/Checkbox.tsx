@@ -14,7 +14,7 @@ type CheckboxProps = {
 
 /**
  * A custom checkbox (the catalogue's `checkbox`) which uses a label to make it
- * accessible: the real input is hidden, and the span after it is the box.
+ * accessible: the real input is hidden, and the box after it stands for it.
  *
  * Inspired by https://jsfiddle.net/maxshuty/2cs0dj54/
  */
@@ -22,11 +22,13 @@ export const Checkbox = React.memo<CheckboxProps>(
   ({ checked, onChange, className, title }) => {
     const id = useContext(IdContext);
     const isEditable = useIsEditable();
+    const classes = checkbox();
 
     return (
       <label
         title={title}
         data-interactive
+        data-disabled={!isEditable || undefined}
         className={css({ display: "inline-block", position: "relative" })}
       >
         <input
@@ -39,7 +41,11 @@ export const Checkbox = React.memo<CheckboxProps>(
             onChange(e.currentTarget.checked);
           }}
         />
-        <span className={cx(checkbox(), className)} />
+        <span className={cx(classes.box, className)}>
+          <span className={classes.tick} aria-hidden="true">
+            ✓
+          </span>
+        </span>
       </label>
     );
   },
