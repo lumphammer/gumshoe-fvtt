@@ -25,6 +25,7 @@ import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 import { SituationalModifiersEditor } from "./SituationalModifiersEditor";
 import { UnlocksEditor } from "./UnlocksEditor";
+import { select } from "../../styled-system/recipes";
 
 interface AbilityConfigProps {
   /** Only to write through: read from `ability`. */
@@ -112,6 +113,7 @@ export const AbilityConfig = memo(function AbilityConfig({
         >
           <div>
             <select
+              className={select()}
               disabled={!isEditable}
               value={selectedCat}
               onChange={onChangeCategory}

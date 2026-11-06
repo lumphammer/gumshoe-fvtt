@@ -5,7 +5,11 @@ import { defineConfig } from "@pandacss/dev";
 import { badge } from "./src/themes/catalogue/badge";
 import { button } from "./src/themes/catalogue/button";
 import { callout } from "./src/themes/catalogue/callout";
+import { checkbox } from "./src/themes/catalogue/checkbox";
+import { input } from "./src/themes/catalogue/input";
 import { panel } from "./src/themes/catalogue/panel";
+import { select } from "./src/themes/catalogue/select";
+import { toggle } from "./src/themes/catalogue/toggle";
 import { type Palette, paletteVar } from "./src/themes/palette";
 
 type PaletteKey = Exclude<keyof Palette, "polarity">;
@@ -88,9 +92,10 @@ export default defineConfig({
   },
   // every variant of every catalogue class, whether or not a call site
   // spells it out: themes override them by name
-  staticCss: { recipes: "*" },
+  staticCss: { recipes: "*", slotRecipes: "*" },
   theme: {
-    recipes: { badge, button, callout, panel },
+    recipes: { badge, button, callout, checkbox, input, panel, select },
+    slotRecipes: { toggle },
     tokens: {
       colors: Object.fromEntries(colorKeys.map((key) => [key, v(key)])),
       radii: { standard: v("radius") },
