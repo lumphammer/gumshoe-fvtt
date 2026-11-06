@@ -439,6 +439,7 @@ test("dragging equipment from one category to another on a PC's sheet", async ({
     equipmentCategories: {
       general: { name: "General", fields: {} },
       tomes: { name: "Tomes", fields: {} },
+      junk: { name: "Junk", fields: {} },
     },
   });
   const pcId = await createActor(page, { name: "Collector", type: "pc" });
@@ -450,9 +451,22 @@ test("dragging equipment from one category to another on a PC's sheet", async ({
   const sheet = await openSheet(page, `Actor.${pcId}`);
   await sheet.locator(".tab-strip > label", { hasText: "Equipment" }).click();
 
-  await sheet
-    .getByText("Brass Lantern", { exact: true })
-    .dragTo(sheet.getByRole("heading", { name: "Tomes" }));
+  // while it's dragged, the other categories are drop targets (the
+  // dropTarget state layer), and the one it's over says so
+  const category = (name: string) =>
+    sheet
+      .locator("[data-drop-state]")
+      .filter({ has: page.getByRole("heading", { name, exact: true }) });
+  await sheet.getByText("Brass Lantern", { exact: true }).hover();
+  await page.mouse.down();
+  // twice: the first move starts the drag, the second is a dragover
+  const tomes = sheet.getByRole("heading", { name: "Tomes" });
+  await tomes.hover();
+  await tomes.hover();
+  await expect(category("Tomes")).toHaveAttribute("data-drop-state", "over");
+  await expect(category("Junk")).toHaveAttribute("data-drop-state", "ready");
+  await expect(category("General")).toHaveCount(0);
+  await page.mouse.up();
   await expect
     .poll(() =>
       page.evaluate(
@@ -466,4 +480,6 @@ test("dragging equipment from one category to another on a PC's sheet", async ({
   expect(await getItemNames(page, pcId, "equipment")).toEqual([
     "Brass Lantern",
   ]);
+  // and nothing's a drop target any more
+  await expect(sheet.locator("[data-drop-state]")).toHaveCount(0);
 });

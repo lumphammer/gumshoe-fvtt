@@ -203,8 +203,10 @@ button).
   `warning` is advice. The box is a tint of the tone's colour over
   `surfaceSolid`, with `text` ink and a bar in the tone's colour on the left
   (`line` for `neutral`).
-- Sheets show callouts in one place, just below the button they're about, so
-  it doesn't move as they come and go.
+- A callout saying why an action can't happen goes just below that action's
+  button, in one place, so it doesn't move as callouts come and go. Advice
+  about the area as a whole (the push-pool warnings) goes at the top of that
+  area.
 
 ## State layers
 
@@ -219,6 +221,9 @@ they always show.
 | `focusRing` | `:focus-visible`, on anything | A 2px `feedback` outline |
 | `dropTarget` | `[data-drop-state="ready"]`: you can drop what you're dragging here | A dashed `line` outline, outside the element |
 | | `[data-drop-state="over"]`: and it's over it | The outline turns `accent`, with a `feedback` tint |
+
+`focusRing` comes last, so a focused element shows focus whatever other
+layer is drawing its outline.
 
 A drop target sets `data-drop-state` itself: `ready` while something it takes
 is being dragged (or always, if it can't tell, like a Bond's actor row, which

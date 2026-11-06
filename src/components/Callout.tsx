@@ -28,8 +28,9 @@ const icons: Record<Tone, string> = {
 
 /**
  * A boxed message about the content around it (the catalogue's `callout`).
- * Sheets show them in one place, just below the button they're about (e.g.
- * the weapon sheet's attack button), so it doesn't move as they come and go.
+ * One saying why an action can't happen goes just below that action's button
+ * (e.g. the weapon sheet's attack button); advice about a whole area goes at
+ * its top. See docs/theming.md.
  */
 export const Callout = ({
   tone,
