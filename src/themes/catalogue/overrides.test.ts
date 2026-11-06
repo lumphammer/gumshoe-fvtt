@@ -51,6 +51,23 @@ describe("catalogueOverridesCss", () => {
     );
   });
 
+  test("puts the theme scope before context that comes before the class", () => {
+    const css = catalogueOverridesCss("teal", {
+      tabs__tab: {
+        color: "red",
+        "input:checked + &": { color: "blue" },
+        "[data-wrapped] > &, &:hover": { color: "green" },
+      },
+    });
+    const where = ':where([data-inv-theme="teal"])';
+    expect(css).toContain(
+      `${where} input:checked + .inv-tabs__tab { color: blue; }`,
+    );
+    expect(css).toContain(
+      `${where} [data-wrapped] > .inv-tabs__tab, ${where} .inv-tabs__tab:hover { color: green; }`,
+    );
+  });
+
   test("leaves custom properties as they are", () => {
     expect(
       catalogueOverridesCss("teal", { badge: { "--x-y": "1" } }),

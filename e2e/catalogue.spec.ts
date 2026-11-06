@@ -379,3 +379,62 @@ test("controls: a checkbox's box can be replaced, check buttons work from the ke
   await expect(rating).toHaveAttribute("aria-invalid", "true");
   await expect(rating).toHaveCSS("border-top-color", danger);
 });
+
+test("tabs: the selected one is accent on surface, the rest text on a fainter surface, and V1 tab styles still apply", async ({
+  page,
+}) => {
+  const install = (name: string, extra: object) =>
+    page.evaluate(
+      ({ colors, name, extra }) => {
+        CONFIG.Investigator!.installTheme(name, {
+          schemaVersion: "v1" as const,
+          displayName: name,
+          largeSheetRootStyle: {},
+          logo: {
+            frontTextElementStyle: {},
+            rearTextElementStyle: {},
+            textElementsStyle: {},
+            backdropStyle: {},
+          },
+          colors,
+          ...extra,
+        });
+      },
+      { colors, name, extra },
+    );
+  await install("tabsDefaultTheme", {});
+  await install("tabsV1Theme", {
+    tabStyle: { color: "rgb(0, 0, 200)", border: "3px solid rgb(0, 0, 200)" },
+    tabActiveStyle: { background: "rgb(0, 200, 0)" },
+  });
+
+  await setSettings(page, { defaultThemeName: "tabsDefaultTheme" });
+  const actorId = await createActor(page, { name: "Tabbed", type: "pc" });
+  let sheet = await openSheet(page, `Actor.${actorId}`);
+  const selected = () => sheet.locator("input:checked + .inv-tabs__tab");
+  const other = () => sheet.locator("input:not(:checked) + .inv-tabs__tab");
+  await expect(selected()).toHaveCSS("color", colors.accent);
+  await expect(selected()).toHaveCSS(
+    "background-color",
+    colors.backgroundPrimary,
+  );
+  await expect(other().first()).toHaveCSS("color", colors.text);
+  // backgroundPrimary is opaque white here: white at 80% opacity
+  await expect(other().first()).toHaveCSS(
+    "background-color",
+    /^oklch\(0\.99\d* [\d.]+ [\d.]+ \/ 0\.8\)$/,
+  );
+  await expect(sheet.locator(".inv-tabs__content")).toHaveCSS(
+    "background-color",
+    colors.backgroundPrimary,
+  );
+
+  // a V1 theme's tab styles, as overrides
+  await page.evaluate((id) => game.actors.get(id)!.sheet!.close(), actorId);
+  await setSettings(page, { defaultThemeName: "tabsV1Theme" });
+  sheet = await openSheet(page, `Actor.${actorId}`);
+  await expect(other().first()).toHaveCSS("color", "rgb(0, 0, 200)");
+  await expect(other().first()).toHaveCSS("border-top-width", "3px");
+  await expect(selected()).toHaveCSS("background-color", "rgb(0, 200, 0)");
+  await expect(selected()).toHaveCSS("border-top-width", "3px");
+});
