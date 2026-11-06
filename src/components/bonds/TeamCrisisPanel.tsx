@@ -34,7 +34,7 @@ import { Button } from "../inputs/Button";
 import { Checkbox } from "../inputs/Checkbox";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
-import { Hint } from "../inputs/Hint";
+import { Callout } from "../Callout";
 import { InputGrid } from "../inputs/InputGrid";
 import { SpendButtons } from "../inputs/SpendButtons";
 import { ItemSheetLink } from "../ItemSheetLink";
@@ -345,7 +345,7 @@ export const TeamCrisisPanel = ({
         {/* below the button, as on the weapon sheet */}
         {blocker && (
           <GridFieldStacked>
-            <Hint severity="danger">{blocker}</Hint>
+            <Callout tone="danger">{blocker}</Callout>
           </GridFieldStacked>
         )}
       </InputGrid>

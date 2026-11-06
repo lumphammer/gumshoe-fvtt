@@ -4,6 +4,7 @@ import { defineConfig } from "@pandacss/dev";
 
 import { badge } from "./src/themes/catalogue/badge";
 import { button } from "./src/themes/catalogue/button";
+import { callout } from "./src/themes/catalogue/callout";
 import { panel } from "./src/themes/catalogue/panel";
 import { type Palette, paletteVar } from "./src/themes/palette";
 
@@ -89,7 +90,7 @@ export default defineConfig({
   // spells it out: themes override them by name
   staticCss: { recipes: "*" },
   theme: {
-    recipes: { badge, button, panel },
+    recipes: { badge, button, callout, panel },
     tokens: {
       colors: Object.fromEntries(colorKeys.map((key) => [key, v(key)])),
       radii: { standard: v("radius") },

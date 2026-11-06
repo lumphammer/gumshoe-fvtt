@@ -159,3 +159,62 @@ test("a panel's depth comes from where it sits, and V1 panel styles still apply"
   await expect(attack).toHaveCSS("border-top-width", "0px");
   await expect(attack).toHaveCSS("display", "grid");
 });
+
+test("a callout takes its tone, and a drop target shows when it's ready and when something's over it", async ({
+  page,
+}) => {
+  const danger = "rgb(200, 0, 0)";
+  await page.evaluate(
+    ({ colors }) => {
+      CONFIG.Investigator!.installTheme("calloutReviewTheme", {
+        schemaVersion: "v1" as const,
+        displayName: "Callout Review",
+        largeSheetRootStyle: {},
+        logo: {
+          frontTextElementStyle: {},
+          rearTextElementStyle: {},
+          textElementsStyle: {},
+          backdropStyle: {},
+        },
+        colors,
+      });
+    },
+    { colors: { ...colors, danger } },
+  );
+  await setSettings(page, {
+    defaultThemeName: "calloutReviewTheme",
+    useBonds: true,
+  });
+  const actorId = await createActor(page, { name: "Armed", type: "pc" });
+
+  // a weapon with no ammo can't fire: a danger callout
+  const weaponId = await createOwnedItem(page, actorId, {
+    name: "Revolver",
+    type: "weapon",
+    system: { usesAmmo: true, ammo: { min: 0, max: 6, value: 0 } },
+  });
+  const weapon = await openSheet(page, `Actor.${actorId}.Item.${weaponId}`);
+  const callout = weapon.locator(".inv-callout--tone_danger").first();
+  await expect(callout).toHaveRole("status");
+  await expect(callout).toHaveCSS("border-left-color", danger);
+  await expect(callout).toHaveCSS("border-left-style", "solid");
+
+  // a Bond's actor row is always ready for an actor
+  const bondId = await createOwnedItem(page, actorId, {
+    name: "Bob",
+    type: "bond",
+  });
+  const bond = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
+  const actorRow = bond.getByTestId("bond-actor");
+  await expect(actorRow).toHaveAttribute("data-drop-state", "ready");
+  await expect(actorRow).toHaveCSS("outline-style", "dashed");
+  await expect(actorRow).toHaveCSS("outline-color", colors.controlBorder);
+
+  // and shows it when something's over it
+  const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
+  await actorRow.dispatchEvent("dragover", { dataTransfer });
+  await expect(actorRow).toHaveAttribute("data-drop-state", "over");
+  await expect(actorRow).toHaveCSS("outline-color", colors.accent);
+  await actorRow.dispatchEvent("dragleave", { dataTransfer });
+  await expect(actorRow).toHaveAttribute("data-drop-state", "ready");
+});
