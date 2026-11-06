@@ -18,7 +18,8 @@ The theme of this release is "death by a thousand papercuts", so it's mainly bug
 - **Icons show next to character sheet equipment, weapons, bonds, and contacts (#1453).**
 - **The Night's Black Agents themes have a different display font again (#1456).** Big Shoulders is out, Saira Semi Condensed is in. Hopefully more readable.
 - **The big acor name display at the top of the sheets is no-longer spell-checked (#1465).** So you won't get red squiggles on your name.
-- **The tab strip on character sheet now handles running out of space more gracefully (#1467).** A combination of too many tabs enabled plus a language that tends towards longer strings (Ich schaue dich an, Deutsche) meant that the tab strip sometimes went very wonky. It now evolves, like a shit Pokemon, into a more tab grid, instead of running out of space.
+- **The tab strip on character sheet now handles running out of space more gracefully (#1467).** A combination of too many tabs enabled plus a language that tends towards longer strings (Ich schaue dich an, Deutsche) meant that the tab strip sometimes went very wonky. It now evolves, like a CSS Pokemon, into a more tab grid, instead of overflowing the space.
+- **Everything should be snappier and pick up changes made in other windows more reliably (#1476).** This was a big bit of work which I'd wanted to do for ages.
 - **Some missing translations strings fixed (#1494).** The combat tracker was using some of Foundry's translations, which got rug-pulled at some point.
 - **Usabilty tweaks for the new settings window from 10.129 (#1521).**
 
