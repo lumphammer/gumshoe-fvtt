@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { css, cx } from "../../styled-system/css";
+import { checkbox } from "../../styled-system/recipes";
 import { IdContext } from "../IdContext";
 
 type CheckboxProps = {
@@ -12,7 +13,8 @@ type CheckboxProps = {
 };
 
 /**
- * A custom checkbox which uses a label to make it accessible
+ * A custom checkbox (the catalogue's `checkbox`) which uses a label to make it
+ * accessible: the real input is hidden, and the span after it is the box.
  *
  * Inspired by https://jsfiddle.net/maxshuty/2cs0dj54/
  */
@@ -20,77 +22,24 @@ export const Checkbox = React.memo<CheckboxProps>(
   ({ checked, onChange, className, title }) => {
     const id = useContext(IdContext);
     const isEditable = useIsEditable();
-    const theme = useContext(ThemeContext);
 
     return (
       <label
         title={title}
-        css={{
-          display: "inline-block",
-          position: "relative",
-        }}
+        data-interactive
+        className={css({ display: "inline-block", position: "relative" })}
       >
         <input
           id={id}
           type="checkbox"
           checked={checked}
           disabled={!isEditable}
-          css={{
-            position: "absolute",
-            opacity: 0,
-            zIndex: -1,
-          }}
+          className={css({ position: "absolute", opacity: 0, zIndex: -1 })}
           onChange={(e) => {
             onChange(e.currentTarget.checked);
           }}
         />
-        <span
-          className={className}
-          css={{
-            cursor: "pointer",
-            font: "16px sans-serif",
-            color: "black",
-            ":before": {
-              content: "''",
-              borderWidth: "2px",
-              borderColor: "#ccc",
-              borderStyle: "inset",
-              borderRadius: "5px",
-              display: "inline-block",
-              width: "1.1em",
-              height: "1.1em",
-              aspectRatio: "1 / 1",
-              verticalAlign: "-2px",
-              backgroundColor: theme.colors.accentContrast,
-            },
-            "input[type=checkbox]:checked+&:before": {
-              // backgroundColor: theme.colors.accent,
-              color: theme.colors.accentContrast,
-              textAlign: "center",
-              verticalAlign: "middle",
-            },
-            "input[type=checkbox]:checked+&:after": {
-              content: "'✓'",
-              fontWeight: "bold",
-              color: theme.colors.accent,
-              position: "absolute",
-              top: "0em",
-              left: "0.3em",
-            },
-            "input[type=checkbox]:focus+&:before, input[type=checkbox]:not(:disabled)+&:hover:before":
-              {
-                boxShadow: `0px 0px 0px 2px ${theme.colors.glow}`,
-                outlineColor: "transparent",
-                outlineWidth: "2px",
-                outlineStyle: "dotted",
-              },
-            "input[type=checkbox]:disabled+&": {
-              cursor: "default",
-              color: "black",
-              opacity: "0.5",
-            },
-          }}
-        />
+        <span className={cx(checkbox(), className)} />
       </label>
     );
   },
