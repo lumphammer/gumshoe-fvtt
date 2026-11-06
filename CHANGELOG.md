@@ -2,7 +2,7 @@
 
 (Skipped version numbers are testing releases.)
 
-## Unreleased
+## 10.131 (2026-11-06)
 
 The theme of this release is "death by a thousand papercuts", so it's mainly bug fixes and small improvements.
 
