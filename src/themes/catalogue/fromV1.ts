@@ -4,23 +4,33 @@ import type {
 } from "@lumphammer/investigator-fvtt-types";
 
 import { paletteVar } from "../palette";
-import type { CatalogueOverrides, OverrideStyle } from "./overrides";
+import {
+  type CatalogueOverrides,
+  type OverrideStyle,
+  splitSelectorList,
+} from "./overrides";
+
+/** Emotion's `:hover` attaches to the element; an override's bare selector is a descendant. */
+const attach = (key: string) =>
+  key.startsWith("@")
+    ? key
+    : splitSelectorList(key)
+        .map((part) => (part.startsWith(":") ? `&${part}` : part))
+        .join(", ");
 
 /**
- * An Emotion style object as an override style: `:hover` and the like
- * attach to the element, as Emotion has them (an override's bare selector is
- * a descendant), and a list of fallbacks keeps its last.
+ * An Emotion style object as an override style: pseudo-classes attach to the
+ * element, as Emotion has them, and a list of fallbacks keeps its last.
  */
 function fromEmotion(style: CSSObject): OverrideStyle {
   return Object.fromEntries(
     Object.entries(style).flatMap(([key, value]) => {
-      const selector = key.startsWith(":") ? `&${key}` : key;
-      if (Array.isArray(value)) return [[selector, value.at(-1)]];
+      if (Array.isArray(value)) return [[key, value.at(-1)]];
       if (value !== null && typeof value === "object") {
-        return [[selector, fromEmotion(value as CSSObject)]];
+        return [[attach(key), fromEmotion(value as CSSObject)]];
       }
       if (typeof value === "string" || typeof value === "number") {
-        return [[selector, value]];
+        return [[key, value]];
       }
       return [];
     }),
@@ -31,23 +41,22 @@ function fromEmotion(style: CSSObject): OverrideStyle {
  * The catalogue overrides a V1 seed's own styles become, so V1 themes keep
  * their look as their components are converted.
  *
- * An override replaces the class's default, so each one starts from the
- * default's declarations: a V1 panel style was spread over them.
+ * In V1, a panel style replaced the panel's background (the call site gave
+ * the padding), and a secondary panel used `panelStyleSecondary`, else
+ * `panelStylePrimary`, else the secondary background. Each depth gets its own
+ * override, so the two stay independent: the base keeps only the padding.
  */
 export function catalogueFromV1(seed: ThemeSeedV1): CatalogueOverrides {
-  const overrides: CatalogueOverrides = {};
-  if (seed.panelStylePrimary) {
-    overrides["panel"] = {
-      background: `var(${paletteVar("surface")})`,
-      padding: "0.5em",
-      ...fromEmotion(seed.panelStylePrimary),
-    };
-  }
-  if (seed.panelStyleSecondary) {
-    overrides["panel--depth_nested"] = {
-      background: `var(${paletteVar("surfaceNested")})`,
-      ...fromEmotion(seed.panelStyleSecondary),
-    };
-  }
-  return overrides;
+  const { panelStylePrimary: primary, panelStyleSecondary: secondary } = seed;
+  if (!primary && !secondary) return {};
+  return {
+    panel: { padding: "0.5em" },
+    "panel--depth_top": primary
+      ? fromEmotion(primary)
+      : { background: `var(${paletteVar("surface")})` },
+    "panel--depth_nested": fromEmotion(
+      secondary ??
+        primary ?? { background: `var(${paletteVar("surfaceNested")})` },
+    ),
+  };
 }

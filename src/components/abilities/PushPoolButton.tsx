@@ -4,7 +4,7 @@ import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { AbilityItem } from "../../module/items/exports";
 import { Button } from "../inputs/Button";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
-import { InputGrid } from "../inputs/InputGrid";
+import { inputGridStyle } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 import { Panel } from "../Panel";
 
@@ -21,21 +21,19 @@ export const PushPoolButton = memo(function PushPoolButton({
   }, [push]);
 
   return (
-    <Panel css={{ marginBottom: "0.5em" }}>
-      <InputGrid>
-        <GridFieldStacked>
-          <div
-            css={{
-              display: "flex",
-              flexDirection: "row",
-            }}
-          >
-            <Button css={{ flex: 1 }} onClick={handleClickPush}>
-              <Translate>Push</Translate>
-            </Button>
-          </div>
-        </GridFieldStacked>
-      </InputGrid>
+    <Panel css={{ ...inputGridStyle, marginBottom: "0.5em" }}>
+      <GridFieldStacked>
+        <div
+          css={{
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <Button css={{ flex: 1 }} onClick={handleClickPush}>
+            <Translate>Push</Translate>
+          </Button>
+        </div>
+      </GridFieldStacked>
     </Panel>
   );
 });

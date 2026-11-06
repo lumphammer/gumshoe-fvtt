@@ -97,24 +97,33 @@ test("a theme's badge override replaces the default but keeps tone, states and h
   await expect(badge).toHaveAttribute("aria-pressed", "true");
 });
 
-test("a panel's depth comes from where it sits, and a V1 panel style still applies", async ({
+test("a panel's depth comes from where it sits, and V1 panel styles still apply", async ({
   page,
 }) => {
-  await page.evaluate((colors) => {
-    CONFIG.Investigator!.installTheme("panelReviewTheme", {
-      schemaVersion: "v1" as const,
-      displayName: "Panel Review",
-      largeSheetRootStyle: {},
-      logo: {
-        frontTextElementStyle: {},
-        rearTextElementStyle: {},
-        textElementsStyle: {},
-        backdropStyle: {},
-      },
-      colors,
-      panelStylePrimary: { border: "3px solid rgb(0, 128, 0)" },
-    });
-  }, colors);
+  const primary = "rgb(0, 0, 200)";
+  const secondary = "rgb(0, 200, 0)";
+  await page.evaluate(
+    ({ colors, primary, secondary }) => {
+      CONFIG.Investigator!.installTheme("panelReviewTheme", {
+        schemaVersion: "v1" as const,
+        displayName: "Panel Review",
+        largeSheetRootStyle: {},
+        logo: {
+          frontTextElementStyle: {},
+          rearTextElementStyle: {},
+          textElementsStyle: {},
+          backdropStyle: {},
+        },
+        colors,
+        panelStylePrimary: {
+          backgroundColor: primary,
+          border: "3px solid rgb(0, 128, 0)",
+        },
+        panelStyleSecondary: { backgroundColor: secondary },
+      });
+    },
+    { colors, primary, secondary },
+  );
   await setSettings(page, { defaultThemeName: "panelReviewTheme" });
 
   const actorId = await createActor(page, { name: "Armed", type: "pc" });
@@ -132,21 +141,21 @@ test("a panel's depth comes from where it sits, and a V1 panel style still appli
   );
   const sheet = await openSheet(page, `Actor.${actorId}`);
 
-  // on the sheet: stats and pools
+  // on the sheet: stats and pools, with the primary style
   const top = sheet.locator(".inv-panel--depth_top");
   await expect(top).toHaveCount(2);
   for (const panel of await top.all()) {
-    await expect(panel).toHaveCSS("background-color", colors.backgroundPrimary);
+    await expect(panel).toHaveCSS("background-color", primary);
     await expect(panel).toHaveCSS("border-top-width", "3px");
+    await expect(panel).toHaveCSS("padding-top", /^\d+(\.\d+)?px$/);
   }
 
-  // in a tab: the attack panel
+  // in a tab: the attack panel, with the secondary style and none of the
+  // primary's; and it's the grid itself, as before
   await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
   const attack = sheet.locator(".inv-panel--depth_nested");
   await expect(attack).toContainText(/Revolver/);
-  await expect(attack).toHaveCSS(
-    "background-color",
-    colors.backgroundSecondary,
-  );
-  await expect(attack).toHaveCSS("border-top-width", "3px");
+  await expect(attack).toHaveCSS("background-color", secondary);
+  await expect(attack).toHaveCSS("border-top-width", "0px");
+  await expect(attack).toHaveCSS("display", "grid");
 });
