@@ -12,7 +12,20 @@
     box-shadow: 0 0 0.5em var(--inv-feedback);
   }
 
-  /* focusRing: anything focused from the keyboard */
+  /* dropTarget: somewhere you can drop what you're dragging ("ready"), and
+     what you're dragging is over it ("over") */
+  [data-inv-theme] [data-drop-state="ready"],
+  [data-inv-theme] [data-drop-state="over"] {
+    outline: 2px dashed var(--inv-line);
+    outline-offset: 0.2em;
+  }
+  [data-inv-theme] [data-drop-state="over"] {
+    outline-color: var(--inv-accent);
+    background-color: color-mix(in srgb, var(--inv-feedback) 25%, transparent);
+  }
+
+  /* focusRing: anything focused from the keyboard. Last, so it wins over the
+     other layers' outlines (a focused drop target still shows focus) */
   [data-inv-theme] :focus-visible {
     outline: 2px solid var(--inv-feedback);
     outline-offset: 1px;

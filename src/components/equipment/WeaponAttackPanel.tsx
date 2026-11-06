@@ -30,7 +30,7 @@ import {
   getSpendAfterRange,
 } from "../../module/attacks/rules";
 import { hasAmmoFor } from "./consumeWeaponAmmo";
-import { Hint } from "../inputs/Hint";
+import { Callout } from "../Callout";
 import { Panel } from "../Panel";
 
 const defaultSpendOptions = Array.from({ length: 8 })
@@ -517,14 +517,14 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
             the attack button so it doesn't move as hints come and go. */}
         {blockers.map((blocker) => (
           <GridFieldStacked key={blocker.key}>
-            <Hint severity="danger" action={blocker.action}>
+            <Callout tone="danger" action={blocker.action}>
               {blocker.message}
-            </Hint>
+            </Callout>
           </GridFieldStacked>
         ))}
         {wastedExtraSpend > 0 && (
           <GridFieldStacked>
-            <Hint severity="warning">
+            <Callout tone="warning">
               <Translate
                 values={{
                   Wasted: String(wastedExtraSpend),
@@ -533,7 +533,7 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
               >
                 WastedExtraSpend
               </Translate>
-            </Hint>
+            </Callout>
           </GridFieldStacked>
         )}
       </Panel>

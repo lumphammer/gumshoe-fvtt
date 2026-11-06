@@ -187,7 +187,7 @@ Foundry glue lives elsewhere.
   - **Spend**: an ability in `bondRebuildSpendCategory` (abilities with a
     rating are listed; empty ones are disabled). With no points anywhere, the
     button is disabled and a hint below it says so, styled like the weapon
-    sheet's (`Hint`, which they now share).
+    sheet's (`Callout`, which they now share).
   - **Neglect**: an ordinary Bond that isn't broken. If there isn't one, the
     panel says so and the neglect is skipped. If the neglect would break it,
     a confirmation asks first.
@@ -252,7 +252,7 @@ Design (reviewed: a starting point):
     spend: the same point can't pay twice.
   - **Spend:** Stability and every Bond (broken ones disabled), as on the
     Stability sheet.
-  - **Make the test** is disabled, with a `Hint` saying why, until there's
+  - **Make the test** is disabled, with a `Callout` saying why, until there's
     a teammate and the losses add up. It asks first if a spend or a loss
     could break a Bond.
 - Rules in `src/module/bonds/crisis.ts` (`planCrisis`, the losses, the card
