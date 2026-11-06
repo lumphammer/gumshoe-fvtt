@@ -17,4 +17,16 @@
     outline: 2px solid var(--inv-feedback);
     outline-offset: 1px;
   }
+
+  /* dropTarget: somewhere you can drop what you're dragging ("ready"), and
+     what you're dragging is over it ("over") */
+  [data-inv-theme] [data-drop-state="ready"],
+  [data-inv-theme] [data-drop-state="over"] {
+    outline: 2px dashed var(--inv-line);
+    outline-offset: 0.2em;
+  }
+  [data-inv-theme] [data-drop-state="over"] {
+    outline-color: var(--inv-accent);
+    background-color: color-mix(in srgb, var(--inv-feedback) 25%, transparent);
+  }
 }

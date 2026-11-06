@@ -27,7 +27,7 @@ import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
 import { TextInput } from "../inputs/TextInput";
-import { Hint } from "../inputs/Hint";
+import { Callout } from "../Callout";
 import { Translate } from "../Translate";
 
 /**
@@ -228,7 +228,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
         {/* below the button, as on the weapon sheet */}
         {noPointsMessage && (
           <GridFieldStacked>
-            <Hint severity="danger">{noPointsMessage}</Hint>
+            <Callout tone="danger">{noPointsMessage}</Callout>
           </GridFieldStacked>
         )}
       </InputGrid>

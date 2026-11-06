@@ -5,8 +5,8 @@ contract: what each palette entry and catalogue class **means**, so that anyone
 writing a component or a theme makes the same choice in the same place.
 
 The system is being built in steps (#1532). The palette exists, as custom
-properties on every themed root, and the catalogue has `badge`, `button` and
-`panel`. Everything else is still drawn by Emotion from V1 themes, and the
+properties on every themed root, and the catalogue has `badge`, `button`,
+`panel` and `callout`. Everything else is still drawn by Emotion from V1 themes, and the
 two run side by side until every component is converted.
 
 ## The pieces
@@ -189,6 +189,23 @@ overflow, flex).
 - A panel that's also a grid of fields takes `inputGridStyle` rather than
   wrapping an `InputGrid`, so it stays one element.
 
+### `callout`
+
+A boxed message about the content around it: why an action can't happen
+("Out of ammo"), or advice ("You have too many push pools"). Use the
+`Callout` component (`src/components/Callout.tsx`), which applies the class
+and adds the tone's icon and an optional action on the right (a "Clear jam"
+button).
+
+- **Not for** "there's nothing here" (an empty state), or a label on a thing
+  (a badge).
+- **Variants**: `tone`. `danger` is for something that stops an action;
+  `warning` is advice. The box is a tint of the tone's colour over
+  `surfaceSolid`, with `text` ink and a bar in the tone's colour on the left
+  (`line` for `neutral`).
+- Sheets show callouts in one place, just below the button they're about, so
+  it doesn't move as they come and go.
+
 ## State layers
 
 Feedback that looks the same on anything, whatever its class, so classes don't
@@ -200,8 +217,13 @@ they always show.
 |---|---|---|
 | `hoverFeedback` | `[data-interactive]:hover`, unless disabled | A `feedback` glow, and a pointer |
 | `focusRing` | `:focus-visible`, on anything | A 2px `feedback` outline |
+| `dropTarget` | `[data-drop-state="ready"]`: you can drop what you're dragging here | A dashed `line` outline, outside the element |
+| | `[data-drop-state="over"]`: and it's over it | The outline turns `accent`, with a `feedback` tint |
 
-Drop targets (`[data-drop-state]`) will join them.
+A drop target sets `data-drop-state` itself: `ready` while something it takes
+is being dragged (or always, if it can't tell, like a Bond's actor row, which
+takes actors dragged from Foundry's sidebar), and `over` from `dragover` to
+`dragleave` or `drop`.
 
 ## Theme overrides
 
