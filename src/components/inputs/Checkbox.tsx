@@ -42,9 +42,8 @@ export const Checkbox = React.memo<CheckboxProps>(
           }}
         />
         <span className={cx(classes.box, className)}>
-          <span className={classes.tick} aria-hidden="true">
-            ✓
-          </span>
+          {/* an icon, not a ✓, so it isn't part of the label's text */}
+          <i className={cx(classes.tick, "fas fa-check")} aria-hidden="true" />
         </span>
       </label>
     );

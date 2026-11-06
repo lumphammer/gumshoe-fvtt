@@ -32,7 +32,7 @@ export const checkbox = defineSlotRecipe({
       "input:disabled + &": { cursor: "default", opacity: 0.5 },
     },
     tick: {
-      fontWeight: "bold",
+      fontSize: "0.75em",
       lineHeight: "1",
       color: "accent",
       visibility: "hidden",
