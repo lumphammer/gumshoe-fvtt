@@ -81,12 +81,11 @@ export const mutantCityBlueTheme: ThemeV1 = themeFactory({
     borderBottom: `1px solid ${colors.accent}`,
   },
   panelStylePrimary: {
-    ...tealTheme.panelStylePrimary,
+    backgroundColor: tealTheme.colors.backgroundPrimary,
     border: `1px solid ${colors.accent}`,
-    // borderStyle: "none solid solid solid",
   },
   tabContentStyle: {
-    ...tealTheme.panelStylePrimary,
+    backgroundColor: tealTheme.colors.backgroundPrimary,
     border: `1px solid ${colors.accent}`,
     borderStyle: "none solid solid solid",
   },

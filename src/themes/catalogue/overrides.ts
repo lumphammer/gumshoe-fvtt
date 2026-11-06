@@ -110,7 +110,7 @@ const cssValue = (key: string, value: string | number) =>
 const isSafe = (text: string) => !/[{};]|\/\*|\*\/|<\//.test(text);
 
 /** Split a selector list on its top-level commas. */
-function splitSelectorList(list: string) {
+export function splitSelectorList(list: string) {
   const parts: string[] = [];
   let depth = 0;
   let quote: string | null = null;

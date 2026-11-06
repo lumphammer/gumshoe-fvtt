@@ -12,8 +12,6 @@ export interface ThemeV1 extends ThemeSeedV1 {
   tabActiveStyle: CSSObject;
   tabStyle: CSSObject;
   tabSpacerStyle: CSSObject;
-  panelStylePrimary: CSSObject;
-  panelStyleSecondary: CSSObject;
   tabContentStyle: CSSObject;
   tabWrappedStyle: CSSObject;
   tabWrappedActiveStyle: CSSObject;

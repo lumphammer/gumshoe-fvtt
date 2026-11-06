@@ -4,6 +4,7 @@ import type {
 } from "@lumphammer/investigator-fvtt-types";
 
 import { irid } from "../irid/irid";
+import { catalogueFromV1 } from "./catalogue/fromV1";
 import type { ThemeV1 } from "./types";
 
 /**
@@ -38,6 +39,16 @@ export function createBasicTabStyle(colors: ThemeSeedV1["colors"]): CSSObject {
       textShadow: `0 0 0.3em ${colors.glow}`,
     },
   };
+}
+
+/**
+ * The catalogue overrides from a seed's V1 styles, then its own (internal:
+ * not in the published seed type).
+ */
+function catalogueOf(seed: ThemeSeedV1): ThemeV1["catalogue"] {
+  const own = (seed as Pick<ThemeV1, "catalogue">).catalogue;
+  const all = { ...catalogueFromV1(seed), ...own };
+  return Object.keys(all).length > 0 ? all : undefined;
 }
 
 /**
@@ -119,9 +130,6 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
     tabSpacerStyle: seed.tabSpacerStyle ?? {
       width: "0.5em",
     },
-    panelStylePrimary: seed.panelStylePrimary || {
-      backgroundColor: seed.colors.backgroundPrimary,
-    },
     tabContentStyle,
     tabWrappedStyle: seed.tabWrappedStyle ?? {
       borderRadius: "0.2em",
@@ -137,10 +145,6 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
       },
     },
     tabContentWrappedStyle: seed.tabContentWrappedStyle ?? {},
-    panelStyleSecondary: seed.panelStyleSecondary ||
-      seed.panelStylePrimary || {
-        backgroundColor: seed.colors.backgroundSecondary,
-      },
     colors: {
       ...seed.colors,
       bgOpaquePrimary,
@@ -155,6 +159,7 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
       success: success.toString(),
     },
     logo: seed.logo,
+    catalogue: catalogueOf(seed),
     cards: {
       base: cardBase,
       area: {
