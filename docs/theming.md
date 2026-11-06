@@ -165,6 +165,26 @@ Something you click to do something. Use the `Button` component
 There's no global button style any more: a `<button>` inside a themed root
 that isn't a `Button` (or doesn't apply the class) looks like Foundry's.
 
+### `panel`
+
+A block of content on the sheet: an area of it (stats, pools, the NPC
+sidebar), or a box of controls (an ability test, a weapon's attack). Use the
+`Panel` component (`src/components/Panel.tsx`), which applies the class. The
+class owns the look and the padding; the call site owns layout (grid area,
+overflow, flex).
+
+- **Not for** things raised above the sheet (`floating`), or boxed messages
+  (`callout`).
+- **Variants**: `depth`, which the call site **never** chooses: `Panel` works
+  it out from where it sits.
+  - `top`: content on the sheet. `surface`.
+  - `nested`: content inside content: inside another `Panel`, or inside
+    something marked `OnSurface` (a tab's content, until the `tabs` class).
+    `surfaceNested`. Deeper nesting stays `nested`.
+- A V1 theme's `panelClass` is still added. Its `panelStylePrimary` becomes a
+  `panel` override, and `panelStyleSecondary` a `panel--depth_nested` one
+  (`src/themes/catalogue/fromV1.ts`), so V1 themes keep their look.
+
 ## State layers
 
 Feedback that looks the same on anything, whatever its class, so classes don't

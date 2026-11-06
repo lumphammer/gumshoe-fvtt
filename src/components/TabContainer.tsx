@@ -14,6 +14,7 @@ import {
 import { ThemeContext } from "../themes/ThemeContext";
 import { chooseTabColumns } from "./chooseTabColumns";
 import { Translate } from "./Translate";
+import { OnSurface } from "./Panel";
 
 // gap between the tabs when they're in a grid
 const wrappedGapEm = 0.25;
@@ -243,7 +244,8 @@ export const TabContainer = ({
           ...theme.tabContentStyle,
         }}
       >
-        {activeTabDef?.content}
+        {/* a surface, so panels in it are nested (until the tabs class) */}
+        <OnSurface>{activeTabDef?.content}</OnSurface>
       </div>
     </div>
   );

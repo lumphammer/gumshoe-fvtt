@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { FaHeartCrack } from "react-icons/fa6";
 
 import * as c from "../../constants";
@@ -25,7 +25,6 @@ import {
   getTraumaTypesFrom,
 } from "../../module/stability/settings";
 import { traumaTest } from "../../module/stability/traumaTest";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -34,6 +33,7 @@ import { Select } from "../inputs/Select";
 import { SpendButtons } from "../inputs/SpendButtons";
 import { EmbeddedItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
+import { Panel } from "../Panel";
 
 /** the book's losses run from 1 to 8; a little room beyond */
 const potentialLosses = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -48,7 +48,6 @@ export const AbilityTest = memo(function AbilityTest({
   item,
   ability,
 }: AbilityTestProps) {
-  const theme = useContext(ThemeContext);
   const methods = useSystemMethods(item);
   const [spend, setSpend] = useState(0);
   // points to spend from each Bond, by id
@@ -149,128 +148,123 @@ export const AbilityTest = memo(function AbilityTest({
   const spendLabel = bonds.length > 0 ? ability.name : undefined;
 
   return (
-    <InputGrid
-      className={theme.panelClass}
-      css={{
-        padding: "0.5em",
-        marginBottom: "0.5em",
-        ...theme.panelStyleSecondary,
-      }}
-    >
-      {canTestTrauma && (
-        <>
-          <GridField label="Trauma">
-            <Select
-              value={trauma?.id ?? ""}
-              onChange={(e) => setTraumaId(e.currentTarget.value)}
-              css={{ width: "100%" }}
-            >
-              <option value="">{getTranslated("None")}</option>
-              {traumaTypes.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
-                </option>
-              ))}
-            </Select>
-          </GridField>
-          {trauma !== undefined && (
-            <GridField label="Potential loss">
-              <div
-                css={{ display: "flex", gap: "0.5em", alignItems: "center" }}
+    <Panel css={{ marginBottom: "0.5em" }}>
+      <InputGrid>
+        {canTestTrauma && (
+          <>
+            <GridField label="Trauma">
+              <Select
+                value={trauma?.id ?? ""}
+                onChange={(e) => setTraumaId(e.currentTarget.value)}
+                css={{ width: "100%" }}
               >
-                <Select
-                  value={potentialLoss}
-                  onChange={(e) =>
-                    setPotentialLoss(Number(e.currentTarget.value))
-                  }
-                >
-                  {potentialLosses.map((loss) => (
-                    <option key={loss} value={loss}>
-                      {loss}
-                    </option>
-                  ))}
-                </Select>
-                {traumaDifficulty !== null && (
-                  <span data-testid="trauma-difficulty">
-                    <Translate
-                      values={{ Difficulty: String(traumaDifficulty) }}
-                    >
-                      DifficultyN
-                    </Translate>
-                  </span>
-                )}
-              </div>
+                <option value="">{getTranslated("None")}</option>
+                {traumaTypes.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
+              </Select>
             </GridField>
-          )}
-        </>
-      )}
-      <GridField
-        label={spendLabel ?? "Spend"}
-        noTranslate={spendLabel !== undefined}
-      >
-        <SpendButtons
-          value={spend}
-          onChange={setSpend}
-          max={ability.system.pool}
-        />
-      </GridField>
-      {bonds.map((bond) => (
+            {trauma !== undefined && (
+              <GridField label="Potential loss">
+                <div
+                  css={{ display: "flex", gap: "0.5em", alignItems: "center" }}
+                >
+                  <Select
+                    value={potentialLoss}
+                    onChange={(e) =>
+                      setPotentialLoss(Number(e.currentTarget.value))
+                    }
+                  >
+                    {potentialLosses.map((loss) => (
+                      <option key={loss} value={loss}>
+                        {loss}
+                      </option>
+                    ))}
+                  </Select>
+                  {traumaDifficulty !== null && (
+                    <span data-testid="trauma-difficulty">
+                      <Translate
+                        values={{ Difficulty: String(traumaDifficulty) }}
+                      >
+                        DifficultyN
+                      </Translate>
+                    </span>
+                  )}
+                </div>
+              </GridField>
+            )}
+          </>
+        )}
         <GridField
-          key={bond._id}
-          label={
-            <>
-              <EmbeddedItemSheetLink
-                actor={actor}
-                id={bond._id}
-                name={bond.name}
-              />
-              {/* no points: the enabled buttons say how many there are */}
-              {bond.isBroken && (
-                <>
-                  {" "}
-                  <FaHeartCrack
-                    title={getTranslated("Broken")}
-                    css={{ verticalAlign: "middle" }}
-                  />
-                </>
-              )}
-            </>
-          }
-          // a label would pass clicks on the link to the buttons
-          noLabel
+          label={spendLabel ?? "Spend"}
+          noTranslate={spendLabel !== undefined}
         >
           <SpendButtons
-            value={bondSpends[bond._id ?? ""] ?? 0}
-            onChange={(bondSpend) => {
-              const id = bond._id ?? "";
-              setBondSpends((current) => ({ ...current, [id]: bondSpend }));
-            }}
-            max={getMaxBondSpend(bond.points)}
-            disabled={bond.isBroken}
+            value={spend}
+            onChange={setSpend}
+            max={ability.system.pool}
           />
         </GridField>
-      ))}
-      <GridFieldStacked>
-        <div
-          css={{
-            display: "flex",
-            flexDirection: "row",
-          }}
-        >
-          <Button
-            css={{ flex: 1 }}
-            disabled={spend === 0}
-            onClick={handleClickSpend}
+        {bonds.map((bond) => (
+          <GridField
+            key={bond._id}
+            label={
+              <>
+                <EmbeddedItemSheetLink
+                  actor={actor}
+                  id={bond._id}
+                  name={bond.name}
+                />
+                {/* no points: the enabled buttons say how many there are */}
+                {bond.isBroken && (
+                  <>
+                    {" "}
+                    <FaHeartCrack
+                      title={getTranslated("Broken")}
+                      css={{ verticalAlign: "middle" }}
+                    />
+                  </>
+                )}
+              </>
+            }
+            // a label would pass clicks on the link to the buttons
+            noLabel
           >
-            <Translate>{isGeneral ? "Simple Spend" : "Spend"}</Translate>
-          </Button>
-          {isGeneral && (
-            <Button kind="cta" css={{ flex: 1 }} onClick={handleClickTest}>
-              <Translate>Test</Translate> <i className="fa fa-dice" />
+            <SpendButtons
+              value={bondSpends[bond._id ?? ""] ?? 0}
+              onChange={(bondSpend) => {
+                const id = bond._id ?? "";
+                setBondSpends((current) => ({ ...current, [id]: bondSpend }));
+              }}
+              max={getMaxBondSpend(bond.points)}
+              disabled={bond.isBroken}
+            />
+          </GridField>
+        ))}
+        <GridFieldStacked>
+          <div
+            css={{
+              display: "flex",
+              flexDirection: "row",
+            }}
+          >
+            <Button
+              css={{ flex: 1 }}
+              disabled={spend === 0}
+              onClick={handleClickSpend}
+            >
+              <Translate>{isGeneral ? "Simple Spend" : "Spend"}</Translate>
             </Button>
-          )}
-        </div>
-      </GridFieldStacked>
-    </InputGrid>
+            {isGeneral && (
+              <Button kind="cta" css={{ flex: 1 }} onClick={handleClickTest}>
+                <Translate>Test</Translate> <i className="fa fa-dice" />
+              </Button>
+            )}
+          </div>
+        </GridFieldStacked>
+      </InputGrid>
+    </Panel>
   );
 });

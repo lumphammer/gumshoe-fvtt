@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext } from "react";
+import { memo, useCallback } from "react";
 
 import * as c from "../../constants";
 import { occupationSlotIndex } from "../../constants";
@@ -9,7 +9,6 @@ import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
 import type { PersonalDetailItem } from "../../module/items/personalDetail";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { ImagePickle } from "../ImagePickle";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { Button } from "../inputs/Button";
@@ -23,6 +22,7 @@ import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { PersonalDetailField } from "./PersonalDetailField";
 import { StatField } from "./StatField";
 import { TrackersArea } from "./TrackersArea";
+import { Panel } from "../Panel";
 
 // The PC sheet's panels subscribe independently to the data they display.
 // Foundry root re-renders are disabled; descendants keep themselves current.
@@ -91,7 +91,6 @@ export const PCSheetStats = memo(function PCSheetStats() {
   assertGame(game);
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const theme = useContext(ThemeContext);
   const stats = useActorSnapshot(actor, (snapshot) => ({
     name: snapshot.name,
     shortNotes: snapshot.system.shortNotes,
@@ -119,13 +118,10 @@ export const PCSheetStats = memo(function PCSheetStats() {
   );
 
   return (
-    <div
-      className={theme.panelClass}
+    <Panel
       css={{
         gridArea: "stats",
-        padding: "0.5em",
         position: "relative",
-        ...theme.panelStyleSecondary,
       }}
     >
       <InputGrid>
@@ -166,7 +162,7 @@ export const PCSheetStats = memo(function PCSheetStats() {
             </GridField>
           ))}
       </InputGrid>
-    </div>
+    </Panel>
   );
 });
 
@@ -174,7 +170,6 @@ export const PCSheetStats = memo(function PCSheetStats() {
 export const PCSheetPools = memo(function PCSheetPools() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const theme = useContext(ThemeContext);
   const pools = useActorSnapshot(actor, (snapshot) => ({
     mwInjuryStatus: snapshot.system.mwInjuryStatus,
   }));
@@ -188,18 +183,15 @@ export const PCSheetPools = memo(function PCSheetPools() {
   const methods = useSystemMethods(actor);
 
   return (
-    <div
-      className={theme.panelClass}
+    <Panel
       css={{
         gridArea: "pools",
         position: "relative",
         overflowX: "visible",
         overflowY: "auto",
-        padding: "0.5em",
         display: "flex",
         flexDirection: "column",
         gap: "0.5em",
-        ...theme.panelStylePrimary,
       }}
     >
       {useMwStyleAbilities && (
@@ -234,6 +226,6 @@ export const PCSheetPools = memo(function PCSheetPools() {
         <StatField key={key} id={key} stat={pcStats[key]} />
       ))}
       <InitiativeAbilityPicker actor={actor} />
-    </div>
+    </Panel>
   );
 });

@@ -1,11 +1,10 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertNPCActor } from "../../module/actors/npc";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { ImagePickle } from "../ImagePickle";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
@@ -16,6 +15,7 @@ import { LogoEditable } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { StatField } from "./StatField";
 import { TrackersArea } from "./TrackersArea";
+import { Panel } from "../Panel";
 
 // The NPC sheet's panels subscribe independently to the data they display.
 // Foundry root re-renders are disabled; descendants keep themselves current.
@@ -62,7 +62,6 @@ export const NPCSheetHeader = memo(function NPCSheetHeader() {
 export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
   const { actor } = useActorSheetContext();
   assertNPCActor(actor);
-  const theme = useContext(ThemeContext);
   const npc = useActorSnapshot(actor, ({ system }) => ({
     mwInjuryStatus: system.mwInjuryStatus,
     combatBonus: system.combatBonus,
@@ -82,15 +81,12 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
   const methods = useSystemMethods(actor);
 
   return (
-    <div
-      className={theme.panelClass}
+    <Panel
       css={{
         gridArea: "sidebar",
         position: "relative",
-        padding: "0.5em",
         overflowX: "visible",
         overflowY: "auto",
-        ...theme.panelStylePrimary,
       }}
     >
       <Button onClick={methods.confirmRefresh} css={{ marginBottom: "0.5em" }}>
@@ -165,6 +161,6 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
           />
         </>
       )}
-    </div>
+    </Panel>
   );
 });
