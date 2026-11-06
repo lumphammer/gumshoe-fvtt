@@ -1,5 +1,5 @@
 import type React from "react";
-import { useContext, useState } from "react";
+import { useState } from "react";
 
 import { openSheet } from "../../functions/openSheet";
 import { getTranslated } from "../../functions/getTranslated";
@@ -11,7 +11,6 @@ import type { ActiveCharacterActor } from "../../module/actors/types";
 import { isActiveCharacterActor } from "../../module/actors/types";
 import type { BondItem } from "../../module/items/bond";
 import { getWorldActorsStore } from "../../module/snapshots/documentStores";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { parseFoundryDragData } from "../inputs/parseFoundryDragData";
 import { Translate } from "../Translate";
 
@@ -62,7 +61,6 @@ type BondActorProps = {
 };
 
 export const BondActor = ({ bond, actorUuid }: BondActorProps) => {
-  const theme = useContext(ThemeContext);
   const [isDragOver, setIsDragOver] = useState(false);
   const methods = useSystemMethods(bond);
   const linkedName = useActorName(actorUuid);
@@ -100,6 +98,8 @@ export const BondActor = ({ bond, actorUuid }: BondActorProps) => {
       onDragOver={onDragOver}
       onDragLeave={() => setIsDragOver(false)}
       onDrop={onDrop}
+      // always ready: we can't tell an actor is being dragged until it's here
+      data-drop-state={isDragOver ? "over" : "ready"}
       css={{
         display: "flex",
         alignItems: "center",
@@ -107,8 +107,6 @@ export const BondActor = ({ bond, actorUuid }: BondActorProps) => {
         minHeight: "1.8em",
         padding: "0 0.5em",
         borderRadius: "0.2em",
-        border: `1px dashed ${isDragOver ? theme.colors.accent : theme.colors.controlBorder}`,
-        backgroundColor: isDragOver ? theme.colors.backgroundButton : undefined,
       }}
     >
       {actorUuid !== null && linkedName !== null ? (

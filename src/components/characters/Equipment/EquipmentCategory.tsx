@@ -81,15 +81,9 @@ export const EquipmentCategory = memo(function EquipmentCategory({
         setDraggedItem(null);
         void draggedItem.system.setCategoryId(categoryId);
       }}
+      data-drop-state={canDrop ? (isOver ? "over" : "ready") : undefined}
       css={{
         borderRadius: "0.3em",
-        outline: canDrop
-          ? `2px dashed ${isOver ? theme.colors.accent : theme.colors.controlBorder}`
-          : "2px dashed transparent",
-        outlineOffset: "0.2em",
-        background: isOver
-          ? `color-mix(in srgb, ${theme.colors.glow} 25%, transparent)`
-          : undefined,
         display: "grid",
         // the name, the fields, then each row's delete button (`repeat()`
         // can't take 0, so no fields means none of it)

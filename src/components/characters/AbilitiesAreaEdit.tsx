@@ -19,6 +19,7 @@ import { AbilitySlugEdit } from "./AbilitySlugEdit";
 import { AbilitySlugEditQuickShockInvestigative } from "./AbilitySlugEditQuickShockInvestigative";
 import { BuildPointsBar } from "./BuildPointsBar";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
+import { Callout } from "../Callout";
 
 type AbilitiesAreaEditProps = {
   npcMode?: boolean;
@@ -101,19 +102,9 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
       >
         <div css={{ gridArea: "warnings" }}>
           {pushPoolWarnings.map((warning, i) => (
-            <div
-              key={i}
-              css={{
-                background: theme.colors.danger,
-                color: theme.colors.accentContrast,
-                borderRadius: "0.5em",
-                padding: "0.2em 0.7em",
-                marginBottom: "0.5em",
-              }}
-            >
-              ⚠️
+            <Callout key={i} tone="warning" css={{ marginBottom: "0.5em" }}>
               {warning}
-            </div>
+            </Callout>
           ))}
         </div>
         {!mwMode && (
