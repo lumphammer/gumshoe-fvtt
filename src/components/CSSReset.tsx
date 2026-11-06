@@ -8,7 +8,6 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { assertGame } from "../functions/isGame";
 import { ApplicationV2 } from "../fvtt-exports";
-import { irid } from "../irid/irid";
 import { catalogueOverridesCss } from "../themes/catalogue/overrides";
 import { paletteFromV1, paletteStyle, themeSlug } from "../themes/palette";
 import { ThemeContext } from "../themes/ThemeContext";
@@ -105,14 +104,6 @@ export const CSSReset = ({
           ? theme.smallSheetRootStyle
           : {};
 
-    const groove1 = irid(theme.colors.controlBorder);
-    const groove2 = groove1.contrast();
-
-    const [grooveLight, grooveDark] =
-      groove1.luma() < groove2.luma()
-        ? [groove1.toString(), groove2.toString()]
-        : [groove2.toString(), groove1.toString()];
-
     const styles: CSSObject = {
       font: theme.bodyFont,
       padding: mode === "none" ? "0" : "0.5em",
@@ -120,19 +111,6 @@ export const CSSReset = ({
       backgroundColor: mode === "none" ? "transparent" : theme.colors.wallpaper,
       height: "100%",
       accentColor: theme.colors.accent,
-      // this is outside the `:where` cluse below because we need to
-      // override Foundry's CSS for buttons, which use the
-      // selector `form button` (specificity 0 0 2).
-      // `:where(.abc123) button` has a specificity of 0 0 1.
-      // Putting this up here comes out as `.abc123 button` which is
-      // specificity 0 1 1.
-      "button, input[type=button]": {
-        borderStyle: "solid",
-        borderWidth: "1px",
-        borderColor: `${grooveLight} ${grooveDark} ${grooveDark} ${grooveLight}`,
-        background: theme.colors.backgroundButton,
-        boxShadow: ` -1px -1px 0 0 ${grooveLight} inset, 1px 1px 0 0 ${grooveDark} inset`,
-      },
       // fix specificity. The comma causes this to be interpreted as a
       // new selector, i.e. it comes out as
       // ```
@@ -173,29 +151,6 @@ export const CSSReset = ({
         },
         h4: {
           fontSize: "1em",
-        },
-        "button, input[type=button]": {
-          font: theme.displayFont,
-          textTransform: theme.displayFontTextTransform,
-          color: theme.colors.accent,
-          borderRadius: "5px",
-          // 100% was causing scrollbars in some places
-          width: "99%",
-          "&[disabled]": {
-            opacity: 0.5,
-            color: theme.colors.text,
-            "&:hover": {
-              boxShadow: "none",
-              textShadow: "none",
-            },
-          },
-          "&:hover": {
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-            textShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-          "&:focus": {
-            boxShadow: "none",
-          },
         },
         label: {
           fontWeight: "bold",

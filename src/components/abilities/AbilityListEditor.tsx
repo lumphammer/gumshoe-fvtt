@@ -65,6 +65,7 @@ export function NumberTextEditorRow({
           onChange={(value) => onChangeNumber(index, value)}
         />
         <Button
+          kind="ghost"
           css={{ flexBasis: "min-content" }}
           onClick={() => onDelete(index)}
         >

@@ -334,6 +334,7 @@ export const TeamCrisisPanel = ({
         })}
         <GridFieldStacked>
           <Button
+            kind="cta"
             onClick={onTest}
             disabled={blocker !== undefined}
             title={blocker}

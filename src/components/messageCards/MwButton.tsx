@@ -1,7 +1,7 @@
 import type { CSSObject } from "@emotion/react";
 
 import { useHover } from "../../hooks/useHover";
-import { Button } from "../inputs/Button";
+import { NativeButton } from "../native/NativeButton";
 import { useShowHideTransition } from "../transitions/useShowHideTransition";
 import { Translate } from "../Translate";
 import type { MWResult } from "./types";
@@ -115,14 +115,14 @@ export const MwButton = ({ onClick: onClickProp, deets }: MwButtonProps) => {
   );
 
   return onClickProp ? (
-    <Button
+    <NativeButton
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={onClickProp}
       css={style}
     >
       {content}
-    </Button>
+    </NativeButton>
   ) : (
     <div css={style}>{content}</div>
   );

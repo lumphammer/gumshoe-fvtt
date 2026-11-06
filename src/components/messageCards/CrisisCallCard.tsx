@@ -5,7 +5,7 @@ import { isPCActor } from "../../module/actors/pc";
 import { canUser } from "../../module/permissions";
 import { getWorldActorsStore } from "../../module/snapshots/documentStores";
 import { openTeamCrisisWindow } from "../../module/bonds/TeamCrisisApp";
-import { Button } from "../inputs/Button";
+import { NativeButton } from "../native/NativeButton";
 import { Translate } from "../Translate";
 
 type CrisisCallCardProps = {
@@ -78,7 +78,7 @@ export const CrisisCallCard = ({ call, imageUrl }: CrisisCallCardProps) => {
             >
               <span css={{ flex: 1 }}>{member.name}</span>
               {canTest[i] && (
-                <Button
+                <NativeButton
                   css={{ width: "auto", margin: 0 }}
                   onClick={() => {
                     const actor = fromUuidSync(member.uuid);
@@ -91,7 +91,7 @@ export const CrisisCallCard = ({ call, imageUrl }: CrisisCallCardProps) => {
                 >
                   <Translate>Make the test</Translate>{" "}
                   <i className="fa fa-dice" />
-                </Button>
+                </NativeButton>
               )}
             </div>
           );
