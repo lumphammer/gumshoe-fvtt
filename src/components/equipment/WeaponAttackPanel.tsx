@@ -1,4 +1,4 @@
-import { memo, type ReactNode, useCallback, useContext, useState } from "react";
+import { memo, type ReactNode, useCallback, useState } from "react";
 
 import * as c from "../../constants";
 import { getTranslated, getTranslatedOr } from "../../functions/getTranslated";
@@ -11,13 +11,12 @@ import { isPCActor } from "../../module/actors/pc";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { findGeneralAbilityIn } from "../../module/items/findGeneralAbility";
 import type { WeaponItem } from "../../module/items/weapon";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button, ToolbarButton } from "../inputs/Button";
 import { CheckButtons } from "../inputs/CheckButtons";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
-import { InputGrid } from "../inputs/InputGrid";
+import { InputGrid, inputGridStyle } from "../inputs/InputGrid";
 import { EmbeddedItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
 import type { ExtraSpend } from "./performAttack";
@@ -32,6 +31,7 @@ import {
 } from "../../module/attacks/rules";
 import { hasAmmoFor } from "./consumeWeaponAmmo";
 import { Hint } from "../inputs/Hint";
+import { Panel } from "../Panel";
 
 const defaultSpendOptions = Array.from({ length: 8 })
   .fill(null)
@@ -111,7 +111,6 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
   const [extraSpendsByName, setExtraSpendsByName] = useState<
     Record<string, number>
   >({});
-  const theme = useContext(ThemeContext);
 
   // everything but the notes, which the panel doesn't show
   const weapon = useItemSelector(item, (snapshot) => {
@@ -409,14 +408,7 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
 
   return (
     <>
-      <InputGrid
-        className={theme.panelClass}
-        css={{
-          padding: "0.5em",
-          marginBottom: "0.5em",
-          ...theme.panelStyleSecondary,
-        }}
-      >
+      <Panel css={{ ...inputGridStyle, marginBottom: "0.5em" }}>
         {fireModes.length > 1 && (
           <GridField label="Fire mode">
             <CheckButtons
@@ -544,7 +536,7 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
             </Hint>
           </GridFieldStacked>
         )}
-      </InputGrid>
+      </Panel>
       <InputGrid css={{ rowGap: "0.3em" }}>
         <GridField label="Bonus pool">
           <AsyncNumberInput onChange={setBonusPool} value={bonusPool} />

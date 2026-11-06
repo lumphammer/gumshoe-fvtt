@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { FaHeartCrack } from "react-icons/fa6";
 
 import * as c from "../../constants";
@@ -25,15 +25,15 @@ import {
   getTraumaTypesFrom,
 } from "../../module/stability/settings";
 import { traumaTest } from "../../module/stability/traumaTest";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
-import { InputGrid } from "../inputs/InputGrid";
+import { inputGridStyle } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
 import { SpendButtons } from "../inputs/SpendButtons";
 import { EmbeddedItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
+import { Panel } from "../Panel";
 
 /** the book's losses run from 1 to 8; a little room beyond */
 const potentialLosses = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -48,7 +48,6 @@ export const AbilityTest = memo(function AbilityTest({
   item,
   ability,
 }: AbilityTestProps) {
-  const theme = useContext(ThemeContext);
   const methods = useSystemMethods(item);
   const [spend, setSpend] = useState(0);
   // points to spend from each Bond, by id
@@ -149,14 +148,7 @@ export const AbilityTest = memo(function AbilityTest({
   const spendLabel = bonds.length > 0 ? ability.name : undefined;
 
   return (
-    <InputGrid
-      className={theme.panelClass}
-      css={{
-        padding: "0.5em",
-        marginBottom: "0.5em",
-        ...theme.panelStyleSecondary,
-      }}
-    >
+    <Panel css={{ ...inputGridStyle, marginBottom: "0.5em" }}>
       {canTestTrauma && (
         <>
           <GridField label="Trauma">
@@ -271,6 +263,6 @@ export const AbilityTest = memo(function AbilityTest({
           )}
         </div>
       </GridFieldStacked>
-    </InputGrid>
+    </Panel>
   );
 });

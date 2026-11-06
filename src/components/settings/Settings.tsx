@@ -67,6 +67,7 @@ import { SettingsMenu } from "./SettingsMenu";
 import { stabilityPages } from "./Stability/stabilityPages";
 import { StabilitySettings } from "./Stability/StabilitySettings";
 import { StabilitySettingsRoutes } from "./Stability/StabilitySettingsRoutes";
+import { Panel } from "../Panel";
 
 /** the height of the back button and the status, beside the breadcrumbs */
 const headerFloatHeight = "1.75em";
@@ -272,15 +273,11 @@ export const Settings = () => {
                   <div
                     css={{ flex: 1, overflow: "hidden", position: "relative" }}
                   >
-                    <SettingsMenu
-                      data-testid="settings-menu"
-                      pages={pages}
-                      css={{
-                        ...absoluteCover,
-                        overflow: "auto",
-                        ...theme.panelStylePrimary,
-                      }}
-                    />
+                    <Panel
+                      css={{ ...absoluteCover, overflow: "auto", padding: 0 }}
+                    >
+                      <SettingsMenu data-testid="settings-menu" pages={pages} />
+                    </Panel>
                     {pages.map(({ direction, label, content, childRoutes }) => (
                       <SlideInNestedPanelRoute
                         key={label}
