@@ -2,6 +2,27 @@
 
 (Skipped version numbers are testing releases.)
 
+## 10.131 (2026-11-06)
+
+The theme of this release is "death by a thousand papercuts", so it's mainly bug fixes and small improvements.
+
+- **Equipment category _fields_ can now be hidden from "Limited" users (#646).** Thanks @Muwak for the idea, it's finally implemented.
+- **Images in "notes" fields now pop-out when clicked (#704).** This was another idea from @Muwak - done.
+- **The big actor name display at the top of the sheets is now sized better (#1429).** It's always had a sort of auto-sizing thing where as you add more letters it shrinks down to fit them in; but it was dumb about actual character widths, so if your character was called "Dr. Iiiiiiiiiiiiiiiii" the text was too small, but if they were called "Mr. Wwwwwwwwwwwwwwwww" it would be too big. It now actually measures the text and scales correctly.
+- **Actor names typed in while using the Green Triangle theme were accidentally saved in ALL CAPS (#1443).** While thematic, this was annoying. Fixed.
+- **Quick delete buttons for Weapons, bonds and contact (#1444).** Equipment already had these; made sense to put them on the other listy bits.
+- **You can no longer type line-breaks into actor names (#1447.)**
+- **"Extreme range (#1449).** can now be turned on in settings. This is Fall of DELTA GREEN thing for sniper rifles.
+- **Range-based spends for weapons (#1449).** This allows you to configure e.g. Fall of DELTA GREEN's rules for handguns at long range requiring an extra spend, and rifles being able to shoot at "extreme range".
+- **Token bar attibute now defaults to "health" for new token (#1452).**
+- **Icons show next to character sheet equipment, weapons, bonds, and contacts (#1453).**
+- **The Night's Black Agents themes have a different display font again (#1456).** Big Shoulders is out, Saira Semi Condensed is in. Hopefully more readable.
+- **The big acor name display at the top of the sheets is no-longer spell-checked (#1465).** So you won't get red squiggles on your name.
+- **The tab strip on character sheet now handles running out of space more gracefully (#1467).** A combination of too many tabs enabled plus a language that tends towards longer strings (Ich schaue dich an, Deutsche) meant that the tab strip sometimes went very wonky. It now evolves, like a CSS Pokemon, into a more tab grid, instead of overflowing the space.
+- **Everything should be snappier and pick up changes made in other windows more reliably (#1476).** This was a big bit of work which I'd wanted to do for ages.
+- **Some missing translations strings fixed (#1494).** The combat tracker was using some of Foundry's translations, which got rug-pulled at some point.
+- **Usabilty tweaks for the new settings window from 10.129 (#1521).**
+
 ## 10.129 (2026-10-23)
 
 - **Attack targetting and damage application (#1421)** You can now use Foundry's token-targetting system to direct attacks to a specific token. The attack roll will work out whether it's a hit or miss, and you can then apply the damage to the targetted combatant.
