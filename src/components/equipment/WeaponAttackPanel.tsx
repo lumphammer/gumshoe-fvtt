@@ -16,7 +16,7 @@ import { Button, ToolbarButton } from "../inputs/Button";
 import { CheckButtons } from "../inputs/CheckButtons";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
-import { InputGrid } from "../inputs/InputGrid";
+import { InputGrid, inputGridStyle } from "../inputs/InputGrid";
 import { EmbeddedItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
 import type { ExtraSpend } from "./performAttack";
@@ -408,136 +408,134 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
 
   return (
     <>
-      <Panel css={{ marginBottom: "0.5em" }}>
-        <InputGrid>
-          {fireModes.length > 1 && (
-            <GridField label="Fire mode">
-              <CheckButtons
-                size={1}
-                onChange={(index) => setFireMode(fireModes[index])}
-                selected={fireModes.indexOf(effectiveFireMode)}
-                options={fireModes.map((mode, index) => ({
-                  label: getTranslated(fireModeText[mode]),
-                  value: index,
-                  enabled: hasAmmoFor(system, mode),
-                }))}
+      <Panel css={{ ...inputGridStyle, marginBottom: "0.5em" }}>
+        {fireModes.length > 1 && (
+          <GridField label="Fire mode">
+            <CheckButtons
+              size={1}
+              onChange={(index) => setFireMode(fireModes[index])}
+              selected={fireModes.indexOf(effectiveFireMode)}
+              options={fireModes.map((mode, index) => ({
+                label: getTranslated(fireModeText[mode]),
+                value: index,
+                enabled: hasAmmoFor(system, mode),
+              }))}
+            />
+          </GridField>
+        )}
+        {fireModes.length === 1 && effectiveFireMode !== "single" && (
+          <GridField label="Fire mode">
+            <span css={{ display: "inline-block", paddingTop: "0.3em" }}>
+              <Translate>{fireModeText[effectiveFireMode]}</Translate>
+            </span>
+          </GridField>
+        )}
+        {/* alongside other abilities' spends, name the ability being spent */}
+        <GridField
+          label={
+            ability ? (
+              <EmbeddedItemSheetLink
+                actor={weaponActor}
+                id={ability._id}
+                name={ability.name}
               />
-            </GridField>
-          )}
-          {fireModes.length === 1 && effectiveFireMode !== "single" && (
-            <GridField label="Fire mode">
-              <span css={{ display: "inline-block", paddingTop: "0.3em" }}>
-                <Translate>{fireModeText[effectiveFireMode]}</Translate>
-              </span>
-            </GridField>
-          )}
-          {/* alongside other abilities' spends, name the ability being spent */}
+            ) : (
+              "Spend"
+            )
+          }
+          // not a <label> for the spends, so clicking the link only opens it
+          noLabel
+        >
+          <CheckButtons
+            size={1}
+            onChange={setSpend}
+            selected={spend}
+            options={spendOptions}
+          />
+        </GridField>
+        {extraSpends.map((extra) => (
           <GridField
+            key={extra.ability._id}
             label={
-              ability ? (
-                <EmbeddedItemSheetLink
-                  actor={weaponActor}
-                  id={ability._id}
-                  name={ability.name}
-                />
-              ) : (
-                "Spend"
-              )
+              <EmbeddedItemSheetLink
+                actor={weaponActor}
+                id={extra.ability._id}
+                name={extra.ability.name}
+              />
             }
-            // not a <label> for the spends, so clicking the link only opens it
             noLabel
           >
             <CheckButtons
               size={1}
-              onChange={setSpend}
-              selected={spend}
-              options={spendOptions}
+              onChange={(value) =>
+                setExtraSpendsByName((spends) => ({
+                  ...spends,
+                  [extra.ability.name]: value,
+                }))
+              }
+              selected={extra.spend}
+              options={getSpendOptions(extra.ability.pool)}
             />
           </GridField>
-          {extraSpends.map((extra) => (
-            <GridField
-              key={extra.ability._id}
-              label={
-                <EmbeddedItemSheetLink
-                  actor={weaponActor}
-                  id={extra.ability._id}
-                  name={extra.ability.name}
-                />
-              }
-              noLabel
-            >
-              <CheckButtons
-                size={1}
-                onChange={(value) =>
-                  setExtraSpendsByName((spends) => ({
-                    ...spends,
-                    [extra.ability.name]: value,
-                  }))
-                }
-                selected={extra.spend}
-                options={getSpendOptions(extra.ability.pool)}
-              />
-            </GridField>
-          ))}
-          {!isMeleeOnly && (
-            <GridField label="Range">
-              <CheckButtons
-                size={1}
-                onChange={setRangeIndex}
-                selected={effectiveRange ? ranges.indexOf(effectiveRange) : -1}
-                options={ranges.map((range, index) => ({
-                  label:
-                    range.spend > 0
-                      ? `${range.label} · ${range.spend}`
-                      : range.label,
-                  hover:
-                    range.spend > 0
-                      ? getTranslated("RangeCostsN", {
-                          Range: range.fullLabel,
-                          N: String(range.spend),
-                        })
-                      : range.fullLabel,
-                  value: index,
-                  enabled: range.enabled,
-                }))}
-              />
-            </GridField>
-          )}
-          <GridFieldStacked>
-            <Button
-              kind="cta"
-              css={{ lineHeight: 1.5, margin: 0 }}
-              disabled={blockers.length > 0}
-              title={attackTitle}
-              onClick={onAttack}
-            >
-              {attackLabel}
-            </Button>
-          </GridFieldStacked>
-          {/* All the sheet's warnings render here, in one place, just below
+        ))}
+        {!isMeleeOnly && (
+          <GridField label="Range">
+            <CheckButtons
+              size={1}
+              onChange={setRangeIndex}
+              selected={effectiveRange ? ranges.indexOf(effectiveRange) : -1}
+              options={ranges.map((range, index) => ({
+                label:
+                  range.spend > 0
+                    ? `${range.label} · ${range.spend}`
+                    : range.label,
+                hover:
+                  range.spend > 0
+                    ? getTranslated("RangeCostsN", {
+                        Range: range.fullLabel,
+                        N: String(range.spend),
+                      })
+                    : range.fullLabel,
+                value: index,
+                enabled: range.enabled,
+              }))}
+            />
+          </GridField>
+        )}
+        <GridFieldStacked>
+          <Button
+            kind="cta"
+            css={{ lineHeight: 1.5, margin: 0 }}
+            disabled={blockers.length > 0}
+            title={attackTitle}
+            onClick={onAttack}
+          >
+            {attackLabel}
+          </Button>
+        </GridFieldStacked>
+        {/* All the sheet's warnings render here, in one place, just below
             the attack button so it doesn't move as hints come and go. */}
-          {blockers.map((blocker) => (
-            <GridFieldStacked key={blocker.key}>
-              <Hint severity="danger" action={blocker.action}>
-                {blocker.message}
-              </Hint>
-            </GridFieldStacked>
-          ))}
-          {wastedExtraSpend > 0 && (
-            <GridFieldStacked>
-              <Hint severity="warning">
-                <Translate
-                  values={{
-                    Wasted: String(wastedExtraSpend),
-                    Min: String(minimumSpend),
-                  }}
-                >
-                  WastedExtraSpend
-                </Translate>
-              </Hint>
-            </GridFieldStacked>
-          )}
-        </InputGrid>
+        {blockers.map((blocker) => (
+          <GridFieldStacked key={blocker.key}>
+            <Hint severity="danger" action={blocker.action}>
+              {blocker.message}
+            </Hint>
+          </GridFieldStacked>
+        ))}
+        {wastedExtraSpend > 0 && (
+          <GridFieldStacked>
+            <Hint severity="warning">
+              <Translate
+                values={{
+                  Wasted: String(wastedExtraSpend),
+                  Min: String(minimumSpend),
+                }}
+              >
+                WastedExtraSpend
+              </Translate>
+            </Hint>
+          </GridFieldStacked>
+        )}
       </Panel>
       <InputGrid css={{ rowGap: "0.3em" }}>
         <GridField label="Bonus pool">

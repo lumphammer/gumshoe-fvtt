@@ -5,7 +5,8 @@ contract: what each palette entry and catalogue class **means**, so that anyone
 writing a component or a theme makes the same choice in the same place.
 
 The system is being built in steps (#1532). The palette exists, as custom
-properties on every themed root, and the catalogue has `badge` and `button`. Everything else is still drawn by Emotion from V1 themes, and the
+properties on every themed root, and the catalogue has `badge`, `button` and
+`panel`. Everything else is still drawn by Emotion from V1 themes, and the
 two run side by side until every component is converted.
 
 ## The pieces
@@ -182,8 +183,11 @@ overflow, flex).
     something marked `OnSurface` (a tab's content, until the `tabs` class).
     `surfaceNested`. Deeper nesting stays `nested`.
 - A V1 theme's `panelClass` is still added. Its `panelStylePrimary` becomes a
-  `panel` override, and `panelStyleSecondary` a `panel--depth_nested` one
-  (`src/themes/catalogue/fromV1.ts`), so V1 themes keep their look.
+  `panel--depth_top` override, and `panelStyleSecondary` (or, without one,
+  `panelStylePrimary`) a `panel--depth_nested` one, so the two stay
+  independent, as in V1 (`src/themes/catalogue/fromV1.ts`).
+- A panel that's also a grid of fields takes `inputGridStyle` rather than
+  wrapping an `InputGrid`, so it stays one element.
 
 ## State layers
 
