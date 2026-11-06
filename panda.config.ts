@@ -9,6 +9,7 @@ import { checkbox } from "./src/themes/catalogue/checkbox";
 import { input } from "./src/themes/catalogue/input";
 import { panel } from "./src/themes/catalogue/panel";
 import { select } from "./src/themes/catalogue/select";
+import { tabs } from "./src/themes/catalogue/tabs";
 import { toggle } from "./src/themes/catalogue/toggle";
 import { type Palette, paletteVar } from "./src/themes/palette";
 
@@ -95,7 +96,7 @@ export default defineConfig({
   staticCss: { recipes: "*", slotRecipes: "*" },
   theme: {
     recipes: { badge, button, callout, input, panel, select },
-    slotRecipes: { checkbox, toggle },
+    slotRecipes: { checkbox, tabs, toggle },
     tokens: {
       colors: Object.fromEntries(colorKeys.map((key) => [key, v(key)])),
       radii: { standard: v("radius") },

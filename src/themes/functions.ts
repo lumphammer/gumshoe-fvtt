@@ -45,9 +45,9 @@ export function createBasicTabStyle(colors: ThemeSeedV1["colors"]): CSSObject {
  * The catalogue overrides from a seed's V1 styles, then its own (internal:
  * not in the published seed type).
  */
-function catalogueOf(seed: ThemeSeedV1): ThemeV1["catalogue"] {
+function catalogueOf(seed: ThemeSeedV1, theme: ThemeV1): ThemeV1["catalogue"] {
   const own = (seed as Pick<ThemeV1, "catalogue">).catalogue;
-  const all = { ...catalogueFromV1(seed), ...own };
+  const all = { ...catalogueFromV1(seed, theme), ...own };
   return Object.keys(all).length > 0 ? all : undefined;
 }
 
@@ -159,7 +159,6 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
       success: success.toString(),
     },
     logo: seed.logo,
-    catalogue: catalogueOf(seed),
     cards: {
       base: cardBase,
       area: {
@@ -173,6 +172,7 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
     },
   };
 
+  final.catalogue = catalogueOf(seed, final);
   return final;
 };
 
