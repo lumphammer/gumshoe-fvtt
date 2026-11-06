@@ -17,7 +17,8 @@ describe("layerOf", () => {
   });
 });
 
-const scope = ':where([data-inv-theme="teal"]) .inv-badge';
+const root = '[data-inv-theme="teal"]';
+const scope = `.inv-badge:where(${root}, ${root} *)`;
 
 describe("catalogueOverridesCss", () => {
   test("replaces the default in its own layer, scoped to the theme", () => {
@@ -51,21 +52,21 @@ describe("catalogueOverridesCss", () => {
     );
   });
 
-  test("puts the theme scope before context that comes before the class", () => {
+  test("lets context go either side of the class, in the root or outside it", () => {
     const css = catalogueOverridesCss("teal", {
       tabs__tab: {
         color: "red",
         "input:checked + &": { color: "blue" },
         "[data-wrapped] > &, &:hover": { color: "green" },
+        ".compact &": { color: "grey" },
       },
     });
-    const where = ':where([data-inv-theme="teal"])';
+    const tab = `.inv-tabs__tab:where(${root}, ${root} *)`;
+    expect(css).toContain(`input:checked + ${tab} { color: blue; }`);
     expect(css).toContain(
-      `${where} input:checked + .inv-tabs__tab { color: blue; }`,
+      `[data-wrapped] > ${tab}, ${tab}:hover { color: green; }`,
     );
-    expect(css).toContain(
-      `${where} [data-wrapped] > .inv-tabs__tab, ${where} .inv-tabs__tab:hover { color: green; }`,
-    );
+    expect(css).toContain(`.compact ${tab} { color: grey; }`);
   });
 
   test("leaves custom properties as they are", () => {

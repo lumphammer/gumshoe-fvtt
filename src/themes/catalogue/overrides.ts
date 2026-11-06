@@ -143,7 +143,6 @@ const nest = (parents: string[], key: string) =>
   );
 
 function serialize(
-  scope: string,
   selectors: string[],
   style: OverrideStyle,
   replace: boolean,
@@ -159,10 +158,8 @@ function serialize(
     if (typeof value === "object") {
       nested.push(
         ...(key.startsWith("@")
-          ? [
-              `${key} { ${serialize(scope, selectors, value, false).join("\n")} }`,
-            ]
-          : serialize(scope, nest(selectors, key), value, false)),
+          ? [`${key} { ${serialize(selectors, value, false).join("\n")} }`]
+          : serialize(nest(selectors, key), value, false)),
       );
     } else if (isSafe(String(value))) {
       declarations.push(`${kebab(key)}: ${cssValue(key, value)};`);
@@ -170,8 +167,7 @@ function serialize(
       console.warn(`Catalogue override: ignoring ${key}: ${value}`);
     }
   }
-  const scoped = selectors.map((selector) => `${scope} ${selector}`);
-  return [`${scoped.join(", ")} { ${declarations.join(" ")} }`, ...nested];
+  return [`${selectors.join(", ")} { ${declarations.join(" ")} }`, ...nested];
 }
 
 /**
@@ -182,13 +178,14 @@ function serialize(
  * if this layer had nothing for this element", so the default's declarations
  * are all dropped, and the override's own (later in the same rule) apply.
  *
- * The theme scope goes at the front of each selector, so a nested rule can
- * put context before the class (`input:checked + &`). It's in `:where()`, so
- * an override is exactly as specific as
- * the default, and wins by coming later (it's rendered inside the themed
- * root, after our stylesheet). So the class's state rules, which are more
- * specific (`.inv-badge--...:is([aria-pressed=true])`), still beat it, and so
- * do its other layers, such as its variants.
+ * The theme scope is on the class itself (`.inv-badge:where(<root>, <root>
+ * *)`), so a nested rule can put context on either side of it, inside the
+ * themed root or outside (`input:checked + &`, `.compact &`). It's in
+ * `:where()`, so an override is exactly as specific as the default, and wins
+ * by coming later (it's rendered inside the themed root, after our
+ * stylesheet). So the class's state rules, which are more specific
+ * (`.inv-badge--...:is([aria-pressed=true])`), still beat it, and so do its
+ * other layers, such as its variants.
  */
 export function catalogueOverridesCss(
   slug: string,
@@ -200,14 +197,13 @@ export function catalogueOverridesCss(
       if (!ok) console.warn(`Catalogue override: no such class "${name}"`);
       return ok;
     })
-    .map(
-      ([name, style]) =>
-        `@layer ${layerOf(name)} {\n${serialize(
-          `:where([data-inv-theme="${slug}"])`,
-          [`.inv-${name}`],
-          style,
-          true,
-        ).join("\n")}\n}`,
-    )
+    .map(([name, style]) => {
+      const scope = `[data-inv-theme="${slug}"]`;
+      return `@layer ${layerOf(name)} {\n${serialize(
+        [`.inv-${name}:where(${scope}, ${scope} *)`],
+        style,
+        true,
+      ).join("\n")}\n}`;
+    })
     .join("\n");
 }

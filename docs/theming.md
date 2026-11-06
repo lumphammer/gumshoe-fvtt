@@ -217,7 +217,7 @@ overflow, flex).
   it out from where it sits.
   - `top`: content on the sheet. `surface`.
   - `nested`: content inside content: inside another `Panel`, or inside
-    something marked `OnSurface` (a tab's content, until the `tabs` class).
+    something marked `OnSurface`, such as a tab's content.
     `surfaceNested`. Deeper nesting stays `nested`.
 - A V1 theme's `panelClass` is still added. Its `panelStylePrimary` becomes a
   `panel--depth_top` override, and `panelStyleSecondary` (or, without one,
@@ -256,7 +256,10 @@ not.*
   hidden radio, just before it, is checked (`input:checked + &`); the strip
   is wrapped into a grid when the code that measures it sets `data-wrapped`
   on the list (`[data-wrapped] > &`, `[data-wrapped] + &` for the content).
-  A theme's override can target these as nested rules.
+  A theme's override can target these as nested rules. The default selected
+  and wrapped looks have their context in `:where()`, so they're part of the
+  tab's rule rather than states over it: an override of `tab` replaces them
+  too. Disabled (`input:disabled + &`) still applies over an override.
 - **Look**: the selected tab is `surface`, like the content, so they read as
   one, with `accent` ink. The others are `surface` at 80% of its opacity, with
   `text` ink. Unselected tabs are `data-interactive`.
@@ -312,9 +315,10 @@ state, and every override keeps the state layers.
 
 How: `CSSReset` renders the theme's overrides as a `<style>` inside the themed
 root (so it travels with the root into a detached window). The theme scope
-goes at the front of each selector, so a nested rule can put context before
-the class: `"input:checked + &"` becomes
-`:where([data-inv-theme="x"]) input:checked + .inv-tabs__tab`. Each rule goes in
+is on the class itself, so a nested rule can put context on either side of
+it, inside the themed root or outside: `"input:checked + &"` becomes
+`input:checked + .inv-tabs__tab:where([data-inv-theme="x"], [data-inv-theme="x"] *)`.
+Each rule goes in
 the same cascade layer as the default it replaces, and starts with
 `all: revert-layer`, which drops everything that layer had for the element
 (`src/themes/catalogue/overrides.ts`). The theme scope is inside `:where()`,
