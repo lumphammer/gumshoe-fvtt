@@ -77,7 +77,8 @@ describe("catalogueFromV1", () => {
       "&:is(.a, .b) span": { color: "blue" },
       "@media (min-width: 40em)": { padding: 4 },
     });
-    const scope = ':where([data-inv-theme="t"]) .inv-panel--depth_nested';
+    const root = '[data-inv-theme="t"]';
+    const scope = `.inv-panel--depth_nested:where(${root}, ${root} *)`;
     expect(catalogueOverridesCss("t", overrides)).toContain(
       `${scope}:hover, ${scope}:focus-within { color: red; }`,
     );

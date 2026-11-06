@@ -437,4 +437,7 @@ test("tabs: the selected one is accent on surface, the rest text on a fainter su
   await expect(other().first()).toHaveCSS("border-top-width", "3px");
   await expect(selected()).toHaveCSS("background-color", "rgb(0, 200, 0)");
   await expect(selected()).toHaveCSS("border-top-width", "3px");
+  // and nothing of the default selected look that V1 didn't have: the
+  // selected tab keeps tabStyle's colour, not the palette's accent
+  await expect(selected()).toHaveCSS("color", "rgb(0, 0, 200)");
 });

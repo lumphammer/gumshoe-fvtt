@@ -13,7 +13,8 @@ import { paletteVar } from "../palette";
  * grid (`[data-wrapped]` on the list, set by the code that measures it). The
  * selected tab is `surface`, like the content, with `accent` ink; the others
  * are a fainter `surface`, with `text` ink. *`tab` is an expected override,
- * selected and not.*
+ * selected and not:* an override of it replaces the selected and wrapped
+ * looks too.
  */
 export const tabs = defineSlotRecipe({
   className: "inv-tabs",
@@ -30,8 +31,11 @@ export const tabs = defineSlotRecipe({
       background: `[oklch(from var(${paletteVar("surface")}) l c h / calc(alpha * 0.8))]`,
       borderRadius: "0.2em 0.2em 0 0",
       cursor: "pointer",
-      "[data-wrapped] > &": { borderRadius: "0.2em" },
-      "input:checked + &": { background: "surface", color: "accent" },
+      // part of the tab's look, not states laid over it: their context is in
+      // :where(), so they're no more specific than the tab, and a theme's
+      // override of `tab` replaces them too
+      ":where([data-wrapped]) > &": { borderRadius: "0.2em" },
+      ":where(input:checked) + &": { background: "surface", color: "accent" },
       "input:disabled + &": { opacity: 0.3, cursor: "default" },
     },
     spacer: {
