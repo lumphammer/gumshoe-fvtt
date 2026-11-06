@@ -11,6 +11,7 @@ import { Translate } from "../../Translate";
 import { StateContext } from "../contexts";
 import { SettingsEmptyState } from "../SettingsEmptyState";
 import type { Setters } from "../types";
+import { input } from "../../../styled-system/recipes";
 
 /**
  * Where a pack comes from: the system itself, the world, or a module (by
@@ -120,6 +121,7 @@ export const AbilityPacksSettings = ({
         }}
       >
         <input
+          className={input()}
           type="search"
           css={{ flex: 1 }}
           value={search}

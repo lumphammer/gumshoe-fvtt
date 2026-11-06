@@ -78,6 +78,6 @@ describe.each<[string, string, string | undefined, string | undefined]>([
   });
   it("should show error state", async () => {
     const { inputEl } = await setup();
-    expect(inputEl.className.split(" ")).toContain("error");
+    expect(inputEl).toHaveAttribute("aria-invalid", "true");
   });
 });

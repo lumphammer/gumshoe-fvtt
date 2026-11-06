@@ -3,6 +3,8 @@ import React, { useCallback, useContext, useRef } from "react";
 
 import { TextEditor } from "../../fvtt-exports";
 import { useIsEditable } from "../../hooks/useIsEditable";
+import { css, cx } from "../../styled-system/css";
+import { input } from "../../styled-system/recipes";
 import { IdContext } from "../IdContext";
 import { parseFoundryDragData } from "./parseFoundryDragData";
 
@@ -91,12 +93,11 @@ export const TextArea = ({
     <textarea
       ref={textareaRef}
       id={id}
-      css={{
-        flex: 1,
-        width: "100%",
-        height: "100%",
-      }}
-      className={className}
+      className={cx(
+        input(),
+        css({ flex: "1", width: "100%", height: "100%" }),
+        className,
+      )}
       data-lpignore="true"
       value={value}
       defaultValue={defaultValue}

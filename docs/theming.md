@@ -6,7 +6,7 @@ writing a component or a theme makes the same choice in the same place.
 
 The system is being built in steps (#1532). The palette exists, as custom
 properties on every themed root, and the catalogue has `badge`, `button`,
-`panel` and `callout`. Everything else is still drawn by Emotion from V1 themes, and the
+`panel`, `callout`, `input`, `select`, `checkbox` and `toggle`. Everything else is still drawn by Emotion from V1 themes, and the
 two run side by side until every component is converted.
 
 ## The pieces
@@ -158,13 +158,50 @@ Something you click to do something. Use the `Button` component
   - `toolbar`: compact, for a row of tools. As wide as its content.
   - `ghost`: no fill or border, just ink: icon buttons such as delete, and
     the settings Back button.
-- **States**: `:disabled` (half opacity). Hover and focus come from the state
-  layers.
+- **States**: `:disabled` (half opacity). Pressed (`aria-pressed="true"`, or
+  `data-pressed` on a label standing for a checked radio) shows as selected:
+  an `accent` fill with `onAccent` ink, whatever the kind. `CheckButtons`
+  (the spend selectors) is a row of pressed-or-not `toolbar` buttons. Hover
+  and focus come from the state layers.
 - `Button`'s layout defaults (full width; content width for `toolbar`) are
   atomic classes: a call site's own width replaces them.
 
 There's no global button style any more: a `<button>` inside a themed root
-that isn't a `Button` (or doesn't apply the class) looks like Foundry's.
+that isn't a `Button` (or doesn't apply the class) looks like Foundry's. The
+same goes for inputs and selects.
+
+### `input`
+
+A field to type into: `TextInput` (and the async text and number inputs
+built on it) and `TextArea` apply it; a raw `<input>` applies `input()`.
+
+- **Not for** rich text (`richText`, to come), or choosing from a list
+  (`select`).
+- `surface` background, a `line` border, `text` ink in the `body` text
+  style. A placeholder is faded and italic.
+- **States**: invalid, via `aria-invalid="true"` (`TextInput` sets it when
+  validation fails): a `danger` border and tint. Focus is the `focusRing`.
+
+### `select`
+
+A dropdown, for choosing one of a list: `Select` applies it; a raw
+`<select>` applies `select()`. Like `input`, but on `surfaceNestedSolid`,
+with its options on `surfaceSolid`, because they open over other content.
+
+### `checkbox`
+
+A box that's ticked or not, for yes/no in a list or table (an occupational
+ability). Slots `box` and `tick` (`inv-checkbox__box`, `inv-checkbox__tick`),
+applied by `Checkbox`, which hides the real input just before the box. The
+box is `control` with a `line` border; the tick is `accent`, shown when the
+input is checked. **Not for** settings that switch something on (`toggle`).
+
+### `toggle`
+
+An on/off switch, for a setting or mode ("Edit mode"). Slots `track` and
+`thumb` (`inv-toggle__track`, `inv-toggle__thumb`), applied by `Toggle`. On
+(`data-state="checked"`, from Radix) fills the track with `accent` and the
+thumb with `onAccent`; off is `control` and `text`.
 
 ### `panel`
 
@@ -208,6 +245,10 @@ button).
   about the area as a whole (the push-pool warnings) goes at the top of that
   area.
 
+Draw a class's parts with real elements (slots), not `::before`/`::after`:
+an override replaces the rule for the element its name selects, so a
+pseudo-element's defaults would survive it.
+
 ## State layers
 
 Feedback that looks the same on anything, whatever its class, so classes don't
@@ -218,7 +259,7 @@ they always show.
 | Layer | When | Look |
 |---|---|---|
 | `hoverFeedback` | `[data-interactive]:hover`, unless disabled | A `feedback` glow, and a pointer |
-| `focusRing` | `:focus-visible`, on anything | A 2px `feedback` outline |
+| `focusRing` | `:focus-visible`, on anything; for a visually hidden input, the label or span after it | A 2px `feedback` outline |
 | `dropTarget` | `[data-drop-state="ready"]`: you can drop what you're dragging here | A dashed `line` outline, outside the element |
 | | `[data-drop-state="over"]`: and it's over it | The outline turns `accent`, with a `feedback` tint |
 

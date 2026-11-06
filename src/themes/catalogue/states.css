@@ -7,7 +7,11 @@
 @layer system.states {
   /* hoverFeedback: anything that does something when clicked */
   [data-inv-theme]
-    [data-interactive]:not(:disabled, [aria-disabled="true"]):hover {
+    [data-interactive]:not(
+      :disabled,
+      [aria-disabled="true"],
+      [data-disabled]
+    ):hover {
     cursor: pointer;
     box-shadow: 0 0 0.5em var(--inv-feedback);
   }
@@ -26,7 +30,10 @@
 
   /* focusRing: anything focused from the keyboard. Last, so it wins over the
      other layers' outlines (a focused drop target still shows focus) */
-  [data-inv-theme] :focus-visible {
+  [data-inv-theme] :focus-visible,
+  /* a visually hidden input shows focus on what stands for it, after it
+     (a CheckButtons label, a Checkbox's box) */
+  [data-inv-theme] input:focus-visible + :is(label, span) {
     outline: 2px solid var(--inv-feedback);
     outline-offset: 1px;
   }

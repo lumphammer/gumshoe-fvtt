@@ -14,7 +14,10 @@ import { defineRecipe } from "@pandacss/dev";
  * - `toolbar`: compact, for a row of tools.
  * - `ghost`: no fill or border, just the ink: icon buttons such as delete.
  *
- * States: `:disabled`. Hover and focus come from the state layers.
+ * States: `:disabled`; pressed (`aria-pressed="true"`, or `data-pressed`
+ * on a label standing for a checked radio), which shows as selected: an
+ * `accent` fill with `onAccent` ink, whatever the kind. Hover and focus come
+ * from the state layers.
  */
 export const button = defineRecipe({
   className: "inv-button",
@@ -42,5 +45,19 @@ export const button = defineRecipe({
       ghost: { background: "transparent", borderColor: "transparent" },
     },
   },
+  // selected, whatever the kind: in the same layer as the kinds' colours,
+  // after them
+  compoundVariants: [
+    {
+      kind: ["default", "cta", "toolbar", "ghost"],
+      css: {
+        _pressed: {
+          color: "onAccent",
+          background: "accent",
+          borderColor: "accent",
+        },
+      },
+    },
+  ],
   defaultVariants: { kind: "default" },
 });
