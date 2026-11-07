@@ -5,11 +5,11 @@ import { VscOutput } from "react-icons/vsc";
 
 import { useDragStart } from "../../hooks/useDragStart";
 import { useJournalEntrySnapshot } from "../../hooks/useJournalEntrySnapshot";
-import { useTheme } from "../../hooks/useTheme";
 import { absoluteCover } from "../absoluteCover";
 import { useToolbarContent } from "./magicToolbar";
 // import { useTheme } from "../../hooks/useTheme";
 import { ToolbarButton } from "./magicToolbar/ToolbarButton";
+import { richText, row } from "../../styled-system/recipes";
 
 const pageIdDataAttribute = "data-page-id";
 const pageIdDatasetName = "pageId";
@@ -61,8 +61,6 @@ export const PageNavigation = ({
   onNavigate,
   activePageId,
 }: PageNavigationProps) => {
-  const theme = useTheme();
-
   // what's shown of each page, in order
   const pages = useJournalEntrySnapshot(journalEntry, (entry) =>
     entry.pages
@@ -156,13 +154,12 @@ export const PageNavigation = ({
 
   return (
     <div
+      className={richText()}
       css={{
         ...absoluteCover,
         padding: "1px",
         overflowY: "auto",
         flex: 1,
-        backgroundColor: theme.colors.backgroundPrimary,
-        border: `1px solid ${theme.colors.accent}`,
       }}
     >
       {pages.map((page) => {
@@ -174,6 +171,8 @@ export const PageNavigation = ({
               onClick={handlePageClick}
               onDragStart={handleDragStart}
               draggable
+              aria-current={page.id === activePageId ? "page" : undefined}
+              className={row({ interactive: true })}
               css={{
                 textAlign: "left",
                 whiteSpace: "nowrap",
@@ -184,15 +183,7 @@ export const PageNavigation = ({
                 cursor: "pointer",
                 textDecoration: "none",
                 color: "inherit",
-                backgroundColor:
-                  page.id === activePageId
-                    ? theme.colors.backgroundButton
-                    : "transparent",
-                border: "1px solid transparent",
                 marginLeft: `${(page.level - 1) * 1.5}em`,
-                "&:hover": {
-                  border: `1px solid ${theme.colors.accent}`,
-                },
               }}
             >
               <span

@@ -7,7 +7,7 @@ import { button } from "./src/themes/catalogue/button";
 import { callout } from "./src/themes/catalogue/callout";
 import { card } from "./src/themes/catalogue/card";
 import { checkbox } from "./src/themes/catalogue/checkbox";
-import { input } from "./src/themes/catalogue/input";
+import { input, richText } from "./src/themes/catalogue/input";
 import {
   dragHandle,
   emptyState,
@@ -128,6 +128,7 @@ export default defineConfig({
       outcome,
       panel,
       partyCell,
+      richText,
       row,
       sectionHeading,
       select,

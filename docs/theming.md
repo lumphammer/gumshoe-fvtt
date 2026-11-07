@@ -9,8 +9,11 @@ properties on every themed root, and the catalogue has `badge`, `button`,
 `panel`, `callout`, `input`, `select`, `checkbox`, `toggle`, `tabs`,
 `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`,
 `displayText`, `mutedText`, `outcome`, `sheetRoot`, `logo`, `card`,
-`surface`, `floating` and `partyCell`, plus element defaults. Everything else is still drawn by Emotion from V1 themes, and the
-two run side by side until every component is converted.
+`surface`, `floating`, `partyCell` and `richText`, plus element defaults.
+Every component's look now comes from the catalogue, and none reads a
+theme's colours. Emotion is still used for layout at call sites (`css`
+props), and V1 themes are mapped onto the catalogue (`fromV1.ts`); moving
+layout to Panda's `css()` and a V2 theme format are later work.
 
 ## The pieces
 
@@ -180,7 +183,7 @@ same goes for inputs and selects.
 A field to type into: `TextInput` (and the async text and number inputs
 built on it) and `TextArea` apply it; a raw `<input>` applies `input()`.
 
-- **Not for** rich text (`richText`, to come), or choosing from a list
+- **Not for** rich text (`richText`), or choosing from a list
   (`select`).
 - `surface` background, a `line` border, `text` ink in the `body` text
   style. A placeholder is faded and italic.
@@ -297,6 +300,8 @@ take only `[a-z0-9_-]`.
     menu).
   - `striped`: for rows striped by position rather than by the call site (a
     settings form, whose rows come and go): odd ones are on `control`.
+  - State: selected (`aria-current`, `aria-selected` or `data-selected`), the
+    current one (the journal page you're on), on `control`.
 - **`dragHandle`**: the grip to drag to reorder a list. `textMuted` on
   `surfaceSolid`, faded until hovered, when it grows and turns `accent`.
 - **`emptyState`**: stands in for a list with nothing in it: dashed `line`
@@ -417,6 +422,12 @@ hex-escaped in the attribute selector.
   stuck over the rest as it scrolls, use the solid versions. Variants `odd`,
   `zero`, `header`.
 
+### `richText`
+
+An editor for formatted text (notes, descriptions) and the journal's page
+list beside it: `surface`, with a `line` border. The content inside
+(ProseMirror's) keeps Foundry's own styling.
+
 Draw a class's parts with real elements (slots), not `::before`/`::after`:
 an override replaces the rule for the element its name selects, so a
 pseudo-element's defaults would survive it.
@@ -509,10 +520,11 @@ Shared definitions for the native world are in `src/components/native/`:
 
 ## Converting a component
 
-`src/themes/catalogue/paletteReads.test.ts` lists the files that still read a
-theme's colours (`.colors`). It fails if a file not on the list starts reading
-them, and if a file on the list stops, so the list only shrinks: when you
-convert one, take it off.
+`src/themes/catalogue/paletteReads.test.ts` fails if any component reads a
+theme's colours (`.colors`, or destructured `colors`): use a catalogue
+class. The list of files allowed to read them, kept while the components were
+converted, is now empty. `src/themes/` and `startup/loadCustomThemes.ts`
+are exempt: they define themes.
 
 ## Where the CSS goes
 

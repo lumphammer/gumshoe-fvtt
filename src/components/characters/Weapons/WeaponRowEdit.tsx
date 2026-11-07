@@ -1,17 +1,17 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import { confirmAndDeleteItem } from "../../../functions/confirmAndDeleteItem";
 import { useItemSelector } from "../../../hooks/useItemSnapshot";
 import { useSettings } from "../../../hooks/useSettings";
 import { useSystemMethods } from "../../../hooks/useSystemMethods";
 import type { WeaponItem } from "../../../module/items/weapon";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
 import { IndexedRichTextEditor } from "../../inputs/IndexedRichTextEditor";
 import { OtherableDropDown } from "../../inputs/OtherableDropDown";
 import { Toggle } from "../../inputs/Toggle";
+import { row as rowClass } from "../../../styled-system/recipes";
 
 // the icons get Font Awesome's fixed width (1.25em), which is wider than the
 // button, so they stuck out to the right: let them be as wide as the chevron
@@ -34,7 +34,6 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
   weapon,
   index,
 }: WeaponRowEditProps) {
-  const theme = useContext(ThemeContext);
   const row = useItemSelector(weapon, ({ name, system: s }) => ({
     name,
     damage: s.damage,
@@ -97,10 +96,10 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
   return (
     <>
       <div
+        className={rowClass({ alternate: true })}
         css={{
           gridColumn: "1/-1",
           gridRow: `${gridRow}/${gridRow + 2}`,
-          background: theme.colors.backgroundButton,
           margin: "-0.5em",
         }}
       />

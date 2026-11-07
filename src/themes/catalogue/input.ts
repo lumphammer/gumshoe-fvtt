@@ -42,3 +42,21 @@ export const input = defineRecipe({
     },
   },
 });
+
+/**
+ * **richText**: an editor for formatted text (notes, descriptions): a field
+ * to type into, like `input`, but a whole area of it, with its own toolbar.
+ *
+ * Its content (ProseMirror's) keeps Foundry's own styling; this is the
+ * field around it: `surface`, with a `line` border.
+ */
+export const richText = defineRecipe({
+  className: "inv-rich-text",
+  description: "An editor for formatted text.",
+  base: {
+    background: "surface",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: "line",
+  },
+});
