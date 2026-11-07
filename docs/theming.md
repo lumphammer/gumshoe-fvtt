@@ -336,7 +336,8 @@ height are layout, in `CSSReset`.
 *Expected override:* a theme's backdrop goes in its `size` variants. A V1
 seed's `largeSheetRootStyle` and `smallSheetRootStyle` become
 `sheet-root--size_large` and `sheet-root--size_small` overrides, which patch
-the variants, as V1 spread them over the defaults.
+the variants, as V1 spread them over the defaults; their `padding` and
+`height`, if any, go in the root's inline style instead.
 
 The application window around the root (`appWindowStyle` in V1) isn't a
 class yet: in Foundry v13, `CSSReset` looks for `.window-app`, which
@@ -448,8 +449,19 @@ Foundry v14 orders its CSS in cascade layers, and a system's styles belong in
 `system.states`, `system.utilities`. Panda splits `system.recipes` further:
 `base`, `slots` (with its own `base`, `variants` and `compound_variants`),
 `variants`, `compound_variants`. **Nothing goes directly in `system`**: rules directly in a
-layer beat everything in its sub-layers. CSSReset's Emotion rules and
-`investigator.less`'s Foundry fixes are in `system.base`.
+layer beat everything in its sub-layers.
+
+- `system.base`: the element defaults (`elements.css`) and
+  `investigator.less`'s Foundry fixes.
+- `system.recipes`: the catalogue classes, the themed root's look
+  (`sheetRoot`) among them, and a theme's overrides of them.
+- `system.states`: the state layers (`states.css`).
+- `system.utilities`: layout from `css()` at call sites.
+
+The themed root's padding and height are in its inline `style`, with the
+palette, so a V1 theme's root style can still set them. What's left of
+Emotion (a theme's `global` styles, V1 window styles, and call-site `css`
+props not converted yet) isn't in a layer, so it beats all of these.
 
 The palette is set as an inline `style` on the themed root, not in a
 stylesheet. A detached window (Foundry's own, or PopOut!) copies the page's

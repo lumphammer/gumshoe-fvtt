@@ -6,7 +6,7 @@ import type { PropsWithChildren } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { ApplicationV2 } from "../fvtt-exports";
-import { css as pandaCss, cx } from "../styled-system/css";
+import { cx } from "../styled-system/css";
 import { sheetRoot } from "../styled-system/recipes";
 import { catalogueOverridesCss } from "../themes/catalogue/overrides";
 import { paletteFromV1, paletteStyle, themeSlug } from "../themes/palette";
@@ -96,6 +96,23 @@ export const CSSReset = ({
     });
   }, [head]);
 
+  // the root's padding and height are layout, but a V1 theme's root style
+  // could set them, over the defaults: keep that
+  const layout = useMemo(() => {
+    const v1 =
+      mode === "large"
+        ? theme.largeSheetRootStyle
+        : mode === "small"
+          ? theme.smallSheetRootStyle
+          : {};
+    const px = (value: unknown) =>
+      typeof value === "number" ? `${value}px` : (value as string | undefined);
+    return {
+      padding: px(v1.padding) ?? (mode === "none" ? "0" : "0.5em"),
+      height: px(v1.height) ?? "100%",
+    };
+  }, [mode, theme]);
+
   const slug = themeSlug(theme);
   // the theme's replacements for catalogue classes, as a <style> inside the
   // root, so that it goes wherever the root goes, detached windows included
@@ -112,16 +129,9 @@ export const CSSReset = ({
           <Global styles={theme.global} />
           <div
             ref={ref}
-            className={cx(
-              sheetRoot({ size: mode }),
-              pandaCss({
-                padding: mode === "none" ? "0" : "0.5em",
-                height: "100%",
-              }),
-              className,
-            )}
+            className={cx(sheetRoot({ size: mode }), className)}
             data-inv-theme={slug}
-            style={paletteStyle(paletteFromV1(theme))}
+            style={{ ...paletteStyle(paletteFromV1(theme)), ...layout }}
           >
             {children}
             {overridesCss && <style>{overridesCss}</style>}

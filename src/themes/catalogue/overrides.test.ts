@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { catalogueOverridesCss, layerOf } from "./overrides";
+import { catalogueOverridesCss, isSafeValue, layerOf } from "./overrides";
 
 describe("layerOf", () => {
   test.each([
@@ -124,5 +124,31 @@ describe("catalogueOverridesCss", () => {
     expect(css).not.toContain(" p ");
     expect(css).not.toContain("/*");
     expect(css).toContain("padding: 1em;");
+  });
+});
+
+describe("isSafeValue", () => {
+  test.each([
+    'url("data:image/svg+xml;base64,PHN2Zy8+")',
+    "url(data:image/png;base64,AAAA)",
+    "url('a{b}.svg')",
+    '"a; b"',
+    "1px solid red",
+    "linear-gradient(to top, #fff 0%, #000 10%)",
+  ])("allows %s", (value) => {
+    expect(isSafeValue(value)).toBe(true);
+  });
+
+  test.each([
+    "red; } p { color: blue",
+    "red }",
+    "url(x) /* y",
+    "a */ b",
+    '"unclosed',
+    "url(open",
+    '"</style>"',
+    '"a\nb"',
+  ])("rejects %s", (value) => {
+    expect(isSafeValue(value)).toBe(false);
   });
 });
