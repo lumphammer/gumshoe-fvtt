@@ -1,6 +1,5 @@
-import type { CSSObject } from "@emotion/react";
-
 import { useHover } from "../../hooks/useHover";
+import { css } from "../../styled-system/css";
 import { NativeButton } from "../native/NativeButton";
 import { useShowHideTransition } from "../transitions/useShowHideTransition";
 import { Translate } from "../Translate";
@@ -11,26 +10,27 @@ type MwButtonProps = {
   onClick?: () => void;
 };
 
-const basicShadow = "0 0 0.5em 0 #0007";
+// the result's colour is `--mw-color`, set inline: it varies by roll
+const resultColor = (alpha: string) =>
+  `rgb(from var(--mw-color) r g b / ${alpha})`;
+
+const buttonClass = css({
+  textAlign: "center",
+  padding: "0.2em",
+  gridArea: "body",
+  marginTop: "0.5em",
+  borderRadius: "[2em]",
+  borderStyle: "none",
+  backgroundImage: `radial-gradient(closest-side, ${resultColor("0.467")} 0%, ${resultColor("0")} 100%), linear-gradient(to bottom, #999, #000)`,
+  boxShadow: "[0 0 0.5em 0 #0007]",
+  fontFamily: "'Longdon Decorative Regular', sans-serif",
+  fontSize: "1.5em",
+});
 
 export const MwButton = ({ onClick: onClickProp, deets }: MwButtonProps) => {
   const { hover, onMouseEnter, onMouseLeave } = useHover();
 
-  const style: CSSObject = {
-    textAlign: "center",
-    padding: "0.2em",
-    gridArea: "body",
-    marginTop: "0.5em",
-    borderRadius: "2em",
-    borderStyle: "none",
-    backgroundImage: [
-      `radial-gradient(closest-side, ${deets.color}77 0%, ${deets.color}00 100%)`,
-      "linear-gradient(to bottom, #999, #000)",
-    ].join(", "),
-    boxShadow: basicShadow,
-    fontFamily: "'Longdon Decorative Regular', sans-serif",
-    fontSize: "1.5em",
-  };
+  const colorVar = { "--mw-color": deets.color } as React.CSSProperties;
 
   const { isShowing: isShowingDeets, shouldMount: shouldMountDeets } =
     useShowHideTransition(!hover, 800);
@@ -40,27 +40,21 @@ export const MwButton = ({ onClick: onClickProp, deets }: MwButtonProps) => {
   const content = (
     <>
       <div
-        css={{
-          color: "#fff",
+        className={css({
+          color: "[#fff]",
           borderStyle: "solid",
           borderWidth: "2px",
-          borderColor: "#fff",
-          borderRadius: "1em",
-          textShadow: [
-            `0 0 0.5em ${deets.color}`,
-            `0 0 0.2em ${deets.color}`,
-            `0 0 1em ${deets.color}`,
-            `0 0 2em ${deets.color}`,
-          ].join(","),
-          boxShadow: [
-            `0 0 0.5em 0 inset ${deets.color}`,
-            `0 0 0.5em 0 ${deets.color}`,
-          ].join(","),
+          borderColor: "[#fff]",
+          borderRadius: "[1em]",
+          textShadow:
+            "[0 0 0.5em var(--mw-color),0 0 0.2em var(--mw-color),0 0 1em var(--mw-color),0 0 2em var(--mw-color)]",
+          boxShadow:
+            "[0 0 0.5em 0 inset var(--mw-color),0 0 0.5em 0 var(--mw-color)]",
           display: "grid",
           gridTemplateColumns: "1fr",
           gridTemplateRows: "1fr",
           gridTemplateAreas: "'area'",
-        }}
+        })}
       >
         {/* <CSSTransition
           in={!hover}
@@ -70,11 +64,11 @@ export const MwButton = ({ onClick: onClickProp, deets }: MwButtonProps) => {
           }}
           unmountOnExit
         >
-          <span css={{ gridArea: "area" }}>{deets.text}</span>
+          <span className={css({ gridArea: "area" })}>{deets.text}</span>
         </CSSTransition> */}
         {shouldMountDeets && (
           <span
-            css={{ gridArea: "area" }}
+            className={css({ gridArea: "area" })}
             style={{
               opacity: isShowingDeets ? 1 : 0,
               transition: isShowingDeets
@@ -93,13 +87,13 @@ export const MwButton = ({ onClick: onClickProp, deets }: MwButtonProps) => {
           }}
           unmountOnExit
         >
-          <span css={{ gridArea: "area" }}>
+          <span className={css({ gridArea: "area" })}>
             <Translate>Re-Roll</Translate> <i className="fas fa-sync fa-spin" />
           </span>
         </CSSTransition> */}
         {shouldMountReRoll && (
           <span
-            css={{ gridArea: "area" }}
+            className={css({ gridArea: "area" })}
             style={{
               opacity: isShowingReRoll ? 1 : 0,
               transition: isShowingReRoll
@@ -119,11 +113,14 @@ export const MwButton = ({ onClick: onClickProp, deets }: MwButtonProps) => {
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={onClickProp}
-      css={style}
+      className={buttonClass}
+      style={colorVar}
     >
       {content}
     </NativeButton>
   ) : (
-    <div css={style}>{content}</div>
+    <div className={buttonClass} style={colorVar}>
+      {content}
+    </div>
   );
 };

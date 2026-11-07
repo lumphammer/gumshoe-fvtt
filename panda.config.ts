@@ -2,6 +2,7 @@
 // See docs/theming.md.
 import { defineConfig } from "@pandacss/dev";
 
+import { appFrame } from "./src/themes/catalogue/appFrame";
 import { badge } from "./src/themes/catalogue/badge";
 import { button } from "./src/themes/catalogue/button";
 import { callout } from "./src/themes/catalogue/callout";
@@ -19,11 +20,7 @@ import { logo } from "./src/themes/catalogue/logo";
 import { panel } from "./src/themes/catalogue/panel";
 import { select } from "./src/themes/catalogue/select";
 import { sheetRoot } from "./src/themes/catalogue/sheetRoot";
-import {
-  floating,
-  partyCell,
-  surface,
-} from "./src/themes/catalogue/surfaces";
+import { floating, partyCell, surface } from "./src/themes/catalogue/surfaces";
 import { tabs } from "./src/themes/catalogue/tabs";
 import { displayText, mutedText, outcome } from "./src/themes/catalogue/text";
 import { toggle } from "./src/themes/catalogue/toggle";
@@ -102,7 +99,8 @@ export default defineConfig({
   // our tokens point at the palette's --inv-* properties, which only exist on
   // a themed root (set by CSSReset), so Panda's own properties must be
   // declared there too: declared on :root, they would resolve to nothing
-  cssVarRoot: "[data-inv-theme]",
+  // (and on the window around it, which has the palette too: appFrame.ts)
+  cssVarRoot: "[data-inv-theme], [data-inv-frame]",
   // all inside Foundry's `system` layer: see src/panda.css
   layers: {
     reset: "system.reset",
@@ -136,7 +134,26 @@ export default defineConfig({
       surface,
       tableHeader,
     },
-    slotRecipes: { card, checkbox, logo, tabs, toggle },
+    slotRecipes: { appFrame, card, checkbox, logo, tabs, toggle },
+    // names are global, so they're prefixed: Foundry has keyframes too
+    keyframes: {
+      invSpin: { to: { rotate: "1turn" } },
+      invExpandFadeIn: {
+        from: { opacity: 0, transform: "scale(0.5)" },
+        to: { opacity: 1, transform: "scale(1)" },
+      },
+      invThrob: {
+        "0%": { backgroundColor: "transparent" },
+        "100%": {
+          backgroundColor:
+            "oklch(from var(--button-hover-background-color) l c h / 0.5)",
+        },
+      },
+      invScrollBg: {
+        "0%": { backgroundPositionX: "0em" },
+        "100%": { backgroundPositionX: "3em" },
+      },
+    },
     tokens: {
       colors: Object.fromEntries(colorKeys.map((key) => [key, v(key)])),
       radii: { standard: v("radius") },
