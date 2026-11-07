@@ -441,3 +441,46 @@ test("tabs: the selected one is accent on surface, the rest text on a fainter su
   // selected tab keeps tabStyle's colour, not the palette's accent
   await expect(selected()).toHaveCSS("color", "rgb(0, 0, 200)");
 });
+
+test("lists: headings and column headers are ruled in line, and an interactive row is highlighted under the pointer", async ({
+  page,
+}) => {
+  await page.evaluate((colors) => {
+    CONFIG.Investigator!.installTheme("listsReviewTheme", {
+      schemaVersion: "v1" as const,
+      displayName: "Lists Review",
+      largeSheetRootStyle: {},
+      logo: {
+        frontTextElementStyle: {},
+        rearTextElementStyle: {},
+        textElementsStyle: {},
+        backdropStyle: {},
+      },
+      colors,
+    });
+  }, colors);
+  await setSettings(page, { defaultThemeName: "listsReviewTheme" });
+  const actorId = await createActor(page, { name: "Listed", type: "pc" });
+  await createOwnedItem(page, actorId, { name: "Knife", type: "weapon" });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+
+  // the ability categories
+  const heading = sheet.locator("h2.inv-section-heading").first();
+  await expect(heading).toHaveCSS("border-bottom-style", "solid");
+  await expect(heading).toHaveCSS(
+    "border-bottom-color",
+    colors.controlBorder,
+  );
+
+  // the weapons table
+  await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
+  const header = sheet.locator(".inv-table-header").first();
+  await expect(header).toHaveCSS("font-weight", "700");
+  await expect(header).toHaveCSS("border-bottom-color", colors.controlBorder);
+  const knife = sheet.locator(".inv-row--interactive_true", {
+    hasText: "Knife",
+  });
+  await expect(knife).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await knife.hover();
+  await expect(knife).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+});

@@ -11,7 +11,7 @@ import { Translate } from "../../Translate";
 import { StateContext } from "../contexts";
 import { SettingsEmptyState } from "../SettingsEmptyState";
 import type { Setters } from "../types";
-import { input } from "../../../styled-system/recipes";
+import { input, row } from "../../../styled-system/recipes";
 
 /**
  * Where a pack comes from: the system itself, the world, or a module (by
@@ -156,14 +156,13 @@ export const AbilityPacksSettings = ({
           return (
             <IdContext.Provider value={id} key={collection}>
               <div
+                className={row({ alternate: i % 2 === 0 })}
                 css={{
                   gridColumn: "1 / -1",
                   display: "grid",
                   gridTemplateColumns: "subgrid",
                   alignItems: "center",
                   padding: "0.3em 0.5em",
-                  background:
-                    i % 2 === 0 ? theme.colors.backgroundButton : undefined,
                 }}
               >
                 <Toggle

@@ -1,5 +1,5 @@
 import { Router } from "@lumphammer/minirouter";
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import { liveItems } from "../../functions/liveItems";
 import { isBondItem } from "../../module/items/bond";
@@ -14,7 +14,6 @@ import {
   areBondsOn,
   getAdaptableTraumaTypesFrom,
 } from "../../module/stability/settings";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
@@ -26,6 +25,7 @@ import { EstablishBondPanel } from "./EstablishBondPanel";
 import { EstablishBondButton } from "./EstablishBondButton";
 import { TeamCrisisButton } from "./TeamCrisisButton";
 import { NestedTeamCrisisPanel } from "./NestedTeamCrisisPanel";
+import { tableHeader } from "../../styled-system/recipes";
 
 /**
  * The Bonds tab on the PC sheet (Fall of DELTA GREEN, p. 045), with
@@ -45,7 +45,6 @@ export const BondsArea = memo(function BondsArea() {
     showAdaptations: getAdaptableTraumaTypesFrom(s).length > 0,
   }));
   const { createBond } = useSystemMethods(actor);
-  const theme = useContext(ThemeContext);
   const addBondTooltip = getTranslated("AddBondTooltip");
 
   return (
@@ -110,12 +109,11 @@ export const BondsArea = memo(function BondsArea() {
                 >
                   {/* the header row, underlined like the ability categories */}
                   <div
+                    className={tableHeader()}
                     css={{
                       gridColumn: "1/-1",
                       display: "grid",
                       gridTemplateColumns: "subgrid",
-                      fontWeight: "bold",
-                      borderBottom: `1px solid ${theme.colors.text}`,
                       "& > *": { paddingInline: "0.25em" },
                     }}
                   >

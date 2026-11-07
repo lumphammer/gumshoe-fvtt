@@ -6,7 +6,7 @@ import { Button } from "../inputs/Button";
 import { SortableTable } from "../sortableTable";
 import { Translate } from "../Translate";
 import { SettingsEmptyState } from "./SettingsEmptyState";
-import { useListHoverBg } from "./useListHoverBg";
+import { row } from "../../styled-system/recipes";
 
 type SettingsSortableListProps = {
   rows: { name: string; detail?: ReactNode }[];
@@ -40,8 +40,6 @@ export const SettingsSortableList = ({
   emptyMessage = "Nothing here yet.",
   className,
 }: SettingsSortableListProps) => {
-  const hoverBg = useListHoverBg();
-
   const handleSetItems = useCallback(
     (newOrder: string[]) => {
       onReorder(newOrder.map(Number));
@@ -56,14 +54,12 @@ export const SettingsSortableList = ({
       return (
         <Link
           to={linkTo(index)}
+          className={row({ interactive: true })}
           css={{
             gridColumn: "1/-1",
             display: "grid",
             gridTemplateColumns: "subgrid",
             textShadow: "none",
-            "&:hover, &:focus-visible": {
-              backgroundColor: hoverBg,
-            },
           }}
         >
           <div
@@ -86,7 +82,7 @@ export const SettingsSortableList = ({
         </Link>
       );
     },
-    [hoverBg, linkTo, rows],
+    [linkTo, rows],
   );
 
   return (

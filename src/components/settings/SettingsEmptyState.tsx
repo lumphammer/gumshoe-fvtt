@@ -1,24 +1,12 @@
-import { useContext } from "react";
-
-import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
+import { emptyState } from "../../styled-system/recipes";
 
 /**
- * Stands in for a list with nothing in it.
+ * Stands in for a list with nothing in it (the catalogue's `emptyState`).
  */
 export const SettingsEmptyState = ({ message }: { message: string }) => {
-  const theme = useContext(ThemeContext);
   return (
-    <div
-      css={{
-        padding: "1.5em 1em",
-        border: `1px dashed ${theme.colors.controlBorder}`,
-        borderRadius: "0.3em",
-        textAlign: "center",
-        fontStyle: "italic",
-        opacity: 0.75,
-      }}
-    >
+    <div className={emptyState()}>
       <Translate>{message}</Translate>
     </div>
   );
