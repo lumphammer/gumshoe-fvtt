@@ -350,17 +350,26 @@ The character sheet's logo (`LogoEditable`): the name and its subtext in large
 display text, drawn twice, a front copy over a rear one, on a backdrop, so a
 theme can do 3D, shadows and text gradients. Slots: `backdrop`, `text` (the
 wrapper of both copies, which the theme can transform), `front_wrapper`,
-`front` (the name), `front_sub` (the subtext), and the same three for `rear`.
+`front` (the name), `front_sub` (the subtext), and the same three for `rear`;
+and `measure`, a hidden full-size copy of the name that `LogoEditable`
+measures to fit the name to the logo.
 Slot names are snake_case, so their classes are valid override names
 (`inv-logo__front_sub`).
 
 *Expected override, every slot:* each theme's logo is its own. A V1 seed's
 `logo` styles become overrides of the matching slots, each starting from that
 slot's defaults (`logoDefaults.ts`), because V1 spread them over the defaults
-(the front style goes on the name and the subtext alike). What V1 put after
-the theme's style stays layout in `LogoEditable`, so a theme can't change it:
-the backdrop fills the logo, and the hidden copy that measures the name is
-full size.
+(the front style goes on the name, the subtext and the measuring copy
+alike). What V1 put after the theme's style stays forced, even against a
+theme's `!important`: the backdrop's `position` and insets (it's absolutely
+positioned at the logo's edges; its size, margins and transforms are the
+theme's), and the measuring copy's position and `1em` font size, merged last
+into its override.
+
+Override values are serialized carefully: a list of fallbacks
+(`width: ["200px", "1lh"]`) becomes one declaration each, and a `<` inside a
+quoted string (an inline SVG in a data URL) is escaped as `\3c `, so it
+can't end the `<style>`.
 
 Draw a class's parts with real elements (slots), not `::before`/`::after`:
 an override replaces the rule for the element its name selects, so a

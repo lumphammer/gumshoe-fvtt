@@ -210,19 +210,7 @@ export const LogoEditable = ({
               visibility: "hidden",
             })}
           >
-            <div
-              ref={measureRef}
-              className={cx(
-                classes.front,
-                // at full size, whatever the theme says
-                css({
-                  position: "absolute",
-                  top: "0",
-                  left: "0",
-                  fontSize: "1em",
-                }),
-              )}
-            >
+            <div ref={measureRef} className={classes.measure}>
               {displayText}
             </div>
           </div>

@@ -78,7 +78,7 @@ describe("catalogueFromV1", () => {
     });
     expect(overrides["panel--depth_nested"]).toEqual({
       "&:hover, &:focus-within": { color: "red" },
-      "& > img": { width: "1lh" },
+      "& > img": { width: ["1em", "1lh"] },
       "&:is(.a, .b) span": { color: "blue" },
       "@media (min-width: 40em)": { padding: 4 },
     });
@@ -138,6 +138,7 @@ test("themes get their V1 panel styles as overrides", () => {
     "logo__front_wrapper",
     "logo__front",
     "logo__front_sub",
+    "logo__measure",
     "logo__rear_wrapper",
     "logo__rear",
     "logo__rear_sub",
@@ -187,5 +188,24 @@ test("a theme's logo styles go over each part's defaults, as in V1", () => {
   expect(overrides["logo__rear_wrapper"]).toMatchObject({ zIndex: -1 });
   expect(overrides["logo__rear_sub"]).toMatchObject({
     textShadow: "1px 1px black",
+  });
+});
+
+test("the logo's forced layout stays forced, even against !important", () => {
+  const overrides = catalogueFromV1(tealTheme, {
+    ...tealTheme,
+    logo: {
+      ...tealTheme.logo,
+      backdropStyle: { position: "fixed !important" as "fixed", width: "150%" },
+      frontTextElementStyle: { fontSize: "2em !important", color: "gold" },
+    },
+  });
+  // the backdrop's position is layout; its size is the theme's
+  expect(overrides["logo__backdrop"]).toEqual({ width: "150%" });
+  // the measuring copy has the front style, then its own size last
+  expect(overrides["logo__measure"]).toMatchObject({
+    color: "gold",
+    fontSize: "1em",
+    position: "absolute",
   });
 });
