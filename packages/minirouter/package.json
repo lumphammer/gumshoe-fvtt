@@ -25,7 +25,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@emotion/react": "^11.14.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@types/react": "catalog:",
     "motion": "^14.10.1",
@@ -36,7 +35,6 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@emotion/react": "^11.14.0",
     "react": "catalog:"
   }
 }

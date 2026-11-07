@@ -1,5 +1,5 @@
 {
-  "include": ["index.ts"],
+  "include": ["index.ts", "emotionCompat.ts"],
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",

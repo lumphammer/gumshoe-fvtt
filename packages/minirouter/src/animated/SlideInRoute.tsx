@@ -1,6 +1,5 @@
-import type { CSSObject } from "@emotion/react";
 import { AnimatePresence, m } from "motion/react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { memo } from "react";
 
 import type { PropsWithChildrenAndDirection } from "../types";
@@ -10,7 +9,7 @@ import { duration } from "./constants";
 import { CustomLazyMotion } from "./CustomLazyMotion";
 import { easeInCubic, easeOutCubic } from "./easings";
 
-const absoluteCover: CSSObject = {
+const absoluteCover: CSSProperties = {
   position: "absolute",
   top: 0,
   right: 0,
@@ -30,7 +29,11 @@ export const SlideInRoute = memo<SlideInRouteProps>(
     return (
       <CustomLazyMotion>
         <div
-          css={{ ...absoluteCover, overflow: "hidden", pointerEvents: "none" }}
+          style={{
+            ...absoluteCover,
+            overflow: "hidden",
+            pointerEvents: "none",
+          }}
         >
           <AnimatePresence mode="wait">
             {backdropResult && currentStep && (
@@ -38,7 +41,7 @@ export const SlideInRoute = memo<SlideInRouteProps>(
                 {backdropResult}
                 <m.div
                   key={currentStep.id}
-                  css={{
+                  style={{
                     ...absoluteCover,
                     width: "100%",
                     zIndex: 2,

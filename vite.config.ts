@@ -16,6 +16,8 @@ const config = defineConfig(({ mode }) => {
     packageType: "system",
     importMetaUrl: import.meta.url,
     plugins: [vitePluginFontsource()],
+    // plain React: styles are Panda's (docs/theming.md), so no `css` prop
+    jsxImportSource: "react",
     // every component and hook, except those marked `"use no memo"`, which
     // read Foundry's mutable state during render on purpose (see
     // docs/immutable-data.md)

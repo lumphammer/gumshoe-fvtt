@@ -8,7 +8,6 @@ import { paletteFromV1, paletteStyle, themeSlug } from "../themes/palette";
 import { ThemeContext } from "../themes/ThemeContext";
 import type { ThemeV1 } from "../themes/types";
 import { claimFrame, type FrameClaim, globalCss } from "./frame";
-import { EmotionPopoutCache } from "./EmotionPopoutCache";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 type CSSResetProps = PropsWithChildren<{
@@ -77,20 +76,18 @@ export const CSSReset = ({
 
   return (
     <ErrorBoundary>
-      <EmotionPopoutCache>
-        <ThemeContext.Provider value={theme}>
-          <div
-            ref={ref}
-            className={cx(sheetRoot({ size: mode }), className)}
-            data-inv-theme={slug}
-            style={{ ...palette, ...layout }}
-          >
-            {children}
-            {global && <style>{global}</style>}
-            {overridesCss && <style>{overridesCss}</style>}
-          </div>
-        </ThemeContext.Provider>
-      </EmotionPopoutCache>
+      <ThemeContext.Provider value={theme}>
+        <div
+          ref={ref}
+          className={cx(sheetRoot({ size: mode }), className)}
+          data-inv-theme={slug}
+          style={{ ...palette, ...layout }}
+        >
+          {children}
+          {global && <style>{global}</style>}
+          {overridesCss && <style>{overridesCss}</style>}
+        </div>
+      </ThemeContext.Provider>
     </ErrorBoundary>
   );
 };

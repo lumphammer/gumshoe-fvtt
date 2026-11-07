@@ -25,10 +25,14 @@
   "homepage": "https://gitlab.com/n3dst4/investigator-fvtt-types",
   "license": "ISC",
   "devDependencies": {
-    "@emotion/react": "^11.14.0",
+    "@emotion/serialize": "^1.3.3",
+    "csstype": "^3.2.3",
     "oxfmt": "^0.77.0",
     "oxlint": "^1.92.0",
     "oxlint-tsgolint": "^7.0.2006",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "csstype": "^3.0.2"
   }
 }

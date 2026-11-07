@@ -159,11 +159,11 @@ translations, adding fields and settings, releases).
 
 ## Themes
 
-- Theming is moving from Emotion and V1 themes to Panda CSS and a palette of
-  CSS custom properties (#1532). `docs/theming.md` is the contract: what
-  each palette entry means, and the rules (components apply catalogue
-  classes and write layout; only the catalogue reads the palette). Emotion
-  and Panda run side by side until every component is converted.
+- Theming is Panda CSS and a palette of CSS custom properties (#1532); V1
+  themes are mapped onto it. `docs/theming.md` is the contract: what each
+  palette entry means, and the rules (components apply catalogue classes and
+  write layout with Panda's `css()`; only the catalogue reads the palette).
+  There's no Emotion and no `css` prop: JSX is plain React's.
 - Converted components apply recipes from `styled-system/recipes` (defined in
   `src/themes/catalogue/`) and write only layout. When converting, take the
   file off the list in `src/themes/catalogue/paletteReads.test.ts`.
