@@ -180,9 +180,6 @@ export const PageNavigation = ({
                 textOverflow: "ellipsis",
                 display: "block",
                 padding: "0.5em",
-                cursor: "pointer",
-                textDecoration: "none",
-                color: "inherit",
                 marginLeft: `${(page.level - 1) * 1.5}em`,
               }}
             >

@@ -18,6 +18,8 @@ interface CardDisplayProps {
   viewMode: CardsViewMode;
   draggable?: boolean;
   onDragStart?: (event: React.DragEvent<HTMLElement>) => void;
+  /** it does something when clicked: the hoverFeedback state layer */
+  interactive?: boolean;
 }
 
 /**
@@ -31,6 +33,7 @@ export const CardDisplay = memo(function CardDisplay({
   viewMode,
   draggable,
   onDragStart,
+  interactive = false,
 }: CardDisplayProps) {
   const [descriptionHTML, setDescriptionHTML] = useState("");
   const [effectsHTML, setEffectsHTML] = useState("");
@@ -95,6 +98,7 @@ export const CardDisplay = memo(function CardDisplay({
         styleKey,
       )}
       data-category={styleKey}
+      data-interactive={interactive || undefined}
     >
       {supertitleText && (
         <p className={cx("supertitle", classes.supertitle)}>{supertitleText}</p>

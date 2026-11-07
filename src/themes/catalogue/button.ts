@@ -48,6 +48,9 @@ export const button = defineRecipe({
       ghost: { background: "transparent", borderColor: "transparent" },
       pip: {
         textStyle: "body",
+        // the display style's case and spacing, which `body` doesn't set
+        textTransform: "none",
+        letterSpacing: "normal",
         fontSize: "inherit",
         padding: "0",
         borderRadius: "0",

@@ -3,8 +3,7 @@ import { defineRecipe } from "@pandacss/dev";
 import { paletteVar } from "../palette";
 
 /** A faint wash of the feedback colour, for a row under the pointer. */
-const highlight =
-  `[color-mix(in srgb, var(${paletteVar("feedback")}) 25%, transparent)]` as const;
+const highlight = `color-mix(in srgb, var(${paletteVar("feedback")}) 25%, transparent)`;
 
 /**
  * **sectionHeading**: a heading that divides a sheet into sections ("Academic",
@@ -64,6 +63,11 @@ export const row = defineRecipe({
   className: "inv-row",
   description: "One item in a list or table.",
   base: {
+    // a row that's a link reads as text, not as a link (accent is for
+    // selected and calls to action)
+    color: "text",
+    textDecoration: "none",
+    textShadow: "none",
     "&:is([aria-current=page], [aria-current=true], [aria-selected=true], [data-selected])":
       { background: "control" },
   },
@@ -71,8 +75,10 @@ export const row = defineRecipe({
     interactive: {
       true: {
         cursor: "pointer",
+        // a wash over whatever the row's own fill is (selected, alternate),
+        // not instead of it
         "&:is(:hover, :focus-visible, [data-highlighted])": {
-          background: highlight,
+          backgroundImage: `[linear-gradient(${highlight}, ${highlight})]`,
         },
       },
       false: {},
