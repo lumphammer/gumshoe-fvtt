@@ -43,9 +43,13 @@ const filesMatching = (pattern: RegExp) =>
     .filter((path) => pattern.test(readFileSync(join(srcDir, path), "utf8")))
     .sort();
 
-// `.colors`, or destructuring them: `{ colors }`, `colors: { ... }`
+// `.colors`, or destructuring them: `{ colors }`, `colors: { ... }`; and a
+// V1 theme's card looks (`cards.base`, `cards.categories`), which are
+// catalogue overrides now (`cards.area` is spacing, so it's allowed)
 const filesReadingColours = () =>
-  filesMatching(/\.colors\b|\{\s*colors\s*[,}]|\bcolors:\s*\{/);
+  filesMatching(
+    /\.colors\b|\{\s*colors\s*[,}]|\bcolors:\s*\{|\.cards\.(base|categories)\b/,
+  );
 
 describe("reading theme colours", () => {
   it("happens only in files that haven't been converted yet", () => {

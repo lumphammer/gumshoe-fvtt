@@ -166,6 +166,9 @@ Something you click to do something. Use the `Button` component
   - `toolbar`: compact, for a row of tools. As wide as its content.
   - `ghost`: no fill or border, just ink: icon buttons such as delete, and
     the settings Back button.
+  - `pip`: one of a row of small number picks (a pool tracker's boxes): the
+    body text style, no padding, square, on `surface`; pressed when it's the
+    current value.
 - **States**: `:disabled` (half opacity). Pressed (`aria-pressed="true"`, or
   `data-pressed` on a label standing for a checked radio) shows as selected:
   an `accent` fill with `onAccent` ink, whatever the kind. `CheckButtons`
@@ -289,9 +292,12 @@ take only `[a-z0-9_-]`.
   column headers.
 - **`tableHeader`**: the row of column headers over a list or table: bold,
   with a `line` rule under it.
-- **`row`**: one item in a list or table. Variants:
+- **`row`**: one item in a list or table, in `text` ink with no underline,
+  even when it's a link: clickable rows read as text. Variants:
   - `interactive`: it opens or does something, so it's highlighted with a
-    wash of `feedback` under the pointer, on keyboard focus, or with
+    wash of `feedback` (laid over its own fill, as a `background-image`, so
+    a selected or striped row keeps its colour) under the pointer, on
+    keyboard focus, or with
     `data-highlighted` (for a row drawn as separate cells that tracks the
     pointer itself, like an equipment row). Rows don't use
     `data-interactive`: a glow round a row is too much.
@@ -396,7 +402,10 @@ its own with the category's style spread over the base, and the base rule
 leaves those categories' cards out, so a category's style wins as it did in
 V1, `!important` and nested rules included. The contexts are in `:where()`,
 so both rules are as specific as the plain class. Any style key works: it's
-hex-escaped in the attribute selector.
+hex-escaped in the attribute selector. A card in a card array is clickable
+(`data-interactive`), so it gets the `hoverFeedback` glow; a V1 seed's
+`hoverStyle` (the base's, then its category's over it) becomes a `:hover`
+rule in its `card__root` override, for cards in an array.
 `cards.area` (the spacing between cards) is still read by `CardArray`.
 
 ### Surfaces: `surface`, `floating`, `partyCell`

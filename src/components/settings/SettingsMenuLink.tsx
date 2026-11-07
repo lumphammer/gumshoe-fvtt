@@ -35,8 +35,6 @@ export const SettingsMenuLink = ({
         alignItems: "center",
         gap: "0.75em",
         padding: "0.6em 1em",
-        textShadow: "none",
-        "&:hover, &:focus-visible": { textShadow: "none" },
         "&:hover .chevron, &:focus-visible .chevron": {
           transform: "translateX(0.2em)",
         },

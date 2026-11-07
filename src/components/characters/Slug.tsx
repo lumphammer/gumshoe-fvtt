@@ -23,6 +23,7 @@ export const Slug = ({ onClick, item, children }: SlugProps) => {
       data-item-id={item?.id}
       onDragStart={onDragStart}
       draggable="true"
+      data-interactive={onClick !== undefined || undefined}
       className={badge({ weight: "strong" })}
       css={{
         display: "block",
