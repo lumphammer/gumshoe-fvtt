@@ -20,6 +20,7 @@ import { BuildPointsBar } from "./BuildPointsBar";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
 import { Callout } from "../Callout";
 import { displayText, sectionHeading } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type AbilitiesAreaEditProps = {
   npcMode?: boolean;
@@ -87,56 +88,68 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
         />
       )}
       <div
-        css={{
+        className={css({
           display: "grid",
           gridTemplateColumns: "minmax(33%, auto) minmax(33%, auto)",
+          columnGap: "1em",
+          marginBottom: "1em",
+        })}
+        style={{
           gridTemplateAreas:
             "'warnings warnings'" +
             (simplifiedMode
               ? "'general investigative'"
               : "'investigative general'"),
-          columnGap: "1em",
-          marginBottom: "1em",
         }}
       >
-        <div css={{ gridArea: "warnings" }}>
+        <div className={css({ gridArea: "warnings" })}>
           {pushPoolWarnings.map((warning, i) => (
-            <Callout key={i} tone="warning" css={{ marginBottom: "0.5em" }}>
+            <Callout
+              key={i}
+              tone="warning"
+              className={css({ marginBottom: "0.5em" })}
+            >
               {warning}
             </Callout>
           ))}
         </div>
         {!mwMode && (
           <div
-            css={{
+            className={css({
               gridArea: "investigative",
               display: "grid",
               gridTemplateAreas: "'ability rating isocc'",
-              gridTemplateColumns: showInvestigativeOccupationalColumn
-                ? "1fr max-content auto"
-                : "1fr max-content",
               columnGap: "0.5em",
               rowGap: "0.1em",
               alignItems: "center",
               alignContent: "start",
+            })}
+            style={{
+              gridTemplateColumns: showInvestigativeOccupationalColumn
+                ? "1fr max-content auto"
+                : "1fr max-content",
             }}
           >
             {simplifiedMode || (
               <i
-                className={displayText({ size: "sm" })}
-                css={{
-                  gridColumn: "rating",
-                }}
+                className={cx(
+                  displayText({ size: "sm" }),
+                  css({
+                    gridColumn: "rating",
+                  }),
+                )}
               >
                 Rating
               </i>
             )}
             {showInvestigativeOccupationalColumn && (
               <i
-                className={displayText({ size: "sm" })}
-                css={{
-                  gridColumn: "isocc",
-                }}
+                className={cx(
+                  displayText({ size: "sm" }),
+                  css({
+                    gridColumn: "isocc",
+                  }),
+                )}
                 title="Occupational Ability"
               >
                 Oc.
@@ -144,7 +157,12 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
             )}
             {Object.keys(investigativeAbilities).map((cat) => (
               <Fragment key={cat}>
-                <h2 className={sectionHeading()} css={{ gridColumn: "1 / -1" }}>
+                <h2
+                  className={cx(
+                    sectionHeading(),
+                    css({ gridColumn: "1 / -1" }),
+                  )}
+                >
                   {cat}
                 </h2>
                 {investigativeAbilities[cat].map(({ id, isQuickShock }) => {
@@ -172,35 +190,41 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
         )}
 
         <div
-          css={{
+          className={css({
             gridArea: "general",
             display: "grid",
             gridTemplateAreas: "'ability rating isocc'",
-            gridTemplateColumns: simplifiedMode
-              ? "1fr max-content"
-              : "1fr max-content auto",
             columnGap: "0.5em",
             rowGap: "0.1em",
             alignItems: "center",
             alignContent: "start",
+          })}
+          style={{
+            gridTemplateColumns: simplifiedMode
+              ? "1fr max-content"
+              : "1fr max-content auto",
           }}
         >
           {simplifiedMode || (
             <i
-              className={displayText({ size: "sm" })}
-              css={{
-                gridColumn: "rating",
-              }}
+              className={cx(
+                displayText({ size: "sm" }),
+                css({
+                  gridColumn: "rating",
+                }),
+              )}
             >
               Rating
             </i>
           )}
           {simplifiedMode || (
             <i
-              className={displayText({ size: "sm" })}
-              css={{
-                gridColumn: "isocc",
-              }}
+              className={cx(
+                displayText({ size: "sm" }),
+                css({
+                  gridColumn: "isocc",
+                }),
+              )}
               title="Occupational Ability"
             >
               Oc.
@@ -209,7 +233,9 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
 
           {Object.keys(generalAbilities).map((cat) => (
             <Fragment key={cat}>
-              <h2 className={sectionHeading()} css={{ gridColumn: "1 / -1" }}>
+              <h2
+                className={cx(sectionHeading(), css({ gridColumn: "1 / -1" }))}
+              >
                 {cat}
               </h2>
               {generalAbilities[cat].map(({ id }) => {

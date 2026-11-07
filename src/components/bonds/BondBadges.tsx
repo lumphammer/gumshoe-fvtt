@@ -1,4 +1,4 @@
-import { css, cx } from "../../styled-system/css";
+import { cx } from "../../styled-system/css";
 import { badge } from "../../styled-system/recipes";
 import { Translate } from "../Translate";
 
@@ -21,8 +21,8 @@ export const BondBadges = ({
   return (
     <span
       className={cx(
-        // never wrapped, so a column of badges is always wide enough for both
-        css({ display: "inline-flex", flexWrap: "nowrap", gap: "0.25em" }),
+        // never wrapped (componentDefaults.css)
+        "inv-default-bond-badges",
         className,
       )}
     >

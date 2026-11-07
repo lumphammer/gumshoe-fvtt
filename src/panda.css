@@ -5,7 +5,8 @@
  * should go directly in `system`: rules directly in a layer beat everything
  * in its sub-layers.
  *
- * `system.states` is ours, not Panda's: the state layers (states.css).
+ * `system.defaults` and `system.states` are ours, not Panda's: component
+ * defaults (componentDefaults.css) and the state layers (states.css).
  */
-@layer system.reset, system.base, system.tokens, system.recipes, system.states, system.utilities;
+@layer system.reset, system.base, system.tokens, system.recipes, system.defaults, system.states, system.utilities;
 @layer system.reset, system.base, system.tokens, system.recipes, system.utilities;
