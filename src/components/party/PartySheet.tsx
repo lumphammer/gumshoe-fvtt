@@ -64,7 +64,6 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
     <CSSReset
       mode="small"
       theme={theme}
-      className={floating({ kind: "overlay" })}
       css={{
         position: "absolute",
         top: 0,
@@ -77,6 +76,7 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
     >
       {header.actorIds.length === 0 && (
         <div
+          className={floating({ kind: "overlay" })}
           style={{
             position: "absolute",
             top: "50%",
