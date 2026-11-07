@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 
 import { mutantCityBlueTheme } from "../mutantCityBlueTheme";
 import { tealTheme } from "../tealTheme";
+import { themeFactory } from "../functions";
 import { catalogueFromV1 } from "./fromV1";
 import { catalogueOverridesCss } from "./overrides";
 
@@ -211,32 +212,52 @@ test("the logo's forced layout stays forced, even against !important", () => {
   });
 });
 
-test("a seed's card styles go over each part's defaults, with its categories as nested rules", () => {
-  const overrides = catalogueFromV1(
-    {
-      ...seed,
-      cards: {
-        base: { titleStyle: { color: "red" } },
-        categories: {
-          stress: { backdropStyle: { borderColor: "orange" } },
-          clue: { titleStyle: { color: "blue" } },
-          'bad"key': { titleStyle: { color: "green" } },
-        },
+describe("cards", () => {
+  const withCards = (cards: object) => {
+    const seed2 = { ...seed, cards } as Parameters<typeof catalogueFromV1>[0];
+    return catalogueFromV1(seed2, themeFactory(seed2));
+  };
+
+  test("nothing for a seed that doesn't style its cards", () => {
+    expect(
+      Object.keys(fromV1(seed)).some((name) => name.startsWith("card")),
+    ).toBe(false);
+  });
+
+  test("a part's base style replaces its defaults whole, as V1's factory did", () => {
+    const overrides = withCards({ base: { subtitleStyle: { color: "blue" } } });
+    // not bold any more: the default subtitle style was replaced
+    expect(overrides["card__subtitle"]).toEqual({ color: "blue" });
+    // the parts it didn't style keep their defaults
+    expect(overrides["card__effect"]).toEqual({ fontStyle: "italic" });
+  });
+
+  test("a category is its own rule, spread over the base, and the base leaves its cards out", () => {
+    const overrides = withCards({
+      base: {
+        titleStyle: { color: "red !important", ":hover": { color: "red" } },
       },
-    },
-    tealTheme,
-  );
-  expect(overrides["card__root"]).toMatchObject({
-    padding: "0.5em",
-    '&[data-category="stress"]': { borderColor: "orange" },
+      categories: { stress: { titleStyle: { color: "blue" } } },
+    });
+    const notStress =
+      ':where(.inv-card__root:is(:not([data-category="stress"]))) &';
+    const stress = ':where(.inv-card__root:is([data-category="stress"])) &';
+    expect(overrides["card__title"]).toEqual({
+      [notStress]: { color: "red !important", "&:hover": { color: "red" } },
+      // V1: the category's colour replaced the base's, important or not
+      [stress]: { color: "blue", "&:hover": { color: "red" } },
+    });
+    expect(overrides["card__root"]).toHaveProperty(
+      '&:where([data-category="stress"])',
+    );
   });
-  expect(overrides["card__title"]).toEqual({
-    color: "red",
-    '[data-category="clue"] &': { color: "blue" },
+
+  test("any style key works: it's escaped in the attribute selector", () => {
+    const overrides = withCards({
+      categories: { "mental stress": { titleStyle: { color: "blue" } } },
+    });
+    expect(Object.keys(overrides["card__title"])).toContain(
+      ':where(.inv-card__root:is([data-category="mental\\20 stress"])) &',
+    );
   });
-  expect(overrides["card__effect"]).toEqual({ fontStyle: "italic" });
-  // no seed styles for its cards: nothing
-  expect(Object.keys(fromV1(seed)).some((k) => k.startsWith("card"))).toBe(
-    false,
-  );
 });

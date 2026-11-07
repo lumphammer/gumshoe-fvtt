@@ -646,3 +646,76 @@ test("sheet root: a V1 root style's backdrop (a data URL) and padding still appl
   );
   await expect(root).toHaveCSS("background-color", colors.wallpaper);
 });
+
+test("cards: a V1 category's style wins over the base, as in V1, whatever its key", async ({
+  page,
+}) => {
+  await page.evaluate((colors) => {
+    CONFIG.Investigator!.installTheme("cardsReviewTheme", {
+      schemaVersion: "v1" as const,
+      displayName: "Cards Review",
+      largeSheetRootStyle: {},
+      logo: {
+        frontTextElementStyle: {},
+        rearTextElementStyle: {},
+        textElementsStyle: {},
+        backdropStyle: {},
+      },
+      colors,
+      cards: {
+        base: { titleStyle: { color: "rgb(200, 0, 0) !important" } },
+        categories: {
+          "mental stress": { titleStyle: { color: "rgb(0, 0, 200)" } },
+        },
+      },
+    });
+  }, colors);
+  await setSettings(page, {
+    defaultThemeName: "cardsReviewTheme",
+    useCards: true,
+    cardCategories: [
+      {
+        id: "stress",
+        singleName: "Stress",
+        pluralName: "Stresses",
+        styleKey: "mental stress",
+        threshold: 3,
+        thresholdType: "limit",
+      },
+      {
+        id: "clue",
+        singleName: "Clue",
+        pluralName: "Clues",
+        styleKey: "clue",
+        threshold: 3,
+        thresholdType: "goal",
+      },
+    ],
+  });
+  const actorId = await createActor(page, { name: "Dealt", type: "pc" });
+  for (const [name, categoryId] of [
+    ["Shaken", "stress"],
+    ["Lead", "clue"],
+  ]) {
+    await createOwnedItem(page, actorId, {
+      name,
+      type: "card",
+      system: {
+        title: name,
+        cardCategoryMemberships: [{ categoryId, nonlethal: false, worth: 1 }],
+        styleKeyCategoryId: categoryId,
+      },
+    });
+  }
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  await sheet.locator(".tab-strip > label", { hasText: "Cards" }).click();
+  // the category's colour replaces the base's, though the base's is !important
+  await expect(
+    sheet.locator(".inv-card__title", { hasText: "Shaken" }),
+  ).toHaveCSS("color", "rgb(0, 0, 200)");
+  // a card in a category the theme doesn't style has the base's
+  await expect(sheet.locator(".inv-card__title", { hasText: "Lead" })).toHaveCSS(
+    "color",
+    "rgb(200, 0, 0)",
+  );
+});
