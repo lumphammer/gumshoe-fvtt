@@ -9,6 +9,7 @@ import type { AbilityItem } from "../../module/items/exports";
 import { AbilityBadges } from "../abilities/AbilityBadges";
 import { SpecialityList } from "../abilities/SpecialityList";
 import { Toggle } from "../inputs/Toggle";
+import { css } from "../../styled-system/css";
 
 type AbilitySlugEditQuickShockInvestigativeProps = {
   /** The live ability: the row reads it through a snapshot */
@@ -39,14 +40,17 @@ export const AbilitySlugEditQuickShockInvestigative = memo(
         <AbilityNameLink
           ability={ability}
           name={row.name}
-          css={{ marginBottom: "0.5em" }}
+          className={css({ marginBottom: "0.5em" })}
         />
-        <div css={{ gridColumn: "rating", justifySelf: "center" }}>
+        <div className={css({ gridColumn: "rating", justifySelf: "center" })}>
           <Toggle checked={row.rating > 0} onChange={handleToggle} />
         </div>
-        <AbilityBadges ability={ability} css={{ gridColumn: "1/-1" }} />
+        <AbilityBadges
+          ability={ability}
+          className={css({ gridColumn: "1/-1" })}
+        />
         {row.hasSpecialities && row.specialitiesCount > 0 && (
-          <div css={{ paddingLeft: "2em", gridColumn: "1/-1" }}>
+          <div className={css({ paddingLeft: "2em", gridColumn: "1/-1" })}>
             <SpecialityList ability={ability} />
           </div>
         )}

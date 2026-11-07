@@ -16,6 +16,7 @@ import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { StatField } from "./StatField";
 import { TrackersArea } from "./TrackersArea";
 import { Panel } from "../Panel";
+import { css } from "../../styled-system/css";
 
 // The NPC sheet's panels subscribe independently to the data they display.
 // Foundry root re-renders are disabled; descendants keep themselves current.
@@ -32,27 +33,27 @@ export const NPCSheetHeader = memo(function NPCSheetHeader() {
   return (
     <>
       <div
-        css={{
+        className={css({
           gridArea: "title",
           textAlign: "center",
           position: "relative",
-        }}
+        })}
       >
         <LogoEditable
           mainText={header.name}
           onChangeMainText={actor.setName}
-          css={{
+          className={css({
             fontSize: "0.66em",
-          }}
+          })}
         />
       </div>
 
       <ImagePickle
         img={header.img}
-        css={{
+        className={css({
           gridArea: "image",
           transform: "rotateZ(2deg)",
-        }}
+        })}
       />
     </>
   );
@@ -82,19 +83,22 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
 
   return (
     <Panel
-      css={{
+      className={css({
         gridArea: "sidebar",
         position: "relative",
         overflowX: "visible",
         overflowY: "auto",
-      }}
+      })}
     >
-      <Button onClick={methods.confirmRefresh} css={{ marginBottom: "0.5em" }}>
+      <Button
+        onClick={methods.confirmRefresh}
+        className={css({ marginBottom: "0.5em" })}
+      >
         <Translate>Full Refresh</Translate>
       </Button>
 
       {s.useMwInjuryStatus && (
-        <div css={{ marginBottom: "0.5em" }}>
+        <div className={css({ marginBottom: "0.5em" })}>
           <MwInjuryStatusWidget
             status={npc.mwInjuryStatus}
             setStatus={methods.setMwInjuryStatus}
@@ -107,14 +111,14 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
       {/* SotS NPC Combat bonus */}
       {s.useNpcCombatBonuses && (
         <>
-          <h3 css={{ gridColumn: "start / end" }}>
+          <h3 className={css({ gridColumn: "start / end" })}>
             <Translate>Combat bonus</Translate>
           </h3>
           <AsyncNumberInput
             value={npc.combatBonus}
             onChange={methods.setCombatBonus}
           />
-          <h3 css={{ gridColumn: "start / end" }}>
+          <h3 className={css({ gridColumn: "start / end" })}>
             <Translate>Damage bonus</Translate>
           </h3>
           <AsyncNumberInput
@@ -125,7 +129,7 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
       )}
       {s.showIsHuman && (
         <>
-          <h3 css={{ gridColumn: "start / end" }}>
+          <h3 className={css({ gridColumn: "start / end" })}>
             <Translate>Human?</Translate>
           </h3>
           <Toggle checked={npc.isHuman} onChange={methods.setIsHuman} />
@@ -133,7 +137,7 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
       )}
       {s.showImmuneToLethality && (
         <>
-          <h3 css={{ gridColumn: "start / end" }}>
+          <h3 className={css({ gridColumn: "start / end" })}>
             <Translate>Immune to Lethality?</Translate>
           </h3>
           <Toggle
@@ -152,7 +156,7 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
       <InitiativeAbilityPicker actor={actor} />
       {s.useTurnPassingInitiative && (
         <>
-          <h4 css={{ width: "8em" }}>
+          <h4 className={css({ width: "8em" })}>
             <Translate>Number of turns</Translate>
           </h4>
           <AsyncNumberInput

@@ -3,6 +3,7 @@ import { useId } from "react";
 import { IdContext } from "../IdContext";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 type EditModeToggleProps = {
   editMode: boolean;
@@ -17,13 +18,13 @@ export const EditModeToggle = ({
   const id = useId();
   return (
     <div
-      css={{
+      className={css({
         display: "flex",
         justifyContent: "flex-end",
         alignItems: "center",
         gap: "0.5em",
         marginBottom: "0.5em",
-      }}
+      })}
     >
       <label htmlFor={id}>
         <Translate>Edit mode</Translate>

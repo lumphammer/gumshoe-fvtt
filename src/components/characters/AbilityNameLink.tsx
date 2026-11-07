@@ -1,6 +1,7 @@
 import { openSheet } from "../../functions/openSheet";
 import { useDragStart } from "../../hooks/useDragStart";
 import type { AbilityItem } from "../../module/items/exports";
+import { cx } from "../../styled-system/css";
 
 type AbilityNameLinkProps = {
   /** the live ability, to open and drag */
@@ -25,8 +26,7 @@ export const AbilityNameLink = ({
       data-item-id={ability.id}
       onDragStart={onDragStart}
       draggable="true"
-      className={className}
-      css={{ gridColumn: "ability", textAlign: "end" }}
+      className={cx("inv-default-ability-name-link", className)}
     >
       {name}
     </a>

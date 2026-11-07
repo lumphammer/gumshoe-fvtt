@@ -9,6 +9,7 @@ import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { Toggle } from "../../inputs/Toggle";
 import { ItemNameWithIcon } from "../ItemNameWithIcon";
 import { row as rowClass } from "../../../styled-system/recipes";
+import { css, cx } from "../../../styled-system/css";
 
 type WeaponRowProps = {
   /** The live weapon: the row reads it through a snapshot */
@@ -42,12 +43,12 @@ export const WeaponRow = memo(function WeaponRow({
   return (
     <>
       <div
-        css={{
+        className={css({
           gridColumn: 1,
           display: "flex",
           alignItems: "center",
           paddingInline: "0.25em",
-        }}
+        })}
       >
         <Toggle
           checked={isReady}
@@ -60,16 +61,18 @@ export const WeaponRow = memo(function WeaponRow({
       <div
         role="button"
         tabIndex={0}
-        className={rowClass({ interactive: true })}
-        css={{
-          gridColumn: "2 / -2",
-          display: "grid",
-          gridTemplateColumns: "subgrid",
-          alignItems: "center",
-          padding: "0.2em 0",
-          borderRadius: "0.2em",
-          "& > *": { paddingInline: "0.25em" },
-        }}
+        className={cx(
+          rowClass({ interactive: true }),
+          css({
+            gridColumn: "2 / -2",
+            display: "grid",
+            gridTemplateColumns: "subgrid",
+            alignItems: "center",
+            padding: "0.2em 0",
+            borderRadius: "[0.2em]",
+            "& > *": { paddingInline: "0.25em" },
+          }),
+        )}
         onClick={openWeaponSheet}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -82,10 +85,10 @@ export const WeaponRow = memo(function WeaponRow({
         onDragStart={onDragStart}
       >
         <ItemNameWithIcon item={row} />
-        <span css={{ textAlign: "center" }}>
+        <span className={css({ textAlign: "center" })}>
           {row.usesAmmo ? `${row.ammo.value}/${row.ammo.max}` : "—"}
         </span>
-        <span css={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+        <span className={css({ overflow: "hidden", textOverflow: "ellipsis" })}>
           {row.ability}
         </span>
       </div>

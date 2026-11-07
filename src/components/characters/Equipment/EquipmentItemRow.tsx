@@ -10,6 +10,7 @@ import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { ItemNameWithIcon } from "../ItemNameWithIcon";
 import { CheckOrCross } from "./CheckOrCross";
 import { row as rowClass } from "../../../styled-system/recipes";
+import { css, cx } from "../../../styled-system/css";
 
 interface EquipmentItemRowProps {
   /** The live item: the row reads it through a snapshot */
@@ -48,21 +49,24 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
     <>
       {/* hover bar */}
       <div
-        className={rowClass({ interactive: true })}
+        className={cx(
+          rowClass({ interactive: true }),
+          css({ gridColumn: "1/-1" }),
+        )}
         data-highlighted={hover || undefined}
-        css={{ gridColumn: "1/-1", gridRow }}
+        style={{ gridRow }}
       />
       <a
         key={item.id}
-        css={{
+        className={css({
           gridColumn: "1",
-          gridRow,
           // mouseEvents: "none",
           // pointerEvents: "",
           cursor: "pointer",
           // so a long name is cut off, rather than widening the table
           minWidth: 0,
-        }}
+        })}
+        style={{ gridRow }}
         onClick={openItemSheet}
         data-item-id={item.id}
         onDragStart={(e) => onDragStart(e, item)}
@@ -77,11 +81,7 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
         return (
           <a
             key={fieldId}
-            css={{
-              gridColumn: j + 2,
-              gridRow,
-              mouseEvents: "none",
-            }}
+            style={{ gridColumn: j + 2, gridRow }}
             onMouseOver={handleMouseOver}
             onMouseOut={handleMouseOut}
             onClick={openItemSheet}
@@ -96,10 +96,7 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
       })}
       <DeleteItemButton
         item={item}
-        css={{
-          gridColumn: Object.keys(fields).length + 2,
-          gridRow,
-        }}
+        style={{ gridColumn: Object.keys(fields).length + 2, gridRow }}
         onMouseOver={handleMouseOver}
         onMouseOut={handleMouseOut}
       />

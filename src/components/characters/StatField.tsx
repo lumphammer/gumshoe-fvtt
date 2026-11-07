@@ -5,6 +5,7 @@ import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertActiveCharacterActor } from "../../module/actors/types";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
+import { css } from "../../styled-system/css";
 
 interface StatFieldProps {
   stat: Stat;
@@ -29,7 +30,7 @@ export const StatField = ({ stat, id }: StatFieldProps) => {
 
   return (
     <div>
-      <h3 css={{ gridColumn: "start / end" }}>{stat.name}</h3>
+      <h3 className={css({ gridColumn: "start / end" })}>{stat.name}</h3>
       <AsyncNumberInput
         min={stat.min ?? 0}
         max={stat.max}

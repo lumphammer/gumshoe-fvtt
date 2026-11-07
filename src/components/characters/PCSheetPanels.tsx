@@ -23,6 +23,7 @@ import { PersonalDetailField } from "./PersonalDetailField";
 import { StatField } from "./StatField";
 import { TrackersArea } from "./TrackersArea";
 import { Panel } from "../Panel";
+import { css } from "../../styled-system/css";
 
 // The PC sheet's panels subscribe independently to the data they display.
 // Foundry root re-renders are disabled; descendants keep themselves current.
@@ -61,11 +62,11 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
   return (
     <>
       <div
-        css={{
+        className={css({
           gridArea: "title",
           textAlign: "center",
           position: "relative",
-        }}
+        })}
       >
         <LogoEditable
           mainText={header.name}
@@ -77,10 +78,10 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
       </div>
       <ImagePickle
         img={header.img}
-        css={{
+        className={css({
           gridArea: "image",
           transform: "rotateZ(2deg)",
-        }}
+        })}
       />
     </>
   );
@@ -119,10 +120,10 @@ export const PCSheetStats = memo(function PCSheetStats() {
 
   return (
     <Panel
-      css={{
+      className={css({
         gridArea: "stats",
         position: "relative",
-      }}
+      })}
     >
       <InputGrid>
         <GridField label="Person Name">
@@ -184,7 +185,7 @@ export const PCSheetPools = memo(function PCSheetPools() {
 
   return (
     <Panel
-      css={{
+      className={css({
         gridArea: "pools",
         position: "relative",
         overflowX: "visible",
@@ -192,7 +193,7 @@ export const PCSheetPools = memo(function PCSheetPools() {
         display: "flex",
         flexDirection: "column",
         gap: "0.5em",
-      }}
+      })}
     >
       {useMwStyleAbilities && (
         <>

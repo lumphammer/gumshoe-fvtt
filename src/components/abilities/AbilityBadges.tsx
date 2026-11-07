@@ -88,15 +88,10 @@ export const AbilityBadges = memo(function AbilityBadges({
   const spaced = css({ marginInline: "0.24em" });
   return (
     <div
+      data-unlocks={unlocks.length > 0 || undefined}
       className={cx(
-        css({
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "end",
-          flexWrap: "wrap",
-          gap: "0.1em",
-        }),
-        unlocks.length > 0 && css({ marginBottom: "0.25em" }),
+        // layout, which call sites can change (componentDefaults.css)
+        "inv-default-ability-badges",
         className,
       )}
     >
