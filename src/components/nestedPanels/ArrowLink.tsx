@@ -2,6 +2,7 @@ import { Link } from "@lumphammer/minirouter";
 import type { ComponentProps } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 
+import { cx } from "../../styled-system/css";
 import { outcome } from "../../styled-system/recipes";
 
 type ArrowLinkProps = ComponentProps<typeof Link> & {
@@ -13,12 +14,13 @@ export const ArrowLink = ({
   back = false,
   danger = false,
   children,
+  className,
   ...rest
 }: ArrowLinkProps) => {
   return (
     <Link
       {...rest}
-      className={danger ? outcome({ tone: "danger" }) : undefined}
+      className={cx(danger && outcome({ tone: "danger" }), className)}
     >
       {back && (
         <FaArrowLeft
