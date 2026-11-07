@@ -20,7 +20,7 @@ const config = defineConfig(({ mode }) => {
     },
 
     plugins: [
-      react({ jsxImportSource: "@emotion/react" }),
+      react(),
     ],
   };
 });

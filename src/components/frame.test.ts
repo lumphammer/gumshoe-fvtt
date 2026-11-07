@@ -1,4 +1,3 @@
-import { css, keyframes } from "@emotion/react";
 import { describe, expect, test } from "vitest";
 
 import { claimFrame, globalCss } from "./frame";
@@ -103,14 +102,12 @@ describe("globalCss", () => {
     expect(globalCss(fontImport)).toBe(fontImport);
   });
 
+  // what Emotion's `css` tag made of a labelled style composed with another
   test("Emotion's labels go, adjacent ones too", () => {
-    const labelled = css`
-      label: theme;
-      ${css`
-        label: font;
-      `}
-      ${fontImport}
-    `;
+    const labelled = {
+      name: "x",
+      styles: `label:theme;label:font;${fontImport}`,
+    };
     expect(globalCss(labelled)).not.toMatch(/label/);
     expect(globalCss(labelled)).toContain(fontImport);
   });
@@ -129,26 +126,26 @@ describe("globalCss", () => {
     expect(globalCss({ name: "x", styles })).toBe(styles);
   });
 
+  // what Emotion's `css` tag made of styles using its `keyframes`: the
+  // keyframes are linked on as `next`
+  const spin = {
+    name: "animation-spin",
+    styles: "@keyframes animation-spin{to{rotate:1turn;}}",
+  };
+  const withSpin = (styles: string) => ({ name: "x", styles, next: spin });
+
   test("keyframes go after the styles, so an @import stays first", () => {
-    const spin = keyframes`to { rotate: 1turn; }`;
-    const out = globalCss(css`
-      ${fontImport}
-      body {
-        animation: ${spin} 2s infinite;
-      }
-    `);
-    expect(out.trimStart().startsWith("@import")).toBe(true);
+    const out = globalCss(
+      withSpin(`${fontImport}body{animation:animation-spin 2s infinite;}`),
+    );
+    expect(out.startsWith("@import")).toBe(true);
   });
 
   test("keyframes the styles use come along", () => {
-    const spin = keyframes`to { rotate: 1turn; }`;
-    const styles = css`
-      body {
-        animation: ${spin} 2s infinite;
-      }
-    `;
-    const out = globalCss(styles);
-    expect(out).toContain(`@keyframes ${spin.name}`);
-    expect(out).toMatch(new RegExp(`animation:\\s*${spin.name}`));
+    const out = globalCss(
+      withSpin("body{animation:animation-spin 2s infinite;}"),
+    );
+    expect(out).toContain("@keyframes animation-spin");
+    expect(out).toContain("animation:animation-spin");
   });
 });

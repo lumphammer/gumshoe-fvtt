@@ -5,7 +5,7 @@ import { useNavigationContext } from "../useNavigationContext";
 export const DevTools: React.FC = () => {
   const { currentStep, childSteps, parentSteps } = useNavigationContext();
   return (
-    <div css={{ padding: "0em", opacity: 0.5 }}>
+    <div style={{ padding: "0em", opacity: 0.5 }}>
       {parentSteps.map((s) => s.direction.description).join("→")}
       {" [ "}
       {currentStep?.direction.description ?? "none"}

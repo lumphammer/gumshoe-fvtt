@@ -63,5 +63,10 @@
     "tsx": "catalog:",
     "yargs": "^18.2.0"
   },
-  "packageManager": "pnpm@12.15.0"
+  "packageManager": "pnpm@12.15.0",
+  "peerDependenciesMeta": {
+    "@emotion/react": {
+      "optional": true
+    }
+  }
 }

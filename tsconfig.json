@@ -8,6 +8,9 @@
     // "noErrorTruncation": true
     // "skipLibCheck": false,
     "noImplicitAny": false,
+    // plain React JSX, not Emotion's (the shared config's default)
+    "jsxImportSource": "react",
+    "paths": {},
   },
   "references": [
     { "path": "./packages/shared-fvtt-bits" },

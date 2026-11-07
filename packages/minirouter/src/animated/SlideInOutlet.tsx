@@ -19,13 +19,13 @@ export const SlideInOutlet = memo<SlideInOutletProps>(
   ({ children, after = false }) => {
     const { content, registry } = useOutletProvider(children);
     const wrappedContent = (
-      <div css={{ ...absoluteCover, pointerEvents: "none" }}>{content}</div>
+      <div style={{ ...absoluteCover, pointerEvents: "none" }}>{content}</div>
     );
 
     return (
       <CustomLazyMotion>
         <div
-          css={{
+          style={{
             ...absoluteCover,
             pointerEvents: "none",
             overflow: "hidden",
@@ -40,7 +40,7 @@ export const SlideInOutlet = memo<SlideInOutletProps>(
                 <m.div
                   key={id}
                   className={`slide-in-outlet-slider-${id}`}
-                  css={{
+                  style={{
                     ...absoluteCover,
                     width: "100%",
                     zIndex: 2,

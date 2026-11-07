@@ -12,8 +12,8 @@ properties on every themed root, and the catalogue has `badge`, `button`,
 `surface`, `floating`, `partyCell`, `richText` and `appFrame`, plus element
 defaults. Every component's look now comes from the catalogue, and none reads
 a theme's colours. V1 themes are mapped onto the catalogue (`fromV1.ts`).
-Layout at call sites is moving from Emotion's `css` prop to Panda's `css()`
-(see Converting a component); a V2 theme format is later work.
+Layout at call sites is Panda's `css()` (see Converting a component); Emotion
+is gone. A V2 theme format is later work.
 
 ## The pieces
 
@@ -542,13 +542,14 @@ Shared definitions for the native world are in `src/components/native/`:
 
 ## Converting a component
 
-Layout at call sites is Panda's `css()` (`className={css({...})}`), not
-Emotion's `css` prop. `src/themes/catalogue/emotionUses.test.ts` lists the
-files that still use Emotion (an `@emotion` import or a `css` prop), and fails
-if a file is added or a converted one isn't taken off. Panda extracts styles
-when it builds, so `css()` only takes values it can work out then: literals,
-constants, and objects imported or spread in (`absoluteCover`). A value that
-varies at run time goes in `style`, usually as a custom property that a static
+Layout at call sites is Panda's `css()` (`className={css({...})}`). JSX is
+plain React's, so there's no `css` prop; `src/themes/catalogue/emotionUses.test.ts`
+fails if Emotion (an `@emotion` import or a `css` prop) comes back. Panda
+extracts styles when it builds, so `css()` only takes values it can work out
+then: literals, constants, objects imported or spread in (`absoluteCover`),
+and a whole value chosen by a ternary. Not a ternary inside a template
+literal: Panda can't build every combination, so the class has no CSS. A value
+that varies at run time goes in `style`, usually as a custom property that a static
 class reads (`MwButton`'s `--mw-color`). For a conditional style, pass
 `css()` several objects (`css(base, active ? activeStyle : {})`), which it
 merges: `cx()` only joins class names, so two classes setting the same
@@ -557,8 +558,8 @@ the same reason, a component that takes a `className` doesn't give itself
 layout with `css()` for properties a caller might set: that goes in a plain
 `inv-default-*` class in `src/components/componentDefaults.css`
 (`system.defaults`), under the caller's utilities. And a `className` before a
-`{...rest}` spread is replaced by the caller's, not merged with it, as
-Emotion's was: put the spread first and merge the caller's in `cx()`.
+`{...rest}` spread is replaced by the caller's, not merged with it: put the
+spread first and merge the caller's in `cx()`.
 Keyframes are in `panda.config.ts`, prefixed `inv` (their names are global).
 Literal colours, shadows and radii need the `[...]` escape (strict tokens), as
 do some layout values Panda's preset maps to its own (`flex: "[0]"`).
@@ -589,10 +590,8 @@ layer beat everything in its sub-layers.
 - `system.utilities`: layout from `css()` at call sites.
 
 The themed root's padding and height are in its inline `style`, with the
-palette, so a V1 theme's root style can still set them. Call-site `css`
-props not converted to Panda yet are Emotion's, which isn't in a layer, so
-they beat all of these; `EmotionPopoutCache` sends their rules to a detached
-window's document, until Emotion goes. A V1 theme's `global` CSS is a
+palette, so a V1 theme's root style can still set them. A V1 theme's `global`
+CSS (a string, or Emotion's serialised styles from a theme module) is a
 `<style>` in the root.
 
 The palette is set as an inline `style` on the themed root, not in a

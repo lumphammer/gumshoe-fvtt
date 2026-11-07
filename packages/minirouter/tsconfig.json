@@ -8,5 +8,7 @@
     "noEmit": false,
     "emitDeclarationOnly": true,
     "outDir": "dist",
+    "jsxImportSource": "react",
+    "paths": {},
   },
 }
