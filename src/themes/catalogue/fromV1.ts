@@ -5,6 +5,7 @@ import type {
 
 import { paletteVar } from "../palette";
 import type { ThemeV1 } from "../types";
+import { logoDefaults } from "./logoDefaults";
 import {
   type CatalogueOverrides,
   type OverrideStyle,
@@ -117,6 +118,35 @@ function sheetRootFromV1(theme: ThemeV1): CatalogueOverrides {
 }
 
 /**
+ * In V1, each part of the logo was its defaults with the theme's style for it
+ * spread over them (the front style over the name, its measuring copy and the
+ * subtext; the rear style over their rear copies). Every seed has a logo.
+ */
+function logoFromV1(theme: ThemeV1): CatalogueOverrides {
+  const { logo } = theme;
+  const over = (
+    defaults: Record<string, string | number>,
+    style: CSSObject | undefined,
+  ): OverrideStyle => ({ ...defaults, ...fromEmotion(style ?? {}) });
+  return {
+    logo__backdrop: over(logoDefaults.backdrop, logo.backdropStyle),
+    logo__text: over(logoDefaults.text, logo.textElementsStyle),
+    logo__front_wrapper: over(
+      logoDefaults.front_wrapper,
+      logo.frontTextElementWrapperStyle,
+    ),
+    logo__front: over(logoDefaults.front, logo.frontTextElementStyle),
+    logo__front_sub: over(logoDefaults.front_sub, logo.frontTextElementStyle),
+    logo__rear_wrapper: over(
+      logoDefaults.rear_wrapper,
+      logo.rearTextElementWrapperStyle,
+    ),
+    logo__rear: over(logoDefaults.rear, logo.rearTextElementStyle),
+    logo__rear_sub: over(logoDefaults.rear_sub, logo.rearTextElementStyle),
+  };
+}
+
+/**
  * The catalogue overrides a V1 seed's own styles become, so V1 themes keep
  * their look as their components are converted. `theme` is the seed as
  * `themeFactory` filled it in, for the V1 defaults of fields it left out.
@@ -127,6 +157,7 @@ export function catalogueFromV1(
 ): CatalogueOverrides {
   return {
     ...sheetRootFromV1(theme),
+    ...logoFromV1(theme),
     ...panelsFromV1(seed),
     ...tabsFromV1(seed, theme),
   };

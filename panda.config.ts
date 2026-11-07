@@ -14,6 +14,7 @@ import {
   sectionHeading,
   tableHeader,
 } from "./src/themes/catalogue/lists";
+import { logo } from "./src/themes/catalogue/logo";
 import { panel } from "./src/themes/catalogue/panel";
 import { select } from "./src/themes/catalogue/select";
 import { sheetRoot } from "./src/themes/catalogue/sheetRoot";
@@ -121,7 +122,7 @@ export default defineConfig({
       sheetRoot,
       tableHeader,
     },
-    slotRecipes: { checkbox, tabs, toggle },
+    slotRecipes: { checkbox, logo, tabs, toggle },
     tokens: {
       colors: Object.fromEntries(colorKeys.map((key) => [key, v(key)])),
       radii: { standard: v("radius") },
