@@ -287,7 +287,11 @@ export function catalogueOverridesCss(
       return ok;
     })
     .map(([name, style]) => {
-      const scope = `[data-inv-theme="${slug}"]`;
+      // the window around a root is Foundry's, and has its own attribute
+      const attribute = name.startsWith("app-frame")
+        ? "data-inv-frame"
+        : "data-inv-theme";
+      const scope = `[${attribute}="${slug}"]`;
       return `@layer ${layerOf(name)} {\n${serialize(
         [`.inv-${name}:where(${scope}, ${scope} *)`],
         style,

@@ -1,6 +1,6 @@
-import { cx } from "@emotion/css";
 import { memo, useMemo } from "react";
 
+import { cx } from "../../../styled-system/css";
 import { assertGame } from "../../../functions/isGame";
 import { useCombatantContext } from "./CombatantContext";
 
@@ -39,10 +39,10 @@ export const BottomRow = memo(function BottomRow() {
         <>
           <button
             type="button"
-            className={cx("inline-control combatant-control icon fa-solid", {
-              "fa-eye-slash active": combatantState.hidden,
-              "fa-eye": !combatantState.hidden,
-            })}
+            className={cx(
+              "inline-control combatant-control icon fa-solid",
+              combatantState.hidden ? "fa-eye-slash active" : "fa-eye",
+            )}
             data-action="toggleHidden"
             data-tooltip=""
             aria-label={localize(
@@ -53,9 +53,7 @@ export const BottomRow = memo(function BottomRow() {
             type="button"
             className={cx(
               "inline-control combatant-control icon fa-solid fa-skull",
-              {
-                active: combatantState.defeated,
-              },
+              combatantState.defeated && "active",
             )}
             data-action="toggleDefeated"
             data-tooltip=""

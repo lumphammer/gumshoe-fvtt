@@ -132,6 +132,16 @@ function sheetRootFromV1(theme: ThemeV1): CatalogueOverrides {
 }
 
 /**
+ * In V1, `appWindowStyle` went on the window around the sheet, over Foundry's
+ * own look: the frame's `root` is empty by default, so it's that look.
+ */
+function appFrameFromV1(seed: ThemeSeedV1): CatalogueOverrides {
+  return seed.appWindowStyle
+    ? { "app-frame__root": fromEmotion(seed.appWindowStyle) }
+    : {};
+}
+
+/**
  * In V1, each part of the logo was its defaults with the theme's style for it
  * spread over them (the front style over the name, its measuring copy and the
  * subtext; the rear style over their rear copies). Every seed has a logo.
@@ -251,6 +261,7 @@ export function catalogueFromV1(
   theme: ThemeV1,
 ): CatalogueOverrides {
   return {
+    ...appFrameFromV1(seed),
     ...sheetRootFromV1(theme),
     ...logoFromV1(theme),
     ...cardsFromV1(seed, theme),

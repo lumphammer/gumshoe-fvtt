@@ -24,7 +24,7 @@ const seed = {
 const fromV1 = (seed: Parameters<typeof catalogueFromV1>[0]) =>
   Object.fromEntries(
     Object.entries(catalogueFromV1(seed, tealTheme)).filter(
-      ([name]) => !/^(sheet-root|logo)/.test(name),
+      ([name]) => !/^(sheet-root|logo|app-frame)/.test(name),
     ),
   );
 
@@ -260,4 +260,15 @@ describe("cards", () => {
       ':where(.inv-card__root:is([data-category="mental\\20 stress"])) &',
     );
   });
+});
+
+test("a theme's window style goes on the frame, scoped to the window", () => {
+  const overrides = catalogueFromV1(
+    { ...tealTheme, appWindowStyle: { boxShadow: "0 0 20px red" } },
+    tealTheme,
+  );
+  expect(overrides["app-frame__root"]).toEqual({ boxShadow: "0 0 20px red" });
+  expect(catalogueOverridesCss("t", overrides)).toContain(
+    '.inv-app-frame__root:where([data-inv-frame="t"], [data-inv-frame="t"] *)',
+  );
 });
