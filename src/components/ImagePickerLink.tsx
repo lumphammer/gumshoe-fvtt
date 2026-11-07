@@ -2,7 +2,6 @@ import type { PropsWithChildren } from "react";
 import React, { useCallback } from "react";
 
 import { displayText, floating } from "../styled-system/recipes";
-import { cx } from "../styled-system/css";
 
 type ImagePickerLinkProps = PropsWithChildren<{
   onClick: () => void;
@@ -23,10 +22,12 @@ export const ImagePickerLink = ({
   return (
     <a
       onClick={onClickCb}
-      className={cx(displayText(), floating({ kind: "chip" }))}
+      className={floating({ kind: "chip" })}
       css={{ padding: "0 0.5em" }}
     >
-      {children}
+      {/* the label's own element, so its class and the chip's can each be
+        overridden without the other */}
+      <span className={displayText()}>{children}</span>
     </a>
   );
 };

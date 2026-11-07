@@ -1,13 +1,5 @@
 import { defineRecipe } from "@pandacss/dev";
 
-import { paletteVar } from "../palette";
-
-const v = (key: Parameters<typeof paletteVar>[0]) => `var(${paletteVar(key)})`;
-
-/** A colour with half of `danger` mixed in. */
-const dangerous = (color: string) =>
-  `[color-mix(in srgb, ${v("danger")} 50%, ${color})]` as const;
-
 /**
  * **surface**: a plain area of surface that isn't a block of content of its
  * own (a panel has padding and nests; this doesn't): a sheet's notes area, a
@@ -28,13 +20,19 @@ export const surface = defineRecipe({
     solid: { true: {}, false: {} },
   },
   compoundVariants: [
-    { depth: "top", solid: false, css: { background: "surface" } },
-    { depth: "nested", solid: false, css: { background: "surfaceNested" } },
-    { depth: "top", solid: true, css: { background: "surfaceSolid" } },
+    // the colour only: a surface can go on an element with a background
+    // image of its own (the loading screen's sheet root)
+    { depth: "top", solid: false, css: { backgroundColor: "surface" } },
+    {
+      depth: "nested",
+      solid: false,
+      css: { backgroundColor: "surfaceNested" },
+    },
+    { depth: "top", solid: true, css: { backgroundColor: "surfaceSolid" } },
     {
       depth: "nested",
       solid: true,
-      css: { background: "surfaceNestedSolid" },
+      css: { backgroundColor: "surfaceNestedSolid" },
     },
   ],
   defaultVariants: { depth: "top", solid: false },
@@ -65,6 +63,9 @@ export const floating = defineRecipe({
         borderLeftWidth: "1px",
         borderLeftStyle: "solid",
         borderLeftColor: "line",
+        // a shadow as deep as the gap it slides in from: the call site sets
+        // --drawer-shadow-size
+        boxShadow: "[0 0 var(--drawer-shadow-size, 1em) 0 #0007]",
       },
       bar: {
         borderBottomWidth: "1px",
@@ -85,7 +86,7 @@ export const floating = defineRecipe({
 /**
  * **partyCell**: a cell of the party sheet's grid of abilities (specialised).
  * Rows alternate between `surface` and `surfaceNested`; an ability nobody in
- * the party has is tinted with `danger`. Header cells (the actors' names, the
+ * the party has is on the danger-tinted surfaces (`surfaceDanger` and so on). Header cells (the actors' names, the
  * abilities' names) are stuck over the others as it scrolls, so they're on
  * the solid surfaces.
  *
@@ -124,25 +125,25 @@ export const partyCell = defineRecipe({
       odd: true,
       zero: true,
       header: false,
-      css: { background: dangerous(v("surface")) },
+      css: { background: "surfaceDanger" },
     },
     {
       odd: false,
       zero: true,
       header: false,
-      css: { background: dangerous(v("surfaceNested")) },
+      css: { background: "surfaceNestedDanger" },
     },
     {
       odd: true,
       zero: true,
       header: true,
-      css: { background: dangerous(v("surfaceSolid")) },
+      css: { background: "surfaceDangerSolid" },
     },
     {
       odd: false,
       zero: true,
       header: true,
-      css: { background: dangerous(v("surfaceNestedSolid")) },
+      css: { background: "surfaceNestedDangerSolid" },
     },
   ],
   defaultVariants: { odd: false, zero: false, header: false },

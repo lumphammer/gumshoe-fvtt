@@ -7,6 +7,7 @@ import { focusableSelector } from "./focusableSelector";
 import { ShowBackLinkContext } from "./ShowBackLinkContext";
 import { floating } from "../../styled-system/recipes";
 import { cx } from "../../styled-system/css";
+import type { CSSProperties } from "react";
 
 const defaultPanelMargin = "3em";
 
@@ -57,6 +58,11 @@ export const NestedPanel = memo<NestedPanelProps>(
           ref={ref}
           className={cx(floating({ kind: "drawer" }), className)}
           onKeyDown={handleKeyDown}
+          style={
+            {
+              "--drawer-shadow-size": `min(${margin}, ${defaultPanelMargin})`,
+            } as CSSProperties
+          }
           css={{
             position: "absolute",
             top: 0,
@@ -64,7 +70,6 @@ export const NestedPanel = memo<NestedPanelProps>(
             right: 0,
             bottom: 0,
             padding: "1em",
-            boxShadow: `0 0 min(${margin}, ${defaultPanelMargin}) 0 #0007`,
             overflow: "auto",
             display: "flex",
             flexDirection: "column",

@@ -19,6 +19,17 @@ export interface Palette {
   surfaceSolid: string;
   /** (derived) `surfaceNested` flattened over `wallpaper`. */
   surfaceNestedSolid: string;
+  /**
+   * (derived) `surface` tinted halfway to `danger`, keeping its opacity: a
+   * status tint for an area that's in trouble (an ability nobody has).
+   */
+  surfaceDanger: string;
+  /** (derived) `surfaceNested` tinted halfway to `danger`, keeping its opacity. */
+  surfaceNestedDanger: string;
+  /** (derived) `surfaceDanger` flattened over `wallpaper`. */
+  surfaceDangerSolid: string;
+  /** (derived) `surfaceNestedDanger` flattened over `wallpaper`. */
+  surfaceNestedDangerSolid: string;
   /** The fill of controls: buttons, toggle tracks. */
   control: string;
   /** The default ink. Legible on `surface`, `surfaceNested` and `control`. */
@@ -143,6 +154,10 @@ export function paletteFromV1(theme: ThemeV1): Palette {
     surfaceNested: colors.backgroundSecondary,
     surfaceSolid: colors.bgOpaquePrimary,
     surfaceNestedSolid: colors.bgOpaqueSecondary,
+    surfaceDanger: colors.bgTransDangerPrimary,
+    surfaceNestedDanger: colors.bgTransDangerSecondary,
+    surfaceDangerSolid: colors.bgOpaqueDangerPrimary,
+    surfaceNestedDangerSolid: colors.bgOpaqueDangerSecondary,
     control: colors.backgroundButton,
     text: colors.text,
     textMuted: `color-mix(in srgb, ${colors.text} 70%, ${colors.bgOpaquePrimary})`,
