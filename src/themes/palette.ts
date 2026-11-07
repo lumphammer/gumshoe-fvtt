@@ -84,29 +84,36 @@ const channel = (value: string, percent: string, max: number) =>
   percent ? (Number(value) / 100) * max : Number(value);
 
 /**
+ * A colour's sRGB channels (0 to 255), or null if it isn't one we can read as
+ * sRGB: Irid's hex, named and comma-separated colours, and space-separated
+ * `rgb()`.
+ */
+function sRgbOf(color: string): [number, number, number] | null {
+  try {
+    const { r, g, b } = irid(color).rgb;
+    return [r, g, b];
+  } catch {
+    // not one Irid reads
+  }
+  const css = color.trim().toLowerCase();
+  const rgb = /^rgba?\(\s*([\d.]+)(%?)\s+([\d.]+)(%?)\s+([\d.]+)(%?)/.exec(css);
+  if (!rgb) return null;
+  const [r, g, b] = [1, 3, 5].map((i) =>
+    Math.round(channel(rgb[i], rgb[i + 1], 255)),
+  );
+  return [r, g, b];
+}
+
+/**
  * A colour's relative luminance (0 is black, 1 is white), or null if we can't
  * tell. Irid reads hex, named and comma-separated colours; this also reads
  * space-separated `rgb()`, and the lightness of `oklch()`, `oklab()`, `lch()`
  * and `lab()`.
  */
 export function luminanceOf(color: string): number | null {
-  try {
-    return irid(color).relativeLuminance();
-  } catch {
-    // not one Irid reads
-  }
+  const rgb = sRgbOf(color);
+  if (rgb) return irid(`rgb(${rgb.join(", ")})`).relativeLuminance();
   const css = color.trim().toLowerCase();
-  const rgb = /^rgba?\(\s*([\d.]+)(%?)\s+([\d.]+)(%?)\s+([\d.]+)(%?)/.exec(css);
-  if (rgb) {
-    const [r, g, b] = [1, 3, 5].map((i) =>
-      Math.round(channel(rgb[i], rgb[i + 1], 255)),
-    );
-    try {
-      return irid(`rgb(${r}, ${g}, ${b})`).relativeLuminance();
-    } catch {
-      return null;
-    }
-  }
   const ok = /^okl(?:ch|ab)\(\s*([\d.]+)(%?)/.exec(css);
   if (ok) {
     // OKLab's lightness is roughly the cube root of luminance
@@ -126,11 +133,45 @@ const blackReadsBetter = (luminance: number) =>
   // contrast ratio with black vs with white (WCAG)
   (luminance + 0.05) / 0.05 > 1.05 / (luminance + 0.05);
 
-/** Black or white, whichever has the higher contrast ratio on `color`. */
+/**
+ * APCA's lightness contrast (Lc, about -108 to 106) of text on a background,
+ * from their luminances: the perceptual model being developed for WCAG 3
+ * (SAPC 0.0.98G constants), with luminances from `apcaLuminanceOf`. Unlike WCAG 2's contrast ratio, it doesn't
+ * overrate dark text on saturated mid-tones: on pure red, WCAG 2 prefers
+ * black (5.25:1 to 4:1), but white reads far better, and APCA agrees (Lc 70
+ * to 40).
+ */
+export function apcaContrast(text: number, background: number) {
+  const clamp = (y: number) => (y < 0.022 ? y + (0.022 - y) ** 1.414 : y);
+  const [t, b] = [clamp(text), clamp(background)];
+  if (b > t) {
+    const sapc = (b ** 0.56 - t ** 0.57) * 1.14;
+    return sapc < 0.1 ? 0 : (sapc - 0.027) * 100;
+  }
+  const sapc = (b ** 0.65 - t ** 0.62) * 1.14;
+  return sapc > -0.1 ? 0 : (sapc + 0.027) * 100;
+}
+
+/**
+ * A colour's luminance as APCA works it out: its sRGB channels to the power
+ * 2.4, not WCAG's piecewise curve, which can flip a close choice of ink.
+ * Colours we can't read as sRGB fall back to their relative luminance.
+ */
+function apcaLuminanceOf(color: string): number | null {
+  const rgb = sRgbOf(color);
+  if (!rgb) return luminanceOf(color);
+  const [r, g, b] = rgb.map((c) => (c / 255) ** 2.4);
+  return 0.2126729 * r + 0.7151522 * g + 0.072175 * b;
+}
+
+/** Black or white, whichever reads better on `color` (APCA). */
 function inkOn(color: string, fallback: string) {
-  const luminance = luminanceOf(color);
+  const luminance = apcaLuminanceOf(color);
   if (luminance === null) return fallback;
-  return blackReadsBetter(luminance) ? "#000000" : "#ffffff";
+  return Math.abs(apcaContrast(0, luminance)) >=
+    Math.abs(apcaContrast(1, luminance))
+    ? "#000000"
+    : "#ffffff";
 }
 
 /** Light ink means a dark theme. */

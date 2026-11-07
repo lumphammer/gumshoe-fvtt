@@ -77,7 +77,7 @@ kebab case: `surfaceNested` is `--inv-surface-nested`), and a Panda token
 | `feedback` | The colour of hover, focus and drag-over feedback. Never state or decoration |
 | `line` | Structural lines: control outlines, separators, heading rules, table header rules |
 | `danger`, `warning`, `success`, `info` | Status. Each is legible as text on both surfaces |
-| `onDanger`, `onWarning`, `onSuccess`, `onInfo` | Ink on the matching status fill |
+| `onDanger`, `onWarning`, `onSuccess`, `onInfo` | Ink on the matching status fill. From a V1 theme, black or white, whichever reads better by APCA contrast (WCAG 2's ratio prefers black on saturated reds, where white reads far better) |
 | `radius` | The one corner radius classes share (Panda: `radii.standard`) |
 | `elevation` | The shadow for anything floating (Panda: `shadows.elevation`) |
 | `bodyFont` | The `body` text style: prose and controls. A CSS `font` value |
