@@ -5,6 +5,7 @@ import type {
 
 import { paletteVar } from "../palette";
 import type { ThemeV1 } from "../types";
+import { cardDefaults, v1CardStyleNames } from "./cardDefaults";
 import { backdropForced, logoDefaults, measureForced } from "./logoDefaults";
 import {
   type CatalogueOverrides,
@@ -172,6 +173,41 @@ function logoFromV1(theme: ThemeV1): CatalogueOverrides {
 }
 
 /**
+ * In V1, each part of a card was its defaults with the seed's `cards.base`
+ * style spread over them, and then its category's (`cards.categories`, by
+ * the card's style key). A category becomes a nested rule in each part's
+ * override: on the root, `&[data-category="x"]`; on the others,
+ * `[data-category="x"] &`. Only for a seed that styles its cards.
+ */
+function cardsFromV1(seed: ThemeSeedV1): CatalogueOverrides {
+  const base = seed.cards?.base;
+  const categories = Object.entries(seed.cards?.categories ?? {}).filter(
+    // a style key goes in an attribute selector: nothing that could end it
+    ([key]) => /^[\w-]+$/.test(key),
+  );
+  if (!base && categories.length === 0) return {};
+  return Object.fromEntries(
+    (Object.keys(cardDefaults) as (keyof typeof cardDefaults)[]).map((slot) => {
+      const name = v1CardStyleNames[slot];
+      const style: OverrideStyle = {
+        ...cardDefaults[slot],
+        ...fromEmotion(base?.[name] ?? {}),
+      };
+      for (const [key, category] of categories) {
+        const own = category[name];
+        if (!own) continue;
+        const selector =
+          slot === "root"
+            ? `&[data-category="${key}"]`
+            : `[data-category="${key}"] &`;
+        style[selector] = fromEmotion(own);
+      }
+      return [`card__${slot}`, style];
+    }),
+  );
+}
+
+/**
  * The catalogue overrides a V1 seed's own styles become, so V1 themes keep
  * their look as their components are converted. `theme` is the seed as
  * `themeFactory` filled it in, for the V1 defaults of fields it left out.
@@ -183,6 +219,7 @@ export function catalogueFromV1(
   return {
     ...sheetRootFromV1(theme),
     ...logoFromV1(theme),
+    ...cardsFromV1(seed),
     ...panelsFromV1(seed),
     ...tabsFromV1(seed, theme),
   };

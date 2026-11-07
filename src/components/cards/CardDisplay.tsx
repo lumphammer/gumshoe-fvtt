@@ -1,10 +1,4 @@
-import React, {
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
 import { getTranslated } from "../../functions/getTranslated";
@@ -13,9 +7,10 @@ import { isNullOrEmptyString } from "../../functions/utilities";
 import type { CardItem } from "../../module/items/card";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { cx } from "../../styled-system/css";
 import { summarizeCategoryMemberships } from "./functions";
 import type { CardsViewMode } from "./types";
+import { card as cardClass } from "../../styled-system/recipes";
 
 interface CardDisplayProps {
   card: CardItem;
@@ -37,7 +32,6 @@ export const CardDisplay = memo(function CardDisplay({
   draggable,
   onDragStart,
 }: CardDisplayProps) {
-  const theme = useContext(ThemeContext);
   const [descriptionHTML, setDescriptionHTML] = useState("");
   const [effectsHTML, setEffectsHTML] = useState("");
   const data = useItemSelector(card, (snapshot) => ({
@@ -72,7 +66,7 @@ export const CardDisplay = memo(function CardDisplay({
     void cleanAndEnrichHtml(system.effects).then(setEffectsHTML);
   }, [system.effects]);
 
-  const categoryTheme = styleKey ? theme.cards.categories[styleKey] : null;
+  const classes = cardClass();
 
   const supertitleText = [
     // category name
@@ -94,60 +88,30 @@ export const CardDisplay = memo(function CardDisplay({
       data-item-id={card.id}
       tabIndex={0}
       onClick={handleClick}
-      className={`investigator-card-display ${className} ${styleKey}`}
-      css={{
-        ...theme.cards.base.backdropStyle,
-        ...categoryTheme?.backdropStyle,
-      }}
+      className={cx(
+        "investigator-card-display",
+        classes.root,
+        className,
+        styleKey,
+      )}
+      data-category={styleKey}
     >
       {supertitleText && (
-        <p
-          className="supertitle"
-          css={{
-            ...theme.cards.base.supertitleStyle,
-            ...categoryTheme?.supertitleStyle,
-          }}
-        >
-          {supertitleText}
-        </p>
+        <p className={cx("supertitle", classes.supertitle)}>{supertitleText}</p>
       )}
-      <h2
-        className="title"
-        css={{
-          ...theme.cards.base.titleStyle,
-          ...categoryTheme?.titleStyle,
-        }}
-      >
-        {data.name}
-      </h2>
+      <h2 className={cx("title", classes.title)}>{data.name}</h2>
       {!isNullOrEmptyString(system.subtitle) && (
-        <p
-          className="subtitle"
-          css={{
-            ...theme.cards.base.subtitleStyle,
-            ...categoryTheme?.subtitleStyle,
-          }}
-        >
-          {system.subtitle}
-        </p>
+        <p className={cx("subtitle", classes.subtitle)}>{system.subtitle}</p>
       )}
       {showText && !isNullOrEmptyString(descriptionHTML) && (
         <p
-          className="description"
-          css={{
-            ...theme.cards.base.descriptionStyle,
-            ...categoryTheme?.descriptionStyle,
-          }}
+          className={cx("description", classes.description)}
           dangerouslySetInnerHTML={{ __html: descriptionHTML }}
         />
       )}
       {showText && !isNullOrEmptyString(effectsHTML) && (
         <p
-          className="effects"
-          css={{
-            ...theme.cards.base.effectStyle,
-            ...categoryTheme?.effectStyle,
-          }}
+          className={cx("effects", classes.effect)}
           dangerouslySetInnerHTML={{ __html: effectsHTML }}
         />
       )}

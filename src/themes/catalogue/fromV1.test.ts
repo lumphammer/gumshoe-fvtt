@@ -16,6 +16,7 @@ const seed = {
   tabWrappedStyle: undefined,
   tabWrappedActiveStyle: undefined,
   tabContentWrappedStyle: undefined,
+  cards: undefined,
 };
 
 /** The mapping, without the sheet root and logo (which every theme has). */
@@ -208,4 +209,34 @@ test("the logo's forced layout stays forced, even against !important", () => {
     fontSize: "1em",
     position: "absolute",
   });
+});
+
+test("a seed's card styles go over each part's defaults, with its categories as nested rules", () => {
+  const overrides = catalogueFromV1(
+    {
+      ...seed,
+      cards: {
+        base: { titleStyle: { color: "red" } },
+        categories: {
+          stress: { backdropStyle: { borderColor: "orange" } },
+          clue: { titleStyle: { color: "blue" } },
+          'bad"key': { titleStyle: { color: "green" } },
+        },
+      },
+    },
+    tealTheme,
+  );
+  expect(overrides["card__root"]).toMatchObject({
+    padding: "0.5em",
+    '&[data-category="stress"]': { borderColor: "orange" },
+  });
+  expect(overrides["card__title"]).toEqual({
+    color: "red",
+    '[data-category="clue"] &': { color: "blue" },
+  });
+  expect(overrides["card__effect"]).toEqual({ fontStyle: "italic" });
+  // no seed styles for its cards: nothing
+  expect(Object.keys(fromV1(seed)).some((k) => k.startsWith("card"))).toBe(
+    false,
+  );
 });
