@@ -1,4 +1,4 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import { liveItems } from "../../functions/liveItems";
 import { isNetworkContactItem } from "../../module/items/networkContact";
@@ -13,11 +13,11 @@ import {
   getNetworkAbilityIn,
   getNetworkContactsIn,
 } from "../../module/actors/pcDerived";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
 import { NetworkContactRow } from "./NetworkContactRow";
+import { tableHeader } from "../../styled-system/recipes";
 
 /**
  * The Contacts tab on the PC sheet (Fall of DELTA GREEN, p. 068): what's left
@@ -26,7 +26,6 @@ import { NetworkContactRow } from "./NetworkContactRow";
 export const NetworkContactsArea = memo(function NetworkContactsArea() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const theme = useContext(ThemeContext);
   const networkName = useSettings((s) => s.networkAbility);
   // the contacts' ids, by name; the Network ability's pool and rating; and
   // the points the contacts hold
@@ -114,12 +113,11 @@ export const NetworkContactsArea = memo(function NetworkContactsArea() {
         >
           {/* the header row, underlined like the ability categories */}
           <div
+            className={tableHeader()}
             css={{
               gridColumn: "1/-1",
               display: "grid",
               gridTemplateColumns: "subgrid",
-              fontWeight: "bold",
-              borderBottom: `1px solid ${theme.colors.text}`,
               "& > *": { paddingInline: "0.25em" },
             }}
           >

@@ -7,6 +7,13 @@ import { button } from "./src/themes/catalogue/button";
 import { callout } from "./src/themes/catalogue/callout";
 import { checkbox } from "./src/themes/catalogue/checkbox";
 import { input } from "./src/themes/catalogue/input";
+import {
+  dragHandle,
+  emptyState,
+  row,
+  sectionHeading,
+  tableHeader,
+} from "./src/themes/catalogue/lists";
 import { panel } from "./src/themes/catalogue/panel";
 import { select } from "./src/themes/catalogue/select";
 import { tabs } from "./src/themes/catalogue/tabs";
@@ -95,7 +102,19 @@ export default defineConfig({
   // spells it out: themes override them by name
   staticCss: { recipes: "*", slotRecipes: "*" },
   theme: {
-    recipes: { badge, button, callout, input, panel, select },
+    recipes: {
+      badge,
+      button,
+      callout,
+      dragHandle,
+      emptyState,
+      input,
+      panel,
+      row,
+      sectionHeading,
+      select,
+      tableHeader,
+    },
     slotRecipes: { checkbox, tabs, toggle },
     tokens: {
       colors: Object.fromEntries(colorKeys.map((key) => [key, v(key)])),

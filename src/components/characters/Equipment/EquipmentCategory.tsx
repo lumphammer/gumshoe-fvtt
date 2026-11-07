@@ -1,5 +1,5 @@
 import type React from "react";
-import { memo, useCallback, useContext, useState } from "react";
+import { memo, useCallback, useState } from "react";
 
 import { liveItems } from "../../../functions/liveItems";
 import { isEquipmentItem } from "../../../module/items/equipment";
@@ -10,10 +10,10 @@ import type {
   EquipmentCategoriesSnapshot,
   EquipmentItem,
 } from "../../../module/items/equipment";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { EquipmentItemRow } from "./EquipmentItemRow";
+import { tableHeader } from "../../../styled-system/recipes";
 
 interface EquipmentCategoryProps {
   categoryId: string;
@@ -36,7 +36,6 @@ export const EquipmentCategory = memo(function EquipmentCategory({
   setDraggedItem,
 }: EquipmentCategoryProps) {
   const dragStart = useDragStart();
-  const theme = useContext(ThemeContext);
   const { createEquipment } = useSystemMethods(actor);
   // the live items, only to pass to the rows
   const items = liveItems(actor, ids, isEquipmentItem);
@@ -130,11 +129,8 @@ export const EquipmentCategory = memo(function EquipmentCategory({
 
       {/* Headers */}
       <div
-        css={{
-          gridColumn: "1/-1",
-          gridRow: "headers",
-          borderBottom: `1px solid ${theme.colors.controlBorder}`,
-        }}
+        className={tableHeader()}
+        css={{ gridColumn: "1/-1", gridRow: "headers" }}
       />
       <div css={{ gridColumn: "1", gridRow: "headers" }}>
         <Translate>Item Name</Translate>
