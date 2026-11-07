@@ -8,8 +8,8 @@ The system is being built in steps (#1532). The palette exists, as custom
 properties on every themed root, and the catalogue has `badge`, `button`,
 `panel`, `callout`, `input`, `select`, `checkbox`, `toggle`, `tabs`,
 `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`,
-`displayText`, `mutedText`, `outcome` and `sheetRoot`, plus element
-defaults. Everything else is still drawn by Emotion from V1 themes, and the
+`displayText`, `mutedText`, `outcome`, `sheetRoot` and `logo`, plus
+element defaults. Everything else is still drawn by Emotion from V1 themes, and the
 two run side by side until every component is converted.
 
 ## The pieces
@@ -343,6 +343,24 @@ The application window around the root (`appWindowStyle` in V1) isn't a
 class yet: in Foundry v13, `CSSReset` looks for `.window-app`, which
 ApplicationV2 windows don't have, so V1 window styles currently do nothing
 there.
+
+### `logo`
+
+The character sheet's logo (`LogoEditable`): the name and its subtext in large
+display text, drawn twice, a front copy over a rear one, on a backdrop, so a
+theme can do 3D, shadows and text gradients. Slots: `backdrop`, `text` (the
+wrapper of both copies, which the theme can transform), `front_wrapper`,
+`front` (the name), `front_sub` (the subtext), and the same three for `rear`.
+Slot names are snake_case, so their classes are valid override names
+(`inv-logo__front_sub`).
+
+*Expected override, every slot:* each theme's logo is its own. A V1 seed's
+`logo` styles become overrides of the matching slots, each starting from that
+slot's defaults (`logoDefaults.ts`), because V1 spread them over the defaults
+(the front style goes on the name and the subtext alike). What V1 put after
+the theme's style stays layout in `LogoEditable`, so a theme can't change it:
+the backdrop fills the logo, and the hidden copy that measures the name is
+full size.
 
 Draw a class's parts with real elements (slots), not `::before`/`::after`:
 an override replaces the rule for the element its name selects, so a

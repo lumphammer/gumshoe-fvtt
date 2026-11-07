@@ -1,9 +1,9 @@
-import type { CSSObject } from "@emotion/react";
-import { type RefObject, useContext, useEffect, useRef } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useIsEditable } from "../../hooks/useIsEditable";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { css, cx } from "../../styled-system/css";
+import { logo } from "../../styled-system/recipes";
 
 type LogoEditableProps = {
   className?: string;
@@ -12,12 +12,6 @@ type LogoEditableProps = {
   defaultSubText?: string;
   onChangeMainText: (newValue: string) => void;
   onChangeSubText?: (newValue: string) => void;
-};
-
-const subtextSyle: CSSObject = {
-  fontSize: "0.5em",
-  padding: "0 1em",
-  minHeight: "1em",
 };
 
 /**
@@ -86,38 +80,6 @@ const useFitTextToWidth = (
   }, [wrapperRef, measureRef]);
 };
 
-const textStyle: CSSObject = {
-  transition: "font-size var(--logo-fit-duration, 0s)",
-  fontSize: "calc(1em * var(--logo-fit, 1))",
-  padding: "0 1em",
-};
-
-// clips the measuring copy, so it can't make anything scroll
-const measureClipStyle: CSSObject = {
-  position: "absolute",
-  top: 0,
-  left: 0,
-  width: 0,
-  height: 0,
-  overflow: "hidden",
-  visibility: "hidden",
-};
-
-const measureStyle: CSSObject = {
-  position: "absolute",
-  top: 0,
-  left: 0,
-  fontSize: "1em",
-};
-
-const textBearerStyle: CSSObject = {
-  color: "transparent",
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-};
-
 /**
  * Fancy editable logo text for the top of the character sheet.
  *
@@ -146,7 +108,7 @@ export const LogoEditable = ({
   onChangeMainText,
   onChangeSubText,
 }: LogoEditableProps) => {
-  const theme = useContext(ThemeContext);
+  const classes = logo();
 
   // all the editing logic is done in the hook
   const {
@@ -186,106 +148,86 @@ export const LogoEditable = ({
   return (
     // outer - set the transform origin
     <div
-      className={`logo ${className}`}
-      css={{
-        display: "block",
-        position: "relative",
-        height: "6em",
-        width: "auto",
-        perspective: "500px",
-        perspectiveOrigin: "50% 50%",
-      }}
+      className={cx(
+        "logo",
+        css({
+          display: "block",
+          position: "relative",
+          height: "6em",
+          width: "auto",
+          perspective: "500px",
+          perspectiveOrigin: "50% 50%",
+        }),
+        className,
+      )}
     >
-      {/* Backdrop */}
+      {/* Backdrop: filling the logo, whatever the theme says */}
       <div
-        className="backdrop"
-        css={{
-          ...theme.logo.backdropStyle,
-          position: "absolute",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-        }}
+        className={cx(
+          "backdrop",
+          classes.backdrop,
+          css({ position: "absolute", inset: "0" }),
+        )}
       />
       {/* inner - apply the transform */}
       <div
-        className="text-elements-wrapper"
+        className={cx("text-elements-wrapper", classes.text)}
         ref={wrapperRef}
-        css={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          font: theme.displayFont,
-          textTransform: theme.displayFontTextTransform,
-          fontSize: "4em",
-          whiteSpace: "nowrap",
-          caretColor: "black",
-          border: "none",
-          padding: 0,
-          lineHeight: 1,
-          ...theme.logo.textElementsStyle,
-        }}
       >
         {/* rear-element, aka the shadow-bearer */}
         <div
-          className="rear-text-element shadow-bearer"
+          className={cx(
+            "rear-text-element shadow-bearer",
+            classes.rear_wrapper,
+          )}
           aria-hidden
-          css={{
-            zIndex: -1,
-            ...textBearerStyle,
-            ...theme.logo.rearTextElementWrapperStyle,
-          }}
         >
-          <div
-            css={{
-              ...textStyle,
-              ...theme.logo.rearTextElementStyle,
-            }}
-          >
-            {displayText}
-          </div>
+          <div className={classes.rear}>{displayText}</div>
           {hasSubtext && (
-            <div
-              css={{
-                ...subtextSyle,
-                ...theme.logo.rearTextElementStyle,
-              }}
-            >
-              {displaySubtext}
-            </div>
+            <div className={classes.rear_sub}>{displaySubtext}</div>
           )}
         </div>
 
         {/* front element, aka the gradient-bearer (on themes that have text
           gradients) */}
         <div
-          css={{
-            ...textBearerStyle,
-            ...theme.logo.frontTextElementWrapperStyle,
-          }}
-          className="front-text-element gradient-bearer"
+          className={cx(
+            "front-text-element gradient-bearer",
+            classes.front_wrapper,
+          )}
         >
-          {/* full-size copy of the main text, to measure it */}
-          <div aria-hidden css={measureClipStyle}>
+          {/* full-size copy of the main text, to measure it, clipped so it
+            can't make anything scroll */}
+          <div
+            aria-hidden
+            className={css({
+              position: "absolute",
+              top: "0",
+              left: "0",
+              width: "0",
+              height: "0",
+              overflow: "hidden",
+              visibility: "hidden",
+            })}
+          >
             <div
               ref={measureRef}
-              css={{
-                ...textStyle,
-                ...theme.logo.frontTextElementStyle,
-                ...measureStyle,
-              }}
+              className={cx(
+                classes.front,
+                // at full size, whatever the theme says
+                css({
+                  position: "absolute",
+                  top: "0",
+                  left: "0",
+                  fontSize: "1em",
+                }),
+              )}
             >
               {displayText}
             </div>
           </div>
           <div
-            css={{
-              ...textStyle,
-              ...theme.logo.frontTextElementStyle,
-            }}
+            className={classes.front}
             contentEditable={isEditable}
             spellCheck={false}
             ref={contentEditableRefText}
@@ -297,10 +239,7 @@ export const LogoEditable = ({
           />
           {hasSubtext && (
             <div
-              css={{
-                ...subtextSyle,
-                ...theme.logo.frontTextElementStyle,
-              }}
+              className={classes.front_sub}
               contentEditable={isEditable && onChangeSubText !== undefined}
               spellCheck={false}
               ref={contentEditableRefSubtext}
