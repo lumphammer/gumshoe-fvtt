@@ -521,3 +521,57 @@ test("lists: headings and column headers are ruled in line, interactive rows are
     highlight,
   );
 });
+
+test("text: element defaults and the text classes take the palette", async ({
+  page,
+}) => {
+  const success = "rgb(0, 150, 0)";
+  await page.evaluate(
+    ({ colors }) => {
+      CONFIG.Investigator!.installTheme("textReviewTheme", {
+        schemaVersion: "v1" as const,
+        displayName: "Text Review",
+        largeSheetRootStyle: {},
+        logo: {
+          frontTextElementStyle: {},
+          rearTextElementStyle: {},
+          textElementsStyle: {},
+          backdropStyle: {},
+        },
+        colors,
+        displayFont: "italic 400 16px serif",
+        displayFontTextTransform: "uppercase",
+      });
+    },
+    { colors: { ...colors, success } },
+  );
+  await setSettings(page, {
+    defaultThemeName: "textReviewTheme",
+    useCards: true,
+  });
+  const actorId = await createActor(page, { name: "Wordy", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+
+  // headings: the display text style, from the palette
+  const heading = sheet.locator("h2").first();
+  await expect(heading).toHaveCSS("font-style", "italic");
+  await expect(heading).toHaveCSS("text-transform", "uppercase");
+
+  // displayText: the build points' label
+  await sheet.getByLabel("Edit mode").click();
+  const label = sheet.locator(".inv-display-text--size_sm").first();
+  await expect(label).toHaveCSS("font-style", "italic");
+  await expect(label).toHaveCSS("text-transform", "uppercase");
+
+  // links are `link` (from the V1 accent)
+  const link = sheet.locator("a").filter({ hasText: /\S/ }).first();
+  await expect(link).toHaveCSS("color", colors.accent);
+
+  // mutedText: the empty card list
+  await sheet.locator(".tab-strip > label", { hasText: "Cards" }).click();
+  const muted = sheet.locator(".inv-muted-text").first();
+  await expect(muted).toHaveCSS(
+    "color",
+    await resolve(muted, "var(--inv-text-muted)"),
+  );
+});

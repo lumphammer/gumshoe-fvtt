@@ -1,4 +1,4 @@
-import { Fragment, memo, useContext } from "react";
+import { Fragment, memo } from "react";
 
 import { liveItem } from "../../functions/liveItems";
 import { isAbilityItem } from "../../module/items/exports";
@@ -14,13 +14,12 @@ import {
   sumRatingsIn,
 } from "../../module/actors/abilitiesDerived";
 import { assertActiveCharacterActor } from "../../module/actors/types";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { AbilitySlugEdit } from "./AbilitySlugEdit";
 import { AbilitySlugEditQuickShockInvestigative } from "./AbilitySlugEditQuickShockInvestigative";
 import { BuildPointsBar } from "./BuildPointsBar";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
 import { Callout } from "../Callout";
-import { sectionHeading } from "../../styled-system/recipes";
+import { displayText, sectionHeading } from "../../styled-system/recipes";
 
 type AbilitiesAreaEditProps = {
   npcMode?: boolean;
@@ -36,7 +35,6 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
 }: AbilitiesAreaEditProps) {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
-  const theme = useContext(ThemeContext);
   const mwMode = useSettings((s) => s.useMwStyleAbilities);
 
   const layout = useActorAndSettings(actor, (snapshot, settings) => {
@@ -125,11 +123,9 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
           >
             {simplifiedMode || (
               <i
+                className={displayText({ size: "sm" })}
                 css={{
                   gridColumn: "rating",
-                  font: theme.displayFont,
-                  textTransform: theme.displayFontTextTransform,
-                  fontSize: "smaller",
                 }}
               >
                 Rating
@@ -137,11 +133,9 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
             )}
             {showInvestigativeOccupationalColumn && (
               <i
+                className={displayText({ size: "sm" })}
                 css={{
                   gridColumn: "isocc",
-                  font: theme.displayFont,
-                  textTransform: theme.displayFontTextTransform,
-                  fontSize: "smaller",
                 }}
                 title="Occupational Ability"
               >
@@ -193,11 +187,9 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
         >
           {simplifiedMode || (
             <i
+              className={displayText({ size: "sm" })}
               css={{
                 gridColumn: "rating",
-                font: theme.displayFont,
-                textTransform: theme.displayFontTextTransform,
-                fontSize: "smaller",
               }}
             >
               Rating
@@ -205,11 +197,9 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
           )}
           {simplifiedMode || (
             <i
+              className={displayText({ size: "sm" })}
               css={{
                 gridColumn: "isocc",
-                font: theme.displayFont,
-                textTransform: theme.displayFontTextTransform,
-                fontSize: "smaller",
               }}
               title="Occupational Ability"
             >

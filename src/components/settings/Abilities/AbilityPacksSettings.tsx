@@ -11,7 +11,7 @@ import { Translate } from "../../Translate";
 import { StateContext } from "../contexts";
 import { SettingsEmptyState } from "../SettingsEmptyState";
 import type { Setters } from "../types";
-import { input, row } from "../../../styled-system/recipes";
+import { input, mutedText, outcome, row } from "../../../styled-system/recipes";
 
 /**
  * Where a pack comes from: the system itself, the world, or a module (by
@@ -179,11 +179,10 @@ export const AbilityPacksSettings = ({
                   {label}
                 </label>
                 <span
-                  css={{
-                    fontStyle: "italic",
-                    opacity: missing ? undefined : 0.75,
-                    color: missing ? theme.colors.warning : undefined,
-                  }}
+                  className={
+                    missing ? outcome({ tone: "warning" }) : mutedText()
+                  }
+                  css={{ fontStyle: "italic" }}
                 >
                   {source}
                 </span>

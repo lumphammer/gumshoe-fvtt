@@ -2,6 +2,7 @@ import { memo, useContext } from "react";
 
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
+import { displayText } from "../../styled-system/recipes";
 
 type BuildPointsCounterProps = {
   label: string;
@@ -9,7 +10,6 @@ type BuildPointsCounterProps = {
 };
 
 const BuildPointsCounter = ({ label, total }: BuildPointsCounterProps) => {
-  const theme = useContext(ThemeContext);
   return (
     <div
       css={{
@@ -20,20 +20,12 @@ const BuildPointsCounter = ({ label, total }: BuildPointsCounterProps) => {
         gap: "0.5em",
       }}
     >
-      <i
-        css={{
-          font: theme.displayFont,
-          textTransform: theme.displayFontTextTransform,
-          fontSize: "smaller",
-        }}
-      >
+      <i className={displayText({ size: "sm" })}>
         <Translate>{label}</Translate>
       </i>
       <span
+        className={displayText({ size: "lg" })}
         css={{
-          font: theme.displayFont,
-          textTransform: theme.displayFontTextTransform,
-          fontSize: "larger",
           lineHeight: 1,
         }}
       >
