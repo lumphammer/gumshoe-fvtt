@@ -7,6 +7,7 @@ import { isBondBroken } from "../../module/bonds/rules";
 import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
+import { css, cx } from "../../styled-system/css";
 
 type EstablishBondCardProps = {
   record: EstablishRecord;
@@ -31,49 +32,53 @@ export const EstablishBondCard = ({
 
   return (
     <div
-      className="dice-roll"
+      className={cx(
+        "dice-roll",
+        css({
+          display: "grid",
+          gridTemplateColumns: "max-content 1fr",
+          gridTemplateAreas: '"image headline" "image body"',
+          alignItems: "center",
+        }),
+      )}
       data-testid="establish-bond-card"
-      css={{
-        display: "grid",
-        gridTemplateColumns: "max-content 1fr",
-        gridTemplateAreas: '"image headline" "image body"',
-        alignItems: "center",
-      }}
     >
       <div
-        css={{
+        className={css({
           height: "4em",
           width: "4em",
           gridArea: "image",
-          backgroundImage: imageUrl ? `url(${imageUrl})` : undefined,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
           transform: "scale(0.9) rotate(-5deg)",
-          boxShadow: "0 0 0.5em black",
+          boxShadow: "[0 0 0.5em black]",
           marginRight: "1em",
           alignSelf: "start",
-        }}
+        })}
+        style={{ backgroundImage: imageUrl ? `url(${imageUrl})` : undefined }}
       />
-      <b css={{ gridArea: "headline" }}>
+      <b className={css({ gridArea: "headline" })}>
         <Translate values={{ BondName: record.bondName }}>
           {record.reformed
             ? "ReformingBondWithBondName"
             : "EstablishingBondWithBondName"}
         </Translate>
       </b>
-      <div css={{ gridArea: "body" }}>
+      <div className={css({ gridArea: "body" })}>
         <div>
           <DieFace value={record.die} />
         </div>
         <div
           data-testid="establish-outcome"
-          className={nativeStatus({ tone: bonded ? "success" : "danger" })}
-          css={{
-            fontWeight: "bold",
-            fontSize: "1.2em",
-            margin: "0.25em 0",
-          }}
+          className={cx(
+            nativeStatus({ tone: bonded ? "success" : "danger" }),
+            css({
+              fontWeight: "bold",
+              fontSize: "1.2em",
+              margin: "0.25em 0",
+            }),
+          )}
         >
           <Translate>{outcomeText[record.outcome]}</Translate>
         </div>

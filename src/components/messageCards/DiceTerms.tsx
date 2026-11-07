@@ -7,6 +7,7 @@ import type {
   OperatorTerm,
   RollTerm,
 } from "../../fvtt-exports";
+import { css, cx } from "../../styled-system/css";
 
 type DiceTermsProps = {
   terms: RollTerm[] | undefined;
@@ -20,20 +21,20 @@ export const DieFace = ({ value }: { value: number }) => {
   const [tilt] = useState(() => Math.random() * 12 - 6);
   return (
     <span
-      css={{
+      className={css({
         width: "1.5em",
         display: "inline-block",
         height: "1.5em",
         textAlign: "center",
-        background: "white",
+        background: "[white]",
         borderWidth: "3px",
-        borderRadius: "0.2em",
-        boxShadow: "0.2em 0.2em 0.2em #0007",
+        borderRadius: "[0.2em]",
+        boxShadow: "[0.2em 0.2em 0.2em #0007]",
         borderStyle: "outset",
-        borderColor: "#bbb",
+        borderColor: "[#bbb]",
         marginRight: "0.2em",
-        transform: `rotate(${tilt}deg)`,
-      }}
+      })}
+      style={{ transform: `rotate(${tilt}deg)` }}
     >
       {value}
     </span>
@@ -43,11 +44,13 @@ export const DieFace = ({ value }: { value: number }) => {
 export const DiceTerms = ({ terms = [], className }: DiceTermsProps) => {
   return (
     <span
-      className={className}
-      css={{
-        display: "inline-block",
-        paddingBottom: "0.3em",
-      }}
+      className={cx(
+        className,
+        css({
+          display: "inline-block",
+          paddingBottom: "0.3em",
+        }),
+      )}
     >
       {terms.map<ReactNode>((term, i) => {
         if ((term as DiceTerm).results) {

@@ -23,6 +23,7 @@ import { isClassicCombat } from "../../module/combat/classicCombat";
 import { CombatantRow } from "./CombatantRow/CombatantRow";
 import { CombatRoundContext } from "./CombatantRow/CombatantTurnContext";
 import { useTrackerContext } from "./TrackerContext";
+import { css, cx } from "../../styled-system/css";
 
 // https://github.com/clauderic/dnd-kit/discussions/684#discussioncomment-2462985
 const measuringConfig: MeasuringConfiguration = {
@@ -104,18 +105,22 @@ export const CombatantList = memo(function CombatantList() {
           {/* we need to wrap the actual tracker ol in another element so that
           foundry's autosizing works */}
           <div
-            className="combat-tracker"
-            css={{
-              flex: 1,
-            }}
+            className={cx(
+              "combat-tracker",
+              css({
+                flex: "[1]",
+              }),
+            )}
           >
             <ol
               // see investigator-combatant-list in the LESS for why we add this class
-              className="plain investigator-combatant-list"
-              css={{
-                position: "relative",
-                flex: 1,
-              }}
+              className={cx(
+                "plain investigator-combatant-list",
+                css({
+                  position: "relative",
+                  flex: "[1]",
+                }),
+              )}
             >
               {ids.map((id) => {
                 const combatant = combat.turns.find((x) => x.id === id);

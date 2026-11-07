@@ -5,26 +5,31 @@ import { isTurnPassingCombatant } from "../../../module/combat/turnPassingCombat
 import { ClassicInitiative } from "./ClassicInitiative";
 import { useCombatantContext } from "./CombatantContext";
 import { TurnPassingInitiative } from "./TurnPassingInitiative";
+import { css, cx } from "../../../styled-system/css";
 
 export const TopRow = memo(function TopRow() {
   const { combatant, combatantState } = useCombatantContext();
 
   return (
     <div
-      className="top-row"
-      css={{
-        display: "flex",
-        alignItems: "start",
-        justifyContent: "space-between",
-      }}
+      className={cx(
+        "top-row",
+        css({
+          display: "flex",
+          alignItems: "start",
+          justifyContent: "space-between",
+        }),
+      )}
     >
       <strong
-        className="name"
-        css={{
-          flex: 1,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
+        className={cx(
+          "name",
+          css({
+            flex: "[1]",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }),
+        )}
       >
         {combatantState.name}
       </strong>

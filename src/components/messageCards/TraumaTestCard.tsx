@@ -6,6 +6,7 @@ import { useStabilityStateName } from "../../hooks/useStabilityStateName";
 import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
+import { css, cx } from "../../styled-system/css";
 
 type TraumaTestCardProps = {
   record: TraumaTestRecord;
@@ -33,31 +34,33 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
 
   return (
     <div
-      className="dice-roll"
+      className={cx(
+        "dice-roll",
+        css({
+          display: "grid",
+          gridTemplateColumns: "max-content 1fr",
+          gridTemplateAreas: '"image headline" "image body"',
+          alignItems: "center",
+        }),
+      )}
       data-testid="trauma-test-card"
-      css={{
-        display: "grid",
-        gridTemplateColumns: "max-content 1fr",
-        gridTemplateAreas: '"image headline" "image body"',
-        alignItems: "center",
-      }}
     >
       <div
-        css={{
+        className={css({
           height: "4em",
           width: "4em",
           gridArea: "image",
-          backgroundImage: imageUrl ? `url(${imageUrl})` : undefined,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
           transform: "scale(0.9) rotate(-5deg)",
-          boxShadow: "0 0 0.5em black",
+          boxShadow: "[0 0 0.5em black]",
           marginRight: "1em",
           alignSelf: "start",
-        }}
+        })}
+        style={{ backgroundImage: imageUrl ? `url(${imageUrl})` : undefined }}
       />
-      <b css={{ gridArea: "headline" }}>
+      <b className={css({ gridArea: "headline" })}>
         <Translate
           values={{
             Trauma: record.trauma,
@@ -68,7 +71,7 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
           StabilityTestAgainstTrauma
         </Translate>
       </b>
-      <div css={{ gridArea: "body" }}>
+      <div className={css({ gridArea: "body" })}>
         <div>
           <DieFace value={record.die} />
           {spendTotal > 0 && ` + ${spendTotal}`}
@@ -104,14 +107,16 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
         )}
         <div
           data-testid="trauma-outcome"
-          className={nativeStatus({
-            tone: record.succeeded ? "success" : "danger",
-          })}
-          css={{
-            fontWeight: "bold",
-            fontSize: "1.2em",
-            margin: "0.25em 0",
-          }}
+          className={cx(
+            nativeStatus({
+              tone: record.succeeded ? "success" : "danger",
+            }),
+            css({
+              fontWeight: "bold",
+              fontSize: "1.2em",
+              margin: "0.25em 0",
+            }),
+          )}
         >
           {record.succeeded ? (
             <Translate>Holds steady</Translate>
@@ -127,8 +132,10 @@ export const TraumaTestCard = ({ record, imageUrl }: TraumaTestCardProps) => {
         {record.worsened && stateAfter !== "steady" && (
           <div
             data-testid="trauma-state"
-            className={nativeStatus({ tone: "danger" })}
-            css={{ margin: "0.25em 0" }}
+            className={cx(
+              nativeStatus({ tone: "danger" }),
+              css({ margin: "0.25em 0" }),
+            )}
           >
             <b>
               {stateAfterName}

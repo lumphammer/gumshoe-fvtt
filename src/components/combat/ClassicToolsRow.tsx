@@ -2,6 +2,7 @@ import { memo, useCallback } from "react";
 
 import { localize } from "./functions";
 import type { TrackerContextValue } from "./TrackerContext";
+import { css, cx } from "../../styled-system/css";
 
 /**
  * The GM's tools. Takes props, not the tracker's context, so a new turn
@@ -20,12 +21,14 @@ export const ClassicToolsRow = memo(function ToolsRow({
 
   return (
     <nav
-      className="combat-controls"
-      css={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "flex-end",
-      }}
+      className={cx(
+        "combat-controls",
+        css({
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-end",
+        }),
+      )}
     >
       <button
         type="button"

@@ -7,6 +7,7 @@ import { getWorldActorsStore } from "../../module/snapshots/documentStores";
 import { openTeamCrisisWindow } from "../../module/bonds/TeamCrisisApp";
 import { NativeButton } from "../native/NativeButton";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 type CrisisCallCardProps = {
   call: CrisisCall;
@@ -34,32 +35,32 @@ export const CrisisCallCard = ({ call, imageUrl }: CrisisCallCardProps) => {
   return (
     <div
       data-testid="crisis-call-card"
-      css={{
+      className={css({
         display: "grid",
         gridTemplateColumns: "max-content 1fr",
         gridTemplateAreas: '"image headline" "image body"',
         alignItems: "center",
-      }}
+      })}
     >
       <div
-        css={{
+        className={css({
           height: "4em",
           width: "4em",
           gridArea: "image",
-          backgroundImage: imageUrl ? `url(${imageUrl})` : undefined,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
           transform: "scale(0.9) rotate(-5deg)",
-          boxShadow: "0 0 0.5em black",
+          boxShadow: "[0 0 0.5em black]",
           marginRight: "1em",
           alignSelf: "start",
-        }}
+        })}
+        style={{ backgroundImage: imageUrl ? `url(${imageUrl})` : undefined }}
       />
-      <b css={{ gridArea: "headline" }}>
+      <b className={css({ gridArea: "headline" })}>
         <Translate>Team Crisis</Translate>
       </b>
-      <div css={{ gridArea: "body" }}>
+      <div className={css({ gridArea: "body" })}>
         <p>
           <Translate>CrisisCallHint</Translate>
         </p>
@@ -69,17 +70,17 @@ export const CrisisCallCard = ({ call, imageUrl }: CrisisCallCardProps) => {
             <div
               key={member.uuid}
               data-testid="crisis-call-member"
-              css={{
+              className={css({
                 display: "flex",
                 alignItems: "center",
                 gap: "0.5em",
                 marginBottom: "0.25em",
-              }}
+              })}
             >
-              <span css={{ flex: 1 }}>{member.name}</span>
+              <span className={css({ flex: "[1]" })}>{member.name}</span>
               {canTest[i] && (
                 <NativeButton
-                  css={{ width: "auto", margin: 0 }}
+                  className={css({ width: "auto", margin: 0 })}
                   onClick={() => {
                     const actor = fromUuidSync(member.uuid);
                     if (!isPCActor(actor)) return;

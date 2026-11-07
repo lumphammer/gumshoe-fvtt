@@ -9,6 +9,7 @@ import { Translate } from "../Translate";
 import { useAbilityCardHeader } from "./useAbilityCardHeader";
 import { DiceTerms } from "./DiceTerms";
 import type { AbilityCardMode } from "./types";
+import { css, cx } from "../../styled-system/css";
 
 interface AbilityTestCardProps {
   msg: ChatMessage;
@@ -38,38 +39,40 @@ export const AbilityTestCard = React.memo(
 
     return (
       <div
-        className="dice-roll"
-        css={{
-          position: "relative",
-          display: "grid",
-          gridTemplateColumns: "max-content 1fr",
-          gridTemplateRows: "max-content minmax(0, max-content) max-content",
-          gridTemplateAreas:
-            '"image headline" ' + '"image terms" ' + '"image body" ',
-          alignItems: "center",
-        }}
+        className={cx(
+          "dice-roll",
+          css({
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: "max-content 1fr",
+            gridTemplateRows: "max-content minmax(0, max-content) max-content",
+            gridTemplateAreas:
+              '"image headline" ' + '"image terms" ' + '"image body" ',
+            alignItems: "center",
+          }),
+        )}
       >
         {/* IMAGE */}
         <div
-          css={{
+          className={css({
             height: "4em",
             width: "4em",
             gridArea: "image",
-            backgroundImage: `url(${header?.img ?? imageUrl})`,
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             transform: "scale(0.9) rotate(-5deg)",
-            boxShadow: "0 0 0.5em black",
+            boxShadow: "[0 0 0.5em black]",
             marginRight: "1em",
             alignSelf: "start",
-          }}
+          })}
+          style={{ backgroundImage: `url(${header?.img ?? imageUrl})` }}
         />
         {/* HEADLINE */}
         <div
-          css={{
+          className={css({
             gridArea: "headline",
-          }}
+          })}
         >
           <b>
             <a onClick={onClickAbilityName}>
@@ -79,9 +82,9 @@ export const AbilityTestCard = React.memo(
         </div>
         {/* TERMS */}
         <div
-          css={{
+          className={css({
             gridArea: "terms",
-          }}
+          })}
         >
           {mode === "spend" && <Translate>PointSpend</Translate>}
           {mode === "test" && (
@@ -116,13 +119,15 @@ export const AbilityTestCard = React.memo(
         </div>
         {/* RESULT */}
         <a
-          className="dice-total"
-          css={{
-            gridArea: "body",
-            "&&": {
-              marginTop: "0.5em",
-            },
-          }}
+          className={cx(
+            "dice-total",
+            css({
+              gridArea: "body",
+              "&&": {
+                marginTop: "0.5em",
+              },
+            }),
+          )}
         >
           {msg.rolls?.[0]?.total}
         </a>

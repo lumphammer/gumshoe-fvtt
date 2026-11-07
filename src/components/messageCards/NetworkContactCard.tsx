@@ -2,6 +2,7 @@ import type { ContactRecord } from "../../module/contacts/rules";
 import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
+import { css, cx } from "../../styled-system/css";
 
 type NetworkContactCardProps = {
   record: ContactRecord;
@@ -19,35 +20,37 @@ export const NetworkContactCard = ({
 }: NetworkContactCardProps) => {
   return (
     <div
-      className="dice-roll"
+      className={cx(
+        "dice-roll",
+        css({
+          display: "grid",
+          gridTemplateColumns: "max-content 1fr",
+          gridTemplateAreas: '"image headline" "image body"',
+          alignItems: "center",
+        }),
+      )}
       data-testid="network-contact-card"
-      css={{
-        display: "grid",
-        gridTemplateColumns: "max-content 1fr",
-        gridTemplateAreas: '"image headline" "image body"',
-        alignItems: "center",
-      }}
     >
       <div
-        css={{
+        className={css({
           height: "4em",
           width: "4em",
           gridArea: "image",
-          backgroundImage: imageUrl ? `url(${imageUrl})` : undefined,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
           transform: "scale(0.9) rotate(-5deg)",
-          boxShadow: "0 0 0.5em black",
+          boxShadow: "[0 0 0.5em black]",
           marginRight: "1em",
           alignSelf: "start",
-        }}
+        })}
+        style={{ backgroundImage: imageUrl ? `url(${imageUrl})` : undefined }}
       />
-      <div css={{ gridArea: "headline" }}>
+      <div className={css({ gridArea: "headline" })}>
         <b>{record.contactName}</b>
         {record.location && <i> ({record.location})</i>}
       </div>
-      <div css={{ gridArea: "body" }}>
+      <div className={css({ gridArea: "body" })}>
         <div data-testid="network-contact-action">
           {record.kind === "assign" ? (
             <Translate
@@ -65,7 +68,7 @@ export const NetworkContactCard = ({
               <DieFace value={record.die ?? 0} />
               {record.points > 0 && ` + ${record.points}`}
               {" = "}
-              <b css={{ fontSize: "1.2em" }}>{record.total}</b>
+              <b className={css({ fontSize: "1.2em" })}>{record.total}</b>
             </>
           ) : (
             <Translate>
@@ -85,8 +88,10 @@ export const NetworkContactCard = ({
         </div>
         {record.poolAfter === 0 && record.kind !== "assign" && (
           <div
-            className={nativeStatus({ tone: "warning" })}
-            css={{ fontStyle: "italic" }}
+            className={cx(
+              nativeStatus({ tone: "warning" }),
+              css({ fontStyle: "italic" }),
+            )}
           >
             <Translate>Favors exhausted</Translate>
           </div>

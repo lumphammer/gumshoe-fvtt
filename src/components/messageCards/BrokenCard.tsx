@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Translate } from "../Translate";
+import { css, cx } from "../../styled-system/css";
 
 interface BrokenCardProps {
   name: string | null;
@@ -19,42 +20,44 @@ export const BrokenCard = React.memo(
   ({ name, imageUrl, reason }: BrokenCardProps) => {
     return (
       <div
-        className="dice-roll"
-        css={{
-          position: "relative",
-          display: "grid",
-          gridTemplateColumns: "max-content 1fr",
-          gridTemplateAreas: '"image headline"',
-          alignItems: "center",
-          justifyItems: "start",
-          opacity: 0.7,
-        }}
+        className={cx(
+          "dice-roll",
+          css({
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: "max-content 1fr",
+            gridTemplateAreas: '"image headline"',
+            alignItems: "center",
+            justifyItems: "start",
+            opacity: 0.7,
+          }),
+        )}
       >
         {imageUrl && (
           <div
-            css={{
+            className={css({
               height: "4em",
               width: "4em",
               gridArea: "image",
-              backgroundImage: `url(${imageUrl})`,
               backgroundSize: "cover",
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center",
               marginRight: "1em",
-              filter: "grayscale(1)",
-            }}
+              filter: "[grayscale(1)]",
+            })}
+            style={{ backgroundImage: `url(${imageUrl})` }}
           />
         )}
-        <div css={{ gridArea: "headline" }}>
+        <div className={css({ gridArea: "headline" })}>
           <div
-            css={{
+            className={css({
               fontSize: "1.5em",
               fontStyle: "italic",
-            }}
+            })}
           >
             {name ?? <Translate>UnknownAbility</Translate>}
           </div>
-          <div css={{ fontSize: "0.9em" }}>
+          <div className={css({ fontSize: "0.9em" })}>
             <Translate>{reason}</Translate>
           </div>
         </div>
