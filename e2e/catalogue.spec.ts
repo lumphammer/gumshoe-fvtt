@@ -380,7 +380,7 @@ test("controls: a checkbox's box can be replaced, check buttons work from the ke
   await expect(rating).toHaveCSS("border-top-color", danger);
 });
 
-test("tabs: the selected one is accent on surface, the rest text on a fainter surface, and V1 tab styles still apply", async ({
+test("tabs: the selected one is accent on surface, the rest text on surfaceNested, and V1 tab styles still apply", async ({
   page,
 }) => {
   const install = (name: string, extra: object) =>
@@ -419,10 +419,9 @@ test("tabs: the selected one is accent on surface, the rest text on a fainter su
     colors.backgroundPrimary,
   );
   await expect(other().first()).toHaveCSS("color", colors.text);
-  // backgroundPrimary is opaque white here: white at 80% opacity
   await expect(other().first()).toHaveCSS(
     "background-color",
-    /^oklch\(0\.99\d* [\d.]+ [\d.]+ \/ 0\.8\)$/,
+    colors.backgroundSecondary,
   );
   await expect(sheet.locator(".inv-tabs__content")).toHaveCSS(
     "background-color",

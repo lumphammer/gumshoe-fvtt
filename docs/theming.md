@@ -272,8 +272,10 @@ not.*
   tab's rule rather than states over it: an override of `tab` replaces them
   too. Disabled (`input:disabled + &`) still applies over an override.
 - **Look**: the selected tab is `surface`, like the content, so they read as
-  one, with `accent` ink. The others are `surface` at 80% of its opacity, with
-  `text` ink. Unselected tabs are `data-interactive`.
+  one, with `accent` ink. The others are `surfaceNested`, with `text` ink,
+  as V1's unselected tabs were on `backgroundSecondary` (which its contract
+  says is "used for inactive tabs"); a fainter `surface` was too close to the
+  selected tab on light themes. Unselected tabs are `data-interactive`.
 - `content` is `surface`, owns the padding, and its children are nested, so
   a `Panel` in a tab is `nested`.
 - A V1 theme's `tabClass` is still added, and a seed that sets any of the

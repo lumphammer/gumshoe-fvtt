@@ -1,7 +1,5 @@
 import { defineSlotRecipe } from "@pandacss/dev";
 
-import { paletteVar } from "../palette";
-
 /**
  * **tabs**: a strip of tabs and the content of the selected one
  * (`TabContainer`).
@@ -12,7 +10,7 @@ import { paletteVar } from "../palette";
  * States, from the DOM: selected (`input:checked + &`), and wrapped into a
  * grid (`[data-wrapped]` on the list, set by the code that measures it). The
  * selected tab is `surface`, like the content, with `accent` ink; the others
- * are a fainter `surface`, with `text` ink. *`tab` is an expected override,
+ * are `surfaceNested`, with `text` ink. *`tab` is an expected override,
  * selected and not:* an override of it replaces the selected and wrapped
  * looks too.
  */
@@ -28,7 +26,8 @@ export const tabs = defineSlotRecipe({
       padding: "0.3em",
       textAlign: "center",
       color: "text",
-      background: `[oklch(from var(${paletteVar("surface")}) l c h / calc(alpha * 0.8))]`,
+      // as V1: its backgroundSecondary was "used for inactive tabs"
+      background: "surfaceNested",
       borderRadius: "0.2em 0.2em 0 0",
       cursor: "pointer",
       // part of the tab's look, not states laid over it: their context is in
