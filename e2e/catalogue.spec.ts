@@ -500,14 +500,18 @@ test("lists: headings and column headers are ruled in line, interactive rows are
     knife,
     "color-mix(in srgb, var(--inv-feedback) 25%, transparent)",
   );
-  await expect(knife).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  // the highlight is a wash laid over the row's own fill
+  const washed = new RegExp(
+    `linear-gradient\\(${highlight.replace(/[()]/g, "\\$&")}`,
+  );
+  await expect(knife).toHaveCSS("background-image", "none");
   await expect(knife).toHaveCSS("cursor", "crosshair");
   await knife.hover();
-  await expect(knife).toHaveCSS("background-color", highlight);
+  await expect(knife).toHaveCSS("background-image", washed);
   await page.mouse.move(0, 0);
   await page.keyboard.press("Shift");
   await knife.focus();
-  await expect(knife).toHaveCSS("background-color", highlight);
+  await expect(knife).toHaveCSS("background-image", washed);
 
   // an equipment row, drawn as cells: its bar is highlighted from them, and
   // its column headers are bold
@@ -517,8 +521,8 @@ test("lists: headings and column headers are ruled in line, interactive rows are
   ).toHaveCSS("font-weight", "700");
   await sheet.getByText("Lantern", { exact: true }).hover();
   await expect(sheet.locator("[data-highlighted]")).toHaveCSS(
-    "background-color",
-    highlight,
+    "background-image",
+    washed,
   );
 });
 
@@ -582,7 +586,8 @@ test("text: element defaults and the text classes take the palette", async ({
   await expect(label).toHaveCSS("text-transform", "uppercase");
 
   // links are `link` (from the V1 accent)
-  const link = sheet.locator("a").filter({ hasText: /\S/ }).first();
+  // a plain link (not one with a class of its own, like a pool's pips)
+  const link = sheet.locator("a:not([class*=inv-])").filter({ hasText: /\S/ }).first();
   await expect(link).toHaveCSS("color", colors.accent);
 
   // mutedText: the empty card list

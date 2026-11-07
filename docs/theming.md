@@ -9,8 +9,11 @@ properties on every themed root, and the catalogue has `badge`, `button`,
 `panel`, `callout`, `input`, `select`, `checkbox`, `toggle`, `tabs`,
 `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`,
 `displayText`, `mutedText`, `outcome`, `sheetRoot`, `logo`, `card`,
-`surface`, `floating` and `partyCell`, plus element defaults. Everything else is still drawn by Emotion from V1 themes, and the
-two run side by side until every component is converted.
+`surface`, `floating`, `partyCell` and `richText`, plus element defaults.
+Every component's look now comes from the catalogue, and none reads a
+theme's colours. Emotion is still used for layout at call sites (`css`
+props), and V1 themes are mapped onto the catalogue (`fromV1.ts`); moving
+layout to Panda's `css()` and a V2 theme format are later work.
 
 ## The pieces
 
@@ -163,6 +166,9 @@ Something you click to do something. Use the `Button` component
   - `toolbar`: compact, for a row of tools. As wide as its content.
   - `ghost`: no fill or border, just ink: icon buttons such as delete, and
     the settings Back button.
+  - `pip`: one of a row of small number picks (a pool tracker's boxes): the
+    body text style, no padding, square, on `surface`; pressed when it's the
+    current value.
 - **States**: `:disabled` (half opacity). Pressed (`aria-pressed="true"`, or
   `data-pressed` on a label standing for a checked radio) shows as selected:
   an `accent` fill with `onAccent` ink, whatever the kind. `CheckButtons`
@@ -180,7 +186,7 @@ same goes for inputs and selects.
 A field to type into: `TextInput` (and the async text and number inputs
 built on it) and `TextArea` apply it; a raw `<input>` applies `input()`.
 
-- **Not for** rich text (`richText`, to come), or choosing from a list
+- **Not for** rich text (`richText`), or choosing from a list
   (`select`).
 - `surface` background, a `line` border, `text` ink in the `body` text
   style. A placeholder is faded and italic.
@@ -286,9 +292,12 @@ take only `[a-z0-9_-]`.
   column headers.
 - **`tableHeader`**: the row of column headers over a list or table: bold,
   with a `line` rule under it.
-- **`row`**: one item in a list or table. Variants:
+- **`row`**: one item in a list or table, in `text` ink with no underline,
+  even when it's a link: clickable rows read as text. Variants:
   - `interactive`: it opens or does something, so it's highlighted with a
-    wash of `feedback` under the pointer, on keyboard focus, or with
+    wash of `feedback` (laid over its own fill, as a `background-image`, so
+    a selected or striped row keeps its colour) under the pointer, on
+    keyboard focus, or with
     `data-highlighted` (for a row drawn as separate cells that tracks the
     pointer itself, like an equipment row). Rows don't use
     `data-interactive`: a glow round a row is too much.
@@ -297,6 +306,8 @@ take only `[a-z0-9_-]`.
     menu).
   - `striped`: for rows striped by position rather than by the call site (a
     settings form, whose rows come and go): odd ones are on `control`.
+  - State: selected (`aria-current`, `aria-selected` or `data-selected`), the
+    current one (the journal page you're on), on `control`.
 - **`dragHandle`**: the grip to drag to reorder a list. `textMuted` on
   `surfaceSolid`, faded until hovered, when it grows and turns `accent`.
 - **`emptyState`**: stands in for a list with nothing in it: dashed `line`
@@ -391,7 +402,10 @@ its own with the category's style spread over the base, and the base rule
 leaves those categories' cards out, so a category's style wins as it did in
 V1, `!important` and nested rules included. The contexts are in `:where()`,
 so both rules are as specific as the plain class. Any style key works: it's
-hex-escaped in the attribute selector.
+hex-escaped in the attribute selector. A card in a card array is clickable
+(`data-interactive`), so it gets the `hoverFeedback` glow; a V1 seed's
+`hoverStyle` (the base's, then its category's over it) becomes a `:hover`
+rule in its `card__root` override, for cards in an array.
 `cards.area` (the spacing between cards) is still read by `CardArray`.
 
 ### Surfaces: `surface`, `floating`, `partyCell`
@@ -416,6 +430,12 @@ hex-escaped in the attribute selector.
   has is on the danger surfaces (`surfaceDanger` and so on); header cells,
   stuck over the rest as it scrolls, use the solid versions. Variants `odd`,
   `zero`, `header`.
+
+### `richText`
+
+An editor for formatted text (notes, descriptions) and the journal's page
+list beside it: `surface`, with a `line` border. The content inside
+(ProseMirror's) keeps Foundry's own styling.
 
 Draw a class's parts with real elements (slots), not `::before`/`::after`:
 an override replaces the rule for the element its name selects, so a
@@ -509,10 +529,11 @@ Shared definitions for the native world are in `src/components/native/`:
 
 ## Converting a component
 
-`src/themes/catalogue/paletteReads.test.ts` lists the files that still read a
-theme's colours (`.colors`). It fails if a file not on the list starts reading
-them, and if a file on the list stops, so the list only shrinks: when you
-convert one, take it off.
+`src/themes/catalogue/paletteReads.test.ts` fails if any component reads a
+theme's colours (`.colors`, or destructured `colors`): use a catalogue
+class. The list of files allowed to read them, kept while the components were
+converted, is now empty. `src/themes/` and `startup/loadCustomThemes.ts`
+are exempt: they define themes.
 
 ## Where the CSS goes
 

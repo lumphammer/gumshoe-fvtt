@@ -1,12 +1,13 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { popOutClickedImage } from "../../functions/popOutClickedImage";
 import { cleanAndEnrichHtml } from "../../functions/textFunctions";
 import { systemLogger } from "../../functions/utilities";
 import { useIsEditable } from "../../hooks/useIsEditable";
 import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { NotesDisplay } from "./NotesDisplay";
+import { cx } from "../../styled-system/css";
+import { richText } from "../../styled-system/recipes";
 
 type RichTextEditorProps = {
   /** optional class */
@@ -34,7 +35,6 @@ const EditableRichTextEditor = ({
   const { doc } = useDocumentSheetContext();
 
   const divRef = useRef<HTMLDivElement>(null);
-  const theme = useContext(ThemeContext);
 
   // enriching HTML is async for some reason, so we need to treat it like a data
   // fetch and set a piece of state for it. We also stash it in a ref so editor
@@ -118,8 +118,6 @@ const EditableRichTextEditor = ({
       ref={divRef}
       onClick={popOutClickedImage}
       css={{
-        backgroundColor: theme.colors.backgroundPrimary,
-        border: `1px solid ${theme.colors.controlBorder}`,
         position: "absolute",
         inset: "0px",
         "prose-mirror:not([open]) img:not(.nopopout)": {
@@ -145,7 +143,7 @@ const EditableRichTextEditor = ({
           },
         },
       }}
-      className={`${className} `}
+      className={cx(richText(), className)}
     ></div>
   );
 };

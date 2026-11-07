@@ -2,7 +2,6 @@ import React, { memo, useContext } from "react";
 
 import { useDragStart } from "../../hooks/useDragStart";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
-import { useSettings } from "../../hooks/useSettings";
 import type { CardItem } from "../../module/items/card";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { CardDisplay } from "./CardDisplay";
@@ -26,18 +25,11 @@ export const CardArrayCard = memo(function CardArrayCard({
     active: system.active,
     styleKeyCategoryId: system.styleKeyCategoryId,
   }));
-  const styleKey = useSettings(
-    (s) =>
-      s.cardCategories.find((cat) => cat.id === data.styleKeyCategoryId)
-        ?.styleKey,
-  );
   const theme = useContext(ThemeContext);
 
   const { viewMode } = useContext(CardsAreaSettingsContext);
 
   const handleDragStart = useDragStart();
-
-  const categoryTheme = styleKey ? theme.cards.categories[styleKey] : null;
 
   return (
     // opacity has to be applied on a wrapper otherwise we break transform-style
@@ -55,14 +47,8 @@ export const CardArrayCard = memo(function CardArrayCard({
         onDragStart={handleDragStart}
         className={`investigator-card-array-card ${className}`}
         card={card}
-        css={{
-          cursor: "pointer",
-          marginBottom: theme.cards.area.verticalSpacing,
-          ":hover": {
-            ...theme.cards.base.hoverStyle,
-            ...categoryTheme?.hoverStyle,
-          },
-        }}
+        interactive
+        css={{ marginBottom: theme.cards.area.verticalSpacing }}
         viewMode={viewMode}
       />
     </div>

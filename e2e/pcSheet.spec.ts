@@ -56,12 +56,12 @@ test("the pools panel follows pools and the initiative ability changed elsewhere
   const selected = (value: number) =>
     tracker.locator("a", { hasText: new RegExp(`^${value}$`) });
   await expect(tracker).toBeVisible();
-  const before = await selected(3).getAttribute("class");
+  await expect(selected(3)).toHaveAttribute("data-pressed", "true");
 
   await updateAbility(page, actorId, "Athletics", { pool: 1 });
-  // the selected box is styled differently: 3 loses that, 1 gains it
-  await expect.poll(() => selected(1).getAttribute("class")).toBe(before);
-  await expect.poll(() => selected(3).getAttribute("class")).not.toBe(before);
+  // the selected box is pressed: 3 loses that, 1 gains it
+  await expect(selected(1)).toHaveAttribute("data-pressed", "true");
+  await expect(selected(3)).not.toHaveAttribute("data-pressed");
 
   await updateAbility(page, actorId, "Athletics", { showTracker: false });
   await expect(tracker).toHaveCount(0);

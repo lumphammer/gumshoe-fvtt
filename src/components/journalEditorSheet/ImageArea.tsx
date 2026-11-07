@@ -1,11 +1,11 @@
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 
 import { FilePicker } from "../../fvtt-exports";
 import { useJournalEntrySnapshot } from "../../hooks/useJournalEntrySnapshot";
 import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
 import Cross from "./no_image_cross.svg?react";
+import { floating, row } from "../../styled-system/recipes";
 
 interface ImageAreaProps {
   page: any;
@@ -16,7 +16,6 @@ interface ImageAreaProps {
  * lifting.
  */
 export const ImageArea = ({ page }: ImageAreaProps) => {
-  const theme = useContext(ThemeContext);
   const { app } = useDocumentSheetContext();
   const src = useJournalEntrySnapshot(
     page.parent,
@@ -74,25 +73,18 @@ export const ImageArea = ({ page }: ImageAreaProps) => {
           />
         ) : (
           <div
+            className={row({ interactive: true })}
             css={{
               ...absoluteCover,
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
-              ":hover": {
-                backgroundColor: theme.colors.backgroundButton,
-              },
             }}
           >
             <div
-              css={{
-                fontSize: "1.5em",
-                color: theme.colors.text,
-                padding: "1em",
-                background: theme.colors.backgroundButton,
-                borderRadius: "0.5em",
-              }}
+              className={floating({ kind: "chip" })}
+              css={{ fontSize: "1.5em", padding: "1em" }}
             >
               Click to add image
             </div>

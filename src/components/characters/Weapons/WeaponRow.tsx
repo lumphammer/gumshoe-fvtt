@@ -1,11 +1,10 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import { useDragStart } from "../../../hooks/useDragStart";
 import { openSheet } from "../../../functions/openSheet";
 import { getTranslated } from "../../../functions/getTranslated";
 import { useItemSelector } from "../../../hooks/useItemSnapshot";
 import type { WeaponItem } from "../../../module/items/weapon";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { Toggle } from "../../inputs/Toggle";
 import { ItemNameWithIcon } from "../ItemNameWithIcon";
@@ -35,7 +34,6 @@ export const WeaponRow = memo(function WeaponRow({
     ability: snapshot.system.ability,
   }));
   const onDragStart = useDragStart();
-  const theme = useContext(ThemeContext);
 
   const openWeaponSheet = () => {
     openSheet(weapon);
@@ -83,7 +81,7 @@ export const WeaponRow = memo(function WeaponRow({
         draggable="true"
         onDragStart={onDragStart}
       >
-        <ItemNameWithIcon item={row} css={{ color: theme.colors.accent }} />
+        <ItemNameWithIcon item={row} />
         <span css={{ textAlign: "center" }}>
           {row.usesAmmo ? `${row.ammo.value}/${row.ammo.max}` : "—"}
         </span>

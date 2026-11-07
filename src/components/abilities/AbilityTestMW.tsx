@@ -1,16 +1,16 @@
-import React, { memo, useCallback, useContext, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 
 import { mwNegateCost, mwWallopCost } from "../../constants";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { AbilityItem } from "../../module/items/exports";
 import type { GeneralAbilityItem } from "../../module/items/generalAbility";
-import { ThemeContext } from "../../themes/ThemeContext";
 import type { MWDifficulty } from "../../types";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
 import { Translate } from "../Translate";
+import { Panel } from "../Panel";
 
 interface AbilityTestMWProps {
   /** Only to write through (a general ability, in Moribund World) */
@@ -25,7 +25,6 @@ export const AbilityTestMW = memo(function AbilityTestMW({
   const { mwTestAbility, mWWallop, mWNegateIllustrious } = useSystemMethods(
     item as GeneralAbilityItem,
   );
-  const theme = useContext(ThemeContext);
   const [difficulty, setDifficulty] = useState<MWDifficulty>(0);
   const [boonLevy, setBoonLevy] = useState(0);
 
@@ -54,12 +53,9 @@ export const AbilityTestMW = memo(function AbilityTestMW({
   };
 
   return (
-    <div
+    <Panel
       css={{
-        border: `1px solid ${theme.colors.controlBorder}`,
-        padding: "0.5em",
         marginBottom: "1em",
-        background: theme.colors.backgroundSecondary,
         display: "flex",
         flexDirection: "column",
         gap: "0.5em",
@@ -118,6 +114,6 @@ export const AbilityTestMW = memo(function AbilityTestMW({
           <Translate>Test</Translate>
         </Button>
       </div>
-    </div>
+    </Panel>
   );
 });

@@ -10,19 +10,8 @@ import { describe, expect, it } from "vitest";
 // A source scan, like schemaInitialValues.test.ts: it looks for `.colors`
 // and for destructured `colors`.
 
-const notYetConverted = [
-  "components/abilities/AbilityTestMW.tsx",
-  "components/abilities/PoolCheckbox.tsx",
-  "components/characters/MoribundWorld/MwItemGroup.tsx",
-  "components/characters/Slug.tsx",
-  "components/characters/Weapons/WeaponRowEdit.tsx",
-  "components/characters/Weapons/WeaponRow.tsx",
-  "components/inputs/RichTextEditor.tsx",
-  "components/journalEditorSheet/ImageArea.tsx",
-  "components/journalEditorSheet/PageNavigation.tsx",
-  "components/settings/SettingsNote.tsx",
-  "components/settings/Settings.tsx",
-];
+// Empty: every component has been converted (#1532). Keep it that way.
+const notYetConverted: string[] = [];
 
 // The native world: our parts of Foundry's own UI, which look like Foundry
 // and never read the theme at all, not even its fonts (docs/theming.md).
@@ -54,9 +43,13 @@ const filesMatching = (pattern: RegExp) =>
     .filter((path) => pattern.test(readFileSync(join(srcDir, path), "utf8")))
     .sort();
 
-// `.colors`, or destructuring them: `{ colors }`, `colors: { ... }`
+// `.colors`, or destructuring them: `{ colors }`, `colors: { ... }`; and a
+// V1 theme's card looks (`cards.base`, `cards.categories`), which are
+// catalogue overrides now (`cards.area` is spacing, so it's allowed)
 const filesReadingColours = () =>
-  filesMatching(/\.colors\b|\{\s*colors\s*[,}]|\bcolors:\s*\{/);
+  filesMatching(
+    /\.colors\b|\{\s*colors\s*[,}]|\bcolors:\s*\{|\.cards\.(base|categories)\b/,
+  );
 
 describe("reading theme colours", () => {
   it("happens only in files that haven't been converted yet", () => {

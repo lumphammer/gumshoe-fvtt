@@ -193,7 +193,9 @@ const attributeValue = (key: string) =>
  * and the base rule leaves out the categories' cards, so a category's style
  * wins as it did in V1 (`!important`, nested rules and fallbacks included).
  * Their contexts are in `:where()`, so both are as specific as the plain
- * class. Only for a seed that styles its cards.
+ * class. A card in a card array also had the hover style (the base's, then
+ * its category's, over it) under the pointer: that's a `:hover` rule in the
+ * root's. Only for a seed that styles its cards.
  */
 function cardsFromV1(seed: ThemeSeedV1, theme: ThemeV1): CatalogueOverrides {
   const categories = Object.entries(seed.cards?.categories ?? {});
@@ -204,7 +206,15 @@ function cardsFromV1(seed: ThemeSeedV1, theme: ThemeV1): CatalogueOverrides {
     (Object.keys(v1CardStyleNames) as (keyof typeof v1CardStyleNames)[]).map(
       (slot) => {
         const name = v1CardStyleNames[slot];
-        const base = theme.cards.base[name];
+        // a card in a card array (clickable) had the hover style on top
+        const withHover = (style: CSSObject, hover: CSSObject | undefined) =>
+          slot === "root" && hover
+            ? { ...style, "&.investigator-card-array-card:hover": hover }
+            : style;
+        const base = withHover(
+          theme.cards.base[name],
+          theme.cards.base.hoverStyle,
+        );
         if (categories.length === 0) {
           return [`card__${slot}`, fromEmotion(base)];
         }
@@ -216,10 +226,14 @@ function cardsFromV1(seed: ThemeSeedV1, theme: ThemeV1): CatalogueOverrides {
           [within(`:not(${anyCategory})`)]: fromEmotion(base),
         };
         categories.forEach(([, category], i) => {
-          style[within(`[data-category=${keys[i]}]`)] = fromEmotion({
-            ...base,
-            ...category[name],
-          });
+          style[within(`[data-category=${keys[i]}]`)] = fromEmotion(
+            withHover(
+              { ...theme.cards.base[name], ...category[name] },
+              category.hoverStyle
+                ? { ...theme.cards.base.hoverStyle, ...category.hoverStyle }
+                : theme.cards.base.hoverStyle,
+            ),
+          );
         });
         return [`card__${slot}`, style];
       },

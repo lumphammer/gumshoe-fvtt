@@ -1,12 +1,12 @@
-import React, { memo, useContext } from "react";
+import React, { memo } from "react";
 
 import { openSheet } from "../../../functions/openSheet";
 import { mwItem } from "../../../constants";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import type { MwType } from "../../../types";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
+import { row } from "../../../styled-system/recipes";
 
 /** An item, as the group shows it */
 export type MwItemSummary = { id: string; name: string };
@@ -26,18 +26,14 @@ export const MwItemGroup = memo(function MwItemGroup({
   mwType,
 }: MwItemGroupProps) {
   const { actor } = useActorSheetContext();
-  const theme = useContext(ThemeContext);
   const openItemSheet = (id: string) => {
     openSheet(actor.items.get(id));
   };
 
   return (
     <div
-      css={{
-        marginBottom: "0.5em",
-        paddingBottom: "0.5em",
-        borderBottom: `1px solid ${theme.colors.controlBorder}`,
-      }}
+      className={row({ divided: true })}
+      css={{ marginBottom: "0.5em", paddingBottom: "0.5em" }}
     >
       <div>
         <h1
