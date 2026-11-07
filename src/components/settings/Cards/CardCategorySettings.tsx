@@ -15,6 +15,7 @@ import { SettingsGridField } from "../SettingsGridField";
 import { SettingsIdField } from "../SettingsIdField";
 import { store } from "../store";
 import { cardCategory } from "./directions";
+import { css } from "../../../styled-system/css";
 
 export const CardCategorySettings = () => {
   const index = useParams(cardCategory);
@@ -155,7 +156,7 @@ export const CardCategorySettings = () => {
         onChange={handleChangeId}
       />
       <SettingsGridField label="Delete">
-        <Button css={{ width: "auto" }} onClick={handleClickDelete}>
+        <Button className={css({ width: "auto" })} onClick={handleClickDelete}>
           <i className="fas fa-trash" /> <Translate>Delete</Translate>
         </Button>
       </SettingsGridField>

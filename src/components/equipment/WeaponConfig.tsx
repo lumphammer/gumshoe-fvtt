@@ -23,6 +23,7 @@ import { WeaponRange, WeaponRangeHeadings } from "./WeaponRangeConfig";
 import { getTranslated } from "../../functions/getTranslated";
 import type { WeaponFireModes } from "../../module/attacks/rules";
 import { weaponFireModesValues } from "../../module/attacks/rules";
+import { css } from "../../styled-system/css";
 
 const weaponFireModesText: Record<WeaponFireModes, string> = {
   single: "WeaponFireModesSingle",
@@ -105,7 +106,7 @@ export const WeaponConfig = memo(function WeaponConfig({
           onChange={methods.setAbility}
           pickerValues={validCombatAbilities}
           validValues={generalAbilityNames}
-          css={{ marginBottom: "0.3em" }}
+          className={css({ marginBottom: "0.3em" })}
         />
       </GridField>
       <GridField label="Base Damage">
@@ -120,7 +121,7 @@ export const WeaponConfig = memo(function WeaponConfig({
                 e.currentTarget.value as WeaponFireModes,
               );
             }}
-            css={{ width: "100%" }}
+            className={css({ width: "100%" })}
           >
             {weaponFireModesValues.map((value) => (
               <option key={value} value={value}>

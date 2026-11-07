@@ -10,6 +10,7 @@ import { useToolbarContent } from "./magicToolbar";
 // import { useTheme } from "../../hooks/useTheme";
 import { ToolbarButton } from "./magicToolbar/ToolbarButton";
 import { richText, row } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 const pageIdDataAttribute = "data-page-id";
 const pageIdDatasetName = "pageId";
@@ -154,13 +155,15 @@ export const PageNavigation = ({
 
   return (
     <div
-      className={richText()}
-      css={{
-        ...absoluteCover,
-        padding: "1px",
-        overflowY: "auto",
-        flex: 1,
-      }}
+      className={cx(
+        richText(),
+        css({
+          ...absoluteCover,
+          padding: "1px",
+          overflowY: "auto",
+          flex: "[1]",
+        }),
+      )}
     >
       {pages.map((page) => {
         return (
@@ -172,23 +175,25 @@ export const PageNavigation = ({
               onDragStart={handleDragStart}
               draggable
               aria-current={page.id === activePageId ? "page" : undefined}
-              className={row({ interactive: true })}
-              css={{
-                textAlign: "left",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                display: "block",
-                padding: "0.5em",
-                marginLeft: `${(page.level - 1) * 1.5}em`,
-              }}
+              className={cx(
+                row({ interactive: true }),
+                css({
+                  textAlign: "left",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "block",
+                  padding: "0.5em",
+                }),
+              )}
+              style={{ marginLeft: `${(page.level - 1) * 1.5}em` }}
             >
               <span
-                css={{
+                className={css({
                   display: "inline-block",
                   width: "2em",
                   verticalAlign: "baseline",
-                }}
+                })}
               >
                 {page.type === "text" ? <FaBarsStaggered /> : <FaImage />}
               </span>

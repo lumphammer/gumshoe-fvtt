@@ -16,6 +16,7 @@ import { SettingsGridField } from "../SettingsGridField";
 import { SettingsNote } from "../SettingsNote";
 import type { Setters } from "../types";
 import { NamedTranslate } from "./NamedTranslate";
+import { css } from "../../../styled-system/css";
 
 /**
  * Stability states: their names, and the highest pool in each. What they do
@@ -61,22 +62,22 @@ export const StabilityStatesSettings = ({ setters }: { setters: Setters }) => {
               >
                 <div
                   data-testid={`stability-state-${state}`}
-                  css={{
+                  className={css({
                     display: "flex",
                     gap: "0.5em",
                     alignItems: "center",
-                  }}
+                  })}
                 >
                   <AsyncTextInput
-                    css={{ flex: 2 }}
+                    className={css({ flex: "[2]" })}
                     value={settings.stabilityStates[state].name}
                     onChange={set(state, "name")}
                   />
-                  <span css={{ whiteSpace: "nowrap" }}>
+                  <span className={css({ whiteSpace: "nowrap" })}>
                     <Translate>Pool at most</Translate>
                   </span>
                   <AsyncNumberInput
-                    css={{ flex: 1 }}
+                    className={css({ flex: "[1]" })}
                     value={settings.stabilityStates[state].upTo}
                     onChange={set(state, "upTo")}
                   />

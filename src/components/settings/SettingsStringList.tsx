@@ -7,6 +7,7 @@ import { SortableTable } from "../sortableTable";
 import { Translate } from "../Translate";
 import { SettingsEmptyState } from "./SettingsEmptyState";
 import { input } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type SettingsStringListProps = {
   value: string[];
@@ -93,17 +94,16 @@ export const SettingsStringList = ({
       const index = Number(id);
       return (
         <div
-          css={{
+          className={css({
             gridColumn: "1/-1",
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
             gap: "0.5em",
-          }}
+          })}
         >
           <input
-            className={input()}
-            css={{ flex: 1, minWidth: 0 }}
+            className={cx(input(), css({ flex: "[1]", minWidth: 0 }))}
             type="text"
             data-index={index}
             aria-label={`Item ${index + 1}`}
@@ -111,7 +111,7 @@ export const SettingsStringList = ({
             onChange={handleChangeItem}
           />
           <Button
-            css={{ flex: "0 0 auto", width: "auto", margin: 0 }}
+            className={css({ flex: "[0 0 auto]", width: "auto", margin: 0 })}
             onClick={() => void handleDelete(index)}
             disabled={nonempty && value.length < 2}
             title={value[index]}
@@ -130,27 +130,35 @@ export const SettingsStringList = ({
   return (
     <div
       ref={containerRef}
-      className={className}
-      css={{ display: "flex", flexDirection: "column", gap: "0.5em" }}
+      className={cx(
+        className,
+        css({ display: "flex", flexDirection: "column", gap: "0.5em" }),
+      )}
     >
       {value.length === 0 ? (
         <SettingsEmptyState message={emptyMessage} />
       ) : sortable ? (
         <SortableTable
-          css={{ position: "relative", padding: 0 }}
+          className={css({ position: "relative", padding: 0 })}
           items={ids}
           setItems={handleReorder}
           renderItem={renderRow}
           headers={[]}
         />
       ) : (
-        <div css={{ display: "flex", flexDirection: "column", gap: "0.5em" }}>
+        <div
+          className={css({
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5em",
+          })}
+        >
           {ids.map((id) => (
             <div key={id}>{renderRow(id)}</div>
           ))}
         </div>
       )}
-      <Button css={{ width: "100%", margin: 0 }} onClick={handleAdd}>
+      <Button className={css({ width: "100%", margin: 0 })} onClick={handleAdd}>
         <i className="fas fa-plus" /> <Translate>{addLabel}</Translate>
       </Button>
     </div>

@@ -11,6 +11,7 @@ import { InputGrid } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
 import { Translate } from "../Translate";
 import { Panel } from "../Panel";
+import { css } from "../../styled-system/css";
 
 interface AbilityTestMWProps {
   /** Only to write through (a general ability, in Moribund World) */
@@ -54,17 +55,17 @@ export const AbilityTestMW = memo(function AbilityTestMW({
 
   return (
     <Panel
-      css={{
+      className={css({
         marginBottom: "1em",
         display: "flex",
         flexDirection: "column",
         gap: "0.5em",
-      }}
+      })}
     >
       <InputGrid>
         <GridField label="Difficulty">
           <Select
-            css={{ display: "block", width: "100%" }}
+            className={css({ display: "block", width: "100%" })}
             value={difficulty}
             onChange={onChangeDifficulty}
           >
@@ -75,9 +76,9 @@ export const AbilityTestMW = memo(function AbilityTestMW({
           </Select>
         </GridField>
         <GridField label="Boon/levy">
-          <div css={{ position: "relative" }}>
+          <div className={css({ position: "relative" })}>
             <Select
-              css={{ display: "block", width: "100%" }}
+              className={css({ display: "block", width: "100%" })}
               value={boonLevy}
               onChange={onChangeBoonLevy}
             >
@@ -91,26 +92,26 @@ export const AbilityTestMW = memo(function AbilityTestMW({
         </GridField>
       </InputGrid>
       <div
-        css={{
+        className={css({
           display: "flex",
           flexDirection: "row",
-        }}
+        })}
       >
         <Button
           disabled={pool < mwNegateCost}
-          css={{ flex: "1" }}
+          className={css({ flex: "1" })}
           onClick={onNegateIllustrious}
         >
           <Translate>Negate</Translate>
         </Button>
         <Button
           disabled={pool < mwWallopCost}
-          css={{ flex: "1" }}
+          className={css({ flex: "1" })}
           onClick={onWallop}
         >
           <Translate>Wallop</Translate>
         </Button>
-        <Button kind="cta" css={{ flex: "2" }} onClick={onTest}>
+        <Button kind="cta" className={css({ flex: "[2]" })} onClick={onTest}>
           <Translate>Test</Translate>
         </Button>
       </div>

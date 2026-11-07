@@ -3,6 +3,7 @@ import type { ComponentProps } from "react";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { row } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 /**
  * A row in a settings `InputGrid`. Each row is a subgrid spanning the whole
@@ -15,23 +16,28 @@ import { row } from "../../styled-system/recipes";
 type SettingsGridFieldProps = ComponentProps<typeof GridField>;
 
 export const SettingsGridField = ({
-  labelStyle,
+  labelClassName,
   ...props
 }: SettingsGridFieldProps) => {
   return (
     <div
-      className={row({ striped: true })}
-      css={{
-        gridColumn: "label / end",
-        padding: "0.5em",
-        display: "grid",
-        gridTemplateColumns: "subgrid",
-        alignItems: "center",
-      }}
+      className={cx(
+        row({ striped: true }),
+        css({
+          gridColumn: "label / end",
+          padding: "0.5em",
+          display: "grid",
+          gridTemplateColumns: "subgrid",
+          alignItems: "center",
+        }),
+      )}
     >
       <GridField
         {...props}
-        labelStyle={{ alignSelf: "center", paddingTop: 0, ...labelStyle }}
+        labelClassName={cx(
+          css({ alignSelf: "center", paddingTop: 0 }),
+          labelClassName,
+        )}
       />
     </div>
   );
@@ -46,8 +52,10 @@ export const SettingsGridFieldStacked = (
 ) => {
   return (
     <div
-      className={row({ striped: true })}
-      css={{ gridColumn: "label / end", padding: "0.5em" }}
+      className={cx(
+        row({ striped: true }),
+        css({ gridColumn: "label / end", padding: "0.5em" }),
+      )}
     >
       <GridFieldStacked {...props} />
     </div>

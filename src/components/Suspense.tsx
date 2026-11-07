@@ -5,6 +5,7 @@ import { useTheme } from "../hooks/useTheme";
 import { absoluteCover } from "./absoluteCover";
 import { CSSReset } from "./CSSReset";
 import { surface } from "../styled-system/recipes";
+import { css, cx } from "../styled-system/css";
 
 const Fallback = () => {
   const theme = useTheme();
@@ -12,18 +13,19 @@ const Fallback = () => {
     <CSSReset
       theme={theme}
       mode="large"
-      className={surface()}
-      css={absoluteCover}
+      className={cx(surface(), css(absoluteCover))}
     >
       <i
-        className="fas fa-spinner fa-spin"
-        css={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          fontSize: "3em",
-        }}
+        className={cx(
+          "fas fa-spinner fa-spin",
+          css({
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            fontSize: "3em",
+          }),
+        )}
       />
     </CSSReset>
   );

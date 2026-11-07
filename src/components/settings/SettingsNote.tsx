@@ -2,6 +2,7 @@ import type { PropsWithChildren } from "react";
 import { FaTriangleExclamation, FaCircleInfo } from "react-icons/fa6";
 
 import { callout } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 /**
  * A short explanatory note at the top of a settings page, for things people
@@ -16,10 +17,16 @@ export const SettingsNote = ({
   return (
     <div
       role="note"
-      className={callout({ tone: mode === "warn" ? "warning" : "info" })}
-      css={{ alignItems: "baseline", padding: "0.5em", marginBottom: "0.5em" }}
+      className={cx(
+        callout({ tone: mode === "warn" ? "warning" : "info" }),
+        css({
+          alignItems: "baseline",
+          padding: "0.5em",
+          marginBottom: "0.5em",
+        }),
+      )}
     >
-      <Icon css={{ flex: "0 0 auto" }} />
+      <Icon className={css({ flex: "[0 0 auto]" })} />
       <div>{children}</div>
     </div>
   );

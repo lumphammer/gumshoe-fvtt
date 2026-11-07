@@ -1,7 +1,7 @@
 import { ButtonLink, useNavigationContext } from "@lumphammer/minirouter";
 import { FaArrowLeft } from "react-icons/fa6";
 
-import { cx } from "../../styled-system/css";
+import { css, cx } from "../../styled-system/css";
 import { button } from "../../styled-system/recipes";
 import { Translate } from "../Translate";
 
@@ -20,10 +20,14 @@ export const SettingsBackButton = ({ className }: { className?: string }) => {
       from="root"
       to={path.slice(0, -1)}
       data-interactive
-      className={cx(button({ kind: "ghost" }), className)}
-      css={{ width: "auto", whiteSpace: "nowrap" }}
+      className={cx(
+        cx(button({ kind: "ghost" }), className),
+        css({ width: "auto", whiteSpace: "nowrap" }),
+      )}
     >
-      <FaArrowLeft css={{ fontSize: "0.8em", marginRight: "0.3em" }} />
+      <FaArrowLeft
+        className={css({ fontSize: "0.8em", marginRight: "0.3em" })}
+      />
       <Translate>Back</Translate>
     </ButtonLink>
   );

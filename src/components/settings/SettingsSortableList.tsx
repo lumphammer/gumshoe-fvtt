@@ -7,6 +7,7 @@ import { SortableTable } from "../sortableTable";
 import { Translate } from "../Translate";
 import { SettingsEmptyState } from "./SettingsEmptyState";
 import { row } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type SettingsSortableListProps = {
   rows: { name: string; detail?: ReactNode }[];
@@ -54,21 +55,23 @@ export const SettingsSortableList = ({
       return (
         <Link
           to={linkTo(index)}
-          className={row({ interactive: true })}
-          css={{
-            gridColumn: "1/-1",
-            display: "grid",
-            gridTemplateColumns: "subgrid",
-            textShadow: "none",
-          }}
+          className={cx(
+            row({ interactive: true }),
+            css({
+              gridColumn: "1/-1",
+              display: "grid",
+              gridTemplateColumns: "subgrid",
+              textShadow: "none",
+            }),
+          )}
         >
           <div
-            css={{
+            className={css({
               padding: "0.3em",
               overflow: "hidden",
               whiteSpace: "nowrap",
               textOverflow: "ellipsis",
-            }}
+            })}
           >
             {name || (
               <i>
@@ -76,7 +79,13 @@ export const SettingsSortableList = ({
               </i>
             )}
           </div>
-          <div css={{ padding: "0.3em", fontStyle: "italic", opacity: 0.7 }}>
+          <div
+            className={css({
+              padding: "0.3em",
+              fontStyle: "italic",
+              opacity: 0.7,
+            })}
+          >
             {detail}
           </div>
         </Link>
@@ -87,20 +96,16 @@ export const SettingsSortableList = ({
 
   return (
     <div
-      className={className}
-      css={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: 0,
-      }}
+      // layout, which call sites can change (componentDefaults.css)
+      className={cx("inv-default-settings-sortable-list", className)}
     >
-      <p css={{ marginTop: 0 }}>
-        <Button css={{ width: "auto" }} onClick={onAdd}>
+      <p className={css({ marginTop: 0 })}>
+        <Button className={css({ width: "auto" })} onClick={onAdd}>
           <i className="fas fa-plus" /> <Translate>{addLabel}</Translate>
         </Button>
       </p>
       <SortableTable
-        css={{ flex: 1, overflow: "auto", position: "relative" }}
+        className={css({ flex: "[1]", overflow: "auto", position: "relative" })}
         items={rows.map((_, i) => i.toString())}
         setItems={handleSetItems}
         renderItem={renderRow}

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 
 import { IdContext } from "../IdContext";
 import { Translate } from "../Translate";
+import { css, cx } from "../../styled-system/css";
 
 type GridFieldStackedProps = {
   label?: string | ReactNode;
@@ -22,14 +23,14 @@ export const GridFieldStacked = ({
   return (
     <IdContext.Provider value={htmlId}>
       <div
-        css={{
+        className={css({
           gridColumn: "label / end",
           position: "relative",
           display: "flex",
           flexDirection: "column",
-        }}
+        })}
       >
-        <label htmlFor={htmlId} css={{}}>
+        <label htmlFor={htmlId} className={css({})}>
           {label &&
             (noTranslate || typeof label !== "string" ? (
               label
@@ -38,11 +39,13 @@ export const GridFieldStacked = ({
             ))}
         </label>
         <div
-          css={{
-            position: "relative",
-            flex: 1,
-          }}
-          className={className}
+          className={cx(
+            className,
+            css({
+              position: "relative",
+              flex: "[1]",
+            }),
+          )}
         >
           {children}
         </div>

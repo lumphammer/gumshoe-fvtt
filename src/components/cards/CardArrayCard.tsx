@@ -6,6 +6,7 @@ import type { CardItem } from "../../module/items/card";
 import { ThemeContext } from "../../themes/ThemeContext";
 import { CardDisplay } from "./CardDisplay";
 import { CardsAreaSettingsContext } from "./contexts";
+import { css } from "../../styled-system/css";
 
 interface CardArrayCardProps {
   card: CardItem;
@@ -35,11 +36,11 @@ export const CardArrayCard = memo(function CardArrayCard({
     // opacity has to be applied on a wrapper otherwise we break transform-style
     // (if used.) See https://stackoverflow.com/a/70627306/212676
     <div
-      css={{
+      className={css({
         opacity: data.active ? 1 : 0.5,
-        transition: "opacity 0.2s ease-in-out",
+        transition: "[opacity 0.2s ease-in-out]",
         containerType: "inline-size",
-      }}
+      })}
     >
       <CardDisplay
         key={card.id}
@@ -48,7 +49,7 @@ export const CardArrayCard = memo(function CardArrayCard({
         className={`investigator-card-array-card ${className}`}
         card={card}
         interactive
-        css={{ marginBottom: theme.cards.area.verticalSpacing }}
+        style={{ marginBottom: theme.cards.area.verticalSpacing }}
         viewMode={viewMode}
       />
     </div>

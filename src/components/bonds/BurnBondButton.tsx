@@ -3,6 +3,7 @@ import { isPCActor } from "../../module/actors/pc";
 import type { BondItem } from "../../module/items/bond";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
+import { css, cx } from "../../styled-system/css";
 
 type BurnBondButtonProps = {
   /** only to burn */
@@ -29,8 +30,7 @@ export const BurnBondButton = ({
   });
   return (
     <Button
-      className={className}
-      css={{ whiteSpace: "nowrap" }}
+      className={cx(className, css({ whiteSpace: "nowrap" }))}
       disabled={!canBurn}
       onClick={() => {
         const actor = bond.actor;

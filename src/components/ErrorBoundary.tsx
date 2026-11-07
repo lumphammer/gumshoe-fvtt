@@ -3,6 +3,7 @@ import React from "react";
 
 import { systemLogger } from "../functions/utilities";
 import { absoluteCover } from "./absoluteCover";
+import { css } from "../styled-system/css";
 
 // eslint-disable-next-line typescript/no-empty-object-type
 type ErrorBoundaryProps = PropsWithChildren<{}>;
@@ -33,13 +34,13 @@ export class ErrorBoundary extends React.Component<
     if (this.state.error) {
       return (
         <div
-          css={{
+          className={css({
             ...absoluteCover,
             padding: "1em",
-            backgroundColor: "#222",
-            color: "#eee",
+            backgroundColor: "[#222]",
+            color: "[#eee]",
             overflow: "auto",
-          }}
+          })}
         >
           <h1>Alas! Something went wrong 😔</h1>
           <p>

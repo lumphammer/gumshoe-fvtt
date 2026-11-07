@@ -12,6 +12,7 @@ import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Select } from "../inputs/Select";
+import { css } from "../../styled-system/css";
 
 type PersonalDetailMainProps = {
   /** only to write through */
@@ -40,10 +41,10 @@ export const PersonalDetailMain = ({
 
   return (
     <InputGrid
-      css={{
+      className={css({
         ...absoluteCover,
         gridTemplateRows: "auto auto auto 1fr",
-      }}
+      })}
     >
       <GridField label="Item Name">
         <AsyncTextInput value={name} onChange={item.setName} />
@@ -51,9 +52,9 @@ export const PersonalDetailMain = ({
       <GridField label="Slot">
         <Select
           value={system.slotIndex}
-          css={{
+          className={css({
             width: "100%",
-          }}
+          })}
           onChange={(e) => {
             void methods.setSlotIndex(+e.currentTarget.value);
           }}
@@ -69,9 +70,9 @@ export const PersonalDetailMain = ({
       <GridField label="Compendium Pack">
         <Select
           value={system.compendiumPackId ?? ""}
-          css={{
+          className={css({
             width: "100%",
-          }}
+          })}
           onChange={(e) => {
             const value =
               e.currentTarget.value === "~~~NULL~~~"
@@ -89,11 +90,11 @@ export const PersonalDetailMain = ({
         </Select>
       </GridField>
       <div
-        css={{
-          flex: 1,
+        className={css({
+          flex: "[1]",
           position: "relative",
           gridColumn: "1/-1",
-        }}
+        })}
       >
         <RichTextEditor
           html={system.notes}

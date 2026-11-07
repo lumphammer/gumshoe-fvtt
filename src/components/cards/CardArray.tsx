@@ -11,6 +11,7 @@ import { CardsAreaSettingsContext } from "./contexts";
 import type { CardLayoutView } from "./functions";
 import type { CardsColumnWidth } from "./types";
 import { mutedText } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 interface CardArrayProps {
   /** the cards, in order, from the actor's snapshot */
@@ -33,15 +34,17 @@ export const CardArray = ({ cards }: CardArrayProps) => {
   if (cards.length === 0) {
     return (
       <div
-        className={mutedText()}
-        css={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          alignItems: "center",
-          fontSize: "1.5em",
-          margin: "1em 0em",
-        }}
+        className={cx(
+          mutedText(),
+          css({
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "start",
+            alignItems: "center",
+            fontSize: "1.5em",
+            margin: "1em 0em",
+          }),
+        )}
       >
         <Translate>No cards</Translate>
       </div>
@@ -52,7 +55,7 @@ export const CardArray = ({ cards }: CardArrayProps) => {
     <Masonry
       minColumnWidth={columndWidths[columnWidthSetting]}
       columnGap={theme.cards.area.horizontalSpacing}
-      css={{
+      style={{
         marginTop: theme.cards.area.verticalSpacing,
         marginBottom: theme.cards.area.verticalSpacing,
         marginLeft: theme.cards.area.horizontalSpacing,

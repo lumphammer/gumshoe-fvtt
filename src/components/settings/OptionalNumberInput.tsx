@@ -1,5 +1,6 @@
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Toggle } from "../inputs/Toggle";
+import { css } from "../../styled-system/css";
 
 type OptionalNumberInputProps = {
   value: number | undefined;
@@ -21,17 +22,17 @@ export const OptionalNumberInput = ({
 }: OptionalNumberInputProps) => {
   return (
     <div
-      css={{
+      className={css({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         gap: "0.5em",
-      }}
+      })}
     >
       <Toggle checked={value !== undefined} onChange={onToggle} />
       {value !== undefined && (
         <AsyncNumberInput
-          css={{ flex: 1 }}
+          className={css({ flex: "[1]" })}
           value={value}
           onChange={onChange}
           min={min}

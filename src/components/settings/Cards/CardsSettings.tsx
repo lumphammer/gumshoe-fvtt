@@ -7,6 +7,7 @@ import { StateContext } from "../contexts";
 import { SettingsGridField } from "../SettingsGridField";
 import type { Setters } from "../types";
 import { Categories } from "./Categories";
+import { css } from "../../../styled-system/css";
 
 interface CardsSettingsProps {
   setters: Setters;
@@ -18,7 +19,11 @@ export const CardsSettings = ({ setters }: CardsSettingsProps) => {
   return (
     <div
       data-testid="cards-settings"
-      css={{ height: "100%", display: "flex", flexDirection: "column" }}
+      className={css({
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      })}
     >
       <InputGrid>
         <SettingsGridField label="Use cards?">
@@ -30,7 +35,7 @@ export const CardsSettings = ({ setters }: CardsSettingsProps) => {
           <h3>
             <Translate>Card categories</Translate>
           </h3>
-          <Categories css={{ flex: 1, minHeight: "10em" }} />
+          <Categories className={css({ flex: "[1]", minHeight: "10em" })} />
         </>
       )}
     </div>

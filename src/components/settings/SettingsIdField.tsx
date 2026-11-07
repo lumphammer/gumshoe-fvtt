@@ -1,6 +1,7 @@
 import { Button } from "../inputs/Button";
 import { SettingsGridField } from "./SettingsGridField";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 type SettingsIdFieldProps = {
   id: string;
@@ -41,7 +42,7 @@ export const SettingsIdField = ({
   return (
     <SettingsGridField label="Unique Id">
       <code>{id}</code>{" "}
-      <Button css={{ width: "auto" }} onClick={handleClickEdit}>
+      <Button className={css({ width: "auto" })} onClick={handleClickEdit}>
         <Translate>Edit</Translate>
       </Button>
     </SettingsGridField>

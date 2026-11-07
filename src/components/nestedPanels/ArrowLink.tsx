@@ -2,7 +2,7 @@ import { Link } from "@lumphammer/minirouter";
 import type { ComponentProps } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 
-import { cx } from "../../styled-system/css";
+import { css, cx } from "../../styled-system/css";
 import { outcome } from "../../styled-system/recipes";
 
 type ArrowLinkProps = ComponentProps<typeof Link> & {
@@ -24,25 +24,25 @@ export const ArrowLink = ({
     >
       {back && (
         <FaArrowLeft
-          css={{
+          className={css({
             marginRight: "0.3em",
             transform: "translateY(0.2em)",
-          }}
+          })}
         />
       )}
       <span
-        css={{
+        className={css({
           verticalAlign: "baseline",
-        }}
+        })}
       >
         {children}
       </span>
       {!back && (
         <FaArrowRight
-          css={{
+          className={css({
             marginLeft: "0.3em",
             transform: "translateY(0.2em)",
-          }}
+          })}
         />
       )}
     </Link>

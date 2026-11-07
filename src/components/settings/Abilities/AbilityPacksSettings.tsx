@@ -17,6 +17,7 @@ import {
   row,
   surface,
 } from "../../../styled-system/recipes";
+import { css, cx } from "../../../styled-system/css";
 
 /**
  * Where a pack comes from: the system itself, the world, or a module (by
@@ -104,7 +105,7 @@ export const AbilityPacksSettings = ({
 
   return (
     <div>
-      <p css={{ marginTop: 0 }}>
+      <p className={css({ marginTop: 0 })}>
         <Translate>
           {which === "newPCPacks"
             ? "Items from these compendium packs are added to every new PC."
@@ -112,28 +113,29 @@ export const AbilityPacksSettings = ({
         </Translate>
       </p>
       <div
-        className={surface({ solid: true })}
-        css={{
-          position: "sticky",
-          top: 0,
-          zIndex: 1,
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: "0.5em",
-          padding: "0.5em 0",
-        }}
+        className={cx(
+          surface({ solid: true }),
+          css({
+            position: "sticky",
+            top: 0,
+            zIndex: 1,
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "0.5em",
+            padding: "0.5em 0",
+          }),
+        )}
       >
         <input
-          className={input()}
+          className={cx(input(), css({ flex: "[1]" }))}
           type="search"
-          css={{ flex: 1 }}
           value={search}
           onChange={(e) => setSearch(e.currentTarget.value)}
           placeholder={getTranslated("Search compendium packs")}
           aria-label={getTranslated("Search compendium packs")}
         />
-        <span css={{ whiteSpace: "nowrap", opacity: 0.75 }}>
+        <span className={css({ whiteSpace: "nowrap", opacity: 0.75 })}>
           <Translate values={{ Count: selectedCount.toString() }}>
             CountSelected
           </Translate>
@@ -149,25 +151,27 @@ export const AbilityPacksSettings = ({
         />
       )}
       <div
-        css={{
+        className={css({
           display: "grid",
           gridTemplateColumns: "max-content 1fr max-content",
           columnGap: "0.5em",
-        }}
+        })}
       >
         {visiblePacks.map(({ collection, label, source, missing }, i) => {
           const id = `${baseId}-${collection}`;
           return (
             <IdContext.Provider value={id} key={collection}>
               <div
-                className={row({ alternate: i % 2 === 0 })}
-                css={{
-                  gridColumn: "1 / -1",
-                  display: "grid",
-                  gridTemplateColumns: "subgrid",
-                  alignItems: "center",
-                  padding: "0.3em 0.5em",
-                }}
+                className={cx(
+                  row({ alternate: i % 2 === 0 }),
+                  css({
+                    gridColumn: "1 / -1",
+                    display: "grid",
+                    gridTemplateColumns: "subgrid",
+                    alignItems: "center",
+                    padding: "0.3em 0.5em",
+                  }),
+                )}
               >
                 <Toggle
                   checked={selectedPacks.includes(collection)}
@@ -183,10 +187,10 @@ export const AbilityPacksSettings = ({
                   {label}
                 </label>
                 <span
-                  className={
-                    missing ? outcome({ tone: "warning" }) : mutedText()
-                  }
-                  css={{ fontStyle: "italic" }}
+                  className={cx(
+                    missing ? outcome({ tone: "warning" }) : mutedText(),
+                    css({ fontStyle: "italic" }),
+                  )}
                 >
                   {source}
                 </span>

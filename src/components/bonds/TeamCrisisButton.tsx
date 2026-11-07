@@ -4,6 +4,7 @@ import { getTranslated } from "../../functions/getTranslated";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
 import { crisis } from "./directions";
+import { css } from "../../styled-system/css";
 
 /**
  * Opens the panel for the Stability test after a team crisis (p. 046). It
@@ -16,7 +17,7 @@ export const TeamCrisisButton = () => {
   return (
     <Button
       data-testid="open-team-crisis"
-      css={{ flexBasis: "max-content", alignSelf: "flex-start" }}
+      className={css({ flexBasis: "max-content", alignSelf: "flex-start" })}
       onClick={() => navigate("here", crisis())}
       title={tooltip}
     >

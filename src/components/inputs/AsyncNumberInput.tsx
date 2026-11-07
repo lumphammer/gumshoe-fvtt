@@ -4,6 +4,7 @@ import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { Button } from "./Button";
 import { TextInput } from "./TextInput";
 import type { ValidationResult } from "./types";
+import { css, cx } from "../../styled-system/css";
 
 type AsyncNumberInputProps = {
   value: undefined | number;
@@ -106,18 +107,20 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
 
     return (
       <div
-        css={{
-          display: "flex",
-          flexDirection: "row",
-          button: {
-            lineHeight: "inherit",
-            flexBasis: "min-content",
-            flex: 0,
-            padding: "0 0.25em",
-            fontSize: smallButtons ? "0.6em" : undefined,
-          },
-        }}
-        className={className}
+        className={cx(
+          className,
+          css({
+            display: "flex",
+            flexDirection: "row",
+            "& button": {
+              lineHeight: "inherit",
+              flexBasis: "min-content",
+              flex: "[0]",
+              padding: "0 0.25em",
+              fontSize: smallButtons ? "0.6em" : undefined,
+            },
+          }),
+        )}
         style={style}
       >
         {(noPlusMinus === undefined || !noPlusMinus) && (
@@ -132,11 +135,11 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
         )}
         <TextInput
           validation={validationResult}
-          css={{
-            flex: 1,
+          className={css({
+            flex: "[1]",
             flexBasis: "min-content",
             userSelect: "text",
-          }}
+          })}
           value={display}
           onChange={onChange}
           onFocus={onFocus}

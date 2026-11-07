@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import React, { Fragment, useContext, useMemo } from "react";
 
 import { MagicToolbarContentContext } from "./contexts";
+import { css } from "../../../styled-system/css";
 
 interface MagicToolbarProps extends React.PropsWithChildren {
   categories: string[];
@@ -61,18 +62,19 @@ export const MagicToolbar = ({
     return (
       <Fragment key={category}>
         <div
-          css={{ gridRow: 1, gridColumn: index + 1, borderBottom: "1px solid" }}
+          className={css({ gridRow: 1, borderBottom: "1px solid" })}
+          style={{ gridColumn: index + 1 }}
         >
           {category}
         </div>
         <div
-          css={{
+          className={css({
             gridRow: 2,
-            gridColumn: index + 1,
             display: "flex",
             flexDirection: "row",
             gap: "0.5em",
-          }}
+          })}
+          style={{ gridColumn: index + 1 }}
         >
           {groupedContent[category]}
         </div>
@@ -81,13 +83,13 @@ export const MagicToolbar = ({
   });
   return (
     <div
-      css={{
+      className={css({
         display: "grid",
         gridTemplateRows: "auto 1fr",
         justifyContent: "start",
         columnGap: "1em",
         rowGap: "0.5em",
-      }}
+      })}
     >
       {content}
     </div>

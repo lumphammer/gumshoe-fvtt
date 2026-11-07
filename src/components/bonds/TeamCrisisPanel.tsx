@@ -39,6 +39,7 @@ import { InputGrid } from "../inputs/InputGrid";
 import { SpendButtons } from "../inputs/SpendButtons";
 import { ItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 /** What a failure would do with one teammate, e.g. "new (2)" or "2 → 3" */
 const describeChange = (change: CrisisChange) =>
@@ -213,7 +214,11 @@ export const TeamCrisisPanel = ({
             <GridField key={candidate.uuid} label={candidate.name} noTranslate>
               <div
                 data-testid="crisis-teammate"
-                css={{ display: "flex", gap: "0.5em", alignItems: "center" }}
+                className={css({
+                  display: "flex",
+                  gap: "0.5em",
+                  alignItems: "center",
+                })}
               >
                 <Checkbox
                   checked={change !== undefined}
@@ -310,7 +315,7 @@ export const TeamCrisisPanel = ({
                       {" "}
                       <FaHeartCrack
                         title={getTranslated("Broken")}
-                        css={{ verticalAlign: "middle" }}
+                        className={css({ verticalAlign: "middle" })}
                       />
                     </>
                   )}

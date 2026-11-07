@@ -7,6 +7,7 @@ import { SettingsNote } from "../SettingsNote";
 import { SettingsSortableList } from "../SettingsSortableList";
 import type { Setters } from "../types";
 import { personalDetail } from "./directions";
+import { css } from "../../../styled-system/css";
 
 export const PersonalDetailsSettings = ({ setters }: { setters: Setters }) => {
   const { settings } = useContext(StateContext);
@@ -29,12 +30,18 @@ export const PersonalDetailsSettings = ({ setters }: { setters: Setters }) => {
   );
 
   return (
-    <div css={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <div
+      className={css({
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      })}
+    >
       <SettingsNote>
         <Translate>PositionalFieldsNote</Translate>
       </SettingsNote>
       <SettingsSortableList
-        css={{ flex: 1 }}
+        className={css({ flex: "[1]" })}
         rows={settings.personalDetails.map(({ name, type }) => ({
           name,
           detail: <Translate>{type === "item" ? "Item" : "Text"}</Translate>,

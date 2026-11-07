@@ -4,6 +4,7 @@ import { FaGripLines } from "react-icons/fa6";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { dragHandle } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type DragHandleProps = {
   setActivatorNodeRef?: (node: HTMLDivElement) => void;
@@ -22,16 +23,18 @@ export const DragHandle = ({
       tabIndex={0}
       {...attributes}
       aria-label={getTranslated("Drag to reorder")}
-      className={dragHandle()}
-      css={{
-        height: "100%",
-        width: "3em",
-        textAlign: "center",
-        gridColumn: "1",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
+      className={cx(
+        dragHandle(),
+        css({
+          height: "100%",
+          width: "3em",
+          textAlign: "center",
+          gridColumn: "1",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }),
+      )}
       ref={setActivatorNodeRef}
       {...listeners}
     >

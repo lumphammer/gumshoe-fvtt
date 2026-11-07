@@ -65,6 +65,38 @@
     min-width: 0;
   }
 
+  /* InputGrid; the same as `inputGridStyle` */
+  .inv-default-input-grid {
+    display: grid;
+    grid-template-rows: auto;
+    grid-template-columns: [label] fit-content(50%) [control] 1fr [end];
+    grid-auto-rows: auto;
+    row-gap: 0.2em;
+  }
+
+  /* GridField's label */
+  .inv-default-grid-field-label {
+    grid-column: label;
+    padding-top: 0.3em;
+    padding-right: 0.5em;
+    align-self: start;
+    text-align: end;
+    overflow-wrap: anywhere;
+  }
+
+  .inv-default-settings-sortable-list {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* SortableTable: absoluteCover, with padding */
+  .inv-default-sortable-table {
+    position: absolute;
+    inset: 0;
+    padding: 1em;
+  }
+
   .inv-default-ability-name-link {
     grid-column: ability;
     text-align: end;
