@@ -335,10 +335,19 @@ catalogue: {
 }
 ```
 
-An override **replaces** the default for that name: none of the default's
-declarations survive, so it has to say everything it wants. The class's other
-parts still apply on top: replacing `badge` keeps its tones and its pressed
-state, and every override keeps the state layers.
+An override of a class's base or a slot (`badge`, `tabs__tab`) **replaces**
+the default for that name: none of the default's declarations survive, so it
+has to say everything it wants. The class's other parts still apply on top:
+replacing `badge` keeps its tones and its pressed state, and every override
+keeps the state layers.
+
+An override of a variant or compound variant (`row--interactive_true`,
+`badge--compound__tone_danger__weight_strong`) **patches** it instead: its
+declarations go over the variant's, and the rest of the variant stays. All of
+a class's variants share one cascade layer, so replacing one would drop an
+element's other variants with it (a row that's `interactive` and `divided`
+would lose its divider). To take a declaration away, set it explicitly
+(`borderBottomStyle: "none"`).
 
 How: `CSSReset` renders the theme's overrides as a `<style>` inside the themed
 root (so it travels with the root into a detached window). The theme scope
@@ -346,8 +355,8 @@ is on the class itself, so a nested rule can put context on either side of
 it, inside the themed root or outside: `"input:checked + &"` becomes
 `input:checked + .inv-tabs__tab:where([data-inv-theme="x"], [data-inv-theme="x"] *)`.
 Each rule goes in
-the same cascade layer as the default it replaces, and starts with
-`all: revert-layer`, which drops everything that layer had for the element
+the same cascade layer as the default it replaces; a replacing one starts
+with `all: revert-layer`, which drops everything that layer had for the element
 (`src/themes/catalogue/overrides.ts`). The theme scope is inside `:where()`,
 so an override is exactly as specific as the default and wins by coming
 later. A class's state rules (`:is([aria-pressed=true])` and the like) are

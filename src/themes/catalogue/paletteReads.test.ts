@@ -7,7 +7,8 @@ import { describe, expect, it } from "vitest";
 // directly, from before the catalogue. The list only shrinks: when you convert
 // one, take it off.
 //
-// A source scan, like schemaInitialValues.test.ts: it looks for `.colors`.
+// A source scan, like schemaInitialValues.test.ts: it looks for `.colors`
+// and for destructured `colors`.
 
 const notYetConverted = [
   "components/abilities/AbilityTestMW.tsx",
@@ -69,7 +70,9 @@ const filesMatching = (pattern: RegExp) =>
     .filter((path) => pattern.test(readFileSync(join(srcDir, path), "utf8")))
     .sort();
 
-const filesReadingColours = () => filesMatching(/\.colors\b/);
+// `.colors`, or destructuring them: `{ colors }`, `colors: { ... }`
+const filesReadingColours = () =>
+  filesMatching(/\.colors\b|\{\s*colors\s*[,}]|\bcolors:\s*\{/);
 
 describe("reading theme colours", () => {
   it("happens only in files that haven't been converted yet", () => {
