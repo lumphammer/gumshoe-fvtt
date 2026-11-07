@@ -51,7 +51,34 @@ export const logoDefaults = {
     fontSize: "calc(1em * var(--logo-fit, 1))",
     padding: "0 1em",
   },
+  // a hidden copy of the main text at full size, to measure it: the main
+  // text's look, with its position and size forced (see measureForced)
+  measure: {
+    transition: "font-size var(--logo-fit-duration, 0s)",
+    padding: "0 1em",
+  },
   // the subtext, under it
   front_sub: { fontSize: "0.5em", padding: "0 1em", minHeight: "1em" },
   rear_sub: { fontSize: "0.5em", padding: "0 1em", minHeight: "1em" },
 } as const;
+
+/**
+ * What the measuring copy always is, whatever a theme's front style says: V1
+ * put these after the theme's style. Merged last into its styles.
+ */
+export const measureForced = {
+  position: "absolute",
+  top: "0",
+  left: "0",
+  fontSize: "1em",
+} as const;
+
+/** The backdrop always fills the logo: V1 put these after the theme's style. */
+export const backdropForced = [
+  "position",
+  "inset",
+  "top",
+  "right",
+  "bottom",
+  "left",
+] as const;

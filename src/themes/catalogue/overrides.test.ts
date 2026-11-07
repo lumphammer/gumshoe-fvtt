@@ -1,6 +1,11 @@
 import { describe, expect, test } from "vitest";
 
-import { catalogueOverridesCss, isSafeValue, layerOf } from "./overrides";
+import {
+  catalogueOverridesCss,
+  escapeStrings,
+  isSafeValue,
+  layerOf,
+} from "./overrides";
 
 describe("layerOf", () => {
   test.each([
@@ -150,5 +155,30 @@ describe("isSafeValue", () => {
     '"a\nb"',
   ])("rejects %s", (value) => {
     expect(isSafeValue(value)).toBe(false);
+  });
+});
+
+describe("values", () => {
+  test("a list of fallbacks becomes one declaration each, in order", () => {
+    expect(
+      catalogueOverridesCss("teal", {
+        badge: { width: ["200px", "1lh"] as unknown as string },
+      }),
+    ).toContain("width: 200px; width: 1lh;");
+  });
+
+  test("an inline SVG in a data URL is kept, with its < escaped", () => {
+    const svg = `url("data:image/svg+xml,<svg xmlns='x'></svg>")`;
+    const css = catalogueOverridesCss("teal", {
+      badge: { backgroundImage: svg },
+    });
+    expect(css).not.toContain("</");
+    expect(css).toContain(
+      "background-image: url(\"data:image/svg+xml,\\3c svg xmlns='x'>\\3c /svg>\");",
+    );
+  });
+
+  test("escapeStrings only touches quoted strings", () => {
+    expect(escapeStrings(`a<b "c<d" 'e<f'`)).toBe(`a<b "c\\3c d" 'e\\3c f'`);
   });
 });

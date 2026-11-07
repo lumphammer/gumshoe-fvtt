@@ -6,7 +6,12 @@ import type { CSSProperties } from "react";
  * ...`).
  */
 export type OverrideStyle = CSSProperties & {
-  [key: string]: OverrideStyle | string | number | undefined;
+  [key: string]:
+    | OverrideStyle
+    | string
+    | number
+    | (string | number)[]
+    | undefined;
 };
 
 /**
@@ -113,6 +118,36 @@ const cssValue = (key: string, value: string | number) =>
 const isSafe = (text: string) => !/[{};]|\/\*|\*\/|<\//.test(text);
 
 /**
+ * A value with every `<` inside a quoted string escaped (`\\3c `, which CSS
+ * reads as `<`), so an inline SVG in a data URL (`url("data:image/svg+xml,
+ * <svg>...</svg>")`) can't end the `<style>` it's in.
+ */
+export function escapeStrings(text: string) {
+  let quote: string | null = null;
+  let out = "";
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (quote) {
+      if (char === "\\") {
+        out += char + (text[i + 1] ?? "");
+        i++;
+        continue;
+      }
+      if (char === quote) {
+        quote = null;
+      } else if (char === "<") {
+        out += "\\3c ";
+        continue;
+      }
+    } else if (char === '"' || char === "'") {
+      quote = char;
+    }
+    out += char;
+  }
+  return out;
+}
+
+/**
  * Whether a value can go into the stylesheet as it is. Like `isSafe`, but `;`,
  * braces and comment markers are allowed inside a quoted string or a
  * `url(...)`, where they can't end anything: a data URL backdrop
@@ -192,14 +227,26 @@ function serialize(
       console.warn(`Catalogue override: ignoring "${key}"`);
       continue;
     }
-    if (typeof value === "object") {
+    if (Array.isArray(value)) {
+      // fallbacks: each in turn, so a browser keeps the last it understands
+      for (const each of value) {
+        const text = escapeStrings(cssValue(key, each));
+        if (isSafeValue(text)) {
+          declarations.push(`${kebab(key)}: ${text};`);
+        } else {
+          console.warn(`Catalogue override: ignoring ${key}: ${each}`);
+        }
+      }
+    } else if (typeof value === "object") {
       nested.push(
         ...(key.startsWith("@")
           ? [`${key} { ${serialize(selectors, value, false).join("\n")} }`]
           : serialize(nest(selectors, key), value, false)),
       );
-    } else if (isSafeValue(String(value))) {
-      declarations.push(`${kebab(key)}: ${cssValue(key, value)};`);
+    } else if (isSafeValue(escapeStrings(cssValue(key, value)))) {
+      declarations.push(
+        `${kebab(key)}: ${escapeStrings(cssValue(key, value))};`,
+      );
     } else {
       console.warn(`Catalogue override: ignoring ${key}: ${value}`);
     }

@@ -5,7 +5,7 @@ import type {
 
 import { paletteVar } from "../palette";
 import type { ThemeV1 } from "../types";
-import { logoDefaults } from "./logoDefaults";
+import { backdropForced, logoDefaults, measureForced } from "./logoDefaults";
 import {
   type CatalogueOverrides,
   type OverrideStyle,
@@ -22,20 +22,34 @@ const attach = (key: string) =>
 
 /**
  * An Emotion style object as an override style: pseudo-classes attach to the
- * element, as Emotion has them, and a list of fallbacks keeps its last.
+ * element, as Emotion has them, and a list of fallbacks stays a list.
  */
 function fromEmotion(style: CSSObject): OverrideStyle {
   return Object.fromEntries(
-    Object.entries(style).flatMap(([key, value]) => {
-      if (Array.isArray(value)) return [[key, value.at(-1)]];
-      if (value !== null && typeof value === "object") {
-        return [[attach(key), fromEmotion(value as CSSObject)]];
-      }
-      if (typeof value === "string" || typeof value === "number") {
-        return [[key, value]];
-      }
-      return [];
-    }),
+    Object.entries(style).flatMap(
+      ([key, value]): [string, OverrideStyle[string]][] => {
+        // fallbacks: all of them, in order (the serializer repeats the
+        // declaration for each)
+        if (Array.isArray(value)) {
+          return [
+            [
+              key,
+              (value as unknown[]).filter(
+                (v): v is string | number =>
+                  typeof v === "string" || typeof v === "number",
+              ),
+            ],
+          ];
+        }
+        if (value !== null && typeof value === "object") {
+          return [[attach(key), fromEmotion(value as CSSObject)]];
+        }
+        if (typeof value === "string" || typeof value === "number") {
+          return [[key, value]];
+        }
+        return [];
+      },
+    ),
   );
 }
 
@@ -129,7 +143,13 @@ function logoFromV1(theme: ThemeV1): CatalogueOverrides {
     style: CSSObject | undefined,
   ): OverrideStyle => ({ ...defaults, ...fromEmotion(style ?? {}) });
   return {
-    logo__backdrop: over(logoDefaults.backdrop, logo.backdropStyle),
+    // the backdrop always fills the logo (layout in LogoEditable), so its
+    // position and insets aren't the theme's, even with !important
+    logo__backdrop: Object.fromEntries(
+      Object.entries(over(logoDefaults.backdrop, logo.backdropStyle)).filter(
+        ([key]) => !(backdropForced as readonly string[]).includes(key),
+      ),
+    ),
     logo__text: over(logoDefaults.text, logo.textElementsStyle),
     logo__front_wrapper: over(
       logoDefaults.front_wrapper,
@@ -137,6 +157,11 @@ function logoFromV1(theme: ThemeV1): CatalogueOverrides {
     ),
     logo__front: over(logoDefaults.front, logo.frontTextElementStyle),
     logo__front_sub: over(logoDefaults.front_sub, logo.frontTextElementStyle),
+    // the front style, with the measuring copy's position and size last
+    logo__measure: {
+      ...over(logoDefaults.measure, logo.frontTextElementStyle),
+      ...measureForced,
+    },
     logo__rear_wrapper: over(
       logoDefaults.rear_wrapper,
       logo.rearTextElementWrapperStyle,
