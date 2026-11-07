@@ -1,0 +1,72 @@
+/*
+ * Element defaults: plain elements inside a themed root (headings, labels,
+ * links, rules), so call sites use a catalogue class only when they need
+ * something else. Built from the palette's custom properties. In
+ * `system.base`, and no more specific than the element (`:where()` on the
+ * root), so any class beats them. See docs/theming.md.
+ */
+@layer system.base {
+  :where([data-inv-theme]) * {
+    scrollbar-width: thin;
+    user-select: auto;
+    box-sizing: border-box;
+    scrollbar-color: var(--inv-accent) var(--inv-control);
+  }
+
+  :where([data-inv-theme]) :is(h1, h2, h3, h4) {
+    border: none;
+    margin: 0.3em 0;
+    padding: 0;
+    font: var(--inv-display-font);
+    text-transform: var(--inv-display-case);
+    letter-spacing: var(--inv-display-letter-spacing);
+  }
+  :where([data-inv-theme]) h1 {
+    font-size: 1.5em;
+  }
+  :where([data-inv-theme]) h2 {
+    font-size: 1.3em;
+  }
+  :where([data-inv-theme]) h3 {
+    font-size: 1.1em;
+  }
+  :where([data-inv-theme]) h4 {
+    font-size: 1em;
+  }
+
+  :where([data-inv-theme]) label {
+    font-weight: bold;
+  }
+
+  :where([data-inv-theme]) :is(a, label.parp) {
+    color: var(--inv-link);
+  }
+  :where([data-inv-theme])
+    :is(
+      a:hover,
+      a.hover,
+      .hover a,
+      label.parp:hover,
+      label.parp.hover,
+      .hover label.parp
+    ) {
+    text-decoration: underline;
+    text-shadow: 0 0 0.5em var(--inv-feedback);
+  }
+
+  :where([data-inv-theme]) hr {
+    width: calc(100% - 2em);
+    height: 2px;
+    border-width: 0;
+    background-image: linear-gradient(
+      90deg,
+      oklch(from var(--inv-line) l c h / 0%) 0%,
+      oklch(from var(--inv-line) l c h / 50%) 50%,
+      oklch(from var(--inv-line) l c h / 0%) 100%
+    );
+  }
+
+  :where([data-inv-theme]) i.fa:last-child {
+    margin: 0;
+  }
+}

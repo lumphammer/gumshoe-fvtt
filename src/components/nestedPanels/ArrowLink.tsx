@@ -1,9 +1,8 @@
 import { Link } from "@lumphammer/minirouter";
 import type { ComponentProps } from "react";
-import { useContext } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 
-import { ThemeContext } from "../../themes/ThemeContext";
+import { outcome } from "../../styled-system/recipes";
 
 type ArrowLinkProps = ComponentProps<typeof Link> & {
   back?: boolean;
@@ -16,16 +15,10 @@ export const ArrowLink = ({
   children,
   ...rest
 }: ArrowLinkProps) => {
-  const theme = useContext(ThemeContext);
-
   return (
     <Link
       {...rest}
-      css={{
-        "&&": {
-          color: danger ? theme.colors.danger : undefined,
-        },
-      }}
+      className={danger ? outcome({ tone: "danger" }) : undefined}
     >
       {back && (
         <FaArrowLeft

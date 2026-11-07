@@ -7,7 +7,8 @@ writing a component or a theme makes the same choice in the same place.
 The system is being built in steps (#1532). The palette exists, as custom
 properties on every themed root, and the catalogue has `badge`, `button`,
 `panel`, `callout`, `input`, `select`, `checkbox`, `toggle`, `tabs`,
-`sectionHeading`, `tableHeader`, `row`, `dragHandle` and `emptyState`. Everything else is still drawn by Emotion from V1 themes, and the
+`sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`,
+`displayText`, `mutedText` and `outcome`, plus element defaults. Everything else is still drawn by Emotion from V1 themes, and the
 two run side by side until every component is converted.
 
 ## The pieces
@@ -295,6 +296,32 @@ take only `[a-z0-9_-]`.
   `surfaceSolid`, faded until hovered, when it grows and turns `accent`.
 - **`emptyState`**: stands in for a list with nothing in it: dashed `line`
   border, italic `textMuted`. *Not for* warnings (`callout`).
+
+### Text: element defaults, `displayText`, `mutedText`, `outcome`
+
+**Element defaults** (`src/themes/catalogue/elements.css`) style plain
+elements inside a themed root, so a call site needs a class only for
+something else:
+- `h1` to `h4` are in the `display` text style;
+- `label` is bold;
+- `a` (and `label.parp`) is `link`, underlined with a `feedback` glow under
+  the pointer;
+- `hr` is a `line` that fades out at both ends;
+- scrollbars are `accent` on `control`.
+
+They're in `system.base`, scoped with `:where()` so they're no more specific
+than the element: any class beats them.
+
+- **`displayText`**: text in the `display` style that isn't a heading, such
+  as column labels ("Rating"), figures (build points) or menu entries.
+  `size: sm | md | lg` (smaller, as is, larger).
+- **`mutedText`**: secondary information within content, such as a menu
+  entry's description or summary. `textMuted` ink; `size: sm | md`. *Not
+  for* things that are switched off.
+- **`outcome`**: the result of something, in its tone's ink: a goal met
+  (`success`), a limit passed (`danger`), something missing (`warning`).
+  `neutral` is `text`. *Not for* a label on a thing (`badge`) or a message
+  about it (`callout`).
 
 Draw a class's parts with real elements (slots), not `::before`/`::after`:
 an override replaces the rule for the element its name selects, so a

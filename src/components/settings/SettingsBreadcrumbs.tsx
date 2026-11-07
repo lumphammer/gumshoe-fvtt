@@ -8,7 +8,6 @@ import { Fragment, type ReactNode, useContext } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 
 import { getTranslated } from "../../functions/getTranslated";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
 import { npcStats, personalDetail } from "./Actors/directions";
 import { cardCategory } from "./Cards/directions";
@@ -16,6 +15,8 @@ import { StateContext } from "./contexts";
 import { equipmentCategory, equipmentField } from "./Equipment/directions";
 import { traumaType } from "./Stability/directions";
 import { stat } from "./Stats/directions";
+import { displayText } from "../../styled-system/recipes";
+import { cx } from "../../styled-system/css";
 
 type PageWithLabel = { direction: AnyDirection; label: string };
 
@@ -33,7 +34,6 @@ export const SettingsBreadcrumbs = ({
   pages,
   className,
 }: SettingsBreadcrumbsProps) => {
-  const theme = useContext(ThemeContext);
   const { settings } = useContext(StateContext);
   const { currentStep, childSteps } = useNavigationContext();
   const path = currentStep ? [currentStep, ...childSteps] : [];
@@ -88,14 +88,9 @@ export const SettingsBreadcrumbs = ({
 
   return (
     <nav
-      className={className}
+      className={cx(displayText(), className)}
       aria-label={getTranslated("Breadcrumbs")}
-      css={{
-        padding: "0.3em 0 0.1em 0",
-        font: theme.displayFont,
-        textTransform: theme.displayFontTextTransform,
-        fontSize: "1.2em",
-      }}
+      css={{ padding: "0.3em 0 0.1em 0", fontSize: "1.2em" }}
     >
       {crumbs.map(({ key, to, label }, i) => {
         const isCurrent = i === crumbs.length - 1;
