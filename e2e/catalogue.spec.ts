@@ -442,11 +442,11 @@ test("tabs: the selected one is accent on surface, the rest text on a fainter su
   await expect(selected()).toHaveCSS("color", "rgb(0, 0, 200)");
 });
 
-test("lists: headings and column headers are ruled in line, and an interactive row is highlighted under the pointer", async ({
+test("lists: headings and column headers are ruled in line, interactive rows are highlighted, and a variant override patches", async ({
   page,
 }) => {
   await page.evaluate((colors) => {
-    CONFIG.Investigator!.installTheme("listsReviewTheme", {
+    const seed = {
       schemaVersion: "v1" as const,
       displayName: "Lists Review",
       largeSheetRootStyle: {},
@@ -457,11 +457,23 @@ test("lists: headings and column headers are ruled in line, and an interactive r
         backdropStyle: {},
       },
       colors,
-    });
+      // internal: not in the published seed type. A variant override
+      // patches: the highlight stays
+      catalogue: { "row--interactive_true": { cursor: "crosshair" } },
+    };
+    CONFIG.Investigator!.installTheme("listsReviewTheme", seed);
   }, colors);
-  await setSettings(page, { defaultThemeName: "listsReviewTheme" });
+  await setSettings(page, {
+    defaultThemeName: "listsReviewTheme",
+    equipmentCategories: { general: { name: "General", fields: {} } },
+  });
   const actorId = await createActor(page, { name: "Listed", type: "pc" });
   await createOwnedItem(page, actorId, { name: "Knife", type: "weapon" });
+  await createOwnedItem(page, actorId, {
+    name: "Lantern",
+    type: "equipment",
+    system: { categoryId: "general" },
+  });
   const sheet = await openSheet(page, `Actor.${actorId}`);
 
   // the ability categories
@@ -472,15 +484,40 @@ test("lists: headings and column headers are ruled in line, and an interactive r
     colors.controlBorder,
   );
 
-  // the weapons table
+  // the weapons table: bold, ruled headers, and a row that's highlighted
+  // under the pointer and on keyboard focus
   await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
   const header = sheet.locator(".inv-table-header").first();
-  await expect(header).toHaveCSS("font-weight", "700");
   await expect(header).toHaveCSS("border-bottom-color", colors.controlBorder);
+  await expect(header.getByText("Name", { exact: true })).toHaveCSS(
+    "font-weight",
+    "700",
+  );
   const knife = sheet.locator(".inv-row--interactive_true", {
     hasText: "Knife",
   });
+  const highlight = await resolve(
+    knife,
+    "color-mix(in srgb, var(--inv-feedback) 25%, transparent)",
+  );
   await expect(knife).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(knife).toHaveCSS("cursor", "crosshair");
   await knife.hover();
-  await expect(knife).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(knife).toHaveCSS("background-color", highlight);
+  await page.mouse.move(0, 0);
+  await page.keyboard.press("Shift");
+  await knife.focus();
+  await expect(knife).toHaveCSS("background-color", highlight);
+
+  // an equipment row, drawn as cells: its bar is highlighted from them, and
+  // its column headers are bold
+  await sheet.locator(".tab-strip > label", { hasText: "Equipment" }).click();
+  await expect(
+    sheet.locator(".inv-table-header > div").first(),
+  ).toHaveCSS("font-weight", "700");
+  await sheet.getByText("Lantern", { exact: true }).hover();
+  await expect(sheet.locator("[data-highlighted]")).toHaveCSS(
+    "background-color",
+    highlight,
+  );
 });

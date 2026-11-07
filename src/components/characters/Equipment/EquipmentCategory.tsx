@@ -130,18 +130,20 @@ export const EquipmentCategory = memo(function EquipmentCategory({
       {/* Headers */}
       <div
         className={tableHeader()}
-        css={{ gridColumn: "1/-1", gridRow: "headers" }}
-      />
-      <div css={{ gridColumn: "1", gridRow: "headers" }}>
-        <Translate>Item Name</Translate>
+        css={{
+          gridColumn: "1/-1",
+          gridRow: "headers",
+          display: "grid",
+          gridTemplateColumns: "subgrid",
+        }}
+      >
+        <div>
+          <Translate>Item Name</Translate>
+        </div>
+        {Object.entries(fields).map(([fieldId, field]) => (
+          <div key={fieldId}>{field.name}</div>
+        ))}
       </div>
-      {Object.entries(fields).map(([fieldId, field], i) => {
-        return (
-          <div key={fieldId} css={{ gridColumn: i + 2, gridRow: "headers" }}>
-            {field.name}
-          </div>
-        );
-      })}
 
       {/* Nothing */}
       {items.length === 0 && (
