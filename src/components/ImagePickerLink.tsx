@@ -1,8 +1,7 @@
 import type { PropsWithChildren } from "react";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 
-import { ThemeContext } from "../themes/ThemeContext";
-import { displayText } from "../styled-system/recipes";
+import { displayText, floating } from "../styled-system/recipes";
 
 type ImagePickerLinkProps = PropsWithChildren<{
   onClick: () => void;
@@ -12,8 +11,6 @@ export const ImagePickerLink = ({
   onClick,
   children,
 }: ImagePickerLinkProps) => {
-  const theme = useContext(ThemeContext);
-
   const onClickCb = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       e.stopPropagation();
@@ -25,18 +22,12 @@ export const ImagePickerLink = ({
   return (
     <a
       onClick={onClickCb}
-      className={displayText()}
-      css={{
-        backgroundColor: theme.colors.bgOpaquePrimary,
-        padding: "0 0.5em",
-        borderRadius: "0.5em",
-        transition: "background-color 0.2s",
-        ":hover": {
-          backgroundColor: theme.colors.backgroundPrimary,
-        },
-      }}
+      className={floating({ kind: "chip" })}
+      css={{ padding: "0 0.5em" }}
     >
-      {children}
+      {/* the label's own element, so its class and the chip's can each be
+        overridden without the other */}
+      <span className={displayText()}>{children}</span>
     </a>
   );
 };

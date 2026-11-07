@@ -8,8 +8,8 @@ The system is being built in steps (#1532). The palette exists, as custom
 properties on every themed root, and the catalogue has `badge`, `button`,
 `panel`, `callout`, `input`, `select`, `checkbox`, `toggle`, `tabs`,
 `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`,
-`displayText`, `mutedText`, `outcome`, `sheetRoot`, `logo` and `card`, plus
-element defaults. Everything else is still drawn by Emotion from V1 themes, and the
+`displayText`, `mutedText`, `outcome`, `sheetRoot`, `logo`, `card`,
+`surface`, `floating` and `partyCell`, plus element defaults. Everything else is still drawn by Emotion from V1 themes, and the
 two run side by side until every component is converted.
 
 ## The pieces
@@ -64,6 +64,7 @@ kebab case: `surfaceNested` is `--inv-surface-nested`), and a Panda token
 | `surface` | What content sits on. Any colour, solid or translucent |
 | `surfaceNested` | What content *inside* content sits on. A panel inside a panel uses it, worked out from the structure, never chosen by the call site |
 | `surfaceSolid`, `surfaceNestedSolid` | *Derived*: the surfaces flattened over `wallpaper` (no change if they're already solid). For anything that overlaps or scrolls over other content: popovers, sticky rows, dropdowns |
+| `surfaceDanger`, `surfaceNestedDanger`, and their `…Solid` versions | *Derived*: the surfaces tinted halfway to `danger`, keeping their opacity, and those flattened over `wallpaper`. A status tint for an area in trouble (an ability nobody in the party has) |
 | `control` | The fill of controls: buttons, toggle tracks |
 | `text` | The default ink. Legible on both surfaces and on `control` |
 | `textMuted` | Ink for secondary information: notes, empty states, inactive rows, table headers |
@@ -91,6 +92,7 @@ about how anything looks:
 |---|---|
 | `backgroundPrimary` / `backgroundSecondary` | `surface` / `surfaceNested` |
 | `bgOpaquePrimary` / `bgOpaqueSecondary` | `surfaceSolid` / `surfaceNestedSolid` |
+| `bgTransDanger*` / `bgOpaqueDanger*` | `surfaceDanger`, `surfaceNestedDanger`, `surfaceDangerSolid`, `surfaceNestedDangerSolid` |
 | `backgroundButton` | `control` |
 | `accent` | `accent`, and `link` |
 | `accentContrast` | `onAccent` |
@@ -293,6 +295,8 @@ take only `[a-z0-9_-]`.
   - `alternate`: every other row of a long list, on `control`.
   - `divided`: a `line` under it, for rows with no table around them (a
     menu).
+  - `striped`: for rows striped by position rather than by the call site (a
+    settings form, whose rows come and go): odd ones are on `control`.
 - **`dragHandle`**: the grip to drag to reorder a list. `textMuted` on
   `surfaceSolid`, faded until hovered, when it grows and turns `accent`.
 - **`emptyState`**: stands in for a list with nothing in it: dashed `line`
@@ -389,6 +393,29 @@ V1, `!important` and nested rules included. The contexts are in `:where()`,
 so both rules are as specific as the plain class. Any style key works: it's
 hex-escaped in the attribute selector.
 `cards.area` (the spacing between cards) is still read by `CardArray`.
+
+### Surfaces: `surface`, `floating`, `partyCell`
+
+- **`surface`**: a plain area of surface that isn't a block of content of its
+  own (a panel has padding and nests; this doesn't): a sheet's notes area, a
+  cover over a picture, the loading screen. `depth: top | nested` picks
+  `surface` or `surfaceNested`; `solid` picks the solid version, for one
+  that overlaps or scrolls over other content (a sticky search bar). It sets
+  only the background *colour*, so it can go on an element with an image of
+  its own (the loading screen's sheet root).
+- **`floating`**: something raised above the sheet, overlapping it, always
+  on the solid surface. `kind`: `overlay` (a message over everything,
+  rounded, with `elevation`), `drawer` (a panel sliding in from the side,
+  with a `line` on its leading edge and a shadow as deep as the gap it slides
+  in from, which the call site sets as `--drawer-shadow-size`), `bar` (stuck
+  to the top of a scrolling area, with a `line` under it), `chip` (a small
+  label over a picture, lighter under the pointer; the label's text style
+  goes on its own element inside).
+- **`partyCell`** (specialised): a cell of the party sheet's grid of
+  abilities. Rows alternate `surface` and `surfaceNested`; an ability nobody
+  has is on the danger surfaces (`surfaceDanger` and so on); header cells,
+  stuck over the rest as it scrolls, use the solid versions. Variants `odd`,
+  `zero`, `header`.
 
 Draw a class's parts with real elements (slots), not `::before`/`::after`:
 an override replaces the rule for the element its name selects, so a

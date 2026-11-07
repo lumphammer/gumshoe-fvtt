@@ -5,14 +5,13 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import type { AbilityItem } from "../../module/items/exports";
 import { isAbilityItem } from "../../module/items/exports";
-import type { ThemeV1 } from "../../themes/types";
 import type { AbilityRowData, PartyMemberView } from "./types";
+import { partyCell } from "../../styled-system/recipes";
 
 type AbilityRowProps = {
   abilityRowData: AbilityRowData;
   index: number;
   actors: readonly PartyMemberView[];
-  theme: ThemeV1;
 };
 
 /**
@@ -67,25 +66,10 @@ export const AbilityRow = ({
   abilityRowData,
   index,
   actors,
-  theme,
 }: AbilityRowProps) => {
   const zero = abilityRowData.total === 0;
   const odd = index % 2 === 0;
 
-  const bg = zero
-    ? odd
-      ? theme.colors.bgTransDangerPrimary
-      : theme.colors.bgTransDangerSecondary
-    : odd
-      ? theme.colors.backgroundPrimary
-      : theme.colors.backgroundSecondary;
-  const headerBg = zero
-    ? odd
-      ? theme.colors.bgOpaqueDangerPrimary
-      : theme.colors.bgOpaqueDangerSecondary
-    : odd
-      ? theme.colors.bgOpaquePrimary
-      : theme.colors.bgOpaqueSecondary;
   return (
     <>
       {/* Ability name */}
@@ -95,9 +79,9 @@ export const AbilityRow = ({
             ? getTranslated("Ability not in configured packs")
             : undefined
         }
+        className={partyCell({ header: true, odd, zero })}
         css={{
           gridRow: index + 2,
-          backgroundColor: headerBg,
           padding: "0.5em",
           textAlign: "left",
           position: "sticky",
@@ -123,8 +107,8 @@ export const AbilityRow = ({
                 actorInfo?.abilityUuid,
               );
             }}
+            className={partyCell({ odd, zero })}
             css={{
-              background: bg,
               display: "block",
               gridRow: index + 2,
               gridColumn: j + 2,
@@ -139,8 +123,8 @@ export const AbilityRow = ({
 
       {/* Total */}
       <div
+        className={partyCell({ header: true, odd, zero })}
         css={{
-          background: headerBg,
           gridRow: index + 2,
           gridColumn: actors.length + 2,
           position: "sticky",

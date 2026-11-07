@@ -719,3 +719,46 @@ test("cards: a V1 category's style wins over the base, as in V1, whatever its ke
     "rgb(200, 0, 0)",
   );
 });
+
+test("surfaces: the party sheet's empty message floats, and an ability nobody has is on the danger surface", async ({
+  page,
+}) => {
+  const partyId = await createActor(page, { name: "Crew", type: "party" });
+  const sheet = await openSheet(page, `Actor.${partyId}`);
+
+  // the empty party's message is the overlay, not the whole sheet
+  const message = sheet.locator(".inv-floating--kind_overlay");
+  await expect(message).toHaveCount(1);
+  await expect(message).toContainText("No actors in this party yet");
+  await expect(message).toHaveCSS("border-top-left-radius", /px$/);
+  await expect(message).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(sheet.locator(".inv-sheet-root").first()).toHaveCSS(
+    "border-top-left-radius",
+    "0px",
+  );
+
+  // with a member, abilities nobody has rated are on the danger surfaces
+  const memberId = await createActor(page, { name: "Member", type: "pc" });
+  await page.evaluate(
+    async ({ partyId, memberId }) => {
+      await game.actors
+        .get(partyId)!
+        .update({ system: { actorIds: [memberId] } });
+    },
+    { partyId, memberId },
+  );
+  const zeroCell = sheet
+    .locator(".inv-party-cell--zero_true.inv-party-cell--header_false")
+    .first();
+  await expect(zeroCell).toBeVisible();
+  const odd = await zeroCell.evaluate((el) =>
+    el.classList.contains("inv-party-cell--odd_true"),
+  );
+  await expect(zeroCell).toHaveCSS(
+    "background-color",
+    await resolve(
+      zeroCell,
+      odd ? "var(--inv-surface-danger)" : "var(--inv-surface-nested-danger)",
+    ),
+  );
+});

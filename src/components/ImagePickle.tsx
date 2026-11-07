@@ -1,12 +1,12 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { getTokenizer } from "../functions/getTokenizer";
 import { assertGame } from "../functions/isGame";
 import { FilePicker, ImagePopout } from "../fvtt-exports";
 import { useIsDocumentOwner } from "../hooks/useIsDocumentOwner";
 import { useDocumentSheetContext } from "../hooks/useSheetContexts";
-import { ThemeContext } from "../themes/ThemeContext";
 import { ImagePickerLink } from "./ImagePickerLink";
+import { surface } from "../styled-system/recipes";
 
 const cover = {
   position: "absolute",
@@ -33,7 +33,6 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
     throw new Error("ImagePickle must be used within an Actor or Item");
   }
   const [showOverlay, setShowOverlay] = useState(false);
-  const theme = useContext(ThemeContext);
   assertGame(game);
   const isOwner = useIsDocumentOwner();
 
@@ -130,11 +129,11 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
       </div>
 
       <div
+        className={surface({ depth: "nested" })}
         css={{
           ...cover,
           opacity: showOverlay ? 1 : 0,
           transition: `opacity ${transitionTime} ease-in`,
-          background: theme.colors.backgroundSecondary,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-around",

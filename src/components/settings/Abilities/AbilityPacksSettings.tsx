@@ -3,7 +3,6 @@ import { useContext, useId, useState } from "react";
 import { assertGame } from "../../../functions/isGame";
 import type { ItemPackView } from "../../../hooks/useItemPacks";
 import { useItemPacks } from "../../../hooks/useItemPacks";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import { IdContext } from "../../IdContext";
 import { Toggle } from "../../inputs/Toggle";
 import { getTranslated } from "../../../functions/getTranslated";
@@ -11,7 +10,13 @@ import { Translate } from "../../Translate";
 import { StateContext } from "../contexts";
 import { SettingsEmptyState } from "../SettingsEmptyState";
 import type { Setters } from "../types";
-import { input, mutedText, outcome, row } from "../../../styled-system/recipes";
+import {
+  input,
+  mutedText,
+  outcome,
+  row,
+  surface,
+} from "../../../styled-system/recipes";
 
 /**
  * Where a pack comes from: the system itself, the world, or a module (by
@@ -58,7 +63,6 @@ export const AbilityPacksSettings = ({
   setters,
 }: AbilityPacksSettingsProps) => {
   const { settings } = useContext(StateContext);
-  const theme = useContext(ThemeContext);
   const selectedPacks = settings[which];
   const setSelectedPacks = setters[which];
 
@@ -108,6 +112,7 @@ export const AbilityPacksSettings = ({
         </Translate>
       </p>
       <div
+        className={surface({ solid: true })}
         css={{
           position: "sticky",
           top: 0,
@@ -117,7 +122,6 @@ export const AbilityPacksSettings = ({
           alignItems: "center",
           gap: "0.5em",
           padding: "0.5em 0",
-          background: theme.colors.bgOpaquePrimary,
         }}
       >
         <input

@@ -19,6 +19,11 @@ import { logo } from "./src/themes/catalogue/logo";
 import { panel } from "./src/themes/catalogue/panel";
 import { select } from "./src/themes/catalogue/select";
 import { sheetRoot } from "./src/themes/catalogue/sheetRoot";
+import {
+  floating,
+  partyCell,
+  surface,
+} from "./src/themes/catalogue/surfaces";
 import { tabs } from "./src/themes/catalogue/tabs";
 import { displayText, mutedText, outcome } from "./src/themes/catalogue/text";
 import { toggle } from "./src/themes/catalogue/toggle";
@@ -34,6 +39,10 @@ const colorKeys = [
   "surfaceNested",
   "surfaceSolid",
   "surfaceNestedSolid",
+  "surfaceDanger",
+  "surfaceNestedDanger",
+  "surfaceDangerSolid",
+  "surfaceNestedDangerSolid",
   "control",
   "text",
   "textMuted",
@@ -113,14 +122,17 @@ export default defineConfig({
       displayText,
       dragHandle,
       emptyState,
+      floating,
       input,
       mutedText,
       outcome,
       panel,
+      partyCell,
       row,
       sectionHeading,
       select,
       sheetRoot,
+      surface,
       tableHeader,
     },
     slotRecipes: { card, checkbox, logo, tabs, toggle },
