@@ -4,6 +4,7 @@ import { CardArray } from "./CardArray";
 import type { CardLayoutView } from "./functions";
 import { categorizeCards, summarizeCategoryCards } from "./functions";
 import { outcome } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 interface UncategorizedCardArrayProps {
   /** the cards, in order, from the actor's snapshot */
@@ -29,10 +30,12 @@ export const UncategorizedCardArray = ({
       return (
         <span
           key={categoryId}
-          className={outcome({
-            tone: isOverGoal ? "success" : isOverLimit ? "danger" : "neutral",
-          })}
-          css={{ marginRight: "1em" }}
+          className={cx(
+            outcome({
+              tone: isOverGoal ? "success" : isOverLimit ? "danger" : "neutral",
+            }),
+            css({ marginRight: "1em" }),
+          )}
         >
           {summary} {category.pluralName}
         </span>
@@ -42,7 +45,7 @@ export const UncategorizedCardArray = ({
 
   return (
     <>
-      <div css={{ marginTop: "0.5em" }}>
+      <div className={css({ marginTop: "0.5em" })}>
         {summary}
         {uncategorized.length > 0 &&
           summarizeCategoryCards(uncategorized, null)[0] +

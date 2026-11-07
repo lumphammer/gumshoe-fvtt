@@ -6,6 +6,7 @@ import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { Toggle } from "../inputs/Toggle";
+import { css } from "../../styled-system/css";
 
 interface CategoryMembershipRowProps {
   category: CardCategory;
@@ -44,7 +45,7 @@ export const CategoryMembershipRow = ({
   return (
     <>
       <GridFieldStacked key={category.id}>
-        {index !== 0 && <hr css={{ margin: "1em 0em" }} />}
+        {index !== 0 && <hr className={css({ margin: "1em 0em" })} />}
         <h2>{category.singleName}</h2>
       </GridFieldStacked>
       <GridField label="Active">

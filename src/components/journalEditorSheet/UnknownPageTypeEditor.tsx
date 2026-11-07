@@ -1,6 +1,7 @@
 import { openSheet } from "../../functions/openSheet";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
+import { css } from "../../styled-system/css";
 
 interface UnknownPageTypeEditorProps {
   page: any;
@@ -18,17 +19,17 @@ export const UnknownPageTypeEditor = ({
 }: UnknownPageTypeEditorProps) => {
   return (
     <div
-      css={{
+      className={css({
         ...absoluteCover,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         fontSize: "1.5em",
         // color: "gray",
-      }}
+      })}
     >
       <Button
-        css={{ width: "auto" }}
+        className={css({ width: "auto" })}
         onClick={() => {
           openSheet(page);
         }}

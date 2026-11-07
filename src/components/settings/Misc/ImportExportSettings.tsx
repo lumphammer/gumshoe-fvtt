@@ -12,6 +12,7 @@ import { Translate } from "../../Translate";
 import { DirtyContext, DispatchContext, StateContext } from "../contexts";
 import { SettingsGridField } from "../SettingsGridField";
 import { store } from "../store";
+import { css } from "../../../styled-system/css";
 
 /**
  * The settings in a file, or null (with an error shown) if they won't do.
@@ -68,7 +69,7 @@ export const ImportExportSettings = () => {
 
   return (
     <InputGrid>
-      <p css={{ gridColumn: "label / end", marginTop: 0 }}>
+      <p className={css({ gridColumn: "label / end", marginTop: 0 })}>
         BETA - please report bugs!
       </p>
       <SettingsGridField label="Export settings to file">

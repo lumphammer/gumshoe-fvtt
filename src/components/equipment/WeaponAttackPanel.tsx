@@ -32,6 +32,7 @@ import {
 import { hasAmmoFor } from "./consumeWeaponAmmo";
 import { Callout } from "../Callout";
 import { Panel } from "../Panel";
+import { css } from "../../styled-system/css";
 
 const defaultSpendOptions = Array.from({ length: 8 })
   .fill(null)
@@ -408,7 +409,7 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
 
   return (
     <>
-      <Panel css={{ ...inputGridStyle, marginBottom: "0.5em" }}>
+      <Panel className={css({ ...inputGridStyle, marginBottom: "0.5em" })}>
         {fireModes.length > 1 && (
           <GridField label="Fire mode">
             <CheckButtons
@@ -425,7 +426,9 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
         )}
         {fireModes.length === 1 && effectiveFireMode !== "single" && (
           <GridField label="Fire mode">
-            <span css={{ display: "inline-block", paddingTop: "0.3em" }}>
+            <span
+              className={css({ display: "inline-block", paddingTop: "0.3em" })}
+            >
               <Translate>{fireModeText[effectiveFireMode]}</Translate>
             </span>
           </GridField>
@@ -505,7 +508,7 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
         <GridFieldStacked>
           <Button
             kind="cta"
-            css={{ lineHeight: 1.5, margin: 0 }}
+            className={css({ lineHeight: 1.5, margin: 0 })}
             disabled={blockers.length > 0}
             title={attackTitle}
             onClick={onAttack}
@@ -537,7 +540,7 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
           </GridFieldStacked>
         )}
       </Panel>
-      <InputGrid css={{ rowGap: "0.3em" }}>
+      <InputGrid className={css({ rowGap: "0.3em" })}>
         <GridField label="Bonus pool">
           <AsyncNumberInput onChange={setBonusPool} value={bonusPool} />
         </GridField>
@@ -548,24 +551,24 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
             noTranslate
           >
             <div
-              css={{
+              className={css({
                 display: "flex",
                 flexDirection: "row",
-              }}
+              })}
             >
               <AsyncNumberInput
-                css={{ flex: 1 }}
+                className={css({ flex: "[1]" })}
                 min={0}
                 max={system.ammo.max}
                 value={system.ammo.value}
                 onChange={setAmmo}
               />
               <Button
-                css={{
+                className={css({
                   flexBasis: "min-content",
-                  flex: 0,
+                  flex: "[0]",
                   lineHeight: "inherit",
-                }}
+                })}
                 onClick={reload}
               >
                 <Translate>Reload</Translate>

@@ -34,6 +34,7 @@ import { SpendButtons } from "../inputs/SpendButtons";
 import { EmbeddedItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
 import { Panel } from "../Panel";
+import { css } from "../../styled-system/css";
 
 /** the book's losses run from 1 to 8; a little room beyond */
 const potentialLosses = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -148,14 +149,14 @@ export const AbilityTest = memo(function AbilityTest({
   const spendLabel = bonds.length > 0 ? ability.name : undefined;
 
   return (
-    <Panel css={{ ...inputGridStyle, marginBottom: "0.5em" }}>
+    <Panel className={css({ ...inputGridStyle, marginBottom: "0.5em" })}>
       {canTestTrauma && (
         <>
           <GridField label="Trauma">
             <Select
               value={trauma?.id ?? ""}
               onChange={(e) => setTraumaId(e.currentTarget.value)}
-              css={{ width: "100%" }}
+              className={css({ width: "100%" })}
             >
               <option value="">{getTranslated("None")}</option>
               {traumaTypes.map((type) => (
@@ -168,7 +169,11 @@ export const AbilityTest = memo(function AbilityTest({
           {trauma !== undefined && (
             <GridField label="Potential loss">
               <div
-                css={{ display: "flex", gap: "0.5em", alignItems: "center" }}
+                className={css({
+                  display: "flex",
+                  gap: "0.5em",
+                  alignItems: "center",
+                })}
               >
                 <Select
                   value={potentialLoss}
@@ -222,7 +227,7 @@ export const AbilityTest = memo(function AbilityTest({
                   {" "}
                   <FaHeartCrack
                     title={getTranslated("Broken")}
-                    css={{ verticalAlign: "middle" }}
+                    className={css({ verticalAlign: "middle" })}
                   />
                 </>
               )}
@@ -244,20 +249,24 @@ export const AbilityTest = memo(function AbilityTest({
       ))}
       <GridFieldStacked>
         <div
-          css={{
+          className={css({
             display: "flex",
             flexDirection: "row",
-          }}
+          })}
         >
           <Button
-            css={{ flex: 1 }}
+            className={css({ flex: "[1]" })}
             disabled={spend === 0}
             onClick={handleClickSpend}
           >
             <Translate>{isGeneral ? "Simple Spend" : "Spend"}</Translate>
           </Button>
           {isGeneral && (
-            <Button kind="cta" css={{ flex: 1 }} onClick={handleClickTest}>
+            <Button
+              kind="cta"
+              className={css({ flex: "[1]" })}
+              onClick={handleClickTest}
+            >
               <Translate>Test</Translate> <i className="fa fa-dice" />
             </Button>
           )}

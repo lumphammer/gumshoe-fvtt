@@ -5,6 +5,7 @@ import { useActorTheme } from "../../hooks/useActorTheme";
 import type { PCActor } from "../../module/actors/pc";
 import { CSSReset } from "../CSSReset";
 import { TeamCrisisPanel } from "./TeamCrisisPanel";
+import { css } from "../../styled-system/css";
 
 /** What the window gives the panel (see `TeamCrisisApp`) */
 export type TeamCrisisWindowApp = {
@@ -26,7 +27,12 @@ export const TeamCrisisWindow = () => {
     <CSSReset
       theme={theme}
       mode="small"
-      css={{ position: "absolute", inset: 0, overflow: "auto", padding: "1em" }}
+      className={css({
+        position: "absolute",
+        inset: 0,
+        overflow: "auto",
+        padding: "1em",
+      })}
     >
       <TeamCrisisPanel
         actor={app.actor}

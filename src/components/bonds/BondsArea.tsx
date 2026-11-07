@@ -26,6 +26,7 @@ import { EstablishBondButton } from "./EstablishBondButton";
 import { TeamCrisisButton } from "./TeamCrisisButton";
 import { NestedTeamCrisisPanel } from "./NestedTeamCrisisPanel";
 import { tableHeader } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 /**
  * The Bonds tab on the PC sheet (Fall of DELTA GREEN, p. 045), with
@@ -51,25 +52,32 @@ export const BondsArea = memo(function BondsArea() {
     <Router>
       <div
         data-testid="bonds-area"
-        css={{ ...absoluteCover, overflow: "auto", padding: "0.5em" }}
+        className={css({
+          ...absoluteCover,
+          overflow: "auto",
+          padding: "0.5em",
+        })}
       >
         {showBonds && (
           <>
             <div
-              css={{
+              className={css({
                 display: "flex",
                 flexDirection: "row",
                 // three buttons: in a narrow sheet they go under the heading
                 flexWrap: "wrap",
                 justifyContent: "end",
                 gap: "0.5em",
-              }}
+              })}
             >
-              <h2 css={{ flex: 1, "&&": { margin: 0 } }}>
+              <h2 className={css({ flex: "[1]", "&&": { margin: 0 } })}>
                 <Translate>Bonds</Translate>
               </h2>
               <Button
-                css={{ flexBasis: "max-content", alignSelf: "flex-start" }}
+                className={css({
+                  flexBasis: "max-content",
+                  alignSelf: "flex-start",
+                })}
                 onClick={createBond}
                 title={addBondTooltip}
               >
@@ -81,15 +89,20 @@ export const BondsArea = memo(function BondsArea() {
             </div>
 
             {bonds.length === 0 ? (
-              <i css={{ display: "block", fontSize: "1.2em" }}>
+              <i className={css({ display: "block", fontSize: "1.2em" })}>
                 <Translate>No Bonds yet!</Translate>
               </i>
             ) : (
               // a container, so the table can respond to its own width, and rows
               // can size the name against it (cqw)
-              <div css={{ containerType: "inline-size", marginTop: "0.5em" }}>
+              <div
+                className={css({
+                  containerType: "inline-size",
+                  marginTop: "0.5em",
+                })}
+              >
                 <div
-                  css={{
+                  className={css({
                     display: "grid",
                     // name (at least a third; a long one can take up to half: see
                     // `BondRow`, which caps it), badges, rating, and an empty
@@ -105,23 +118,25 @@ export const BondsArea = memo(function BondsArea() {
                     },
                     gridAutoRows: "min-content",
                     columnGap: "0.5em",
-                  }}
+                  })}
                 >
                   {/* the header row, underlined like the ability categories */}
                   <div
-                    className={tableHeader()}
-                    css={{
-                      gridColumn: "1/-1",
-                      display: "grid",
-                      gridTemplateColumns: "subgrid",
-                      "& > *": { paddingInline: "0.25em" },
-                    }}
+                    className={cx(
+                      tableHeader(),
+                      css({
+                        gridColumn: "1/-1",
+                        display: "grid",
+                        gridTemplateColumns: "subgrid",
+                        "& > *": { paddingInline: "0.25em" },
+                      }),
+                    )}
                   >
                     <div>
                       <Translate>Person Name</Translate>
                     </div>
                     <div />
-                    <div css={{ textAlign: "end" }}>
+                    <div className={css({ textAlign: "end" })}>
                       <Translate>Rating</Translate>
                     </div>
                   </div>

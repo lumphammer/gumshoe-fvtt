@@ -9,6 +9,7 @@ import { ItemNameWithIcon } from "../characters/ItemNameWithIcon";
 import { DeleteItemButton } from "../inputs/DeleteItemButton";
 import { BondBadges } from "./BondBadges";
 import { row as rowClass } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 /**
  * One Bond on the Bonds tab: name, badges and rating, and a delete button.
@@ -37,17 +38,19 @@ export const BondRow = memo(function BondRow({
     // a subgrid, so the cells line up with the headers, and the row can be
     // one thing to hover
     <div
-      className={rowClass({ interactive: true })}
-      css={{
-        gridColumn: "1/-1",
-        display: "grid",
-        gridTemplateColumns: "subgrid",
-        alignItems: "center",
-      }}
+      className={cx(
+        rowClass({ interactive: true }),
+        css({
+          gridColumn: "1/-1",
+          display: "grid",
+          gridTemplateColumns: "subgrid",
+          alignItems: "center",
+        }),
+      )}
     >
       {/* everything but the delete button, to click and drag */}
       <a
-        css={{
+        className={css({
           gridColumn: "1/-2",
           display: "grid",
           gridTemplateColumns: "subgrid",
@@ -57,7 +60,7 @@ export const BondRow = memo(function BondRow({
           // the highlight is enough; no link underline
           "&&:hover": { textDecoration: "none" },
           "& > *": { paddingInline: "0.25em" },
-        }}
+        })}
         onClick={openBondSheet}
         data-item-id={bond.id}
         onDragStart={onDragStart}
@@ -69,21 +72,21 @@ export const BondRow = memo(function BondRow({
           title={row.name}
           // up to half the table (cqw: the table is the container), then cut
           // off
-          css={{ maxWidth: "50cqw" }}
+          className={css({ maxWidth: "50cqw" })}
         />
         <div
-          css={{
+          className={css({
             display: "flex",
             // its min-content width, so the column always fits both badges
             flexWrap: "nowrap",
             alignItems: "center",
             gap: "0.5em",
-          }}
+          })}
         >
           <BondBadges isDeltaGreen={row.isDeltaGreen} isBroken={row.isBroken} />
         </div>
         {/* right-aligned, so the numbers line up under the header */}
-        <div data-testid="bond-rating" css={{ textAlign: "end" }}>
+        <div data-testid="bond-rating" className={css({ textAlign: "end" })}>
           {row.points}
         </div>
       </a>

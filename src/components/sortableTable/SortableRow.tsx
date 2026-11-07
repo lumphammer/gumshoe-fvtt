@@ -5,6 +5,7 @@ import { useContext } from "react";
 
 import { DragHandle } from "./DragHandle";
 import { ActiveIdContext } from "./ActiveIdContext";
+import { css } from "../../styled-system/css";
 
 type SortableRowProps = PropsWithChildren<{
   id: string;
@@ -24,12 +25,12 @@ export const SortableRow = ({ children, id }: SortableRowProps) => {
 
   return (
     <div
-      css={{
+      className={css({
         display: "grid",
         gridTemplateColumns: "subgrid",
         gridColumn: "1/-1",
         opacity: active ? 0.5 : 1,
-      }}
+      })}
       ref={setNodeRef}
       style={{
         transform: CSS.Transform.toString(transform),
@@ -42,11 +43,11 @@ export const SortableRow = ({ children, id }: SortableRowProps) => {
         attributes={attributes}
       />
       <div
-        css={{
+        className={css({
           display: "grid",
           gridTemplateColumns: "subgrid",
           gridColumn: "2/-1",
-        }}
+        })}
       >
         {children}
       </div>

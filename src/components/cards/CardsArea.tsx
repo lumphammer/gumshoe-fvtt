@@ -19,6 +19,7 @@ import { CardsAreaSettingsContext } from "./contexts";
 import type { CardLayoutView } from "./functions";
 import type { CardsAreaSettings } from "./types";
 import { UncategorizedCardArray } from "./UncategorizedCardArray";
+import { css, cx } from "../../styled-system/css";
 
 const settingsDirection = createDirection("settings");
 
@@ -123,22 +124,22 @@ export const CardsArea = memo(function CardsArea() {
     <CardsAreaSettingsContext.Provider value={cardsAreaSettings}>
       <Router>
         <div
-          css={{
+          className={css({
             ...absoluteCover,
             display: "flex",
             flexDirection: "column",
             padding: "0.5em",
-          }}
+          })}
         >
           <div
-            css={{
+            className={css({
               display: "flex",
               flexWrap: "wrap",
               justifyContent: "end",
               flexDirection: "row",
               flexBasis: "",
               gap: "0.5em",
-            }}
+            })}
           >
             <ToolbarButton onClick={handleClickCreateCard}>
               {getTranslated("Create card")}
@@ -146,16 +147,18 @@ export const CardsArea = memo(function CardsArea() {
             <ToolbarButton onClick={handleClickEndScenario}>
               {getTranslated("End scenario")}
             </ToolbarButton>
-            <div css={{ flex: 1 }} />
+            <div className={css({ flex: "[1]" })} />
             <ArrowLink to={settingsDirection()}>Settings</ArrowLink>
           </div>
           <div
-            className="container-ref-haver"
+            className={cx(
+              "container-ref-haver",
+              css({
+                flex: "[1]",
+                overflow: "auto",
+              }),
+            )}
             ref={containerRef}
-            css={{
-              flex: 1,
-              overflow: "auto",
-            }}
           >
             {cardsAreaSettings.category === "categorized" ? (
               <CategorizedCardArray cards={cards} />
@@ -167,7 +170,7 @@ export const CardsArea = memo(function CardsArea() {
         <SlideInNestedPanelRoute
           margin={"10em"}
           direction={settingsDirection}
-          css={{ display: "flex", flexDirection: "column" }}
+          className={css({ display: "flex", flexDirection: "column" })}
           closeOnClickOutside
         >
           <CardsAreaSettingsSheet

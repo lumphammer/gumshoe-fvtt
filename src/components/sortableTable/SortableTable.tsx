@@ -21,11 +21,11 @@ import {
 import React, { useCallback, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { absoluteCover } from "../absoluteCover";
 import { Translate } from "../Translate";
 import { ActiveIdContext } from "./ActiveIdContext";
 import { SortableRow } from "./SortableRow";
 import { tableHeader } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type Header = {
   id: string;
@@ -90,8 +90,8 @@ export const SortableTable = ({
 
   return (
     <div
-      className={`sortable-table ${className}`}
-      css={{ ...absoluteCover, padding: "1em" }}
+      // layout, which call sites can change (componentDefaults.css)
+      className={cx("sortable-table inv-default-sortable-table", className)}
     >
       <ActiveIdContext.Provider value={activeId}>
         <DndContext
@@ -104,20 +104,24 @@ export const SortableTable = ({
           <SortableContext items={items} strategy={verticalListSortingStrategy}>
             {createPortal(<DragOverlay />, document.body)}
             <div
-              css={{
+              className={css({
                 display: "grid",
-                gridTemplateColumns: `max-content ${gridTemplateColumns}`,
                 gap: "0.5em",
+              })}
+              style={{
+                gridTemplateColumns: `max-content ${gridTemplateColumns}`,
               }}
             >
               {headers.length > 0 && (
                 <div
-                  className={tableHeader()}
-                  css={{
-                    gridColumn: "1/-1",
-                    display: "grid",
-                    gridTemplateColumns: "subgrid",
-                  }}
+                  className={cx(
+                    tableHeader(),
+                    css({
+                      gridColumn: "1/-1",
+                      display: "grid",
+                      gridTemplateColumns: "subgrid",
+                    }),
+                  )}
                 >
                   <div />
                   {headers.map((header) => (

@@ -20,6 +20,7 @@ import { getAdaptableTraumaTypesFrom } from "../../module/stability/settings";
 import { Checkbox } from "../inputs/Checkbox";
 import { Translate } from "../Translate";
 import { sectionHeading } from "../../styled-system/recipes";
+import { css } from "../../styled-system/css";
 
 /** What being adapted does, in our words: nothing, for some types */
 const getEffects = (type: TraumaType) => {
@@ -82,11 +83,11 @@ export const AdaptationTracker = memo(function AdaptationTracker({
   const boxes = Array.from({ length: adaptationThreshold }, (_, i) => i + 1);
 
   return (
-    <div data-testid="adaptations" css={{ marginTop: "1em" }}>
+    <div data-testid="adaptations" className={css({ marginTop: "1em" })}>
       <h3 className={sectionHeading()}>
         <Translate>Adapted to</Translate>
       </h3>
-      <p css={{ fontSize: "0.9em" }}>
+      <p className={css({ fontSize: "0.9em" })}>
         <Translate
           values={{
             AbilityName: stabilityName,
@@ -97,13 +98,13 @@ export const AdaptationTracker = memo(function AdaptationTracker({
         </Translate>
       </p>
       <div
-        css={{
+        className={css({
           display: "grid",
           gridTemplateColumns: "max-content max-content 1fr",
           columnGap: "0.5em",
           rowGap: "0.25em",
           alignItems: "center",
-        }}
+        })}
       >
         {types.map((type) => {
           const typeProgress = progress[type.id] ?? 0;
@@ -114,7 +115,7 @@ export const AdaptationTracker = memo(function AdaptationTracker({
               <div>{type.name}</div>
               <div
                 data-testid={`adaptation-${type.id}`}
-                css={{ display: "flex", gap: "0.25em" }}
+                className={css({ display: "flex", gap: "0.25em" })}
               >
                 {boxes.map((box) => (
                   <Checkbox
@@ -138,11 +139,11 @@ export const AdaptationTracker = memo(function AdaptationTracker({
               </div>
               {isAdapted && effects.length > 0 && (
                 <div
-                  css={{
+                  className={css({
                     gridColumn: "1/-1",
                     fontSize: "0.9em",
                     paddingLeft: "1em",
-                  }}
+                  })}
                 >
                   {effects.map((effect, i) => (
                     <Fragment key={i}>

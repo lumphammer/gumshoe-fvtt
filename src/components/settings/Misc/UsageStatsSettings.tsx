@@ -20,6 +20,7 @@ import {
   SettingsGridFieldStacked,
 } from "../SettingsGridField";
 import { SettingsNote } from "../SettingsNote";
+import { css } from "../../../styled-system/css";
 
 /**
  * The report as it would be sent now. Not compiled, so it's worked out again
@@ -74,7 +75,13 @@ export const UsageStatsSettings = () => {
         )}
         {state.installId && (
           <SettingsGridField label="Install ID">
-            <div css={{ display: "flex", gap: "0.5em", alignItems: "center" }}>
+            <div
+              className={css({
+                display: "flex",
+                gap: "0.5em",
+                alignItems: "center",
+              })}
+            >
               <code>{state.installId}</code>
               <Button onClick={handleReset}>
                 <Translate>Reset</Translate>
@@ -84,11 +91,11 @@ export const UsageStatsSettings = () => {
         )}
 
         <SettingsGridFieldStacked>
-          <details css={{ cursor: "pointer" }}>
+          <details className={css({ cursor: "pointer" })}>
             <summary>
               <Translate>UsageStatsShowReport</Translate>
             </summary>
-            <pre css={{ userSelect: "text" }}>{report}</pre>
+            <pre className={css({ userSelect: "text" })}>{report}</pre>
           </details>
         </SettingsGridFieldStacked>
       </InputGrid>

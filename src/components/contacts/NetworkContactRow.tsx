@@ -7,6 +7,7 @@ import type { NetworkContactItem } from "../../module/items/networkContact";
 import { ItemNameWithIcon } from "../characters/ItemNameWithIcon";
 import { DeleteItemButton } from "../inputs/DeleteItemButton";
 import { row as rowClass } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 /**
  * One contact on the Contacts tab: name, location and pool, and a delete
@@ -35,17 +36,19 @@ export const NetworkContactRow = memo(function NetworkContactRow({
     // a subgrid, so the cells line up with the headers, and the row can be
     // one thing to hover
     <div
-      className={rowClass({ interactive: true })}
-      css={{
-        gridColumn: "1/-1",
-        display: "grid",
-        gridTemplateColumns: "subgrid",
-        alignItems: "center",
-      }}
+      className={cx(
+        rowClass({ interactive: true }),
+        css({
+          gridColumn: "1/-1",
+          display: "grid",
+          gridTemplateColumns: "subgrid",
+          alignItems: "center",
+        }),
+      )}
     >
       {/* everything but the delete button, to click and drag */}
       <a
-        css={{
+        className={css({
           gridColumn: "1/-2",
           display: "grid",
           gridTemplateColumns: "subgrid",
@@ -60,7 +63,7 @@ export const NetworkContactRow = memo(function NetworkContactRow({
             whiteSpace: "nowrap",
             textOverflow: "ellipsis",
           },
-        }}
+        })}
         onClick={openContactSheet}
         data-item-id={contact.id}
         data-testid="network-contact-row"
@@ -69,7 +72,10 @@ export const NetworkContactRow = memo(function NetworkContactRow({
       >
         <ItemNameWithIcon item={row} title={row.name} />
         <div title={row.location}>{row.location}</div>
-        <div data-testid="network-contact-pool" css={{ textAlign: "end" }}>
+        <div
+          data-testid="network-contact-pool"
+          className={css({ textAlign: "end" })}
+        >
           {row.pool}
         </div>
       </a>

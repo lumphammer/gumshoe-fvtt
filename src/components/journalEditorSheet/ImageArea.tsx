@@ -6,6 +6,7 @@ import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
 import { absoluteCover } from "../absoluteCover";
 import Cross from "./no_image_cross.svg?react";
 import { floating, row } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 interface ImageAreaProps {
   page: any;
@@ -47,44 +48,48 @@ export const ImageArea = ({ page }: ImageAreaProps) => {
   return (
     <div
       data-testid="image-container"
-      css={{
+      className={css({
         position: "relative",
         textAlign: "center",
-      }}
+      })}
     >
       <a
-        css={{
+        className={css({
           margin: "auto",
           ...absoluteCover,
-        }}
+        })}
         onClick={handleClickImage}
       >
         {src ? (
           <img
-            css={{
+            className={css({
               cursor: "pointer",
-              ":hover": {
+              "&:hover": {
                 opacity: 0.5,
               },
               maxWidth: "100%",
               maxHeight: "100%",
-            }}
+            })}
             src={src}
           />
         ) : (
           <div
-            className={row({ interactive: true })}
-            css={{
-              ...absoluteCover,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+            className={cx(
+              row({ interactive: true }),
+              css({
+                ...absoluteCover,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }),
+            )}
           >
             <div
-              className={floating({ kind: "chip" })}
-              css={{ fontSize: "1.5em", padding: "1em" }}
+              className={cx(
+                floating({ kind: "chip" }),
+                css({ fontSize: "1.5em", padding: "1em" }),
+              )}
             >
               Click to add image
             </div>

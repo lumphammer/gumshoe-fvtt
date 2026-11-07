@@ -13,6 +13,7 @@ import { SettingsIdField } from "../SettingsIdField";
 import { SettingsSortableList } from "../SettingsSortableList";
 import { store } from "../store";
 import { equipmentCategory, equipmentField } from "./directions";
+import { css } from "../../../styled-system/css";
 
 export const EquipmentCategorySettings = () => {
   const index = useParams(equipmentCategory);
@@ -104,7 +105,13 @@ export const EquipmentCategorySettings = () => {
   }
 
   return (
-    <div css={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <div
+      className={css({
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      })}
+    >
       <InputGrid>
         <SettingsGridField label="Category Name">
           <AsyncTextInput value={category.name} onChange={handleChangeName} />
@@ -116,7 +123,10 @@ export const EquipmentCategorySettings = () => {
           onChange={handleChangeId}
         />
         <SettingsGridField label="Delete">
-          <Button css={{ width: "auto" }} onClick={handleClickDelete}>
+          <Button
+            className={css({ width: "auto" })}
+            onClick={handleClickDelete}
+          >
             <i className="fas fa-trash" /> <Translate>Delete</Translate>
           </Button>
         </SettingsGridField>
@@ -125,7 +135,7 @@ export const EquipmentCategorySettings = () => {
         <Translate>Fields</Translate>
       </h3>
       <SettingsSortableList
-        css={{ flex: 1, minHeight: "10em" }}
+        className={css({ flex: "[1]", minHeight: "10em" })}
         rows={Object.values(category.fields).map((field) => ({
           name: field.name,
           detail: (

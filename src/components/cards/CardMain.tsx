@@ -14,6 +14,7 @@ import { TabContainer } from "../TabContainer";
 import { editCategoryMemberships } from "./directions";
 import { EditCategoryMemberships } from "./EditCategoryMemberships";
 import { summarizeCategoryMemberships } from "./functions";
+import { css, cx } from "../../styled-system/css";
 
 /** Editing a card: it reads the card and its categories through snapshots */
 export const CardMain = ({ item }: { item: CardItem }) => {
@@ -63,12 +64,14 @@ export const CardMain = ({ item }: { item: CardItem }) => {
         </GridField>
       </InputGrid>
       <div
-        className="notes-container"
-        css={{
-          flex: 1,
-          position: "relative",
-          marginTop: "0.5em",
-        }}
+        className={cx(
+          "notes-container",
+          css({
+            flex: "[1]",
+            position: "relative",
+            marginTop: "0.5em",
+          }),
+        )}
       >
         <TabContainer
           defaultTab="description"
@@ -78,11 +81,11 @@ export const CardMain = ({ item }: { item: CardItem }) => {
               label: "Description",
               content: (
                 <InputGrid
-                  css={{
+                  className={css({
                     ...absoluteCover,
                     gridTemplateRows: "1fr",
                     margin: "0.5em",
-                  }}
+                  })}
                 >
                   <RichTextEditor
                     name="description"
@@ -98,11 +101,11 @@ export const CardMain = ({ item }: { item: CardItem }) => {
               label: "Effects",
               content: (
                 <InputGrid
-                  css={{
+                  className={css({
                     ...absoluteCover,
                     gridTemplateRows: "1fr",
                     margin: "0.5em",
-                  }}
+                  })}
                 >
                   <RichTextEditor
                     name="effects"

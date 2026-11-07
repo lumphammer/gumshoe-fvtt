@@ -37,8 +37,10 @@ export const OtherableDropDown = ({
 
   return (
     <div
-      css={{ display: "flex", flexDirection: "column", gap: "0.2em" }}
-      className={className}
+      className={cx(
+        className,
+        css({ display: "flex", flexDirection: "column", gap: "0.2em" }),
+      )}
     >
       <select
         className={select()}

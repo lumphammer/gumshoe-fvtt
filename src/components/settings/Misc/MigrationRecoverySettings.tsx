@@ -5,6 +5,7 @@ import { retryFailedMigrations } from "../../../startup/migrateWorldIfNeeded";
 import { Button } from "../../inputs/Button";
 import { InputGrid } from "../../inputs/InputGrid";
 import { SettingsGridField } from "../SettingsGridField";
+import { css } from "../../../styled-system/css";
 
 export const MigrationRecoverySettings = () => {
   const [isRetryingMigrations, setIsRetryingMigrations] = useState(false);
@@ -28,7 +29,9 @@ export const MigrationRecoverySettings = () => {
   return (
     <InputGrid>
       <SettingsGridField label="Last migration error">
-        <div css={{ fontFamily: "monospace" }}>{lastMigrationError}</div>
+        <div className={css({ fontFamily: "monospace" })}>
+          {lastMigrationError}
+        </div>
       </SettingsGridField>
       <SettingsGridField label="Retry migration">
         <Button disabled={isRetryingMigrations} onClick={retryMigrations}>

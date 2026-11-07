@@ -11,6 +11,7 @@ import { HTMLPage } from "./HTMLPage";
 import { ImageEditor } from "./ImageEditor";
 import { ToolbarButton, useToolbarContent } from "./magicToolbar";
 import { UnknownPageTypeEditor } from "./UnknownPageTypeEditor";
+import { css } from "../../styled-system/css";
 
 const MAX_INDENT = 3;
 const MIN_INDENT = 1;
@@ -207,24 +208,24 @@ export const PageEditor = ({ page }: PageEditorProps) => {
   return (
     <div
       data-testid="editor"
-      css={{
+      className={css({
         position: "relative",
         width: "100%",
         height: "100%",
         display: "flex",
         flexDirection: "column",
         gap: "0.5em",
-      }}
+      })}
     >
       <div data-testid="name">
         <AsyncTextInput value={view.name} onChange={handleRename} />
       </div>
       <div
         data-testid="main-area"
-        css={{
-          flex: 1,
+        className={css({
+          flex: "[1]",
           position: "relative",
-        }}
+        })}
       >
         {view.type === "image" ? (
           <ImageEditor page={page} key={page.id} />

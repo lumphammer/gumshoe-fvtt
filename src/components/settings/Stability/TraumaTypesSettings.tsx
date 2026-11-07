@@ -11,6 +11,7 @@ import { SettingsGridField } from "../SettingsGridField";
 import { SettingsSortableList } from "../SettingsSortableList";
 import type { Setters } from "../types";
 import { traumaType } from "./directions";
+import { css } from "../../../styled-system/css";
 
 export const TraumaTypesSettings = ({ setters }: { setters: Setters }) => {
   const { settings } = useContext(StateContext);
@@ -46,7 +47,11 @@ export const TraumaTypesSettings = ({ setters }: { setters: Setters }) => {
   return (
     <div
       data-testid="trauma-types-settings"
-      css={{ height: "100%", display: "flex", flexDirection: "column" }}
+      className={css({
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      })}
     >
       <InputGrid>
         <SettingsGridField label="Use trauma?">
@@ -59,7 +64,7 @@ export const TraumaTypesSettings = ({ setters }: { setters: Setters }) => {
             <Translate>Trauma types</Translate>
           </h3>
           <SettingsSortableList
-            css={{ flex: 1, minHeight: "10em" }}
+            className={css({ flex: "[1]", minHeight: "10em" })}
             rows={types.map((type) => ({
               name: type.name,
               detail: (

@@ -6,7 +6,7 @@ import { ArrowLink } from "./ArrowLink";
 import { focusableSelector } from "./focusableSelector";
 import { ShowBackLinkContext } from "./ShowBackLinkContext";
 import { floating } from "../../styled-system/recipes";
-import { cx } from "../../styled-system/css";
+import { css, cx } from "../../styled-system/css";
 import type { CSSProperties } from "react";
 
 const defaultPanelMargin = "3em";
@@ -56,25 +56,27 @@ export const NestedPanel = memo<NestedPanelProps>(
       <>
         <section
           ref={ref}
-          className={cx(floating({ kind: "drawer" }), className)}
+          className={cx(
+            cx(floating({ kind: "drawer" }), className),
+            css({
+              position: "absolute",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              padding: "1em",
+              overflow: "auto",
+              display: "flex",
+              flexDirection: "column",
+              pointerEvents: "all",
+            }),
+          )}
           onKeyDown={handleKeyDown}
           style={
             {
               "--drawer-shadow-size": `min(${margin}, ${defaultPanelMargin})`,
+              left: margin,
             } as CSSProperties
           }
-          css={{
-            position: "absolute",
-            top: 0,
-            left: margin,
-            right: 0,
-            bottom: 0,
-            padding: "1em",
-            overflow: "auto",
-            display: "flex",
-            flexDirection: "column",
-            pointerEvents: "all",
-          }}
         >
           {showBackLink && (
             <div className="nav-bar">
@@ -86,8 +88,13 @@ export const NestedPanel = memo<NestedPanelProps>(
           {/* actual children */}
           <div
             ref={childrenAreaRef}
-            className="children-box"
-            css={{ flex: 1, paddingTop: showBackLink ? "1em" : undefined }}
+            className={cx(
+              "children-box",
+              css({
+                flex: "[1]",
+                paddingTop: showBackLink ? "1em" : undefined,
+              }),
+            )}
           >
             {children}
           </div>

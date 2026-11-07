@@ -15,6 +15,7 @@ import { card as cardClass } from "../../styled-system/recipes";
 interface CardDisplayProps {
   card: CardItem;
   className?: string;
+  style?: React.CSSProperties;
   viewMode: CardsViewMode;
   draggable?: boolean;
   onDragStart?: (event: React.DragEvent<HTMLElement>) => void;
@@ -30,6 +31,7 @@ interface CardDisplayProps {
 export const CardDisplay = memo(function CardDisplay({
   card,
   className,
+  style,
   viewMode,
   draggable,
   onDragStart,
@@ -91,6 +93,7 @@ export const CardDisplay = memo(function CardDisplay({
       data-item-id={card.id}
       tabIndex={0}
       onClick={handleClick}
+      style={style}
       className={cx(
         "investigator-card-display",
         classes.root,

@@ -7,6 +7,7 @@ import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { inputGridStyle } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 import { Panel } from "../Panel";
+import { css } from "../../styled-system/css";
 
 export const PushPoolButton = memo(function PushPoolButton({
   item,
@@ -21,15 +22,15 @@ export const PushPoolButton = memo(function PushPoolButton({
   }, [push]);
 
   return (
-    <Panel css={{ ...inputGridStyle, marginBottom: "0.5em" }}>
+    <Panel className={css({ ...inputGridStyle, marginBottom: "0.5em" })}>
       <GridFieldStacked>
         <div
-          css={{
+          className={css({
             display: "flex",
             flexDirection: "row",
-          }}
+          })}
         >
-          <Button css={{ flex: 1 }} onClick={handleClickPush}>
+          <Button className={css({ flex: "[1]" })} onClick={handleClickPush}>
             <Translate>Push</Translate>
           </Button>
         </div>

@@ -7,6 +7,7 @@ import type { AbilityItem } from "../../module/items/exports";
 import { isAbilityItem } from "../../module/items/exports";
 import type { AbilityRowData, PartyMemberView } from "./types";
 import { partyCell } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type AbilityRowProps = {
   abilityRowData: AbilityRowData;
@@ -79,16 +80,18 @@ export const AbilityRow = ({
             ? getTranslated("Ability not in configured packs")
             : undefined
         }
-        className={partyCell({ header: true, odd, zero })}
-        css={{
-          gridRow: index + 2,
-          padding: "0.5em",
-          textAlign: "left",
-          position: "sticky",
-          left: 0,
-          // extras aren't part of the configured set, so set them apart
-          fontStyle: abilityRowData.isExtra ? "italic" : undefined,
-        }}
+        className={cx(
+          partyCell({ header: true, odd, zero }),
+          css({
+            padding: "0.5em",
+            textAlign: "left",
+            position: "sticky",
+            left: 0,
+            // extras aren't part of the configured set, so set them apart
+            fontStyle: abilityRowData.isExtra ? "italic" : undefined,
+          }),
+        )}
+        style={{ gridRow: index + 2 }}
       >
         {abilityRowData.ability.name}
       </div>
@@ -107,14 +110,15 @@ export const AbilityRow = ({
                 actorInfo?.abilityUuid,
               );
             }}
-            className={partyCell({ odd, zero })}
-            css={{
-              display: "block",
-              gridRow: index + 2,
-              gridColumn: j + 2,
-              padding: "0.5em",
-              textAlign: "center",
-            }}
+            className={cx(
+              partyCell({ odd, zero }),
+              css({
+                display: "block",
+                padding: "0.5em",
+                textAlign: "center",
+              }),
+            )}
+            style={{ gridRow: index + 2, gridColumn: j + 2 }}
           >
             {actorInfo?.rating ?? "–"}
           </a>
@@ -123,15 +127,16 @@ export const AbilityRow = ({
 
       {/* Total */}
       <div
-        className={partyCell({ header: true, odd, zero })}
-        css={{
-          gridRow: index + 2,
-          gridColumn: actors.length + 2,
-          position: "sticky",
-          right: 0,
-          padding: "0.5em",
-          textAlign: "center",
-        }}
+        className={cx(
+          partyCell({ header: true, odd, zero }),
+          css({
+            position: "sticky",
+            right: 0,
+            padding: "0.5em",
+            textAlign: "center",
+          }),
+        )}
+        style={{ gridRow: index + 2, gridColumn: actors.length + 2 }}
       >
         {abilityRowData.total}
       </div>

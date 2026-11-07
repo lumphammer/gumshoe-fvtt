@@ -6,7 +6,7 @@ import { systemLogger } from "../../functions/utilities";
 import { useIsEditable } from "../../hooks/useIsEditable";
 import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
 import { NotesDisplay } from "./NotesDisplay";
-import { cx } from "../../styled-system/css";
+import { css, cx } from "../../styled-system/css";
 import { richText } from "../../styled-system/recipes";
 
 type RichTextEditorProps = {
@@ -117,33 +117,35 @@ const EditableRichTextEditor = ({
     <div
       ref={divRef}
       onClick={popOutClickedImage}
-      css={{
-        position: "absolute",
-        inset: "0px",
-        "prose-mirror:not([open]) img:not(.nopopout)": {
-          cursor: "pointer",
-        },
-        ".prosemirror": {
+      className={cx(
+        cx(richText(), className),
+        css({
           position: "absolute",
-          inset: "0.5em",
-          "button.icon.toggle": {
-            position: "absolute",
-            top: "0px",
-            right: "0px",
-            width: "2em",
-            height: "2em",
+          inset: "0px",
+          "& prose-mirror:not([open]) img:not(.nopopout)": {
+            cursor: "pointer",
           },
-          ".menu-container": {
-            flexBasis: "min-content",
-            menu: {
-              position: "static",
-              backgroundColor: "transparent",
-              padding: 0,
+          "& .prosemirror": {
+            position: "absolute",
+            inset: "0.5em",
+            "& button.icon.toggle": {
+              position: "absolute",
+              top: "0px",
+              right: "0px",
+              width: "2em",
+              height: "2em",
+            },
+            "& .menu-container": {
+              flexBasis: "min-content",
+              "& menu": {
+                position: "static",
+                backgroundColor: "transparent",
+                padding: 0,
+              },
             },
           },
-        },
-      }}
-      className={cx(richText(), className)}
+        }),
+      )}
     ></div>
   );
 };

@@ -11,6 +11,7 @@ import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
 import { AbilityBadges } from "./AbilityBadges";
 import { PoolCheckbox } from "./PoolCheckbox";
+import { css } from "../../styled-system/css";
 
 const range = (from: number, to: number): number[] => {
   if (to < from) {
@@ -52,7 +53,7 @@ export const PoolTracker = memo(function PoolTracker({
         gridTemplateColumns: "[start] 1fr 1fr 1fr 1fr [end]",
       }}
     >
-      <h2 css={{ gridColumn: "start / end" }}>
+      <h2 className={css({ gridColumn: "start / end" })}>
         <a
           onClick={() => {
             openSheet(ability);
@@ -65,13 +66,13 @@ export const PoolTracker = memo(function PoolTracker({
       {isGeneralAbilityItem(ability) && (
         <AbilityBadges
           ability={ability}
-          css={{
+          className={css({
             gridColumn: "start / end",
             justifyContent: "start",
             rowGap: "0.25em",
             // only when there are badges, to keep them off the boxes
             "&:not(:empty)": { marginBottom: "0.5em" },
-          }}
+          })}
         />
       )}
 
@@ -85,11 +86,11 @@ export const PoolTracker = memo(function PoolTracker({
       ))}
       {tracker.isPushPool && (
         <Button
-          css={{
+          className={css({
             gridColumn: "start / end",
             width: "auto",
             marginTop: "0.5em",
-          }}
+          })}
           disabled={tracker.pool === 0}
           onClick={() => {
             if (isGeneralAbilityItem(ability)) void ability.system.push();

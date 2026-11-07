@@ -1,6 +1,8 @@
-import type { PropsWithChildren } from "react";
+import type { CSSProperties, PropsWithChildren } from "react";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
+
+import { css, cx } from "../styled-system/css";
 
 // adapted from https://github.com/mui/material-ui/blob/next/packages/mui-lab/src/Masonry/Masonry.js
 
@@ -39,6 +41,7 @@ type MasonryProps = PropsWithChildren<{
   /** The gap between columns. Any valid CSS length value. */
   columnGap?: string;
   className?: string;
+  style?: CSSProperties;
 }>;
 
 /**
@@ -52,6 +55,7 @@ export const Masonry = function Masonry({
   minColumnWidth,
   columnGap = "0px",
   className,
+  style,
 }: MasonryProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const measurerRef = useRef<HTMLDivElement>(null);
@@ -192,17 +196,23 @@ export const Masonry = function Masonry({
   return (
     <div
       ref={containerRef}
-      className={className}
-      css={{
-        display: "flex",
-        flexFlow: "column wrap",
-        height: maxColumnHeight === 0 ? "auto" : maxColumnHeight + "px",
-        alignContent: "flex-start",
-        position: "relative",
-        "> *": {
-          width: widthExpression,
-        },
-      }}
+      className={cx(
+        css({
+          display: "flex",
+          flexFlow: "column wrap",
+          alignContent: "flex-start",
+          position: "relative",
+          "& > *": { width: "var(--masonry-item-width)" },
+        }),
+        className,
+      )}
+      style={
+        {
+          height: maxColumnHeight === 0 ? "auto" : maxColumnHeight + "px",
+          "--masonry-item-width": widthExpression,
+          ...style,
+        } as CSSProperties
+      }
     >
       <div
         {...helperDataProps}
