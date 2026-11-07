@@ -17,6 +17,7 @@ import {
 import { panel } from "./src/themes/catalogue/panel";
 import { select } from "./src/themes/catalogue/select";
 import { tabs } from "./src/themes/catalogue/tabs";
+import { displayText, mutedText, outcome } from "./src/themes/catalogue/text";
 import { toggle } from "./src/themes/catalogue/toggle";
 import { type Palette, paletteVar } from "./src/themes/palette";
 
@@ -106,9 +107,12 @@ export default defineConfig({
       badge,
       button,
       callout,
+      displayText,
       dragHandle,
       emptyState,
       input,
+      mutedText,
+      outcome,
       panel,
       row,
       sectionHeading,

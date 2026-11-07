@@ -1,11 +1,10 @@
 import type { CardCategory } from "@lumphammer/investigator-fvtt-types";
-import { useContext } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { CardArray } from "./CardArray";
 import type { CardLayoutView } from "./functions";
 import { summarizeCategoryCards } from "./functions";
+import { outcome } from "../../styled-system/recipes";
 
 interface CategorizedCardArrayCategoryProps {
   category: Readonly<CardCategory> | null;
@@ -16,7 +15,6 @@ export const CategorizedCardArrayCategory = ({
   category,
   cards,
 }: CategorizedCardArrayCategoryProps) => {
-  const theme = useContext(ThemeContext);
   const [summary, isOverGoal, isOverLimit] = summarizeCategoryCards(
     cards,
     category,
@@ -24,13 +22,9 @@ export const CategorizedCardArrayCategory = ({
   return (
     <>
       <h2
-        css={{
-          color: isOverGoal
-            ? theme.colors.success
-            : isOverLimit
-              ? theme.colors.danger
-              : undefined,
-        }}
+        className={outcome({
+          tone: isOverGoal ? "success" : isOverLimit ? "danger" : "neutral",
+        })}
       >
         {category?.pluralName ?? getTranslated("Uncategorized")} ({summary})
       </h2>

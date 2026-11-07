@@ -10,6 +10,7 @@ import { CardArrayCard } from "./CardArrayCard";
 import { CardsAreaSettingsContext } from "./contexts";
 import type { CardLayoutView } from "./functions";
 import type { CardsColumnWidth } from "./types";
+import { mutedText } from "../../styled-system/recipes";
 
 interface CardArrayProps {
   /** the cards, in order, from the actor's snapshot */
@@ -32,14 +33,13 @@ export const CardArray = ({ cards }: CardArrayProps) => {
   if (cards.length === 0) {
     return (
       <div
+        className={mutedText()}
         css={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "start",
           alignItems: "center",
           fontSize: "1.5em",
-          color: theme.colors.text,
-          opacity: 0.5,
           margin: "1em 0em",
         }}
       >

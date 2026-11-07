@@ -1,11 +1,9 @@
-import { useContext } from "react";
-
 import { getTranslated } from "../../functions/getTranslated";
 import { useSettings } from "../../hooks/useSettings";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { CardArray } from "./CardArray";
 import type { CardLayoutView } from "./functions";
 import { categorizeCards, summarizeCategoryCards } from "./functions";
+import { outcome } from "../../styled-system/recipes";
 
 interface UncategorizedCardArrayProps {
   /** the cards, in order, from the actor's snapshot */
@@ -17,7 +15,6 @@ export const UncategorizedCardArray = ({
 }: UncategorizedCardArrayProps) => {
   const categories = useSettings((s) => s.cardCategories);
   const [categorizedCards, uncategorized] = categorizeCards(cards, categories);
-  const theme = useContext(ThemeContext);
 
   const summary = Object.entries(categorizedCards).map(
     ([categoryId, cards], i) => {
@@ -32,14 +29,10 @@ export const UncategorizedCardArray = ({
       return (
         <span
           key={categoryId}
-          css={{
-            marginRight: "1em",
-            color: isOverGoal
-              ? theme.colors.success
-              : isOverLimit
-                ? theme.colors.danger
-                : undefined,
-          }}
+          className={outcome({
+            tone: isOverGoal ? "success" : isOverLimit ? "danger" : "neutral",
+          })}
+          css={{ marginRight: "1em" }}
         >
           {summary} {category.pluralName}
         </span>

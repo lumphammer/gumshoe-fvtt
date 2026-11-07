@@ -1,11 +1,9 @@
 import { type AnyStep, Link } from "@lumphammer/minirouter";
 import type { ReactNode } from "react";
-import { useContext } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 
-import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
-import { row } from "../../styled-system/recipes";
+import { displayText, mutedText, row } from "../../styled-system/recipes";
 
 type SettingsMenuLinkProps = {
   to: AnyStep;
@@ -27,8 +25,6 @@ export const SettingsMenuLink = ({
   summary,
   icon,
 }: SettingsMenuLinkProps) => {
-  const theme = useContext(ThemeContext);
-
   return (
     <Link
       to={to}
@@ -60,10 +56,9 @@ export const SettingsMenuLink = ({
       )}
       <span css={{ flex: 1, minWidth: 0 }}>
         <span
+          className={displayText()}
           css={{
             display: "block",
-            font: theme.displayFont,
-            textTransform: theme.displayFontTextTransform,
             fontSize: "1.2em",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -73,12 +68,8 @@ export const SettingsMenuLink = ({
         </span>
         {description && (
           <span
-            css={{
-              display: "block",
-              fontSize: "0.9em",
-              color: theme.colors.text,
-              opacity: 0.75,
-            }}
+            className={mutedText({ size: "sm" })}
+            css={{ display: "block" }}
           >
             <Translate>{description}</Translate>
           </span>
@@ -86,14 +77,13 @@ export const SettingsMenuLink = ({
       </span>
       {summary !== undefined && summary !== null && (
         <span
+          className={mutedText()}
           css={{
             flex: "0 1 auto",
             maxWidth: "40%",
             overflow: "hidden",
             whiteSpace: "nowrap",
             textOverflow: "ellipsis",
-            color: theme.colors.text,
-            opacity: 0.75,
           }}
         >
           {summary}
