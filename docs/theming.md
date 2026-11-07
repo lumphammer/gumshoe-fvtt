@@ -380,10 +380,14 @@ theme can style one category's cards: `&[data-category="x"]` in a `card__root`
 override, `[data-category="x"] &` in the others. *`root` is an expected
 override.*
 
-A V1 seed's `cards.base` styles become overrides of the matching slots, each
-starting from that slot's defaults (`cardDefaults.ts`), and its
-`cards.categories` become those nested rules. Style keys that aren't plain
-words (`[\w-]+`) are skipped, since they go in an attribute selector.
+A V1 seed that styles its cards gets an override of each slot: its
+`themeFactory` style (the default, or the seed's `cards.base` style for that
+part, replacing it whole). Each of its `cards.categories` becomes a rule of
+its own with the category's style spread over the base, and the base rule
+leaves those categories' cards out, so a category's style wins as it did in
+V1, `!important` and nested rules included. The contexts are in `:where()`,
+so both rules are as specific as the plain class. Any style key works: it's
+hex-escaped in the attribute selector.
 `cards.area` (the spacing between cards) is still read by `CardArray`.
 
 Draw a class's parts with real elements (slots), not `::before`/`::after`:
