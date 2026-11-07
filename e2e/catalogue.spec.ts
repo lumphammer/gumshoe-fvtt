@@ -548,6 +548,24 @@ test("text: element defaults and the text classes take the palette", async ({
   await setSettings(page, {
     defaultThemeName: "textReviewTheme",
     useCards: true,
+    cardCategories: [
+      {
+        id: "stress",
+        singleName: "Stress",
+        pluralName: "Stresses",
+        styleKey: "stress",
+        threshold: 1,
+        thresholdType: "limit",
+      },
+      {
+        id: "clue",
+        singleName: "Clue",
+        pluralName: "Clues",
+        styleKey: "clue",
+        threshold: 1,
+        thresholdType: "goal",
+      },
+    ],
   });
   const actorId = await createActor(page, { name: "Wordy", type: "pc" });
   const sheet = await openSheet(page, `Actor.${actorId}`);
@@ -574,4 +592,24 @@ test("text: element defaults and the text classes take the palette", async ({
     "color",
     await resolve(muted, "var(--inv-text-muted)"),
   );
+
+  // outcome: a limit reached is danger, a goal met is success
+  const danger = await resolve(muted, "var(--inv-danger)");
+  for (const categoryId of ["stress", "clue"]) {
+    await createOwnedItem(page, actorId, {
+      name: categoryId,
+      type: "card",
+      system: {
+        title: categoryId,
+        cardCategoryMemberships: [{ categoryId, nonlethal: false, worth: 1 }],
+        styleKeyCategoryId: categoryId,
+      },
+    });
+  }
+  await expect(
+    sheet.locator(".inv-outcome--tone_danger", { hasText: "Stresses" }),
+  ).toHaveCSS("color", danger);
+  await expect(
+    sheet.locator(".inv-outcome--tone_success", { hasText: "Clues" }),
+  ).toHaveCSS("color", success);
 });

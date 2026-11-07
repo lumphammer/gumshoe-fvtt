@@ -13,7 +13,10 @@
     scrollbar-color: var(--inv-accent) var(--inv-control);
   }
 
-  :where([data-inv-theme]) :is(h1, h2, h3, h4) {
+  :where([data-inv-theme]) h1,
+  :where([data-inv-theme]) h2,
+  :where([data-inv-theme]) h3,
+  :where([data-inv-theme]) h4 {
     border: none;
     margin: 0.3em 0;
     padding: 0;
@@ -38,18 +41,18 @@
     font-weight: bold;
   }
 
-  :where([data-inv-theme]) :is(a, label.parp) {
+  /* plain selector lists, not :is(), so each keeps its own specificity
+     (`a` stays as weak as an element) */
+  :where([data-inv-theme]) a,
+  :where([data-inv-theme]) label.parp {
     color: var(--inv-link);
   }
-  :where([data-inv-theme])
-    :is(
-      a:hover,
-      a.hover,
-      .hover a,
-      label.parp:hover,
-      label.parp.hover,
-      .hover label.parp
-    ) {
+  :where([data-inv-theme]) a:hover,
+  :where([data-inv-theme]) a.hover,
+  :where([data-inv-theme]) .hover a,
+  :where([data-inv-theme]) label.parp:hover,
+  :where([data-inv-theme]) label.parp.hover,
+  :where([data-inv-theme]) .hover label.parp {
     text-decoration: underline;
     text-shadow: 0 0 0.5em var(--inv-feedback);
   }
