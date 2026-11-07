@@ -8,7 +8,8 @@ The system is being built in steps (#1532). The palette exists, as custom
 properties on every themed root, and the catalogue has `badge`, `button`,
 `panel`, `callout`, `input`, `select`, `checkbox`, `toggle`, `tabs`,
 `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`,
-`displayText`, `mutedText` and `outcome`, plus element defaults. Everything else is still drawn by Emotion from V1 themes, and the
+`displayText`, `mutedText`, `outcome` and `sheetRoot`, plus element
+defaults. Everything else is still drawn by Emotion from V1 themes, and the
 two run side by side until every component is converted.
 
 ## The pieces
@@ -322,6 +323,25 @@ than the element: any class beats them.
   (`success`), a limit passed (`danger`), something missing (`warning`).
   `neutral` is `text`. *Not for* a label on a thing (`badge`) or a message
   about it (`callout`).
+
+### `sheetRoot`
+
+The themed root of a window, applied by `CSSReset` to the element that
+carries `data-inv-theme` and the palette's custom properties: the `body` text
+style, `text` ink, `accent` for native controls, and the wallpaper. `size`:
+`large` (a full sheet) and `small` (a small window) are on `wallpaper`;
+`none` (a themed area inside something else) is transparent. Padding and
+height are layout, in `CSSReset`.
+
+*Expected override:* a theme's backdrop goes in its `size` variants. A V1
+seed's `largeSheetRootStyle` and `smallSheetRootStyle` become
+`sheet-root--size_large` and `sheet-root--size_small` overrides, which patch
+the variants, as V1 spread them over the defaults.
+
+The application window around the root (`appWindowStyle` in V1) isn't a
+class yet: in Foundry v13, `CSSReset` looks for `.window-app`, which
+ApplicationV2 windows don't have, so V1 window styles currently do nothing
+there.
 
 Draw a class's parts with real elements (slots), not `::before`/`::after`:
 an override replaces the rule for the element its name selects, so a

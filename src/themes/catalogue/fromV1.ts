@@ -104,6 +104,19 @@ function tabsFromV1(seed: ThemeSeedV1, theme: ThemeV1): CatalogueOverrides {
 }
 
 /**
+ * In V1, a sheet's root was the defaults (wallpaper and so on) with
+ * `largeSheetRootStyle` or `smallSheetRootStyle` spread over them; every
+ * seed has the large one. They patch the `size` variants (a variant override
+ * goes over the default), so they keep that composition.
+ */
+function sheetRootFromV1(theme: ThemeV1): CatalogueOverrides {
+  return {
+    "sheet-root--size_large": fromEmotion(theme.largeSheetRootStyle),
+    "sheet-root--size_small": fromEmotion(theme.smallSheetRootStyle),
+  };
+}
+
+/**
  * The catalogue overrides a V1 seed's own styles become, so V1 themes keep
  * their look as their components are converted. `theme` is the seed as
  * `themeFactory` filled it in, for the V1 defaults of fields it left out.
@@ -112,5 +125,9 @@ export function catalogueFromV1(
   seed: ThemeSeedV1,
   theme: ThemeV1,
 ): CatalogueOverrides {
-  return { ...panelsFromV1(seed), ...tabsFromV1(seed, theme) };
+  return {
+    ...sheetRootFromV1(theme),
+    ...panelsFromV1(seed),
+    ...tabsFromV1(seed, theme),
+  };
 }
