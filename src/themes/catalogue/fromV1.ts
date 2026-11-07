@@ -171,6 +171,62 @@ function logoFromV1(theme: ThemeV1): CatalogueOverrides {
   };
 }
 
+/** V1's names for the card's parts, by slot. */
+const v1CardStyleNames = {
+  root: "backdropStyle",
+  supertitle: "supertitleStyle",
+  title: "titleStyle",
+  subtitle: "subtitleStyle",
+  description: "descriptionStyle",
+  effect: "effectStyle",
+} as const;
+
+/** A style key, as a quoted attribute value: anything but a word character is hex-escaped. */
+const attributeValue = (key: string) =>
+  `"${key.replace(/[^\w-]/g, (c) => `\\${c.codePointAt(0)!.toString(16)} `)}"`;
+
+/**
+ * In V1, each part of a card was its `themeFactory` style (the defaults, or
+ * the seed's `cards.base` style for that part, replacing them whole), with
+ * its category's (`cards.categories`, by the card's style key) spread over
+ * it. Each category becomes its own rule here, with the two spread together,
+ * and the base rule leaves out the categories' cards, so a category's style
+ * wins as it did in V1 (`!important`, nested rules and fallbacks included).
+ * Their contexts are in `:where()`, so both are as specific as the plain
+ * class. Only for a seed that styles its cards.
+ */
+function cardsFromV1(seed: ThemeSeedV1, theme: ThemeV1): CatalogueOverrides {
+  const categories = Object.entries(seed.cards?.categories ?? {});
+  if (!seed.cards?.base && categories.length === 0) return {};
+  const keys = categories.map(([key]) => attributeValue(key));
+  const anyCategory = keys.map((key) => `[data-category=${key}]`).join(", ");
+  return Object.fromEntries(
+    (Object.keys(v1CardStyleNames) as (keyof typeof v1CardStyleNames)[]).map(
+      (slot) => {
+        const name = v1CardStyleNames[slot];
+        const base = theme.cards.base[name];
+        if (categories.length === 0) {
+          return [`card__${slot}`, fromEmotion(base)];
+        }
+        const within = (context: string) =>
+          slot === "root"
+            ? `&:where(${context})`
+            : `:where(.inv-card__root:is(${context})) &`;
+        const style: OverrideStyle = {
+          [within(`:not(${anyCategory})`)]: fromEmotion(base),
+        };
+        categories.forEach(([, category], i) => {
+          style[within(`[data-category=${keys[i]}]`)] = fromEmotion({
+            ...base,
+            ...category[name],
+          });
+        });
+        return [`card__${slot}`, style];
+      },
+    ),
+  );
+}
+
 /**
  * The catalogue overrides a V1 seed's own styles become, so V1 themes keep
  * their look as their components are converted. `theme` is the seed as
@@ -183,6 +239,7 @@ export function catalogueFromV1(
   return {
     ...sheetRootFromV1(theme),
     ...logoFromV1(theme),
+    ...cardsFromV1(seed, theme),
     ...panelsFromV1(seed),
     ...tabsFromV1(seed, theme),
   };

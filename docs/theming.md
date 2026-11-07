@@ -8,7 +8,7 @@ The system is being built in steps (#1532). The palette exists, as custom
 properties on every themed root, and the catalogue has `badge`, `button`,
 `panel`, `callout`, `input`, `select`, `checkbox`, `toggle`, `tabs`,
 `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`,
-`displayText`, `mutedText`, `outcome`, `sheetRoot` and `logo`, plus
+`displayText`, `mutedText`, `outcome`, `sheetRoot`, `logo` and `card`, plus
 element defaults. Everything else is still drawn by Emotion from V1 themes, and the
 two run side by side until every component is converted.
 
@@ -370,6 +370,25 @@ Override values are serialized carefully: a list of fallbacks
 (`width: ["200px", "1lh"]`) becomes one declaration each, and a `<` inside a
 quoted string (an inline SVG in a data URL) is escaped as `\3c `, so it
 can't end the `<style>`.
+
+### `card`
+
+A card (Cards rules), applied by `CardDisplay`. Slots: `root`, `supertitle`,
+`title`, `subtitle`, `description`, `effect`. The root is on `surfaceSolid`
+with a `line` border. It has `data-category` (the card's style key), so a
+theme can style one category's cards: `&[data-category="x"]` in a `card__root`
+override, `[data-category="x"] &` in the others. *`root` is an expected
+override.*
+
+A V1 seed that styles its cards gets an override of each slot: its
+`themeFactory` style (the default, or the seed's `cards.base` style for that
+part, replacing it whole). Each of its `cards.categories` becomes a rule of
+its own with the category's style spread over the base, and the base rule
+leaves those categories' cards out, so a category's style wins as it did in
+V1, `!important` and nested rules included. The contexts are in `:where()`,
+so both rules are as specific as the plain class. Any style key works: it's
+hex-escaped in the attribute selector.
+`cards.area` (the spacing between cards) is still read by `CardArray`.
 
 Draw a class's parts with real elements (slots), not `::before`/`::after`:
 an override replaces the rule for the element its name selects, so a
