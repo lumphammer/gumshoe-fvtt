@@ -13,27 +13,15 @@ import { describe, expect, it } from "vitest";
 const notYetConverted = [
   "components/abilities/AbilityTestMW.tsx",
   "components/abilities/PoolCheckbox.tsx",
-  "components/characters/BuildPointsBar.tsx",
-  "components/characters/CharacterSheetSimple.tsx",
   "components/characters/MoribundWorld/MwItemGroup.tsx",
-  "components/characters/SettingsArea.tsx",
   "components/characters/Slug.tsx",
   "components/characters/Weapons/WeaponRowEdit.tsx",
   "components/characters/Weapons/WeaponRow.tsx",
-  "components/ImagePickerLink.tsx",
-  "components/ImagePickle.tsx",
   "components/inputs/RichTextEditor.tsx",
   "components/journalEditorSheet/ImageArea.tsx",
   "components/journalEditorSheet/PageNavigation.tsx",
-  "components/nestedPanels/NestedPanel.tsx",
-  "components/party/AbilityRow.tsx",
-  "components/party/PartySheet.tsx",
-  "components/settings/Abilities/AbilityPacksSettings.tsx",
-  "components/settings/SettingsGridField.tsx",
   "components/settings/SettingsNote.tsx",
   "components/settings/Settings.tsx",
-  "components/Suspense.tsx",
-  "startup/loadCustomThemes.ts",
 ];
 
 // The native world: our parts of Foundry's own UI, which look like Foundry
@@ -55,8 +43,10 @@ const sourceFiles = () =>
       (path) =>
         /\.tsx?$/.test(path) &&
         !/\.test(-d)?\.tsx?$/.test(path) &&
-        // themes define colours; styled-system is generated
-        !/^(themes|styled-system)\//.test(path),
+        // themes define colours (and so does loading a custom theme from a
+        // file); styled-system is generated
+        !/^(themes|styled-system)\//.test(path) &&
+        path !== "startup/loadCustomThemes.ts",
     );
 
 const filesMatching = (pattern: RegExp) =>

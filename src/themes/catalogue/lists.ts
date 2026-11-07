@@ -54,6 +54,8 @@ export const tableHeader = defineRecipe({
  *   eye along it.
  * - `divided`: a `line` under it, for rows with no table around them (a
  *   menu).
+ * - `striped`: for rows striped by position, not by the call site (a
+ *   settings form, whose rows come and go): the odd ones are on `control`.
  */
 export const row = defineRecipe({
   className: "inv-row",
@@ -73,6 +75,10 @@ export const row = defineRecipe({
       true: { background: "control" },
       false: {},
     },
+    striped: {
+      true: { "&:nth-of-type(odd)": { background: "control" } },
+      false: {},
+    },
     divided: {
       true: {
         borderBottomWidth: "1px",
@@ -82,7 +88,12 @@ export const row = defineRecipe({
       false: {},
     },
   },
-  defaultVariants: { interactive: false, alternate: false, divided: false },
+  defaultVariants: {
+    interactive: false,
+    alternate: false,
+    striped: false,
+    divided: false,
+  },
 });
 
 /**

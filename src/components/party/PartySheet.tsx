@@ -25,6 +25,7 @@ import { AbilityRow } from "./AbilityRow";
 import { buildRowData, getSystemAbilities, toMemberView } from "./functions";
 import type { PartyAbilityView } from "./types";
 import { isCategoryHeader, isTypeHeader } from "./types";
+import { floating, partyCell } from "../../styled-system/recipes";
 
 const PartySheetBody = ({ party }: { party: PartyActor }) => {
   const header = useActorSnapshot(party, (snapshot) => ({
@@ -63,6 +64,7 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
     <CSSReset
       mode="small"
       theme={theme}
+      className={floating({ kind: "overlay" })}
       css={{
         position: "absolute",
         top: 0,
@@ -82,10 +84,6 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
             transform: "translate(-50%, -50%)",
             zIndex: 100,
             padding: "1em",
-            // border: `1px solid ${theme.colors.text}`,
-            borderRadius: "0.5em",
-            background: theme.colors.bgOpaquePrimary,
-            boxShadow: `0 0 1em 0em ${theme.colors.text}`,
             fontSize: "1.4em",
             textAlign: "center",
           }}
@@ -140,13 +138,13 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
       >
         {/* Top left block */}
         <div
+          className={partyCell({ header: true })}
           css={{
             gridRow: 1,
             gridColumn: 1,
             position: "sticky",
             top: 0,
             left: 0,
-            background: theme.colors.bgOpaqueSecondary,
             padding: "0.5em",
             textAlign: "center",
             zIndex: 3,
@@ -168,12 +166,12 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
           return (
             <div
               key={actor.id}
+              className={partyCell({ header: true, odd: true })}
               css={{
                 gridRow: 1,
                 gridColumn: j + 2,
                 position: "sticky",
                 top: 0,
-                backgroundColor: theme.colors.bgOpaquePrimary,
                 padding: "0.5em",
                 zIndex: 2,
                 lineHeight: 1,
@@ -232,13 +230,13 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
 
         {/* TOTAL header */}
         <div
+          className={partyCell({ header: true })}
           css={{
             gridRow: 1,
             gridColumn: actors.length + 2,
             position: "sticky",
             top: 0,
             right: 0,
-            background: theme.colors.bgOpaqueSecondary,
             padding: "0.5em",
             textAlign: "center",
             zIndex: 3,
@@ -260,7 +258,6 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
             gridColumn: actors.length + 2,
             top: 0,
             right: 0,
-            background: theme.colors.bgOpaquePrimary,
             padding: "0.5em",
             textAlign: "center",
             lineHeight: 1,
@@ -277,6 +274,7 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
             return (
               <React.Fragment key={data.abilityType}>
                 <h1
+                  className={partyCell({ header: true })}
                   css={{
                     "&&": {
                       gridRow: i + 2,
@@ -285,8 +283,6 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
                       textAlign: "left",
                       position: "sticky",
                       left: 0,
-                      // opaque so the point counters can't scroll underneath
-                      background: theme.colors.bgOpaqueSecondary,
                     },
                   }}
                 >
@@ -299,10 +295,10 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
                 {actors.map((actor, j) => (
                   <div
                     key={actor.id}
+                    className={partyCell({})}
                     css={{
                       gridRow: i + 2,
                       gridColumn: j + 2,
-                      background: theme.colors.backgroundSecondary,
                       padding: "0.5em",
                       display: "flex",
                       alignItems: "center",
@@ -314,12 +310,12 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
                   </div>
                 ))}
                 <div
+                  className={partyCell({ header: true })}
                   css={{
                     gridRow: i + 2,
                     gridColumn: actors.length + 2,
                     position: "sticky",
                     right: 0,
-                    background: theme.colors.bgOpaqueSecondary,
                     padding: "0.5em",
                     display: "flex",
                     alignItems: "center",
@@ -357,7 +353,6 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
                 abilityRowData={data}
                 index={i}
                 actors={actors}
-                theme={theme}
               />
             );
           }

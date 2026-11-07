@@ -1,8 +1,7 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 
-import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
-import { displayText } from "../../styled-system/recipes";
+import { displayText, floating } from "../../styled-system/recipes";
 
 type BuildPointsCounterProps = {
   label: string;
@@ -52,9 +51,9 @@ export const BuildPointsBar = memo(function BuildPointsBar({
   generalTotal,
   showInvestigative,
 }: BuildPointsBarProps) {
-  const theme = useContext(ThemeContext);
   return (
     <div
+      className={floating({ kind: "bar" })}
       css={{
         position: "sticky",
         // the sticky rect is inset by the tab content scroller's 0.5em padding,
@@ -69,11 +68,6 @@ export const BuildPointsBar = memo(function BuildPointsBar({
         marginRight: "-0.5em",
         marginBottom: "0.5em",
         padding: "0.5em",
-        background: theme.colors.bgOpaquePrimary,
-        backdropFilter: "blur(10px)",
-        borderStyle: "none none solid none",
-        borderColor: theme.colors.controlBorder,
-        borderWidth: "1px",
         display: "grid",
         gridTemplateColumns: "minmax(33%, auto) minmax(33%, auto)",
         columnGap: "1em",
