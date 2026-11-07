@@ -1,8 +1,8 @@
-import { cx } from "@emotion/css";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { memo } from "react";
 import { FaEllipsisV } from "react-icons/fa";
 
+import { css, cx } from "../../../styled-system/css";
 import { useLocalFoundryTheme } from "../../../hooks/useLocalFoundryTheme";
 import { nativeMenuContentStyles } from "./nativeMenuContentStyles";
 import { NativeMenuKindProvider } from "./NativeMenuKindContext";
@@ -24,7 +24,7 @@ export const NativeDropdownMenu = memo(
         </DropdownMenu.Trigger>
 
         <NativeMenuKindProvider kind="dropdown">
-          <span ref={ref} css={{ display: "none" }} />
+          <span ref={ref} className={css({ display: "none" })} />
           <DropdownMenu.Portal>
             <DropdownMenu.Content
               avoidCollisions
@@ -43,7 +43,7 @@ export const NativeDropdownMenu = memo(
               <DropdownMenu.Arrow
                 width={10}
                 height={10}
-                css={{ fill: "var(--border-color)" }}
+                className={css({ fill: "var(--border-color)" })}
               />
             </DropdownMenu.Content>
           </DropdownMenu.Portal>

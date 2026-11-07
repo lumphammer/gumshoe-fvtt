@@ -1,7 +1,7 @@
-import type { CSSObject } from "@emotion/react";
 import type {
   CardsAreaStyles,
   CardStyles,
+  CSSObject,
   ThemeSeedV1,
 } from "@lumphammer/investigator-fvtt-types";
 

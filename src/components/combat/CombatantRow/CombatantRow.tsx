@@ -1,10 +1,10 @@
 import type { AnimateLayoutChanges } from "@dnd-kit/sortable";
 import { defaultAnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { cx } from "@emotion/css";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { createContext, memo, useContext } from "react";
 
+import { css, cx } from "../../../styled-system/css";
 import { assertGame } from "../../../functions/isGame";
 import type { InvestigatorCombatant } from "../../../module/combat/InvestigatorCombatant";
 import {
@@ -68,11 +68,13 @@ const RowListItem = () => {
     <NativeContextMenuTrigger asChild>
       <li
         ref={setNodeRef}
-        className={cx("combatant", {
-          active: shell.active,
-          hide: shell.hidden,
-          defeated: shell.defeated,
-        })}
+        className={cx(
+          "combatant",
+          shell.active && "active",
+          shell.hidden && "hide",
+          shell.defeated && "defeated",
+          css({ alignItems: "start" }),
+        )}
         {...attributes}
         data-combatant-id={shell.id}
         style={{
@@ -80,7 +82,6 @@ const RowListItem = () => {
           transition: shell.transition,
           opacity: shell.depleted && !shell.active ? 0.7 : 1,
         }}
-        css={{ alignItems: "start" }}
       >
         {/* the row content is pushed down so it can memoise even if the
         draggable hook is updating very frequently */}

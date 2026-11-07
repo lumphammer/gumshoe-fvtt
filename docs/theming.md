@@ -9,11 +9,11 @@ properties on every themed root, and the catalogue has `badge`, `button`,
 `panel`, `callout`, `input`, `select`, `checkbox`, `toggle`, `tabs`,
 `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`,
 `displayText`, `mutedText`, `outcome`, `sheetRoot`, `logo`, `card`,
-`surface`, `floating`, `partyCell` and `richText`, plus element defaults.
-Every component's look now comes from the catalogue, and none reads a
-theme's colours. Emotion is still used for layout at call sites (`css`
-props), and V1 themes are mapped onto the catalogue (`fromV1.ts`); moving
-layout to Panda's `css()` and a V2 theme format are later work.
+`surface`, `floating`, `partyCell`, `richText` and `appFrame`, plus element
+defaults. Every component's look now comes from the catalogue, and none reads
+a theme's colours. V1 themes are mapped onto the catalogue (`fromV1.ts`).
+Layout at call sites is moving from Emotion's `css` prop to Panda's `css()`
+(see Converting a component); a V2 theme format is later work.
 
 ## The pieces
 
@@ -354,10 +354,23 @@ seed's `largeSheetRootStyle` and `smallSheetRootStyle` become
 the variants, as V1 spread them over the defaults; their `padding` and
 `height`, if any, go in the root's inline style instead.
 
-The application window around the root (`appWindowStyle` in V1) isn't a
-class yet: in Foundry v13, `CSSReset` looks for `.window-app`, which
-ApplicationV2 windows don't have, so V1 window styles currently do nothing
-there.
+### `appFrame`
+
+Foundry's window around a themed root, as a slot recipe: `root` (the
+`.application` element), `header` (its titlebar) and `content` (the
+`.window-content` our root sits in). `CSSReset` puts the classes on Foundry's
+elements while it's mounted, if it's the outermost themed root in the window
+(not with `noStyleAppWindow`); roots side by side in one window (a loading
+fallback over a suspended sheet) take turns, the latest first (`frame.ts`). The window gets the palette's custom
+properties and `data-inv-frame`, not `data-inv-theme`: the frame is
+Foundry's, so it doesn't get our element defaults or state layers, and a
+theme's `app-frame` overrides are scoped to `data-inv-frame` instead.
+
+Empty by default, so a window looks like Foundry's own. *Expected
+override:* a theme's glow or border on `root`; a transparent titlebar would be
+`header` (#1534). A V1 seed's `appWindowStyle` becomes an `app-frame__root`
+override. (Before this, window styles hadn't shown since our sheets moved to
+ApplicationV2: `CSSReset` looked for ApplicationV1's `.window-app`.)
 
 ### `logo`
 
@@ -529,6 +542,21 @@ Shared definitions for the native world are in `src/components/native/`:
 
 ## Converting a component
 
+Layout at call sites is Panda's `css()` (`className={css({...})}`), not
+Emotion's `css` prop. `src/themes/catalogue/emotionUses.test.ts` lists the
+files that still use Emotion (an `@emotion` import or a `css` prop), and fails
+if a file is added or a converted one isn't taken off. Panda extracts styles
+when it builds, so `css()` only takes values it can work out then: literals,
+constants, and objects imported or spread in (`absoluteCover`). A value that
+varies at run time goes in `style`, usually as a custom property that a static
+class reads (`MwButton`'s `--mw-color`). For a conditional style, pass
+`css()` several objects (`css(base, active ? activeStyle : {})`), which it
+merges: `cx()` only joins class names, so two classes setting the same
+property would be decided by stylesheet order, not by which came last.
+Keyframes are in `panda.config.ts`, prefixed `inv` (their names are global).
+Literal colours, shadows and radii need the `[...]` escape (strict tokens), as
+do some layout values Panda's preset maps to its own (`flex: "[0]"`).
+
 `src/themes/catalogue/paletteReads.test.ts` fails if any component reads a
 theme's colours (`.colors`, or destructured `colors`): use a catalogue
 class. The list of files allowed to read them, kept while the components were
@@ -553,9 +581,11 @@ layer beat everything in its sub-layers.
 - `system.utilities`: layout from `css()` at call sites.
 
 The themed root's padding and height are in its inline `style`, with the
-palette, so a V1 theme's root style can still set them. What's left of
-Emotion (a theme's `global` styles, V1 window styles, and call-site `css`
-props not converted yet) isn't in a layer, so it beats all of these.
+palette, so a V1 theme's root style can still set them. Call-site `css`
+props not converted to Panda yet are Emotion's, which isn't in a layer, so
+they beat all of these; `EmotionPopoutCache` sends their rules to a detached
+window's document, until Emotion goes. A V1 theme's `global` CSS is a
+`<style>` in the root.
 
 The palette is set as an inline `style` on the themed root, not in a
 stylesheet. A detached window (Foundry's own, or PopOut!) copies the page's
