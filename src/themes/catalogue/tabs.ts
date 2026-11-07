@@ -1,5 +1,7 @@
 import { defineSlotRecipe } from "@pandacss/dev";
 
+import { tabDefaults, unselectedTabBackground } from "./tabDefaults";
+
 /**
  * **tabs**: a strip of tabs and the content of the selected one
  * (`TabContainer`).
@@ -10,9 +12,9 @@ import { defineSlotRecipe } from "@pandacss/dev";
  * States, from the DOM: selected (`input:checked + &`), and wrapped into a
  * grid (`[data-wrapped]` on the list, set by the code that measures it). The
  * selected tab is `surface`, like the content, with `accent` ink; the others
- * are `surfaceNested`, with `text` ink. *`tab` is an expected override,
- * selected and not:* an override of it replaces the selected and wrapped
- * looks too.
+ * are a fainter `surface` (more so on light themes), with `text` ink
+ * (`tabDefaults.ts`). *`tab` is an expected override, selected and not:* an
+ * override of it replaces the selected and wrapped looks too.
  */
 export const tabs = defineSlotRecipe({
   className: "inv-tabs",
@@ -21,20 +23,12 @@ export const tabs = defineSlotRecipe({
   base: {
     list: {},
     tab: {
-      textStyle: "display",
-      fontSize: "1.2em",
-      padding: "0.3em",
-      textAlign: "center",
+      ...tabDefaults,
+      // the same as the defaults, as tokens (strict tokens)
       color: "text",
-      // as V1: its backgroundSecondary was "used for inactive tabs"
-      background: "surfaceNested",
-      borderRadius: "0.2em 0.2em 0 0",
-      cursor: "pointer",
-      // part of the tab's look, not states laid over it: their context is in
-      // :where(), so they're no more specific than the tab, and a theme's
-      // override of `tab` replaces them too
-      ":where([data-wrapped]) > &": { borderRadius: "0.2em" },
+      background: `[${unselectedTabBackground}]`,
       ":where(input:checked) + &": { background: "surface", color: "accent" },
+      // a state over the tab, so it applies over a theme's override too
       "input:disabled + &": { opacity: 0.3, cursor: "default" },
     },
     spacer: {

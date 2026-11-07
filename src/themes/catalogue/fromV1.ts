@@ -6,6 +6,7 @@ import type {
 import { paletteVar } from "../palette";
 import type { ThemeV1 } from "../types";
 import { backdropForced, logoDefaults, measureForced } from "./logoDefaults";
+import { tabDefaults } from "./tabDefaults";
 import {
   type CatalogueOverrides,
   type OverrideStyle,
@@ -90,10 +91,21 @@ const tabFields = [
  * and `tabWrappedStyle` / `tabWrappedActiveStyle` over it in a grid; the
  * content had 0.5em padding from the call site, with `tabContentStyle` over
  * it, and `tabContentWrappedStyle` over that under a grid. A seed that sets
- * any of them gets all seven, as `themeFactory` filled them in.
+ * any of them gets all seven, as `themeFactory` filled them in. One that sets
+ * none gets the default tab on V1's background.
  */
 function tabsFromV1(seed: ThemeSeedV1, theme: ThemeV1): CatalogueOverrides {
-  if (!tabFields.some((field) => seed[field])) return {};
+  if (!tabFields.some((field) => seed[field])) {
+    // V1's default unselected tab was on `backgroundSecondary`, whose
+    // contract says it's "used for inactive tabs", so V1 themes chose it
+    // with that in mind. The catalogue's default is a fainter `surface`
+    return {
+      tabs__tab: {
+        ...tabDefaults,
+        background: `var(${paletteVar("surfaceNested")})`,
+      },
+    };
+  }
   return {
     tabs__tab: {
       font: `var(${paletteVar("displayFont")})`,

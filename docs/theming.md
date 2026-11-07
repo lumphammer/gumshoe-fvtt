@@ -272,15 +272,20 @@ not.*
   tab's rule rather than states over it: an override of `tab` replaces them
   too. Disabled (`input:disabled + &`) still applies over an override.
 - **Look**: the selected tab is `surface`, like the content, so they read as
-  one, with `accent` ink. The others are `surfaceNested`, with `text` ink,
-  as V1's unselected tabs were on `backgroundSecondary` (which its contract
-  says is "used for inactive tabs"); a fainter `surface` was too close to the
-  selected tab on light themes. Unselected tabs are `data-interactive`.
+  one, with `accent` ink. The others are a fainter `surface`, with `text`
+  ink: 40% of its opacity on a light theme, whose pale surface is close to
+  the wallpaper, and 80% on a dark one, where more would make the tabs
+  vanish. `light-dark()` picks by the `color-scheme` that `polarity` sets.
+  Unselected tabs are `data-interactive`. The defaults are plain CSS in
+  `tabDefaults.ts`, which the recipe and V1's override share.
 - `content` is `surface`, owns the padding, and its children are nested, so
   a `Panel` in a tab is `nested`.
 - A V1 theme's `tabClass` is still added, and a seed that sets any of the
   seven `tab*Style` fields gets them all as `tabs` overrides
-  (`src/themes/catalogue/fromV1.ts`), so V1 themes keep their tabs.
+  (`src/themes/catalogue/fromV1.ts`), so V1 themes keep their tabs. A seed
+  that sets none gets a `tabs__tab` override that's the default with V1's
+  unselected background, `surfaceNested`: V1's `backgroundSecondary` is
+  "used for inactive tabs", so V1 themes chose it with that in mind.
 
 ### Lists: `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`
 
@@ -600,6 +605,13 @@ The palette is set as an inline `style` on the themed root, not in a
 stylesheet. A detached window (Foundry's own, or PopOut!) copies the page's
 stylesheets when it opens, but not rules inserted into them at run time, so
 anything themed has to travel with the element (#1537).
+
+The build's CSS target (`build.cssTarget` in `vite.config.ts`) is the
+browsers our CSS needs anyway: relative colours (`oklch(from …)`) and
+`light-dark()`. With Vite's default, the minifier would polyfill
+`light-dark()` with variables it sets only where a stylesheet declares
+`color-scheme`, which a themed root sets inline, so it would resolve to
+nothing.
 
 Panda's generated code (`src/styled-system`) isn't committed: `pnpm install`
 generates it (`prepare`), and so does `pnpm build`. After changing

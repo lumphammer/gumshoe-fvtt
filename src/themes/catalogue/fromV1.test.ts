@@ -5,6 +5,7 @@ import { tealTheme } from "../tealTheme";
 import { themeFactory } from "../functions";
 import { catalogueFromV1 } from "./fromV1";
 import { catalogueOverridesCss } from "./overrides";
+import { tabDefaults } from "./tabDefaults";
 
 const seed = {
   ...tealTheme,
@@ -20,11 +21,13 @@ const seed = {
   cards: undefined,
 };
 
-/** The mapping, without the sheet root and logo (which every theme has). */
+/**
+ * The mapping, without the sheet root, logo and tab (which every theme has).
+ */
 const fromV1 = (seed: Parameters<typeof catalogueFromV1>[0]) =>
   Object.fromEntries(
     Object.entries(catalogueFromV1(seed, tealTheme)).filter(
-      ([name]) => !/^(sheet-root|logo|app-frame)/.test(name),
+      ([name]) => !/^(sheet-root|logo|app-frame|tabs__tab$)/.test(name),
     ),
   );
 
@@ -93,8 +96,14 @@ describe("catalogueFromV1", () => {
 });
 
 describe("tabs", () => {
-  test("nothing, when a seed has no tab styles", () => {
-    expect(Object.keys(fromV1(seed))).toEqual([]);
+  test("the default tab on V1's background, when a seed has no tab styles", () => {
+    const overrides = catalogueFromV1(seed, tealTheme);
+    expect(overrides["tabs__tab"]).toEqual({
+      ...tabDefaults,
+      background: "var(--inv-surface-nested)",
+    });
+    expect(overrides["tabs__spacer"]).toBeUndefined();
+    expect(overrides["tabs__content"]).toBeUndefined();
   });
 
   test("a seed's tab styles become the tabs slots, with V1's states", () => {
@@ -144,6 +153,7 @@ test("themes get their V1 panel styles as overrides", () => {
     "logo__rear_wrapper",
     "logo__rear",
     "logo__rear_sub",
+    "tabs__tab",
   ]);
 });
 

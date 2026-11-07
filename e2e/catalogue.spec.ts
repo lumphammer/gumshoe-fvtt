@@ -380,7 +380,7 @@ test("controls: a checkbox's box can be replaced, check buttons work from the ke
   await expect(rating).toHaveCSS("border-top-color", danger);
 });
 
-test("tabs: the selected one is accent on surface, the rest text on surfaceNested, and V1 tab styles still apply", async ({
+test("tabs: the selected one is accent on surface, the rest text on a fainter surface (V1 themes: surfaceNested), and V1 tab styles still apply", async ({
   page,
 }) => {
   const install = (name: string, extra: object) =>
@@ -403,6 +403,13 @@ test("tabs: the selected one is accent on surface, the rest text on surfaceNeste
       { colors, name, extra },
     );
   await install("tabsDefaultTheme", {});
+  await install("tabsDarkTheme", {
+    colors: {
+      ...colors,
+      text: "rgb(230, 230, 230)",
+      backgroundPrimary: "rgb(20, 20, 20)",
+    },
+  });
   await install("tabsV1Theme", {
     tabStyle: { color: "rgb(0, 0, 200)", border: "3px solid rgb(0, 0, 200)" },
     tabActiveStyle: { background: "rgb(0, 200, 0)" },
@@ -419,6 +426,7 @@ test("tabs: the selected one is accent on surface, the rest text on surfaceNeste
     colors.backgroundPrimary,
   );
   await expect(other().first()).toHaveCSS("color", colors.text);
+  // a V1 theme's unselected tabs are on backgroundSecondary, as in V1
   await expect(other().first()).toHaveCSS(
     "background-color",
     colors.backgroundSecondary,
@@ -426,6 +434,52 @@ test("tabs: the selected one is accent on surface, the rest text on surfaceNeste
   await expect(sheet.locator(".inv-tabs__content")).toHaveCSS(
     "background-color",
     colors.backgroundPrimary,
+  );
+
+  // the catalogue's own default, which every V1 theme overrides: remove the
+  // theme's tab rules to see it. A fainter surface: 40% of its opacity on a
+  // light theme (backgroundPrimary is opaque white here)...
+  const dropTabOverride = () =>
+    page.evaluate(() => {
+      const prune = (
+        rules: CSSRuleList,
+        owner: CSSStyleSheet | CSSGroupingRule,
+      ) => {
+        for (let i = rules.length - 1; i >= 0; i--) {
+          const rule = rules[i];
+          if (
+            rule instanceof CSSStyleRule &&
+            rule.selectorText.includes("inv-tabs__tab")
+          ) {
+            owner.deleteRule(i);
+          } else if (rule instanceof CSSGroupingRule) {
+            prune(rule.cssRules, rule);
+          }
+        }
+      };
+      for (const style of document.querySelectorAll("[data-inv-theme] style")) {
+        const sheet = (style as HTMLStyleElement).sheet!;
+        prune(sheet.cssRules, sheet);
+      }
+    });
+  await dropTabOverride();
+  await expect(other().first()).toHaveCSS(
+    "background-color",
+    /^oklch\(0\.99\d* [\d.]+ [\d.]+ \/ 0\.4\)$/,
+  );
+  await expect(selected()).toHaveCSS(
+    "background-color",
+    colors.backgroundPrimary,
+  );
+  await expect(selected()).toHaveCSS("color", colors.accent);
+  // ...and 80% on a dark one
+  await page.evaluate((id) => game.actors.get(id)!.sheet!.close(), actorId);
+  await setSettings(page, { defaultThemeName: "tabsDarkTheme" });
+  sheet = await openSheet(page, `Actor.${actorId}`);
+  await dropTabOverride();
+  await expect(other().first()).toHaveCSS(
+    "background-color",
+    /^oklch\([\d.]+ [\d.e-]+ [\d.]+ \/ 0\.8\)$/,
   );
 
   // a V1 theme's tab styles, as overrides
