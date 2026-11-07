@@ -56,11 +56,17 @@ export const tableHeader = defineRecipe({
  *   menu).
  * - `striped`: for rows striped by position, not by the call site (a
  *   settings form, whose rows come and go): the odd ones are on `control`.
+ *
+ * States: selected (`aria-current`, `aria-selected` or `data-selected`): the
+ * row is the current one (the page you're on), on `control`.
  */
 export const row = defineRecipe({
   className: "inv-row",
   description: "One item in a list or table.",
-  base: {},
+  base: {
+    "&:is([aria-current=page], [aria-current=true], [aria-selected=true], [data-selected])":
+      { background: "control" },
+  },
   variants: {
     interactive: {
       true: {

@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 
 import { useDragStart } from "../../hooks/useDragStart";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { badge } from "../../styled-system/recipes";
 
 interface SlugProps {
   onClick?: () => void;
@@ -11,7 +11,6 @@ interface SlugProps {
 }
 
 export const Slug = ({ onClick, item, children }: SlugProps) => {
-  const theme = useContext(ThemeContext);
   const onDragStart = useDragStart();
 
   return (
@@ -24,21 +23,16 @@ export const Slug = ({ onClick, item, children }: SlugProps) => {
       data-item-id={item?.id}
       onDragStart={onDragStart}
       draggable="true"
+      className={badge({ weight: "strong" })}
       css={{
         display: "block",
-        borderRadius: "0.7em",
         padding: "0.1em 0.5em",
         margin: "0.1em 0.1em 0.1em 0",
-        backgroundColor: theme.colors.backgroundButton,
-        color: theme.colors.accent,
         lineHeight: "1em",
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis",
         // width: "100%",
-        borderStyle: "solid",
-        borderWidth: "1px",
-        borderColor: theme.colors.accent,
         flex: 1,
         minWidth: "max-content",
       }}

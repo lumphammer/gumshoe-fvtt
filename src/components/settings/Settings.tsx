@@ -68,6 +68,7 @@ import { stabilityPages } from "./Stability/stabilityPages";
 import { StabilitySettings } from "./Stability/StabilitySettings";
 import { StabilitySettingsRoutes } from "./Stability/StabilitySettingsRoutes";
 import { Panel } from "../Panel";
+import { outcome, surface } from "../../styled-system/recipes";
 
 /** the height of the back button and the status, beside the breadcrumbs */
 const headerFloatHeight = "1.75em";
@@ -250,13 +251,13 @@ export const Settings = () => {
                     />
                     <div
                       role="status"
+                      className={outcome({ tone: "warning" })}
                       css={{
                         float: "right",
                         height: headerFloatHeight,
                         lineHeight: headerFloatHeight,
                         margin: "0.25em 0 0.25em 0.5em",
                         whiteSpace: "nowrap",
-                        color: theme.colors.accent,
                         visibility: hasChanges ? "visible" : "hidden",
                       }}
                     >
@@ -295,11 +296,11 @@ export const Settings = () => {
                 </Router>
               </ShowBackLinkContext.Provider>
               <div
+                className={surface({ depth: "nested" })}
                 css={{
                   display: "flex",
                   flexDirection: "row",
                   padding: "0.5em",
-                  background: theme.colors.backgroundSecondary,
                 }}
               >
                 <Button

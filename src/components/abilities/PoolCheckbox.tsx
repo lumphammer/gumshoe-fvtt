@@ -1,7 +1,7 @@
-import { memo, useCallback, useContext } from "react";
+import { memo, useCallback } from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { button } from "../../styled-system/recipes";
 
 type PoolCheckboxProps = {
   value: number;
@@ -17,8 +17,6 @@ export const PoolCheckbox = memo(function PoolCheckbox({
   const onClick = useCallback(() => {
     onClickProp(value);
   }, [onClickProp, value]);
-
-  const theme = useContext(ThemeContext);
   const isEditable = useIsEditable();
 
   return (
@@ -26,13 +24,13 @@ export const PoolCheckbox = memo(function PoolCheckbox({
       tabIndex={isEditable ? 0 : undefined}
       onClick={isEditable ? onClick : undefined}
       aria-disabled={!isEditable}
+      // a ghost button, pressed when it's the pool's value
+      data-interactive
+      data-pressed={selected || undefined}
+      className={button({ kind: "ghost" })}
       css={{
         width: "auto",
         height: "1.2em",
-        background: selected
-          ? theme.colors.accent
-          : theme.colors.backgroundPrimary,
-        color: `${selected ? theme.colors.accentContrast : undefined} !important`,
         textAlign: "center",
         display: "inline-block",
         position: "relative",
