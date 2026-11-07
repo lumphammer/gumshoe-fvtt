@@ -3,6 +3,7 @@ import { describe, expect, test } from "vitest";
 import { baseThemes } from "./baseThemes";
 import { niceThemeDark } from "./niceThemeDark";
 import {
+  apcaContrast,
   luminanceOf,
   paletteFromV1,
   paletteStyle,
@@ -44,13 +45,40 @@ describe("paletteFromV1", () => {
     expect(palette.onWarning).toBe("#000000");
   });
 
-  test("picks the ink with the higher contrast ratio, not the brighter difference", () => {
-    // on pure red, black is 5.25:1 and white 4.00:1
+  test("picks ink by perceived contrast (APCA), not WCAG 2's ratio", () => {
+    // on pure red, WCAG 2 prefers black (5.25:1 to 4:1), but white reads
+    // better; on green, the same
     const palette = paletteFromV1({
       ...tealTheme,
-      colors: { ...tealTheme.colors, danger: "#f00" },
+      colors: { ...tealTheme.colors, danger: "#f00", success: "#008000" },
     });
-    expect(palette.onDanger).toBe("#000000");
+    expect(palette.onDanger).toBe("#ffffff");
+    expect(palette.onSuccess).toBe("#ffffff");
+    // a close call, which WCAG's luminance curve would give to black:
+    // reference APCA has white at Lc 56.2 and black at 53.0
+    expect(
+      paletteFromV1({
+        ...tealTheme,
+        colors: { ...tealTheme.colors, danger: "#a0a0a0" },
+      }).onDanger,
+    ).toBe("#ffffff");
+    // yellow and a light orange still get black
+    expect(
+      paletteFromV1({
+        ...tealTheme,
+        colors: { ...tealTheme.colors, danger: "yellow", warning: "#fc0" },
+      }),
+    ).toMatchObject({ onDanger: "#000000", onWarning: "#000000" });
+  });
+
+  test("works out APCA contrast", () => {
+    // reference values from the APCA calculator (apcacontrast.com)
+    expect(apcaContrast(0, 1)).toBeCloseTo(106.04, 1);
+    expect(apcaContrast(1, 0)).toBeCloseTo(-107.88, 1);
+    // #888 text on white, white text on #888
+    const grey = (0x88 / 255) ** 2.4;
+    expect(apcaContrast(grey, 1)).toBeCloseTo(63.06, 0);
+    expect(apcaContrast(1, grey)).toBeCloseTo(-68.54, 0);
   });
 
   test.each([
