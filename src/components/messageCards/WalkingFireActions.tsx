@@ -13,6 +13,7 @@ import { editAttack } from "../../module/attacks/editAttack";
 import { planWalkFire } from "../../module/attacks/walkingFire";
 import { Translate } from "../Translate";
 import { useWalkingFireOptions } from "./useAttackSnapshots";
+import { css } from "../../styled-system/css";
 
 type WalkingFireActionsProps = {
   msg: AttackMessage;
@@ -61,8 +62,8 @@ export const WalkingFireActions = ({
   };
 
   return (
-    <div css={{ paddingTop: "0.4em", borderTop: "1px solid #0003" }}>
-      <div css={{ marginBottom: "0.3em" }}>
+    <div className={css({ paddingTop: "0.4em", borderTop: "1px solid #0003" })}>
+      <div className={css({ marginBottom: "0.3em" })}>
         <i className="fas fa-person-walking-arrow-right" />{" "}
         <Translate>
           {noBulletsLeft ? "WalkFireNoBulletsLeft" : "WalkFireHint"}
@@ -71,11 +72,11 @@ export const WalkingFireActions = ({
       {/* once all the burst's bullets have hit, there's nothing to walk */}
       {!noBulletsLeft && (
         <div
-          css={{
+          className={css({
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             gap: "0.3em",
-          }}
+          })}
         >
           {options.payments.map((payment) => (
             <button
