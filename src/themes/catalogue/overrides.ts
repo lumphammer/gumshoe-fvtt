@@ -178,11 +178,14 @@ function serialize(
  * if this layer had nothing for this element", so the default's declarations
  * are all dropped, and the override's own (later in the same rule) apply.
  *
- * The theme scope is in `:where()`, so an override is exactly as specific as
- * the default, and wins by coming later (it's rendered inside the themed
- * root, after our stylesheet). So the class's state rules, which are more
- * specific (`.inv-badge--...:is([aria-pressed=true])`), still beat it, and so
- * do its other layers, such as its variants.
+ * The theme scope is on the class itself (`.inv-badge:where(<root>, <root>
+ * *)`), so a nested rule can put context on either side of it, inside the
+ * themed root or outside (`input:checked + &`, `.compact &`). It's in
+ * `:where()`, so an override is exactly as specific as the default, and wins
+ * by coming later (it's rendered inside the themed root, after our
+ * stylesheet). So the class's state rules, which are more specific
+ * (`.inv-badge--...:is([aria-pressed=true])`), still beat it, and so do its
+ * other layers, such as its variants.
  */
 export function catalogueOverridesCss(
   slug: string,
@@ -194,13 +197,13 @@ export function catalogueOverridesCss(
       if (!ok) console.warn(`Catalogue override: no such class "${name}"`);
       return ok;
     })
-    .map(
-      ([name, style]) =>
-        `@layer ${layerOf(name)} {\n${serialize(
-          [`:where([data-inv-theme="${slug}"]) .inv-${name}`],
-          style,
-          true,
-        ).join("\n")}\n}`,
-    )
+    .map(([name, style]) => {
+      const scope = `[data-inv-theme="${slug}"]`;
+      return `@layer ${layerOf(name)} {\n${serialize(
+        [`.inv-${name}:where(${scope}, ${scope} *)`],
+        style,
+        true,
+      ).join("\n")}\n}`;
+    })
     .join("\n");
 }
