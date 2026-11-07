@@ -106,10 +106,45 @@ const cssValue = (key: string, value: string | number) =>
     : String(value);
 
 /**
- * Whether a piece of a theme can go into the stylesheet as it is: nothing
- * that could end the rule it's in, or start a comment that swallows the end.
+ * Whether a key (a property name or a selector) can go into the stylesheet as
+ * it is: nothing that could end the rule it's in, or start a comment that
+ * swallows the end.
  */
 const isSafe = (text: string) => !/[{};]|\/\*|\*\/|<\//.test(text);
+
+/**
+ * Whether a value can go into the stylesheet as it is. Like `isSafe`, but `;`,
+ * braces and comment markers are allowed inside a quoted string or a
+ * `url(...)`, where they can't end anything: a data URL backdrop
+ * (`url("data:image/svg+xml;base64,...")`) is fine. Strings must close on
+ * their line, `url(` must close, and `</` (which would end the `<style>`) is
+ * never allowed.
+ */
+export function isSafeValue(text: string) {
+  if (text.includes("</")) return false;
+  let quote: string | null = null;
+  let inUrl = false;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (quote) {
+      if (char === "\\") i++;
+      else if (char === "\n") return false;
+      else if (char === quote) quote = null;
+    } else if (char === '"' || char === "'") {
+      quote = char;
+    } else if (inUrl) {
+      if (char === ")") inUrl = false;
+    } else if (/^url\($/i.test(text.slice(i - 3, i + 1))) {
+      // an unquoted url(...) runs to its ")"; a quoted one is a string
+      inUrl = !/^\s*["']/.test(text.slice(i + 1));
+    } else if (/[{};]/.test(char) || text.startsWith("/*", i)) {
+      return false;
+    } else if (text.startsWith("*/", i)) {
+      return false;
+    }
+  }
+  return quote === null && !inUrl;
+}
 
 /** Split a selector list on its top-level commas. */
 export function splitSelectorList(list: string) {
@@ -163,7 +198,7 @@ function serialize(
           ? [`${key} { ${serialize(selectors, value, false).join("\n")} }`]
           : serialize(nest(selectors, key), value, false)),
       );
-    } else if (isSafe(String(value))) {
+    } else if (isSafeValue(String(value))) {
       declarations.push(`${kebab(key)}: ${cssValue(key, value)};`);
     } else {
       console.warn(`Catalogue override: ignoring ${key}: ${value}`);

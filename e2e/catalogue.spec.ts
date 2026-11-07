@@ -613,3 +613,36 @@ test("text: element defaults and the text classes take the palette", async ({
     sheet.locator(".inv-outcome--tone_success", { hasText: "Clues" }),
   ).toHaveCSS("color", success);
 });
+
+test("sheet root: a V1 root style's backdrop (a data URL) and padding still apply", async ({
+  page,
+}) => {
+  const svg = "url(\"data:image/svg+xml;base64,PHN2Zy8+\")";
+  await page.evaluate(
+    ({ colors, svg }) => {
+      CONFIG.Investigator!.installTheme("rootReviewTheme", {
+        schemaVersion: "v1" as const,
+        displayName: "Root Review",
+        largeSheetRootStyle: { backgroundImage: svg, padding: "30px" },
+        logo: {
+          frontTextElementStyle: {},
+          rearTextElementStyle: {},
+          textElementsStyle: {},
+          backdropStyle: {},
+        },
+        colors,
+      });
+    },
+    { colors, svg },
+  );
+  await setSettings(page, { defaultThemeName: "rootReviewTheme" });
+  const actorId = await createActor(page, { name: "Rooted", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const root = sheet.locator(".inv-sheet-root").first();
+  await expect(root).toHaveCSS("padding-top", "30px");
+  await expect(root).toHaveCSS(
+    "background-image",
+    /data:image\/svg\+xml;base64,PHN2Zy8\+/,
+  );
+  await expect(root).toHaveCSS("background-color", colors.wallpaper);
+});

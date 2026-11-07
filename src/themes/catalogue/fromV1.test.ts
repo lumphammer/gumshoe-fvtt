@@ -18,8 +18,13 @@ const seed = {
   tabContentWrappedStyle: undefined,
 };
 
+/** The mapping, without the sheet root (which every theme has). */
 const fromV1 = (seed: Parameters<typeof catalogueFromV1>[0]) =>
-  catalogueFromV1(seed, tealTheme);
+  Object.fromEntries(
+    Object.entries(catalogueFromV1(seed, tealTheme)).filter(
+      ([name]) => !name.startsWith("sheet-root"),
+    ),
+  );
 
 describe("catalogueFromV1", () => {
   test("nothing, when a seed has no panel styles", () => {
@@ -125,5 +130,23 @@ test("themes get their V1 panel styles as overrides", () => {
     border: expect.stringMatching(/^1px solid/),
   });
   expect(mutantCityBlueTheme.catalogue?.["tabs__tab"]).toBeDefined();
-  expect(tealTheme.catalogue).toBeUndefined();
+  expect(Object.keys(tealTheme.catalogue ?? {})).toEqual([
+    "sheet-root--size_large",
+    "sheet-root--size_small",
+  ]);
+});
+
+test("a theme's sheet root styles patch the root's size variants", () => {
+  const overrides = catalogueFromV1(tealTheme, {
+    ...tealTheme,
+    largeSheetRootStyle: { backgroundImage: "url(a.webp)", fontSize: "1.1em" },
+    smallSheetRootStyle: { ":before": { content: "''" } },
+  });
+  expect(overrides["sheet-root--size_large"]).toEqual({
+    backgroundImage: "url(a.webp)",
+    fontSize: "1.1em",
+  });
+  expect(overrides["sheet-root--size_small"]).toEqual({
+    "&:before": { content: "''" },
+  });
 });

@@ -110,5 +110,13 @@ test("paletteVar", () => {
 });
 
 test("themeSlug", () => {
-  expect(themeSlug(tealTheme)).toBe("teal-of-cthulhu");
+  // readable, stable for a theme, and unique to it
+  expect(themeSlug(tealTheme)).toMatch(/^teal-of-cthulhu-\d+$/);
+  expect(themeSlug(tealTheme)).toBe(themeSlug(tealTheme));
+  const a = { ...tealTheme, displayName: "My Theme" };
+  const b = { ...tealTheme, displayName: "My-Theme" };
+  expect(themeSlug(a)).not.toBe(themeSlug(b));
+  expect(themeSlug({ ...tealTheme, displayName: "テーマ" })).toMatch(
+    /^theme-\d+$/,
+  );
 });

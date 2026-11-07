@@ -16,6 +16,7 @@ import {
 } from "./src/themes/catalogue/lists";
 import { panel } from "./src/themes/catalogue/panel";
 import { select } from "./src/themes/catalogue/select";
+import { sheetRoot } from "./src/themes/catalogue/sheetRoot";
 import { tabs } from "./src/themes/catalogue/tabs";
 import { displayText, mutedText, outcome } from "./src/themes/catalogue/text";
 import { toggle } from "./src/themes/catalogue/toggle";
@@ -117,6 +118,7 @@ export default defineConfig({
       row,
       sectionHeading,
       select,
+      sheetRoot,
       tableHeader,
     },
     slotRecipes: { checkbox, tabs, toggle },

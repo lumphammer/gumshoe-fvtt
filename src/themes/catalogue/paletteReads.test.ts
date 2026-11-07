@@ -20,7 +20,6 @@ const notYetConverted = [
   "components/characters/Slug.tsx",
   "components/characters/Weapons/WeaponRowEdit.tsx",
   "components/characters/Weapons/WeaponRow.tsx",
-  "components/CSSReset.tsx",
   "components/ImagePickerLink.tsx",
   "components/ImagePickle.tsx",
   "components/inputs/RichTextEditor.tsx",

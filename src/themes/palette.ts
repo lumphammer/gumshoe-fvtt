@@ -187,9 +187,25 @@ export function paletteStyle(palette: Palette): Record<string, string> {
   };
 }
 
-/** A stable id for a theme, for `data-inv-theme`. */
-export const themeSlug = (theme: ThemeV1) =>
-  theme.displayName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+const slugs = new WeakMap<ThemeV1, string>();
+let themeCount = 0;
+
+/**
+ * An id for a theme, for `data-inv-theme`, which scopes its catalogue
+ * overrides: readable (from its display name), and unique to the theme, so
+ * two themes whose names come out the same ("My Theme", "My-Theme", or two
+ * names in a script with no Latin letters) never style each other's sheets.
+ */
+export const themeSlug = (theme: ThemeV1) => {
+  let slug = slugs.get(theme);
+  if (slug === undefined) {
+    const name = theme.displayName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+    themeCount += 1;
+    slug = `${name || "theme"}-${themeCount}`;
+    slugs.set(theme, slug);
+  }
+  return slug;
+};

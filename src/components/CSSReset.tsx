@@ -1,13 +1,13 @@
 import createCache from "@emotion/cache";
 import { css } from "@emotion/css";
-import type { CSSObject } from "@emotion/react";
 import { CacheProvider as EmotionCacheProvider, Global } from "@emotion/react";
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import type { PropsWithChildren } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 
-import { assertGame } from "../functions/isGame";
 import { ApplicationV2 } from "../fvtt-exports";
+import { cx } from "../styled-system/css";
+import { sheetRoot } from "../styled-system/recipes";
 import { catalogueOverridesCss } from "../themes/catalogue/overrides";
 import { paletteFromV1, paletteStyle, themeSlug } from "../themes/palette";
 import { ThemeContext } from "../themes/ThemeContext";
@@ -96,48 +96,22 @@ export const CSSReset = ({
     });
   }, [head]);
 
-  const styles = useMemo<CSSObject>(() => {
-    const rootStyle =
+  // the root's padding and height are layout, but a V1 theme's root style
+  // could set them, over the defaults: keep that
+  const layout = useMemo(() => {
+    const v1 =
       mode === "large"
         ? theme.largeSheetRootStyle
         : mode === "small"
           ? theme.smallSheetRootStyle
           : {};
-
-    const styles: CSSObject = {
-      font: theme.bodyFont,
-      padding: mode === "none" ? "0" : "0.5em",
-      color: theme.colors.text,
-      backgroundColor: mode === "none" ? "transparent" : theme.colors.wallpaper,
-      height: "100%",
-      accentColor: theme.colors.accent,
-      ...rootStyle,
+    const px = (value: unknown) =>
+      typeof value === "number" ? `${value}px` : (value as string | undefined);
+    return {
+      padding: px(v1.padding) ?? (mode === "none" ? "0" : "0.5em"),
+      height: px(v1.height) ?? "100%",
     };
-
-    return styles;
   }, [mode, theme]);
-
-  // v13+ only (CSS Layers)
-  // we put these styles into the `system` layer to play nice with Foundry's
-  // layering system. If we left them outside of a layer they would still work,
-  // but they would take priority over other like `modules` and `exceptions` which
-  // are supposed to be above `system`.
-  // They go in `system.base`, not `system` itself: rules directly in a layer
-  // beat everything in its sub-layers, which would put them above Panda's
-  // (`src/panda.css`) whatever their specificity.
-  // We wouldn't need to do this if we were exporting our CSS into a file and
-  // getting Foundry to load it, but see https://github.com/lumphammer/gumshoe-fvtt/issues/928
-  // for why we don't do that.
-  const layeredStyles = useMemo((): CSSObject => {
-    assertGame(game);
-    if (foundry.utils.isNewerVersion(game.version, "13.0")) {
-      return {
-        "@layer system.base": styles,
-      };
-    } else {
-      return styles;
-    }
-  }, [styles]);
 
   const slug = themeSlug(theme);
   // the theme's replacements for catalogue classes, as a <style> inside the
@@ -155,10 +129,9 @@ export const CSSReset = ({
           <Global styles={theme.global} />
           <div
             ref={ref}
-            className={className}
-            css={layeredStyles}
+            className={cx(sheetRoot({ size: mode }), className)}
             data-inv-theme={slug}
-            style={paletteStyle(paletteFromV1(theme))}
+            style={{ ...paletteStyle(paletteFromV1(theme)), ...layout }}
           >
             {children}
             {overridesCss && <style>{overridesCss}</style>}
