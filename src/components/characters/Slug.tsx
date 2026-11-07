@@ -26,6 +26,8 @@ export const Slug = ({ onClick, item, children }: SlugProps) => {
       className={badge({ weight: "strong" })}
       css={{
         display: "block",
+        // the size of the text around it, not a badge's smaller size
+        fontSize: "inherit",
         padding: "0.1em 0.5em",
         margin: "0.1em 0.1em 0.1em 0",
         lineHeight: "1em",

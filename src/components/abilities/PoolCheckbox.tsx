@@ -24,10 +24,10 @@ export const PoolCheckbox = memo(function PoolCheckbox({
       tabIndex={isEditable ? 0 : undefined}
       onClick={isEditable ? onClick : undefined}
       aria-disabled={!isEditable}
-      // a ghost button, pressed when it's the pool's value
+      // a pip, pressed when it's the pool's value
       data-interactive
       data-pressed={selected || undefined}
-      className={button({ kind: "ghost" })}
+      className={button({ kind: "pip" })}
       css={{
         width: "auto",
         height: "1.2em",
