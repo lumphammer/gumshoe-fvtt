@@ -23,6 +23,14 @@ const config = defineConfig(({ mode }) => {
     // docs/immutable-data.md)
     reactCompiler: { compilationMode: "infer" },
   });
+  // the browsers our CSS needs anyway (relative colours, `oklch(from …)`), so
+  // the minifier leaves newer CSS alone. Vite's default target would
+  // polyfill `light-dark()` with variables set only where a stylesheet
+  // declares `color-scheme`, but a themed root sets it inline
+  userConfig.build = {
+    ...userConfig.build,
+    cssTarget: ["chrome123", "edge123", "firefox128", "safari18"],
+  };
   // `pnpm build:profiling`: React's profiling build, which records render
   // durations for the render-timing benchmarks (e2e/renderTiming.bench.ts)
   if (process.env["PROFILE_REACT"]) {
