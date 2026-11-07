@@ -9,6 +9,7 @@ type AsyncNumberInputProps = {
   value: undefined | number;
   onChange: (newValue: number) => void;
   className?: string;
+  style?: React.CSSProperties;
   min?: number;
   max?: number;
   /** only accept whole numbers */
@@ -37,6 +38,7 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
     value,
     onChange: onChangeOrig,
     className,
+    style,
     min,
     max,
     integer = false,
@@ -116,6 +118,7 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
           },
         }}
         className={className}
+        style={style}
       >
         {(noPlusMinus === undefined || !noPlusMinus) && (
           <Button onClick={onClickDec} disabled={disabled}>

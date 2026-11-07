@@ -148,18 +148,8 @@ export const LogoEditable = ({
   return (
     // outer - set the transform origin
     <div
-      className={cx(
-        "logo",
-        css({
-          display: "block",
-          position: "relative",
-          height: "6em",
-          width: "auto",
-          perspective: "500px",
-          perspectiveOrigin: "50% 50%",
-        }),
-        className,
-      )}
+      // layout, which call sites can change (componentDefaults.css)
+      className={cx("logo", "inv-default-logo", className)}
     >
       {/* Backdrop: filling the logo, whatever the theme says */}
       <div

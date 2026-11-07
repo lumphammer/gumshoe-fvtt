@@ -552,7 +552,13 @@ varies at run time goes in `style`, usually as a custom property that a static
 class reads (`MwButton`'s `--mw-color`). For a conditional style, pass
 `css()` several objects (`css(base, active ? activeStyle : {})`), which it
 merges: `cx()` only joins class names, so two classes setting the same
-property would be decided by stylesheet order, not by which came last.
+property would be decided by stylesheet order, not by which came last. For
+the same reason, a component that takes a `className` doesn't give itself
+layout with `css()` for properties a caller might set: that goes in a plain
+`inv-default-*` class in `src/components/componentDefaults.css`
+(`system.defaults`), under the caller's utilities. And a `className` before a
+`{...rest}` spread is replaced by the caller's, not merged with it, as
+Emotion's was: put the spread first and merge the caller's in `cx()`.
 Keyframes are in `panda.config.ts`, prefixed `inv` (their names are global).
 Literal colours, shadows and radii need the `[...]` escape (strict tokens), as
 do some layout values Panda's preset maps to its own (`flex: "[0]"`).
@@ -568,7 +574,7 @@ are exempt: they define themes.
 Foundry v14 orders its CSS in cascade layers, and a system's styles belong in
 `system`. Ours go in sub-layers of it, in this order (`src/panda.css`):
 `system.reset`, `system.base`, `system.tokens`, `system.recipes`,
-`system.states`, `system.utilities`. Panda splits `system.recipes` further:
+`system.defaults`, `system.states`, `system.utilities`. Panda splits `system.recipes` further:
 `base`, `slots` (with its own `base`, `variants` and `compound_variants`),
 `variants`, `compound_variants`. **Nothing goes directly in `system`**: rules directly in a
 layer beat everything in its sub-layers.
@@ -577,6 +583,8 @@ layer beat everything in its sub-layers.
   `investigator.less`'s Foundry fixes.
 - `system.recipes`: the catalogue classes, the themed root's look
   (`sheetRoot`) among them, and a theme's overrides of them.
+- `system.defaults`: components' own overridable layout
+  (`componentDefaults.css`).
 - `system.states`: the state layers (`states.css`).
 - `system.utilities`: layout from `css()` at call sites.
 

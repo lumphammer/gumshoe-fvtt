@@ -17,6 +17,7 @@ import { Select } from "../inputs/Select";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 import { surface } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 const defaultThemeIdentifier = "PQkMK35MWjRI2";
 /** The PC's own settings, read through a snapshot */
@@ -107,13 +108,15 @@ export const SettingArea = memo(function SettingArea() {
       </InputGrid>
 
       <p
-        className={surface({ depth: "nested" })}
-        css={{
-          textTransform: "initial",
-          border: "1px dashed currentColor",
-          padding: "1em",
-          margin: "2em 1em 1em 1em",
-        }}
+        className={cx(
+          surface({ depth: "nested" }),
+          css({
+            textTransform: "initial",
+            border: "1px dashed currentColor",
+            padding: "1em",
+            margin: "2em 1em 1em 1em",
+          }),
+        )}
       >
         <a target="_new" href="https://github.com/n3dst4/investigator-fvtt">
           GUMSHOE for FoundryVTT (aka INVESTIGATOR)

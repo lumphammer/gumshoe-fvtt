@@ -1,6 +1,7 @@
 import "./panda.css";
 import "./themes/catalogue/elements.css";
 import "./themes/catalogue/states.css";
+import "./components/componentDefaults.css";
 import "./investigator.less";
 import "./configuration";
 

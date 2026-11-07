@@ -15,6 +15,7 @@ import { AbilitySlugPlayNormal } from "./AbilitySlugPlayNormal";
 import { AbilitySlugPlayQuickShockInvestigative } from "./AbilitySlugPlayQuickShockInvestigative";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
 import { sectionHeading } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type AbilitiesAreaPlayProps = {
   flipLeftRight?: boolean;
@@ -56,18 +57,20 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
   return (
     <>
       <div
-        css={{
+        className={css({
           display: "grid",
           gridTemplateColumns: "minmax(33%, auto) minmax(33%, auto)",
+          columnGap: "1em",
+          marginBottom: "1em",
+        })}
+        style={{
           gridTemplateAreas: flipLeftRight
             ? "'general investigative'"
             : "'investigative general'",
-          columnGap: "1em",
-          marginBottom: "1em",
         }}
       >
         <div
-          css={{
+          className={css({
             gridArea: "investigative",
             display: "grid",
             gridTemplateAreas: "'ability rating set spend'",
@@ -76,12 +79,17 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
             rowGap: "0.4em",
             alignItems: "center",
             alignContent: "start",
-          }}
+          })}
         >
           {Object.keys(investigativeAbilities).map((cat) =>
             showEmpty || investigativeAbilities[cat].length > 0 ? (
               <Fragment key={cat}>
-                <h2 className={sectionHeading()} css={{ gridColumn: "1 / -1" }}>
+                <h2
+                  className={cx(
+                    sectionHeading(),
+                    css({ gridColumn: "1 / -1" }),
+                  )}
+                >
                   {cat}
                 </h2>
                 {investigativeAbilities[cat].map(({ id, isQuickShock }) => {
@@ -107,7 +115,7 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
           )}
         </div>
         <div
-          css={{
+          className={css({
             gridArea: "general",
             display: "grid",
             gridTemplateColumns: "1fr max-content max-content max-content",
@@ -116,11 +124,13 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
             rowGap: "0.4em",
             alignItems: "center",
             alignContent: "start",
-          }}
+          })}
         >
           {Object.keys(generalAbilities).map((cat) => (
             <Fragment key={cat}>
-              <h2 className={sectionHeading()} css={{ gridColumn: "1 / -1" }}>
+              <h2
+                className={cx(sectionHeading(), css({ gridColumn: "1 / -1" }))}
+              >
                 {cat}
               </h2>
               {generalAbilities[cat].map(({ id }) => {

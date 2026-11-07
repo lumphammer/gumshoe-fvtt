@@ -25,6 +25,7 @@ import { PCSheetHeader, PCSheetPools, PCSheetStats } from "./PCSheetPanels";
 import { SettingArea } from "./SettingsArea";
 import { useSettingsButton } from "./useSettingsButton";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
+import { css } from "../../styled-system/css";
 
 /**
  * The PC sheet. Memoised (it has no props), so Foundry's own re-render stops
@@ -55,7 +56,7 @@ export const PCSheetFull = memo(function PCSheetFull() {
     <CSSReset
       theme={theme}
       mode="large"
-      css={{
+      className={css({
         position: "absolute",
         top: 0,
         right: 0,
@@ -69,18 +70,18 @@ export const PCSheetFull = memo(function PCSheetFull() {
           '"title title image" ' +
           '"pools stats image" ' +
           '"pools body  body" ',
-      }}
+      })}
     >
       <PCSheetHeader />
       <PCSheetStats />
       <PCSheetPools />
 
       <div
-        css={{
+        className={css({
           gridArea: "body",
           position: "relative",
           overflow: "hidden",
-        }}
+        })}
       >
         <TabContainer
           defaultTab="abilities"

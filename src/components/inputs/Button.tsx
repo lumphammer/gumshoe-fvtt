@@ -2,7 +2,7 @@ import type { ComponentProps, PropsWithChildren } from "react";
 import React from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
-import { css, cx } from "../../styled-system/css";
+import { cx } from "../../styled-system/css";
 import { button, type ButtonVariantProps } from "../../styled-system/recipes";
 
 type ButtonProps = ComponentProps<"button"> &
@@ -31,12 +31,10 @@ export const Button = React.memo<ButtonProps>(
           disabled={(disabled ?? false) || !isEditable}
           className={cx(
             button({ kind }),
-            // layout: toolbar buttons are as wide as their content; the rest
-            // as wide as their container (100% can cause scrollbars). One
-            // atomic class each, so call sites can override them
+            // layout, which call sites can change (componentDefaults.css)
             kind === "toolbar"
-              ? css({ display: "block", width: "max-content" })
-              : css({ width: "99%" }),
+              ? "inv-default-button-fit"
+              : "inv-default-button",
             className,
           )}
           onClick={handleClick}

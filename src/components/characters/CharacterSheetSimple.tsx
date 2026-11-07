@@ -7,6 +7,7 @@ import { ImagePickle } from "../ImagePickle";
 import { NotesDisplay } from "../inputs/NotesDisplay";
 import { LogoEditable } from "./LogoEditable";
 import { surface } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type CharacterSheetSimpleProps = {
   /** shown under the name, e.g. a PC's occupation */
@@ -40,7 +41,7 @@ export const CharacterSheetSimple = ({
     <CSSReset
       theme={theme}
       mode="large"
-      css={{
+      className={css({
         position: "absolute",
         top: 0,
         right: 0,
@@ -52,40 +53,40 @@ export const CharacterSheetSimple = ({
         flexWrap: "wrap",
         flexDirection: "column",
         justifyContent: "flex-start",
-      }}
+      })}
     >
       <LogoEditable
         mainText={data.name}
         subText={subText}
         onChangeMainText={actor.setName}
-        css={{
+        className={css({
           fontSize: "0.66em",
           width: "100%",
-        }}
+        })}
       />
       <div
-        css={{
-          flex: 1,
+        className={css({
+          flex: "[1]",
           overflow: "auto",
           display: "flex",
           flexDirection: "row",
           gap: "1em",
-        }}
+        })}
       >
         <div
-          css={{
+          className={css({
             containerType: "size",
             display: "flex",
             justifyContent: "center",
             alignItems: "start",
 
-            flex: 1,
+            flex: "[1]",
             padding: "1em",
-          }}
+          })}
         >
           <ImagePickle
             img={data.img}
-            css={{
+            className={css({
               width: "100%",
               height: "auto",
               aspectRatio: "1/1",
@@ -95,17 +96,19 @@ export const CharacterSheetSimple = ({
               },
 
               transform: "rotateZ(-1deg)",
-            }}
+            })}
           />
         </div>
         {hasNotes && (
           <NotesDisplay
-            className={surface()}
-            css={{
-              flex: 1,
-              overflow: "auto",
-              padding: "1em",
-            }}
+            className={cx(
+              surface(),
+              css({
+                flex: "[1]",
+                overflow: "auto",
+                padding: "1em",
+              }),
+            )}
             html={notes}
           />
         )}

@@ -6,6 +6,7 @@ import type { PCActor } from "../../module/actors/pc";
 import { getGeneralAbilityNamesIn } from "../../module/items/findGeneralAbility";
 import { OtherableDropDown } from "../inputs/OtherableDropDown";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 export function InitiativeAbilityPicker({
   actor,
@@ -23,7 +24,7 @@ export function InitiativeAbilityPicker({
   const { setInitiativeAbility } = useSystemMethods(actor);
   return (
     <div>
-      <h3 css={{ gridColumn: "start / end" }}>
+      <h3 className={css({ gridColumn: "start / end" })}>
         <Translate>Initiative</Translate>
       </h3>
       <OtherableDropDown

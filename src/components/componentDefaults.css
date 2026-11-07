@@ -1,0 +1,72 @@
+/*
+ * Component defaults: layout a reusable component gives itself, which a call
+ * site's css() should be able to change (a TextInput's width, a link's grid
+ * column). Atomic css() classes for the same property, the component's and
+ * the call site's, would be decided by where Panda happened to put them in the
+ * stylesheet, so a component's own layout is here instead, in a layer under
+ * `system.utilities`. See docs/theming.md, "Converting a component".
+ */
+@layer system.defaults {
+  .inv-default-text-input {
+    flex: 1;
+    width: 100%;
+  }
+
+  .inv-default-text-area {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* as wide as its container (100% can cause scrollbars) */
+  .inv-default-button {
+    width: 99%;
+  }
+
+  /* toolbar buttons are as wide as their content */
+  .inv-default-button-fit {
+    display: block;
+    width: max-content;
+  }
+
+  /* never wrapped, so a column of badges is always wide enough for both */
+  .inv-default-bond-badges {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    gap: 0.25em;
+  }
+
+  .inv-default-ability-badges {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    flex-wrap: wrap;
+    gap: 0.1em;
+  }
+
+  .inv-default-ability-badges[data-unlocks] {
+    margin-bottom: 0.25em;
+  }
+
+  /* LogoEditable: the outer box, which sets the transform origin */
+  .inv-default-logo {
+    display: block;
+    position: relative;
+    height: 6em;
+    width: auto;
+    perspective: 500px;
+    perspective-origin: 50% 50%;
+  }
+
+  .inv-default-item-name-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    min-width: 0;
+  }
+
+  .inv-default-ability-name-link {
+    grid-column: ability;
+    text-align: end;
+  }
+}

@@ -1,14 +1,15 @@
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, CSSProperties } from "react";
 import { useCallback, useContext } from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
-import { css, cx } from "../../styled-system/css";
+import { cx } from "../../styled-system/css";
 import { input } from "../../styled-system/recipes";
 import { IdContext } from "../IdContext";
 import type { ValidationResult } from "./types";
 
 type TextInputProps = {
   className?: string;
+  style?: CSSProperties;
   value?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
@@ -21,6 +22,7 @@ type TextInputProps = {
 
 export const TextInput = ({
   className,
+  style,
   value,
   defaultValue,
   onChange,
@@ -48,7 +50,8 @@ export const TextInput = ({
       size={3}
       id={id}
       aria-invalid={invalid || undefined}
-      className={cx(input(), css({ flex: "1", width: "100%" }), className)}
+      className={cx(input(), "inv-default-text-input", className)}
+      style={style}
       data-lpignore="true"
       value={value}
       defaultValue={defaultValue}

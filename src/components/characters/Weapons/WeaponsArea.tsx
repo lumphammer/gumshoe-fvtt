@@ -15,6 +15,7 @@ import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { WeaponRow } from "./WeaponRow";
 import { sectionHeading, tableHeader } from "../../../styled-system/recipes";
+import { css, cx } from "../../../styled-system/css";
 
 // the "&&" beats Foundry's own h2 margins
 const headingStyle = { "&&": { margin: 0 } };
@@ -59,32 +60,32 @@ export const WeaponsArea = memo(function WeaponsArea({
   );
   return (
     <div
-      css={{
-        height: fillHeight ? "100%" : undefined,
+      className={css({
         display: "flex",
         flexDirection: "column",
-      }}
+      })}
+      style={{ height: fillHeight ? "100%" : undefined }}
     >
       {/* the list gets whatever the ready weapon leaves, scrolling if need be */}
       <div
-        css={
-          fillHeight ? { flex: 1, minHeight: 0, overflow: "auto" } : undefined
-        }
+        className={css(
+          fillHeight ? { flex: "[1]", minHeight: 0, overflow: "auto" } : {},
+        )}
       >
         <div
-          css={{
+          className={css({
             display: "flex",
             flexDirection: "row",
-          }}
+          })}
         >
-          <h2 css={{ flex: 1, ...headingStyle }}>
+          <h2 className={css({ flex: "[1]", ...headingStyle })}>
             <Translate>Weapons</Translate>
           </h2>
           <Button
-            css={{
+            className={css({
               flexBasis: "max-content",
               alignSelf: "flex-start",
-            }}
+            })}
             onClick={async () => {
               await actor.createEmbeddedDocuments(
                 "Item",
@@ -107,17 +108,17 @@ export const WeaponsArea = memo(function WeaponsArea({
 
         {items.length === 0 && (
           <i
-            css={{
+            className={css({
               display: "block",
               fontSize: "1.2em",
-            }}
+            })}
           >
             <Translate>No weapons yet!</Translate>
           </i>
         )}
         {items.length > 0 && (
           <div
-            css={{
+            className={css({
               display: "grid",
               // ready, name, ammo, ability, delete
               gridTemplateColumns:
@@ -125,17 +126,19 @@ export const WeaponsArea = memo(function WeaponsArea({
               gridAutoRows: "min-content",
               columnGap: "0.5em",
               whiteSpace: "nowrap",
-            }}
+            })}
           >
             {/* the header row, underlined like the ability categories */}
             <div
-              className={tableHeader()}
-              css={{
-                gridColumn: "1/-1",
-                display: "grid",
-                gridTemplateColumns: "subgrid",
-                "& > *": { paddingInline: "0.25em" },
-              }}
+              className={cx(
+                tableHeader(),
+                css({
+                  gridColumn: "1/-1",
+                  display: "grid",
+                  gridTemplateColumns: "subgrid",
+                  "& > *": { paddingInline: "0.25em" },
+                }),
+              )}
             >
               <div>
                 <Translate>Ready</Translate>?
@@ -143,7 +146,7 @@ export const WeaponsArea = memo(function WeaponsArea({
               <div>
                 <Translate>Name</Translate>
               </div>
-              <div css={{ textAlign: "center" }}>
+              <div className={css({ textAlign: "center" })}>
                 <Translate>Ammo</Translate>
               </div>
               <div>
@@ -163,29 +166,35 @@ export const WeaponsArea = memo(function WeaponsArea({
       </div>
       {items.length > 0 && (
         <div
-          css={{
-            paddingTop: "1em",
-            display: "flex",
-            flexDirection: "column",
+          className={css(
+            { paddingTop: "1em", display: "flex", flexDirection: "column" },
             // half the tab, growing to three quarters to fit the panel in
-            ...(fillHeight &&
-              readyWeapon && { minHeight: "50%", maxHeight: "75%" }),
-          }}
+            fillHeight && readyWeapon
+              ? { minHeight: "50%", maxHeight: "75%" }
+              : {},
+          )}
         >
           {readyWeapon ? (
             <>
               <div
-                css={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "flex-end",
-                  marginBottom: "0.5em",
-                }}
-                className={sectionHeading()}
+                className={cx(
+                  sectionHeading(),
+                  css({
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "flex-end",
+                    marginBottom: "0.5em",
+                  }),
+                )}
               >
-                <h2 css={{ flex: 1, ...headingStyle }}>{readyName}</h2>
+                <h2 className={css({ flex: "[1]", ...headingStyle })}>
+                  {readyName}
+                </h2>
                 <Button
-                  css={{ flexBasis: "max-content", marginBottom: "0.2em" }}
+                  className={css({
+                    flexBasis: "max-content",
+                    marginBottom: "0.2em",
+                  })}
                   onClick={() => {
                     openSheet(readyWeapon);
                   }}
@@ -194,7 +203,7 @@ export const WeaponsArea = memo(function WeaponsArea({
                   <Translate>Edit</Translate>
                 </Button>
               </div>
-              <div css={{ minHeight: 0, overflow: "auto" }}>
+              <div className={css({ minHeight: 0, overflow: "auto" })}>
                 {/* a fresh panel for each weapon, so spends etc. don't carry
                     over */}
                 <WeaponAttackPanel key={readyWeapon.id} weapon={readyWeapon} />
