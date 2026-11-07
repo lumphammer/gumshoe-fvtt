@@ -2,10 +2,11 @@ import { useNavigationContext } from "@lumphammer/minirouter";
 import type { PropsWithChildren } from "react";
 import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
 
-import { ThemeContext } from "../../themes/ThemeContext";
 import { ArrowLink } from "./ArrowLink";
 import { focusableSelector } from "./focusableSelector";
 import { ShowBackLinkContext } from "./ShowBackLinkContext";
+import { floating } from "../../styled-system/recipes";
+import { cx } from "../../styled-system/css";
 
 const defaultPanelMargin = "3em";
 
@@ -16,7 +17,6 @@ type NestedPanelProps = PropsWithChildren<{
 
 export const NestedPanel = memo<NestedPanelProps>(
   ({ children, className, margin = defaultPanelMargin }) => {
-    const theme = useContext(ThemeContext);
     const showBackLink = useContext(ShowBackLinkContext);
     const { navigate, currentStep } = useNavigationContext();
     const childrenAreaRef = useRef<HTMLDivElement>(null);
@@ -55,7 +55,7 @@ export const NestedPanel = memo<NestedPanelProps>(
       <>
         <section
           ref={ref}
-          className={className}
+          className={cx(floating({ kind: "drawer" }), className)}
           onKeyDown={handleKeyDown}
           css={{
             position: "absolute",
@@ -64,10 +64,8 @@ export const NestedPanel = memo<NestedPanelProps>(
             right: 0,
             bottom: 0,
             padding: "1em",
-            backgroundColor: theme.colors.bgOpaquePrimary,
             boxShadow: `0 0 min(${margin}, ${defaultPanelMargin}) 0 #0007`,
             overflow: "auto",
-            borderLeft: `1px solid ${theme.colors.controlBorder}`,
             display: "flex",
             flexDirection: "column",
             pointerEvents: "all",

@@ -6,6 +6,7 @@ import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
 import { NotesDisplay } from "../inputs/NotesDisplay";
 import { LogoEditable } from "./LogoEditable";
+import { surface } from "../../styled-system/recipes";
 
 type CharacterSheetSimpleProps = {
   /** shown under the name, e.g. a PC's occupation */
@@ -99,10 +100,10 @@ export const CharacterSheetSimple = ({
         </div>
         {hasNotes && (
           <NotesDisplay
+            className={surface()}
             css={{
               flex: 1,
               overflow: "auto",
-              background: theme.colors.backgroundPrimary,
               padding: "1em",
             }}
             html={notes}
