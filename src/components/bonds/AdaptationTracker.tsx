@@ -1,5 +1,5 @@
 import type { TraumaType } from "@lumphammer/investigator-fvtt-types";
-import { Fragment, memo, useContext } from "react";
+import { Fragment, memo } from "react";
 
 import { useActorAndSettings } from "../../hooks/useActorSnapshot";
 import { useSettings } from "../../hooks/useSettings";
@@ -17,9 +17,9 @@ import {
   getProgressAfterClick,
 } from "../../module/bonds/adaptation";
 import { getAdaptableTraumaTypesFrom } from "../../module/stability/settings";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { Checkbox } from "../inputs/Checkbox";
 import { Translate } from "../Translate";
+import { sectionHeading } from "../../styled-system/recipes";
 
 /** What being adapted does, in our words: nothing, for some types */
 const getEffects = (type: TraumaType) => {
@@ -61,7 +61,6 @@ export const AdaptationTracker = memo(function AdaptationTracker({
 }: {
   actor: PCActor;
 }) {
-  const theme = useContext(ThemeContext);
   const types = useSettings(
     (s) => getAdaptableTraumaTypesFrom(s) as TraumaType[],
   );
@@ -84,7 +83,7 @@ export const AdaptationTracker = memo(function AdaptationTracker({
 
   return (
     <div data-testid="adaptations" css={{ marginTop: "1em" }}>
-      <h3 css={{ borderBottom: `1px solid ${theme.colors.text}` }}>
+      <h3 className={sectionHeading()}>
         <Translate>Adapted to</Translate>
       </h3>
       <p css={{ fontSize: "0.9em" }}>

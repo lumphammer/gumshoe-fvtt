@@ -5,7 +5,7 @@ import { FaChevronRight } from "react-icons/fa6";
 
 import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
-import { useListHoverBg } from "./useListHoverBg";
+import { row } from "../../styled-system/recipes";
 
 type SettingsMenuLinkProps = {
   to: AnyStep;
@@ -28,23 +28,19 @@ export const SettingsMenuLink = ({
   icon,
 }: SettingsMenuLinkProps) => {
   const theme = useContext(ThemeContext);
-  const hoverBg = useListHoverBg();
 
   return (
     <Link
       to={to}
+      className={row({ interactive: true, divided: true })}
       css={{
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         gap: "0.75em",
         padding: "0.6em 1em",
-        borderBottom: `1px solid ${theme.colors.controlBorder}`,
         textShadow: "none",
-        "&:hover, &:focus-visible": {
-          backgroundColor: hoverBg,
-          textShadow: "none",
-        },
+        "&:hover, &:focus-visible": { textShadow: "none" },
         "&:hover .chevron, &:focus-visible .chevron": {
           transform: "translateX(0.2em)",
         },

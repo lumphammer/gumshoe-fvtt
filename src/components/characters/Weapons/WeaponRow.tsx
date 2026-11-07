@@ -9,6 +9,7 @@ import { ThemeContext } from "../../../themes/ThemeContext";
 import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { Toggle } from "../../inputs/Toggle";
 import { ItemNameWithIcon } from "../ItemNameWithIcon";
+import { row as rowClass } from "../../../styled-system/recipes";
 
 type WeaponRowProps = {
   /** The live weapon: the row reads it through a snapshot */
@@ -61,19 +62,15 @@ export const WeaponRow = memo(function WeaponRow({
       <div
         role="button"
         tabIndex={0}
+        className={rowClass({ interactive: true })}
         css={{
           gridColumn: "2 / -2",
           display: "grid",
           gridTemplateColumns: "subgrid",
           alignItems: "center",
           padding: "0.2em 0",
-          cursor: "pointer",
           borderRadius: "0.2em",
           "& > *": { paddingInline: "0.25em" },
-          "&:hover, &:focus-visible": {
-            background: `color-mix(in srgb, ${theme.colors.glow} 25%, transparent)`,
-            outline: "none",
-          },
         }}
         onClick={openWeaponSheet}
         onKeyDown={(e) => {

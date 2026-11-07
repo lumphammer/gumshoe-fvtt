@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext } from "react";
+import { memo, useCallback } from "react";
 
 import { liveItems } from "../../../functions/liveItems";
 import { isWeaponItem } from "../../../module/items/weapon";
@@ -10,11 +10,11 @@ import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../../hooks/useSystemMethods";
 import type { WeaponItem } from "../../../module/items/weapon";
 import { assertActiveCharacterActor } from "../../../module/actors/types";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import { WeaponAttackPanel } from "../../equipment/WeaponAttackPanel";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { WeaponRow } from "./WeaponRow";
+import { sectionHeading, tableHeader } from "../../../styled-system/recipes";
 
 // the "&&" beats Foundry's own h2 margins
 const headingStyle = { "&&": { margin: 0 } };
@@ -37,7 +37,6 @@ export const WeaponsArea = memo(function WeaponsArea({
 }: WeaponsAreaProps) {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
-  const theme = useContext(ThemeContext);
   const { ids, readyId, readyName } = useActorSnapshot(actor, (snapshot) => {
     const weapons = snapshot.items.filter((item) => item.type === weapon);
     const readyWeaponId = snapshot.system.readyWeaponId;
@@ -130,12 +129,11 @@ export const WeaponsArea = memo(function WeaponsArea({
           >
             {/* the header row, underlined like the ability categories */}
             <div
+              className={tableHeader()}
               css={{
                 gridColumn: "1/-1",
                 display: "grid",
                 gridTemplateColumns: "subgrid",
-                fontWeight: "bold",
-                borderBottom: `1px solid ${theme.colors.text}`,
                 "& > *": { paddingInline: "0.25em" },
               }}
             >
@@ -182,8 +180,8 @@ export const WeaponsArea = memo(function WeaponsArea({
                   flexDirection: "row",
                   alignItems: "flex-end",
                   marginBottom: "0.5em",
-                  borderBottom: `1px solid ${theme.colors.text}`,
                 }}
+                className={sectionHeading()}
               >
                 <h2 css={{ flex: 1, ...headingStyle }}>{readyName}</h2>
                 <Button

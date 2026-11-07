@@ -1,14 +1,14 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import { useDragStart } from "../../hooks/useDragStart";
 import { openSheet } from "../../functions/openSheet";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { isBondBroken } from "../../module/bonds/rules";
 import type { BondItem } from "../../module/items/bond";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { ItemNameWithIcon } from "../characters/ItemNameWithIcon";
 import { DeleteItemButton } from "../inputs/DeleteItemButton";
 import { BondBadges } from "./BondBadges";
+import { row as rowClass } from "../../styled-system/recipes";
 
 /**
  * One Bond on the Bonds tab: name, badges and rating, and a delete button.
@@ -28,7 +28,6 @@ export const BondRow = memo(function BondRow({
     isDeltaGreen: system.isDeltaGreen,
     isBroken: isBondBroken(system.points),
   }));
-  const theme = useContext(ThemeContext);
   const onDragStart = useDragStart();
   const openBondSheet = () => {
     openSheet(bond);
@@ -38,12 +37,12 @@ export const BondRow = memo(function BondRow({
     // a subgrid, so the cells line up with the headers, and the row can be
     // one thing to hover
     <div
+      className={rowClass({ interactive: true })}
       css={{
         gridColumn: "1/-1",
         display: "grid",
         gridTemplateColumns: "subgrid",
         alignItems: "center",
-        "&:hover": { backgroundColor: theme.colors.backgroundButton },
       }}
     >
       {/* everything but the delete button, to click and drag */}

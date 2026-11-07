@@ -18,14 +18,14 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
 import { Translate } from "../Translate";
 import { ActiveIdContext } from "./ActiveIdContext";
 import { SortableRow } from "./SortableRow";
+import { tableHeader } from "../../styled-system/recipes";
 
 type Header = {
   id: string;
@@ -84,10 +84,6 @@ export const SortableTable = ({
     [items, setItems],
   );
 
-  const {
-    colors: { controlBorder },
-  } = useContext(ThemeContext);
-
   if (items.length === 0 && emptyMessage) {
     return emptyMessage;
   }
@@ -116,11 +112,11 @@ export const SortableTable = ({
             >
               {headers.length > 0 && (
                 <div
+                  className={tableHeader()}
                   css={{
                     gridColumn: "1/-1",
                     display: "grid",
                     gridTemplateColumns: "subgrid",
-                    borderBottom: `1px solid ${controlBorder}`,
                   }}
                 >
                   <div />

@@ -69,6 +69,24 @@ describe("catalogueOverridesCss", () => {
     expect(css).toContain(`.compact ${tab} { color: grey; }`);
   });
 
+  test("patches a variant rather than replacing it, so the element's other variants survive", () => {
+    const css = catalogueOverridesCss("teal", {
+      "row--interactive_true": { cursor: "crosshair" },
+      "badge--compound__tone_danger__weight_strong": { color: "red" },
+      card__title: { color: "blue" },
+    });
+    expect(css).toContain(
+      `.inv-row--interactive_true:where(${root}, ${root} *) { cursor: crosshair; }`,
+    );
+    expect(css).toContain("{ color: red; }");
+    expect(css).not.toMatch(/interactive_true[^{]*\{ all: revert-layer/);
+    expect(css).not.toMatch(/weight_strong[^{]*\{ all: revert-layer/);
+    // a slot is still replaced
+    expect(css).toMatch(
+      /card__title[^{]*\{ all: revert-layer; color: blue; \}/,
+    );
+  });
+
   test("leaves custom properties as they are", () => {
     expect(
       catalogueOverridesCss("teal", { badge: { "--x-y": "1" } }),

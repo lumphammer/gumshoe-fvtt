@@ -20,6 +20,7 @@ import { AbilitySlugEditQuickShockInvestigative } from "./AbilitySlugEditQuickSh
 import { BuildPointsBar } from "./BuildPointsBar";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
 import { Callout } from "../Callout";
+import { sectionHeading } from "../../styled-system/recipes";
 
 type AbilitiesAreaEditProps = {
   npcMode?: boolean;
@@ -149,14 +150,7 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
             )}
             {Object.keys(investigativeAbilities).map((cat) => (
               <Fragment key={cat}>
-                <h2
-                  css={{
-                    gridColumn: "1 / -1",
-                    borderWidth: "1px",
-                    borderStyle: "none none solid none",
-                    borderColor: theme.colors.text,
-                  }}
-                >
+                <h2 className={sectionHeading()} css={{ gridColumn: "1 / -1" }}>
                   {cat}
                 </h2>
                 {investigativeAbilities[cat].map(({ id, isQuickShock }) => {
@@ -225,14 +219,7 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
 
           {Object.keys(generalAbilities).map((cat) => (
             <Fragment key={cat}>
-              <h2
-                css={{
-                  gridColumn: "1 / -1",
-                  borderWidth: "1px",
-                  borderStyle: "none none solid none",
-                  borderColor: theme.colors.text,
-                }}
-              >
+              <h2 className={sectionHeading()} css={{ gridColumn: "1 / -1" }}>
                 {cat}
               </h2>
               {generalAbilities[cat].map(({ id }) => {

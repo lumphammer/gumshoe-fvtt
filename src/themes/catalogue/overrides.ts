@@ -14,9 +14,11 @@ export type OverrideStyle = CSSProperties & {
  * without the `inv-` prefix: `badge`, `badge--tone_danger`,
  * `badge--compound__tone_danger__weight_strong`, `card__title`.
  *
- * Each one **replaces** the default rule for that name: none of the default's
- * declarations survive, but the class's other parts (its variants, other
- * slots, states) still apply. See docs/theming.md.
+ * An override of a base or slot **replaces** the default rule for that name:
+ * none of the default's declarations survive, but the class's other parts
+ * (its variants, other slots, states) still apply. An override of a variant
+ * or compound variant **patches** it: its declarations go over the
+ * variant's. See docs/theming.md.
  *
  * Internal for now: not part of the published theme types.
  */
@@ -173,10 +175,15 @@ function serialize(
 /**
  * The CSS for a theme's overrides, scoped to that theme's roots.
  *
- * Each rule goes in the same cascade layer as the default it replaces, and
- * starts with `all: revert-layer`. Inside that layer, `revert-layer` means "as
- * if this layer had nothing for this element", so the default's declarations
- * are all dropped, and the override's own (later in the same rule) apply.
+ * Each rule goes in the same cascade layer as the default it replaces. An
+ * override of a base or slot starts with `all: revert-layer`: inside that
+ * layer, that means "as if this layer had nothing for this element", so the
+ * default's declarations are all dropped, and the override's own (later in
+ * the same rule) apply. An override of a variant or compound variant doesn't
+ * revert: all of a class's variants share one layer, so reverting it would
+ * drop the element's other variants too (a row that's both `interactive` and
+ * `divided`). A variant override patches, then: its declarations go over the
+ * variant's.
  *
  * The theme scope is on the class itself (`.inv-badge:where(<root>, <root>
  * *)`), so a nested rule can put context on either side of it, inside the
@@ -202,7 +209,8 @@ export function catalogueOverridesCss(
       return `@layer ${layerOf(name)} {\n${serialize(
         [`.inv-${name}:where(${scope}, ${scope} *)`],
         style,
-        true,
+        // a base or slot is replaced; a variant is patched (see above)
+        layerOf(name).endsWith(".base"),
       ).join("\n")}\n}`;
     })
     .join("\n");

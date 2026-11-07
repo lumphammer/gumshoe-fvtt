@@ -6,7 +6,8 @@ writing a component or a theme makes the same choice in the same place.
 
 The system is being built in steps (#1532). The palette exists, as custom
 properties on every themed root, and the catalogue has `badge`, `button`,
-`panel`, `callout`, `input`, `select`, `checkbox`, `toggle` and `tabs`. Everything else is still drawn by Emotion from V1 themes, and the
+`panel`, `callout`, `input`, `select`, `checkbox`, `toggle`, `tabs`,
+`sectionHeading`, `tableHeader`, `row`, `dragHandle` and `emptyState`. Everything else is still drawn by Emotion from V1 themes, and the
 two run side by side until every component is converted.
 
 ## The pieces
@@ -269,6 +270,32 @@ not.*
   seven `tab*Style` fields gets them all as `tabs` overrides
   (`src/themes/catalogue/fromV1.ts`), so V1 themes keep their tabs.
 
+### Lists: `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`
+
+Their CSS classes are kebab-case, like every class name (`inv-section-heading`,
+`inv-table-header`, `inv-drag-handle`, `inv-empty-state`): theme overrides
+take only `[a-z0-9_-]`.
+
+- **`sectionHeading`**: a heading that divides a sheet into sections
+  ("Academic", "Weapons"), with a `line` rule under it. Apply it to the
+  heading, or to the row holding the heading and its buttons. *Not for*
+  column headers.
+- **`tableHeader`**: the row of column headers over a list or table: bold,
+  with a `line` rule under it.
+- **`row`**: one item in a list or table. Variants:
+  - `interactive`: it opens or does something, so it's highlighted with a
+    wash of `feedback` under the pointer, on keyboard focus, or with
+    `data-highlighted` (for a row drawn as separate cells that tracks the
+    pointer itself, like an equipment row). Rows don't use
+    `data-interactive`: a glow round a row is too much.
+  - `alternate`: every other row of a long list, on `control`.
+  - `divided`: a `line` under it, for rows with no table around them (a
+    menu).
+- **`dragHandle`**: the grip to drag to reorder a list. `textMuted` on
+  `surfaceSolid`, faded until hovered, when it grows and turns `accent`.
+- **`emptyState`**: stands in for a list with nothing in it: dashed `line`
+  border, italic `textMuted`. *Not for* warnings (`callout`).
+
 Draw a class's parts with real elements (slots), not `::before`/`::after`:
 an override replaces the rule for the element its name selects, so a
 pseudo-element's defaults would survive it.
@@ -308,10 +335,19 @@ catalogue: {
 }
 ```
 
-An override **replaces** the default for that name: none of the default's
-declarations survive, so it has to say everything it wants. The class's other
-parts still apply on top: replacing `badge` keeps its tones and its pressed
-state, and every override keeps the state layers.
+An override of a class's base or a slot (`badge`, `tabs__tab`) **replaces**
+the default for that name: none of the default's declarations survive, so it
+has to say everything it wants. The class's other parts still apply on top:
+replacing `badge` keeps its tones and its pressed state, and every override
+keeps the state layers.
+
+An override of a variant or compound variant (`row--interactive_true`,
+`badge--compound__tone_danger__weight_strong`) **patches** it instead: its
+declarations go over the variant's, and the rest of the variant stays. All of
+a class's variants share one cascade layer, so replacing one would drop an
+element's other variants with it (a row that's `interactive` and `divided`
+would lose its divider). To take a declaration away, set it explicitly
+(`borderBottomStyle: "none"`).
 
 How: `CSSReset` renders the theme's overrides as a `<style>` inside the themed
 root (so it travels with the root into a detached window). The theme scope
@@ -319,8 +355,8 @@ is on the class itself, so a nested rule can put context on either side of
 it, inside the themed root or outside: `"input:checked + &"` becomes
 `input:checked + .inv-tabs__tab:where([data-inv-theme="x"], [data-inv-theme="x"] *)`.
 Each rule goes in
-the same cascade layer as the default it replaces, and starts with
-`all: revert-layer`, which drops everything that layer had for the element
+the same cascade layer as the default it replaces; a replacing one starts
+with `all: revert-layer`, which drops everything that layer had for the element
 (`src/themes/catalogue/overrides.ts`). The theme scope is inside `:where()`,
 so an override is exactly as specific as the default and wins by coming
 later. A class's state rules (`:is([aria-pressed=true])` and the like) are

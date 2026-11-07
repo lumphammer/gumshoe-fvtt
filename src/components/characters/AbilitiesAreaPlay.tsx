@@ -1,4 +1,4 @@
-import { Fragment, memo, useContext } from "react";
+import { Fragment, memo } from "react";
 
 import { liveItem } from "../../functions/liveItems";
 import { isAbilityItem } from "../../module/items/exports";
@@ -11,10 +11,10 @@ import {
   getPushPoolIn,
 } from "../../module/actors/abilitiesDerived";
 import { assertActiveCharacterActor } from "../../module/actors/types";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { AbilitySlugPlayNormal } from "./AbilitySlugPlayNormal";
 import { AbilitySlugPlayQuickShockInvestigative } from "./AbilitySlugPlayQuickShockInvestigative";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
+import { sectionHeading } from "../../styled-system/recipes";
 
 type AbilitiesAreaPlayProps = {
   flipLeftRight?: boolean;
@@ -30,7 +30,6 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
 }: AbilitiesAreaPlayProps) {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
-  const theme = useContext(ThemeContext);
   const showEmpty = useSettings((s) => s.showEmptyInvestigativeCategories);
 
   const layout = useActorAndSettings(actor, (snapshot, settings) => {
@@ -82,14 +81,7 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
           {Object.keys(investigativeAbilities).map((cat) =>
             showEmpty || investigativeAbilities[cat].length > 0 ? (
               <Fragment key={cat}>
-                <h2
-                  css={{
-                    gridColumn: "1 / -1",
-                    borderWidth: "1px",
-                    borderStyle: "none none solid none",
-                    borderColor: theme.colors.text,
-                  }}
-                >
+                <h2 className={sectionHeading()} css={{ gridColumn: "1 / -1" }}>
                   {cat}
                 </h2>
                 {investigativeAbilities[cat].map(({ id, isQuickShock }) => {
@@ -128,14 +120,7 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
         >
           {Object.keys(generalAbilities).map((cat) => (
             <Fragment key={cat}>
-              <h2
-                css={{
-                  gridColumn: "1 / -1",
-                  borderWidth: "1px",
-                  borderStyle: "none none solid none",
-                  borderColor: theme.colors.text,
-                }}
-              >
+              <h2 className={sectionHeading()} css={{ gridColumn: "1 / -1" }}>
                 {cat}
               </h2>
               {generalAbilities[cat].map(({ id }) => {
