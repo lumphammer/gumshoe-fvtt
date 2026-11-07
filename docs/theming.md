@@ -233,7 +233,9 @@ overflow, flex).
 - A V1 theme's `panelClass` is still added. Its `panelStylePrimary` becomes a
   `panel--depth_top` override, and `panelStyleSecondary` (or, without one,
   `panelStylePrimary`) a `panel--depth_nested` one, so the two stay
-  independent, as in V1 (`src/themes/catalogue/fromV1.ts`).
+  independent, as in V1 (`src/themes/catalogue/fromV1.ts`). A V1 panel
+  style replaced the panel's background, but a variant override patches, so
+  one without a background of its own gets `backgroundColor: transparent`.
 - A panel that's also a grid of fields takes `inputGridStyle` rather than
   wrapping an `InputGrid`, so it stays one element.
 
@@ -276,16 +278,15 @@ not.*
   ink: 40% of its opacity on a light theme, whose pale surface is close to
   the wallpaper, and 80% on a dark one, where more would make the tabs
   vanish. `light-dark()` picks by the `color-scheme` that `polarity` sets.
-  Unselected tabs are `data-interactive`. The defaults are plain CSS in
-  `tabDefaults.ts`, which the recipe and V1's override share.
+  Unselected tabs are `data-interactive`.
 - `content` is `surface`, owns the padding, and its children are nested, so
   a `Panel` in a tab is `nested`.
-- A V1 theme's `tabClass` is still added, and a seed that sets any of the
-  seven `tab*Style` fields gets them all as `tabs` overrides
-  (`src/themes/catalogue/fromV1.ts`), so V1 themes keep their tabs. A seed
-  that sets none gets a `tabs__tab` override that's the default with V1's
-  unselected background, `surfaceNested`: V1's `backgroundSecondary` is
-  "used for inactive tabs", so V1 themes chose it with that in mind.
+- A V1 theme's `tabClass` is still added, and its seven `tab*Style` fields
+  become `tabs` overrides (`src/themes/catalogue/fromV1.ts`), so V1 themes
+  keep their tabs. `themeFactory` fills in the fields a seed leaves out, and
+  those V1 defaults become overrides too: a V1 theme gets V1's default tabs
+  (`accent` ink, unselected ones on `backgroundSecondary`, which V1 says is
+  "used for inactive tabs"), not the catalogue's.
 
 ### Lists: `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`
 
@@ -353,13 +354,14 @@ carries `data-inv-theme` and the palette's custom properties: the `body` text
 style, `text` ink, `accent` for native controls, and the wallpaper. `size`:
 `large` (a full sheet) and `small` (a small window) are on `wallpaper`;
 `none` (a themed area inside something else) is transparent. Padding and
-height are layout, in `CSSReset`.
+height are layout, but they're in the `size` variants too, so a V1 root
+style can still set them.
 
 *Expected override:* a theme's backdrop goes in its `size` variants. A V1
 seed's `largeSheetRootStyle` and `smallSheetRootStyle` become
 `sheet-root--size_large` and `sheet-root--size_small` overrides, which patch
-the variants, as V1 spread them over the defaults; their `padding` and
-`height`, if any, go in the root's inline style instead.
+the variants, as V1 spread them over the defaults, padding and height
+included.
 
 ### `appFrame`
 
@@ -415,17 +417,19 @@ theme can style one category's cards: `&[data-category="x"]` in a `card__root`
 override, `[data-category="x"] &` in the others. *`root` is an expected
 override.*
 
-A V1 seed that styles its cards gets an override of each slot: its
-`themeFactory` style (the default, or the seed's `cards.base` style for that
-part, replacing it whole). Each of its `cards.categories` becomes a rule of
+A V1 theme gets an override of each slot: its `themeFactory` style (V1's
+default, or the seed's `cards.base` style for that part, replacing it
+whole). Each of its `cards.categories` becomes a rule of
 its own with the category's style spread over the base, and the base rule
 leaves those categories' cards out, so a category's style wins as it did in
 V1, `!important` and nested rules included. The contexts are in `:where()`,
 so both rules are as specific as the plain class. Any style key works: it's
 hex-escaped in the attribute selector. A card in a card array is clickable
-(`data-interactive`), so it gets the `hoverFeedback` glow; a V1 seed's
+(`data-interactive`), so it gets the `hoverFeedback` glow; a V1 theme's
 `hoverStyle` (the base's, then its category's over it) becomes a `:hover`
-rule in its `card__root` override, for cards in an array.
+rule in its `card__root` override, for cards in an array. The glow's
+`box-shadow` comes after it, so it wins over one in a `hoverStyle`, such as
+V1's default glow, which is close to it.
 `cards.area` (the spacing between cards) is still read by `CardArray`.
 
 ### Surfaces: `surface`, `floating`, `partyCell`
@@ -485,9 +489,8 @@ takes actors dragged from Foundry's sidebar), and `over` from `dragover` to
 
 ## Theme overrides
 
-A theme can replace any catalogue class, variant or slot. `ThemeV1` has an
-internal `catalogue` field for this (not in the published seed type until the
-new theme format settles), keyed by the class name without `inv-`:
+A theme can replace any catalogue class, variant or slot. The overrides live
+in `ThemeV1`'s `catalogue` field, keyed by the class name without `inv-`:
 
 ```ts
 catalogue: {
@@ -495,6 +498,14 @@ catalogue: {
   "badge--compound__tone_danger__weight_strong": { ... },
 }
 ```
+
+Where they come from, for now: `fromV1` makes them from a V1 theme's styles,
+and that's all. **Theme authors can't write overrides yet, and V1 seeds
+won't ever be able to**: that comes with ThemeV2 (#1533). Until then, the e2e
+tests use a temporary back door in `themeFactory`: a seed object can carry an
+untyped `catalogue` field, whose overrides go over `fromV1`'s. It's not in
+`ThemeSeedV1`, it's not a feature, and nothing but those tests should use
+it. It goes away when the tests can install a ThemeV2 theme.
 
 An override of a class's base or a slot (`badge`, `tabs__tab`) **replaces**
 the default for that name: none of the default's declarations survive, so it
@@ -526,7 +537,12 @@ they're in.
 
 Override values are plain CSS text. Numbers get `px`, as in React's `style`,
 except for unitless properties and custom properties. Anything that could
-end its rule (`{`, `}`, `;`, a comment) is ignored, with a warning.
+end its rule (`{`, `}`, `;`, a comment, or a backslash escape, which could
+disguise one) is ignored, with a warning. Inside a quoted string or a
+`url()`, `;` and braces are fine. These checks are against mistakes, not a
+hostile theme: a theme is installed by a module's code, which can already
+add any CSS it likes, and a crafted selector such as `:is(&, .x)` can reach
+outside the themed root.
 
 ## The native world
 
@@ -596,8 +612,7 @@ layer beat everything in its sub-layers.
 - `system.states`: the state layers (`states.css`).
 - `system.utilities`: layout from `css()` at call sites.
 
-The themed root's padding and height are in its inline `style`, with the
-palette, so a V1 theme's root style can still set them. A V1 theme's `global`
+A V1 theme's `global`
 CSS (a string, or Emotion's serialised styles from a theme module) is a
 `<style>` in the root.
 

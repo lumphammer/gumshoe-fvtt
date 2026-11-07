@@ -56,7 +56,7 @@ const installTheme = (
         // reads the palette: the frame has to get it too
         appWindowStyle: { boxShadow: "0 0 0 4px var(--inv-accent)" },
         global: `.inv-tabs__content { outline: 3px dotted ${mark}; }`,
-        // internal: not in the published seed type
+        // a test-only back door until ThemeV2 (themeFactory), not a seed field
         catalogue: { input: { textDecorationColor: mark } },
       };
       CONFIG.Investigator!.installTheme(name, seed);
@@ -95,14 +95,19 @@ test("a detached sheet keeps its palette, catalogue classes, overrides and state
   const input = root.locator(".inv-input").first();
 
   const expectTheme = async (palette: typeof colors, mark: string) => {
-    // the palette and catalogue classes: selected tab accent on surface,
-    // the rest text, the content surface
+    // the palette and V1's tabs: accent ink, the selected tab on
+    // backgroundPrimary, the rest on backgroundSecondary, the content on
+    // backgroundPrimary
     await expect(selected()).toHaveCSS("color", palette.accent);
     await expect(selected()).toHaveCSS(
       "background-color",
       palette.backgroundPrimary,
     );
-    await expect(other().first()).toHaveCSS("color", palette.text);
+    await expect(other().first()).toHaveCSS("color", palette.accent);
+    await expect(other().first()).toHaveCSS(
+      "background-color",
+      palette.backgroundSecondary,
+    );
     await expect(content).toHaveCSS(
       "background-color",
       palette.backgroundPrimary,
@@ -120,12 +125,15 @@ test("a detached sheet keeps its palette, catalogue classes, overrides and state
   await expectTheme(colors, "rgb(0, 150, 0)");
 
   // it still renders in the new window, and styles follow: choosing another
-  // tab makes it the accented one
+  // tab makes it the selected one
   const next = other().first();
   const label = (await next.textContent())!;
   await next.click();
   await expect(selected()).toHaveText(label);
-  await expect(selected()).toHaveCSS("color", colors.accent);
+  await expect(selected()).toHaveCSS(
+    "background-color",
+    colors.backgroundPrimary,
+  );
 
   // state layers: hover feedback, and the focus ring
   await other().first().hover();

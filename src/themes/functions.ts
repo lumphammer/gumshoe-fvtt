@@ -42,16 +42,6 @@ export function createBasicTabStyle(colors: ThemeSeedV1["colors"]): CSSObject {
 }
 
 /**
- * The catalogue overrides from a seed's V1 styles, then its own (internal:
- * not in the published seed type).
- */
-function catalogueOf(seed: ThemeSeedV1, theme: ThemeV1): ThemeV1["catalogue"] {
-  const own = (seed as Pick<ThemeV1, "catalogue">).catalogue;
-  const all = { ...catalogueFromV1(seed, theme), ...own };
-  return Object.keys(all).length > 0 ? all : undefined;
-}
-
-/**
  * Turn a ThemeSeed (bare basics for defining a theme) into a fully usable
  * theme
  */
@@ -172,7 +162,14 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
     },
   };
 
-  final.catalogue = catalogueOf(seed, final);
+  // A temporary back door for the e2e tests, so they can install catalogue
+  // overrides that no V1 field can express, until ThemeV2 (#1533) gives
+  // themes a real way to. It is NOT a feature of V1 seeds, and V1 seeds
+  // won't get one: `ThemeSeedV1` doesn't have it, and nothing should use it
+  // but those tests. Remove it when they can use ThemeV2.
+  const { catalogue: testOverrides } = seed as ThemeSeedV1 &
+    Pick<ThemeV1, "catalogue">;
+  final.catalogue = { ...catalogueFromV1(final), ...testOverrides };
   return final;
 };
 

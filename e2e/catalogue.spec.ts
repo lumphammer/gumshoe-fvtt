@@ -41,7 +41,7 @@ test("a theme's badge override replaces the default but keeps tone, states and h
         backdropStyle: {},
       },
       colors,
-      // internal: not in the published seed type
+      // a test-only back door until ThemeV2 (themeFactory), not a seed field
       catalogue: {
         badge: { fontStyle: "italic", borderRadius: 0 },
         "badge--compound__tone_neutral__weight_subtle": {
@@ -99,7 +99,7 @@ test("a theme's badge override replaces the default but keeps tone, states and h
   await expect(badge).toHaveAttribute("aria-pressed", "true");
 });
 
-test("a panel's depth comes from where it sits, and V1 panel styles still apply", async ({
+test("a panel's depth comes from where it sits, and V1 panel and root styles still apply", async ({
   page,
 }) => {
   const primary = "rgb(0, 0, 200)";
@@ -109,7 +109,8 @@ test("a panel's depth comes from where it sits, and V1 panel styles still apply"
       CONFIG.Investigator!.installTheme("panelReviewTheme", {
         schemaVersion: "v1" as const,
         displayName: "Panel Review",
-        largeSheetRootStyle: {},
+        // a longhand: it has to beat the root's own padding
+        largeSheetRootStyle: { paddingTop: "30px" },
         logo: {
           frontTextElementStyle: {},
           rearTextElementStyle: {},
@@ -121,7 +122,8 @@ test("a panel's depth comes from where it sits, and V1 panel styles still apply"
           backgroundColor: primary,
           border: "3px solid rgb(0, 128, 0)",
         },
-        panelStyleSecondary: { backgroundColor: secondary },
+        // no background: in V1 that left the panel transparent
+        panelStyleSecondary: { border: `2px solid ${secondary}` },
       });
     },
     { colors, primary, secondary },
@@ -142,6 +144,10 @@ test("a panel's depth comes from where it sits, and V1 panel styles still apply"
     { actorId, revolverId },
   );
   const sheet = await openSheet(page, `Actor.${actorId}`);
+  await expect(sheet.locator("[data-inv-theme]").first()).toHaveCSS(
+    "padding-top",
+    "30px",
+  );
 
   // on the sheet: stats and pools, with the primary style
   const top = sheet.locator(".inv-panel--depth_top");
@@ -157,8 +163,9 @@ test("a panel's depth comes from where it sits, and V1 panel styles still apply"
   await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
   const attack = sheet.locator(".inv-panel--depth_nested");
   await expect(attack).toContainText(/Revolver/);
-  await expect(attack).toHaveCSS("background-color", secondary);
-  await expect(attack).toHaveCSS("border-top-width", "0px");
+  await expect(attack).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(attack).toHaveCSS("border-top-color", secondary);
+  await expect(attack).toHaveCSS("border-top-width", "2px");
   await expect(attack).toHaveCSS("display", "grid");
 });
 
@@ -311,7 +318,7 @@ test("controls: a checkbox's box can be replaced, check buttons work from the ke
           backdropStyle: {},
         },
         colors,
-        // internal: not in the published seed type
+        // a test-only back door until ThemeV2 (themeFactory), not a seed field
         catalogue: {
           checkbox__box: { background: "rgb(0, 160, 0)", width: "2em" },
         },
@@ -380,7 +387,7 @@ test("controls: a checkbox's box can be replaced, check buttons work from the ke
   await expect(rating).toHaveCSS("border-top-color", danger);
 });
 
-test("tabs: the selected one is accent on surface, the rest text on a fainter surface (V1 themes: surfaceNested), and V1 tab styles still apply", async ({
+test("tabs: V1 themes get V1's tabs, defaults and their own styles alike; the catalogue's own are text on a fainter surface", async ({
   page,
 }) => {
   const install = (name: string, extra: object) =>
@@ -425,8 +432,9 @@ test("tabs: the selected one is accent on surface, the rest text on a fainter su
     "background-color",
     colors.backgroundPrimary,
   );
-  await expect(other().first()).toHaveCSS("color", colors.text);
-  // a V1 theme's unselected tabs are on backgroundSecondary, as in V1
+  // a V1 theme without tab styles gets V1's default tabs: accent ink, and
+  // the unselected ones on backgroundSecondary
+  await expect(other().first()).toHaveCSS("color", colors.accent);
   await expect(other().first()).toHaveCSS(
     "background-color",
     colors.backgroundSecondary,
@@ -472,6 +480,7 @@ test("tabs: the selected one is accent on surface, the rest text on a fainter su
     colors.backgroundPrimary,
   );
   await expect(selected()).toHaveCSS("color", colors.accent);
+  await expect(other().first()).toHaveCSS("color", colors.text);
   // ...and 80% on a dark one
   await page.evaluate((id) => game.actors.get(id)!.sheet!.close(), actorId);
   await setSettings(page, { defaultThemeName: "tabsDarkTheme" });
@@ -510,8 +519,8 @@ test("lists: headings and column headers are ruled in line, interactive rows are
         backdropStyle: {},
       },
       colors,
-      // internal: not in the published seed type. A variant override
-      // patches: the highlight stays
+      // a test-only back door until ThemeV2 (themeFactory), not a seed
+      // field. A variant override patches: the highlight stays
       catalogue: { "row--interactive_true": { cursor: "crosshair" } },
     };
     CONFIG.Investigator!.installTheme("listsReviewTheme", seed);
