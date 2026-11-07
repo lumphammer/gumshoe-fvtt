@@ -10,6 +10,7 @@ import { useSettings } from "../../hooks/useSettings";
 import { Translate } from "../Translate";
 import { AttackTargets } from "./AttackTargets";
 import { DiceTerms } from "./DiceTerms";
+import { css, cx } from "../../styled-system/css";
 
 const fireModeText: Record<FireMode, string> = {
   single: "FireModeSingle",
@@ -61,42 +62,45 @@ export const AttackCard = React.memo(
     return (
       <>
         <div
-          className="dice-roll"
-          css={{
-            position: "relative",
-            display: "grid",
-            gridTemplateColumns: "max-content 1fr",
-            gridTemplateRows: "max-content minmax(0, max-content) max-content",
-            gridTemplateAreas:
-              '"image headline" ' +
-              '"image hit-terms" ' +
-              '"image hit-body" ' +
-              '"image damage-terms" ' +
-              '"image damage-body" ',
-            alignItems: "center",
-          }}
+          className={cx(
+            "dice-roll",
+            css({
+              position: "relative",
+              display: "grid",
+              gridTemplateColumns: "max-content 1fr",
+              gridTemplateRows:
+                "max-content minmax(0, max-content) max-content",
+              gridTemplateAreas:
+                '"image headline" ' +
+                '"image hit-terms" ' +
+                '"image hit-body" ' +
+                '"image damage-terms" ' +
+                '"image damage-body" ',
+              alignItems: "center",
+            }),
+          )}
         >
           {/* IMAGE */}
           <div
-            css={{
+            className={css({
               height: "4em",
               width: "4em",
               gridArea: "image",
-              backgroundImage: `url(${img})`,
               backgroundSize: "cover",
               backgroundRepeat: "no-repeat",
               backgroundPosition: "center",
               transform: "scale(0.9) rotate(-5deg)",
-              boxShadow: "0 0 0.5em black",
+              boxShadow: "[0 0 0.5em black]",
               marginRight: "1em",
               alignSelf: "start",
-            }}
+            })}
+            style={{ backgroundImage: `url(${img})` }}
           />
           {/* HEADLINE */}
           <div
-            css={{
+            className={css({
               gridArea: "headline",
-            }}
+            })}
           >
             <b>
               {header ? (
@@ -126,9 +130,9 @@ export const AttackCard = React.memo(
           {/* HIT TERMS */}
 
           <div
-            css={{
+            className={css({
               gridArea: "hit-terms",
-            }}
+            })}
           >
             <Translate>Hit roll</Translate>
             {": "}
@@ -137,10 +141,12 @@ export const AttackCard = React.memo(
           </div>
           {/* HIT RESULT */}
           <a
-            className="dice-total"
-            css={{
-              gridArea: "hit-body",
-            }}
+            className={cx(
+              "dice-total",
+              css({
+                gridArea: "hit-body",
+              }),
+            )}
           >
             {hitRoll.total}
           </a>
@@ -148,9 +154,9 @@ export const AttackCard = React.memo(
           {/* DAMAGE TERMS */}
 
           <div
-            css={{
+            className={css({
               gridArea: "damage-terms",
-            }}
+            })}
           >
             <Translate>Damage</Translate>
             {": "}
@@ -159,16 +165,18 @@ export const AttackCard = React.memo(
           </div>
           {/* DAMAGE RESULT */}
           <a
-            className="dice-total"
-            css={{
-              gridArea: "damage-body",
-            }}
+            className={cx(
+              "dice-total",
+              css({
+                gridArea: "damage-body",
+              }),
+            )}
           >
             {damageRoll.total}
           </a>
         </div>
         {isShotDry && (
-          <div css={{ marginTop: "0.3em" }}>
+          <div className={css({ marginTop: "0.3em" })}>
             <i className="fas fa-exclamation-circle" />{" "}
             <b>
               <Translate>Shot dry</Translate>!
@@ -177,7 +185,7 @@ export const AttackCard = React.memo(
           </div>
         )}
         {weaponJammed && (
-          <div css={{ marginTop: "0.3em" }}>
+          <div className={css({ marginTop: "0.3em" })}>
             <i className="fas fa-exclamation-circle" />{" "}
             <b>
               <Translate>Jammed</Translate>!

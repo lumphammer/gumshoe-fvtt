@@ -7,6 +7,7 @@ import { DialogV2 } from "../../fvtt-exports";
 import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { localize } from "./functions";
+import { css, cx } from "../../styled-system/css";
 
 export const EncounterNav = memo(
   ({
@@ -30,23 +31,25 @@ export const EncounterNav = memo(
         {game.user?.isGM && (
           <>
             <button
-              className="inline-control icon fa-solid fa-plus"
-              css={{
-                minHeight: "var(--button-size)",
-                paddingLeft: "1em",
-                paddingRight: "1em",
-              }}
+              className={cx(
+                "inline-control icon fa-solid fa-plus",
+                css({
+                  minHeight: "var(--button-size)",
+                  paddingLeft: "1em",
+                  paddingRight: "1em",
+                }),
+              )}
               data-action="createCombat"
               data-tooltip
               aria-label="Create Encounter"
               title={localize("COMBAT.Create")}
             />
             <NativeDropdownMenu
-              css={{
+              className={css({
                 minHeight: "var(--button-size)",
                 paddingLeft: "0.1em",
                 paddingRight: "0.1em",
-              }}
+              })}
               label={<FaChevronDown />}
             >
               <NativeMenuItem
@@ -87,14 +90,16 @@ export const EncounterNav = memo(
             />
           )}
           <div
-            className="encounter-count"
-            css={{
-              // https://github.com/foundryvtt/foundryvtt/issues/12872
-              color: "var(--color-text-secondary)",
-            }}
+            className={cx(
+              "encounter-count",
+              css({
+                // https://github.com/foundryvtt/foundryvtt/issues/12872
+                color: "var(--color-text-secondary)",
+              }),
+            )}
           >
             <span className="value">
-              <Icon css={{ verticalAlign: "middle" }} />{" "}
+              <Icon className={css({ verticalAlign: "middle" })} />{" "}
               {(combatIndex + 1).toString()}
             </span>
           </div>

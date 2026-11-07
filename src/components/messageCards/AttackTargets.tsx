@@ -36,6 +36,7 @@ import { Translate } from "../Translate";
 import type { TargetView } from "./useAttackSnapshots";
 import { useResolveOptions, useTargetViews } from "./useAttackSnapshots";
 import { WalkingFireActions } from "./WalkingFireActions";
+import { css } from "../../styled-system/css";
 
 /** how long to wait for the GM to apply damage before re-enabling buttons */
 const gmRequestTimeoutMs = 5000;
@@ -203,14 +204,14 @@ const AttackTargetRow = ({
     )
   ) : isApplied ? (
     <div
-      css={{
+      className={css({
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
         gap: "0.3em",
         alignItems: "center",
-      }}
+      })}
     >
-      <span css={{ textAlign: "center" }}>
+      <span className={css({ textAlign: "center" })}>
         <i className="fas fa-check" /> <Translate>Applied</Translate>
       </span>
       {canAct && (
@@ -231,26 +232,26 @@ const AttackTargetRow = ({
 
   return (
     <div
-      css={{
+      className={css({
         padding: "0.4em 0",
         borderTop: "1px solid #0003",
-        opacity: exists ? 1 : 0.6,
-      }}
+      })}
+      style={{ opacity: exists ? 1 : 0.6 }}
     >
       {/* HEADER */}
       <div
-        css={{
+        className={css({
           display: "grid",
           gridTemplateColumns: "2em 1fr max-content",
           columnGap: "0.5em",
           alignItems: "center",
           marginBottom: "0.3em",
-        }}
+        })}
       >
         <img
           src={target.img}
           alt=""
-          css={{ width: "2em", height: "2em", border: "none" }}
+          className={css({ width: "2em", height: "2em", border: "none" })}
         />
         <div>
           <b>{shownName}</b>
@@ -278,7 +279,7 @@ const AttackTargetRow = ({
 
       {/* DETAILS */}
       <div
-        css={{
+        className={css({
           display: "grid",
           gridTemplateColumns: "max-content 1fr",
           columnGap: "0.75em",
@@ -288,7 +289,7 @@ const AttackTargetRow = ({
           "& > .label": {
             opacity: 0.75,
           },
-        }}
+        })}
       >
         <span className="label">
           <Translate>Cover</Translate>
@@ -301,7 +302,7 @@ const AttackTargetRow = ({
               aria-label={getTranslated("CoverForTokenName", {
                 TokenName: shownName,
               })}
-              css={{ width: "100%" }}
+              className={css({ width: "100%" })}
             >
               {(Object.keys(coverText) as Cover[]).map((cover) => (
                 <option key={cover} value={cover}>
@@ -346,7 +347,7 @@ const AttackTargetRow = ({
                   onKeyDown={(e) => {
                     if (e.key === "Enter") e.currentTarget.blur();
                   }}
-                  css={{ width: "4em" }}
+                  className={css({ width: "4em" })}
                 />
               ) : (
                 resolved.armor
@@ -393,7 +394,10 @@ const AttackTargetRow = ({
                   aria-label={getTranslated("ShotDryChooseTarget", {
                     TokenName: shownName,
                   })}
-                  css={{ margin: "0 0.4em 0 0", verticalAlign: "middle" }}
+                  className={css({
+                    margin: "0 0.4em 0 0",
+                    verticalAlign: "middle",
+                  })}
                 />
               )}
               {resolved.shotDryExtraDice > 0 ? (
@@ -418,7 +422,7 @@ const AttackTargetRow = ({
                 // bullets hit), so show the ones we have so far
                 resolved.lethality ? (
                   target.damageRolls.map((r, i) => (
-                    <span key={i} css={{ display: "block" }}>
+                    <span key={i} className={css({ display: "block" })}>
                       <Translate values={{ Die: String(r.die) }}>
                         LethalityDieDie
                       </Translate>
@@ -432,7 +436,7 @@ const AttackTargetRow = ({
                 // no Health to resolve against, so just show what each
                 // bullet rolled
                 resolved.instances.map((instance, i) => (
-                  <span key={i} css={{ display: "block" }}>
+                  <span key={i} className={css({ display: "block" })}>
                     {resolved.bulletCount > 1 && (
                       <>
                         <Translate values={{ N: String(instance.bullet) }}>
@@ -452,7 +456,7 @@ const AttackTargetRow = ({
                 ))
               ) : damage && (resolved.lethality || damage.steps.length > 1) ? (
                 damage.steps.map((step, i) => (
-                  <span key={i} css={{ display: "block" }}>
+                  <span key={i} className={css({ display: "block" })}>
                     {resolved.bulletCount > 1 && (
                       <>
                         <Translate values={{ N: String(step.instance.bullet) }}>
@@ -513,7 +517,7 @@ const AttackTargetRow = ({
 
       {/* ACTION */}
       {resolved.isHit && action && (
-        <div css={{ marginTop: "0.4em" }}>{action}</div>
+        <div className={css({ marginTop: "0.4em" })}>{action}</div>
       )}
     </div>
   );
@@ -574,7 +578,7 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
     attack.targets.length > 0;
 
   return (
-    <div css={{ marginTop: "0.5em" }}>
+    <div className={css({ marginTop: "0.5em" })}>
       {attack.targets.map((target) => (
         <AttackTargetRow
           key={target.id}
@@ -591,7 +595,12 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
       {canAct &&
         isMultiTarget &&
         attack.targets.every((t) => t.applied === null) && (
-          <div css={{ paddingTop: "0.4em", borderTop: "1px solid #0003" }}>
+          <div
+            className={css({
+              paddingTop: "0.4em",
+              borderTop: "1px solid #0003",
+            })}
+          >
             <button type="button" onClick={onAddTargets}>
               <i className="fas fa-crosshairs" />{" "}
               <Translate>Add targets</Translate>
@@ -604,7 +613,12 @@ export const AttackTargets = ({ msg }: AttackTargetsProps) => {
         attack.targets.length <= 1 &&
         !attack.targets.some((t) => t.walked) &&
         attack.targets.every((t) => t.applied === null) && (
-          <div css={{ paddingTop: "0.4em", borderTop: "1px solid #0003" }}>
+          <div
+            className={css({
+              paddingTop: "0.4em",
+              borderTop: "1px solid #0003",
+            })}
+          >
             <button type="button" onClick={onSetTarget}>
               <i className="fas fa-crosshairs" />{" "}
               <Translate>

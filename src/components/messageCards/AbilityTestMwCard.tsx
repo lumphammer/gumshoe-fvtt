@@ -8,6 +8,7 @@ import { DiceTerms } from "./DiceTerms";
 import { MwButton } from "./MwButton";
 import { MwCostSlug } from "./MwCostSlug";
 import type { MWResult } from "./types";
+import { css, cx } from "../../styled-system/css";
 
 interface AbilityTestMwCardProps {
   msg: ChatMessage;
@@ -87,21 +88,23 @@ export const AbilityTestMwCard = React.memo(
 
     return (
       <div
-        className="dice-roll"
-        css={{
-          position: "relative",
-          display: "grid",
-          gridTemplateColumns: "1fr",
-          gridTemplateRows: "max-content minmax(0, max-content) max-content",
-          gridTemplateAreas: '"headline" ' + '"pool" ' + '"body" ',
-          alignItems: "center",
-        }}
+        className={cx(
+          "dice-roll",
+          css({
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            gridTemplateRows: "max-content minmax(0, max-content) max-content",
+            gridTemplateAreas: '"headline" ' + '"pool" ' + '"body" ',
+            alignItems: "center",
+          }),
+        )}
       >
         {/* HEADLINE */}
         <div
-          css={{
+          className={css({
             gridArea: "headline",
-          }}
+          })}
         >
           <b>
             <a onClick={onClickAbilityName}>
@@ -127,9 +130,9 @@ export const AbilityTestMwCard = React.memo(
         </div>
         {/* POOL */}
         <div
-          css={{
+          className={css({
             gridArea: "pool",
-          }}
+          })}
         >
           <Translate>Pool</Translate>: {pool}
           {boonLevyFactor}
