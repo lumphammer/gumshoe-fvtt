@@ -582,7 +582,8 @@ test("text: element defaults and the text classes take the palette", async ({
   await expect(label).toHaveCSS("text-transform", "uppercase");
 
   // links are `link` (from the V1 accent)
-  const link = sheet.locator("a").filter({ hasText: /\S/ }).first();
+  // a plain link (not one with a class of its own, like a pool's pips)
+  const link = sheet.locator("a:not([class*=inv-])").filter({ hasText: /\S/ }).first();
   await expect(link).toHaveCSS("color", colors.accent);
 
   // mutedText: the empty card list
