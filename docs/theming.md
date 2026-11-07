@@ -8,7 +8,7 @@ The system is being built in steps (#1532). The palette exists, as custom
 properties on every themed root, and the catalogue has `badge`, `button`,
 `panel`, `callout`, `input`, `select`, `checkbox`, `toggle`, `tabs`,
 `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`,
-`displayText`, `mutedText`, `outcome`, `sheetRoot` and `logo`, plus
+`displayText`, `mutedText`, `outcome`, `sheetRoot`, `logo` and `card`, plus
 element defaults. Everything else is still drawn by Emotion from V1 themes, and the
 two run side by side until every component is converted.
 
@@ -370,6 +370,21 @@ Override values are serialized carefully: a list of fallbacks
 (`width: ["200px", "1lh"]`) becomes one declaration each, and a `<` inside a
 quoted string (an inline SVG in a data URL) is escaped as `\3c `, so it
 can't end the `<style>`.
+
+### `card`
+
+A card (Cards rules), applied by `CardDisplay`. Slots: `root`, `supertitle`,
+`title`, `subtitle`, `description`, `effect`. The root is on `surfaceSolid`
+with a `line` border. It has `data-category` (the card's style key), so a
+theme can style one category's cards: `&[data-category="x"]` in a `card__root`
+override, `[data-category="x"] &` in the others. *`root` is an expected
+override.*
+
+A V1 seed's `cards.base` styles become overrides of the matching slots, each
+starting from that slot's defaults (`cardDefaults.ts`), and its
+`cards.categories` become those nested rules. Style keys that aren't plain
+words (`[\w-]+`) are skipped, since they go in an attribute selector.
+`cards.area` (the spacing between cards) is still read by `CardArray`.
 
 Draw a class's parts with real elements (slots), not `::before`/`::after`:
 an override replaces the rule for the element its name selects, so a

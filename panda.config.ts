@@ -5,6 +5,7 @@ import { defineConfig } from "@pandacss/dev";
 import { badge } from "./src/themes/catalogue/badge";
 import { button } from "./src/themes/catalogue/button";
 import { callout } from "./src/themes/catalogue/callout";
+import { card } from "./src/themes/catalogue/card";
 import { checkbox } from "./src/themes/catalogue/checkbox";
 import { input } from "./src/themes/catalogue/input";
 import {
@@ -122,7 +123,7 @@ export default defineConfig({
       sheetRoot,
       tableHeader,
     },
-    slotRecipes: { checkbox, logo, tabs, toggle },
+    slotRecipes: { card, checkbox, logo, tabs, toggle },
     tokens: {
       colors: Object.fromEntries(colorKeys.map((key) => [key, v(key)])),
       radii: { standard: v("radius") },
