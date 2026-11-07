@@ -99,7 +99,7 @@ test("a theme's badge override replaces the default but keeps tone, states and h
   await expect(badge).toHaveAttribute("aria-pressed", "true");
 });
 
-test("a panel's depth comes from where it sits, and V1 panel styles still apply", async ({
+test("a panel's depth comes from where it sits, and V1 panel and root styles still apply", async ({
   page,
 }) => {
   const primary = "rgb(0, 0, 200)";
@@ -109,7 +109,8 @@ test("a panel's depth comes from where it sits, and V1 panel styles still apply"
       CONFIG.Investigator!.installTheme("panelReviewTheme", {
         schemaVersion: "v1" as const,
         displayName: "Panel Review",
-        largeSheetRootStyle: {},
+        // a longhand: it has to beat the root's own padding
+        largeSheetRootStyle: { paddingTop: "30px" },
         logo: {
           frontTextElementStyle: {},
           rearTextElementStyle: {},
@@ -121,7 +122,8 @@ test("a panel's depth comes from where it sits, and V1 panel styles still apply"
           backgroundColor: primary,
           border: "3px solid rgb(0, 128, 0)",
         },
-        panelStyleSecondary: { backgroundColor: secondary },
+        // no background: in V1 that left the panel transparent
+        panelStyleSecondary: { border: `2px solid ${secondary}` },
       });
     },
     { colors, primary, secondary },
@@ -142,6 +144,10 @@ test("a panel's depth comes from where it sits, and V1 panel styles still apply"
     { actorId, revolverId },
   );
   const sheet = await openSheet(page, `Actor.${actorId}`);
+  await expect(sheet.locator("[data-inv-theme]").first()).toHaveCSS(
+    "padding-top",
+    "30px",
+  );
 
   // on the sheet: stats and pools, with the primary style
   const top = sheet.locator(".inv-panel--depth_top");
@@ -157,8 +163,9 @@ test("a panel's depth comes from where it sits, and V1 panel styles still apply"
   await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
   const attack = sheet.locator(".inv-panel--depth_nested");
   await expect(attack).toContainText(/Revolver/);
-  await expect(attack).toHaveCSS("background-color", secondary);
-  await expect(attack).toHaveCSS("border-top-width", "0px");
+  await expect(attack).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(attack).toHaveCSS("border-top-color", secondary);
+  await expect(attack).toHaveCSS("border-top-width", "2px");
   await expect(attack).toHaveCSS("display", "grid");
 });
 

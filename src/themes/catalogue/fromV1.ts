@@ -60,18 +60,28 @@ function fromEmotion(style: CSSObject): OverrideStyle {
  * `panelStylePrimary`, else the secondary background. Each depth gets its own
  * override, so the two stay independent: the base keeps only the padding.
  */
+/**
+ * A V1 panel style replaced the panel's background, but a depth override
+ * patches the default's (a surface colour): one without a background of its
+ * own clears the default's colour.
+ */
+const ownBackground = (style: OverrideStyle): OverrideStyle =>
+  "background" in style || "backgroundColor" in style
+    ? style
+    : { ...style, backgroundColor: "transparent" };
+
 function panelsFromV1(seed: ThemeSeedV1): CatalogueOverrides {
   const { panelStylePrimary: primary, panelStyleSecondary: secondary } = seed;
   if (!primary && !secondary) return {};
+  const nested = secondary ?? primary;
   return {
     panel: { padding: "0.5em" },
     "panel--depth_top": primary
-      ? fromEmotion(primary)
+      ? ownBackground(fromEmotion(primary))
       : { background: `var(${paletteVar("surface")})` },
-    "panel--depth_nested": fromEmotion(
-      secondary ??
-        primary ?? { background: `var(${paletteVar("surfaceNested")})` },
-    ),
+    "panel--depth_nested": nested
+      ? ownBackground(fromEmotion(nested))
+      : { background: `var(${paletteVar("surfaceNested")})` },
   };
 }
 

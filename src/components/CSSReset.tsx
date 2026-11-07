@@ -26,23 +26,6 @@ export const CSSReset = ({
 }: CSSResetProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  // the root's padding and height are layout, but a V1 theme's root style
-  // could set them, over the defaults: keep that
-  const layout = useMemo(() => {
-    const v1 =
-      mode === "large"
-        ? theme.largeSheetRootStyle
-        : mode === "small"
-          ? theme.smallSheetRootStyle
-          : {};
-    const px = (value: unknown) =>
-      typeof value === "number" ? `${value}px` : (value as string | undefined);
-    return {
-      padding: px(v1.padding) ?? (mode === "none" ? "0" : "0.5em"),
-      height: px(v1.height) ?? "100%",
-    };
-  }, [mode, theme]);
-
   const slug = themeSlug(theme);
   const palette = useMemo(() => paletteStyle(paletteFromV1(theme)), [theme]);
 
@@ -81,7 +64,7 @@ export const CSSReset = ({
           ref={ref}
           className={cx(sheetRoot({ size: mode }), className)}
           data-inv-theme={slug}
-          style={{ ...palette, ...layout }}
+          style={palette}
         >
           {children}
           {global && <style>{global}</style>}

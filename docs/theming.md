@@ -233,7 +233,10 @@ overflow, flex).
 - A V1 theme's `panelClass` is still added. Its `panelStylePrimary` becomes a
   `panel--depth_top` override, and `panelStyleSecondary` (or, without one,
   `panelStylePrimary`) a `panel--depth_nested` one, so the two stay
-  independent, as in V1 (`src/themes/catalogue/fromV1.ts`).
+  independent, as in V1 (`src/themes/catalogue/fromV1.ts`). A V1 panel
+  style replaced the panel's background, so these start with
+  `background: none`: a variant override patches, and would otherwise keep
+  the default surface.
 - A panel that's also a grid of fields takes `inputGridStyle` rather than
   wrapping an `InputGrid`, so it stays one element.
 
@@ -353,13 +356,14 @@ carries `data-inv-theme` and the palette's custom properties: the `body` text
 style, `text` ink, `accent` for native controls, and the wallpaper. `size`:
 `large` (a full sheet) and `small` (a small window) are on `wallpaper`;
 `none` (a themed area inside something else) is transparent. Padding and
-height are layout, in `CSSReset`.
+height are layout, but they're in the `size` variants too, so a V1 root
+style can still set them.
 
 *Expected override:* a theme's backdrop goes in its `size` variants. A V1
 seed's `largeSheetRootStyle` and `smallSheetRootStyle` become
 `sheet-root--size_large` and `sheet-root--size_small` overrides, which patch
-the variants, as V1 spread them over the defaults; their `padding` and
-`height`, if any, go in the root's inline style instead.
+the variants, as V1 spread them over the defaults, padding and height
+included.
 
 ### `appFrame`
 
@@ -526,7 +530,12 @@ they're in.
 
 Override values are plain CSS text. Numbers get `px`, as in React's `style`,
 except for unitless properties and custom properties. Anything that could
-end its rule (`{`, `}`, `;`, a comment) is ignored, with a warning.
+end its rule (`{`, `}`, `;`, a comment, or a backslash escape, which could
+disguise one) is ignored, with a warning. Inside a quoted string or a
+`url()`, `;` and braces are fine. These checks are against mistakes, not a
+hostile theme: a theme is installed by a module's code, which can already
+add any CSS it likes, and a crafted selector such as `:is(&, .x)` can reach
+outside the themed root.
 
 ## The native world
 
@@ -596,8 +605,7 @@ layer beat everything in its sub-layers.
 - `system.states`: the state layers (`states.css`).
 - `system.utilities`: layout from `css()` at call sites.
 
-The themed root's padding and height are in its inline `style`, with the
-palette, so a V1 theme's root style can still set them. A V1 theme's `global`
+A V1 theme's `global`
 CSS (a string, or Emotion's serialised styles from a theme module) is a
 `<style>` in the root.
 

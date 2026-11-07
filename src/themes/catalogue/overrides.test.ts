@@ -57,6 +57,24 @@ describe("catalogueOverridesCss", () => {
     );
   });
 
+  test("leaves an & in a quoted attribute value alone", () => {
+    const css = catalogueOverridesCss("teal", {
+      badge: { '&[data-mark="a&b"]': { color: "red" } },
+    });
+    expect(css).toContain(`${scope}[data-mark="a&b"] { color: red; }`);
+    // nor an escaped one
+    expect(
+      catalogueOverridesCss("teal", {
+        badge: { "& .a\\&b": { color: "red" } },
+      }),
+    ).toContain(`${scope} .a\\&b { color: red; }`);
+    // an escaped quote doesn't end the string, so its comma doesn't split
+    const escaped = catalogueOverridesCss("teal", {
+      badge: { '&[data-mark="a\\"],&b"]': { color: "red" } },
+    });
+    expect(escaped).toContain(`${scope}[data-mark="a\\"],&b"] { color: red; }`);
+  });
+
   test("lets context go either side of the class, in the root or outside it", () => {
     const css = catalogueOverridesCss("teal", {
       tabs__tab: {
@@ -138,6 +156,7 @@ describe("isSafeValue", () => {
     "url(data:image/png;base64,AAAA)",
     "url('a{b}.svg')",
     '"a; b"',
+    '"\\201C"',
     "1px solid red",
     "linear-gradient(to top, #fff 0%, #000 10%)",
   ])("allows %s", (value) => {
@@ -153,6 +172,19 @@ describe("isSafeValue", () => {
     "url(open",
     '"</style>"',
     '"a\nb"',
+    // CSS ends a string at any newline
+    '"a\rb"',
+    '"a\fb"',
+    // a quote in an unquoted url makes a bad url, which ends at the next ")"
+    'url(x";) } } .victim { color: red; } /*")',
+    "url(x(\\)) } .victim {",
+    // an escape outside a string: an escaped quote, or a disguised url(
+    'a\\"; } .victim { color: red; } "',
+    '\\75rl(x";) } } .victim { color: red; } /*")',
+    // `xurl(` is an ordinary function, so its comment is a comment
+    'xurl(/*) "*/) ; } } .victim { color: red; } /*" url(*/)',
+    // CSS doesn't count a non-breaking space as whitespace
+    'url(\u00a0";) } } .victim { color: red; } /*")',
   ])("rejects %s", (value) => {
     expect(isSafeValue(value)).toBe(false);
   });

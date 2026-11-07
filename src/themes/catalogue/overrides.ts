@@ -152,8 +152,8 @@ export function escapeStrings(text: string) {
  * braces and comment markers are allowed inside a quoted string or a
  * `url(...)`, where they can't end anything: a data URL backdrop
  * (`url("data:image/svg+xml;base64,...")`) is fine. Strings must close on
- * their line, `url(` must close, and `</` (which would end the `<style>`) is
- * never allowed.
+ * their line, `url(` must close, a backslash is allowed only in a quoted
+ * string, and `</` (which would end the `<style>`) is never allowed.
  */
 export function isSafeValue(text: string) {
   if (text.includes("</")) return false;
@@ -161,17 +161,27 @@ export function isSafeValue(text: string) {
   let inUrl = false;
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
-    if (quote) {
+    if (inUrl) {
+      // CSS reads a quote, "(" or escape in an unquoted url as a bad url,
+      // which can end anywhere: refuse them
+      if (char === ")") inUrl = false;
+      else if (/["'(\\]/.test(char)) return false;
+    } else if (quote) {
       if (char === "\\") i++;
-      else if (char === "\n") return false;
+      // CSS ends a string at any newline
+      else if (/[\n\r\f]/.test(char)) return false;
       else if (char === quote) quote = null;
+    } else if (char === "\\") {
+      // an escape outside a string can disguise anything (`\\75rl(` is
+      // `url(`), and a theme's value has no need of one
+      return false;
     } else if (char === '"' || char === "'") {
       quote = char;
-    } else if (inUrl) {
-      if (char === ")") inUrl = false;
-    } else if (/^url\($/i.test(text.slice(i - 3, i + 1))) {
+    } else if (
+      /(?:^|[^\w-])url\($/i.test(text.slice(Math.max(0, i - 4), i + 1))
+    ) {
       // an unquoted url(...) runs to its ")"; a quoted one is a string
-      inUrl = !/^\s*["']/.test(text.slice(i + 1));
+      inUrl = !/^[ \t\n\r\f]*["']/.test(text.slice(i + 1));
     } else if (/[{};]/.test(char) || text.startsWith("/*", i)) {
       return false;
     } else if (text.startsWith("*/", i)) {
@@ -187,7 +197,14 @@ export function splitSelectorList(list: string) {
   let depth = 0;
   let quote: string | null = null;
   let current = "";
-  for (const char of list) {
+  for (let i = 0; i < list.length; i++) {
+    const char = list[i];
+    if (char === "\\") {
+      // an escaped character, in a string or not, is just a character
+      current += char + (list[i + 1] ?? "");
+      i++;
+      continue;
+    }
     if (quote) {
       if (char === quote) quote = null;
     } else if (char === '"' || char === "'") {
@@ -206,11 +223,19 @@ export function splitSelectorList(list: string) {
   return [...parts, current].map((part) => part.trim());
 }
 
+/** `&` stands for the parent (not an escaped one, or one in a string). */
+const replaceParent = (part: string, parent: string) =>
+  part.replace(/\\.|(["'])(?:\\.|(?!\1)[^\\])*\1|&/g, (match) =>
+    match === "&" ? parent : match,
+  );
+
 /** `&` stands for the parent; anything else is a descendant. */
 const nest = (parents: string[], key: string) =>
   splitSelectorList(key).flatMap((part) =>
     parents.map((parent) =>
-      part.includes("&") ? part.replaceAll("&", parent) : `${parent} ${part}`,
+      replaceParent(part, "") !== part
+        ? replaceParent(part, parent)
+        : `${parent} ${part}`,
     ),
   );
 

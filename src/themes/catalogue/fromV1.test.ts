@@ -49,6 +49,8 @@ describe("catalogueFromV1", () => {
     });
   });
 
+  // V1's panel style replaced the background, so one without a background
+  // leaves the panel transparent
   test("a secondary panel style is for nested panels only", () => {
     expect(
       fromV1({
@@ -58,9 +60,25 @@ describe("catalogueFromV1", () => {
       }),
     ).toEqual({
       panel: { padding: "0.5em" },
-      "panel--depth_top": { border: "1px solid" },
-      "panel--depth_nested": { boxShadow: "0 0 1px" },
+      "panel--depth_top": {
+        border: "1px solid",
+        backgroundColor: "transparent",
+      },
+      "panel--depth_nested": {
+        boxShadow: "0 0 1px",
+        backgroundColor: "transparent",
+      },
     });
+  });
+
+  test("a panel style's own backgrounds keep their order", () => {
+    // the shorthand comes last, so it wins, as it did in V1
+    expect(
+      fromV1({
+        ...seed,
+        panelStylePrimary: { backgroundColor: "red", background: "blue" },
+      })["panel--depth_top"],
+    ).toEqual({ backgroundColor: "red", background: "blue" });
   });
 
   test("without a primary style, top panels keep the default surface", () => {
@@ -86,6 +104,7 @@ describe("catalogueFromV1", () => {
       "& > img": { width: ["1em", "1lh"] },
       "&:is(.a, .b) span": { color: "blue" },
       "@media (min-width: 40em)": { padding: 4 },
+      backgroundColor: "transparent",
     });
     const root = '[data-inv-theme="t"]';
     const scope = `.inv-panel--depth_nested:where(${root}, ${root} *)`;
