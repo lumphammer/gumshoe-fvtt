@@ -13,8 +13,8 @@ const dangerTint = (surface: "surface" | "surfaceNested") =>
  *
  * Variants: `depth` (`top` is `surface`, `nested` is `surfaceNested`), and
  * `solid`, for one that overlaps or scrolls over other content. Surfaces are
- * opaque, so it looks the same; it's there for a theme whose overrides make
- * surfaces translucent, to keep these ones opaque (as V1's do).
+ * expected to be opaque, so it looks the same; it's there for a theme whose
+ * surfaces are translucent, to keep these ones opaque (as V1's do).
  * Not for: a block of content (panel); something raised above the sheet
  * (floating).
  */
@@ -99,7 +99,7 @@ export const floating = defineRecipe({
  * Variants: `odd`, `zero` (nobody has it), `header`: the actors' names and
  * the abilities' names, stuck over the other cells as the grid scrolls. They
  * look the same as the others, as surfaces are expected to be opaque; the variant is there
- * for a theme whose overrides make surfaces translucent, to keep the headers
+ * for a theme whose surfaces are translucent, to keep the headers
  * opaque (as V1's do).
  */
 export const partyCell = defineRecipe({
