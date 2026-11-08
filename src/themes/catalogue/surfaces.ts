@@ -98,9 +98,9 @@ export const floating = defineRecipe({
  *
  * Variants: `odd`, `zero` (nobody has it), `header`: the actors' names and
  * the abilities' names, stuck over the other cells as the grid scrolls. They
- * look the same as the others, as surfaces are expected to be opaque; the variant is there
- * for a theme whose surfaces are translucent, to keep the headers
- * opaque (as V1's do).
+ * look the same as the others, as surfaces are expected to be opaque; the
+ * variant is there for a theme whose surfaces are translucent, to keep the
+ * headers opaque (as V1's do).
  */
 export const partyCell = defineRecipe({
   className: "inv-party-cell",
