@@ -234,9 +234,8 @@ overflow, flex).
   `panel--depth_top` override, and `panelStyleSecondary` (or, without one,
   `panelStylePrimary`) a `panel--depth_nested` one, so the two stay
   independent, as in V1 (`src/themes/catalogue/fromV1.ts`). A V1 panel
-  style replaced the panel's background, so these start with
-  `background: none`: a variant override patches, and would otherwise keep
-  the default surface.
+  style replaced the panel's background, but a variant override patches, so
+  one without a background of its own gets `backgroundColor: transparent`.
 - A panel that's also a grid of fields takes `inputGridStyle` rather than
   wrapping an `InputGrid`, so it stays one element.
 
@@ -279,16 +278,15 @@ not.*
   ink: 40% of its opacity on a light theme, whose pale surface is close to
   the wallpaper, and 80% on a dark one, where more would make the tabs
   vanish. `light-dark()` picks by the `color-scheme` that `polarity` sets.
-  Unselected tabs are `data-interactive`. The defaults are plain CSS in
-  `tabDefaults.ts`, which the recipe and V1's override share.
+  Unselected tabs are `data-interactive`.
 - `content` is `surface`, owns the padding, and its children are nested, so
   a `Panel` in a tab is `nested`.
-- A V1 theme's `tabClass` is still added, and a seed that sets any of the
-  seven `tab*Style` fields gets them all as `tabs` overrides
-  (`src/themes/catalogue/fromV1.ts`), so V1 themes keep their tabs. A seed
-  that sets none gets a `tabs__tab` override that's the default with V1's
-  unselected background, `surfaceNested`: V1's `backgroundSecondary` is
-  "used for inactive tabs", so V1 themes chose it with that in mind.
+- A V1 theme's `tabClass` is still added, and its seven `tab*Style` fields
+  become `tabs` overrides (`src/themes/catalogue/fromV1.ts`), so V1 themes
+  keep their tabs. `themeFactory` fills in the fields a seed leaves out, and
+  those V1 defaults become overrides too: a V1 theme gets V1's default tabs
+  (`accent` ink, unselected ones on `backgroundSecondary`, which V1 says is
+  "used for inactive tabs"), not the catalogue's.
 
 ### Lists: `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`
 
@@ -419,17 +417,19 @@ theme can style one category's cards: `&[data-category="x"]` in a `card__root`
 override, `[data-category="x"] &` in the others. *`root` is an expected
 override.*
 
-A V1 seed that styles its cards gets an override of each slot: its
-`themeFactory` style (the default, or the seed's `cards.base` style for that
-part, replacing it whole). Each of its `cards.categories` becomes a rule of
+A V1 theme gets an override of each slot: its `themeFactory` style (V1's
+default, or the seed's `cards.base` style for that part, replacing it
+whole). Each of its `cards.categories` becomes a rule of
 its own with the category's style spread over the base, and the base rule
 leaves those categories' cards out, so a category's style wins as it did in
 V1, `!important` and nested rules included. The contexts are in `:where()`,
 so both rules are as specific as the plain class. Any style key works: it's
 hex-escaped in the attribute selector. A card in a card array is clickable
-(`data-interactive`), so it gets the `hoverFeedback` glow; a V1 seed's
+(`data-interactive`), so it gets the `hoverFeedback` glow; a V1 theme's
 `hoverStyle` (the base's, then its category's over it) becomes a `:hover`
-rule in its `card__root` override, for cards in an array.
+rule in its `card__root` override, for cards in an array. The glow's
+`box-shadow` comes after it, so it wins over one in a `hoverStyle`, such as
+V1's default glow, which is close to it.
 `cards.area` (the spacing between cards) is still read by `CardArray`.
 
 ### Surfaces: `surface`, `floating`, `partyCell`

@@ -1,12 +1,8 @@
-import type {
-  CSSObject,
-  ThemeSeedV1,
-} from "@lumphammer/investigator-fvtt-types";
+import type { CSSObject } from "@lumphammer/investigator-fvtt-types";
 
 import { paletteVar } from "../palette";
 import type { ThemeV1 } from "../types";
 import { backdropForced, logoDefaults, measureForced } from "./logoDefaults";
-import { tabDefaults } from "./tabDefaults";
 import {
   type CatalogueOverrides,
   type OverrideStyle,
@@ -55,12 +51,6 @@ function fromEmotion(style: CSSObject): OverrideStyle {
 }
 
 /**
- * In V1, a panel style replaced the panel's background (the call site gave
- * the padding), and a secondary panel used `panelStyleSecondary`, else
- * `panelStylePrimary`, else the secondary background. Each depth gets its own
- * override, so the two stay independent: the base keeps only the padding.
- */
-/**
  * A V1 panel style replaced the panel's background, but a depth override
  * patches the default's (a surface colour): one without a background of its
  * own clears the default's colour.
@@ -70,8 +60,16 @@ const ownBackground = (style: OverrideStyle): OverrideStyle =>
     ? style
     : { ...style, backgroundColor: "transparent" };
 
-function panelsFromV1(seed: ThemeSeedV1): CatalogueOverrides {
-  const { panelStylePrimary: primary, panelStyleSecondary: secondary } = seed;
+/**
+ * In V1, a panel style replaced the panel's background (the call site gave
+ * the padding), and a secondary panel used `panelStyleSecondary`, else
+ * `panelStylePrimary`, else the secondary background. Each depth gets its own
+ * override, so the two stay independent: the base keeps only the padding.
+ * `themeFactory` has no default panel styles, so a theme without them gets
+ * the catalogue's panels, which look the same.
+ */
+function panelsFromV1(theme: ThemeV1): CatalogueOverrides {
+  const { panelStylePrimary: primary, panelStyleSecondary: secondary } = theme;
   if (!primary && !secondary) return {};
   const nested = secondary ?? primary;
   return {
@@ -85,37 +83,16 @@ function panelsFromV1(seed: ThemeSeedV1): CatalogueOverrides {
   };
 }
 
-const tabFields = [
-  "tabStyle",
-  "tabActiveStyle",
-  "tabSpacerStyle",
-  "tabContentStyle",
-  "tabWrappedStyle",
-  "tabWrappedActiveStyle",
-  "tabContentWrappedStyle",
-] as const;
-
 /**
  * In V1, a tab was `tabStyle` (with the display font and centred content
  * from the call site), with `tabActiveStyle` over it when selected in a row,
  * and `tabWrappedStyle` / `tabWrappedActiveStyle` over it in a grid; the
  * content had 0.5em padding from the call site, with `tabContentStyle` over
- * it, and `tabContentWrappedStyle` over that under a grid. A seed that sets
- * any of them gets all seven, as `themeFactory` filled them in. One that sets
- * none gets the default tab on V1's background.
+ * it, and `tabContentWrappedStyle` over that under a grid. `themeFactory`
+ * fills in all seven, so every V1 theme gets V1's tabs, its defaults
+ * included, and not the catalogue's.
  */
-function tabsFromV1(seed: ThemeSeedV1, theme: ThemeV1): CatalogueOverrides {
-  if (!tabFields.some((field) => seed[field])) {
-    // V1's default unselected tab was on `backgroundSecondary`, whose
-    // contract says it's "used for inactive tabs", so V1 themes chose it
-    // with that in mind. The catalogue's default is a fainter `surface`
-    return {
-      tabs__tab: {
-        ...tabDefaults,
-        background: `var(${paletteVar("surfaceNested")})`,
-      },
-    };
-  }
+function tabsFromV1(theme: ThemeV1): CatalogueOverrides {
   return {
     tabs__tab: {
       font: `var(${paletteVar("displayFont")})`,
@@ -130,6 +107,8 @@ function tabsFromV1(seed: ThemeSeedV1, theme: ThemeV1): CatalogueOverrides {
       "[data-wrapped] > input:checked + &": fromEmotion(
         theme.tabWrappedActiveStyle,
       ),
+      // V1's tabs dropped any hover glow on a disabled tab
+      "input:disabled + &:hover": { textShadow: "none" },
     },
     tabs__spacer: fromEmotion(theme.tabSpacerStyle),
     tabs__content: {
@@ -157,9 +136,9 @@ function sheetRootFromV1(theme: ThemeV1): CatalogueOverrides {
  * In V1, `appWindowStyle` went on the window around the sheet, over Foundry's
  * own look: the frame's `root` is empty by default, so it's that look.
  */
-function appFrameFromV1(seed: ThemeSeedV1): CatalogueOverrides {
-  return seed.appWindowStyle
-    ? { "app-frame__root": fromEmotion(seed.appWindowStyle) }
+function appFrameFromV1(theme: ThemeV1): CatalogueOverrides {
+  return theme.appWindowStyle
+    ? { "app-frame__root": fromEmotion(theme.appWindowStyle) }
     : {};
 }
 
@@ -227,11 +206,10 @@ const attributeValue = (key: string) =>
  * Their contexts are in `:where()`, so both are as specific as the plain
  * class. A card in a card array also had the hover style (the base's, then
  * its category's, over it) under the pointer: that's a `:hover` rule in the
- * root's. Only for a seed that styles its cards.
+ * root's. Every V1 theme gets them, `themeFactory`'s defaults included.
  */
-function cardsFromV1(seed: ThemeSeedV1, theme: ThemeV1): CatalogueOverrides {
-  const categories = Object.entries(seed.cards?.categories ?? {});
-  if (!seed.cards?.base && categories.length === 0) return {};
+function cardsFromV1(theme: ThemeV1): CatalogueOverrides {
+  const categories = Object.entries(theme.cards.categories);
   const keys = categories.map(([key]) => attributeValue(key));
   const anyCategory = keys.map((key) => `[data-category=${key}]`).join(", ");
   return Object.fromEntries(
@@ -274,20 +252,18 @@ function cardsFromV1(seed: ThemeSeedV1, theme: ThemeV1): CatalogueOverrides {
 }
 
 /**
- * The catalogue overrides a V1 seed's own styles become, so V1 themes keep
- * their look as their components are converted. `theme` is the seed as
- * `themeFactory` filled it in, for the V1 defaults of fields it left out.
+ * The catalogue overrides a V1 theme's styles become, so V1 themes keep their
+ * look as their components are converted. `theme` is the seed as
+ * `themeFactory` filled it in: V1's defaults for the fields a seed leaves out
+ * are part of the V1 contract too, so they become overrides as well.
  */
-export function catalogueFromV1(
-  seed: ThemeSeedV1,
-  theme: ThemeV1,
-): CatalogueOverrides {
+export function catalogueFromV1(theme: ThemeV1): CatalogueOverrides {
   return {
-    ...appFrameFromV1(seed),
+    ...appFrameFromV1(theme),
     ...sheetRootFromV1(theme),
     ...logoFromV1(theme),
-    ...cardsFromV1(seed, theme),
-    ...panelsFromV1(seed),
-    ...tabsFromV1(seed, theme),
+    ...cardsFromV1(theme),
+    ...panelsFromV1(theme),
+    ...tabsFromV1(theme),
   };
 }

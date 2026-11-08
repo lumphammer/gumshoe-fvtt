@@ -42,12 +42,11 @@ export function createBasicTabStyle(colors: ThemeSeedV1["colors"]): CSSObject {
 }
 
 /**
- * The catalogue overrides from a seed's V1 styles, then its own (internal:
+ * The catalogue overrides from a theme's V1 styles, then its own (internal:
  * not in the published seed type).
  */
-function catalogueOf(seed: ThemeSeedV1, theme: ThemeV1): ThemeV1["catalogue"] {
-  const own = (seed as Pick<ThemeV1, "catalogue">).catalogue;
-  const all = { ...catalogueFromV1(seed, theme), ...own };
+function catalogueOf(theme: ThemeV1): ThemeV1["catalogue"] {
+  const all = { ...catalogueFromV1(theme), ...theme.catalogue };
   return Object.keys(all).length > 0 ? all : undefined;
 }
 
@@ -172,7 +171,7 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
     },
   };
 
-  final.catalogue = catalogueOf(seed, final);
+  final.catalogue = catalogueOf(final);
   return final;
 };
 

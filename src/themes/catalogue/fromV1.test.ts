@@ -5,7 +5,6 @@ import { tealTheme } from "../tealTheme";
 import { themeFactory } from "../functions";
 import { catalogueFromV1 } from "./fromV1";
 import { catalogueOverridesCss } from "./overrides";
-import { tabDefaults } from "./tabDefaults";
 
 const seed = {
   ...tealTheme,
@@ -21,25 +20,25 @@ const seed = {
   cards: undefined,
 };
 
-/**
- * The mapping, without the sheet root, logo and tab (which every theme has).
- */
-const fromV1 = (seed: Parameters<typeof catalogueFromV1>[0]) =>
+const theme = themeFactory(seed);
+
+/** The panel overrides, from a theme. */
+const fromV1 = (theme: Parameters<typeof catalogueFromV1>[0]) =>
   Object.fromEntries(
-    Object.entries(catalogueFromV1(seed, tealTheme)).filter(
-      ([name]) => !/^(sheet-root|logo|app-frame|tabs__tab$)/.test(name),
+    Object.entries(catalogueFromV1(theme)).filter(([name]) =>
+      name.startsWith("panel"),
     ),
   );
 
 describe("catalogueFromV1", () => {
   test("nothing, when a seed has no panel styles", () => {
-    expect(fromV1(seed)).toEqual({});
+    expect(fromV1(theme)).toEqual({});
   });
 
   test("a primary panel style is for top panels, and nested ones without their own", () => {
     expect(
       fromV1({
-        ...seed,
+        ...theme,
         panelStylePrimary: { backgroundColor: "red", border: "1px solid" },
       }),
     ).toEqual({
@@ -54,7 +53,7 @@ describe("catalogueFromV1", () => {
   test("a secondary panel style is for nested panels only", () => {
     expect(
       fromV1({
-        ...seed,
+        ...theme,
         panelStylePrimary: { border: "1px solid" },
         panelStyleSecondary: { boxShadow: "0 0 1px" },
       }),
@@ -75,7 +74,7 @@ describe("catalogueFromV1", () => {
     // the shorthand comes last, so it wins, as it did in V1
     expect(
       fromV1({
-        ...seed,
+        ...theme,
         panelStylePrimary: { backgroundColor: "red", background: "blue" },
       })["panel--depth_top"],
     ).toEqual({ backgroundColor: "red", background: "blue" });
@@ -83,7 +82,7 @@ describe("catalogueFromV1", () => {
 
   test("without a primary style, top panels keep the default surface", () => {
     expect(
-      fromV1({ ...seed, panelStyleSecondary: { color: "red" } })[
+      fromV1({ ...theme, panelStyleSecondary: { color: "red" } })[
         "panel--depth_top"
       ],
     ).toEqual({ background: "var(--inv-surface)" });
@@ -91,7 +90,7 @@ describe("catalogueFromV1", () => {
 
   test("Emotion's pseudo-classes attach to the element, in selector lists too", () => {
     const overrides = fromV1({
-      ...seed,
+      ...theme,
       panelStyleSecondary: {
         ":hover, :focus-within": { color: "red" },
         "& > img": { width: ["1em", "1lh"] },
@@ -115,30 +114,35 @@ describe("catalogueFromV1", () => {
 });
 
 describe("tabs", () => {
-  test("the default tab on V1's background, when a seed has no tab styles", () => {
-    const overrides = catalogueFromV1(seed, tealTheme);
-    expect(overrides["tabs__tab"]).toEqual({
-      ...tabDefaults,
-      background: "var(--inv-surface-nested)",
+  test("a seed without tab styles gets V1's default tabs", () => {
+    const { colors } = tealTheme;
+    const overrides = catalogueFromV1(theme);
+    expect(overrides["tabs__tab"]).toMatchObject({
+      background: colors.backgroundSecondary,
+      color: colors.accent,
+      "&:hover": { textShadow: `0 0 0.3em ${colors.glow}` },
+      ":not([data-wrapped]) > input:checked + &": {
+        background: colors.backgroundPrimary,
+      },
+      "input:disabled + &:hover": { textShadow: "none" },
     });
-    expect(overrides["tabs__spacer"]).toBeUndefined();
-    expect(overrides["tabs__content"]).toBeUndefined();
+    expect(overrides["tabs__spacer"]).toEqual({ width: "0.5em" });
+    expect(overrides["tabs__content"]).toMatchObject({
+      backgroundColor: colors.backgroundPrimary,
+    });
   });
 
-  test("a seed's tab styles become the tabs slots, with V1's states", () => {
-    const overrides = catalogueFromV1(
-      { ...seed, tabStyle: { color: "red", ":hover": { color: "blue" } } },
-      {
-        ...tealTheme,
-        tabStyle: { color: "red", ":hover": { color: "blue" } },
-        tabActiveStyle: { background: "white" },
-        tabWrappedStyle: { borderRadius: "1em" },
-        tabWrappedActiveStyle: { background: "grey" },
-        tabSpacerStyle: { width: "1em" },
-        tabContentStyle: { border: "1px solid" },
-        tabContentWrappedStyle: { borderStyle: "dashed" },
-      },
-    );
+  test("a theme's tab styles become the tabs slots, with V1's states", () => {
+    const overrides = catalogueFromV1({
+      ...tealTheme,
+      tabStyle: { color: "red", ":hover": { color: "blue" } },
+      tabActiveStyle: { background: "white" },
+      tabWrappedStyle: { borderRadius: "1em" },
+      tabWrappedActiveStyle: { background: "grey" },
+      tabSpacerStyle: { width: "1em" },
+      tabContentStyle: { border: "1px solid" },
+      tabContentWrappedStyle: { borderStyle: "dashed" },
+    });
     expect(overrides["tabs__tab"]).toMatchObject({
       color: "red",
       "&:hover": { color: "blue" },
@@ -172,12 +176,20 @@ test("themes get their V1 panel styles as overrides", () => {
     "logo__rear_wrapper",
     "logo__rear",
     "logo__rear_sub",
+    "card__root",
+    "card__supertitle",
+    "card__title",
+    "card__subtitle",
+    "card__description",
+    "card__effect",
     "tabs__tab",
+    "tabs__spacer",
+    "tabs__content",
   ]);
 });
 
 test("a theme's sheet root styles patch the root's size variants", () => {
-  const overrides = catalogueFromV1(tealTheme, {
+  const overrides = catalogueFromV1({
     ...tealTheme,
     largeSheetRootStyle: { backgroundImage: "url(a.webp)", fontSize: "1.1em" },
     smallSheetRootStyle: { ":before": { content: "''" } },
@@ -192,7 +204,7 @@ test("a theme's sheet root styles patch the root's size variants", () => {
 });
 
 test("a theme's logo styles go over each part's defaults, as in V1", () => {
-  const overrides = catalogueFromV1(tealTheme, {
+  const overrides = catalogueFromV1({
     ...tealTheme,
     logo: {
       backdropStyle: { background: "red" },
@@ -223,7 +235,7 @@ test("a theme's logo styles go over each part's defaults, as in V1", () => {
 });
 
 test("the logo's forced layout stays forced, even against !important", () => {
-  const overrides = catalogueFromV1(tealTheme, {
+  const overrides = catalogueFromV1({
     ...tealTheme,
     logo: {
       ...tealTheme.logo,
@@ -243,14 +255,19 @@ test("the logo's forced layout stays forced, even against !important", () => {
 
 describe("cards", () => {
   const withCards = (cards: object) => {
-    const seed2 = { ...seed, cards } as Parameters<typeof catalogueFromV1>[0];
-    return catalogueFromV1(seed2, themeFactory(seed2));
+    const seed2 = { ...seed, cards } as Parameters<typeof themeFactory>[0];
+    return catalogueFromV1(themeFactory(seed2));
   };
 
-  test("nothing for a seed that doesn't style its cards", () => {
-    expect(
-      Object.keys(fromV1(seed)).some((name) => name.startsWith("card")),
-    ).toBe(false);
+  test("a seed that doesn't style its cards gets V1's defaults", () => {
+    const overrides = catalogueFromV1(theme);
+    expect(overrides["card__root"]).toMatchObject({
+      padding: "0.5em",
+      "&.investigator-card-array-card:hover": {
+        boxShadow: `0 0 0.3em 0.2em ${tealTheme.colors.glow}`,
+      },
+    });
+    expect(overrides["card__subtitle"]).toEqual({ fontWeight: "bold" });
   });
 
   test("a part's base style replaces its defaults whole, as V1's factory did", () => {
@@ -292,10 +309,10 @@ describe("cards", () => {
 });
 
 test("a theme's window style goes on the frame, scoped to the window", () => {
-  const overrides = catalogueFromV1(
-    { ...tealTheme, appWindowStyle: { boxShadow: "0 0 20px red" } },
-    tealTheme,
-  );
+  const overrides = catalogueFromV1({
+    ...tealTheme,
+    appWindowStyle: { boxShadow: "0 0 20px red" },
+  });
   expect(overrides["app-frame__root"]).toEqual({ boxShadow: "0 0 20px red" });
   expect(catalogueOverridesCss("t", overrides)).toContain(
     '.inv-app-frame__root:where([data-inv-frame="t"], [data-inv-frame="t"] *)',

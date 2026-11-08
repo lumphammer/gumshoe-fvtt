@@ -387,7 +387,7 @@ test("controls: a checkbox's box can be replaced, check buttons work from the ke
   await expect(rating).toHaveCSS("border-top-color", danger);
 });
 
-test("tabs: the selected one is accent on surface, the rest text on a fainter surface (V1 themes: surfaceNested), and V1 tab styles still apply", async ({
+test("tabs: V1 themes get V1's tabs, defaults and their own styles alike; the catalogue's own are text on a fainter surface", async ({
   page,
 }) => {
   const install = (name: string, extra: object) =>
@@ -432,8 +432,9 @@ test("tabs: the selected one is accent on surface, the rest text on a fainter su
     "background-color",
     colors.backgroundPrimary,
   );
-  await expect(other().first()).toHaveCSS("color", colors.text);
-  // a V1 theme's unselected tabs are on backgroundSecondary, as in V1
+  // a V1 theme without tab styles gets V1's default tabs: accent ink, and
+  // the unselected ones on backgroundSecondary
+  await expect(other().first()).toHaveCSS("color", colors.accent);
   await expect(other().first()).toHaveCSS(
     "background-color",
     colors.backgroundSecondary,
@@ -479,6 +480,7 @@ test("tabs: the selected one is accent on surface, the rest text on a fainter su
     colors.backgroundPrimary,
   );
   await expect(selected()).toHaveCSS("color", colors.accent);
+  await expect(other().first()).toHaveCSS("color", colors.text);
   // ...and 80% on a dark one
   await page.evaluate((id) => game.actors.get(id)!.sheet!.close(), actorId);
   await setSettings(page, { defaultThemeName: "tabsDarkTheme" });
