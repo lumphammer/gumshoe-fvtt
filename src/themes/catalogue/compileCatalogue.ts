@@ -2,6 +2,7 @@ import type { ThemeCatalogue } from "@lumphammer/investigator-fvtt-types";
 
 import { paletteColorKeys, paletteVar } from "../palette";
 import type { CatalogueOverrides, OverrideStyle } from "./overrides";
+import { backdropForced, measureForced } from "./logoDefaults";
 import { recipeShapes } from "./recipeShapes.generated";
 
 type Warn = (message: string) => void;
@@ -65,7 +66,60 @@ function compileStyle(
       warn(`${where}: "${key}" isn't a CSS value`);
     }
   }
+  // a style that had something, all of it left out, would replace a base
+  // with nothing: leave the style out instead (an empty one, `{}`, still
+  // replaces, as the theme asked)
+  if (Object.keys(style).length > 0 && Object.keys(result).length === 0) {
+    warn(`${where}: nothing in it is a style, so it's left out`);
+    return undefined;
+  }
   return result;
+}
+
+/**
+ * The logo's layout that the code depends on (`logoDefaults.ts`): the
+ * backdrop fills the logo, and the measuring copy is at full size where
+ * `LogoEditable` measures it. An override of the backdrop or the measuring
+ * copy can't change it: those declarations are left out (with a warning, if
+ * they'd change it), and the measuring copy's go last.
+ */
+function forceLogoLayout(overrides: CatalogueOverrides, warn: Warn) {
+  const without = (
+    style: OverrideStyle,
+    keys: readonly string[],
+    forced: Record<string, string> | null,
+    where: string,
+  ) =>
+    Object.fromEntries(
+      Object.entries(style).filter(([key, value]) => {
+        if (!keys.includes(key)) return true;
+        if (!forced || forced[key] !== value) {
+          warn(`${where}: "${key}" is the logo's layout, so it's left out`);
+        }
+        return false;
+      }),
+    ) as OverrideStyle;
+  const backdrop = overrides["logo__backdrop"];
+  if (backdrop) {
+    overrides["logo__backdrop"] = without(
+      backdrop,
+      backdropForced,
+      null,
+      "logo.backdrop",
+    );
+  }
+  const measure = overrides["logo__measure"];
+  if (measure) {
+    overrides["logo__measure"] = {
+      ...without(
+        measure,
+        Object.keys(measureForced),
+        measureForced,
+        "logo.measure",
+      ),
+      ...measureForced,
+    };
+  }
 }
 
 /** `over` on top of `under`, nested rules merged too. */
@@ -234,5 +288,6 @@ export function compileCatalogue(
       }
     }
   }
+  forceLogoLayout(result, warn);
   return result;
 }

@@ -198,8 +198,46 @@ describe("compileCatalogue", () => {
     ]) {
       const { overrides, warnings } = compile(catalogue);
       expect(Object.keys(overrides["badge"] ?? {})).toEqual([]);
-      expect(warnings).toHaveLength(1);
+      expect(warnings.length).toBeGreaterThan(0);
     }
+  });
+
+  test("a style with nothing left in it replaces nothing; an empty one does", () => {
+    const { overrides, warnings } = compile({
+      badge: { base: { ":hover": { color: "danger" } } },
+      callout: { base: {} },
+    });
+    expect(overrides).toEqual({ callout: {} });
+    expect(warnings).toEqual([
+      'badge.base: ":hover" is neither a selector with & nor an at-rule',
+      "badge.base: nothing in it is a style, so it's left out",
+    ]);
+  });
+
+  test("the logo's layout stays, whatever an override says", () => {
+    const { overrides, warnings } = compile({
+      logo: {
+        base: {
+          backdrop: { position: "fixed", inset: 0, width: "150%" },
+          measure: { color: "accent", fontSize: "2em", top: "0" },
+        },
+      },
+    });
+    expect(overrides["logo__backdrop"]).toEqual({ width: "150%" });
+    // its own size and position last
+    expect(overrides["logo__measure"]).toEqual({
+      color: "var(--inv-accent)",
+      position: "absolute",
+      top: "0",
+      left: "0",
+      fontSize: "1em",
+    });
+    // the same value as the layout's isn't worth a warning
+    expect(warnings).toEqual([
+      "logo.backdrop: \"position\" is the logo's layout, so it's left out",
+      "logo.backdrop: \"inset\" is the logo's layout, so it's left out",
+      "logo.measure: \"fontSize\" is the logo's layout, so it's left out",
+    ]);
   });
 
   test("warns on the console by default", () => {
