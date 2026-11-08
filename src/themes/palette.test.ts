@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 
-import { baseThemes } from "./baseThemes";
-import { niceThemeDark } from "./niceThemeDark";
+import { v1BaseThemes as baseThemes } from "./v1";
+import { niceThemeDark } from "./v1/niceThemeDark";
 import {
   apcaContrast,
   luminanceOf,
@@ -10,7 +10,7 @@ import {
   paletteVar,
   themeSlug,
 } from "./palette";
-import { tealTheme } from "./tealTheme";
+import { tealTheme } from "./v1/tealTheme";
 
 describe("paletteFromV1", () => {
   test.each(Object.entries(baseThemes))("%s has every entry", (_, theme) => {

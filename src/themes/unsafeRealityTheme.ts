@@ -1,24 +1,41 @@
 import { systemId } from "../constants";
-import { averiaLibre } from "./constants";
-import { themeFactory } from "./functions";
-import type { ThemeV1 } from "./types";
+import { defineThemeV2 } from "./theme";
 
-const orange = "#af2211";
-const darkOrange = "#b63017";
-const lightOrange = "#ed6a26";
-const yellow = "#ffef78";
-const brick = "#84432a";
-const wallpaper = brick;
-
-export const unsafeRealityTheme: ThemeV1 = themeFactory({
-  schemaVersion: "v1",
+export const unsafeRealityTheme = defineThemeV2({
+  schemaVersion: "v2",
   displayName: "Unsafe Reality",
-  largeSheetRootStyle: {
-    backgroundImage: `
+  palette: {
+    polarity: "dark",
+    wallpaper: "#84432a",
+    surface: "#5447",
+    surfaceNested: "#5677",
+    control: "#7702",
+    text: "#ccc",
+    accent: "#df9d4f",
+    line: "#aaa9",
+    feedback: "#f4bcf0",
+    danger: "#ff0000",
+    warning: "#d68a00",
+    success: "#008000",
+    info: "#2b6cb0",
+    textMuted: "color-mix(in srgb, #ccc 70%, rgb(110, 67, 54))",
+    onAccent: "black",
+    bodyFont: "16px 'Averia Libre', sans-serif",
+    displayFont: "normal normal normal 1.1em 'Averia Serif Libre', serif",
+    cardGap: "0.5em 0.5em",
+  },
+  catalogue: {
+    sheetRoot: {
+      variants: {
+        size: {
+          large: {
+            backgroundSize: "cover, cover, cover",
+            backgroundPosition: "center, center, center",
+            backgroundImage: `
     linear-gradient(
       to bottom,
-      ${wallpaper} 0%,
-      ${wallpaper} 100%
+      #84432a 0%,
+      #84432a 100%
     ),
     linear-gradient(
       to bottom,
@@ -27,53 +44,335 @@ export const unsafeRealityTheme: ThemeV1 = themeFactory({
     ),
       url(systems/${systemId}/assets/wallpaper/monochrome-unreality-cropped.webp)
     `,
-    backgroundSize: "cover, cover, cover",
-    backgroundPosition: "center, center, center",
-    backgroundBlendMode: "color, normal, normal",
-  },
-  bodyFont: averiaLibre.fontFamily,
-  displayFont: "normal normal normal 1.1em 'Averia Serif Libre', serif",
-  logo: {
-    frontTextElementStyle: {
-      color: yellow,
-      maskImage: `url(systems/${systemId}/assets/wallpaper/grunge-gradient.webp)`,
-      maskRepeat: "no-repeat",
-      maskSize: "100% 100%",
-      maskOrigin: "border-box",
+            backgroundBlendMode: "color, normal, normal",
+          },
+          small: {
+            backgroundImage: `
+    linear-gradient(
+      to bottom,
+      #84432a 0%,
+      #84432a 100%
+    ),
+    linear-gradient(
+      to bottom,
+      #000a 0%,
+      #000a 100%
+    ),
+      url(systems/${systemId}/assets/wallpaper/monochrome-unreality-cropped.webp)
+    `,
+            backgroundSize: "cover, cover, cover",
+            backgroundPosition: "center, center, center",
+            backgroundBlendMode: "color, normal, normal",
+          },
+        },
+      },
     },
-    rearTextElementStyle: {
-      color: orange,
-      textShadow: `
-      -5px -5px 10px ${lightOrange},
-      5px 5px 10px ${lightOrange}
-      `,
+    logo: {
+      base: {
+        backdrop: {
+          background:
+            "\n        linear-gradient(to bottom, #b63017 0%, #af2211 100%)\n      ",
+          maskImage: `url(systems/${systemId}/assets/wallpaper/esoterica.webp)`,
+          maskRepeat: "no-repeat",
+          maskSize: "contain",
+          maskPosition: "50% 10%",
+          maskOrigin: "border-box",
+          margin: "-2em -0em -3em",
+        },
+        text: {
+          position: "absolute",
+          top: "0",
+          right: "0",
+          bottom: "0",
+          left: "0",
+          font: "var(--inv-display-font)",
+          textTransform: "var(--inv-display-case)",
+          fontSize: "4em",
+          whiteSpace: "nowrap",
+          caretColor: "black",
+          border: "none",
+          padding: "0",
+          lineHeight: "1",
+          transform: "rotateY(15deg) rotateZ(-2deg) translateX(-0%)",
+          fontVariant: "small-caps",
+        },
+        front_wrapper: {
+          color: "transparent",
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        },
+        front: {
+          transition: "font-size var(--logo-fit-duration, 0s)",
+          fontSize: "calc(1em * var(--logo-fit, 1))",
+          padding: "0 1em",
+          color: "#ffef78",
+          maskImage: `url(systems/${systemId}/assets/wallpaper/grunge-gradient.webp)`,
+          maskRepeat: "no-repeat",
+          maskSize: "100% 100%",
+          maskOrigin: "border-box",
+        },
+        front_sub: {
+          fontSize: "0.5em",
+          padding: "0 1em",
+          minHeight: "1em",
+          color: "#ffef78",
+          maskImage: `url(systems/${systemId}/assets/wallpaper/grunge-gradient.webp)`,
+          maskRepeat: "no-repeat",
+          maskSize: "100% 100%",
+          maskOrigin: "border-box",
+        },
+        measure: {
+          transition: "font-size var(--logo-fit-duration, 0s)",
+          padding: "0 1em",
+          color: "#ffef78",
+          maskImage: `url(systems/${systemId}/assets/wallpaper/grunge-gradient.webp)`,
+          maskRepeat: "no-repeat",
+          maskSize: "100% 100%",
+          maskOrigin: "border-box",
+          position: "absolute",
+          top: "0",
+          left: "0",
+          fontSize: "1em",
+        },
+        rear_wrapper: {
+          zIndex: -1,
+          color: "transparent",
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        },
+        rear: {
+          transition: "font-size var(--logo-fit-duration, 0s)",
+          fontSize: "calc(1em * var(--logo-fit, 1))",
+          padding: "0 1em",
+          color: "#af2211",
+          textShadow:
+            "\n      -5px -5px 10px #ed6a26,\n      5px 5px 10px #ed6a26\n      ",
+        },
+        rear_sub: {
+          fontSize: "0.5em",
+          padding: "0 1em",
+          minHeight: "1em",
+          color: "#af2211",
+          textShadow:
+            "\n      -5px -5px 10px #ed6a26,\n      5px 5px 10px #ed6a26\n      ",
+        },
+      },
     },
-    textElementsStyle: {
-      transform: "rotateY(15deg) rotateZ(-2deg) translateX(-0%)",
-      fontVariant: "small-caps",
+    surface: {
+      compoundVariants: [
+        {
+          depth: "top",
+          solid: true,
+          css: {
+            backgroundColor: "rgb(110, 67, 54)",
+          },
+        },
+        {
+          depth: "nested",
+          solid: true,
+          css: {
+            backgroundColor: "rgb(110, 83, 77)",
+          },
+        },
+      ],
     },
-    backdropStyle: {
-      background: `
-        linear-gradient(to bottom, ${darkOrange} 0%, ${orange} 100%)
-      `,
-      maskImage: `url(systems/${systemId}/assets/wallpaper/esoterica.webp)`,
-      maskRepeat: "no-repeat",
-      maskSize: "contain",
-      maskPosition: "50% 10%",
-      maskOrigin: "border-box",
-      margin: "-2em -0em -3em",
+    floating: {
+      base: {
+        background: "rgb(110, 67, 54)",
+      },
     },
-  },
-
-  colors: {
-    accent: "#df9d4f",
-    accentContrast: "black",
-    glow: "#f4bcf0",
-    wallpaper,
-    backgroundSecondary: "#5677",
-    backgroundPrimary: "#5447",
-    backgroundButton: "#7702",
-    text: "#ccc",
-    controlBorder: "#aaa9",
+    partyCell: {
+      compoundVariants: [
+        {
+          header: true,
+          odd: true,
+          zero: false,
+          css: {
+            background: "rgb(110, 67, 54)",
+          },
+        },
+        {
+          header: true,
+          odd: false,
+          zero: false,
+          css: {
+            background: "rgb(110, 83, 77)",
+          },
+        },
+        {
+          header: true,
+          odd: true,
+          zero: true,
+          css: {
+            background: "rgb(149, 51, 38)",
+          },
+        },
+        {
+          header: true,
+          odd: false,
+          zero: true,
+          css: {
+            background: "rgb(149, 59, 49)",
+          },
+        },
+        {
+          header: false,
+          odd: true,
+          zero: true,
+          css: {
+            background: "rgba(170, 34, 34, 0.47)",
+          },
+        },
+        {
+          header: false,
+          odd: false,
+          zero: true,
+          css: {
+            background: "rgba(170, 51, 59, 0.47)",
+          },
+        },
+      ],
+    },
+    select: {
+      base: {
+        font: "var(--inv-body-font)",
+        fontVariantLigatures: "none",
+        color: "var(--inv-text)",
+        padding: "0.1em 0.3em",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: "var(--inv-line)",
+        boxShadow: "none",
+        "&:is(:hover, [data-hover])": {
+          borderColor: "var(--inv-line)",
+        },
+        "&:is(:focus, [data-focus])": {
+          borderColor: "var(--inv-line)",
+          boxShadow: "none",
+        },
+        "&:is(:disabled, [disabled], [data-disabled], [aria-disabled=true])": {
+          opacity: 0.7,
+        },
+        background: "rgb(110, 83, 77)",
+        "& option": {
+          background: "rgb(110, 67, 54)",
+          color: "var(--inv-text)",
+        },
+      },
+    },
+    dragHandle: {
+      base: {
+        cursor: "n-resize",
+        borderRadius: "0.35em",
+        color: "var(--inv-text-muted)",
+        background: "rgb(110, 67, 54)",
+        opacity: 0.7,
+        "&:is(:hover, [data-hover])": {
+          opacity: 1,
+          transform: "scale(1.1)",
+          color: "var(--inv-accent)",
+        },
+      },
+    },
+    callout: {
+      variants: {
+        tone: {
+          neutral: {
+            background:
+              "color-mix(in srgb, var(--inv-line) 30%, rgb(110, 67, 54))",
+          },
+          danger: {
+            background:
+              "color-mix(in srgb, var(--inv-danger) 30%, rgb(110, 67, 54))",
+          },
+          warning: {
+            background:
+              "color-mix(in srgb, var(--inv-warning) 30%, rgb(110, 67, 54))",
+          },
+          success: {
+            background:
+              "color-mix(in srgb, var(--inv-success) 30%, rgb(110, 67, 54))",
+          },
+          info: {
+            background:
+              "color-mix(in srgb, var(--inv-info) 30%, rgb(110, 67, 54))",
+          },
+        },
+      },
+    },
+    card: {
+      base: {
+        root: {
+          border: "1px solid #aaa9",
+          padding: "0.5em",
+          transformOrigin: "top",
+          backgroundColor: "rgb(110, 67, 54)",
+          "&.investigator-card-array-card:hover": {
+            boxShadow: "0 0 0.3em 0.2em #f4bcf0",
+          },
+        },
+        supertitle: {
+          fontSize: "0.9em",
+        },
+        title: {},
+        subtitle: {
+          fontWeight: "bold",
+        },
+        description: {},
+        effect: {
+          fontStyle: "italic",
+        },
+      },
+    },
+    tabs: {
+      base: {
+        tab: {
+          font: "var(--inv-display-font)",
+          textTransform: "var(--inv-display-case)",
+          letterSpacing: "var(--inv-display-letter-spacing)",
+          textAlign: "center",
+          flex: 1,
+          padding: "0.3em",
+          display: "inline-block",
+          fontSize: "1.2em",
+          background: "#5677",
+          borderRadius: "0.2em 0.2em 0 0",
+          color: "#df9d4f",
+          "&:hover": {
+            textShadow: "0 0 0.3em #f4bcf0",
+          },
+          ":not([data-wrapped]) > input:checked + &": {
+            background: "#5447",
+            "&:hover": {
+              textShadow: "none",
+            },
+          },
+          "[data-wrapped] > &": {
+            borderRadius: "0.2em",
+          },
+          "[data-wrapped] > input:checked + &": {
+            background: "#5447",
+            "&:hover": {
+              textShadow: "none",
+            },
+          },
+          "input:disabled + &:hover": {
+            textShadow: "none",
+          },
+        },
+        spacer: {
+          width: "0.5em",
+        },
+        content: {
+          padding: "0.5em",
+          backgroundColor: "#5447",
+          "[data-wrapped] + &": {},
+        },
+      },
+    },
   },
 });

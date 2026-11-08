@@ -7,7 +7,7 @@ import {
   requiredPaletteKeys,
   resolvePalette,
 } from "./palette";
-import { tealTheme } from "./tealTheme";
+import { tealTheme } from "./v1/tealTheme";
 import {
   defineThemeV2,
   themeFromV1,

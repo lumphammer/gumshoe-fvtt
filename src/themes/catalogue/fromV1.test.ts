@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 
-import { mutantCityBlueTheme } from "../mutantCityBlueTheme";
-import { tealTheme } from "../tealTheme";
+import { mutantCityBlueTheme } from "../v1/mutantCityBlueTheme";
+import { tealTheme } from "../v1/tealTheme";
 import { themeFactory } from "../functions";
 import { compileCatalogue } from "./compileCatalogue";
 import { catalogueFromV1 } from "./fromV1";

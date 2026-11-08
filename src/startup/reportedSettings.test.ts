@@ -9,7 +9,7 @@ import {
 } from "../presets";
 import type { RuntimeConfig } from "../runtime";
 import { baseThemes } from "../themes/baseThemes";
-import { tealTheme } from "../themes/tealTheme";
+import { tealTheme } from "../themes/v1/tealTheme";
 import { themeFromV1 } from "../themes/theme";
 import {
   buildReportedSettings,

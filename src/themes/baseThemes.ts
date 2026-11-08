@@ -1,3 +1,5 @@
+import type { ThemeV2 } from "@lumphammer/investigator-fvtt-types";
+
 import * as constants from "../constants";
 import { antiquarianTheme } from "./antiquarianTheme";
 import { deltaGroovyTheme } from "./deltaGroovyTheme";
@@ -10,11 +12,10 @@ import { niceThemeDark } from "./niceThemeDark";
 import { olderThanMemoryTheme } from "./olderThanMemoryTheme";
 import { pallidTheme } from "./pallidTheme";
 import { tealTheme } from "./tealTheme";
-import type { ThemeV1 } from "./types";
 import { unsafeRealityTheme } from "./unsafeRealityTheme";
 
 // remember to update the HMR setup below any time you modify this export.
-export const baseThemes: { [themeName: string]: ThemeV1 } = {
+export const baseThemes: { [themeName: string]: ThemeV2 } = {
   tealTheme,
   niceTheme,
   niceThemeDark,
@@ -29,7 +30,7 @@ export const baseThemes: { [themeName: string]: ThemeV1 } = {
   mutantCityBlueTheme,
 };
 
-export const reregisterBaseTheme = (name: string, theme: ThemeV1) => {
+export const reregisterBaseTheme = (name: string, theme: ThemeV2) => {
   baseThemes[name] = theme;
 };
 

@@ -8,7 +8,7 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 
-import { baseThemes } from "../src/themes/baseThemes";
+import { v1BaseThemes as baseThemes } from "../src/themes/v1";
 import { themeV2Source, v2FromV1 } from "../src/themes/v2FromV1";
 
 const root = join(import.meta.dirname, "..");

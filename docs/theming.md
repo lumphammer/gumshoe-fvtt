@@ -46,8 +46,11 @@ into one runtime `Theme` (display name, complete palette, overrides by class,
 entry; `fromV1` making a V2 catalogue from a V1 theme's styles, compiled as
 a V2 theme's is; `pnpm print:theme-v2` printing a V1 built-in theme as V2
 source that looks the same (`src/themes/v2FromV1.ts`, checked for all of
-them). **Still to do**: the built-in themes are still V1; the types
-package packs properly now (#1557), but a new version isn't published yet.
+them); the built-in themes in V2, printed so (`src/themes`), with their V1
+originals in `src/themes/v1` (what they were printed from, and fixtures for
+the V1 path's tests; `v2FromV1.test.ts` checks each built-in still looks as
+it did, until it's restyled). **Still to do**: restyling the built-in themes;
+the types package packs properly now (#1557), but a new version isn't published yet.
 
 ### Shape
 
