@@ -30,6 +30,126 @@ A few end goals of the whole [theming epic](https://github.com/lumphammer/gumsho
 - Custom themes loaded from a folder will still work, and they can be
   `ThemeSeedV1` or `ThemeV2` format.
 
+## ThemeV2 (planned)
+
+The format agreed for ThemeV2 (#1533). None of this exists yet: it's the
+design that the work towards the end goals will build. Where it differs from
+how things work today, today's sections below describe the present.
+
+### Shape
+
+A V2 theme is plain, JSON-serialisable data: no functions, no Emotion
+objects. Built-in themes are written in TypeScript through a typed
+`defineThemeV2()` helper; module themes and folder themes (JSON or YAML) have
+the same shape.
+
+```ts
+defineThemeV2({
+  schemaVersion: "v2",
+  displayName: "Example",
+  description: "Optional",
+  palette: { polarity: "light", surface: "#fff", accent: "#c00", … },
+  catalogue: {
+    badge: {
+      base: { borderRadius: 0 },
+      variants: { tone: { danger: { fontWeight: "bold" } } },
+      compoundVariants: [{ tone: "danger", weight: "strong", css: { … } }],
+    },
+    tabs: {
+      // a slot recipe: styles by slot
+      base: { tab: { color: "accent" }, content: { … } },
+    },
+  },
+  globalCss: "",
+});
+```
+
+- One palette per theme: light and dark versions of a design are separate
+  themes.
+- No `extends`: TypeScript themes share code by spreading objects.
+- The theme picker's swatch is drawn from the palette.
+
+### Palette
+
+- **Required**: `polarity` (stated, never guessed), `wallpaper`, `surface`,
+  `surfaceNested`, `control`, `text`, `accent`, `line`, `feedback`, `danger`,
+  `warning`, `success`, `info`.
+- **Optional**, each with a derived default that a theme can replace:
+  `textMuted` (from `text`), `link` (`accent`), the `on*` inks (by APCA
+  contrast), `radius`, `elevation`, `bodyFont` and `displayFont` (`inherit`),
+  `displayCase` (`none`), `displayLetterSpacing` (`normal`), and `cardGap`.
+- `cardGap` is the spacing between cards, as a CSS `gap` value: one length,
+  or a row gap then a column gap. A card array also has it as its margin, as
+  V1 did. V1's `cards.area` becomes
+  `` `${verticalSpacing} ${horizontalSpacing}` ``, so the two axes stay
+  independent (Mutant City Blue's differ).
+- Surfaces are expected to be opaque, not required to be.
+- Fonts are palette entries only. V2 doesn't load them: built-in themes'
+  fonts come from the system's CSS, a module theme's from its module's, and a
+  folder theme's from `@font-face` or `@import` in its `globalCss`.
+- The palette's custom properties (`--inv-accent` and so on) are a stable,
+  documented contract, exported as a `PaletteVar` type.
+
+### Overrides (`catalogue`)
+
+- Keyed by recipe name as written in code (`badge`, `partyCell`), each shaped
+  like the recipe's Panda config: `base`, `variants`, `compoundVariants`, by
+  slot for a slot recipe. Authors never see generated class names.
+- An override of a base or slot **replaces** the recipe's own; an override of
+  a variant or compound variant **patches** it.
+- A `compoundVariants` override can target any combination of variant values,
+  not only the ones the recipe declares.
+- Values: a value that is exactly a palette name (`color: "accent"`) is that
+  entry; inside an expression, the entry is `var(--inv-…)`
+  (`"oklch(from var(--inv-surface) calc(l - 0.1) c h)"`); anything else is
+  plain CSS. States are nested keys (`"&:hover"`), not Panda's `_hover`.
+- Style objects are typed: camelCase properties from `csstype`, custom
+  properties (`--${string}`), and nested keys that contain `&` or start with
+  `@` (no bare descendant selectors).
+- Everything V1 had its own field for is an override: the logo's slots, the
+  sheet root's size variants (backdrop image and all), the app frame, cards,
+  tabs and panels. A card category's style is a nested selector in the
+  `card` override, on the `data-category` attribute of the card's root: in
+  the `root` slot, `'&[data-category="stress"]'`; in the other slots,
+  `'[data-category="stress"] &'`.
+- An override of the logo's forced layout (the parts the code positions) is
+  dropped with a warning.
+
+### `globalCss`
+
+A raw CSS string, in a `<style>` in the themed root, unscoped. An escape
+hatch for whatever the catalogue can't express, documented as unsupported:
+it may break as the markup changes.
+
+### Types and validation
+
+- A script generates the override types from the recipe definitions into
+  `@lumphammer/investigator-fvtt-types`, which the app imports too;
+  `pnpm check` fails if they're out of date. The package publishes ThemeV2
+  and the palette types (this includes fixing #1557).
+- The catalogue's recipe, slot and variant names and values are public API:
+  renaming or removing one is a breaking change for the types package.
+  Adding is not.
+- Every theme except the built-ins is validated when it's installed (a module
+  may be plain JS, or built against an old version of the types): a broken
+  shape (a missing required palette entry, a bad `polarity`, an unknown
+  `schemaVersion`) rejects the theme with an error, shown to the GM for a
+  folder theme; a bad override is skipped with a warning.
+
+### V1
+
+- `CONFIG.Investigator.installTheme(id, theme)` and the folder loader take
+  either version, by `schemaVersion`. A V1 seed is converted to V2 when it's
+  installed (`themeFactory`, then `paletteFromV1` and `fromV1`), so V2 is the
+  only theme type the rest of the code sees. V1's `global` (a string, or
+  Emotion's serialised styles from a theme module) becomes `globalCss` the
+  way `frame.ts` turns it into CSS today: Emotion's labels stripped, and
+  linked keyframes kept, in order.
+- `tabClass`, `panelClass` and `notesCssClasses` are dropped: deprecated and
+  ignored in the types, so a V1 theme that sets them still loads.
+- With V2 in place, the e2e tests' `catalogue` back door and `ThemeContext`
+  go.
+
 ## The pieces
 
 - **Palette**: a theme's colours, fonts and a few shared values, each with
