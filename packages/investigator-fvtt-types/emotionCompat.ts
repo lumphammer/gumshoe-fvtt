@@ -7,7 +7,7 @@ import type {
   SerializedStyles as EmotionSerializedStyles,
 } from "@emotion/serialize";
 
-import type { CSSObject, SerializedStyles, ThemeSeedV1 } from "./index";
+import type { CSSObject, SerializedStyles, ThemeSeedV1 } from "./index.js";
 
 declare const ours: CSSObject;
 declare const theirs: EmotionCSSObject;

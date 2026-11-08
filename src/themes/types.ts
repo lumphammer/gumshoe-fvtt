@@ -32,9 +32,8 @@ export interface ThemeV1 extends ThemeSeedV1 {
 
   /**
    * Replacements for catalogue classes (docs/theming.md): what `fromV1`
-   * makes of the V1 styles, plus the e2e tests' temporary overrides
-   * (`themeFactory`). Not in `ThemeSeedV1`, and V1 seeds won't get it:
-   * theme authors get overrides with ThemeV2 (#1533).
+   * makes of the V1 styles. Not in `ThemeSeedV1`, and V1 seeds won't get it:
+   * theme authors write overrides in ThemeV2's `catalogue`.
    */
   catalogue?: CatalogueOverrides;
 

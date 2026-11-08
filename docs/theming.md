@@ -44,8 +44,8 @@ into one runtime `Theme` (display name, complete palette, overrides by class,
 `globalCss`), which is all the rest of the code sees; `ThemeContext`,
 `tabClass`, `panelClass` and `notesCssClasses` gone; the card gap a palette
 entry. **Still to do**: V1 themes still become overrides by class (`fromV1`),
-not a V2 catalogue; the built-in themes are still V1; the e2e tests' back
-door is still there; the types package isn't published.
+not a V2 catalogue; the built-in themes are still V1; the types package
+packs properly now (#1557), but a new version isn't published yet.
 
 ### Shape
 
@@ -169,7 +169,7 @@ it may break as the markup changes.
 - `tabClass`, `panelClass` and `notesCssClasses` are dropped: deprecated and
   ignored in the types, so a V1 theme that sets them still loads.
 - With V2 in place, the e2e tests' `catalogue` back door and `ThemeContext`
-  go.
+  go. (Done: the tests install V2 themes.)
 
 ## The pieces
 
@@ -665,23 +665,20 @@ takes actors dragged from Foundry's sidebar), and `over` from `dragover` to
 
 ## Theme overrides
 
-A theme can replace any catalogue class, variant or slot. The overrides live
-in `ThemeV1`'s `catalogue` field, keyed by the class name without `inv-`:
+A theme can replace any catalogue class, variant or slot. A V2 theme writes
+its overrides in its `catalogue`, shaped like the recipes (see ThemeV2,
+above); a V1 theme gets them from `fromV1`, and **V1 seeds won't ever be able
+to write their own**. Either way, they become overrides keyed by the class
+name without `inv-`, which the runtime `Theme` holds:
 
 ```ts
-catalogue: {
+{
   badge: { borderRadius: 0, fontStyle: "italic" },
   "badge--compound__tone_danger__weight_strong": { ... },
+  // a V2 compound variant: an element with both classes
+  "badge--tone_danger.badge--weight_strong": { ... },
 }
 ```
-
-Where they come from, for now: `fromV1` makes them from a V1 theme's styles,
-and that's all. **Theme authors can't write overrides yet, and V1 seeds
-won't ever be able to**: that comes with ThemeV2 (#1533). Until then, the e2e
-tests use a temporary back door in `themeFactory`: a seed object can carry an
-untyped `catalogue` field, whose overrides go over `fromV1`'s. It's not in
-`ThemeSeedV1`, it's not a feature, and nothing but those tests should use
-it. It goes away when the tests can install a ThemeV2 theme.
 
 An override of a class's base or a slot (`badge`, `tabs__tab`) **replaces**
 the default for that name: none of the default's declarations survive, so it

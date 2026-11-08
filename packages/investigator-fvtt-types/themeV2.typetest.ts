@@ -1,6 +1,6 @@
 // A compile-time check, not part of the API: what ThemeV2's catalogue types
 // accept and refuse. `tsc` fails if one of these stops holding.
-import type { ThemeCatalogue } from "./themeV2";
+import type { ThemeCatalogue } from "./themeV2.js";
 
 export const accepted: ThemeCatalogue = {
   badge: {

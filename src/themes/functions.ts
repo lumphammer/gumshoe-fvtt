@@ -162,14 +162,9 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
     },
   };
 
-  // A temporary back door for the e2e tests, so they can install catalogue
-  // overrides that no V1 field can express, until ThemeV2 (#1533) gives
-  // themes a real way to. It is NOT a feature of V1 seeds, and V1 seeds
-  // won't get one: `ThemeSeedV1` doesn't have it, and nothing should use it
-  // but those tests. Remove it when they can use ThemeV2.
-  const { catalogue: testOverrides } = seed as ThemeSeedV1 &
-    Pick<ThemeV1, "catalogue">;
-  final.catalogue = { ...catalogueFromV1(final), ...testOverrides };
+  // only what `fromV1` makes of the V1 styles: a seed can't have its own
+  // overrides (ThemeV2 themes can)
+  final.catalogue = catalogueFromV1(final);
   return final;
 };
 

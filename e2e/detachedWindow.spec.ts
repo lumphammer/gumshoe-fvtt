@@ -7,6 +7,7 @@ import {
   setSettings,
   test,
 } from "./foundry.ts";
+import { testTheme } from "./themes.ts";
 
 // A sheet detached into its own window (Foundry's `detachWindow`) keeps its
 // styling (#1537). Foundry copies the page's stylesheets into the new window
@@ -41,27 +42,20 @@ const installTheme = (
   mark: string,
 ) =>
   page.evaluate(
-    ({ name, palette, mark }) => {
-      const seed = {
-        schemaVersion: "v1" as const,
-        displayName: name,
-        largeSheetRootStyle: {},
-        logo: {
-          frontTextElementStyle: {},
-          rearTextElementStyle: {},
-          textElementsStyle: {},
-          backdropStyle: {},
+    ({ name, theme }) => CONFIG.Investigator!.installTheme(name, theme),
+    {
+      name,
+      theme: testTheme(name, palette, {
+        catalogue: {
+          input: { base: { textDecorationColor: mark } },
+          // reads the palette: the frame has to get it too
+          appFrame: {
+            base: { root: { boxShadow: "0 0 0 4px var(--inv-accent)" } },
+          },
         },
-        colors: palette,
-        // reads the palette: the frame has to get it too
-        appWindowStyle: { boxShadow: "0 0 0 4px var(--inv-accent)" },
-        global: `.inv-tabs__content { outline: 3px dotted ${mark}; }`,
-        // a test-only back door until ThemeV2 (themeFactory), not a seed field
-        catalogue: { input: { textDecorationColor: mark } },
-      };
-      CONFIG.Investigator!.installTheme(name, seed);
+        globalCss: `.inv-tabs__content { outline: 3px dotted ${mark}; }`,
+      }),
     },
-    { name, palette, mark },
   );
 
 test("a detached sheet keeps its palette, catalogue classes, overrides and state layers, and follows a change of theme", async ({
@@ -95,19 +89,14 @@ test("a detached sheet keeps its palette, catalogue classes, overrides and state
   const input = root.locator(".inv-input").first();
 
   const expectTheme = async (palette: typeof colors, mark: string) => {
-    // the palette and V1's tabs: accent ink, the selected tab on
-    // backgroundPrimary, the rest on backgroundSecondary, the content on
-    // backgroundPrimary
+    // the palette and the catalogue's tabs: the selected one accent on
+    // surface, the rest text, the content on surface
     await expect(selected()).toHaveCSS("color", palette.accent);
     await expect(selected()).toHaveCSS(
       "background-color",
       palette.backgroundPrimary,
     );
-    await expect(other().first()).toHaveCSS("color", palette.accent);
-    await expect(other().first()).toHaveCSS(
-      "background-color",
-      palette.backgroundSecondary,
-    );
+    await expect(other().first()).toHaveCSS("color", palette.text);
     await expect(content).toHaveCSS(
       "background-color",
       palette.backgroundPrimary,

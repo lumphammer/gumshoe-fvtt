@@ -2,7 +2,7 @@
 // shaped like the catalogue's recipes, and typed from them.
 import type * as CSS from "csstype";
 
-import type { CatalogueRecipeShapes } from "./catalogue.generated";
+import type { CatalogueRecipeShapes } from "./catalogue.generated.js";
 
 export type { CatalogueRecipeShapes };
 

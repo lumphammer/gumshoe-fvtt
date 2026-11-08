@@ -1,14 +1,21 @@
 {
   "name": "@lumphammer/investigator-fvtt-types",
-  "version": "1.14.0-alpha.3",
-  "description": "",
+  "version": "1.15.0-alpha.0",
+  "description": "TypeScript types for themes and presets for INVESTIGATOR for Foundry VTT",
   "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "dist/index.d.ts",
+    "dist/themeV2.d.ts",
+    "dist/catalogue.generated.d.ts",
+    "README.md"
+  ],
   "scripts": {
+    "prepack": "tsc -p .",
     "test": "tsc",
     "typecheck": "tsc",
     "lint:check": "oxlint --type-aware --report-unused-disable-directives-severity=error",
@@ -20,9 +27,10 @@
   "author": "Neil de Carteret <neil@lumphammer.net",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/n3dst4/investigator-fvtt-types"
+    "url": "git+https://github.com/lumphammer/gumshoe-fvtt.git",
+    "directory": "packages/investigator-fvtt-types"
   },
-  "homepage": "https://gitlab.com/n3dst4/investigator-fvtt-types",
+  "homepage": "https://github.com/lumphammer/gumshoe-fvtt/tree/main/packages/investigator-fvtt-types",
   "license": "ISC",
   "devDependencies": {
     "@emotion/serialize": "^1.3.3",

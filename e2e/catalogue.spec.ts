@@ -9,6 +9,7 @@ import {
   test,
   updateAbility,
 } from "./foundry.ts";
+import { testTheme } from "./themes.ts";
 
 // The catalogue's runtime (docs/theming.md): a theme's override replaces a
 // class's default, and the class's variants and states still apply on top,
@@ -29,28 +30,23 @@ const colors = {
 test("a theme's badge override replaces the default but keeps tone, states and hover", async ({
   page,
 }) => {
-  await page.evaluate((colors) => {
-    const seed = {
-      schemaVersion: "v1" as const,
-      displayName: "Catalogue Review",
-      largeSheetRootStyle: {},
-      logo: {
-        frontTextElementStyle: {},
-        rearTextElementStyle: {},
-        textElementsStyle: {},
-        backdropStyle: {},
-      },
-      colors,
-      // a test-only back door until ThemeV2 (themeFactory), not a seed field
+  await page.evaluate(
+    (theme) => CONFIG.Investigator!.installTheme("catalogueReviewTheme", theme),
+    testTheme("Catalogue Review", colors, {
       catalogue: {
-        badge: { fontStyle: "italic", borderRadius: 0 },
-        "badge--compound__tone_neutral__weight_subtle": {
-          color: "rgb(200, 0, 0)",
+        badge: {
+          base: { fontStyle: "italic", borderRadius: 0 },
+          compoundVariants: [
+            {
+              tone: "neutral",
+              weight: "subtle",
+              css: { color: "rgb(200, 0, 0)" },
+            },
+          ],
         },
       },
-    };
-    CONFIG.Investigator!.installTheme("catalogueReviewTheme", seed);
-  }, colors);
+    }),
+  );
   await setSettings(page, { defaultThemeName: "catalogueReviewTheme" });
 
   const actorId = await createActor(page, { name: "Styled", type: "pc" });
@@ -307,26 +303,14 @@ test("controls: a checkbox's box can be replaced, check buttons work from the ke
 }) => {
   const danger = "rgb(200, 0, 0)";
   await page.evaluate(
-    ({ colors }) => {
-      const seed = {
-        schemaVersion: "v1" as const,
-        displayName: "Controls Review",
-        largeSheetRootStyle: {},
-        logo: {
-          frontTextElementStyle: {},
-          rearTextElementStyle: {},
-          textElementsStyle: {},
-          backdropStyle: {},
+    (theme) => CONFIG.Investigator!.installTheme("controlsReviewTheme", theme),
+    testTheme("Controls Review", { ...colors, danger }, {
+      catalogue: {
+        checkbox: {
+          base: { box: { background: "rgb(0, 160, 0)", width: "2em" } },
         },
-        colors,
-        // a test-only back door until ThemeV2 (themeFactory), not a seed field
-        catalogue: {
-          checkbox__box: { background: "rgb(0, 160, 0)", width: "2em" },
-        },
-      };
-      CONFIG.Investigator!.installTheme("controlsReviewTheme", seed);
-    },
-    { colors: { ...colors, danger } },
+      },
+    }),
   );
   await setSettings(page, { defaultThemeName: "controlsReviewTheme" });
   const actorId = await createActor(page, { name: "Checked", type: "pc" });
@@ -508,24 +492,15 @@ test("tabs: V1 themes get V1's tabs, defaults and their own styles alike; the ca
 test("lists: headings and column headers are ruled in line, interactive rows are highlighted, and a variant override patches", async ({
   page,
 }) => {
-  await page.evaluate((colors) => {
-    const seed = {
-      schemaVersion: "v1" as const,
-      displayName: "Lists Review",
-      largeSheetRootStyle: {},
-      logo: {
-        frontTextElementStyle: {},
-        rearTextElementStyle: {},
-        textElementsStyle: {},
-        backdropStyle: {},
+  await page.evaluate(
+    (theme) => CONFIG.Investigator!.installTheme("listsReviewTheme", theme),
+    testTheme("Lists Review", colors, {
+      // a variant override patches: the highlight stays
+      catalogue: {
+        row: { variants: { interactive: { true: { cursor: "crosshair" } } } },
       },
-      colors,
-      // a test-only back door until ThemeV2 (themeFactory), not a seed
-      // field. A variant override patches: the highlight stays
-      catalogue: { "row--interactive_true": { cursor: "crosshair" } },
-    };
-    CONFIG.Investigator!.installTheme("listsReviewTheme", seed);
-  }, colors);
+    }),
+  );
   await setSettings(page, {
     defaultThemeName: "listsReviewTheme",
     equipmentCategories: { general: { name: "General", fields: {} } },

@@ -8,8 +8,8 @@ export type {
   ThemePalette,
   ThemeStyle,
   ThemeV2,
-} from "./themeV2";
-import type { ThemeV2 } from "./themeV2";
+} from "./themeV2.js";
+import type { ThemeV2 } from "./themeV2.js";
 
 /**
  * A style object: CSS properties in camelCase (a number is pixels, as in
