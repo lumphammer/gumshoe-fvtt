@@ -15,6 +15,21 @@ a theme's colours. V1 themes are mapped onto the catalogue (`fromV1.ts`).
 Layout at call sites is Panda's `css()` (see Converting a component); Emotion
 is gone. A V2 theme format is later work.
 
+## End goals
+
+A few end goals of the whole [theming epic](https://github.com/lumphammer/gumshoe-fvtt/issues/1532):
+
+- We will have a way to author themes which is native to the new catalogue +
+  Panda system. Let's refer to this as `ThemeV2` for now.
+- `ThemeV1` will only exist as a stepping-stone from `ThemeSeedV1` to
+  `ThemeV2`; it's never used anywhere else.
+- `ThemeContext` will _probably_ go away - ideally the remaining call sites can
+  all get what they need from catalogue recipes. If there are exceptions, they
+  will be evaluated on a case-by-case basis.
+- All our built-in themes will be converted to `ThemeV2` and given a makeover.
+- Custom themes loaded from a folder will still work, and they can be
+  `ThemeSeedV1` or `ThemeV2` format.
+
 ## The pieces
 
 - **Palette**: a theme's colours, fonts and a few shared values, each with
@@ -37,7 +52,7 @@ is gone. A V2 theme format is later work.
    else.
 4. **Every class has a default built from the palette**, so a palette on its
    own makes a usable theme. Themes may override any class: a shallow
-   "replace", per slot for classes with slots. Some slots are *expected* to be
+   "replace", per slot for classes with slots. Some slots are _expected_ to be
    overridden, because that's where a theme's personality lives:
    `sheetRoot`, `window.titlebar`, `tabs.tab`, `logo` and `card.root`.
 5. **States are attributes; variants are design choices.** Selected, disabled,
@@ -60,28 +75,28 @@ Each entry is a custom property on the themed root (`--inv-` and the name in
 kebab case: `surfaceNested` is `--inv-surface-nested`), and a Panda token
 (`colors.surfaceNested`).
 
-| Entry | Meaning |
-|---|---|
-| `polarity` | `light` or `dark`. Sets `color-scheme` on the themed root, so scrollbars and native controls match. Light and dark versions of a design are separate themes |
-| `wallpaper` | The colour the sheet's backdrop averages to. Shown while images load, and the colour surfaces are flattened over. Must agree with the backdrop image |
-| `surface` | What content sits on. Any colour, solid or translucent |
-| `surfaceNested` | What content *inside* content sits on. A panel inside a panel uses it, worked out from the structure, never chosen by the call site |
-| `surfaceSolid`, `surfaceNestedSolid` | *Derived*: the surfaces flattened over `wallpaper` (no change if they're already solid). For anything that overlaps or scrolls over other content: popovers, sticky rows, dropdowns |
-| `surfaceDanger`, `surfaceNestedDanger`, and their `…Solid` versions | *Derived*: the surfaces tinted halfway to `danger`, keeping their opacity, and those flattened over `wallpaper`. A status tint for an area in trouble (an ability nobody in the party has) |
-| `control` | The fill of controls: buttons, toggle tracks |
-| `text` | The default ink. Legible on both surfaces and on `control` |
-| `textMuted` | Ink for secondary information: notes, empty states, inactive rows, table headers |
-| `link` | Ink for links within prose (rich text, journals, notes). Distinguishable from `text` in running text. Not for other clickable things |
-| `accent` | **Selected, or a call to action**: the active tab, a toggle that's on, the OK button. *Not* "clickable": most of a sheet is clickable, and that's shown by shape, hover feedback and the cursor |
-| `onAccent` | Ink on an `accent` fill |
-| `feedback` | The colour of hover, focus and drag-over feedback. Never state or decoration |
-| `line` | Structural lines: control outlines, separators, heading rules, table header rules |
-| `danger`, `warning`, `success`, `info` | Status. Each is legible as text on both surfaces |
-| `onDanger`, `onWarning`, `onSuccess`, `onInfo` | Ink on the matching status fill. From a V1 theme, black or white, whichever reads better by APCA contrast (WCAG 2's ratio prefers black on saturated reds, where white reads far better) |
-| `radius` | The one corner radius classes share (Panda: `radii.standard`) |
-| `elevation` | The shadow for anything floating (Panda: `shadows.elevation`) |
-| `bodyFont` | The `body` text style: prose and controls. A CSS `font` value |
-| `displayFont`, `displayCase`, `displayLetterSpacing` | The `display` text style: titles, headings, tabs, labels. Panda applies the three together as `textStyle: "display"` |
+| Entry                                                               | Meaning                                                                                                                                                                                         |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `polarity`                                                          | `light` or `dark`. Sets `color-scheme` on the themed root, so scrollbars and native controls match. Light and dark versions of a design are separate themes                                     |
+| `wallpaper`                                                         | The colour the sheet's backdrop averages to. Shown while images load, and the colour surfaces are flattened over. Must agree with the backdrop image                                            |
+| `surface`                                                           | What content sits on. Any colour, solid or translucent                                                                                                                                          |
+| `surfaceNested`                                                     | What content _inside_ content sits on. A panel inside a panel uses it, worked out from the structure, never chosen by the call site                                                             |
+| `surfaceSolid`, `surfaceNestedSolid`                                | _Derived_: the surfaces flattened over `wallpaper` (no change if they're already solid). For anything that overlaps or scrolls over other content: popovers, sticky rows, dropdowns             |
+| `surfaceDanger`, `surfaceNestedDanger`, and their `…Solid` versions | _Derived_: the surfaces tinted halfway to `danger`, keeping their opacity, and those flattened over `wallpaper`. A status tint for an area in trouble (an ability nobody in the party has)      |
+| `control`                                                           | The fill of controls: buttons, toggle tracks                                                                                                                                                    |
+| `text`                                                              | The default ink. Legible on both surfaces and on `control`                                                                                                                                      |
+| `textMuted`                                                         | Ink for secondary information: notes, empty states, inactive rows, table headers                                                                                                                |
+| `link`                                                              | Ink for links within prose (rich text, journals, notes). Distinguishable from `text` in running text. Not for other clickable things                                                            |
+| `accent`                                                            | **Selected, or a call to action**: the active tab, a toggle that's on, the OK button. _Not_ "clickable": most of a sheet is clickable, and that's shown by shape, hover feedback and the cursor |
+| `onAccent`                                                          | Ink on an `accent` fill                                                                                                                                                                         |
+| `feedback`                                                          | The colour of hover, focus and drag-over feedback. Never state or decoration                                                                                                                    |
+| `line`                                                              | Structural lines: control outlines, separators, heading rules, table header rules                                                                                                               |
+| `danger`, `warning`, `success`, `info`                              | Status. Each is legible as text on both surfaces                                                                                                                                                |
+| `onDanger`, `onWarning`, `onSuccess`, `onInfo`                      | Ink on the matching status fill. From a V1 theme, black or white, whichever reads better by APCA contrast (WCAG 2's ratio prefers black on saturated reds, where white reads far better)        |
+| `radius`                                                            | The one corner radius classes share (Panda: `radii.standard`)                                                                                                                                   |
+| `elevation`                                                         | The shadow for anything floating (Panda: `shadows.elevation`)                                                                                                                                   |
+| `bodyFont`                                                          | The `body` text style: prose and controls. A CSS `font` value                                                                                                                                   |
+| `displayFont`, `displayCase`, `displayLetterSpacing`                | The `display` text style: titles, headings, tabs, labels. Panda applies the three together as `textStyle: "display"`                                                                            |
 
 Status-tinted surfaces (flagged rows, invalid inputs, callouts) will be derived
 from the status colours and the surfaces, not set by themes.
@@ -91,19 +106,19 @@ from the status colours and the surfaces, not set by themes.
 Every V1 theme gets a palette from `paletteFromV1`, which should change nothing
 about how anything looks:
 
-| V1 | Palette |
-|---|---|
-| `backgroundPrimary` / `backgroundSecondary` | `surface` / `surfaceNested` |
-| `bgOpaquePrimary` / `bgOpaqueSecondary` | `surfaceSolid` / `surfaceNestedSolid` |
-| `bgTransDanger*` / `bgOpaqueDanger*` | `surfaceDanger`, `surfaceNestedDanger`, `surfaceDangerSolid`, `surfaceNestedDangerSolid` |
-| `backgroundButton` | `control` |
-| `accent` | `accent`, and `link` |
-| `accentContrast` | `onAccent` |
-| `glow` | `feedback` |
-| `controlBorder` | `line` |
-| `danger`, `warning`, `success` | The same. `info` and the `on-` partners are new |
-| `bodyFont`, `displayFont`, `displayFontTextTransform` | `bodyFont`, `displayFont`, `displayCase` |
-| (from `text`) | `polarity`: light text means a dark theme |
+| V1                                                    | Palette                                                                                  |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `backgroundPrimary` / `backgroundSecondary`           | `surface` / `surfaceNested`                                                              |
+| `bgOpaquePrimary` / `bgOpaqueSecondary`               | `surfaceSolid` / `surfaceNestedSolid`                                                    |
+| `bgTransDanger*` / `bgOpaqueDanger*`                  | `surfaceDanger`, `surfaceNestedDanger`, `surfaceDangerSolid`, `surfaceNestedDangerSolid` |
+| `backgroundButton`                                    | `control`                                                                                |
+| `accent`                                              | `accent`, and `link`                                                                     |
+| `accentContrast`                                      | `onAccent`                                                                               |
+| `glow`                                                | `feedback`                                                                               |
+| `controlBorder`                                       | `line`                                                                                   |
+| `danger`, `warning`, `success`                        | The same. `info` and the `on-` partners are new                                          |
+| `bodyFont`, `displayFont`, `displayFontTextTransform` | `bodyFont`, `displayFont`, `displayCase`                                                 |
+| (from `text`)                                         | `polarity`: light text means a dark theme                                                |
 
 ## Catalogue
 
@@ -262,8 +277,8 @@ button).
 
 A strip of tabs and the content of the selected one, applied by
 `TabContainer`. Slots `list`, `tab`, `spacer` and `content`
-(`inv-tabs__tab` and so on). *`tab` is an expected override, selected and
-not.*
+(`inv-tabs__tab` and so on). _`tab` is an expected override, selected and
+not._
 
 - **States**, from the DOM rather than variants: a tab is selected when its
   hidden radio, just before it, is checked (`input:checked + &`); the strip
@@ -296,7 +311,7 @@ take only `[a-z0-9_-]`.
 
 - **`sectionHeading`**: a heading that divides a sheet into sections
   ("Academic", "Weapons"), with a `line` rule under it. Apply it to the
-  heading, or to the row holding the heading and its buttons. *Not for*
+  heading, or to the row holding the heading and its buttons. _Not for_
   column headers.
 - **`tableHeader`**: the row of column headers over a list or table: bold,
   with a `line` rule under it.
@@ -319,13 +334,14 @@ take only `[a-z0-9_-]`.
 - **`dragHandle`**: the grip to drag to reorder a list. `textMuted` on
   `surfaceSolid`, faded until hovered, when it grows and turns `accent`.
 - **`emptyState`**: stands in for a list with nothing in it: dashed `line`
-  border, italic `textMuted`. *Not for* warnings (`callout`).
+  border, italic `textMuted`. _Not for_ warnings (`callout`).
 
 ### Text: element defaults, `displayText`, `mutedText`, `outcome`
 
 **Element defaults** (`src/themes/catalogue/elements.css`) style plain
 elements inside a themed root, so a call site needs a class only for
 something else:
+
 - `h1` to `h4` are in the `display` text style;
 - `label` is bold;
 - `a` (and `label.parp`) is `link`, underlined with a `feedback` glow under
@@ -340,11 +356,11 @@ than the element: any class beats them.
   as column labels ("Rating"), figures (build points) or menu entries.
   `size: sm | md | lg` (smaller, as is, larger).
 - **`mutedText`**: secondary information within content, such as a menu
-  entry's description or summary. `textMuted` ink; `size: sm | md`. *Not
-  for* things that are switched off.
+  entry's description or summary. `textMuted` ink; `size: sm | md`. _Not
+  for_ things that are switched off.
 - **`outcome`**: the result of something, in its tone's ink: a goal met
   (`success`), a limit passed (`danger`), something missing (`warning`).
-  `neutral` is `text`. *Not for* a label on a thing (`badge`) or a message
+  `neutral` is `text`. _Not for_ a label on a thing (`badge`) or a message
   about it (`callout`).
 
 ### `sheetRoot`
@@ -357,7 +373,7 @@ style, `text` ink, `accent` for native controls, and the wallpaper. `size`:
 height are layout, but they're in the `size` variants too, so a V1 root
 style can still set them.
 
-*Expected override:* a theme's backdrop goes in its `size` variants. A V1
+_Expected override:_ a theme's backdrop goes in its `size` variants. A V1
 seed's `largeSheetRootStyle` and `smallSheetRootStyle` become
 `sheet-root--size_large` and `sheet-root--size_small` overrides, which patch
 the variants, as V1 spread them over the defaults, padding and height
@@ -375,8 +391,8 @@ properties and `data-inv-frame`, not `data-inv-theme`: the frame is
 Foundry's, so it doesn't get our element defaults or state layers, and a
 theme's `app-frame` overrides are scoped to `data-inv-frame` instead.
 
-Empty by default, so a window looks like Foundry's own. *Expected
-override:* a theme's glow or border on `root`; a transparent titlebar would be
+Empty by default, so a window looks like Foundry's own. _Expected
+override:_ a theme's glow or border on `root`; a transparent titlebar would be
 `header` (#1534). A V1 seed's `appWindowStyle` becomes an `app-frame__root`
 override. (Before this, window styles hadn't shown since our sheets moved to
 ApplicationV2: `CSSReset` looked for ApplicationV1's `.window-app`.)
@@ -393,7 +409,7 @@ measures to fit the name to the logo.
 Slot names are snake_case, so their classes are valid override names
 (`inv-logo__front_sub`).
 
-*Expected override, every slot:* each theme's logo is its own. A V1 seed's
+_Expected override, every slot:_ each theme's logo is its own. A V1 seed's
 `logo` styles become overrides of the matching slots, each starting from that
 slot's defaults (`logoDefaults.ts`), because V1 spread them over the defaults
 (the front style goes on the name, the subtext and the measuring copy
@@ -414,8 +430,8 @@ A card (Cards rules), applied by `CardDisplay`. Slots: `root`, `supertitle`,
 `title`, `subtitle`, `description`, `effect`. The root is on `surfaceSolid`
 with a `line` border. It has `data-category` (the card's style key), so a
 theme can style one category's cards: `&[data-category="x"]` in a `card__root`
-override, `[data-category="x"] &` in the others. *`root` is an expected
-override.*
+override, `[data-category="x"] &` in the others. _`root` is an expected
+override._
 
 A V1 theme gets an override of each slot: its `themeFactory` style (V1's
 default, or the seed's `cards.base` style for that part, replacing it
@@ -439,7 +455,7 @@ V1's default glow, which is close to it.
   cover over a picture, the loading screen. `depth: top | nested` picks
   `surface` or `surfaceNested`; `solid` picks the solid version, for one
   that overlaps or scrolls over other content (a sticky search bar). It sets
-  only the background *colour*, so it can go on an element with an image of
+  only the background _colour_, so it can go on an element with an image of
   its own (the loading screen's sheet root).
 - **`floating`**: something raised above the sheet, overlapping it, always
   on the solid surface. `kind`: `overlay` (a message over everything,
@@ -472,12 +488,12 @@ each draw their own. They're plain CSS in `src/themes/catalogue/states.css`,
 in the `system.states` layer, after the catalogue and theme overrides, so
 they always show.
 
-| Layer | When | Look |
-|---|---|---|
-| `hoverFeedback` | `[data-interactive]:hover`, unless disabled | A `feedback` glow, and a pointer |
-| `focusRing` | `:focus-visible`, on anything; for a visually hidden input, the label or span after it | A 2px `feedback` outline |
-| `dropTarget` | `[data-drop-state="ready"]`: you can drop what you're dragging here | A dashed `line` outline, outside the element |
-| | `[data-drop-state="over"]`: and it's over it | The outline turns `accent`, with a `feedback` tint |
+| Layer           | When                                                                                   | Look                                               |
+| --------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `hoverFeedback` | `[data-interactive]:hover`, unless disabled                                            | A `feedback` glow, and a pointer                   |
+| `focusRing`     | `:focus-visible`, on anything; for a visually hidden input, the label or span after it | A 2px `feedback` outline                           |
+| `dropTarget`    | `[data-drop-state="ready"]`: you can drop what you're dragging here                    | A dashed `line` outline, outside the element       |
+|                 | `[data-drop-state="over"]`: and it's over it                                           | The outline turns `accent`, with a `feedback` tint |
 
 `focusRing` comes last, so a focused element shows focus whatever other
 layer is drawing its outline.
