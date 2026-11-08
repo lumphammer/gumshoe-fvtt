@@ -489,9 +489,8 @@ takes actors dragged from Foundry's sidebar), and `over` from `dragover` to
 
 ## Theme overrides
 
-A theme can replace any catalogue class, variant or slot. `ThemeV1` has an
-internal `catalogue` field for this (not in the published seed type until the
-new theme format settles), keyed by the class name without `inv-`:
+A theme can replace any catalogue class, variant or slot. The overrides live
+in `ThemeV1`'s `catalogue` field, keyed by the class name without `inv-`:
 
 ```ts
 catalogue: {
@@ -499,6 +498,14 @@ catalogue: {
   "badge--compound__tone_danger__weight_strong": { ... },
 }
 ```
+
+Where they come from, for now: `fromV1` makes them from a V1 theme's styles,
+and that's all. **Theme authors can't write overrides yet, and V1 seeds
+won't ever be able to**: that comes with ThemeV2 (#1533). Until then, the e2e
+tests use a temporary back door in `themeFactory`: a seed object can carry an
+untyped `catalogue` field, whose overrides go over `fromV1`'s. It's not in
+`ThemeSeedV1`, it's not a feature, and nothing but those tests should use
+it. It goes away when the tests can install a ThemeV2 theme.
 
 An override of a class's base or a slot (`badge`, `tabs__tab`) **replaces**
 the default for that name: none of the default's declarations survive, so it

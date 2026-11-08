@@ -41,7 +41,7 @@ test("a theme's badge override replaces the default but keeps tone, states and h
         backdropStyle: {},
       },
       colors,
-      // internal: not in the published seed type
+      // a test-only back door until ThemeV2 (themeFactory), not a seed field
       catalogue: {
         badge: { fontStyle: "italic", borderRadius: 0 },
         "badge--compound__tone_neutral__weight_subtle": {
@@ -318,7 +318,7 @@ test("controls: a checkbox's box can be replaced, check buttons work from the ke
           backdropStyle: {},
         },
         colors,
-        // internal: not in the published seed type
+        // a test-only back door until ThemeV2 (themeFactory), not a seed field
         catalogue: {
           checkbox__box: { background: "rgb(0, 160, 0)", width: "2em" },
         },
@@ -519,8 +519,8 @@ test("lists: headings and column headers are ruled in line, interactive rows are
         backdropStyle: {},
       },
       colors,
-      // internal: not in the published seed type. A variant override
-      // patches: the highlight stays
+      // a test-only back door until ThemeV2 (themeFactory), not a seed
+      // field. A variant override patches: the highlight stays
       catalogue: { "row--interactive_true": { cursor: "crosshair" } },
     };
     CONFIG.Investigator!.installTheme("listsReviewTheme", seed);

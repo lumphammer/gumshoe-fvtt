@@ -56,7 +56,7 @@ const installTheme = (
         // reads the palette: the frame has to get it too
         appWindowStyle: { boxShadow: "0 0 0 4px var(--inv-accent)" },
         global: `.inv-tabs__content { outline: 3px dotted ${mark}; }`,
-        // internal: not in the published seed type
+        // a test-only back door until ThemeV2 (themeFactory), not a seed field
         catalogue: { input: { textDecorationColor: mark } },
       };
       CONFIG.Investigator!.installTheme(name, seed);
