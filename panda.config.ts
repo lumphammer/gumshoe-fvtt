@@ -24,33 +24,16 @@ import { floating, partyCell, surface } from "./src/themes/catalogue/surfaces";
 import { tabs } from "./src/themes/catalogue/tabs";
 import { displayText, mutedText, outcome } from "./src/themes/catalogue/text";
 import { toggle } from "./src/themes/catalogue/toggle";
-import { type Palette, paletteVar } from "./src/themes/palette";
+import {
+  type Palette,
+  paletteColorKeys,
+  paletteVar,
+} from "./src/themes/palette";
 
 type PaletteKey = Exclude<keyof Palette, "polarity">;
 
 const v = (key: PaletteKey) => ({ value: `var(${paletteVar(key)})` });
 
-const colorKeys = [
-  "wallpaper",
-  "surface",
-  "surfaceNested",
-  "control",
-  "text",
-  "textMuted",
-  "link",
-  "accent",
-  "onAccent",
-  "feedback",
-  "line",
-  "danger",
-  "onDanger",
-  "warning",
-  "onWarning",
-  "success",
-  "onSuccess",
-  "info",
-  "onInfo",
-] as const satisfies readonly PaletteKey[];
 
 export default defineConfig({
   // conditions (_hover, _selected...) and utilities, but not preset-panda:
@@ -149,7 +132,7 @@ export default defineConfig({
       },
     },
     tokens: {
-      colors: Object.fromEntries(colorKeys.map((key) => [key, v(key)])),
+      colors: Object.fromEntries(paletteColorKeys.map((key) => [key, v(key)])),
       radii: { standard: v("radius") },
       shadows: { elevation: v("elevation") },
     },

@@ -66,6 +66,29 @@ export interface Palette {
   displayLetterSpacing: string;
 }
 
+/** The palette's colours: Panda's `colors` tokens. */
+export const paletteColorKeys = [
+  "wallpaper",
+  "surface",
+  "surfaceNested",
+  "control",
+  "text",
+  "textMuted",
+  "link",
+  "accent",
+  "onAccent",
+  "feedback",
+  "line",
+  "danger",
+  "onDanger",
+  "warning",
+  "onWarning",
+  "success",
+  "onSuccess",
+  "info",
+  "onInfo",
+] as const satisfies readonly (keyof Palette)[];
+
 /** The custom property a palette entry is set in, e.g. `--inv-surface-nested`. */
 export const paletteVar = (key: Exclude<keyof Palette, "polarity">) =>
   `--inv-${key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`;

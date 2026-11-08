@@ -99,8 +99,10 @@ defineThemeV2({
   a variant or compound variant **patches** it.
 - A `compoundVariants` override can target any combination of variant values,
   not only the ones the recipe declares.
-- Values: a value that is exactly a palette name (`color: "accent"`) is that
-  entry; inside an expression, the entry is `var(--inv-…)`
+- Values: in a colour property (`color`, `background`, `fill`, `stroke`,
+  and any `…Color`), a value that is exactly the name of a palette colour
+  (`color: "accent"`) is that colour. Anywhere else (`cursor: "text"` is
+  CSS's), and inside an expression, a palette entry is `var(--inv-…)`
   (`"oklch(from var(--inv-surface) calc(l - 0.1) c h)"`); anything else is
   plain CSS. States are nested keys (`"&:hover"`), not Panda's `_hover`.
 - Style objects are typed: camelCase properties from `csstype`, custom
@@ -125,7 +127,12 @@ it may break as the markup changes.
 
 - A script generates the override types from the recipe definitions into
   `@lumphammer/investigator-fvtt-types`, which the app imports too;
-  `pnpm check` fails if they're out of date. The package publishes ThemeV2
+  `pnpm check` fails if they're out of date. (Done:
+  `scripts/generateCatalogueShapes.ts`, `pnpm generate:catalogue`, which also
+  writes the runtime list the app checks overrides against; the types are
+  `ThemeCatalogue` and `ThemeStyle` in the types package, and
+  `compileCatalogue.ts` turns a theme's catalogue into today's overrides by
+  class.) The package publishes ThemeV2
   and the palette types (this includes fixing #1557).
 - The catalogue's recipe, slot and variant names and values are public API:
   renaming or removing one is a breaking change for the types package.

@@ -32,7 +32,10 @@ export type CatalogueOverrides = Record<string, OverrideStyle>;
 /**
  * The cascade layer Panda puts a part of a recipe in (see the layers in
  * panda.config.ts): a slot's parts under `slots`, then `base`, `variants` or
- * `compound_variants`.
+ * `compound_variants`. A name can also be several variants' classes joined
+ * by `.` (`badge--tone_danger.badge--weight_strong`): an element with all of
+ * them, in the compound variants' layer (a variant joined to itself is that
+ * variant, in that layer).
  */
 export function layerOf(name: string) {
   const [part, ...variant] = name.split("--");
@@ -40,7 +43,7 @@ export function layerOf(name: string) {
   const sub =
     variant.length === 0
       ? "base"
-      : variant[0].startsWith("compound__")
+      : variant[0].startsWith("compound__") || name.includes(".")
         ? "compound_variants"
         : "variants";
   return `system.recipes${slots}.${sub}`;
@@ -307,7 +310,7 @@ export function catalogueOverridesCss(
 ) {
   return Object.entries(overrides)
     .filter(([name]) => {
-      const ok = /^[a-z0-9_-]+$/.test(name);
+      const ok = /^[a-z0-9_-]+(\.[a-z0-9_-]+)*$/.test(name);
       if (!ok) console.warn(`Catalogue override: no such class "${name}"`);
       return ok;
     })
@@ -317,8 +320,17 @@ export function catalogueOverridesCss(
         ? "data-inv-frame"
         : "data-inv-theme";
       const scope = `[${attribute}="${slug}"]`;
+      // a compound: the first class as it is, the others in :where(), so
+      // it's as specific as Panda's compound class, and the class's states
+      // still win
+      const [first, ...others] = name.split(".");
+      const classes = `.inv-${first}${
+        others.length > 0
+          ? `:where(${others.map((part) => `.inv-${part}`).join("")})`
+          : ""
+      }`;
       return `@layer ${layerOf(name)} {\n${serialize(
-        [`.inv-${name}:where(${scope}, ${scope} *)`],
+        [`${classes}:where(${scope}, ${scope} *)`],
         style,
         // a base or slot is replaced; a variant is patched (see above)
         layerOf(name).endsWith(".base"),

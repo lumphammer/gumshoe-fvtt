@@ -1,5 +1,12 @@
 import type * as CSS from "csstype";
 
+export type {
+  CatalogueRecipeShapes,
+  RecipeOverride,
+  ThemeCatalogue,
+  ThemeStyle,
+} from "./themeV2";
+
 /**
  * A style object: CSS properties in camelCase (a number is pixels, as in
  * React's `style`, for properties that take a length), with nested rules
