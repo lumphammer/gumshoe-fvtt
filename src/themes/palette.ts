@@ -12,20 +12,14 @@ export interface Palette {
   /** The colour the sheet's backdrop averages to, shown while images load. */
   wallpaper: string;
   /**
-   * What content sits on. Opaque: things that overlap other content (menus,
-   * sticky headers) sit on it too. A theme that wants a translucent look
-   * gets it with overrides, not here.
+   * What content sits on. Expected to be opaque, as things that overlap
+   * other content (menus, sticky headers) sit on it too. Not enforced: a
+   * translucent one works if the theme keeps those things opaque with
+   * overrides.
    */
   surface: string;
-  /** What content inside content sits on. Opaque, like `surface`. */
+  /** What content inside content sits on. Expected to be opaque, like `surface`. */
   surfaceNested: string;
-  /**
-   * (derived) `surface` tinted halfway to `danger`, keeping its opacity: a
-   * status tint for an area that's in trouble (an ability nobody has).
-   */
-  surfaceDanger: string;
-  /** (derived) `surfaceNested` tinted halfway to `danger`, keeping its opacity. */
-  surfaceNestedDanger: string;
   /** The fill of controls: buttons, toggle tracks. */
   control: string;
   /** The default ink. Legible on `surface`, `surfaceNested` and `control`. */
@@ -191,8 +185,6 @@ export function paletteFromV1(theme: ThemeV1): Palette {
     // puts V1's flattened ones (`bgOpaque*`) where things overlap content
     surface: colors.backgroundPrimary,
     surfaceNested: colors.backgroundSecondary,
-    surfaceDanger: colors.bgTransDangerPrimary,
-    surfaceNestedDanger: colors.bgTransDangerSecondary,
     control: colors.backgroundButton,
     text: colors.text,
     textMuted: `color-mix(in srgb, ${colors.text} 70%, ${colors.bgOpaquePrimary})`,

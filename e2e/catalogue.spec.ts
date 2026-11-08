@@ -826,14 +826,14 @@ test("surfaces: the party sheet's empty message floats, and an ability nobody ha
   const odd = await zeroCell.evaluate((el) =>
     el.classList.contains("inv-party-cell--odd_true"),
   );
+  // V1's danger tint: the surface (white, at 50% or 20%) halfway to red,
+  // keeping the surface's opacity
   await expect(zeroCell).toHaveCSS(
     "background-color",
-    await resolve(
-      zeroCell,
-      odd ? "var(--inv-surface-danger)" : "var(--inv-surface-nested-danger)",
-    ),
+    odd
+      ? /^rgba\(255, 12[78], 12[78], 0\.5\)$/
+      : /^rgba\(255, 12[78], 12[78], 0\.2\)$/,
   );
-  await expect(zeroCell).toHaveCSS("background-color", /^rgba\(/);
   // the header cells, stuck over the others, are opaque
   await expect(
     sheet.locator(".inv-party-cell--header_true").first(),

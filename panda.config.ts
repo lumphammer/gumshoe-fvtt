@@ -34,8 +34,6 @@ const colorKeys = [
   "wallpaper",
   "surface",
   "surfaceNested",
-  "surfaceDanger",
-  "surfaceNestedDanger",
   "control",
   "text",
   "textMuted",

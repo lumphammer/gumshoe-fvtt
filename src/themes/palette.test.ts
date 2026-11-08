@@ -133,7 +133,7 @@ describe("paletteStyle", () => {
 
 test("paletteVar", () => {
   expect(paletteVar("onAccent")).toBe("--inv-on-accent");
-  expect(paletteVar("surfaceNestedDanger")).toBe("--inv-surface-nested-danger");
+  expect(paletteVar("surfaceNested")).toBe("--inv-surface-nested");
 });
 
 test("themeSlug", () => {

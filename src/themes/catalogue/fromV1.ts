@@ -260,18 +260,22 @@ function cardsFromV1(theme: ThemeV1): CatalogueOverrides {
 /**
  * V1's surfaces could be translucent, and things that overlap other content
  * (menus, sticky headers, cards) were on them flattened over the wallpaper
- * (`bgOpaque*`). The palette's surfaces are opaque, so the recipes for those
- * things use them as they are: these put V1's flattened ones back.
+ * (`bgOpaque*`). The palette's surfaces are expected to be opaque, so the recipes for those
+ * things use them as they are: these put V1's flattened ones back. V1's
+ * danger-tinted surfaces (`bgTransDanger*`) kept the surface's opacity, which
+ * the recipe's tint doesn't, so they're put back too.
  */
-function overlapsFromV1(theme: ThemeV1): CatalogueOverrides {
+function surfacesFromV1(theme: ThemeV1): CatalogueOverrides {
   const {
     bgOpaquePrimary: top,
     bgOpaqueSecondary: nested,
     bgOpaqueDangerPrimary: dangerTop,
     bgOpaqueDangerSecondary: dangerNested,
+    bgTransDangerPrimary: dangerTopTrans,
+    bgTransDangerSecondary: dangerNestedTrans,
   } = theme.colors;
-  const cell = (odd: boolean, zero: boolean) =>
-    `party-cell--compound__header_true__odd_${odd}__zero_${zero}`;
+  const cell = (odd: boolean, zero: boolean, header = true) =>
+    `party-cell--compound__header_${header}__odd_${odd}__zero_${zero}`;
   return {
     "surface--compound__depth_top__solid_true": { backgroundColor: top },
     "surface--compound__depth_nested__solid_true": { backgroundColor: nested },
@@ -280,6 +284,8 @@ function overlapsFromV1(theme: ThemeV1): CatalogueOverrides {
     [cell(false, false)]: { background: nested },
     [cell(true, true)]: { background: dangerTop },
     [cell(false, true)]: { background: dangerNested },
+    [cell(true, true, false)]: { background: dangerTopTrans },
+    [cell(false, true, false)]: { background: dangerNestedTrans },
     select: {
       ...fieldDefaults,
       background: nested,
@@ -306,7 +312,7 @@ export function catalogueFromV1(theme: ThemeV1): CatalogueOverrides {
     ...appFrameFromV1(theme),
     ...sheetRootFromV1(theme),
     ...logoFromV1(theme),
-    ...overlapsFromV1(theme),
+    ...surfacesFromV1(theme),
     ...cardsFromV1(theme),
     ...panelsFromV1(theme),
     ...tabsFromV1(theme),

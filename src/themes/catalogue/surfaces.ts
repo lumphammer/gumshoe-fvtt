@@ -1,5 +1,11 @@
 import { defineRecipe } from "@pandacss/dev";
 
+import { paletteVar } from "../palette";
+
+/** A surface tinted halfway to `danger`: an area that's in trouble. */
+const dangerTint = (surface: "surface" | "surfaceNested") =>
+  `[color-mix(in srgb, var(${paletteVar("danger")}) 50%, var(${paletteVar(surface)}))]` as const;
+
 /**
  * **surface**: a plain area of surface that isn't a block of content of its
  * own (a panel has padding and nests; this doesn't): a sheet's notes area, a
@@ -88,12 +94,11 @@ export const floating = defineRecipe({
 /**
  * **partyCell**: a cell of the party sheet's grid of abilities (specialised).
  * Rows alternate between `surface` and `surfaceNested`; an ability nobody in
- * the party has is on the danger-tinted surfaces (`surfaceDanger` and
- * `surfaceNestedDanger`).
+ * the party has is on them tinted halfway to `danger`.
  *
  * Variants: `odd`, `zero` (nobody has it), `header`: the actors' names and
  * the abilities' names, stuck over the other cells as the grid scrolls. They
- * look the same as the others, as surfaces are opaque; the variant is there
+ * look the same as the others, as surfaces are expected to be opaque; the variant is there
  * for a theme whose overrides make surfaces translucent, to keep the headers
  * opaque (as V1's do).
  */
@@ -130,25 +135,25 @@ export const partyCell = defineRecipe({
       odd: true,
       zero: true,
       header: false,
-      css: { background: "surfaceDanger" },
+      css: { background: dangerTint("surface") },
     },
     {
       odd: false,
       zero: true,
       header: false,
-      css: { background: "surfaceNestedDanger" },
+      css: { background: dangerTint("surfaceNested") },
     },
     {
       odd: true,
       zero: true,
       header: true,
-      css: { background: "surfaceDanger" },
+      css: { background: dangerTint("surface") },
     },
     {
       odd: false,
       zero: true,
       header: true,
-      css: { background: "surfaceNestedDanger" },
+      css: { background: dangerTint("surfaceNested") },
     },
   ],
   defaultVariants: { odd: false, zero: false, header: false },

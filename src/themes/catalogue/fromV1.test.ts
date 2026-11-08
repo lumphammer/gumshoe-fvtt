@@ -183,6 +183,8 @@ test("themes get their V1 panel styles as overrides", () => {
     "party-cell--compound__header_true__odd_false__zero_false",
     "party-cell--compound__header_true__odd_true__zero_true",
     "party-cell--compound__header_true__odd_false__zero_true",
+    "party-cell--compound__header_false__odd_true__zero_true",
+    "party-cell--compound__header_false__odd_false__zero_true",
     "select",
     "drag-handle",
     "callout--tone_neutral",
@@ -202,7 +204,7 @@ test("themes get their V1 panel styles as overrides", () => {
   ]);
 });
 
-test("things that overlap content are on V1's flattened surfaces", () => {
+test("things that overlap content are on V1's flattened surfaces, and danger tints are V1's", () => {
   const { colors } = tealTheme;
   const overrides = catalogueFromV1(tealTheme);
   expect(overrides["surface--compound__depth_top__solid_true"]).toEqual({
@@ -212,6 +214,10 @@ test("things that overlap content are on V1's flattened surfaces", () => {
   expect(
     overrides["party-cell--compound__header_true__odd_false__zero_true"],
   ).toEqual({ background: colors.bgOpaqueDangerSecondary });
+  // and V1's danger tint, which kept the surface's opacity
+  expect(
+    overrides["party-cell--compound__header_false__odd_true__zero_true"],
+  ).toEqual({ background: colors.bgTransDangerPrimary });
   // a base override replaces the default, so it restates the rest of it
   expect(overrides["select"]).toMatchObject({
     borderStyle: "solid",
