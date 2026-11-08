@@ -1,4 +1,4 @@
-// ThemeV2's catalogue overrides (docs/theming.md, "ThemeV2 (planned)"):
+// ThemeV2's catalogue overrides (docs/theming.md, "Themes (ThemeV2)"):
 // shaped like the catalogue's recipes, and typed from them.
 import type * as CSS from "csstype";
 
@@ -158,7 +158,7 @@ type Kebab<S extends string> = S extends `${infer Head}${infer Tail}`
  */
 export type PaletteVar = `--inv-${Kebab<Exclude<keyof ThemePalette, "polarity">>}`;
 
-/** A theme (docs/theming.md, "ThemeV2"). */
+/** A theme (docs/theming.md, "Themes (ThemeV2)"). */
 export interface ThemeV2 {
   schemaVersion: "v2";
   displayName: string;

@@ -1,7 +1,7 @@
 // Writes the catalogue's shapes, from its recipes (the ones registered in
 // panda.config.ts): each recipe's class name, slots and variants, with their
 // values. ThemeV2's overrides are typed and checked against them
-// (docs/theming.md, "ThemeV2 (planned)").
+// (docs/theming.md, "Themes (ThemeV2)").
 //
 //   pnpm generate:catalogue          writes the files
 //   pnpm generate:catalogue --check  fails if they're out of date

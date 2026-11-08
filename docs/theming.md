@@ -4,16 +4,13 @@ How themes are defined and how components get their look. This is the
 contract: what each palette entry and catalogue class **means**, so that anyone
 writing a component or a theme makes the same choice in the same place.
 
-The system is being built in steps (#1532). The palette exists, as custom
-properties on every themed root, and the catalogue has `badge`, `button`,
-`panel`, `callout`, `input`, `select`, `checkbox`, `toggle`, `tabs`,
-`sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`,
-`displayText`, `mutedText`, `outcome`, `sheetRoot`, `logo`, `card`,
-`surface`, `floating`, `partyCell`, `richText` and `appFrame`, plus element
-defaults. Every component's look now comes from the catalogue, and none reads
-a theme's colours. V1 themes are mapped onto the catalogue (`fromV1.ts`).
-Layout at call sites is Panda's `css()` (see Converting a component); Emotion
-is gone. A V2 theme format is being built (ThemeV2, below).
+A theme is a **palette** and overrides of the **catalogue**: named classes,
+one per kind of thing, built from the palette with Panda. Every component's
+look comes from the catalogue, and none reads a theme's colours. Themes are
+written as ThemeV2 (below); V1 themes still work, converted when they're
+installed. The built-in themes are V2, printed from their V1 originals so
+they look as they did: restyling them is still to do. Layout at call sites
+is Panda's `css()` (see Converting a component); Emotion is gone.
 
 ## End goals
 
@@ -30,161 +27,22 @@ A few end goals of the whole [theming epic](https://github.com/lumphammer/gumsho
 - Custom themes loaded from a folder will still work, and they can be
   `ThemeSeedV1` or `ThemeV2` format.
 
-## ThemeV2 (planned)
-
-The format agreed for ThemeV2 (#1533), being built in slices. Where it
-differs from how things work today, today's sections below describe the
-present.
-
-**Built so far**: the override types and their compiler (below, Types and
-validation); the `ThemeV2` and `ThemePalette` types in the types package;
-`installTheme` and the folder loader taking V2 themes, checked as they're
-installed (`src/themes/theme.ts`); every installed theme, V1 or V2, resolved
-into one runtime `Theme` (display name, complete palette, overrides by class,
-`globalCss`), which is all the rest of the code sees; `ThemeContext`,
-`tabClass`, `panelClass` and `notesCssClasses` gone; the card gap a palette
-entry; `fromV1` making a V2 catalogue from a V1 theme's styles, compiled as
-a V2 theme's is; `pnpm print:theme-v2` printing a V1 built-in theme as V2
-source that looks the same (`src/themes/v2FromV1.ts`, checked for all of
-them); the built-in themes in V2, printed so (`src/themes`), with their V1
-originals in `src/themes/v1` (what they were printed from, and fixtures for
-the V1 path's tests; `v2FromV1.test.ts` checks each built-in still looks as
-it did, until it's restyled). **Still to do**: restyling the built-in themes;
-the types package packs properly now (#1557), but a new version isn't published yet.
-
-### Shape
-
-A V2 theme is plain, JSON-serialisable data: no functions, no Emotion
-objects. Built-in themes are written in TypeScript through a typed
-`defineThemeV2()` helper; module themes and folder themes (JSON or YAML) have
-the same shape.
-
-```ts
-defineThemeV2({
-  schemaVersion: "v2",
-  displayName: "Example",
-  description: "Optional",
-  palette: { polarity: "light", surface: "#fff", accent: "#c00", … },
-  catalogue: {
-    badge: {
-      base: { borderRadius: 0 },
-      variants: { tone: { danger: { fontWeight: "bold" } } },
-      compoundVariants: [{ tone: "danger", weight: "strong", css: { … } }],
-    },
-    tabs: {
-      // a slot recipe: styles by slot
-      base: { tab: { color: "accent" }, content: { … } },
-    },
-  },
-  globalCss: "",
-});
-```
-
-- One palette per theme: light and dark versions of a design are separate
-  themes.
-- No `extends`: TypeScript themes share code by spreading objects.
-- The theme picker's swatch is drawn from the palette.
-
-### Palette
-
-- **Required**: `polarity` (stated, never guessed), `wallpaper`, `surface`,
-  `surfaceNested`, `control`, `text`, `accent`, `line`, `feedback`, `danger`,
-  `warning`, `success`, `info`.
-- **Optional**, each with a derived default that a theme can replace:
-  `textMuted` (from `text`), `link` (`accent`), the `on*` inks (by APCA
-  contrast), `radius`, `elevation`, `bodyFont` and `displayFont` (`inherit`),
-  `displayCase` (`none`), `displayLetterSpacing` (`normal`), and `cardGap`.
-- `cardGap` is the spacing between cards, as a CSS `gap` value: one length,
-  or a row gap then a column gap. A card array also has it as its margin, as
-  V1 did. V1's `cards.area` becomes
-  `` `${verticalSpacing} ${horizontalSpacing}` ``, so the two axes stay
-  independent (Mutant City Blue's differ).
-- Surfaces are expected to be opaque, not required to be.
-- Fonts are palette entries only. V2 doesn't load them: built-in themes'
-  fonts come from the system's CSS, a module theme's from its module's, and a
-  folder theme's from `@font-face` or `@import` in its `globalCss`.
-- The palette's custom properties (`--inv-accent` and so on) are a stable,
-  documented contract, exported as a `PaletteVar` type.
-
-### Overrides (`catalogue`)
-
-- Keyed by recipe name as written in code (`badge`, `partyCell`), each shaped
-  like the recipe's Panda config: `base`, `variants`, `compoundVariants`, by
-  slot for a slot recipe. Authors never see generated class names.
-- An override of a base or slot **replaces** the recipe's own; an override of
-  a variant or compound variant **patches** it.
-- A `compoundVariants` override can target any combination of variant values,
-  not only the ones the recipe declares.
-- Values: in a colour property (`color`, `background`, `fill`, `stroke`,
-  and any `…Color`), a value that is exactly the name of a palette colour
-  (`color: "accent"`) is that colour. Anywhere else (`cursor: "text"` is
-  CSS's), and inside an expression, a palette entry is `var(--inv-…)`
-  (`"oklch(from var(--inv-surface) calc(l - 0.1) c h)"`); anything else is
-  plain CSS. States are nested keys (`"&:hover"`), not Panda's `_hover`.
-- Style objects are typed: camelCase properties from `csstype`, custom
-  properties (`--${string}`), and nested keys that contain `&` or start with
-  `@` (no bare descendant selectors).
-- Everything V1 had its own field for is an override: the logo's slots, the
-  sheet root's size variants (backdrop image and all), the app frame, cards,
-  tabs and panels. A card category's style is a nested selector in the
-  `card` override, on the `data-category` attribute of the card's root: in
-  the `root` slot, `'&[data-category="stress"]'`; in the other slots,
-  `'[data-category="stress"] &'`.
-- An override of the logo's forced layout (the parts the code positions) is
-  dropped with a warning.
-
-### `globalCss`
-
-A raw CSS string, in a `<style>` in the themed root, unscoped. An escape
-hatch for whatever the catalogue can't express, documented as unsupported:
-it may break as the markup changes.
-
-### Types and validation
-
-- A script generates the override types from the recipe definitions into
-  `@lumphammer/investigator-fvtt-types`, which the app imports too;
-  `pnpm check` fails if they're out of date. (Done:
-  `scripts/generateCatalogueShapes.ts`, `pnpm generate:catalogue`, which also
-  writes the runtime list the app checks overrides against; the types are
-  `ThemeCatalogue` and `ThemeStyle` in the types package, and
-  `compileCatalogue.ts` turns a theme's catalogue into today's overrides by
-  class.) The package publishes ThemeV2
-  and the palette types (this includes fixing #1557).
-- The catalogue's recipe, slot and variant names and values are public API:
-  renaming or removing one is a breaking change for the types package.
-  Adding is not.
-- Every theme except the built-ins is validated when it's installed (a module
-  may be plain JS, or built against an old version of the types): a broken
-  shape (a missing required palette entry, a bad `polarity`, an unknown
-  `schemaVersion`) rejects the theme with an error, shown to the GM for a
-  folder theme; a bad override is skipped with a warning.
-
-### V1
-
-- `CONFIG.Investigator.installTheme(id, theme)` and the folder loader take
-  either version, by `schemaVersion`. A V1 seed is converted to V2 when it's
-  installed (`themeFactory`, then `paletteFromV1` and `fromV1`), so V2 is the
-  only theme type the rest of the code sees. (As built, both become the
-  runtime `Theme`, a V2 theme resolved: its palette complete and its
-  catalogue compiled to overrides by class. `fromV1` makes a V1 theme's
-  catalogue, which is compiled the same way. A bare descendant selector in a
-  V1 style, `"h1"`, becomes `"& h1"`, and a V1 theme's values are CSS as
-  written: a palette name isn't a palette colour there.) V1's `global` (a string, or
-  Emotion's serialised styles from a theme module) becomes `globalCss` the
-  way `frame.ts` turns it into CSS today: Emotion's labels stripped, and
-  linked keyframes kept, in order.
-- `tabClass`, `panelClass` and `notesCssClasses` are dropped: deprecated and
-  ignored in the types, so a V1 theme that sets them still loads.
-- With V2 in place, the e2e tests' `catalogue` back door and `ThemeContext`
-  go. (Done: the tests install V2 themes.)
+Where they stand: ThemeV2 exists, and module and folder themes can be V1 or
+V2; `ThemeV1` is only a step on a V1 theme's way to the runtime theme;
+`ThemeContext` is gone; the built-in themes are converted, but not yet given
+their makeover.
 
 ## The pieces
 
 - **Palette**: a theme's colours, fonts and a few shared values, each with
-  one meaning (below). Defined by `Palette` in `src/themes/palette.ts`.
+  one meaning (below). `ThemePalette` in the types package; complete, it's
+  `Palette` in `src/themes/palette.ts`.
 - **Catalogue**: named classes, each a bag of styles for one kind of thing
   ("a badge", "a callout"), with variants. Built from the palette with Panda
   recipes. Themes can override any of them.
+- **Themes**: a palette, overrides of the catalogue, and optionally raw CSS
+  (ThemeV2, below). Every installed theme is resolved into one runtime
+  `Theme` (`src/themes/theme.ts`), which is all the rest of the code sees.
 - **Call sites**: components apply catalogue classes and write layout.
 
 ## Rules
@@ -202,7 +60,7 @@ it may break as the markup changes.
    own makes a usable theme. Themes may override any class: a shallow
    "replace", per slot for classes with slots. Some slots are _expected_ to be
    overridden, because that's where a theme's personality lives:
-   `sheetRoot`, `window.titlebar`, `tabs.tab`, `logo` and `card.root`.
+   `sheetRoot`, `appFrame`, `tabs.tab`, `logo` and `card.root`.
 5. **States are attributes; variants are design choices.** Selected, disabled,
    invalid, inactive, expanded and drag states come from attributes the markup
    should have anyway (`aria-selected`, `aria-disabled`, `aria-invalid`,
@@ -216,6 +74,149 @@ it may break as the markup changes.
 
 A palette entry exists only if two or more classes need to agree on a value.
 Spacing isn't one: it's layout.
+
+## Themes (ThemeV2)
+
+A theme is plain, JSON-serialisable data: no functions. Built-in themes are
+TypeScript, through `defineThemeV2()` (`src/themes/theme.ts`), which only
+type-checks them; a module's theme or a theme file in the custom themes
+folder (JSON or YAML) has the same shape. The types are in
+`@lumphammer/investigator-fvtt-types`: `ThemeV2`, `ThemePalette`,
+`ThemeCatalogue`, `ThemeStyle`, `PaletteVar`.
+
+```ts
+defineThemeV2({
+  schemaVersion: "v2",
+  displayName: "Example",
+  description: "Optional",
+  palette: {
+    polarity: "light",
+    wallpaper: "#ddd",
+    surface: "#fff",
+    surfaceNested: "#f4f4f4",
+    control: "#e8e8e8",
+    text: "#433",
+    accent: "#1d5d5d",
+    line: "#766",
+    feedback: "#5effff",
+    danger: "#c00",
+    warning: "#d68a00",
+    success: "#080",
+    info: "#2b6cb0",
+  },
+  catalogue: {
+    sheetRoot: {
+      variants: {
+        size: {
+          large: { backgroundImage: "url(modules/my-theme/paper.webp)" },
+        },
+      },
+    },
+    badge: {
+      base: { borderRadius: 0, fontStyle: "italic" },
+      variants: { tone: { danger: { fontWeight: "bold" } } },
+      compoundVariants: [
+        { tone: "danger", weight: "strong", css: { color: "onDanger" } },
+      ],
+    },
+    // a slot recipe: styles by slot
+    tabs: { base: { tab: { textTransform: "uppercase" } } },
+  },
+  globalCss: "@import url(modules/my-theme/fonts.css);",
+});
+```
+
+- One palette per theme: light and dark versions of a design are separate
+  themes. No `extends`: TypeScript themes share code by spreading objects.
+- `CONFIG.Investigator.installTheme(id, theme)` takes a V1 or a V2 theme, by
+  its `schemaVersion`; so does the custom themes folder.
+- The theme picker's swatch is drawn from the palette.
+
+### The palette, in a theme
+
+**Required**: `polarity` (stated, never guessed), `wallpaper`, `surface`,
+`surfaceNested`, `control`, `text`, `accent`, `line`, `feedback`, `danger`,
+`warning`, `success`, `info`. **Optional**, each worked out unless the theme
+sets it (`resolvePalette`): `textMuted` (`text`, 70% over `surface`), `link`
+(`accent`), the `on*` inks (black or white, whichever reads better by APCA
+contrast; for a colour it can't read, such as a `color-mix()` or a
+`var()`, white, or black for `onWarning`, so a theme with one of those sets
+the ink itself), `radius` (`0.25em`), `elevation` (`0 0 0.5em black`), `bodyFont`
+and `displayFont` (`inherit`), `displayCase` (`none`),
+`displayLetterSpacing` (`normal`), and `cardGap` (`0.5em`). What each means
+is under Palette, below.
+
+Fonts are palette entries only: a theme doesn't load them. The built-in
+themes' fonts come from the system's CSS, a module theme's from its module's,
+and a folder theme's from `@font-face` or `@import` in its `globalCss`.
+
+### Overrides: `catalogue`
+
+Keyed by recipe name as written in code (`badge`, `partyCell`,
+`sectionHeading`), each shaped like the recipe's own Panda config:
+
+- `base` **replaces** the recipe's base: none of the recipe's own
+  declarations survive there, so it has to say everything it wants. For a
+  slot recipe (`tabs`, `card`, `logo`, `checkbox`, `toggle`, `appFrame`),
+  `base` is by slot, and replaces each slot it names.
+- `variants` (`{ tone: { danger: {...} } }`, by slot for a slot recipe)
+  **patch** the recipe's variants: their declarations go over the variant's,
+  and the rest of it stays.
+- `compoundVariants` (`[{ tone: "danger", weight: "strong", css: {...} }]`)
+  patch an element with every one of the variants they name, whether or not
+  the recipe has a compound variant for them. A boolean variant's value can
+  be `true` or `"true"`.
+
+A style is CSS properties in camelCase (a number is pixels, for a property
+that takes a length; an array is fallbacks, one declaration each), custom
+properties (`"--my-thing"`), and nested rules keyed by a selector containing
+`&` (`"&:hover"`, `"input:checked + &"`, `"& img"`) or by an at-rule
+(`"@media (...)"`). There are no bare descendant selectors, and no Panda
+shortcuts (`_hover`). In a colour property (`color`, `background`, `fill`,
+`stroke`, and any `…Color`), a value that's exactly the name of a palette
+colour (`color: "accent"`) is that colour. Anywhere else, and inside an
+expression, a palette entry is its custom property:
+`"oklch(from var(--inv-surface) calc(l - 0.1) c h)"`. (`cursor: "text"` is
+CSS's `text`.)
+
+A card category's style is a nested selector in the `card` override, on the
+`data-category` attribute of the card's root: `'&[data-category="stress"]'`
+in the `root` slot, `'[data-category="stress"] &'` in the others. Theme
+overrides and how they're rendered are under Theme overrides, below.
+
+### `globalCss`
+
+A raw CSS string, in a `<style>` in the themed root, unscoped: an escape
+hatch for what the catalogue can't express, and for loading a folder theme's
+fonts. It isn't supported: it can break as the markup changes.
+
+### Types and checks
+
+- `pnpm generate:catalogue` (`scripts/generateCatalogueShapes.ts`) writes
+  each recipe's slots and variants from the recipes registered in
+  `panda.config.ts`: as types in the types package
+  (`catalogue.generated.ts`), which `ThemeCatalogue` is built from, and as
+  the list the app checks a theme's catalogue against
+  (`src/themes/catalogue/recipeShapes.generated.ts`). `pnpm check` fails if
+  they're out of date. So a recipe, slot, variant or value that doesn't exist
+  is a type error.
+- The catalogue's recipe, slot and variant names and values are public API:
+  renaming or removing one is a breaking change for the types package;
+  adding one isn't.
+- Every theme but the built-ins is checked when it's installed
+  (`validateThemeV2`): a module may be plain JavaScript, or built against an
+  old version of the types. A theme whose shape is wrong (a missing required
+  palette entry, a `polarity` that isn't `light` or `dark`, an unknown
+  `schemaVersion`) is refused, with an error that says everything wrong with
+  it, shown to the GM for a folder theme. What isn't part of a theme is
+  ignored with a warning. So is what doesn't fit the catalogue
+  (`compileCatalogue`): an unknown recipe, slot, variant or value is left
+  out, and so is a declaration or nested rule that isn't valid inside a
+  style, on its own. A style with nothing valid left in it is left out
+  whole, so it doesn't replace a base with nothing (an empty one, `{}`,
+  still does: that's what it says).
+- The types package ships its declarations (`files`, `prepack`), for
+  `bundler` and `nodenext` resolution alike (#1557).
 
 ## Palette
 
@@ -238,7 +239,7 @@ kebab case: `surfaceNested` is `--inv-surface-nested`), and a Panda token
 | `feedback`                                           | The colour of hover, focus and drag-over feedback. Never state or decoration                                                                                                                                                                                                                                                                  |
 | `line`                                               | Structural lines: control outlines, separators, heading rules, table header rules                                                                                                                                                                                                                                                             |
 | `danger`, `warning`, `success`, `info`               | Status. Each is legible as text on both surfaces                                                                                                                                                                                                                                                                                              |
-| `onDanger`, `onWarning`, `onSuccess`, `onInfo`       | Ink on the matching status fill. From a V1 theme, black or white, whichever reads better by APCA contrast (WCAG 2's ratio prefers black on saturated reds, where white reads far better)                                                                                                                                                      |
+| `onDanger`, `onWarning`, `onSuccess`, `onInfo`       | Ink on the matching status fill. Unless a theme sets it, black or white, whichever reads better by APCA contrast (WCAG 2's ratio prefers black on saturated reds, where white reads far better)                                                                                                                                                      |
 | `radius`                                             | The one corner radius classes share (Panda: `radii.standard`)                                                                                                                                                                                                                                                                                 |
 | `elevation`                                          | The shadow for anything floating (Panda: `shadows.elevation`)                                                                                                                                                                                                                                                                                 |
 | `bodyFont`                                           | The `body` text style: prose and controls. A CSS `font` value                                                                                                                                                                                                                                                                                 |
@@ -249,34 +250,15 @@ Status-tinted surfaces (flagged rows, invalid inputs, callouts, the party
 sheet's abilities nobody has) are derived in their recipes, from the status
 colours and the surfaces, not set by themes.
 
-### From V1 themes
-
-Every V1 theme gets a palette from `paletteFromV1`, which should change nothing
-about how anything looks. V1's surfaces can be translucent, and the recipes
-expect opaque ones, so things that overlap content keep V1's look through
-overrides: see "Overlapping things in V1 themes", below.
-
-| V1                                                                           | Palette                                                          |
-| ---------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `backgroundPrimary` / `backgroundSecondary`                                  | `surface` / `surfaceNested`                                      |
-| `bgOpaquePrimary` / `bgOpaqueSecondary`, `bgOpaqueDanger*`, `bgTransDanger*` | none: `fromV1` puts them where V1 had them, as overrides (below) |
-| `backgroundButton`                                                           | `control`                                                        |
-| `accent`                                                                     | `accent`, and `link`                                             |
-| `accentContrast`                                                             | `onAccent`                                                       |
-| `glow`                                                                       | `feedback`                                                       |
-| `controlBorder`                                                              | `line`                                                           |
-| `danger`, `warning`, `success`                                               | The same. `info` and the `on-` partners are new                  |
-| `bodyFont`, `displayFont`, `displayFontTextTransform`                        | `bodyFont`, `displayFont`, `displayCase`                         |
-| (from `text`)                                                                | `polarity`: light text means a dark theme                        |
-
 ## Catalogue
 
 Each class is a Panda recipe in `src/themes/catalogue/`, registered in
-`panda.config.ts`. Its CSS class is `inv-` and its name (`inv-badge`), and
-each variant gets its own class (`inv-badge--tone_danger`); compound variants
-too (`inv-badge--compound__tone_danger__weight_strong`). Every variant is
-generated whether a call site uses it or not, because themes override them by
-name.
+`panda.config.ts`. Its CSS class is `inv-` and its name in kebab case
+(`inv-badge`, `inv-section-heading`), and each variant gets its own class
+(`inv-badge--tone_danger`); compound variants too
+(`inv-badge--compound__tone_danger__weight_strong`). Every variant is
+generated whether a call site uses it or not, so a theme can override any of
+them.
 
 Call sites import the recipe from `styled-system/recipes` and apply it, with
 layout from `css()` alongside:
@@ -394,12 +376,6 @@ overflow, flex).
   - `nested`: content inside content: inside another `Panel`, or inside
     something marked `OnSurface`, such as a tab's content.
     `surfaceNested`. Deeper nesting stays `nested`.
-- A V1 theme's `panelStylePrimary` becomes a
-  `panel--depth_top` override, and `panelStyleSecondary` (or, without one,
-  `panelStylePrimary`) a `panel--depth_nested` one, so the two stay
-  independent, as in V1 (`src/themes/catalogue/fromV1.ts`). A V1 panel
-  style replaced the panel's background, but a variant override patches, so
-  one without a background of its own gets `backgroundColor: transparent`.
 - A panel that's also a grid of fields takes `inputGridStyle` rather than
   wrapping an `InputGrid`, so it stays one element.
 
@@ -445,18 +421,11 @@ not._
   Unselected tabs are `data-interactive`.
 - `content` is `surface`, owns the padding, and its children are nested, so
   a `Panel` in a tab is `nested`.
-- A V1 theme's seven `tab*Style` fields
-  become `tabs` overrides (`src/themes/catalogue/fromV1.ts`), so V1 themes
-  keep their tabs. `themeFactory` fills in the fields a seed leaves out, and
-  those V1 defaults become overrides too: a V1 theme gets V1's default tabs
-  (`accent` ink, unselected ones on `backgroundSecondary`, which V1 says is
-  "used for inactive tabs"), not the catalogue's.
+- `TabContainer` refits its strip when the theme changes (its fonts can
+  change the tabs' widths), by watching the themed root's `data-inv-theme`
+  and palette.
 
 ### Lists: `sectionHeading`, `tableHeader`, `row`, `dragHandle`, `emptyState`
-
-Their CSS classes are kebab-case, like every class name (`inv-section-heading`,
-`inv-table-header`, `inv-drag-handle`, `inv-empty-state`): theme overrides
-take only `[a-z0-9_-]`.
 
 - **`sectionHeading`**: a heading that divides a sheet into sections
   ("Academic", "Weapons"), with a `line` rule under it. Apply it to the
@@ -512,6 +481,7 @@ than the element: any class beats them.
   `neutral` is `text`. _Not for_ a label on a thing (`badge`) or a message
   about it (`callout`).
 
+
 ### `sheetRoot`
 
 The themed root of a window, applied by `CSSReset` to the element that
@@ -519,14 +489,12 @@ carries `data-inv-theme` and the palette's custom properties: the `body` text
 style, `text` ink, `accent` for native controls, and the wallpaper. `size`:
 `large` (a full sheet) and `small` (a small window) are on `wallpaper`;
 `none` (a themed area inside something else) is transparent. Padding and
-height are layout, but they're in the `size` variants too, so a V1 root
-style can still set them.
+height are layout, but they're in the `size` variants too, so a theme can
+still set them (V1 themes do).
 
-_Expected override:_ a theme's backdrop goes in its `size` variants. A V1
-seed's `largeSheetRootStyle` and `smallSheetRootStyle` become
-`sheet-root--size_large` and `sheet-root--size_small` overrides, which patch
-the variants, as V1 spread them over the defaults, padding and height
-included.
+_Expected override:_ a theme's backdrop goes in its `size` variants
+(`sheetRoot: { variants: { size: { large: {...}, small: {...} } } }`), which
+patch them.
 
 ### `appFrame`
 
@@ -535,16 +503,15 @@ Foundry's window around a themed root, as a slot recipe: `root` (the
 `.window-content` our root sits in). `CSSReset` puts the classes on Foundry's
 elements while it's mounted, if it's the outermost themed root in the window
 (not with `noStyleAppWindow`); roots side by side in one window (a loading
-fallback over a suspended sheet) take turns, the latest first (`frame.ts`). The window gets the palette's custom
-properties and `data-inv-frame`, not `data-inv-theme`: the frame is
-Foundry's, so it doesn't get our element defaults or state layers, and a
-theme's `app-frame` overrides are scoped to `data-inv-frame` instead.
+fallback over a suspended sheet) take turns, the latest first (`frame.ts`).
+The window gets the palette's custom properties and `data-inv-frame`, not
+`data-inv-theme`: the frame is Foundry's, so it doesn't get our element
+defaults or state layers, and a theme's `appFrame` overrides are scoped to
+`data-inv-frame` instead.
 
 Empty by default, so a window looks like Foundry's own. _Expected
 override:_ a theme's glow or border on `root`; a transparent titlebar would be
-`header` (#1534). A V1 seed's `appWindowStyle` becomes an `app-frame__root`
-override. (Before this, window styles hadn't shown since our sheets moved to
-ApplicationV2: `CSSReset` looked for ApplicationV1's `.window-app`.)
+`header` (#1534).
 
 ### `logo`
 
@@ -554,50 +521,30 @@ theme can do 3D, shadows and text gradients. Slots: `backdrop`, `text` (the
 wrapper of both copies, which the theme can transform), `front_wrapper`,
 `front` (the name), `front_sub` (the subtext), and the same three for `rear`;
 and `measure`, a hidden full-size copy of the name that `LogoEditable`
-measures to fit the name to the logo.
-Slot names are snake_case, so their classes are valid override names
-(`inv-logo__front_sub`).
+measures to fit the name to the logo. Slot names are snake_case, so their
+classes are valid CSS class names (`inv-logo__front_sub`). The slots'
+defaults are plain CSS in `logoDefaults.ts`.
 
-_Expected override, every slot:_ each theme's logo is its own. A V1 seed's
-`logo` styles become overrides of the matching slots, each starting from that
-slot's defaults (`logoDefaults.ts`), because V1 spread them over the defaults
-(the front style goes on the name, the subtext and the measuring copy
-alike). What V1 put after the theme's style stays forced, even against a
-theme's `!important`: the backdrop's `position` and insets (it's absolutely
-positioned at the logo's edges; its size, margins and transforms are the
-theme's), and the measuring copy's position and `1em` font size, merged last
-into its override.
-
-Override values are serialized carefully: a list of fallbacks
-(`width: ["200px", "1lh"]`) becomes one declaration each, and a `<` inside a
-quoted string (an inline SVG in a data URL) is escaped as `\3c `, so it
-can't end the `<style>`.
+_Expected override, every slot:_ each theme's logo is its own. Some of it is
+layout the code depends on, and an override can't change it: the backdrop's
+`position` and insets (it's absolutely positioned at the logo's edges; its
+size, margins and transforms are the theme's), and the measuring copy's
+position and `1em` font size, which go last in its override. An override
+that sets them has those declarations left out, with a warning
+(`compileCatalogue`).
 
 ### `card`
 
 A card (Cards rules), applied by `CardDisplay`. Slots: `root`, `supertitle`,
 `title`, `subtitle`, `description`, `effect`. The root is on `surface`
 with a `line` border. It has `data-category` (the card's style key), so a
-theme can style one category's cards: `&[data-category="x"]` in a `card__root`
-override, `[data-category="x"] &` in the others. _`root` is an expected
-override._
+theme can style one category's cards (Themes, above). A card in a card array
+is clickable (`data-interactive`), so it gets the `hoverFeedback` glow.
+_`root` is an expected override._
 
-A V1 theme gets an override of each slot: its `themeFactory` style (V1's
-default, or the seed's `cards.base` style for that part, replacing it
-whole). Each of its `cards.categories` becomes a rule of
-its own with the category's style spread over the base, and the base rule
-leaves those categories' cards out, so a category's style wins as it did in
-V1, `!important` and nested rules included. The contexts are in `:where()`,
-so both rules are as specific as the plain class. Any style key works: it's
-hex-escaped in the attribute selector. A card in a card array is clickable
-(`data-interactive`), so it gets the `hoverFeedback` glow; a V1 theme's
-`hoverStyle` (the base's, then its category's over it) becomes a `:hover`
-rule in its `card__root` override, for cards in an array. The glow's
-`box-shadow` comes after it, so it wins over one in a `hoverStyle`, such as
-V1's default glow, which is close to it.
-The spacing between cards is the palette's `cardGap` (V1's `cards.area`),
-which `CardArray` reads from its custom properties: `--inv-card-gap`, and
-`--inv-card-gap-row` and `--inv-card-gap-column` for its two axes.
+The spacing between cards is the palette's `cardGap`, which `CardArray`
+reads from its custom properties: `--inv-card-gap`, and `--inv-card-gap-row`
+and `--inv-card-gap-column` for its two axes.
 
 ### Surfaces: `surface`, `floating`, `partyCell`
 
@@ -606,9 +553,9 @@ which `CardArray` reads from its custom properties: `--inv-card-gap`, and
   cover over a picture, the loading screen. `depth: top | nested` picks
   `surface` or `surfaceNested`; `solid` is for one that overlaps or scrolls
   over other content (a sticky search bar): the same colour, as surfaces are
-  opaque, but a hook for a theme that makes them translucent. It sets
-  only the background _colour_, so it can go on an element with an image of
-  its own (the loading screen's sheet root).
+  expected to be opaque, but a hook for a theme whose surfaces aren't. It
+  sets only the background _colour_, so it can go on an element with an
+  image of its own (the loading screen's sheet root).
 - **`floating`**: something raised above the sheet, overlapping it, on
   `surface`. `kind`: `overlay` (a message over everything,
   rounded, with `elevation`), `drawer` (a panel sliding in from the side,
@@ -619,24 +566,9 @@ which `CardArray` reads from its custom properties: `--inv-card-gap`, and
   goes on its own element inside).
 - **`partyCell`** (specialised): a cell of the party sheet's grid of
   abilities. Rows alternate `surface` and `surfaceNested`; an ability nobody
-  has is on them tinted halfway to `danger`.
-  Variants `odd`, `zero`, `header`: header cells are stuck over the rest as
-  it scrolls, the same colours, but a hook for a theme that makes surfaces
-  translucent.
-
-### Overlapping things in V1 themes
-
-V1's surfaces could be translucent, and things that overlap other content
-were on them flattened over the wallpaper (`bgOpaque*`). The palette has no
-such entries: its surfaces are expected to be opaque, so those things use them as they are.
-`fromV1` puts V1's flattened colours back for them, as overrides: the `solid`
-surfaces, `floating`, the `partyCell` headers, `select` and its options,
-`dragHandle`, and the `callout` tints. V1's danger-tinted surfaces
-(`bgTransDanger*`) kept the surface's opacity, which the `partyCell` tint
-doesn't, so its cells for abilities nobody has get V1's too. (The `card` root already gets V1's
-card style, which is on `bgOpaquePrimary`.) `select` and `dragHandle`
-overrides replace their base, so they restate the rest of it, from the plain
-CSS in `sharedDefaults.ts`, which the recipes are built from too.
+  has is on them tinted halfway to `danger`. Variants `odd`, `zero`,
+  `header`: header cells are stuck over the rest as it scrolls, the same
+  colours, but a hook for a theme whose surfaces are translucent.
 
 ### `richText`
 
@@ -672,57 +604,148 @@ takes actors dragged from Foundry's sidebar), and `over` from `dragover` to
 
 ## Theme overrides
 
-A theme can replace any catalogue class, variant or slot. A V2 theme writes
-its overrides in its `catalogue`, shaped like the recipes (see ThemeV2,
-above); a V1 theme gets them from `fromV1`, and **V1 seeds won't ever be able
-to write their own**. Either way, they become overrides keyed by the class
-name without `inv-`, which the runtime `Theme` holds:
+A theme's catalogue (Themes, above) is compiled into overrides keyed by the
+class name without `inv-` (`compileCatalogue`), which the runtime `Theme`
+holds:
 
 ```ts
 {
-  badge: { borderRadius: 0, fontStyle: "italic" },
-  "badge--compound__tone_danger__weight_strong": { ... },
-  // a V2 compound variant: an element with both classes
-  "badge--tone_danger.badge--weight_strong": { ... },
+  badge: { borderRadius: 0, fontStyle: "italic" },        // base
+  tabs__tab: { ... },                                      // a slot
+  "badge--tone_danger": { ... },                           // a variant
+  "badge--tone_danger.badge--weight_strong": { ... },      // a compound
 }
 ```
 
-An override of a class's base or a slot (`badge`, `tabs__tab`) **replaces**
-the default for that name: none of the default's declarations survive, so it
-has to say everything it wants. The class's other parts still apply on top:
-replacing `badge` keeps its tones and its pressed state, and every override
-keeps the state layers.
-
-An override of a variant or compound variant (`row--interactive_true`,
-`badge--compound__tone_danger__weight_strong`) **patches** it instead: its
-declarations go over the variant's, and the rest of the variant stays. All of
-a class's variants share one cascade layer, so replacing one would drop an
-element's other variants with it (a row that's `interactive` and `divided`
-would lose its divider). To take a declaration away, set it explicitly
-(`borderBottomStyle: "none"`).
+A replaced base or slot loses all of its default's declarations, but the
+class's other parts still apply on top: replacing `badge` keeps its tones and
+its pressed state, and every override keeps the state layers. A variant is
+patched rather than replaced because all of a class's variants share one
+cascade layer: replacing one would drop an element's other variants with it
+(a row that's `interactive` and `divided` would lose its divider). To take a
+declaration away, set it explicitly (`borderBottomStyle: "none"`).
 
 How: `CSSReset` renders the theme's overrides as a `<style>` inside the themed
 root (so it travels with the root into a detached window). The theme scope
 is on the class itself, so a nested rule can put context on either side of
 it, inside the themed root or outside: `"input:checked + &"` becomes
 `input:checked + .inv-tabs__tab:where([data-inv-theme="x"], [data-inv-theme="x"] *)`.
-Each rule goes in
-the same cascade layer as the default it replaces; a replacing one starts
-with `all: revert-layer`, which drops everything that layer had for the element
-(`src/themes/catalogue/overrides.ts`). The theme scope is inside `:where()`,
-so an override is exactly as specific as the default and wins by coming
-later. A class's state rules (`:is([aria-pressed=true])` and the like) are
-more specific, so they still apply over an override, even one of the rule
-they're in.
+Each rule goes in the same cascade layer as the default it replaces; a
+replacing one starts with `all: revert-layer`, which drops everything that
+layer had for the element (`src/themes/catalogue/overrides.ts`). The theme
+scope is inside `:where()`, so an override is exactly as specific as the
+default and wins by coming later. A compound's first class is as it is and
+the others are in `:where()` (`.inv-badge--tone_danger:where(.inv-badge--weight_strong)`),
+so it's as specific as Panda's own compound class. A class's state rules
+(`:is([aria-pressed=true])` and the like) are more specific, so they still
+apply over an override, even one of the rule they're in.
 
 Override values are plain CSS text. Numbers get `px`, as in React's `style`,
 except for unitless properties and custom properties. Anything that could
 end its rule (`{`, `}`, `;`, a comment, or a backslash escape, which could
 disguise one) is ignored, with a warning. Inside a quoted string or a
-`url()`, `;` and braces are fine. These checks are against mistakes, not a
-hostile theme: a theme is installed by a module's code, which can already
-add any CSS it likes, and a crafted selector such as `:is(&, .x)` can reach
-outside the themed root.
+`url()`, `;` and braces are fine. A list of fallbacks
+(`width: ["200px", "1lh"]`) becomes one declaration each, and a `<` inside a
+quoted string (an inline SVG in a data URL) is escaped as `\3c `, so it
+can't end the `<style>`. These checks are against mistakes, not a hostile
+theme: a theme is installed by a module's code, which can already add any
+CSS it likes, and a crafted selector such as `:is(&, .x)` can reach outside
+the themed root.
+
+## V1 themes
+
+A V1 theme (`ThemeSeedV1`) still installs, and keeps its look. It's
+converted when it's installed: `themeFactory` fills in V1's defaults for what
+the seed leaves out (they're part of the V1 contract too, so they're
+converted as well), then `paletteFromV1` makes its palette and `fromV1` a
+ThemeV2 catalogue from its styles, compiled as a V2 theme's is
+(`themeFromV1`). V1's `global` (a string, or Emotion's serialised styles from
+a theme module) becomes `globalCss`, with Emotion's labels stripped and
+linked keyframes kept, in order (`frame.ts`). `ThemeV1` exists only for that
+conversion. A V1 seed can't write catalogue overrides of its own, and won't
+ever be able to: that's ThemeV2.
+
+Converting a V1 style: a pseudo-class key (`":hover"`) attaches to the
+element, as Emotion has it (`"&:hover"`); a bare selector is a descendant,
+written with `&` (`"h1, h2"` becomes `"& h1, & h2"`), and two keys that come
+to the same selector are one rule, the later's declarations over the
+earlier's. A V1 theme's values are CSS as written: a palette name isn't a
+palette colour there.
+
+### The palette
+
+| V1                                                                           | Palette                                                          |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `backgroundPrimary` / `backgroundSecondary`                                  | `surface` / `surfaceNested`                                      |
+| `bgOpaquePrimary` / `bgOpaqueSecondary`, `bgOpaqueDanger*`, `bgTransDanger*` | none: `fromV1` puts them where V1 had them, as overrides (below) |
+| `backgroundButton`                                                           | `control`                                                        |
+| `accent`                                                                     | `accent`, and `link`                                             |
+| `accentContrast`                                                             | `onAccent`                                                       |
+| `glow`                                                                       | `feedback`                                                       |
+| `controlBorder`                                                              | `line`                                                           |
+| `danger`, `warning`, `success`                                               | The same. `info` and the `on-` partners are new                  |
+| `bodyFont`, `displayFont`, `displayFontTextTransform`                        | `bodyFont`, `displayFont`, `displayCase`                         |
+| (from `text`)                                                                | `polarity`: light text means a dark theme                        |
+
+### Its styles
+
+- **Panels**: `panelStylePrimary` patches the `panel` `depth: top`
+  variant, and `panelStyleSecondary` (or, without one, `panelStylePrimary`)
+  `depth: nested`, so the two stay independent, as in V1. A V1 panel style
+  replaced the panel's background, but a variant override patches, so one
+  without a background of its own gets `backgroundColor: transparent`.
+- **Tabs**: the seven `tab*Style` fields become the `tabs` slots, with V1's
+  selected and wrapped states as nested rules, and V1's hover glow dropped
+  on a disabled tab. A V1 theme gets V1's default tabs (`accent` ink,
+  unselected ones on `backgroundSecondary`, which V1 says is "used for
+  inactive tabs"), not the catalogue's.
+- **The sheet root**: `largeSheetRootStyle` and `smallSheetRootStyle` patch
+  the `sheetRoot` `size` variants, as V1 spread them over the defaults,
+  padding and height included.
+- **The window**: `appWindowStyle` replaces the `appFrame` `root`. (Before
+  this, window styles hadn't shown since our sheets moved to ApplicationV2:
+  `CSSReset` looked for ApplicationV1's `.window-app`.)
+- **The logo**: each slot starts from its defaults (`logoDefaults.ts`), with
+  the theme's style for it spread over them, as V1 did (the front style goes
+  on the name, the subtext and the measuring copy alike). What V1 put after
+  the theme's style stays forced, even against a theme's `!important`.
+- **Cards**: each slot is its `themeFactory` style (V1's default, or the
+  seed's `cards.base` style for that part, replacing it whole). Each of its
+  `cards.categories` becomes a rule of its own with the category's style
+  spread over the base, and the base rule leaves those categories' cards
+  out, so a category's style wins as it did in V1, `!important` and nested
+  rules included. The contexts are in `:where()`, so both rules are as
+  specific as the plain class; any style key works, hex-escaped in the
+  attribute selector. A `hoverStyle` (the base's, then its category's over
+  it) becomes a `:hover` rule on the root, for cards in an array; the
+  `hoverFeedback` glow's `box-shadow` comes after it, so it wins over one in
+  a `hoverStyle`, such as V1's default glow, which is close to it.
+  `cards.area` becomes `cardGap`, `` `${verticalSpacing} ${horizontalSpacing}` ``,
+  so the two axes stay independent (Mutant City Blue's differ).
+- **Things that overlap content**: V1's surfaces could be translucent, and
+  things that overlap other content were on them flattened over the
+  wallpaper (`bgOpaque*`). The recipes expect opaque surfaces, so `fromV1`
+  puts V1's flattened colours back: the `solid` surfaces, `floating`, the
+  `partyCell` headers, `select` and its options, `dragHandle`, and the
+  `callout` tints. V1's danger-tinted surfaces (`bgTransDanger*`) kept the
+  surface's opacity, which the `partyCell` tint doesn't, so its cells for
+  abilities nobody has get V1's too. (The `card` root gets V1's card style,
+  which is on `bgOpaquePrimary`.) `select` and `dragHandle` overrides
+  replace their base, so they restate the rest of it, from the plain CSS in
+  `sharedDefaults.ts`, which the recipes are built from too.
+- **Dropped**: `tabClass`, `panelClass` and `notesCssClasses` are deprecated
+  and ignored, so a V1 theme that sets them still loads.
+
+### The built-in themes
+
+The built-in themes (`src/themes/*Theme.ts`) are V2, printed from their V1
+originals by `pnpm print:theme-v2` (`scripts/printThemeV2.ts`,
+`src/themes/v2FromV1.ts`), which leaves out what V2 would work out the same
+anyway, and refuses a theme with a value that would change meaning in V2.
+The originals are in `src/themes/v1/`: what they were printed from, and V1
+themes for the V1 path's tests. Until a built-in theme is restyled,
+`v2FromV1.test.ts` checks it still resolves exactly as its original did; a
+theme that's restyled on purpose comes out of that check.
 
 ## The native world
 
@@ -792,9 +815,8 @@ layer beat everything in its sub-layers.
 - `system.states`: the state layers (`states.css`).
 - `system.utilities`: layout from `css()` at call sites.
 
-A V1 theme's `global`
-CSS (a string, or Emotion's serialised styles from a theme module) is a
-`<style>` in the root.
+A theme's `globalCss` is a `<style>` in the root, like its overrides, so it
+travels with the root too.
 
 The palette is set as an inline `style` on the themed root, not in a
 stylesheet. A detached window (Foundry's own, or PopOut!) copies the page's
