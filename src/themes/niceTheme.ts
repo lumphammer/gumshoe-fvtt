@@ -27,7 +27,6 @@ export const niceTheme: ThemeV1 = themeFactory({
       transform: "scaleY(0.9) scaleX(1.2) translateY(0.1em)",
       zIndex: -1,
       borderStyle: "solid",
-      borderThickness: "2px 0",
       borderColor: "#433",
     },
   },

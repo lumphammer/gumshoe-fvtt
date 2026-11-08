@@ -35,6 +35,7 @@
     "update-legacy-release-branch": "./scripts/update-legacy-release-branch.sh",
     "extract-packs": "./tasks.ts extractPacks",
     "generate:catalogue": "tsx scripts/generateCatalogueShapes.ts",
+    "print:theme-v2": "tsx scripts/printThemeV2.ts",
     "check": "pnpm run generate:catalogue --check && pnpm run typecheck && pnpm run test --run && pnpm run lint:check && pnpm run format:check && pnpm run build"
   },
   "author": "",

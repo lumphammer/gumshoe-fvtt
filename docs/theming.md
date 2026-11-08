@@ -44,7 +44,9 @@ into one runtime `Theme` (display name, complete palette, overrides by class,
 `globalCss`), which is all the rest of the code sees; `ThemeContext`,
 `tabClass`, `panelClass` and `notesCssClasses` gone; the card gap a palette
 entry; `fromV1` making a V2 catalogue from a V1 theme's styles, compiled as
-a V2 theme's is. **Still to do**: the built-in themes are still V1; the types
+a V2 theme's is; `pnpm print:theme-v2` printing a V1 built-in theme as V2
+source that looks the same (`src/themes/v2FromV1.ts`, checked for all of
+them). **Still to do**: the built-in themes are still V1; the types
 package packs properly now (#1557), but a new version isn't published yet.
 
 ### Shape
