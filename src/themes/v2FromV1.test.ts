@@ -66,10 +66,11 @@ test("themeV2Source writes the system's asset paths with systemId", () => {
 });
 
 /*
- * The built-in themes were printed from their V1 originals, so they look the
- * same. A theme that's restyled on purpose drops out of this.
+ * The built-in themes that were printed from their V1 originals look the
+ * same. A theme that's restyled on purpose drops out of this, and a new one
+ * was never in it.
  */
-const unchanged = Object.keys(baseThemes);
+const unchanged = Object.keys(baseThemes).filter((id) => id in v1BaseThemes);
 test.each(unchanged)("built-in %s still looks as it did in V1", (id) => {
   const { displayName, palette, catalogue, globalCss } = themeFromV1(
     v1BaseThemes[id],

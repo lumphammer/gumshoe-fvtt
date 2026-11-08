@@ -43,14 +43,9 @@ export const fearTheme = defineThemeV2({
       base: {
         backdrop: {},
         text: {
-          position: "absolute",
-          top: "0",
-          right: "0",
-          bottom: "0",
-          left: "0",
           font: "var(--inv-display-font)",
           textTransform: "var(--inv-display-case)",
-          fontSize: "4em",
+          fontSize: "1em",
           whiteSpace: "nowrap",
           caretColor: "black",
           border: "none",
@@ -60,14 +55,8 @@ export const fearTheme = defineThemeV2({
         },
         front_wrapper: {
           color: "transparent",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
         },
         front: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          fontSize: "calc(1em * var(--logo-fit, 1))",
           padding: "0 1em",
           background:
             "linear-gradient(90deg, rgba(73, 61, 51, 1.0) 0%, rgba(97, 81, 68, 0.7) 100%)",
@@ -81,28 +70,8 @@ export const fearTheme = defineThemeV2({
             "linear-gradient(90deg, rgba(73, 61, 51, 1.0) 0%, rgba(97, 81, 68, 0.7) 100%)",
           backgroundClip: "text",
         },
-        measure: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          padding: "0 1em",
-          background:
-            "linear-gradient(90deg, rgba(73, 61, 51, 1.0) 0%, rgba(97, 81, 68, 0.7) 100%)",
-          backgroundClip: "text",
-          position: "absolute",
-          top: "0",
-          left: "0",
-          fontSize: "1em",
-        },
-        rear_wrapper: {
-          zIndex: -1,
-          color: "transparent",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        },
+        rear_wrapper: {},
         rear: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          fontSize: "calc(1em * var(--logo-fit, 1))",
           padding: "0 1em",
           textShadow: "0px 0px 10px white",
         },

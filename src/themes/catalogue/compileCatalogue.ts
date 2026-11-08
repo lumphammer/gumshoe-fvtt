@@ -2,7 +2,7 @@ import type { ThemeCatalogue } from "@lumphammer/investigator-fvtt-types";
 
 import { paletteColorKeys, paletteVar } from "../palette";
 import type { CatalogueOverrides, OverrideStyle } from "./overrides";
-import { backdropForced, measureForced } from "./logoDefaults";
+import { logoLayout } from "./logoDefaults";
 import { recipeShapes } from "./recipeShapes.generated";
 
 type Warn = (message: string) => void;
@@ -77,48 +77,33 @@ function compileStyle(
 }
 
 /**
- * The logo's layout that the code depends on (`logoDefaults.ts`): the
- * backdrop fills the logo, and the measuring copy is at full size where
- * `LogoEditable` measures it. An override of the backdrop or the measuring
- * copy can't change it: those declarations are left out (with a warning, if
- * they'd change it), and the measuring copy's go last.
+ * What `LogoEditable` sets on the logo's slots (`logoLayout`): an override
+ * can't change it, so those declarations are left out, nested rules' too,
+ * with a warning (an `!important` would otherwise win).
  */
 function forceLogoLayout(overrides: CatalogueOverrides, warn: Warn) {
   const without = (
     style: OverrideStyle,
     keys: readonly string[],
-    forced: Record<string, string> | null,
     where: string,
-  ) =>
-    Object.fromEntries(
-      Object.entries(style).filter(([key, value]) => {
-        if (!keys.includes(key)) return true;
-        if (!forced || forced[key] !== value) {
-          warn(`${where}: "${key}" is the logo's layout, so it's left out`);
-        }
-        return false;
-      }),
-    ) as OverrideStyle;
-  const backdrop = overrides["logo__backdrop"];
-  if (backdrop) {
-    overrides["logo__backdrop"] = without(
-      backdrop,
-      backdropForced,
-      null,
-      "logo.backdrop",
-    );
-  }
-  const measure = overrides["logo__measure"];
-  if (measure) {
-    overrides["logo__measure"] = {
-      ...without(
-        measure,
-        Object.keys(measureForced),
-        measureForced,
-        "logo.measure",
-      ),
-      ...measureForced,
-    };
+  ): OverrideStyle => {
+    const result: OverrideStyle = {};
+    for (const [key, value] of Object.entries(style)) {
+      if (isObject(value)) {
+        result[key] = without(value, keys, where);
+      } else if (keys.includes(key)) {
+        warn(`${where}: "${key}" is set by the logo itself, so it's left out`);
+      } else {
+        result[key] = value;
+      }
+    }
+    return result;
+  };
+  for (const [slot, keys] of Object.entries(logoLayout)) {
+    const style = overrides[`logo__${slot}`];
+    if (style) {
+      overrides[`logo__${slot}`] = without(style, keys, `logo.${slot}`);
+    }
   }
 }
 

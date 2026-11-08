@@ -219,24 +219,31 @@ describe("compileCatalogue", () => {
       logo: {
         base: {
           backdrop: { position: "fixed", inset: 0, width: "150%" },
-          measure: { color: "accent", fontSize: "2em", top: "0" },
+          front_wrapper: {
+            transform: "none",
+            color: "accent",
+            "@media (min-width: 1px)": { transform: "none", opacity: 0.5 },
+          },
+          rear_wrapper: { color: "red" },
+          front: { fontSize: "2em" },
         },
       },
     });
     expect(overrides["logo__backdrop"]).toEqual({ width: "150%" });
-    // its own size and position last
-    expect(overrides["logo__measure"]).toEqual({
+    // nested rules too
+    expect(overrides["logo__front_wrapper"]).toEqual({
       color: "var(--inv-accent)",
-      position: "absolute",
-      top: "0",
-      left: "0",
-      fontSize: "1em",
+      "@media (min-width: 1px)": { opacity: 0.5 },
     });
-    // the same value as the layout's isn't worth a warning
+    expect(overrides["logo__rear_wrapper"]).toEqual({});
+    // the name's size is the theme's (LogoEditable fits it)
+    expect(overrides["logo__front"]).toEqual({ fontSize: "2em" });
     expect(warnings).toEqual([
-      "logo.backdrop: \"position\" is the logo's layout, so it's left out",
-      "logo.backdrop: \"inset\" is the logo's layout, so it's left out",
-      "logo.measure: \"fontSize\" is the logo's layout, so it's left out",
+      'logo.backdrop: "position" is set by the logo itself, so it\'s left out',
+      'logo.backdrop: "inset" is set by the logo itself, so it\'s left out',
+      'logo.front_wrapper: "transform" is set by the logo itself, so it\'s left out',
+      'logo.front_wrapper: "transform" is set by the logo itself, so it\'s left out',
+      'logo.rear_wrapper: "color" is set by the logo itself, so it\'s left out',
     ]);
   });
 

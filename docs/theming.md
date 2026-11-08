@@ -239,12 +239,12 @@ kebab case: `surfaceNested` is `--inv-surface-nested`), and a Panda token
 | `feedback`                                           | The colour of hover, focus and drag-over feedback. Never state or decoration                                                                                                                                                                                                                                                                  |
 | `line`                                               | Structural lines: control outlines, separators, heading rules, table header rules                                                                                                                                                                                                                                                             |
 | `danger`, `warning`, `success`, `info`               | Status. Each is legible as text on both surfaces                                                                                                                                                                                                                                                                                              |
-| `onDanger`, `onWarning`, `onSuccess`, `onInfo`       | Ink on the matching status fill. Unless a theme sets it, black or white, whichever reads better by APCA contrast (WCAG 2's ratio prefers black on saturated reds, where white reads far better)                                                                                                                                                      |
+| `onDanger`, `onWarning`, `onSuccess`, `onInfo`       | Ink on the matching status fill. Unless a theme sets it, black or white, whichever reads better by APCA contrast (WCAG 2's ratio prefers black on saturated reds, where white reads far better)                                                                                                                                               |
 | `radius`                                             | The one corner radius classes share (Panda: `radii.standard`)                                                                                                                                                                                                                                                                                 |
 | `elevation`                                          | The shadow for anything floating (Panda: `shadows.elevation`)                                                                                                                                                                                                                                                                                 |
 | `bodyFont`                                           | The `body` text style: prose and controls. A CSS `font` value                                                                                                                                                                                                                                                                                 |
 | `displayFont`, `displayCase`, `displayLetterSpacing` | The `display` text style: titles, headings, tabs, labels. Panda applies the three together as `textStyle: "display"`                                                                                                                                                                                                                          |
-| `cardGap`                                            | The spacing between cards (a CSS `gap` value: a row gap, then a column gap), and around a card array. `CardArray` reads it, as `--inv-card-gap` and its axes `--inv-card-gap-row` and `--inv-card-gap-column`                                                                                                                                  |
+| `cardGap`                                            | The spacing between cards (a CSS `gap` value: a row gap, then a column gap), and around a card array. `CardArray` reads it, as `--inv-card-gap` and its axes `--inv-card-gap-row` and `--inv-card-gap-column`                                                                                                                                 |
 
 Status-tinted surfaces (flagged rows, invalid inputs, callouts, the party
 sheet's abilities nobody has) are derived in their recipes, from the status
@@ -481,7 +481,6 @@ than the element: any class beats them.
   `neutral` is `text`. _Not for_ a label on a thing (`badge`) or a message
   about it (`callout`).
 
-
 ### `sheetRoot`
 
 The themed root of a window, applied by `CSSReset` to the element that
@@ -519,19 +518,35 @@ The character sheet's logo (`LogoEditable`): the name and its subtext in large
 display text, drawn twice, a front copy over a rear one, on a backdrop, so a
 theme can do 3D, shadows and text gradients. Slots: `backdrop`, `text` (the
 wrapper of both copies, which the theme can transform), `front_wrapper`,
-`front` (the name), `front_sub` (the subtext), and the same three for `rear`;
-and `measure`, a hidden full-size copy of the name that `LogoEditable`
-measures to fit the name to the logo. Slot names are snake_case, so their
-classes are valid CSS class names (`inv-logo__front_sub`). The slots'
-defaults are plain CSS in `logoDefaults.ts`.
+`front` (the name), `front_sub` (the subtext), and the same three for `rear`.
+Slot names are snake_case, so their classes are valid CSS class names
+(`inv-logo__front_sub`). The slots' defaults are plain CSS in
+`logoDefaults.ts`.
 
-_Expected override, every slot:_ each theme's logo is its own. Some of it is
-layout the code depends on, and an override can't change it: the backdrop's
-`position` and insets (it's absolutely positioned at the logo's edges; its
-size, margins and transforms are the theme's), and the measuring copy's
-position and `1em` font size, which go last in its override. An override
-that sets them has those declarations left out, with a warning
-(`compileCatalogue`).
+Everything the logo needs to work is `LogoEditable`'s, outside the slots, so
+a slot's override is only what the theme changes (`text: { transform:
+"scale(0.7)" }` is a whole logo restyle):
+
+- **The look by default**, inherited: the display font, case and letter
+  spacing at 4em, on one line, in `text`. The rear copy's text is
+  transparent, so only what a theme gives it (a shadow, or a colour on
+  `rear` and `rear_sub`) shows.
+- **The layout**: the backdrop and `text` fill the logo, and each copy is
+  centred in it, the rear one behind. An override can't change these
+  properties, or the rear wrapper's `color` (`logoLayout`);
+  `compileCatalogue` leaves them out, nested rules' too, with a warning.
+- **The fit**: the name is scaled down to fit the logo's width, by its font
+  size, measured with a hidden copy that has the `front` style at full size.
+  So `front` can set its own size, spacing and padding, and the fit follows,
+  as long as they're relative to the font size (`em`): a length that isn't
+  (`48px`, `3rem`, or a letter spacing set on `text` or a wrapper, which is a
+  length by the time it's inherited) doesn't shrink, and a long name
+  overflows. The palette's `displayLetterSpacing` does shrink. A transform on
+  `text` applies after the fit, which doesn't see it: one that shrinks the
+  logo is fine, one that enlarges it can overflow. And `front` mustn't set a
+  `width` (with `!important`, it would reach the hidden copy too).
+
+_Expected override, every slot:_ each theme's logo is its own.
 
 ### `card`
 
@@ -707,8 +722,11 @@ palette colour there.
   `CSSReset` looked for ApplicationV1's `.window-app`.)
 - **The logo**: each slot starts from its defaults (`logoDefaults.ts`), with
   the theme's style for it spread over them, as V1 did (the front style goes
-  on the name, the subtext and the measuring copy alike). What V1 put after
-  the theme's style stays forced, even against a theme's `!important`.
+  on the name and the subtext alike). The layout V1 put after the theme's
+  style is `LogoEditable`'s, so it's left out. The text's own size is
+  inherited from 4em now, so a relative size the theme gave it is divided by
+  4 (`calc(2em / 4)`), and a colour on the rear wrapper goes on the rear
+  copies instead.
 - **Cards**: each slot is its `themeFactory` style (V1's default, or the
   seed's `cards.base` style for that part, replacing it whole). Each of its
   `cards.categories` becomes a rule of its own with the category's style

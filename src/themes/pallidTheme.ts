@@ -54,14 +54,9 @@ export const pallidTheme = defineThemeV2({
           maskImage: "linear-gradient(rgba(0, 0, 0, 1.0), transparent)",
         },
         text: {
-          position: "absolute",
-          top: "0",
-          right: "0",
-          bottom: "0",
-          left: "0",
           font: "var(--inv-display-font)",
           textTransform: "var(--inv-display-case)",
-          fontSize: "4em",
+          fontSize: "1em",
           whiteSpace: "nowrap",
           caretColor: "black",
           border: "none",
@@ -71,14 +66,8 @@ export const pallidTheme = defineThemeV2({
         },
         front_wrapper: {
           color: "transparent",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
         },
         front: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          fontSize: "calc(1em * var(--logo-fit, 1))",
           padding: "0 1em",
           background:
             "linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(108,108,108,1) 24%, rgba(148,148,148,1) 34%, rgba(106,106,106,1) 44%, rgba(0,0,0,1) 87%, rgba(143,143,143,1) 100%)",
@@ -92,28 +81,8 @@ export const pallidTheme = defineThemeV2({
             "linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(108,108,108,1) 24%, rgba(148,148,148,1) 34%, rgba(106,106,106,1) 44%, rgba(0,0,0,1) 87%, rgba(143,143,143,1) 100%)",
           backgroundClip: "text",
         },
-        measure: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          padding: "0 1em",
-          background:
-            "linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(108,108,108,1) 24%, rgba(148,148,148,1) 34%, rgba(106,106,106,1) 44%, rgba(0,0,0,1) 87%, rgba(143,143,143,1) 100%)",
-          backgroundClip: "text",
-          position: "absolute",
-          top: "0",
-          left: "0",
-          fontSize: "1em",
-        },
-        rear_wrapper: {
-          zIndex: -1,
-          color: "transparent",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        },
+        rear_wrapper: {},
         rear: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          fontSize: "calc(1em * var(--logo-fit, 1))",
           padding: "0 1em",
           textShadow:
             "        -3px -3px 5px #cdf6ff,\n        -3px 3px 5px #cdf6ff,\n        3px -3px 5px #cdf6ff,\n        3px 3px 5px #cdf6ff",

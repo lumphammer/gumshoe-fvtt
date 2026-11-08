@@ -48,14 +48,9 @@ export const tealTheme = defineThemeV2({
             "radial-gradient(closest-side, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%)",
         },
         text: {
-          position: "absolute",
-          top: "0",
-          right: "0",
-          bottom: "0",
-          left: "0",
           font: "var(--inv-display-font)",
           textTransform: "var(--inv-display-case)",
-          fontSize: "4em",
+          fontSize: "1em",
           whiteSpace: "nowrap",
           caretColor: "black",
           border: "none",
@@ -65,14 +60,8 @@ export const tealTheme = defineThemeV2({
         },
         front_wrapper: {
           color: "transparent",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
         },
         front: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          fontSize: "calc(1em * var(--logo-fit, 1))",
           padding: "0 1em",
           background:
             "linear-gradient(135deg, #efb183 0%,#222 30%,#efb183 90%)",
@@ -86,28 +75,8 @@ export const tealTheme = defineThemeV2({
             "linear-gradient(135deg, #efb183 0%,#222 30%,#efb183 90%)",
           backgroundClip: "text",
         },
-        measure: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          padding: "0 1em",
-          background:
-            "linear-gradient(135deg, #efb183 0%,#222 30%,#efb183 90%)",
-          backgroundClip: "text",
-          position: "absolute",
-          top: "0",
-          left: "0",
-          fontSize: "1em",
-        },
-        rear_wrapper: {
-          zIndex: -1,
-          color: "transparent",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        },
+        rear_wrapper: {},
         rear: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          fontSize: "calc(1em * var(--logo-fit, 1))",
           padding: "0 1em",
           textShadow:
             "2px 0px 1px black, 6px 0px 4px rgba(0,0,0,0.5), -1px 0px 0px rgba(255,255,255,0.5)",

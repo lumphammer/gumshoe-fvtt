@@ -52,14 +52,9 @@ export const olderThanMemoryTheme = defineThemeV2({
       base: {
         backdrop: {},
         text: {
-          position: "absolute",
-          top: "0",
-          right: "0",
-          bottom: "0",
-          left: "0",
           font: "normal small-caps normal 1.1em 'Longdon Decorative Regular', serif",
           textTransform: "var(--inv-display-case)",
-          fontSize: "4em",
+          fontSize: "1em",
           whiteSpace: "nowrap",
           caretColor: "black",
           border: "none",
@@ -70,14 +65,8 @@ export const olderThanMemoryTheme = defineThemeV2({
         },
         front_wrapper: {
           color: "transparent",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
         },
         front: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          fontSize: "calc(1em * var(--logo-fit, 1))",
           padding: "0 1em",
           color: "#fff",
           textShadow:
@@ -91,24 +80,7 @@ export const olderThanMemoryTheme = defineThemeV2({
           textShadow:
             "0 0 0.5em #fda994, 0 0 0.2em #fda994, 0 0 1em #fda994, 0 0 2em #fda994",
         },
-        measure: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          padding: "0 1em",
-          color: "#fff",
-          textShadow:
-            "0 0 0.5em #fda994, 0 0 0.2em #fda994, 0 0 1em #fda994, 0 0 2em #fda994",
-          position: "absolute",
-          top: "0",
-          left: "0",
-          fontSize: "1em",
-        },
         rear_wrapper: {
-          zIndex: -1,
-          color: "transparent",
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
           border: "2px solid #fda994",
           borderRadius: "3em",
           boxShadow: "0 0 0.5em 0 inset #fda994,0 0 0.5em 0 #fda994",
@@ -117,8 +89,6 @@ export const olderThanMemoryTheme = defineThemeV2({
           padding: "0.1em",
         },
         rear: {
-          transition: "font-size var(--logo-fit-duration, 0s)",
-          fontSize: "calc(1em * var(--logo-fit, 1))",
           padding: "0 1em",
         },
         rear_sub: {

@@ -61,7 +61,6 @@ export interface CatalogueRecipeShapes {
       | "front_wrapper"
       | "front"
       | "front_sub"
-      | "measure"
       | "rear_wrapper"
       | "rear"
       | "rear_sub";

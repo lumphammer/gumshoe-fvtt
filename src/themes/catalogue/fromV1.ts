@@ -6,7 +6,7 @@ import type {
 
 import { paletteVar } from "../palette";
 import type { ThemeV1 } from "../types";
-import { backdropForced, logoDefaults, measureForced } from "./logoDefaults";
+import { logoDefaults, logoLayout } from "./logoDefaults";
 import {
   calloutTint,
   dragHandleDefaults,
@@ -198,49 +198,52 @@ function appFrameFromV1(theme: ThemeV1): ThemeCatalogue {
 
 /**
  * In V1, each part of the logo was its defaults with the theme's style for it
- * spread over them (the front style over the name, its measuring copy and the
- * subtext; the rear style over their rear copies). Every seed has a logo.
+ * spread over them (the front style over the name and the subtext; the rear
+ * style over their rear copies), and its layout after it: the layout is
+ * `LogoEditable`'s now, so it's left out (`logoLayout`). Every seed has a logo.
+ *
+ * Two things moved. The text's size is inherited now, from 4em above it, so a
+ * relative size of its own is a quarter of what it was. And the rear copy's
+ * wrapper's text is always transparent, so a colour the theme gave it goes on
+ * the rear copies instead.
  */
 function logoFromV1(theme: ThemeV1): ThemeCatalogue {
   const { logo } = theme;
   const over = (
-    defaults: Record<string, string | number>,
+    slot: keyof typeof logoDefaults,
     style: CSSObject | undefined,
-  ): OverrideStyle => ({ ...defaults, ...fromEmotion(style ?? {}) });
+  ) => {
+    const layout: readonly string[] =
+      slot in logoLayout ? logoLayout[slot as keyof typeof logoLayout] : [];
+    return themeStyle(
+      Object.fromEntries(
+        Object.entries({
+          ...logoDefaults[slot],
+          ...fromEmotion(style ?? {}),
+        }).filter(([key]) => !layout.includes(key)),
+      ),
+    );
+  };
+  const text = over("text", logo.textElementsStyle);
+  const { fontSize } = text;
+  if (typeof fontSize === "string" && /^[\d.]+(em|%)$/.test(fontSize)) {
+    text.fontSize = fontSize === "1em" ? fontSize : `calc(${fontSize} / 4)`;
+  }
+  const rearColor = (style: CSSObject | undefined): CSSObject | undefined =>
+    logo.rearTextElementWrapperStyle?.color === undefined
+      ? style
+      : { color: logo.rearTextElementWrapperStyle.color, ...style };
   return {
     logo: {
       base: {
-        // the backdrop always fills the logo (layout in LogoEditable), so its
-        // position and insets aren't the theme's, even with !important
-        backdrop: themeStyle(
-          Object.fromEntries(
-            Object.entries(
-              over(logoDefaults.backdrop, logo.backdropStyle),
-            ).filter(
-              ([key]) => !(backdropForced as readonly string[]).includes(key),
-            ),
-          ),
-        ),
-        text: themeStyle(over(logoDefaults.text, logo.textElementsStyle)),
-        front_wrapper: themeStyle(
-          over(logoDefaults.front_wrapper, logo.frontTextElementWrapperStyle),
-        ),
-        front: themeStyle(over(logoDefaults.front, logo.frontTextElementStyle)),
-        front_sub: themeStyle(
-          over(logoDefaults.front_sub, logo.frontTextElementStyle),
-        ),
-        // the front style, with the measuring copy's position and size last
-        measure: themeStyle({
-          ...over(logoDefaults.measure, logo.frontTextElementStyle),
-          ...measureForced,
-        }),
-        rear_wrapper: themeStyle(
-          over(logoDefaults.rear_wrapper, logo.rearTextElementWrapperStyle),
-        ),
-        rear: themeStyle(over(logoDefaults.rear, logo.rearTextElementStyle)),
-        rear_sub: themeStyle(
-          over(logoDefaults.rear_sub, logo.rearTextElementStyle),
-        ),
+        backdrop: over("backdrop", logo.backdropStyle),
+        text,
+        front_wrapper: over("front_wrapper", logo.frontTextElementWrapperStyle),
+        front: over("front", logo.frontTextElementStyle),
+        front_sub: over("front_sub", logo.frontTextElementStyle),
+        rear_wrapper: over("rear_wrapper", logo.rearTextElementWrapperStyle),
+        rear: over("rear", rearColor(logo.rearTextElementStyle)),
+        rear_sub: over("rear_sub", rearColor(logo.rearTextElementStyle)),
       },
     },
   };

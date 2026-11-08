@@ -218,7 +218,6 @@ test("themes get their V1 panel styles as overrides", () => {
     "logo__front_wrapper",
     "logo__front",
     "logo__front_sub",
-    "logo__measure",
     "logo__rear_wrapper",
     "logo__rear",
     "logo__rear_sub",
@@ -314,42 +313,58 @@ test("a theme's logo styles go over each part's defaults, as in V1", () => {
   });
   expect(overrides["logo__backdrop"]).toEqual({ background: "red" });
   expect(overrides["logo__text"]).toMatchObject({
-    fontSize: "4em",
-    position: "absolute",
+    fontSize: "1em",
     transform: "rotateY(-30deg)",
   });
+  // the layout is LogoEditable's
+  expect(overrides["logo__text"]).not.toHaveProperty("position");
   // the front style goes on the name and the subtext alike
-  expect(overrides["logo__front"]).toMatchObject({
-    fontSize: "calc(1em * var(--logo-fit, 1))",
-    color: "gold",
-  });
+  expect(overrides["logo__front"]).toEqual({ padding: "0 1em", color: "gold" });
   expect(overrides["logo__front_sub"]).toMatchObject({
     fontSize: "0.5em",
     color: "gold",
   });
-  expect(overrides["logo__rear_wrapper"]).toMatchObject({ zIndex: -1 });
   expect(overrides["logo__rear_sub"]).toMatchObject({
     textShadow: "1px 1px black",
   });
 });
 
-test("the logo's forced layout stays forced, even against !important", () => {
+test("the logo's layout stays LogoEditable's, even against !important", () => {
   const overrides = compiled({
     ...tealTheme,
     logo: {
       ...tealTheme.logo,
       backdropStyle: { position: "fixed !important" as "fixed", width: "150%" },
-      frontTextElementStyle: { fontSize: "2em !important", color: "gold" },
+      rearTextElementWrapperStyle: {
+        zIndex: "1 !important",
+        border: "1px solid",
+      },
     },
   });
   // the backdrop's position is layout; its size is the theme's
   expect(overrides["logo__backdrop"]).toEqual({ width: "150%" });
-  // the measuring copy has the front style, then its own size last
-  expect(overrides["logo__measure"]).toMatchObject({
-    color: "gold",
-    fontSize: "1em",
-    position: "absolute",
+  expect(overrides["logo__rear_wrapper"]).toEqual({ border: "1px solid" });
+});
+
+test("a V1 logo's text size and rear colour, where they are now", () => {
+  const overrides = compiled({
+    ...tealTheme,
+    logo: {
+      ...tealTheme.logo,
+      textElementsStyle: { fontSize: "2em" },
+      rearTextElementWrapperStyle: { color: "gold" },
+      rearTextElementStyle: { textShadow: "1px 1px black" },
+    },
   });
+  // 4em is inherited now
+  expect(overrides["logo__text"]).toMatchObject({ fontSize: "calc(2em / 4)" });
+  // the rear wrapper's text is always transparent
+  expect(overrides["logo__rear_wrapper"]).toEqual({});
+  expect(overrides["logo__rear"]).toMatchObject({
+    color: "gold",
+    textShadow: "1px 1px black",
+  });
+  expect(overrides["logo__rear_sub"]).toMatchObject({ color: "gold" });
 });
 
 describe("cards", () => {
