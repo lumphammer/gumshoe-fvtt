@@ -1,12 +1,14 @@
 import { defineRecipe } from "@pandacss/dev";
 
 import { paletteVar } from "../palette";
-import { calloutColorOf as colorOf, calloutTint } from "./sharedDefaults";
 import { type Tone, tones } from "./tones";
 
-/** A tint of the tone over `surface`, so text stays legible. */
+/** A callout's tone colour: `line` for neutral. */
+const colorOf = (tone: Tone) => (tone === "neutral" ? "line" : tone);
+
+/** A tint of the tone over the solid surface, so text stays legible. */
 const tint = (tone: Tone) =>
-  `[${calloutTint(tone, `var(${paletteVar("surface")})`)}]` as const;
+  `[color-mix(in srgb, var(${paletteVar(colorOf(tone))}) 30%, var(${paletteVar("surfaceSolid")}))]` as const;
 
 /**
  * **callout**: a boxed message about the content around it: a problem, or

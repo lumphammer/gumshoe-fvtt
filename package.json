@@ -34,7 +34,8 @@
     "do-full-release": "./packages/shared-fvtt-bits/scripts/do-full-release.sh",
     "update-legacy-release-branch": "./scripts/update-legacy-release-branch.sh",
     "extract-packs": "./tasks.ts extractPacks",
-    "check": "pnpm run typecheck && pnpm run test --run && pnpm run lint:check && pnpm run format:check && pnpm run build"
+    "generate:catalogue": "tsx scripts/generateCatalogueShapes.ts",
+    "check": "pnpm run generate:catalogue --check && pnpm run typecheck && pnpm run test --run && pnpm run lint:check && pnpm run format:check && pnpm run build"
   },
   "author": "",
   "license": "",

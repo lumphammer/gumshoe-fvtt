@@ -26,8 +26,28 @@ function layout(sheet: Locator) {
   return sheet.locator(".tab-strip").evaluate((strip) => {
     const box = strip.getBoundingClientRect();
     const labels = Array.from(strip.querySelectorAll(":scope > label"));
+    const wrapped = strip.hasAttribute("data-wrapped");
+    // the tabs, spacers and content say so too, for themes to style them by
+    const parts = [
+      ...labels,
+      ...strip.querySelectorAll(":scope > .tab-spacer"),
+      strip.parentElement!.querySelector(":scope > .tab-content")!,
+    ];
+    if (parts.some((part) => part.hasAttribute("data-wrapped") !== wrapped)) {
+      return { wrapped: "only partly", allInside: false };
+    }
+    // and exactly one tab, the checked one, is data-selected
+    const selected = labels.filter((label) =>
+      label.hasAttribute("data-selected"),
+    );
+    if (
+      selected.length !== 1 ||
+      !selected[0].matches("input:checked + label")
+    ) {
+      return { wrapped, allInside: false, selected: selected.length };
+    }
     return {
-      wrapped: strip.hasAttribute("data-wrapped"),
+      wrapped,
       allInside: labels.every((label) => {
         const tab = label.getBoundingClientRect();
         return tab.left >= box.left - 0.5 && tab.right <= box.right + 0.5;

@@ -1,9 +1,9 @@
 import { CSSReset } from "../../components/CSSReset";
-import type { ThemeV1 } from "../types";
+import type { Theme } from "../theme";
 import { css } from "../../styled-system/css";
 
 type ThemeSwatchProps = {
-  theme: ThemeV1;
+  theme: Theme;
 };
 
 export const ThemeSwatch = ({ theme }: ThemeSwatchProps) => {
@@ -39,21 +39,21 @@ export const ThemeSwatch = ({ theme }: ThemeSwatchProps) => {
           className={css({
             flex: "[1]",
           })}
-          style={{ backgroundColor: theme.colors.backgroundPrimary }}
+          style={{ backgroundColor: theme.palette.surface }}
         >
           {theme.displayName}
           <br />
-          bgTransPrimary
+          surface
         </div>
         <div
           className={css({
             flex: "[1]",
           })}
-          style={{ backgroundColor: theme.colors.backgroundSecondary }}
+          style={{ backgroundColor: theme.palette.surfaceNested }}
         >
           {theme.displayName}
           <br />
-          bgTransSecondary
+          surfaceNested
         </div>
       </CSSReset>
     </div>

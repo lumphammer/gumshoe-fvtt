@@ -7,7 +7,6 @@ import {
 
 import { cx } from "../styled-system/css";
 import { panel, type PanelVariantProps } from "../styled-system/recipes";
-import { ThemeContext } from "../themes/ThemeContext";
 
 type Depth = NonNullable<PanelVariantProps["depth"]>;
 
@@ -32,10 +31,8 @@ export const Panel = ({
   ...rest
 }: ComponentProps<"div">) => {
   const depth = useContext(DepthContext);
-  // a V1 theme's own class, from before the catalogue
-  const { panelClass } = useContext(ThemeContext);
   return (
-    <div {...rest} className={cx(panel({ depth }), panelClass, className)}>
+    <div {...rest} className={cx(panel({ depth }), className)}>
       <OnSurface>{children}</OnSurface>
     </div>
   );

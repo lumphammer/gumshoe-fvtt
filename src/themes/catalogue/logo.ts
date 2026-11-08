@@ -1,6 +1,6 @@
 import { defineSlotRecipe } from "@pandacss/dev";
 
-import { logoDefaults, measureForced } from "./logoDefaults";
+import { logoDefaults } from "./logoDefaults";
 
 /**
  * **logo**: the character sheet's logo: the name (and subtext) in large
@@ -8,9 +8,9 @@ import { logoDefaults, measureForced } from "./logoDefaults";
  * for themes' 3D effects, shadows and gradients (`LogoEditable`).
  *
  * Slots: `backdrop`, `text` (the wrapper of both copies), `front_wrapper`,
- * `front` (the name), `front_sub` (the subtext), and the same for `rear`;
- * `measure`, a hidden full-size copy of the name that `LogoEditable`
- * measures to fit it.
+ * `front` (the name), `front_sub` (the subtext), and the same for `rear`.
+ * The layout, the fit and the text's look by default are `LogoEditable`'s,
+ * so a slot's override is only what the theme changes.
  * *Expected override, every slot:* a theme's logo is its own.
  */
 export const logo = defineSlotRecipe({
@@ -22,17 +22,15 @@ export const logo = defineSlotRecipe({
     "front_wrapper",
     "front",
     "front_sub",
-    "measure",
     "rear_wrapper",
     "rear",
     "rear_sub",
   ],
   base: {
     ...logoDefaults,
-    // strictTokens: colours that aren't palette tokens need escaping
-    text: { ...logoDefaults.text, caretColor: "[black]" },
-    front_wrapper: { ...logoDefaults.front_wrapper, color: "[transparent]" },
-    rear_wrapper: { ...logoDefaults.rear_wrapper, color: "[transparent]" },
-    measure: { ...logoDefaults.measure, ...measureForced },
+    // V1's are only for V1: the text is the palette's text colour, and its
+    // caret too, unless a theme says otherwise
+    text: {},
+    front_wrapper: {},
   },
 });

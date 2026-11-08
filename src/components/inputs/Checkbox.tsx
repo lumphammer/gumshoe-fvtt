@@ -27,8 +27,6 @@ export const Checkbox = React.memo<CheckboxProps>(
     return (
       <label
         title={title}
-        data-interactive
-        data-disabled={!isEditable || undefined}
         className={css({ display: "inline-block", position: "relative" })}
       >
         <input
@@ -41,7 +39,13 @@ export const Checkbox = React.memo<CheckboxProps>(
             onChange(e.currentTarget.checked);
           }}
         />
-        <span className={cx(classes.box, className)}>
+        {/* clickable, on the box itself, so a theme's `checkbox` states
+          (hover) are on what has them */}
+        <span
+          data-interactive
+          data-disabled={!isEditable || undefined}
+          className={cx(classes.box, className)}
+        >
           {/* an icon, not a ✓, so it isn't part of the label's text */}
           <i className={cx(classes.tick, "fas fa-check")} aria-hidden="true" />
         </span>
