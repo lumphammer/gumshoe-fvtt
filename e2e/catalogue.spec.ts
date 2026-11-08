@@ -225,13 +225,14 @@ test("a callout takes its tone, and a drop target shows when it's ready and when
   await expect(callout).toHaveRole("status");
   await expect(callout).toHaveCSS("border-left-color", danger);
   await expect(callout).toHaveCSS("border-left-style", "solid");
-  // text ink on a tint of the tone over the solid surface
+  // text ink on a tint of the tone over the surface (V1's flattened one,
+  // which for this theme's opaque surface is the same)
   await expect(callout).toHaveCSS("color", colors.text);
   await expect(callout).toHaveCSS(
     "background-color",
     await resolve(
       callout,
-      "color-mix(in srgb, var(--inv-danger) 30%, var(--inv-surface-solid))",
+      "color-mix(in srgb, var(--inv-danger) 30%, var(--inv-surface))",
     ),
   );
 
@@ -262,7 +263,7 @@ test("a callout takes its tone, and a drop target shows when it's ready and when
     "background-color",
     await resolve(
       advice,
-      "color-mix(in srgb, var(--inv-warning) 30%, var(--inv-surface-solid))",
+      "color-mix(in srgb, var(--inv-warning) 30%, var(--inv-surface))",
     ),
   );
 
@@ -790,6 +791,8 @@ test("cards: a V1 category's style wins over the base, as in V1, whatever its ke
 test("surfaces: the party sheet's empty message floats, and an ability nobody has is on the danger surface", async ({
   page,
 }) => {
+  // Teal's surfaces are translucent
+  await setSettings(page, { defaultThemeName: "tealTheme" });
   const partyId = await createActor(page, { name: "Crew", type: "party" });
   const sheet = await openSheet(page, `Actor.${partyId}`);
 
@@ -798,7 +801,9 @@ test("surfaces: the party sheet's empty message floats, and an ability nobody ha
   await expect(message).toHaveCount(1);
   await expect(message).toContainText("No actors in this party yet");
   await expect(message).toHaveCSS("border-top-left-radius", /px$/);
-  await expect(message).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  // a V1 theme's overlapping things are on its surface flattened over the
+  // wallpaper: opaque, though the surface isn't
+  await expect(message).toHaveCSS("background-color", /^rgb\(/);
   await expect(sheet.locator(".inv-sheet-root").first()).toHaveCSS(
     "border-top-left-radius",
     "0px",
@@ -821,11 +826,16 @@ test("surfaces: the party sheet's empty message floats, and an ability nobody ha
   const odd = await zeroCell.evaluate((el) =>
     el.classList.contains("inv-party-cell--odd_true"),
   );
+  // V1's danger tint: the surface (white, at 50% or 20%) halfway to red,
+  // keeping the surface's opacity
   await expect(zeroCell).toHaveCSS(
     "background-color",
-    await resolve(
-      zeroCell,
-      odd ? "var(--inv-surface-danger)" : "var(--inv-surface-nested-danger)",
-    ),
+    odd
+      ? /^rgba\(255, 12[78], 12[78], 0\.5\)$/
+      : /^rgba\(255, 12[78], 12[78], 0\.2\)$/,
   );
+  // the header cells, stuck over the others, are opaque
+  await expect(
+    sheet.locator(".inv-party-cell--header_true").first(),
+  ).toHaveCSS("background-color", /^rgb\(/);
 });
