@@ -2,6 +2,7 @@ import type { ThemeV2 } from "@lumphammer/investigator-fvtt-types";
 
 import { globalCss } from "../components/frame";
 import { compileCatalogue } from "./catalogue/compileCatalogue";
+import { catalogueFromV1 } from "./catalogue/fromV1";
 import type { CatalogueOverrides } from "./catalogue/overrides";
 import {
   optionalPaletteKeys as optionalPalette,
@@ -34,8 +35,9 @@ const fromV1 = new WeakMap<ThemeV1, Theme>();
 
 /**
  * A V1 theme (as `themeFactory` made it from its seed) as a theme: its
- * palette from `paletteFromV1`, and its styles as overrides from `fromV1`.
- * The same theme for the same V1 theme.
+ * palette from `paletteFromV1`, and its styles as a V2 catalogue from
+ * `fromV1`, compiled as a V2 theme's is. The same theme for the same V1
+ * theme.
  */
 export function themeFromV1(theme: ThemeV1): Theme {
   let result = fromV1.get(theme);
@@ -43,7 +45,10 @@ export function themeFromV1(theme: ThemeV1): Theme {
     result = {
       displayName: theme.displayName,
       palette: paletteFromV1(theme),
-      catalogue: theme.catalogue ?? {},
+      // V1's values are CSS as written, palette names or not
+      catalogue: compileCatalogue(catalogueFromV1(theme), undefined, {
+        literal: true,
+      }),
       globalCss: globalCss(theme.global),
     };
     fromV1.set(theme, result);

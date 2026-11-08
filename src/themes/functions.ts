@@ -4,7 +4,6 @@ import type {
 } from "@lumphammer/investigator-fvtt-types";
 
 import { irid } from "../irid/irid";
-import { catalogueFromV1 } from "./catalogue/fromV1";
 import type { ThemeV1 } from "./types";
 
 /**
@@ -162,9 +161,6 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
     },
   };
 
-  // only what `fromV1` makes of the V1 styles: a seed can't have its own
-  // overrides (ThemeV2 themes can)
-  final.catalogue = catalogueFromV1(final);
   return final;
 };
 

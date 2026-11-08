@@ -242,6 +242,10 @@ const nest = (parents: string[], key: string) =>
     ),
   );
 
+/** Whether a selector has `&` (not escaped, nor in a string) in it. */
+export const hasParent = (selector: string) =>
+  replaceParent(selector, "") !== selector;
+
 function serialize(
   selectors: string[],
   style: OverrideStyle,

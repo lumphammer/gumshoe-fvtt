@@ -29,7 +29,7 @@ const compileValue = (property: string, value: string | number) =>
 /**
  * A ThemeV2 style as an override style: a palette colour's name as the
  * value of a colour property (or one of its fallbacks) becomes its custom
- * property, and a nested key that's neither a selector with `&` nor an
+ * property (unless `literal`: a V1 theme's values are CSS as written), and a nested key that's neither a selector with `&` nor an
  * at-rule is dropped (ThemeV2 has no bare descendant selectors). Nothing,
  * for something that isn't a style: an empty style would replace a base
  * with nothing.
@@ -38,7 +38,10 @@ function compileStyle(
   style: unknown,
   where: string,
   warn: Warn,
+  literal = false,
 ): OverrideStyle | undefined {
+  const valueOf = (property: string, value: string | number) =>
+    literal ? value : compileValue(property, value);
   if (!isObject(style)) {
     warn(`${where}: not a style object`);
     return undefined;
@@ -49,15 +52,15 @@ function compileStyle(
       warn(`${where}: "${key}" isn't a property`);
     } else if (isObject(value)) {
       if (key.startsWith("@") || key.includes("&")) {
-        const nested = compileStyle(value, `${where} ${key}`, warn);
+        const nested = compileStyle(value, `${where} ${key}`, warn, literal);
         if (nested) result[key] = nested;
       } else {
         warn(`${where}: "${key}" is neither a selector with & nor an at-rule`);
       }
     } else if (isValue(value)) {
-      result[key] = compileValue(key, value);
+      result[key] = valueOf(key, value);
     } else if (Array.isArray(value) && value.every(isValue)) {
-      result[key] = value.map((fallback) => compileValue(key, fallback));
+      result[key] = value.map((fallback) => valueOf(key, fallback));
     } else if (value !== undefined) {
       warn(`${where}: "${key}" isn't a CSS value`);
     }
@@ -88,6 +91,12 @@ type Shape = (typeof recipeShapes)[keyof typeof recipeShapes];
 export function compileCatalogue(
   catalogue: ThemeCatalogue,
   warn: Warn = (message) => console.warn(`Theme catalogue: ${message}`),
+  {
+    literal = false,
+  }: {
+    /** Values are CSS as written: no palette names (a V1 theme's). */
+    literal?: boolean;
+  } = {},
 ): CatalogueOverrides {
   const result: CatalogueOverrides = {};
   // several parts can come to the same class (two compound variants for the
@@ -127,7 +136,7 @@ export function compileCatalogue(
       classOf: (slot?: string) => string,
     ) => {
       if (slots.length === 0) {
-        add(classOf(), compileStyle(styles, where, warn));
+        add(classOf(), compileStyle(styles, where, warn, literal));
         return;
       }
       if (!isObject(styles)) {
@@ -136,7 +145,10 @@ export function compileCatalogue(
       }
       for (const [slot, style] of Object.entries(styles)) {
         if (slots.includes(slot)) {
-          add(classOf(slot), compileStyle(style, `${where}.${slot}`, warn));
+          add(
+            classOf(slot),
+            compileStyle(style, `${where}.${slot}`, warn, literal),
+          );
         } else {
           warn(`${where}: no such slot "${slot}"`);
         }

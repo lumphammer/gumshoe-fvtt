@@ -5,8 +5,6 @@ import type {
   ThemeSeedV1,
 } from "@lumphammer/investigator-fvtt-types";
 
-import type { CatalogueOverrides } from "./catalogue/overrides";
-
 export interface ThemeV1 extends ThemeSeedV1 {
   smallSheetRootStyle: CSSObject;
   tabActiveStyle: CSSObject;
@@ -29,13 +27,6 @@ export interface ThemeV1 extends ThemeSeedV1 {
     warning: string;
     success: string;
   };
-
-  /**
-   * Replacements for catalogue classes (docs/theming.md): what `fromV1`
-   * makes of the V1 styles. Not in `ThemeSeedV1`, and V1 seeds won't get it:
-   * theme authors write overrides in ThemeV2's `catalogue`.
-   */
-  catalogue?: CatalogueOverrides;
 
   cards: {
     base: CardStyles;

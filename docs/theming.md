@@ -43,9 +43,9 @@ installed (`src/themes/theme.ts`); every installed theme, V1 or V2, resolved
 into one runtime `Theme` (display name, complete palette, overrides by class,
 `globalCss`), which is all the rest of the code sees; `ThemeContext`,
 `tabClass`, `panelClass` and `notesCssClasses` gone; the card gap a palette
-entry. **Still to do**: V1 themes still become overrides by class (`fromV1`),
-not a V2 catalogue; the built-in themes are still V1; the types package
-packs properly now (#1557), but a new version isn't published yet.
+entry; `fromV1` making a V2 catalogue from a V1 theme's styles, compiled as
+a V2 theme's is. **Still to do**: the built-in themes are still V1; the types
+package packs properly now (#1557), but a new version isn't published yet.
 
 ### Shape
 
@@ -161,8 +161,10 @@ it may break as the markup changes.
   installed (`themeFactory`, then `paletteFromV1` and `fromV1`), so V2 is the
   only theme type the rest of the code sees. (As built, both become the
   runtime `Theme`, a V2 theme resolved: its palette complete and its
-  catalogue compiled to overrides by class, which is what `fromV1` makes for
-  a V1 theme.) V1's `global` (a string, or
+  catalogue compiled to overrides by class. `fromV1` makes a V1 theme's
+  catalogue, which is compiled the same way. A bare descendant selector in a
+  V1 style, `"h1"`, becomes `"& h1"`, and a V1 theme's values are CSS as
+  written: a palette name isn't a palette colour there.) V1's `global` (a string, or
   Emotion's serialised styles from a theme module) becomes `globalCss` the
   way `frame.ts` turns it into CSS today: Emotion's labels stripped, and
   linked keyframes kept, in order.

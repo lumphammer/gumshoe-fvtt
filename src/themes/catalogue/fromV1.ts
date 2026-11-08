@@ -1,4 +1,8 @@
-import type { CSSObject } from "@lumphammer/investigator-fvtt-types";
+import type {
+  CSSObject,
+  ThemeCatalogue,
+  ThemeStyle,
+} from "@lumphammer/investigator-fvtt-types";
 
 import { paletteVar } from "../palette";
 import type { ThemeV1 } from "../types";
@@ -9,50 +13,83 @@ import {
   fieldDefaults,
 } from "./sharedDefaults";
 import { tones } from "./tones";
-import {
-  type CatalogueOverrides,
-  type OverrideStyle,
-  splitSelectorList,
-} from "./overrides";
+import { hasParent, type OverrideStyle, splitSelectorList } from "./overrides";
 
-/** Emotion's `:hover` attaches to the element; an override's bare selector is a descendant. */
+/**
+ * An Emotion selector as an override's: a pseudo-class attaches to the
+ * element, as Emotion has it, and a bare selector is a descendant, which a
+ * ThemeV2 style says with `&`.
+ */
 const attach = (key: string) =>
   key.startsWith("@")
     ? key
     : splitSelectorList(key)
-        .map((part) => (part.startsWith(":") ? `&${part}` : part))
+        .map((part) =>
+          part.startsWith(":")
+            ? `&${part}`
+            : hasParent(part)
+              ? part
+              : `& ${part}`,
+        )
         .join(", ");
+
+/** An override style as a theme's (ThemeV2's types are stricter). */
+const themeStyle = (style: OverrideStyle) => style as ThemeStyle;
+
+/** `over` on top of `under`, nested rules merged too. */
+function merge(under: OverrideStyle, over: OverrideStyle): OverrideStyle {
+  const result: OverrideStyle = { ...under };
+  for (const [key, value] of Object.entries(over)) {
+    const current = result[key];
+    result[key] =
+      isStyle(value) && isStyle(current) ? merge(current, value) : value;
+  }
+  return result;
+}
+
+const isStyle = (value: unknown): value is OverrideStyle =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
 
 /**
  * An Emotion style object as an override style: pseudo-classes attach to the
- * element, as Emotion has them, and a list of fallbacks stays a list.
+ * element, as Emotion has them, and a list of fallbacks stays a list. Two
+ * keys that come to the same selector (`h1` and `& h1`) are one rule, the
+ * later's declarations over the earlier's, as their two rules were.
  */
 function fromEmotion(style: CSSObject): OverrideStyle {
-  return Object.fromEntries(
-    Object.entries(style).flatMap(
-      ([key, value]): [string, OverrideStyle[string]][] => {
-        // fallbacks: all of them, in order (the serializer repeats the
-        // declaration for each)
-        if (Array.isArray(value)) {
-          return [
-            [
-              key,
-              (value as unknown[]).filter(
-                (v): v is string | number =>
-                  typeof v === "string" || typeof v === "number",
-              ),
-            ],
-          ];
-        }
-        if (value !== null && typeof value === "object") {
-          return [[attach(key), fromEmotion(value as CSSObject)]];
-        }
-        if (typeof value === "string" || typeof value === "number") {
-          return [[key, value]];
-        }
-        return [];
-      },
-    ),
+  const result: OverrideStyle = {};
+  for (const [key, value] of entriesOf(style)) {
+    const current = result[key];
+    result[key] =
+      isStyle(value) && isStyle(current) ? merge(current, value) : value;
+  }
+  return result;
+}
+
+function entriesOf(style: CSSObject): [string, OverrideStyle[string]][] {
+  return Object.entries(style).flatMap(
+    ([key, value]): [string, OverrideStyle[string]][] => {
+      // fallbacks: all of them, in order (the serializer repeats the
+      // declaration for each)
+      if (Array.isArray(value)) {
+        return [
+          [
+            key,
+            (value as unknown[]).filter(
+              (v): v is string | number =>
+                typeof v === "string" || typeof v === "number",
+            ),
+          ],
+        ];
+      }
+      if (value !== null && typeof value === "object") {
+        return [[attach(key), fromEmotion(value as CSSObject)]];
+      }
+      if (typeof value === "string" || typeof value === "number") {
+        return [[key, value]];
+      }
+      return [];
+    },
   );
 }
 
@@ -74,18 +111,28 @@ const ownBackground = (style: OverrideStyle): OverrideStyle =>
  * `themeFactory` has no default panel styles, so a theme without them gets
  * the catalogue's panels, which look the same.
  */
-function panelsFromV1(theme: ThemeV1): CatalogueOverrides {
+function panelsFromV1(theme: ThemeV1): ThemeCatalogue {
   const { panelStylePrimary: primary, panelStyleSecondary: secondary } = theme;
   if (!primary && !secondary) return {};
   const nested = secondary ?? primary;
   return {
-    panel: { padding: "0.5em" },
-    "panel--depth_top": primary
-      ? ownBackground(fromEmotion(primary))
-      : { background: `var(${paletteVar("surface")})` },
-    "panel--depth_nested": nested
-      ? ownBackground(fromEmotion(nested))
-      : { background: `var(${paletteVar("surfaceNested")})` },
+    panel: {
+      base: { padding: "0.5em" },
+      variants: {
+        depth: {
+          top: themeStyle(
+            primary
+              ? ownBackground(fromEmotion(primary))
+              : { background: `var(${paletteVar("surface")})` },
+          ),
+          nested: themeStyle(
+            nested
+              ? ownBackground(fromEmotion(nested))
+              : { background: `var(${paletteVar("surfaceNested")})` },
+          ),
+        },
+      },
+    },
   };
 }
 
@@ -98,29 +145,35 @@ function panelsFromV1(theme: ThemeV1): CatalogueOverrides {
  * fills in all seven, so every V1 theme gets V1's tabs, its defaults
  * included, and not the catalogue's.
  */
-function tabsFromV1(theme: ThemeV1): CatalogueOverrides {
+function tabsFromV1(theme: ThemeV1): ThemeCatalogue {
+  const tab: OverrideStyle = {
+    font: `var(${paletteVar("displayFont")})`,
+    textTransform: `var(${paletteVar("displayCase")})`,
+    letterSpacing: `var(${paletteVar("displayLetterSpacing")})`,
+    textAlign: "center",
+    ...fromEmotion(theme.tabStyle),
+    ":not([data-wrapped]) > input:checked + &": fromEmotion(
+      theme.tabActiveStyle,
+    ),
+    "[data-wrapped] > &": fromEmotion(theme.tabWrappedStyle),
+    "[data-wrapped] > input:checked + &": fromEmotion(
+      theme.tabWrappedActiveStyle,
+    ),
+    // V1's tabs dropped any hover glow on a disabled tab
+    "input:disabled + &:hover": { textShadow: "none" },
+  };
+  const content: OverrideStyle = {
+    padding: "0.5em",
+    ...fromEmotion(theme.tabContentStyle),
+    "[data-wrapped] + &": fromEmotion(theme.tabContentWrappedStyle),
+  };
   return {
-    tabs__tab: {
-      font: `var(${paletteVar("displayFont")})`,
-      textTransform: `var(${paletteVar("displayCase")})`,
-      letterSpacing: `var(${paletteVar("displayLetterSpacing")})`,
-      textAlign: "center",
-      ...fromEmotion(theme.tabStyle),
-      ":not([data-wrapped]) > input:checked + &": fromEmotion(
-        theme.tabActiveStyle,
-      ),
-      "[data-wrapped] > &": fromEmotion(theme.tabWrappedStyle),
-      "[data-wrapped] > input:checked + &": fromEmotion(
-        theme.tabWrappedActiveStyle,
-      ),
-      // V1's tabs dropped any hover glow on a disabled tab
-      "input:disabled + &:hover": { textShadow: "none" },
-    },
-    tabs__spacer: fromEmotion(theme.tabSpacerStyle),
-    tabs__content: {
-      padding: "0.5em",
-      ...fromEmotion(theme.tabContentStyle),
-      "[data-wrapped] + &": fromEmotion(theme.tabContentWrappedStyle),
+    tabs: {
+      base: {
+        tab: themeStyle(tab),
+        spacer: themeStyle(fromEmotion(theme.tabSpacerStyle)),
+        content: themeStyle(content),
+      },
     },
   };
 }
@@ -131,10 +184,16 @@ function tabsFromV1(theme: ThemeV1): CatalogueOverrides {
  * seed has the large one. They patch the `size` variants (a variant override
  * goes over the default), so they keep that composition.
  */
-function sheetRootFromV1(theme: ThemeV1): CatalogueOverrides {
+function sheetRootFromV1(theme: ThemeV1): ThemeCatalogue {
   return {
-    "sheet-root--size_large": fromEmotion(theme.largeSheetRootStyle),
-    "sheet-root--size_small": fromEmotion(theme.smallSheetRootStyle),
+    sheetRoot: {
+      variants: {
+        size: {
+          large: themeStyle(fromEmotion(theme.largeSheetRootStyle)),
+          small: themeStyle(fromEmotion(theme.smallSheetRootStyle)),
+        },
+      },
+    },
   };
 }
 
@@ -142,9 +201,13 @@ function sheetRootFromV1(theme: ThemeV1): CatalogueOverrides {
  * In V1, `appWindowStyle` went on the window around the sheet, over Foundry's
  * own look: the frame's `root` is empty by default, so it's that look.
  */
-function appFrameFromV1(theme: ThemeV1): CatalogueOverrides {
+function appFrameFromV1(theme: ThemeV1): ThemeCatalogue {
   return theme.appWindowStyle
-    ? { "app-frame__root": fromEmotion(theme.appWindowStyle) }
+    ? {
+        appFrame: {
+          base: { root: themeStyle(fromEmotion(theme.appWindowStyle)) },
+        },
+      }
     : {};
 }
 
@@ -153,38 +216,48 @@ function appFrameFromV1(theme: ThemeV1): CatalogueOverrides {
  * spread over them (the front style over the name, its measuring copy and the
  * subtext; the rear style over their rear copies). Every seed has a logo.
  */
-function logoFromV1(theme: ThemeV1): CatalogueOverrides {
+function logoFromV1(theme: ThemeV1): ThemeCatalogue {
   const { logo } = theme;
   const over = (
     defaults: Record<string, string | number>,
     style: CSSObject | undefined,
   ): OverrideStyle => ({ ...defaults, ...fromEmotion(style ?? {}) });
   return {
-    // the backdrop always fills the logo (layout in LogoEditable), so its
-    // position and insets aren't the theme's, even with !important
-    logo__backdrop: Object.fromEntries(
-      Object.entries(over(logoDefaults.backdrop, logo.backdropStyle)).filter(
-        ([key]) => !(backdropForced as readonly string[]).includes(key),
-      ),
-    ),
-    logo__text: over(logoDefaults.text, logo.textElementsStyle),
-    logo__front_wrapper: over(
-      logoDefaults.front_wrapper,
-      logo.frontTextElementWrapperStyle,
-    ),
-    logo__front: over(logoDefaults.front, logo.frontTextElementStyle),
-    logo__front_sub: over(logoDefaults.front_sub, logo.frontTextElementStyle),
-    // the front style, with the measuring copy's position and size last
-    logo__measure: {
-      ...over(logoDefaults.measure, logo.frontTextElementStyle),
-      ...measureForced,
+    logo: {
+      base: {
+        // the backdrop always fills the logo (layout in LogoEditable), so its
+        // position and insets aren't the theme's, even with !important
+        backdrop: themeStyle(
+          Object.fromEntries(
+            Object.entries(
+              over(logoDefaults.backdrop, logo.backdropStyle),
+            ).filter(
+              ([key]) => !(backdropForced as readonly string[]).includes(key),
+            ),
+          ),
+        ),
+        text: themeStyle(over(logoDefaults.text, logo.textElementsStyle)),
+        front_wrapper: themeStyle(
+          over(logoDefaults.front_wrapper, logo.frontTextElementWrapperStyle),
+        ),
+        front: themeStyle(over(logoDefaults.front, logo.frontTextElementStyle)),
+        front_sub: themeStyle(
+          over(logoDefaults.front_sub, logo.frontTextElementStyle),
+        ),
+        // the front style, with the measuring copy's position and size last
+        measure: themeStyle({
+          ...over(logoDefaults.measure, logo.frontTextElementStyle),
+          ...measureForced,
+        }),
+        rear_wrapper: themeStyle(
+          over(logoDefaults.rear_wrapper, logo.rearTextElementWrapperStyle),
+        ),
+        rear: themeStyle(over(logoDefaults.rear, logo.rearTextElementStyle)),
+        rear_sub: themeStyle(
+          over(logoDefaults.rear_sub, logo.rearTextElementStyle),
+        ),
+      },
     },
-    logo__rear_wrapper: over(
-      logoDefaults.rear_wrapper,
-      logo.rearTextElementWrapperStyle,
-    ),
-    logo__rear: over(logoDefaults.rear, logo.rearTextElementStyle),
-    logo__rear_sub: over(logoDefaults.rear_sub, logo.rearTextElementStyle),
   };
 }
 
@@ -214,11 +287,11 @@ const attributeValue = (key: string) =>
  * its category's, over it) under the pointer: that's a `:hover` rule in the
  * root's. Every V1 theme gets them, `themeFactory`'s defaults included.
  */
-function cardsFromV1(theme: ThemeV1): CatalogueOverrides {
+function cardsFromV1(theme: ThemeV1): ThemeCatalogue {
   const categories = Object.entries(theme.cards.categories);
   const keys = categories.map(([key]) => attributeValue(key));
   const anyCategory = keys.map((key) => `[data-category=${key}]`).join(", ");
-  return Object.fromEntries(
+  const slots = Object.fromEntries(
     (Object.keys(v1CardStyleNames) as (keyof typeof v1CardStyleNames)[]).map(
       (slot) => {
         const name = v1CardStyleNames[slot];
@@ -232,7 +305,7 @@ function cardsFromV1(theme: ThemeV1): CatalogueOverrides {
           theme.cards.base.hoverStyle,
         );
         if (categories.length === 0) {
-          return [`card__${slot}`, fromEmotion(base)];
+          return [slot, themeStyle(fromEmotion(base))];
         }
         const within = (context: string) =>
           slot === "root"
@@ -251,10 +324,11 @@ function cardsFromV1(theme: ThemeV1): CatalogueOverrides {
             ),
           );
         });
-        return [`card__${slot}`, style];
+        return [slot, themeStyle(style)];
       },
     ),
   );
+  return { card: { base: slots } };
 }
 
 /**
@@ -265,7 +339,7 @@ function cardsFromV1(theme: ThemeV1): CatalogueOverrides {
  * danger-tinted surfaces (`bgTransDanger*`) kept the surface's opacity, which
  * the recipe's tint doesn't, so they're put back too.
  */
-function surfacesFromV1(theme: ThemeV1): CatalogueOverrides {
+function surfacesFromV1(theme: ThemeV1): ThemeCatalogue {
   const {
     bgOpaquePrimary: top,
     bgOpaqueSecondary: nested,
@@ -274,40 +348,57 @@ function surfacesFromV1(theme: ThemeV1): CatalogueOverrides {
     bgTransDangerPrimary: dangerTopTrans,
     bgTransDangerSecondary: dangerNestedTrans,
   } = theme.colors;
-  const cell = (odd: boolean, zero: boolean, header = true) =>
-    `party-cell--compound__header_${header}__odd_${odd}__zero_${zero}`;
+  const cell = (
+    odd: boolean,
+    zero: boolean,
+    header: boolean,
+    background: string,
+  ) => ({ header, odd, zero, css: { background } });
   return {
-    "surface--compound__depth_top__solid_true": { backgroundColor: top },
-    "surface--compound__depth_nested__solid_true": { backgroundColor: nested },
-    floating: { background: top },
-    [cell(true, false)]: { background: top },
-    [cell(false, false)]: { background: nested },
-    [cell(true, true)]: { background: dangerTop },
-    [cell(false, true)]: { background: dangerNested },
-    [cell(true, true, false)]: { background: dangerTopTrans },
-    [cell(false, true, false)]: { background: dangerNestedTrans },
-    select: {
-      ...fieldDefaults,
-      background: nested,
-      "& option": { background: top, color: `var(${paletteVar("text")})` },
+    surface: {
+      compoundVariants: [
+        { depth: "top", solid: true, css: { backgroundColor: top } },
+        { depth: "nested", solid: true, css: { backgroundColor: nested } },
+      ],
     },
-    "drag-handle": { ...dragHandleDefaults, background: top },
-    ...Object.fromEntries(
-      tones.map((tone) => [
-        `callout--tone_${tone}`,
-        { background: calloutTint(tone, top) },
-      ]),
-    ),
+    floating: { base: { background: top } },
+    partyCell: {
+      compoundVariants: [
+        cell(true, false, true, top),
+        cell(false, false, true, nested),
+        cell(true, true, true, dangerTop),
+        cell(false, true, true, dangerNested),
+        cell(true, true, false, dangerTopTrans),
+        cell(false, true, false, dangerNestedTrans),
+      ],
+    },
+    select: {
+      base: themeStyle({
+        ...fieldDefaults,
+        background: nested,
+        "& option": { background: top, color: `var(${paletteVar("text")})` },
+      }),
+    },
+    dragHandle: {
+      base: themeStyle({ ...dragHandleDefaults, background: top }),
+    },
+    callout: {
+      variants: {
+        tone: Object.fromEntries(
+          tones.map((tone) => [tone, { background: calloutTint(tone, top) }]),
+        ),
+      },
+    },
   };
 }
 
 /**
- * The catalogue overrides a V1 theme's styles become, so V1 themes keep their
- * look as their components are converted. `theme` is the seed as
- * `themeFactory` filled it in: V1's defaults for the fields a seed leaves out
- * are part of the V1 contract too, so they become overrides as well.
+ * The catalogue (ThemeV2's) a V1 theme's styles become, so V1 themes keep
+ * their look. `theme` is the seed as `themeFactory` filled it in: V1's
+ * defaults for the fields a seed leaves out are part of the V1 contract too,
+ * so they become overrides as well.
  */
-export function catalogueFromV1(theme: ThemeV1): CatalogueOverrides {
+export function catalogueFromV1(theme: ThemeV1): ThemeCatalogue {
   return {
     ...appFrameFromV1(theme),
     ...sheetRootFromV1(theme),

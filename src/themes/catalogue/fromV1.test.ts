@@ -3,8 +3,22 @@ import { describe, expect, test } from "vitest";
 import { mutantCityBlueTheme } from "../mutantCityBlueTheme";
 import { tealTheme } from "../tealTheme";
 import { themeFactory } from "../functions";
+import { compileCatalogue } from "./compileCatalogue";
 import { catalogueFromV1 } from "./fromV1";
 import { catalogueOverridesCss } from "./overrides";
+
+/**
+ * A V1 theme's catalogue, compiled to overrides by class (as `themeFromV1`
+ * does): a warning fails the test, as `fromV1` should only make what fits.
+ */
+const compiled = (theme: Parameters<typeof catalogueFromV1>[0]) =>
+  compileCatalogue(
+    catalogueFromV1(theme),
+    (message) => {
+      throw new Error(message);
+    },
+    { literal: true },
+  );
 
 const seed = {
   ...tealTheme,
@@ -25,7 +39,7 @@ const theme = themeFactory(seed);
 /** The panel overrides, from a theme. */
 const fromV1 = (theme: Parameters<typeof catalogueFromV1>[0]) =>
   Object.fromEntries(
-    Object.entries(catalogueFromV1(theme)).filter(([name]) =>
+    Object.entries(compiled(theme)).filter(([name]) =>
       name.startsWith("panel"),
     ),
   );
@@ -96,6 +110,8 @@ describe("catalogueFromV1", () => {
         "& > img": { width: ["1em", "1lh"] },
         ":is(.a, .b) span": { color: "blue" },
         "@media (min-width: 40em)": { padding: 4 },
+        // a descendant, as Emotion has it
+        "h1, h2": { color: "red" },
       },
     });
     expect(overrides["panel--depth_nested"]).toEqual({
@@ -103,6 +119,7 @@ describe("catalogueFromV1", () => {
       "& > img": { width: ["1em", "1lh"] },
       "&:is(.a, .b) span": { color: "blue" },
       "@media (min-width: 40em)": { padding: 4 },
+      "& h1, & h2": { color: "red" },
       backgroundColor: "transparent",
     });
     const root = '[data-inv-theme="t"]';
@@ -113,10 +130,39 @@ describe("catalogueFromV1", () => {
   });
 });
 
+test("a bare selector and its & form are one rule, the later over the earlier", () => {
+  expect(
+    fromV1({
+      ...theme,
+      panelStylePrimary: {
+        backgroundColor: "red",
+        h1: { color: "red", fontSize: "1em" },
+        "& h1": { fontSize: "2em" },
+        "@media (min-width: 40em)": {
+          h2: { color: "red" },
+          "& h2": { margin: 0 },
+        },
+      },
+    })["panel--depth_top"],
+  ).toEqual({
+    backgroundColor: "red",
+    "& h1": { color: "red", fontSize: "2em" },
+    "@media (min-width: 40em)": { "& h2": { color: "red", margin: 0 } },
+  });
+});
+
+test("a V1 theme's values are CSS as written, even a palette name", () => {
+  expect(
+    fromV1({ ...theme, panelStylePrimary: { color: ["red", "text"] } })[
+      "panel--depth_top"
+    ],
+  ).toMatchObject({ color: ["red", "text"] });
+});
+
 describe("tabs", () => {
   test("a seed without tab styles gets V1's default tabs", () => {
     const { colors } = tealTheme;
-    const overrides = catalogueFromV1(theme);
+    const overrides = compiled(theme);
     expect(overrides["tabs__tab"]).toMatchObject({
       background: colors.backgroundSecondary,
       color: colors.accent,
@@ -133,7 +179,7 @@ describe("tabs", () => {
   });
 
   test("a theme's tab styles become the tabs slots, with V1's states", () => {
-    const overrides = catalogueFromV1({
+    const overrides = compiled({
       ...tealTheme,
       tabStyle: { color: "red", ":hover": { color: "blue" } },
       tabActiveStyle: { background: "white" },
@@ -160,11 +206,11 @@ describe("tabs", () => {
 });
 
 test("themes get their V1 panel styles as overrides", () => {
-  expect(mutantCityBlueTheme.catalogue?.["panel--depth_top"]).toMatchObject({
+  expect(compiled(mutantCityBlueTheme)["panel--depth_top"]).toMatchObject({
     border: expect.stringMatching(/^1px solid/),
   });
-  expect(mutantCityBlueTheme.catalogue?.["tabs__tab"]).toBeDefined();
-  expect(Object.keys(tealTheme.catalogue ?? {})).toEqual([
+  expect(compiled(mutantCityBlueTheme)["tabs__tab"]).toBeDefined();
+  expect(Object.keys(compiled(tealTheme))).toEqual([
     "sheet-root--size_large",
     "sheet-root--size_small",
     "logo__backdrop",
@@ -176,15 +222,15 @@ test("themes get their V1 panel styles as overrides", () => {
     "logo__rear_wrapper",
     "logo__rear",
     "logo__rear_sub",
-    "surface--compound__depth_top__solid_true",
-    "surface--compound__depth_nested__solid_true",
+    "surface--depth_top.surface--solid_true",
+    "surface--depth_nested.surface--solid_true",
     "floating",
-    "party-cell--compound__header_true__odd_true__zero_false",
-    "party-cell--compound__header_true__odd_false__zero_false",
-    "party-cell--compound__header_true__odd_true__zero_true",
-    "party-cell--compound__header_true__odd_false__zero_true",
-    "party-cell--compound__header_false__odd_true__zero_true",
-    "party-cell--compound__header_false__odd_false__zero_true",
+    "party-cell--header_true.party-cell--odd_true.party-cell--zero_false",
+    "party-cell--header_true.party-cell--odd_false.party-cell--zero_false",
+    "party-cell--header_true.party-cell--odd_true.party-cell--zero_true",
+    "party-cell--header_true.party-cell--odd_false.party-cell--zero_true",
+    "party-cell--header_false.party-cell--odd_true.party-cell--zero_true",
+    "party-cell--header_false.party-cell--odd_false.party-cell--zero_true",
     "select",
     "drag-handle",
     "callout--tone_neutral",
@@ -206,17 +252,21 @@ test("themes get their V1 panel styles as overrides", () => {
 
 test("things that overlap content are on V1's flattened surfaces, and danger tints are V1's", () => {
   const { colors } = tealTheme;
-  const overrides = catalogueFromV1(tealTheme);
-  expect(overrides["surface--compound__depth_top__solid_true"]).toEqual({
+  const overrides = compiled(tealTheme);
+  expect(overrides["surface--depth_top.surface--solid_true"]).toEqual({
     backgroundColor: colors.bgOpaquePrimary,
   });
   expect(overrides["floating"]).toEqual({ background: colors.bgOpaquePrimary });
   expect(
-    overrides["party-cell--compound__header_true__odd_false__zero_true"],
+    overrides[
+      "party-cell--header_true.party-cell--odd_false.party-cell--zero_true"
+    ],
   ).toEqual({ background: colors.bgOpaqueDangerSecondary });
   // and V1's danger tint, which kept the surface's opacity
   expect(
-    overrides["party-cell--compound__header_false__odd_true__zero_true"],
+    overrides[
+      "party-cell--header_false.party-cell--odd_true.party-cell--zero_true"
+    ],
   ).toEqual({ background: colors.bgTransDangerPrimary });
   // a base override replaces the default, so it restates the rest of it
   expect(overrides["select"]).toMatchObject({
@@ -233,12 +283,12 @@ test("things that overlap content are on V1's flattened surfaces, and danger tin
   });
   // the overrides are all for names the catalogue has
   expect(catalogueOverridesCss("t", overrides)).toContain(
-    ".inv-party-cell--compound__header_true__odd_false__zero_true",
+    ".inv-party-cell--header_true:where(.inv-party-cell--odd_false.inv-party-cell--zero_true)",
   );
 });
 
 test("a theme's sheet root styles patch the root's size variants", () => {
-  const overrides = catalogueFromV1({
+  const overrides = compiled({
     ...tealTheme,
     largeSheetRootStyle: { backgroundImage: "url(a.webp)", fontSize: "1.1em" },
     smallSheetRootStyle: { ":before": { content: "''" } },
@@ -253,7 +303,7 @@ test("a theme's sheet root styles patch the root's size variants", () => {
 });
 
 test("a theme's logo styles go over each part's defaults, as in V1", () => {
-  const overrides = catalogueFromV1({
+  const overrides = compiled({
     ...tealTheme,
     logo: {
       backdropStyle: { background: "red" },
@@ -284,7 +334,7 @@ test("a theme's logo styles go over each part's defaults, as in V1", () => {
 });
 
 test("the logo's forced layout stays forced, even against !important", () => {
-  const overrides = catalogueFromV1({
+  const overrides = compiled({
     ...tealTheme,
     logo: {
       ...tealTheme.logo,
@@ -305,11 +355,11 @@ test("the logo's forced layout stays forced, even against !important", () => {
 describe("cards", () => {
   const withCards = (cards: object) => {
     const seed2 = { ...seed, cards } as Parameters<typeof themeFactory>[0];
-    return catalogueFromV1(themeFactory(seed2));
+    return compiled(themeFactory(seed2));
   };
 
   test("a seed that doesn't style its cards gets V1's defaults", () => {
-    const overrides = catalogueFromV1(theme);
+    const overrides = compiled(theme);
     expect(overrides["card__root"]).toMatchObject({
       padding: "0.5em",
       "&.investigator-card-array-card:hover": {
@@ -358,7 +408,7 @@ describe("cards", () => {
 });
 
 test("a theme's window style goes on the frame, scoped to the window", () => {
-  const overrides = catalogueFromV1({
+  const overrides = compiled({
     ...tealTheme,
     appWindowStyle: { boxShadow: "0 0 20px red" },
   });
