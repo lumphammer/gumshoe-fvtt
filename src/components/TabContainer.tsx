@@ -3,7 +3,6 @@ import type { ChangeEvent, ReactNode } from "react";
 import {
   Fragment,
   useCallback,
-  useContext,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -13,7 +12,6 @@ import {
 
 import { css, cx } from "../styled-system/css";
 import { tabs } from "../styled-system/recipes";
-import { ThemeContext } from "../themes/ThemeContext";
 import { chooseTabColumns } from "./chooseTabColumns";
 import { Translate } from "./Translate";
 import { OnSurface } from "./Panel";
@@ -100,15 +98,16 @@ export const TabContainer = ({
     [onSelect],
   );
 
-  const theme = useContext(ThemeContext);
   const stripTabDefs = tabDefs.filter((t) => !t.hidden);
 
   // would love to do this point-free, but react compiler wants to see a
   // function literal
   const radioGroup = useMemo(() => nanoid(), []);
 
-  // fit the strip when it's created, resized, or a font loads. It's replaced
-  // when the selected tab changes (see the `key` below)
+  // fit the strip when it's created, resized, a font loads, or the theme
+  // changes (its fonts can change the tabs' widths but not the strip's, so
+  // the ResizeObserver won't notice). It's replaced when the selected tab
+  // changes (see the `key` below)
   const stripRef = useRef<HTMLDivElement | null>(null);
   const observeStrip = useCallback((strip: HTMLDivElement | null) => {
     stripRef.current = strip;
@@ -128,15 +127,25 @@ export const TabContainer = ({
     const fonts = strip.ownerDocument.fonts;
     const refit = () => fitTabStrip(strip);
     fonts.addEventListener("loadingdone", refit);
+    // a change of theme is a new slug and palette on the themed root
+    const themed = strip.closest("[data-inv-theme]");
+    const themeObserver = new MutationObserver(refit);
+    if (themed) {
+      themeObserver.observe(themed, {
+        attributes: true,
+        attributeFilter: ["data-inv-theme", "style"],
+      });
+    }
     return () => {
       observer.disconnect();
+      themeObserver.disconnect();
       fonts.removeEventListener("loadingdone", refit);
     };
   }, []);
 
   // and when the tabs or their labels change (Bonds and Adapted to share an
-  // id), or the theme does: that can change the tabs' widths but not the
-  // strip's, so the ResizeObserver won't notice
+  // id): that can change the tabs' widths but not the strip's, so the
+  // ResizeObserver won't notice
   const fitKey = stripTabDefs
     .map(({ id, label }) => `${id}:${typeof label === "string" ? label : ""}`)
     .join("\n");
@@ -144,7 +153,7 @@ export const TabContainer = ({
     if (stripRef.current) {
       fitTabStrip(stripRef.current);
     }
-  }, [fitKey, theme]);
+  }, [fitKey]);
 
   const classes = tabs();
 
@@ -199,8 +208,6 @@ export const TabContainer = ({
                 data-interactive={id === selected ? undefined : true}
                 className={cx(
                   classes.tab,
-                  // a V1 theme's own class, from before the catalogue
-                  theme.tabClass,
                   css({
                     flex: "1",
                     display: "flex",
@@ -233,7 +240,6 @@ export const TabContainer = ({
         className={cx(
           "tab-content",
           classes.content,
-          theme.panelClass,
           css({ flex: "1", position: "relative", overflow: "auto" }),
         )}
       >

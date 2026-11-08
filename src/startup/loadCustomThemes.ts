@@ -11,7 +11,7 @@ import { installTheme } from "./injectGlobalHelper";
 export function loadCustomThemes() {
   const jsonRe = /\.(?:json|json5)$/;
   const yamlRe = /\.(?:yaml|yml)$/;
-  const schemaRe = /^v(?:1)/;
+  const schemaRe = /^v(?:1|2)/;
 
   Hooks.on("setup", async () => {
     assertGame(game);
@@ -68,6 +68,12 @@ export function loadCustomThemes() {
           throw new Error(
             `schemaVersion "${blob.schemaVersion}" not recognised`,
           );
+        }
+        if (blob.schemaVersion === "v2") {
+          // checked as it's installed: a theme that isn't one is refused
+          installTheme(filename, blob, { type: "local" });
+          systemLogger.log(`Loaded local theme ${filename}`, blob);
+          continue;
         }
         const seed: ThemeSeedV1 = {
           colors: {

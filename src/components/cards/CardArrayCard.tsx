@@ -3,7 +3,6 @@ import React, { memo, useContext } from "react";
 import { useDragStart } from "../../hooks/useDragStart";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import type { CardItem } from "../../module/items/card";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { CardDisplay } from "./CardDisplay";
 import { CardsAreaSettingsContext } from "./contexts";
 import { css } from "../../styled-system/css";
@@ -26,7 +25,6 @@ export const CardArrayCard = memo(function CardArrayCard({
     active: system.active,
     styleKeyCategoryId: system.styleKeyCategoryId,
   }));
-  const theme = useContext(ThemeContext);
 
   const { viewMode } = useContext(CardsAreaSettingsContext);
 
@@ -49,7 +47,7 @@ export const CardArrayCard = memo(function CardArrayCard({
         className={`investigator-card-array-card ${className}`}
         card={card}
         interactive
-        style={{ marginBottom: theme.cards.area.verticalSpacing }}
+        style={{ marginBottom: "var(--inv-card-gap-row)" }}
         viewMode={viewMode}
       />
     </div>

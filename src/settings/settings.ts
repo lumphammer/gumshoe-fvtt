@@ -7,7 +7,7 @@ import { mapValues } from "../functions/utilities";
 import type { MigrationFlags } from "../migrations/types";
 import { defaultSettings } from "../presets";
 import { runtimeConfig } from "../runtime";
-import type { ThemeV1 } from "../themes/types";
+import type { Theme } from "../themes/theme";
 import type { Mandatory } from "../types";
 import {
   createSetting,
@@ -47,7 +47,7 @@ export const settings = {
     name: "Default sheet theme",
     default: defaultSettings.defaultThemeName,
     choices: mapValues(
-      (theme: ThemeV1) => theme.displayName,
+      (theme: Theme) => theme.displayName,
       runtimeConfig.themes,
     ),
   }),

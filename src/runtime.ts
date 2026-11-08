@@ -2,7 +2,7 @@ import type { PresetV1 } from "@lumphammer/investigator-fvtt-types";
 
 import { basePresets } from "./presets";
 import { baseThemes } from "./themes/baseThemes";
-import type { ThemeV1 } from "./themes/types";
+import { type Theme, themeFromV1 } from "./themes/theme";
 
 /**
  * Where an installed theme or preset came from: the custom themes folder, or a
@@ -12,7 +12,7 @@ export type InstallSource = { type: "local" } | { type: "module"; id: string };
 
 export interface RuntimeConfig {
   themes: {
-    [name: string]: ThemeV1;
+    [name: string]: Theme;
   };
   themeSources: {
     [name: string]: InstallSource;
@@ -26,7 +26,9 @@ export interface RuntimeConfig {
 }
 
 export const runtimeConfig: RuntimeConfig = {
-  themes: { ...baseThemes },
+  themes: Object.fromEntries(
+    Object.entries(baseThemes).map(([id, theme]) => [id, themeFromV1(theme)]),
+  ),
   themeSources: {},
   presets: { ...basePresets },
   presetSources: {},

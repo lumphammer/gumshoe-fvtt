@@ -13,7 +13,7 @@ properties on every themed root, and the catalogue has `badge`, `button`,
 defaults. Every component's look now comes from the catalogue, and none reads
 a theme's colours. V1 themes are mapped onto the catalogue (`fromV1.ts`).
 Layout at call sites is Panda's `css()` (see Converting a component); Emotion
-is gone. A V2 theme format is later work.
+is gone. A V2 theme format is being built (ThemeV2, below).
 
 ## End goals
 
@@ -32,9 +32,20 @@ A few end goals of the whole [theming epic](https://github.com/lumphammer/gumsho
 
 ## ThemeV2 (planned)
 
-The format agreed for ThemeV2 (#1533). None of this exists yet: it's the
-design that the work towards the end goals will build. Where it differs from
-how things work today, today's sections below describe the present.
+The format agreed for ThemeV2 (#1533), being built in slices. Where it
+differs from how things work today, today's sections below describe the
+present.
+
+**Built so far**: the override types and their compiler (below, Types and
+validation); the `ThemeV2` and `ThemePalette` types in the types package;
+`installTheme` and the folder loader taking V2 themes, checked as they're
+installed (`src/themes/theme.ts`); every installed theme, V1 or V2, resolved
+into one runtime `Theme` (display name, complete palette, overrides by class,
+`globalCss`), which is all the rest of the code sees; `ThemeContext`,
+`tabClass`, `panelClass` and `notesCssClasses` gone; the card gap a palette
+entry. **Still to do**: V1 themes still become overrides by class (`fromV1`),
+not a V2 catalogue; the built-in themes are still V1; the e2e tests' back
+door is still there; the types package isn't published.
 
 ### Shape
 
@@ -148,7 +159,10 @@ it may break as the markup changes.
 - `CONFIG.Investigator.installTheme(id, theme)` and the folder loader take
   either version, by `schemaVersion`. A V1 seed is converted to V2 when it's
   installed (`themeFactory`, then `paletteFromV1` and `fromV1`), so V2 is the
-  only theme type the rest of the code sees. V1's `global` (a string, or
+  only theme type the rest of the code sees. (As built, both become the
+  runtime `Theme`, a V2 theme resolved: its palette complete and its
+  catalogue compiled to overrides by class, which is what `fromV1` makes for
+  a V1 theme.) V1's `global` (a string, or
   Emotion's serialised styles from a theme module) becomes `globalCss` the
   way `frame.ts` turns it into CSS today: Emotion's labels stripped, and
   linked keyframes kept, in order.
@@ -222,6 +236,7 @@ kebab case: `surfaceNested` is `--inv-surface-nested`), and a Panda token
 | `elevation`                                          | The shadow for anything floating (Panda: `shadows.elevation`)                                                                                                                                                                                                                                                                                 |
 | `bodyFont`                                           | The `body` text style: prose and controls. A CSS `font` value                                                                                                                                                                                                                                                                                 |
 | `displayFont`, `displayCase`, `displayLetterSpacing` | The `display` text style: titles, headings, tabs, labels. Panda applies the three together as `textStyle: "display"`                                                                                                                                                                                                                          |
+| `cardGap`                                            | The spacing between cards (a CSS `gap` value: a row gap, then a column gap), and around a card array. `CardArray` reads it, as `--inv-card-gap` and its axes `--inv-card-gap-row` and `--inv-card-gap-column`                                                                                                                                  |
 
 Status-tinted surfaces (flagged rows, invalid inputs, callouts, the party
 sheet's abilities nobody has) are derived in their recipes, from the status
@@ -372,7 +387,7 @@ overflow, flex).
   - `nested`: content inside content: inside another `Panel`, or inside
     something marked `OnSurface`, such as a tab's content.
     `surfaceNested`. Deeper nesting stays `nested`.
-- A V1 theme's `panelClass` is still added. Its `panelStylePrimary` becomes a
+- A V1 theme's `panelStylePrimary` becomes a
   `panel--depth_top` override, and `panelStyleSecondary` (or, without one,
   `panelStylePrimary`) a `panel--depth_nested` one, so the two stay
   independent, as in V1 (`src/themes/catalogue/fromV1.ts`). A V1 panel
@@ -423,7 +438,7 @@ not._
   Unselected tabs are `data-interactive`.
 - `content` is `surface`, owns the padding, and its children are nested, so
   a `Panel` in a tab is `nested`.
-- A V1 theme's `tabClass` is still added, and its seven `tab*Style` fields
+- A V1 theme's seven `tab*Style` fields
   become `tabs` overrides (`src/themes/catalogue/fromV1.ts`), so V1 themes
   keep their tabs. `themeFactory` fills in the fields a seed leaves out, and
   those V1 defaults become overrides too: a V1 theme gets V1's default tabs
@@ -573,7 +588,9 @@ hex-escaped in the attribute selector. A card in a card array is clickable
 rule in its `card__root` override, for cards in an array. The glow's
 `box-shadow` comes after it, so it wins over one in a `hoverStyle`, such as
 V1's default glow, which is close to it.
-`cards.area` (the spacing between cards) is still read by `CardArray`.
+The spacing between cards is the palette's `cardGap` (V1's `cards.area`),
+which `CardArray` reads from its custom properties: `--inv-card-gap`, and
+`--inv-card-gap-row` and `--inv-card-gap-column` for its two axes.
 
 ### Surfaces: `surface`, `floating`, `partyCell`
 
@@ -709,7 +726,7 @@ Some of what we draw lives in Foundry's own UI, not in a themed sheet: chat
 cards, the combat tracker, `NativeMenu`, `GamePauseBanner`. These look like
 Foundry, whatever theme a sheet uses. They use Foundry's markup, classes and
 custom properties, and **never read the theme**: no palette, no catalogue
-classes, no `ThemeContext` or `useTheme` (a chat card isn't inside a themed
+classes, no `useTheme` (a chat card isn't inside a themed
 root, so it would get a fallback theme anyway). `paletteReads.test.ts` checks
 this, and that they never use the catalogue, for `components/messageCards/`, `components/combat/`,
 `components/native/`, `components/inputs/NativeMenu/` and `GamePauseBanner`.

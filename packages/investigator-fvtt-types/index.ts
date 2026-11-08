@@ -2,10 +2,14 @@ import type * as CSS from "csstype";
 
 export type {
   CatalogueRecipeShapes,
+  PaletteVar,
   RecipeOverride,
   ThemeCatalogue,
+  ThemePalette,
   ThemeStyle,
+  ThemeV2,
 } from "./themeV2";
+import type { ThemeV2 } from "./themeV2";
 
 /**
  * A style object: CSS properties in camelCase (a number is pixels, as in
@@ -171,7 +175,8 @@ export interface ThemeSeedV1 {
    */
   appWindowStyle?: CSSObject;
   /**
-   * Classname to be added to active tabs
+   * @deprecated Ignored. A class for the tabs, from before the catalogue: style
+   * the tabs with `tabStyle` and the rest, or in ThemeV2, the `tabs` recipe.
    */
   tabClass?: string;
   /**
@@ -208,7 +213,9 @@ export interface ThemeSeedV1 {
    */
   tabContentWrappedStyle?: CSSObject;
   /**
-   * Classname that will be applied to all panels
+   * @deprecated Ignored. A class for panels, from before the catalogue: style
+   * panels with `panelStylePrimary` and `panelStyleSecondary`, or in ThemeV2,
+   * the `panel` recipe.
    */
   panelClass?: string;
   /**
@@ -300,6 +307,7 @@ export interface ThemeSeedV1 {
    */
   colors: SeedColorsV1;
 
+  /** @deprecated Ignored: nothing has read it for a long time. */
   notesCssClasses?: {
     scopingContainer?: string;
     pcNote?: string;
@@ -614,7 +622,8 @@ interface InvestigatorConfig {
   /**
    * Install a theme.
    */
-  installTheme: (id: string, seed: ThemeSeedV1) => void;
+  /** Install a theme, V1 or V2 (by its `schemaVersion`), or replace one. */
+  installTheme: (id: string, theme: ThemeSeedV1 | ThemeV2) => void;
   /**
    * Install a preset.
    */

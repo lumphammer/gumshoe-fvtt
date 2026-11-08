@@ -1,14 +1,7 @@
-import type { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
 import { createContext } from "react";
 
-import type { Mandatory } from "../types";
-
-/**
- * As of writing, this is "pcNote" | "npcNote" | "itemNote". It accidentally
- * allows "scopingContainer" which I could exclude but there doesn't seem much
- * need.
- */
-type NotesTypeContextData = keyof Mandatory<ThemeSeedV1["notesCssClasses"]>;
+/** What a notes area is for. */
+type NotesTypeContextData = "pcNote" | "npcNote" | "itemNote";
 
 /**
  * Used to indicate when you render any kind of notes area, what type of notes

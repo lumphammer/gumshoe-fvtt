@@ -1,70 +1,49 @@
+import type { ThemePalette } from "@lumphammer/investigator-fvtt-types";
+
 import { irid } from "../irid/irid";
 import type { ThemeV1 } from "./types";
 
 /**
- * A theme's palette: the values that catalogue classes are built from. Each
- * entry has one meaning, summarised here; `docs/theming.md` has the full
- * contract. Call sites never read these: only catalogue classes do.
+ * A theme's palette, complete: the values that catalogue classes are built
+ * from, each with one meaning (`ThemePalette` in the types package has them;
+ * `docs/theming.md` has the full contract). Call sites never read these:
+ * only catalogue classes do (and `CardArray`, its spacing).
  */
-export interface Palette {
-  /** Whether the theme is light or dark. Sets `color-scheme`. */
-  polarity: "light" | "dark";
-  /** The colour the sheet's backdrop averages to, shown while images load. */
-  wallpaper: string;
-  /**
-   * What content sits on. Expected to be opaque, as things that overlap
-   * other content (menus, sticky headers) sit on it too. Not enforced: a
-   * translucent one works if the theme keeps those things opaque with
-   * overrides.
-   */
-  surface: string;
-  /** What content inside content sits on. Expected to be opaque, like `surface`. */
-  surfaceNested: string;
-  /** The fill of controls: buttons, toggle tracks. */
-  control: string;
-  /** The default ink. Legible on `surface`, `surfaceNested` and `control`. */
-  text: string;
-  /** Ink for secondary information: notes, empty states, inactive rows. */
-  textMuted: string;
-  /** Ink for links within prose. Not for other clickable things. */
-  link: string;
-  /** "Selected" or "call to action". Not for "clickable". */
-  accent: string;
-  /** Ink on an `accent` fill. */
-  onAccent: string;
-  /** The colour of hover, focus and drag-over feedback. Never state or decoration. */
-  feedback: string;
-  /** Structural lines: control outlines, separators, heading rules. */
-  line: string;
-  /** Something bad or destructive. Legible as text on surfaces. */
-  danger: string;
-  /** Ink on a `danger` fill. */
-  onDanger: string;
-  /** Something that needs attention, less serious than `danger`. */
-  warning: string;
-  /** Ink on a `warning` fill. */
-  onWarning: string;
-  /** Something that went well. */
-  success: string;
-  /** Ink on a `success` fill. */
-  onSuccess: string;
-  /** Neutral information. */
-  info: string;
-  /** Ink on an `info` fill. */
-  onInfo: string;
-  /** The one corner radius shared by classes. */
-  radius: string;
-  /** The shadow for anything floating. */
-  elevation: string;
-  /** The `body` text style's font (a CSS `font` value): prose and controls. */
-  bodyFont: string;
-  /** The `display` text style's font (a CSS `font` value): titles, headings, tabs, labels. */
-  displayFont: string;
-  /** The `display` text style's case (a CSS `text-transform` value). */
-  displayCase: string;
-  /** The `display` text style's letter spacing. */
-  displayLetterSpacing: string;
-}
+export type Palette = Required<ThemePalette>;
+
+/** The entries a V2 theme's palette has to have (besides `polarity`). */
+export const requiredPaletteKeys = [
+  "wallpaper",
+  "surface",
+  "surfaceNested",
+  "control",
+  "text",
+  "accent",
+  "line",
+  "feedback",
+  "danger",
+  "warning",
+  "success",
+  "info",
+] as const satisfies readonly (keyof Palette)[];
+
+/** The entries a V2 theme's palette can leave out, to be worked out. */
+export const optionalPaletteKeys = [
+  "textMuted",
+  "link",
+  "onAccent",
+  "onDanger",
+  "onWarning",
+  "onSuccess",
+  "onInfo",
+  "radius",
+  "elevation",
+  "bodyFont",
+  "displayFont",
+  "displayCase",
+  "displayLetterSpacing",
+  "cardGap",
+] as const satisfies readonly (keyof Palette)[];
 
 /** The palette's colours: Panda's `colors` tokens. */
 export const paletteColorKeys = [
@@ -230,7 +209,63 @@ export function paletteFromV1(theme: ThemeV1): Palette {
     displayFont: theme.displayFont ?? "inherit",
     displayCase: String(theme.displayFontTextTransform ?? "none"),
     displayLetterSpacing: "normal",
+    // a row gap, then a column gap
+    cardGap: `${theme.cards.area.verticalSpacing} ${theme.cards.area.horizontalSpacing}`,
   };
+}
+
+/**
+ * A V2 theme's palette, complete: what it leaves out, worked out from what
+ * it has.
+ */
+export function resolvePalette(palette: ThemePalette): Palette {
+  return {
+    textMuted: `color-mix(in srgb, ${palette.text} 70%, ${palette.surface})`,
+    link: palette.accent,
+    onAccent: inkOn(palette.accent, "#fff"),
+    onDanger: inkOn(palette.danger, "#fff"),
+    onWarning: inkOn(palette.warning, "#000"),
+    onSuccess: inkOn(palette.success, "#fff"),
+    onInfo: inkOn(palette.info, "#fff"),
+    radius: "0.25em",
+    elevation: "0 0 0.5em black",
+    bodyFont: "inherit",
+    displayFont: "inherit",
+    displayCase: "none",
+    displayLetterSpacing: "normal",
+    cardGap: "0.5em",
+    // what the theme set (its entries only, and not as undefined)
+    ...Object.fromEntries(
+      ["polarity", ...requiredPaletteKeys, ...optionalPaletteKeys].flatMap(
+        (key) => {
+          const value = palette[key as keyof ThemePalette];
+          return value === undefined ? [] : [[key, value]];
+        },
+      ),
+    ),
+  } as Palette;
+}
+
+/**
+ * A CSS value's parts, split at its top-level spaces: `1em calc(1px + 2px)`
+ * is `1em` and `calc(1px + 2px)`.
+ */
+function topLevelParts(value: string) {
+  const parts: string[] = [];
+  let depth = 0;
+  let current = "";
+  for (const c of value.trim()) {
+    if (c === "(") depth++;
+    if (c === ")") depth--;
+    if (/\s/.test(c) && depth === 0) {
+      if (current) parts.push(current);
+      current = "";
+    } else {
+      current += c;
+    }
+  }
+  if (current) parts.push(current);
+  return parts;
 }
 
 /**
@@ -241,6 +276,8 @@ export function paletteFromV1(theme: ThemeV1): Palette {
  */
 export function paletteStyle(palette: Palette): Record<string, string> {
   const { polarity, ...rest } = palette;
+  // the card gap's two axes, for what needs one of them (a column gap)
+  const [row, column = row] = topLevelParts(palette.cardGap);
   return {
     colorScheme: polarity,
     ...Object.fromEntries(
@@ -249,10 +286,12 @@ export function paletteStyle(palette: Palette): Record<string, string> {
         value,
       ]),
     ),
+    "--inv-card-gap-row": row ?? "0",
+    "--inv-card-gap-column": column ?? "0",
   };
 }
 
-const slugs = new WeakMap<ThemeV1, string>();
+const slugs = new WeakMap<{ displayName: string }, string>();
 let themeCount = 0;
 
 /**
@@ -261,7 +300,7 @@ let themeCount = 0;
  * two themes whose names come out the same ("My Theme", "My-Theme", or two
  * names in a script with no Latin letters) never style each other's sheets.
  */
-export const themeSlug = (theme: ThemeV1) => {
+export const themeSlug = (theme: { displayName: string }) => {
   let slug = slugs.get(theme);
   if (slug === undefined) {
     const name = theme.displayName
