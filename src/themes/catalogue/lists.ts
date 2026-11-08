@@ -1,6 +1,7 @@
 import { defineRecipe } from "@pandacss/dev";
 
 import { paletteVar } from "../palette";
+import { dragHandleDefaults } from "./sharedDefaults";
 
 /** A faint wash of the feedback colour, for a row under the pointer. */
 const highlight = `color-mix(in srgb, var(${paletteVar("feedback")}) 25%, transparent)`;
@@ -118,12 +119,14 @@ export const dragHandle = defineRecipe({
   className: "inv-drag-handle",
   description: "The grip you drag to reorder a list.",
   base: {
-    cursor: "n-resize",
-    borderRadius: "0.35em",
+    ...dragHandleDefaults,
+    // the same as the defaults, as tokens (strict tokens)
     color: "textMuted",
-    background: "surfaceSolid",
-    opacity: 0.7,
-    _hover: { opacity: 1, transform: "scale(1.1)", color: "accent" },
+    background: "surface",
+    "&:is(:hover, [data-hover])": {
+      ...dragHandleDefaults["&:is(:hover, [data-hover])"],
+      color: "accent",
+    },
   },
 });
 

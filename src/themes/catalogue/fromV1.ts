@@ -4,6 +4,12 @@ import { paletteVar } from "../palette";
 import type { ThemeV1 } from "../types";
 import { backdropForced, logoDefaults, measureForced } from "./logoDefaults";
 import {
+  calloutTint,
+  dragHandleDefaults,
+  fieldDefaults,
+} from "./sharedDefaults";
+import { tones } from "./tones";
+import {
   type CatalogueOverrides,
   type OverrideStyle,
   splitSelectorList,
@@ -252,6 +258,44 @@ function cardsFromV1(theme: ThemeV1): CatalogueOverrides {
 }
 
 /**
+ * V1's surfaces could be translucent, and things that overlap other content
+ * (menus, sticky headers, cards) were on them flattened over the wallpaper
+ * (`bgOpaque*`). The palette's surfaces are opaque, so the recipes for those
+ * things use them as they are: these put V1's flattened ones back.
+ */
+function overlapsFromV1(theme: ThemeV1): CatalogueOverrides {
+  const {
+    bgOpaquePrimary: top,
+    bgOpaqueSecondary: nested,
+    bgOpaqueDangerPrimary: dangerTop,
+    bgOpaqueDangerSecondary: dangerNested,
+  } = theme.colors;
+  const cell = (odd: boolean, zero: boolean) =>
+    `party-cell--compound__header_true__odd_${odd}__zero_${zero}`;
+  return {
+    "surface--compound__depth_top__solid_true": { backgroundColor: top },
+    "surface--compound__depth_nested__solid_true": { backgroundColor: nested },
+    floating: { background: top },
+    [cell(true, false)]: { background: top },
+    [cell(false, false)]: { background: nested },
+    [cell(true, true)]: { background: dangerTop },
+    [cell(false, true)]: { background: dangerNested },
+    select: {
+      ...fieldDefaults,
+      background: nested,
+      "& option": { background: top, color: `var(${paletteVar("text")})` },
+    },
+    "drag-handle": { ...dragHandleDefaults, background: top },
+    ...Object.fromEntries(
+      tones.map((tone) => [
+        `callout--tone_${tone}`,
+        { background: calloutTint(tone, top) },
+      ]),
+    ),
+  };
+}
+
+/**
  * The catalogue overrides a V1 theme's styles become, so V1 themes keep their
  * look as their components are converted. `theme` is the seed as
  * `themeFactory` filled it in: V1's defaults for the fields a seed leaves out
@@ -262,6 +306,7 @@ export function catalogueFromV1(theme: ThemeV1): CatalogueOverrides {
     ...appFrameFromV1(theme),
     ...sheetRootFromV1(theme),
     ...logoFromV1(theme),
+    ...overlapsFromV1(theme),
     ...cardsFromV1(theme),
     ...panelsFromV1(theme),
     ...tabsFromV1(theme),

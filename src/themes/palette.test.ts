@@ -24,7 +24,6 @@ describe("paletteFromV1", () => {
     const palette = paletteFromV1(tealTheme);
     expect(palette.surface).toBe(tealTheme.colors.backgroundPrimary);
     expect(palette.surfaceNested).toBe(tealTheme.colors.backgroundSecondary);
-    expect(palette.surfaceSolid).toBe(tealTheme.colors.bgOpaquePrimary);
     expect(palette.control).toBe(tealTheme.colors.backgroundButton);
     expect(palette.onAccent).toBe(tealTheme.colors.accentContrast);
     expect(palette.feedback).toBe(tealTheme.colors.glow);
@@ -134,7 +133,7 @@ describe("paletteStyle", () => {
 
 test("paletteVar", () => {
   expect(paletteVar("onAccent")).toBe("--inv-on-accent");
-  expect(paletteVar("surfaceNestedSolid")).toBe("--inv-surface-nested-solid");
+  expect(paletteVar("surfaceNestedDanger")).toBe("--inv-surface-nested-danger");
 });
 
 test("themeSlug", () => {

@@ -9,16 +9,16 @@ import type { ThemeV1 } from "./types";
 export interface Palette {
   /** Whether the theme is light or dark. Sets `color-scheme`. */
   polarity: "light" | "dark";
-  /** The colour the sheet's backdrop averages to; surfaces are flattened over it. */
+  /** The colour the sheet's backdrop averages to, shown while images load. */
   wallpaper: string;
-  /** What content sits on. Any colour, solid or translucent. */
+  /**
+   * What content sits on. Opaque: things that overlap other content (menus,
+   * sticky headers) sit on it too. A theme that wants a translucent look
+   * gets it with overrides, not here.
+   */
   surface: string;
-  /** What content inside content sits on. */
+  /** What content inside content sits on. Opaque, like `surface`. */
   surfaceNested: string;
-  /** (derived) `surface` flattened over `wallpaper`, for things that overlap other content. */
-  surfaceSolid: string;
-  /** (derived) `surfaceNested` flattened over `wallpaper`. */
-  surfaceNestedSolid: string;
   /**
    * (derived) `surface` tinted halfway to `danger`, keeping its opacity: a
    * status tint for an area that's in trouble (an ability nobody has).
@@ -26,10 +26,6 @@ export interface Palette {
   surfaceDanger: string;
   /** (derived) `surfaceNested` tinted halfway to `danger`, keeping its opacity. */
   surfaceNestedDanger: string;
-  /** (derived) `surfaceDanger` flattened over `wallpaper`. */
-  surfaceDangerSolid: string;
-  /** (derived) `surfaceNestedDanger` flattened over `wallpaper`. */
-  surfaceNestedDangerSolid: string;
   /** The fill of controls: buttons, toggle tracks. */
   control: string;
   /** The default ink. Legible on `surface`, `surfaceNested` and `control`. */
@@ -191,14 +187,12 @@ export function paletteFromV1(theme: ThemeV1): Palette {
   return {
     polarity: polarityOf(colors.text),
     wallpaper: colors.wallpaper,
+    // V1's surfaces can be translucent, which the palette's aren't: `fromV1`
+    // puts V1's flattened ones (`bgOpaque*`) where things overlap content
     surface: colors.backgroundPrimary,
     surfaceNested: colors.backgroundSecondary,
-    surfaceSolid: colors.bgOpaquePrimary,
-    surfaceNestedSolid: colors.bgOpaqueSecondary,
     surfaceDanger: colors.bgTransDangerPrimary,
     surfaceNestedDanger: colors.bgTransDangerSecondary,
-    surfaceDangerSolid: colors.bgOpaqueDangerPrimary,
-    surfaceNestedDangerSolid: colors.bgOpaqueDangerSecondary,
     control: colors.backgroundButton,
     text: colors.text,
     textMuted: `color-mix(in srgb, ${colors.text} 70%, ${colors.bgOpaquePrimary})`,

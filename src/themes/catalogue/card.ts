@@ -21,7 +21,7 @@ export const card = defineSlotRecipe({
       borderColor: "line",
       padding: "0.5em",
       transformOrigin: "top",
-      backgroundColor: "surfaceSolid",
+      backgroundColor: "surface",
     },
     supertitle: { fontSize: "0.9em" },
     title: {},

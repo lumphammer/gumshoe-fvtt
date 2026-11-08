@@ -176,6 +176,20 @@ test("themes get their V1 panel styles as overrides", () => {
     "logo__rear_wrapper",
     "logo__rear",
     "logo__rear_sub",
+    "surface--compound__depth_top__solid_true",
+    "surface--compound__depth_nested__solid_true",
+    "floating",
+    "party-cell--compound__header_true__odd_true__zero_false",
+    "party-cell--compound__header_true__odd_false__zero_false",
+    "party-cell--compound__header_true__odd_true__zero_true",
+    "party-cell--compound__header_true__odd_false__zero_true",
+    "select",
+    "drag-handle",
+    "callout--tone_neutral",
+    "callout--tone_danger",
+    "callout--tone_warning",
+    "callout--tone_success",
+    "callout--tone_info",
     "card__root",
     "card__supertitle",
     "card__title",
@@ -186,6 +200,35 @@ test("themes get their V1 panel styles as overrides", () => {
     "tabs__spacer",
     "tabs__content",
   ]);
+});
+
+test("things that overlap content are on V1's flattened surfaces", () => {
+  const { colors } = tealTheme;
+  const overrides = catalogueFromV1(tealTheme);
+  expect(overrides["surface--compound__depth_top__solid_true"]).toEqual({
+    backgroundColor: colors.bgOpaquePrimary,
+  });
+  expect(overrides["floating"]).toEqual({ background: colors.bgOpaquePrimary });
+  expect(
+    overrides["party-cell--compound__header_true__odd_false__zero_true"],
+  ).toEqual({ background: colors.bgOpaqueDangerSecondary });
+  // a base override replaces the default, so it restates the rest of it
+  expect(overrides["select"]).toMatchObject({
+    borderStyle: "solid",
+    background: colors.bgOpaqueSecondary,
+    "& option": { background: colors.bgOpaquePrimary },
+  });
+  expect(overrides["drag-handle"]).toMatchObject({
+    cursor: "n-resize",
+    background: colors.bgOpaquePrimary,
+  });
+  expect(overrides["callout--tone_danger"]).toEqual({
+    background: `color-mix(in srgb, var(--inv-danger) 30%, ${colors.bgOpaquePrimary})`,
+  });
+  // the overrides are all for names the catalogue has
+  expect(catalogueOverridesCss("t", overrides)).toContain(
+    ".inv-party-cell--compound__header_true__odd_false__zero_true",
+  );
 });
 
 test("a theme's sheet root styles patch the root's size variants", () => {
