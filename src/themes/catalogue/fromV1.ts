@@ -36,6 +36,9 @@ const attach = (key: string) =>
 /** An override style as a theme's (ThemeV2's types are stricter). */
 const themeStyle = (style: OverrideStyle) => style as ThemeStyle;
 
+const isStyle = (value: unknown): value is OverrideStyle =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
+
 /** `over` on top of `under`, nested rules merged too. */
 function merge(under: OverrideStyle, over: OverrideStyle): OverrideStyle {
   const result: OverrideStyle = { ...under };
@@ -47,9 +50,6 @@ function merge(under: OverrideStyle, over: OverrideStyle): OverrideStyle {
   return result;
 }
 
-const isStyle = (value: unknown): value is OverrideStyle =>
-  value !== null && typeof value === "object" && !Array.isArray(value);
-
 /**
  * An Emotion style object as an override style: pseudo-classes attach to the
  * element, as Emotion has them, and a list of fallbacks stays a list. Two
@@ -58,39 +58,24 @@ const isStyle = (value: unknown): value is OverrideStyle =>
  */
 function fromEmotion(style: CSSObject): OverrideStyle {
   const result: OverrideStyle = {};
-  for (const [key, value] of entriesOf(style)) {
-    const current = result[key];
-    result[key] =
-      isStyle(value) && isStyle(current) ? merge(current, value) : value;
-  }
-  return result;
-}
-
-function entriesOf(style: CSSObject): [string, OverrideStyle[string]][] {
-  return Object.entries(style).flatMap(
-    ([key, value]): [string, OverrideStyle[string]][] => {
+  for (const [key, value] of Object.entries(style)) {
+    if (Array.isArray(value)) {
       // fallbacks: all of them, in order (the serializer repeats the
       // declaration for each)
-      if (Array.isArray(value)) {
-        return [
-          [
-            key,
-            (value as unknown[]).filter(
-              (v): v is string | number =>
-                typeof v === "string" || typeof v === "number",
-            ),
-          ],
-        ];
-      }
-      if (value !== null && typeof value === "object") {
-        return [[attach(key), fromEmotion(value as CSSObject)]];
-      }
-      if (typeof value === "string" || typeof value === "number") {
-        return [[key, value]];
-      }
-      return [];
-    },
-  );
+      result[key] = (value as unknown[]).filter(
+        (v): v is string | number =>
+          typeof v === "string" || typeof v === "number",
+      );
+    } else if (value !== null && typeof value === "object") {
+      const selector = attach(key);
+      const nested = fromEmotion(value as CSSObject);
+      const current = result[selector];
+      result[selector] = isStyle(current) ? merge(current, nested) : nested;
+    } else if (typeof value === "string" || typeof value === "number") {
+      result[key] = value;
+    }
+  }
+  return result;
 }
 
 /**
