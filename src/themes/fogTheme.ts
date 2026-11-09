@@ -1,0 +1,59 @@
+import { defineThemeV2 } from "./theme";
+
+export const fogTheme = defineThemeV2({
+  schemaVersion: "v2",
+  displayName: "Fog",
+  description: "A very neutral light theme to test the ThemeV2 system",
+  palette: {
+    polarity: "light",
+    wallpaper: "#d9dcdf", // shown behind the sheet; there's no image yet
+    surface: "#f4f5f6", // what content sits on (opaque)
+    surfaceNested: "#e9ebed", // content inside content
+    control: "#dfe2e5", // button and toggle fill
+    text: "#2b2f33",
+    accent: "#3a6ea5", // selected, or a call to action
+    line: "#8a9096", // outlines, rules
+    feedback: "#7fb3ff", // hover, focus and drag glow
+    danger: "#c0392b",
+    warning: "#d68a00",
+    success: "#2e7d32",
+    info: "#2b6cb0",
+    bodyFont: "14px 'Averia Libre', sans-serif",
+    displayFont: "16px 'Averia Libre', sans-serif",
+  },
+  catalogue: {
+    logo: {
+      base: {
+        text: { transform: "scale(0.7)", fontWeight: "bold" },
+      },
+    },
+    appFrame: {
+      base: {
+        header: {
+          background: "none",
+          borderBottom: "none",
+          "--color-light-1": "var(--inv-text)",
+          fontFamily: "'Averia Libre', sans-serif",
+          "& .window-title": {
+            visibility: "hidden",
+            ":where(.minimized) &": {
+              visibility: "visible",
+            },
+          },
+        },
+        root: {
+          background: "wallpaper",
+        },
+      },
+    },
+    sheetRoot: {
+      variants: {
+        size: {
+          large: {
+            background: "none",
+          },
+        },
+      },
+    },
+  },
+});

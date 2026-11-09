@@ -14,6 +14,8 @@ import { olderThanMemoryTheme } from "./olderThanMemoryTheme";
 import { pallidTheme } from "./pallidTheme";
 import { tealTheme } from "./tealTheme";
 import { unsafeRealityTheme } from "./unsafeRealityTheme";
+import { fogTheme } from "./fogTheme";
+import { nightFogTheme } from "./nightFogTheme";
 import type { ThemeV1 } from "./types";
 
 // The themes that are still V1, converted here until each gets its makeover.
@@ -37,6 +39,8 @@ export const baseThemes: { [themeName: string]: ThemeV2 } = {
   ...Object.fromEntries(
     Object.entries(v1Themes).map(([id, theme]) => [id, themeFromV1(theme)]),
   ),
+  fogTheme,
+  nightFogTheme,
 };
 
 export const reregisterBaseTheme = (name: string, theme: ThemeV2) => {
@@ -66,6 +70,8 @@ if (import.meta.hot) {
         "./olderThanMemoryTheme.ts",
         "./unsafeRealityTheme.ts",
         "./mutantCityBlueTheme.ts",
+        "./fogTheme.ts",
+        "./nightFogTheme.ts",
       ],
       // keep this list in sync with the exports above.
       // unfortunately the HMR API is staticaly analysed so we can't do anything
