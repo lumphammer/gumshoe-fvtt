@@ -18,31 +18,28 @@ export const fogTheme = defineThemeV2({
     warning: "#d68a00",
     success: "#2e7d32",
     info: "#2b6cb0",
-    bodyFont: "14px 'Averia Libre', sans-serif",
+    bodyFont: "16px 'Averia Libre', sans-serif",
     displayFont: "16px 'Averia Libre', sans-serif",
   },
+  // the sheet runs up under a see-through titlebar, a strip across the top
+  layout: "full-frame",
   catalogue: {
     logo: {
       base: {
-        text: { transform: "scale(0.7)", fontWeight: "bold" },
+        text: {
+          transform: "scale(1)",
+          fontWeight: "bold",
+        },
       },
     },
     appFrame: {
       base: {
         header: {
-          background: "none",
-          borderBottom: "none",
-          "--color-light-1": "var(--inv-text)",
+          // the title, when it's minimized
           fontFamily: "'Averia Libre', sans-serif",
-          "& .window-title": {
-            visibility: "hidden",
-            ":where(.minimized) &": {
-              visibility: "visible",
-            },
-          },
         },
         root: {
-          background: "wallpaper",
+          background: "var(--inv-wallpaper)",
         },
       },
     },

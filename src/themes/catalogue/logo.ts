@@ -7,7 +7,9 @@ import { logoDefaults } from "./logoDefaults";
  * display text, drawn twice, a front copy and a rear one, over a backdrop,
  * for themes' 3D effects, shadows and gradients (`LogoEditable`).
  *
- * Slots: `backdrop`, `text` (the wrapper of both copies), `front_wrapper`,
+ * Slots: `root` (the outer box, with the perspective for the text's 3D
+ * transforms; its size is the call site's), `backdrop`, `text` (the wrapper
+ * of both copies), `front_wrapper`,
  * `front` (the name), `front_sub` (the subtext), and the same for `rear`.
  * The layout, the fit and the text's look by default are `LogoEditable`'s,
  * so a slot's override is only what the theme changes.
@@ -17,6 +19,7 @@ export const logo = defineSlotRecipe({
   className: "inv-logo",
   description: "The character sheet's logo.",
   slots: [
+    "root",
     "backdrop",
     "text",
     "front_wrapper",

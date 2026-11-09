@@ -133,6 +133,15 @@ root: `'&[data-category="stress"]'` in the `root` slot,
 escape hatch for what the catalogue can't express, and for loading a folder
 theme's fonts. It isn't supported: it can break as the markup changes.
 
+**`layout`** is `"standard"` (the default) or `"full-frame"`: a character sheet
+(a window with a logo) runs up under a see-through titlebar, a strip as tall as
+Foundry's (`--header-height`) that still drags the window, with a tint on hover
+and no title (shown when minimized). The portrait and sidebar move left, and
+the logo's text keeps below the strip (`LogoEditable`, `--inv-logo-overlap` less
+`--inv-logo-strip-tuck`, 15px from `CSSReset`). The sheets' grids follow
+`data-inv-layout` on the themed root. The strip's look is the `appFrame`
+`layout: full-frame` variant, which a theme can patch.
+
 **Types and checks.** `pnpm generate:catalogue` writes each recipe's slots and
 variants from `panda.config.ts`, as types for `ThemeCatalogue`
 (`catalogue.generated.ts`, in the types package) and as the list the app checks
@@ -289,11 +298,13 @@ mounted, if it's the outermost themed root in the window and not
 `noStyleAppWindow` (roots side by side take turns, the latest first: `frame.ts`).
 The window gets the palette and `data-inv-frame`, not `data-inv-theme`, so it
 has no element defaults or state layers. Empty by default, so a window looks
-like Foundry's. _Expected override:_ a glow or border on `root`.
+like Foundry's. _Expected override:_ a glow or border on `root`. Variant
+`layout` is the theme's, not a call site's.
 
 **`logo`**: the character sheet's logo (`LogoEditable`): name and subtext in
 large display text, drawn twice, a front copy over a rear one, on a backdrop,
-for 3D, shadows and gradients. Slots `backdrop`, `text` (wraps both
+for 3D, shadows and gradients. Slots `root` (the outer box, with the
+`perspective` for the text's 3D transforms), `backdrop`, `text` (wraps both
 copies), and for each of `front` and `rear` a `_wrapper`, the name (`front`,
 `rear`) and the subtext (`front_sub`, `rear_sub`). Defaults are in
 `logoDefaults.ts`. _Expected override, every slot._ What the logo needs to work
@@ -413,7 +424,7 @@ How its styles map:
 
 ## The built-in themes
 
-`tealTheme` is hand-written ThemeV2. The other
+`tealTheme`, `fogTheme` and `nightFogTheme` are hand-written ThemeV2. The other
 eleven are still their small V1 sources (`src/themes/*Theme.ts`), which
 `baseThemes.ts` converts at load, until each gets its makeover. Of the
 [theming epic](https://github.com/lumphammer/gumshoe-fvtt/issues/1532)'s end

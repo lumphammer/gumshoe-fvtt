@@ -193,6 +193,19 @@ export interface ThemeV2 {
   /** Overrides of the catalogue's recipes. */
   catalogue?: ThemeCatalogue;
   /**
+   * How the character sheets are laid out. `"standard"` (the default) has
+   * Foundry's titlebar over the sheet. `"full-frame"` runs the sheet up to
+   * the window's top edge, under a see-through titlebar: a strip across the
+   * top, still the titlebar (it drags the window, and a double click on it
+   * minimizes it), with its buttons in a row at the right, a faint tint on
+   * hover, and no title. The logo runs up under it, but its text keeps below
+   * it, scaled down to fit. The portrait and the sidebar move to the left.
+   * The title shows only when the window is minimized. Windows without a
+   * logo (items, say) keep the standard titlebar. The titlebar's look is the
+   * `appFrame` recipe's `layout: full-frame` variant.
+   */
+  layout?: "standard" | "full-frame";
+  /**
    * Raw CSS, in the themed root, unscoped: an escape hatch for what the
    * catalogue can't express (and for loading a folder theme's fonts). Not
    * supported: it can break as the markup changes.

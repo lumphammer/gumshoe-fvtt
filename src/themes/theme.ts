@@ -11,6 +11,9 @@ import { optionalPaletteKeys, requiredPaletteKeys } from "./palette";
  */
 export type Theme = ThemeV2;
 
+/** How the character sheets are laid out (`ThemeV2.layout`). */
+export type Layout = NonNullable<ThemeV2["layout"]>;
+
 /** Type-checks a V2 theme: the built-in themes are defined with it. */
 export const defineThemeV2 = (theme: ThemeV2) => theme;
 
@@ -65,6 +68,7 @@ const themeSchema = z.looseObject({
         .optional(),
     )
     .optional(),
+  layout: z.enum(["standard", "full-frame"]).optional(),
   globalCss: z.string().optional(),
 });
 

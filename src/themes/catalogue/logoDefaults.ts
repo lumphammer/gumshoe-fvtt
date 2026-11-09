@@ -12,6 +12,9 @@ import { paletteVar } from "../palette";
  * measures it with a hidden copy that has the front style.
  */
 export const logoDefaults = {
+  // the outer box: the perspective for the text's 3D transforms (its size
+  // and position are the call site's)
+  root: { perspective: "500px", perspectiveOrigin: "50% 50%" },
   backdrop: {},
   // the text elements' wrapper. A V1 theme's style here could set `font`,
   // which resets the size and line height, so they're set again after it (1em

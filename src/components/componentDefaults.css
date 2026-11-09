@@ -48,14 +48,12 @@
     margin-bottom: 0.25em;
   }
 
-  /* LogoEditable: the outer box, which sets the transform origin */
+  /* LogoEditable: the outer box (its perspective is the logo recipe's root) */
   .inv-default-logo {
     display: block;
     position: relative;
     height: 6em;
     width: auto;
-    perspective: 500px;
-    perspective-origin: 50% 50%;
   }
 
   .inv-default-item-name-with-icon {

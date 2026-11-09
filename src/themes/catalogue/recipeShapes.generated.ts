@@ -9,7 +9,7 @@ export const recipeShapes = {
   appFrame: {
     className: "inv-app-frame",
     slots: ["root", "header", "content"],
-    variants: {},
+    variants: { layout: ["standard", "full-frame"] },
   },
   badge: {
     className: "inv-badge",
@@ -51,6 +51,7 @@ export const recipeShapes = {
   logo: {
     className: "inv-logo",
     slots: [
+      "root",
       "backdrop",
       "text",
       "front_wrapper",

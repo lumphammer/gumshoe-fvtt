@@ -9,7 +9,7 @@
 export interface CatalogueRecipeShapes {
   appFrame: {
     slots: "root" | "header" | "content";
-    variants: Record<never, never>;
+    variants: { layout: "standard" | "full-frame" };
   };
   badge: {
     slots: never;
@@ -56,6 +56,7 @@ export interface CatalogueRecipeShapes {
   };
   logo: {
     slots:
+      | "root"
       | "backdrop"
       | "text"
       | "front_wrapper"

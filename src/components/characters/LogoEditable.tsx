@@ -15,11 +15,51 @@ type LogoEditableProps = {
 };
 
 /**
+ * Run `setup` (observers, say) with `element`'s window, and again, after
+ * cleaning up, whenever the Foundry window it's in moves to another document:
+ * detached into a popup, or attached again. Observers made in one document
+ * don't see changes in another. Returns how to stop.
+ */
+function inEachDocument(
+  element: HTMLElement,
+  setup: (view: Window & typeof globalThis) => () => void,
+) {
+  let cleanup: (() => void) | undefined;
+  let watcher: MutationObserver | undefined;
+  const start = () => {
+    cleanup?.();
+    watcher?.disconnect();
+    const doc = element.ownerDocument;
+    const view = doc.defaultView;
+    if (!view) return;
+    cleanup = setup(view);
+    // the window is moved by taking it out of its parent here
+    const parent = (element.closest(".application") ?? element).parentNode;
+    if (!parent) return;
+    watcher = new view.MutationObserver(() => {
+      if (element.ownerDocument !== doc) start();
+    });
+    watcher.observe(parent, { childList: true });
+  };
+  start();
+  return () => {
+    cleanup?.();
+    watcher?.disconnect();
+  };
+}
+
+/**
  * Fit the main text to the width of the logo by setting `--logo-fit` on
  * `wrapper`: a scale factor, at most 1, for the main text's font size.
  *
+ * When the text keeps below the full-frame layout's titlebar (`wrapper` is
+ * inset from the top, `useTitlebarOverlap`), the name and the subtext together are fitted to the
+ * height left as well: `--logo-fit-height`, for both. The name gets the
+ * smaller of the two fits. Otherwise the text has the logo's whole height,
+ * and is fitted by width alone, as it always was.
+ *
  * `measure` is a hidden copy of the text at full size: the front style, outside
- * the fit. Measuring that, not the text itself, gives the same answer however big the text currently is (glyph
+ * the fit; `measureSub`, the subtext's, if there is one. Measuring that, not the text itself, gives the same answer however big the text currently is (glyph
  * widths are rounded, so text doesn't scale quite linearly), and doesn't
  * change when the text is resized. Widths are layout widths, so they ignore
  * any transforms a theme applies.
@@ -31,13 +71,16 @@ type LogoEditableProps = {
  * be measured in a fallback font, then refitted when the theme's arrives) and
  * the refit that causes has happened, a frame later.
  */
-const useFitTextToWidth = (
+const useFitText = (
   wrapperRef: RefObject<HTMLElement | null>,
   measureRef: RefObject<HTMLElement | null>,
+  measureSubRef: RefObject<HTMLElement | null>,
+  hasSubtext: boolean,
 ) => {
   useEffect(() => {
     const wrapper = wrapperRef.current;
     const measure = measureRef.current;
+    const measureSub = measureSubRef.current;
     if (!wrapper || !measure) {
       return;
     }
@@ -56,28 +99,110 @@ const useFitTextToWidth = (
         });
       });
     };
-    const observer = new ResizeObserver(() => {
+    const refit = () => {
       const available = wrapper.clientWidth;
       const natural = measure.offsetWidth;
       if (!available || !natural) {
         // not laid out (e.g. in a hidden tab)
         return;
       }
-      const scale = Math.min(1, available / natural);
-      wrapper.style.setProperty("--logo-fit", String(scale));
+      const widthFit = Math.min(1, available / natural);
+      const naturalHeight =
+        measure.offsetHeight + (measureSub?.offsetHeight ?? 0);
+      const heightFit =
+        wrapper.offsetTop > 0 && naturalHeight > 0
+          ? Math.min(1, wrapper.clientHeight / naturalHeight)
+          : 1;
+      wrapper.style.setProperty(
+        "--logo-fit",
+        String(Math.min(widthFit, heightFit)),
+      );
+      wrapper.style.setProperty("--logo-fit-height", String(heightFit));
       if (!started) {
         started = true;
         void startAnimating();
       }
+    };
+    // in a detached window too
+    const stopObserving = inEachDocument(wrapper, (view) => {
+      const observer = new view.ResizeObserver(refit);
+      observer.observe(wrapper);
+      observer.observe(measure);
+      if (measureSub) observer.observe(measureSub);
+      return () => observer.disconnect();
     });
-    observer.observe(wrapper);
-    observer.observe(measure);
     return () => {
       stopped = true;
-      observer.disconnect();
+      stopObserving();
       if (frame !== undefined) cancelAnimationFrame(frame);
     };
-  }, [wrapperRef, measureRef]);
+  }, [wrapperRef, measureRef, measureSubRef, hasSubtext]);
+};
+
+/**
+ * Keep `--inv-logo-overlap` on `root`, the logo: how far the window's
+ * titlebar reaches down over it, in its own (unscaled) pixels. That's only in
+ * the full-frame layout, where the titlebar is a see-through strip over the
+ * top of the sheet (`appFrame`); otherwise it's above the sheet, so 0. The
+ * text keeps below it (less `--inv-logo-strip-tuck`, `CSSReset`).
+ *
+ * Measured again when the logo, the titlebar, or anything between the logo
+ * and the window resizes (which is what moves the logo in it), something in
+ * the window scrolls, or the window changes its layout or is minimized or
+ * restored; in a detached window too.
+ */
+const useTitlebarOverlap = (rootRef: RefObject<HTMLElement | null>) => {
+  useEffect(() => {
+    const root = rootRef.current;
+    const frame = root?.closest<HTMLElement>(".application");
+    const header = frame?.querySelector<HTMLElement>(":scope > .window-header");
+    if (!root || !frame || !header) {
+      return;
+    }
+    const measure = () => {
+      const logo = root.getBoundingClientRect();
+      // in CSS pixels, not scaled ones (the window's `position.scale`)
+      const scale = root.offsetHeight > 0 ? logo.height / root.offsetHeight : 1;
+      if (!scale) return;
+      const overlap = header.getBoundingClientRect().bottom - logo.top;
+      root.style.setProperty(
+        "--inv-logo-overlap",
+        `${Math.max(0, overlap / scale)}px`,
+      );
+    };
+    const stop = inEachDocument(frame, (view) => {
+      const resizes = new view.ResizeObserver(measure);
+      resizes.observe(header);
+      for (
+        let el: HTMLElement | null = root;
+        el && el !== frame;
+        el = el.parentElement
+      ) {
+        resizes.observe(el);
+      }
+      const changes = new view.MutationObserver(measure);
+      changes.observe(frame, {
+        attributes: true,
+        attributeFilter: ["class", "data-inv-layout"],
+      });
+      const scrolls = new AbortController();
+      frame.addEventListener("scroll", measure, {
+        capture: true,
+        passive: true,
+        signal: scrolls.signal,
+      });
+      measure();
+      return () => {
+        resizes.disconnect();
+        changes.disconnect();
+        scrolls.abort();
+      };
+    });
+    return () => {
+      stop();
+      root.style.removeProperty("--inv-logo-overlap");
+    };
+  }, [rootRef]);
 };
 
 /**
@@ -93,7 +218,9 @@ const useFitTextToWidth = (
  * need in the theme.
  *
  * The main text is scaled down to fit the width of the logo, using a third,
- * hidden copy of it to measure. The layout, the fit, the measuring and the
+ * hidden copy of it to measure. In the full-frame layout, the text keeps below
+ * the window's see-through titlebar, and it and the subtext are scaled down to
+ * fit the height left (`useFitText`). The layout, the fit, the measuring and the
  * text's look by default are all here, outside the theme's slots (the `logo`
  * recipe), so a theme only says what it changes.
  *
@@ -143,9 +270,12 @@ export const LogoEditable = ({
       }),
   );
 
+  const rootRef = useRef<HTMLDivElement>(null);
+  useTitlebarOverlap(rootRef);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
-  useFitTextToWidth(wrapperRef, measureRef);
+  const measureSubRef = useRef<HTMLDivElement>(null);
+  useFitText(wrapperRef, measureRef, measureSubRef, hasSubtext);
 
   // a copy of the name: the palette's letter spacing again, at the copy's
   // size, so it scales with the fit (inherited, it would be a length at the
@@ -160,6 +290,18 @@ export const LogoEditable = ({
       transition: "[font-size var(--logo-fit-duration, 0s)]",
     }),
   );
+  // the subtext's fit: to the height, only (--logo-fit-height)
+  const fitHeight = css({
+    fontSize: "calc(1em * var(--logo-fit-height, 1))",
+    transition: "[font-size var(--logo-fit-duration, 0s)]",
+  });
+  // a measured copy's box: as wide as its text
+  const measureBox = css({
+    position: "absolute",
+    top: "0",
+    left: "0",
+    width: "max-content",
+  });
   // each copy, centred in the logo
   const centred = css({
     position: "absolute",
@@ -171,8 +313,13 @@ export const LogoEditable = ({
   return (
     // outer - set the transform origin
     <div
-      // layout, which call sites can change (componentDefaults.css)
-      className={cx("logo", "inv-default-logo", className)}
+      // layout, which call sites can change (componentDefaults.css), and the
+      // theme's perspective
+      className={cx("logo", "inv-default-logo", classes.root, className)}
+      // keeps its text below the full-frame layout's see-through titlebar
+      // (appFrame)
+      data-inv-clears-titlebar
+      ref={rootRef}
     >
       {/* Backdrop: filling the logo, whatever the theme says */}
       <div
@@ -198,12 +345,19 @@ export const LogoEditable = ({
           color: "text",
         })}
       >
-        {/* inner - apply the transform */}
+        {/* inner - apply the transform. In the full-frame layout, the
+          window's see-through titlebar is over the logo's top, so the text
+          keeps below it (useTitlebarOverlap) */}
         <div
           className={cx(
             "text-elements-wrapper",
             classes.text,
-            css({ position: "absolute", inset: "0" }),
+            css({
+              position: "absolute",
+              inset: "0",
+              // below the titlebar, less the tuck (CSSReset)
+              top: "[max(0px, var(--inv-logo-overlap, 0px) - var(--inv-logo-strip-tuck, 0px))]",
+            }),
           )}
           ref={wrapperRef}
         >
@@ -222,7 +376,9 @@ export const LogoEditable = ({
               <div className={classes.rear}>{displayText}</div>
             </div>
             {hasSubtext && (
-              <div className={classes.rear_sub}>{displaySubtext}</div>
+              <div className={fitHeight}>
+                <div className={classes.rear_sub}>{displaySubtext}</div>
+              </div>
             )}
           </div>
 
@@ -235,9 +391,10 @@ export const LogoEditable = ({
               centred,
             )}
           >
-            {/* a hidden copy of the name with the front style, at its full
-              size (outside the fit), to measure it, clipped so it can't make
-              anything scroll */}
+            {/* hidden copies of the name and the subtext with the front
+              style, at their full size (outside the fit), to measure them,
+              each in a box of its own, clipped so they can't make anything
+              scroll */}
             <div
               aria-hidden
               className={css({
@@ -250,21 +407,18 @@ export const LogoEditable = ({
                 visibility: "hidden",
               })}
             >
-              <div
-                className={cx(
-                  copy,
-                  css({
-                    position: "absolute",
-                    top: "0",
-                    left: "0",
-                    width: "max-content",
-                  }),
-                )}
-              >
+              <div className={cx(copy, measureBox)}>
                 <div ref={measureRef} className={classes.front}>
                   {displayText}
                 </div>
               </div>
+              {hasSubtext && (
+                <div className={measureBox}>
+                  <div ref={measureSubRef} className={classes.front_sub}>
+                    {displaySubtext}
+                  </div>
+                </div>
+              )}
             </div>
             <div className={fit}>
               <div
@@ -280,17 +434,19 @@ export const LogoEditable = ({
               />
             </div>
             {hasSubtext && (
-              <div
-                className={classes.front_sub}
-                contentEditable={isEditable && onChangeSubText !== undefined}
-                spellCheck={false}
-                ref={contentEditableRefSubtext}
-                onInput={onInputSubtext}
-                onKeyDown={onKeyDownSubtext}
-                onPaste={onPasteSubtext}
-                onFocus={onFocusSubtext}
-                onBlur={onBlurSubtext}
-              />
+              <div className={fitHeight}>
+                <div
+                  className={classes.front_sub}
+                  contentEditable={isEditable && onChangeSubText !== undefined}
+                  spellCheck={false}
+                  ref={contentEditableRefSubtext}
+                  onInput={onInputSubtext}
+                  onKeyDown={onKeyDownSubtext}
+                  onPaste={onPasteSubtext}
+                  onFocus={onFocusSubtext}
+                  onBlur={onBlurSubtext}
+                />
+              </div>
             )}
           </div>
         </div>
