@@ -1,15 +1,15 @@
 packages:
   - "packages/*"
 catalog:
-  vite: 8.3.5
+  vite: 8.3.6
   vitest: ^3.2.4
   react: ^19.3.1
   "@types/react": ^19.3.0
   fvtt-types: 14.366.0-beta.20261027064042
   tsx: ^4.23.15
-  "@vitejs/plugin-react": 6.1.2
+  "@vitejs/plugin-react": 6.2.1
   # plugin-react 6.1 wants ^0.152.0, which for 0.x means 0.152 only
-  oxc-transform-react: 0.156.0
+  oxc-transform-react: 0.157.0
   less: 4.4.1
   typescript: 7.0.2
   react-dom: ^19.3.1
