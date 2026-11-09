@@ -70,6 +70,14 @@ export const PCSheetFull = memo(function PCSheetFull() {
           '"title title image" ' +
           '"pools stats image" ' +
           '"pools body  body" ',
+        // the portrait on the left, so the window's buttons are over the
+        // logo (ThemeV2.layout)
+        "&[data-inv-layout=full-frame]": {
+          gridTemplateAreas:
+            '"image title title" ' +
+            '"image stats stats" ' +
+            '"pools body  body" ',
+        },
       })}
     >
       <PCSheetHeader />

@@ -1,13 +1,27 @@
 import type { PropsWithChildren } from "react";
 import { useEffect, useMemo, useRef } from "react";
 
-import { cx } from "../styled-system/css";
+import { css, cx } from "../styled-system/css";
 import { sheetRoot } from "../styled-system/recipes";
 import { catalogueOverridesCss } from "../themes/catalogue/overrides";
 import { paletteStyle, themeSlug } from "../themes/palette";
 import type { Theme } from "../themes/theme";
 import { claimFrame, type FrameClaim } from "./frame";
 import { ErrorBoundary } from "./ErrorBoundary";
+
+/**
+ * What the layout means for what's inside this root (and not inside another
+ * root in it): in the full-frame layout, how far the logo's text keeps in
+ * from each side, clear of the window's buttons (`frame.ts` measures them).
+ * Not in a detached window, which keeps the standard titlebar.
+ */
+const layoutVars = css({
+  "--inv-logo-inset": "0px",
+  "&[data-inv-layout=full-frame]": {
+    "--inv-logo-inset": "var(--inv-window-controls-width, 0px)",
+  },
+  "body.detached &": { "--inv-logo-inset": "0px" },
+});
 
 type CSSResetProps = PropsWithChildren<{
   className?: string;
@@ -44,8 +58,8 @@ export const CSSReset = ({
   useEffect(() => {
     // the palette, without colorScheme (Foundry's window has its own)
     const { colorScheme: _, ...properties } = palette;
-    frameClaim.current?.update(slug, properties);
-  }, [noStyleAppWindow, slug, palette]);
+    frameClaim.current?.update(slug, properties, theme.layout);
+  }, [noStyleAppWindow, slug, palette, theme.layout]);
   // the theme's replacements for catalogue classes, as a <style> inside the
   // root, so that it goes wherever the root goes, detached windows included
   const overridesCss = useMemo(
@@ -57,8 +71,10 @@ export const CSSReset = ({
     <ErrorBoundary>
       <div
         ref={ref}
-        className={cx(sheetRoot({ size: mode }), className)}
+        className={cx(sheetRoot({ size: mode }), layoutVars, className)}
         data-inv-theme={slug}
+        // for the sheets' grids, which follow it
+        data-inv-layout={theme.layout}
         style={palette}
       >
         {children}

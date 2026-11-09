@@ -15,13 +15,9 @@ describe("v2FromV1", () => {
       validateThemeV2(v2, (message) => warnings.push(message));
       expect(warnings).toEqual([]);
       // that resolves to what the V1 theme does
-      const { displayName, palette, catalogue, globalCss } = themeFromV1(theme);
       expect(themeFromV2(v2)).toEqual({
-        displayName,
+        ...themeFromV1(theme),
         description: undefined,
-        palette,
-        catalogue,
-        globalCss,
       });
     },
   );
@@ -72,9 +68,6 @@ test("themeV2Source writes the system's asset paths with systemId", () => {
  */
 const unchanged = Object.keys(baseThemes).filter((id) => id in v1BaseThemes);
 test.each(unchanged)("built-in %s still looks as it did in V1", (id) => {
-  const { displayName, palette, catalogue, globalCss } = themeFromV1(
-    v1BaseThemes[id],
-  );
   const { description: _, ...resolved } = themeFromV2(baseThemes[id]);
-  expect(resolved).toEqual({ displayName, palette, catalogue, globalCss });
+  expect(resolved).toEqual(themeFromV1(v1BaseThemes[id]));
 });

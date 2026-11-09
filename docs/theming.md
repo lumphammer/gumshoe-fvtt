@@ -190,6 +190,32 @@ A raw CSS string, in a `<style>` in the themed root, unscoped: an escape
 hatch for what the catalogue can't express, and for loading a folder theme's
 fonts. It isn't supported: it can break as the markup changes.
 
+### `layout`
+
+How the character sheets are laid out: `"standard"` (the default) or
+`"full-frame"`. In the full-frame layout the sheet runs up to the window's top
+edge, under a see-through titlebar. Only the titlebar's buttons take clicks;
+everything else goes through to the sheet, so the window is dragged by the logo
+instead (`data-inv-window-handle`, `frame.ts`). A press there that moves is a
+drag; one that doesn't is a click, which starts editing the name. Once the
+name is being edited, a drag over it selects its text. A double click on the
+logo, off its text, minimizes the window. The title shows only when the window
+is minimized, as an ordinary titlebar.
+
+The titlebar's buttons are stacked down the window's right edge, the close
+button at the top. The PC and NPC sheets put the portrait (and the sidebar) on
+the left, so the buttons are over the logo's right end, on the wallpaper. The
+logo
+keeps its name clear of them: `frame.ts` measures them, as
+`--inv-window-controls-width` on the window, and the logo's text keeps that far
+in from each side, so the name stays centred. The sheets' grids follow `data-inv-layout` on the themed root.
+
+Only for windows with a logo (character sheets): other windows, with nothing
+to drag them by, keep the standard titlebar, and so does a detached window,
+which has no position of its own to drag. The
+titlebar's look is the `appFrame` recipe's `layout: full-frame` variant, which
+a theme can patch (a backing for the buttons, say).
+
 ### Types and checks
 
 - `pnpm generate:catalogue` (`scripts/generateCatalogueShapes.ts`) writes
@@ -509,8 +535,9 @@ defaults or state layers, and a theme's `appFrame` overrides are scoped to
 `data-inv-frame` instead.
 
 Empty by default, so a window looks like Foundry's own. _Expected
-override:_ a theme's glow or border on `root`; a transparent titlebar would be
-`header` (#1534).
+override:_ a theme's glow or border on `root`. Variant `layout` is set by
+the theme's `layout` (above), not by a call site: `full-frame` makes the
+header see-through and lays the content under it.
 
 ### `logo`
 

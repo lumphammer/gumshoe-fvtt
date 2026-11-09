@@ -7,9 +7,10 @@ function styleFrame(
   root: HTMLElement,
   slug: string,
   style: Record<string, string>,
+  layout: "standard" | "full-frame" = "standard",
 ) {
   const claim = claimFrame(root);
-  claim?.update(slug, style);
+  claim?.update(slug, style, layout);
   return claim && (() => claim.release());
 }
 
@@ -74,9 +75,9 @@ describe("styleFrame", () => {
   test("a root whose theme changes keeps its place", () => {
     const { frame, addRoot } = makeWindow();
     const first = claimFrame(addRoot())!;
-    first.update("first", { "--inv-text": "red" });
+    first.update("first", { "--inv-text": "red" }, "standard");
     const second = styleFrame(addRoot(), "second", {});
-    first.update("changed", { "--inv-text": "green" });
+    first.update("changed", { "--inv-text": "green" }, "standard");
     expect(frame.dataset["invFrame"]).toBe("second");
     expect(frame.style.getPropertyValue("--inv-text")).toBe("");
     second!();
@@ -148,4 +149,25 @@ describe("globalCss", () => {
     expect(out).toContain("@keyframes animation-spin");
     expect(out).toContain("animation:animation-spin");
   });
+});
+
+test("the full-frame layout is the latest owner's, and goes with it", () => {
+  const { frame, addRoot } = makeWindow();
+  const header = frame.querySelector(".window-header")!;
+  const standard = styleFrame(addRoot(), "plain", {});
+  const fullFrame = styleFrame(addRoot(), "fog", {}, "full-frame");
+  expect(frame.dataset["invLayout"]).toBe("full-frame");
+  expect(header.className).toContain(
+    "inv-app-frame__header--layout_full-frame",
+  );
+  expect(frame.style.getPropertyValue("--inv-window-controls-width")).toBe(
+    "0px",
+  );
+  fullFrame!();
+  expect(frame.dataset["invLayout"]).toBeUndefined();
+  expect(frame.style.getPropertyValue("--inv-window-controls-width")).toBe("");
+  expect(header.className).not.toContain("layout_full-frame");
+  expect(header.className).toContain("inv-app-frame__header--layout_standard");
+  standard!();
+  expect(header.className).toBe("window-header");
 });

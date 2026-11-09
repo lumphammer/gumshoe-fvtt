@@ -173,6 +173,8 @@ export const LogoEditable = ({
     <div
       // layout, which call sites can change (componentDefaults.css)
       className={cx("logo", "inv-default-logo", className)}
+      // what the window is dragged by, in the full-frame layout (frame.ts)
+      data-inv-window-handle
     >
       {/* Backdrop: filling the logo, whatever the theme says */}
       <div
@@ -198,12 +200,21 @@ export const LogoEditable = ({
           color: "text",
         })}
       >
-        {/* inner - apply the transform */}
+        {/* inner - apply the transform. In the full-frame layout, the
+          window's buttons are over the logo's right end, so the text keeps
+          clear of them (--inv-logo-inset, CSSReset) */}
         <div
           className={cx(
             "text-elements-wrapper",
             classes.text,
-            css({ position: "absolute", inset: "0" }),
+            css({
+              position: "absolute",
+              inset: "0",
+              // as far in from each side, so the name stays centred
+              // (--inv-logo-inset: the nearest themed root's, CSSReset)
+              left: "[var(--inv-logo-inset, 0px)]",
+              right: "[var(--inv-logo-inset, 0px)]",
+            }),
           )}
           ref={wrapperRef}
         >

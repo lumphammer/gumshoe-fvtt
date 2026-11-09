@@ -79,6 +79,14 @@ export const NPCSheetFull = memo(function NPCSheetFull() {
         gridTemplateColumns: "max-content 1fr 4em",
         gap: "0.5em",
         gridTemplateAreas: '"sidebar title image" ' + '"sidebar main main" ',
+        // the portrait over the sidebar, square, so the window's buttons are
+        // over the logo (ThemeV2.layout)
+        "&[data-inv-layout=full-frame]": {
+          gridTemplateRows: "min-content auto 1fr",
+          gridTemplateColumns: "max-content 1fr",
+          gridTemplateAreas:
+            '"image   title" ' + '"image   main" ' + '"sidebar main" ',
+        },
       })}
     >
       <NPCSheetHeader />

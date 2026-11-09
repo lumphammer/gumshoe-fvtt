@@ -17,6 +17,9 @@ import type { ThemeV1 } from "./types";
  * A theme, ready to style a sheet: what every installed theme becomes, V1 or
  * V2, and the only kind the rest of the code sees (docs/theming.md).
  */
+/** How the character sheets are laid out (`ThemeV2.layout`). */
+export type Layout = "standard" | "full-frame";
+
 export interface Theme {
   displayName: string;
   description?: string;
@@ -26,6 +29,8 @@ export interface Theme {
   catalogue: CatalogueOverrides;
   /** Raw CSS, in the themed root. */
   globalCss: string;
+  /** How the character sheets are laid out (`ThemeV2.layout`). */
+  layout: Layout;
 }
 
 /** Type-checks a V2 theme: the built-in themes are defined with it. */
@@ -50,6 +55,7 @@ export function themeFromV1(theme: ThemeV1): Theme {
         literal: true,
       }),
       globalCss: globalCss(theme.global),
+      layout: "standard",
     };
     fromV1.set(theme, result);
   }
@@ -64,6 +70,7 @@ export function themeFromV2(theme: ThemeV2): Theme {
     palette: resolvePalette(theme.palette),
     catalogue: compileCatalogue(theme.catalogue ?? {}),
     globalCss: theme.globalCss ?? "",
+    layout: theme.layout ?? "standard",
   };
 }
 
@@ -77,6 +84,7 @@ const topLevel = new Set([
   "palette",
   "catalogue",
   "globalCss",
+  "layout",
 ]);
 
 /**
@@ -104,6 +112,13 @@ export function validateThemeV2(
     if (theme[key] !== undefined && typeof theme[key] !== "string") {
       problems.push(`${key} has to be a string`);
     }
+  }
+  if (
+    theme["layout"] !== undefined &&
+    theme["layout"] !== "standard" &&
+    theme["layout"] !== "full-frame"
+  ) {
+    problems.push('layout has to be "standard" or "full-frame"');
   }
   if (theme["catalogue"] !== undefined && !isObject(theme["catalogue"])) {
     problems.push("catalogue has to be an object");
