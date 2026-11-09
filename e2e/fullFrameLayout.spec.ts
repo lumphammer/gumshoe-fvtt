@@ -220,7 +220,7 @@ test("the controls are measured unscaled, when the window is scaled", async ({
   await expect.poll(measured).toBeCloseTo(unscaled, -0.5);
 });
 
-test("a detached window keeps the standard titlebar", async ({ page }) => {
+test("a detached window keeps the look", async ({ page }) => {
   const { sheet, actorId } = await openFogSheet(page);
   const sheetId = (await sheet.getAttribute("id"))!;
   const popupPromise = page.waitForEvent("popup");
@@ -234,12 +234,10 @@ test("a detached window keeps the standard titlebar", async ({ page }) => {
   await popup.waitForLoadState();
   const frame = popup.locator(`[id="${sheetId}"]`);
   await expect(frame).toBeVisible();
-  const header = frame.locator(".window-header");
-  await expect(header).toHaveCSS("pointer-events", "auto");
-  // and the logo's name isn't kept in from the sides
-  await expect(frame.locator(".text-elements-wrapper").first()).toHaveCSS(
-    "left",
-    "0px",
+  await expect(frame.locator(".window-header")).toHaveCSS(
+    "pointer-events",
+    "none",
   );
+  await expect(frame.locator(".window-title")).toBeHidden();
   await popup.close();
 });

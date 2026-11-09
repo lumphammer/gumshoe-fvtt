@@ -13,14 +13,12 @@ import { ErrorBoundary } from "./ErrorBoundary";
  * What the layout means for what's inside this root (and not inside another
  * root in it): in the full-frame layout, how far the logo's text keeps in
  * from each side, clear of the window's buttons (`frame.ts` measures them).
- * Not in a detached window, which keeps the standard titlebar.
  */
 const layoutVars = css({
   "--inv-logo-inset": "0px",
   "&[data-inv-layout=full-frame]": {
     "--inv-logo-inset": "var(--inv-window-controls-width, 0px)",
   },
-  "body.detached &": { "--inv-logo-inset": "0px" },
 });
 
 type CSSResetProps = PropsWithChildren<{

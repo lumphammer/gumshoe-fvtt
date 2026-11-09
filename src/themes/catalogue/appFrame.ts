@@ -3,12 +3,10 @@ import { defineSlotRecipe } from "@pandacss/dev";
 /**
  * The window, when its titlebar is see-through, over the content: it has
  * something to drag it by (`data-inv-window-handle`, the logo), and isn't
- * minimized or detached (Foundry's detached windows' bodies are `.detached`:
- * one has no position of its own to drag). Otherwise, it keeps the standard
- * titlebar.
+ * minimized. Otherwise, it keeps the standard titlebar.
  */
 const overlaid =
-  ":where(body:not(.detached) .application:not(.minimized):has([data-inv-window-handle])) > &";
+  ":where(.application:not(.minimized):has([data-inv-window-handle])) > &";
 
 /**
  * **appFrame**: Foundry's window around a themed root: the application

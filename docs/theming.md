@@ -211,8 +211,8 @@ keeps its name clear of them: `frame.ts` measures them, as
 in from each side, so the name stays centred. The sheets' grids follow `data-inv-layout` on the themed root.
 
 Only for windows with a logo (character sheets): other windows, with nothing
-to drag them by, keep the standard titlebar, and so does a detached window,
-which has no position of its own to drag. The
+to drag them by, keep the standard titlebar. A detached window keeps the look,
+but the logo doesn't drag it: that's the operating system's to move. The
 titlebar's look is the `appFrame` recipe's `layout: full-frame` variant, which
 a theme can patch (a backing for the buttons, say).
 

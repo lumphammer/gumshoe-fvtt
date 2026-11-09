@@ -111,8 +111,8 @@ const drags = new WeakMap<HTMLElement, () => void>();
  * moves is a drag; one that doesn't is a click, so the logo's text can still
  * be edited. Once it's being edited, a press on it is the text's own, so a
  * drag selects. A double click on a handle, but not on its text, minimizes
- * the window, as one on the titlebar does. Not in a detached window, which
- * has no position of its own (it keeps the standard titlebar). A drag stops
+ * the window, as one on the titlebar does. Not in a detached window: that's
+ * the operating system's to move (it keeps the look). A drag stops
  * if the window stops being full-frame, or the handle goes.
  */
 function dragByHandle(frame: HTMLElement) {
