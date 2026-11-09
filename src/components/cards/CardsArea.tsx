@@ -53,7 +53,6 @@ export const CardsArea = memo(function CardsArea() {
 
   // keep local state in sync with the actor
   useEffect(() => {
-    // eslint-disable-next-line react/set-state-in-effect
     setCardsAreaSettings({
       category: savedSettings.category,
       sortOrder: savedSettings.sortOrder,
