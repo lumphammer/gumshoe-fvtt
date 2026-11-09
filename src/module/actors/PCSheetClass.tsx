@@ -6,6 +6,7 @@ import { PCSheet } from "../../components/characters/PCSheet";
 import { settingsButtonAction } from "../../components/characters/useSettingsButton";
 import { systemId } from "../../constants";
 import { ActorSheetV2 } from "../../fvtt-exports";
+import { NoDocumentTypeInTitleMixin } from "@lumphammer/shared-fvtt-bits/src/NoDocumentTypeInTitleMixin";
 
 type RenderOptions = foundry.applications.api.ApplicationV2.RenderOptions;
 
@@ -49,7 +50,7 @@ const render = () => {
 
 export const PCSheetClass = ReactApplicationV2Mixin(
   "PCSheetClass",
-  OverrideAutoDisableMixin(PCSheetClassBase),
+  NoDocumentTypeInTitleMixin(OverrideAutoDisableMixin(PCSheetClassBase)),
   render,
   // the sheet reads everything through snapshots, ownership included
   // (docs/immutable-data.md), so Foundry's re-renders needn't reach React

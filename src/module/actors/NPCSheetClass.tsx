@@ -5,6 +5,7 @@ import React from "react";
 import { Suspense } from "../../components/Suspense";
 import { systemId } from "../../constants";
 import { ActorSheetV2 } from "../../fvtt-exports";
+import { NoDocumentTypeInTitleMixin } from "@lumphammer/shared-fvtt-bits/src/NoDocumentTypeInTitleMixin";
 
 const NPCSheet = React.lazy(() =>
   import("../../components/characters/NPCSheet").then(({ NPCSheet }) => ({
@@ -35,7 +36,7 @@ const render = () => {
 
 export const NPCSheetClass = ReactApplicationV2Mixin(
   "NPCSheetClass",
-  OverrideAutoDisableMixin(NPCSheetClassBase),
+  NoDocumentTypeInTitleMixin(OverrideAutoDisableMixin(NPCSheetClassBase)),
   render,
   // the sheet reads everything through snapshots, ownership included
   // (docs/immutable-data.md), so Foundry's re-renders needn't reach React
