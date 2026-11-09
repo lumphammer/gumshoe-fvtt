@@ -5,6 +5,7 @@ import { lazy } from "react";
 import { Suspense } from "../../components/Suspense";
 import { systemId } from "../../constants";
 import { ActorSheetV2 } from "../../fvtt-exports";
+import { NoDocumentTypeInTitleMixin } from "@lumphammer/shared-fvtt-bits/src/NoDocumentTypeInTitleMixin";
 
 const PartySheet = lazy(async () => {
   const { PartySheet } = await import("../../components/party/PartySheet");
@@ -36,7 +37,7 @@ const render = () => {
 
 export const PartySheetClass = ReactApplicationV2Mixin(
   "PartySheetClass",
-  OverrideAutoDisableMixin(PartySheetClassBase),
+  NoDocumentTypeInTitleMixin(OverrideAutoDisableMixin(PartySheetClassBase)),
   render,
   // the sheet reads the party and its members through snapshots, ownership
   // included (docs/immutable-data.md), so Foundry's re-renders needn't reach React

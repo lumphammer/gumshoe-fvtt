@@ -5,8 +5,8 @@ import DocumentSheetV2 = foundry.applications.api.DocumentSheetV2;
 type DocumentSheetV2Constructor = Constructor<DocumentSheetV2.Any>;
 
 /**
- * Wrap an existing Foundry Application class in this Mixin to override the
- * normal rendering behaviour and and use React instead.
+ * Wrap an existing Foundry Application class in this Mixin to disable Foundry's
+ * automatic UI-disabling behaviour.
  *
  * See MIXINS.md.
  *
