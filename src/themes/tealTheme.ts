@@ -9,6 +9,7 @@ const logoShadow =
 export const tealTheme = defineThemeV2({
   schemaVersion: "v2",
   displayName: "Teal of Cthulhu",
+  layout: "full-frame",
   palette: {
     polarity: "light",
     wallpaper: "#ddd",
