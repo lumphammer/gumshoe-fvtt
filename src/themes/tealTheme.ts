@@ -22,7 +22,7 @@ export const tealTheme = defineThemeV2({
     control: "rgba(0,0,0,0.1)",
     text: "#433",
     accent: "#1d5d5d",
-    line: "#766",
+    line: "#aaa",
     feedback: "#5effff",
     danger: "#ff0000",
     warning: "#d68a00",
