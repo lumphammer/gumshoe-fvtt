@@ -47,21 +47,27 @@ export const tealTheme = defineThemeV2({
     logo: {
       base: {
         backdrop: {
-          perspective: "500px",
-          perspectiveOrigin: "50% 50%",
           backgroundImage:
             "radial-gradient(closest-side, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%)",
         },
         text: {
           caretColor: "black",
+          lineHeight: "0.9",
           transform: "rotateY(-30deg) rotateZ(-1deg) translateX(-5%)",
         },
-        // the front copy's text is a gradient, clipped to the letters
-        front_wrapper: { color: "transparent" },
-        front: { background: logoGradient, backgroundClip: "text" },
-        front_sub: { background: logoGradient, backgroundClip: "text" },
-        rear: { textShadow: logoShadow },
-        rear_sub: { textShadow: logoShadow },
+        // the front copy's text is a gradient, clipped to the letters, across
+        // the name and the subtext
+        front_wrapper: {
+          color: "transparent",
+          background: logoGradient,
+          backgroundClip: "text",
+        },
+        rear_wrapper: { textShadow: logoShadow },
+        // no room around the text
+        front: { padding: "0" },
+        rear: { padding: "0" },
+        front_sub: { padding: "0", minHeight: "auto" },
+        rear_sub: { padding: "0", minHeight: "auto" },
       },
     },
     tabs: {
