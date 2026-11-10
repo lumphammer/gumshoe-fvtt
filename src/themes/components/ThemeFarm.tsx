@@ -202,14 +202,14 @@ export const ThemeFarm = () => {
             { "--farm-column-width": `${settings.width}px` } as CSSProperties
           }
         >
-          {/* the columns, all as tall as the tallest */}
+          {/* the columns, wrapping, so the farm scrolls down; each as tall as
+            the tallest in its row */}
           <div
             className={css({
               display: "flex",
+              flexWrap: "wrap",
               alignItems: "stretch",
               gap: "[2px]",
-              width: "max-content",
-              minHeight: "100%",
             })}
           >
             {ids
