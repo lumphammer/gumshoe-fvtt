@@ -51,6 +51,7 @@ export const recipeShapes = {
   logo: {
     className: "inv-logo",
     slots: [
+      "root",
       "backdrop",
       "text",
       "front_wrapper",

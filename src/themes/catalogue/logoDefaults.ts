@@ -13,6 +13,9 @@ import { paletteVar } from "../palette";
  * measures it with a hidden copy that has the front style.
  */
 export const logoDefaults = {
+  // the outer box: the perspective for the text's 3D transforms (its size
+  // and position are the call site's)
+  root: { perspective: "500px", perspectiveOrigin: "50% 50%" },
   backdrop: {},
   // the text elements' wrapper. A V1 theme's style here could set `font`,
   // which resets the size and line height, so they're set again after it (1em
@@ -42,12 +45,14 @@ export const logoDefaults = {
 /**
  * What `LogoEditable` sets on these slots outside the theme's rules: an
  * override can't change it, even with `!important` (`compileCatalogue` leaves
- * these properties out). The backdrop and the text fill the logo; each copy is
+ * these properties out). The outer box is what they're positioned in; the
+ * backdrop and the text fill it; each copy is
  * centred in it, the rear one behind, with transparent text (a theme colours
  * the rear text on `rear` and `rear_sub`).
  */
 const fills = ["position", "inset", "top", "right", "bottom", "left"] as const;
 export const logoLayout = {
+  root: ["position"],
   backdrop: fills,
   text: fills,
   front_wrapper: [...fills, "transform", "translate"],

@@ -56,6 +56,7 @@ export interface CatalogueRecipeShapes {
   };
   logo: {
     slots:
+      | "root"
       | "backdrop"
       | "text"
       | "front_wrapper"

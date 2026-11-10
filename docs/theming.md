@@ -543,8 +543,10 @@ header see-through and lays the content under it.
 
 The character sheet's logo (`LogoEditable`): the name and its subtext in large
 display text, drawn twice, a front copy over a rear one, on a backdrop, so a
-theme can do 3D, shadows and text gradients. Slots: `backdrop`, `text` (the
-wrapper of both copies, which the theme can transform), `front_wrapper`,
+theme can do 3D, shadows and text gradients. Slots: `root` (the outer box: its
+`perspective` and `perspective-origin`, by default `500px` and `50% 50%`, are
+for the text's 3D transforms), `backdrop`, `text` (the wrapper of both copies,
+which the theme can transform), `front_wrapper`,
 `front` (the name), `front_sub` (the subtext), and the same three for `rear`.
 Slot names are snake_case, so their classes are valid CSS class names
 (`inv-logo__front_sub`). The slots' defaults are plain CSS in
@@ -558,10 +560,15 @@ a slot's override is only what the theme changes (`text: { transform:
   spacing at 4em, on one line, in `text`. The rear copy's text is
   transparent, so only what a theme gives it (a shadow, or a colour on
   `rear` and `rear_sub`) shows.
-- **The layout**: the backdrop and `text` fill the logo, and each copy is
-  centred in it, the rear one behind. An override can't change these
-  properties, or the rear wrapper's `color` (`logoLayout`);
-  `compileCatalogue` leaves them out, nested rules' too, with a warning.
+- **The layout**: the outer box (`root`) is positioned, and sized by the call
+  site; the backdrop and `text` fill it, and each copy is centred in it, the
+  rear one behind. An override can't change these properties, or the rear
+  wrapper's `color` (`logoLayout`): `compileCatalogue` leaves them out,
+  nested rules' too, with a warning. `root`'s `display`, `width` and `height`
+  are the call site's, in a layer above the theme's (`componentDefaults.css`),
+  so a theme's lose to them, unless `!important`; they aren't left out, and
+  nor is anything else about its size (`min-height`, say), which a theme
+  shouldn't set.
 - **The fit**: the name is scaled down to fit the logo's width, by its font
   size, measured with a hidden copy that has the `front` style at full size.
   So `front` can set its own size, spacing and padding, and the fit follows,

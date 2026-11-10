@@ -218,6 +218,7 @@ describe("compileCatalogue", () => {
     const { overrides, warnings } = compile({
       logo: {
         base: {
+          root: { position: "static", perspective: "200px" },
           backdrop: { position: "fixed", inset: 0, width: "150%" },
           front_wrapper: {
             transform: "none",
@@ -229,6 +230,8 @@ describe("compileCatalogue", () => {
         },
       },
     });
+    // the perspective is the theme's; the box's position isn't
+    expect(overrides["logo__root"]).toEqual({ perspective: "200px" });
     expect(overrides["logo__backdrop"]).toEqual({ width: "150%" });
     // nested rules too
     expect(overrides["logo__front_wrapper"]).toEqual({
@@ -239,6 +242,7 @@ describe("compileCatalogue", () => {
     // the name's size is the theme's (LogoEditable fits it)
     expect(overrides["logo__front"]).toEqual({ fontSize: "2em" });
     expect(warnings).toEqual([
+      'logo.root: "position" is set by the logo itself, so it\'s left out',
       'logo.backdrop: "position" is set by the logo itself, so it\'s left out',
       'logo.backdrop: "inset" is set by the logo itself, so it\'s left out',
       'logo.front_wrapper: "transform" is set by the logo itself, so it\'s left out',

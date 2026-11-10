@@ -171,8 +171,9 @@ export const LogoEditable = ({
   return (
     // outer - set the transform origin
     <div
-      // layout, which call sites can change (componentDefaults.css)
-      className={cx("logo", "inv-default-logo", className)}
+      // layout, which call sites can change (componentDefaults.css), and the
+      // theme's perspective
+      className={cx("logo", "inv-default-logo", classes.root, className)}
       // what the window is dragged by, in the full-frame layout (frame.ts)
       data-inv-window-handle
     >

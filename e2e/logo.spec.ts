@@ -202,3 +202,32 @@ for (const [id, theme] of Object.entries(v2Themes)) {
       .toBe(true);
   });
 }
+
+test("the logo's perspective is its root's: 500px by default, or the theme's", async ({
+  page,
+}) => {
+  const theme = testTheme("Deep logo", colors, {
+    catalogue: {
+      logo: {
+        base: { root: { perspective: "200px", perspectiveOrigin: "10% 50%" } },
+      },
+    },
+  });
+  await page.evaluate(
+    (theme) => CONFIG.Investigator!.installTheme("deepLogoTheme", theme),
+    theme,
+  );
+  await setSettings(page, { defaultThemeName: "niceTheme" });
+  const actorId = await createActor(page, { name: "Al", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const logo = sheet.locator(".logo").first();
+  await expect(logo).toHaveCSS("perspective", "500px");
+  await setSettings(page, { defaultThemeName: "deepLogoTheme" });
+  await expect(logo).toHaveCSS("perspective", "200px");
+  // 10% across
+  const { width } = (await logo.boundingBox())!;
+  await expect(logo).toHaveCSS(
+    "perspective-origin",
+    new RegExp(`^${Math.floor(width * 0.1)}(\\.\\d+)?px `),
+  );
+});
