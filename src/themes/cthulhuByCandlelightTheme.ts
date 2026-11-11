@@ -168,7 +168,8 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
         depth: {
           top: {
             //
-            background: "oklch(from var(--accent) 0.15 0.005 h / 70%)",
+            background: "oklch(from var(--inv-surface) l c  h / 50%)",
+            // background: "oklch(from var(--accent) 0.15 0.005 h / 70%)",
           },
         },
       },
