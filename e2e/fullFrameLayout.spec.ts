@@ -37,6 +37,17 @@ const position = (sheet: Locator) =>
 const nameText = (sheet: Locator) =>
   sheet.locator(".logo .front-text-element [contenteditable]").first();
 
+/** How far the logo's text may start inside the strip (CSSReset), in px. */
+const tuckOf = (sheet: Locator) =>
+  sheet
+    .locator(".logo .text-elements-wrapper")
+    .evaluate(
+      (wrapper) =>
+        parseFloat(
+          getComputedStyle(wrapper).getPropertyValue("--inv-logo-strip-tuck"),
+        ) || 0,
+    );
+
 /** The titlebar, and a point on it over the logo, left of the buttons. */
 async function titlebar(sheet: Locator) {
   const header = sheet.locator(".window-header");
@@ -147,10 +158,11 @@ for (const type of ["pc", "npc"] as const) {
     "Al",
     "Bartholomew Fitzwilliam-Haversham the Third",
   ]) {
-    test(`${type}: the portrait is on the left, and the logo's text, for "${actorName}", keeps below the titlebar and inside the logo`, async ({
+    test(`${type}: the portrait is on the left, and the logo's text, for "${actorName}", keeps below the titlebar (less the tuck) and inside the logo`, async ({
       page,
     }) => {
       const { sheet } = await openFogSheet(page, type, actorName);
+      const tuck = await tuckOf(sheet);
       // the name and the subtext, at the size they're fitted to
       const text = sheet.locator(
         ".logo .front-text-element > :not([aria-hidden])",
@@ -186,7 +198,9 @@ for (const type of ["pc", "npc"] as const) {
         );
         expect(boxes.length).toBeGreaterThan(0);
         for (const box of boxes) {
-          expect(box.top).toBeGreaterThanOrEqual(header.y + header.height - 1);
+          expect(box.top).toBeGreaterThanOrEqual(
+            header.y + header.height - tuck - 1,
+          );
           expect(box.bottom).toBeLessThanOrEqual(logo.y + logo.height + 1);
           expect(box.left).toBeGreaterThanOrEqual(logo.x - 1);
           expect(box.right).toBeLessThanOrEqual(logo.x + logo.width + 1);
@@ -213,12 +227,13 @@ test("the text starts at the strip's bottom edge, less the tuck", async ({
   page,
 }) => {
   const { sheet } = await openFogSheet(page);
+  const tuck = await tuckOf(sheet);
   await expect
     .poll(async () => {
       const { top, strip } = await textTop(sheet);
       return Math.round(top - strip);
     })
-    .toBe(0);
+    .toBe(-Math.round(tuck));
   await sheet
     .locator("[data-inv-theme]")
     .first()
@@ -256,11 +271,13 @@ test("the overlap is measured unscaled, when the window is scaled", async ({
   await expect
     .poll(async () => (await textTop(sheet)).overlap)
     .toBeCloseTo(unscaled + 12, 0);
-  // and the text still starts at the strip's edge
+  // and the text still starts at the strip's edge, less the tuck (at the
+  // window's scale, on screen)
+  const tuck = await tuckOf(sheet);
   await expect
     .poll(async () => {
       const { top, strip } = await textTop(sheet);
-      return Math.abs(top - strip) < 1;
+      return Math.abs(top - strip + tuck * 0.5) < 1;
     })
     .toBe(true);
 });
