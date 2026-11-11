@@ -46,14 +46,25 @@ export const tealTheme = defineThemeV2({
     },
     logo: {
       base: {
+        // the container --w is measured in (cqw), and no perspective of its
+        // own: the text's transform has it
+        root: { containerType: "inline-size", perspective: "none" },
         backdrop: {
           backgroundImage:
             "radial-gradient(closest-side, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%)",
         },
         text: {
+          fontSize: "0.7em",
           caretColor: "black",
           lineHeight: "0.9",
-          transform: "rotateY(-30deg) rotateZ(-1deg) translateX(-5%)",
+          "--w": "calc(100cqw - 2 * var(--inv-logo-inset, 0px))",
+          "--a": "-25deg", // the turn: negative brings the right end towards you
+          "--n": "1.5", // how far away the viewer is, in text widths (smaller = stronger)
+          transform: `
+            translateX(calc(var(--w) * sin(var(--a)) / (4 * var(--n))))
+            scale(calc((1 - pow(sin(var(--a)) / (2 * var(--n)), 2)) / cos(var(--a))))
+            perspective(calc(var(--n) * var(--w)))
+            rotateY(var(--a))`,
         },
         // the front copy's text is a gradient, clipped to the letters, across
         // the name and the subtext
@@ -84,6 +95,14 @@ export const tealTheme = defineThemeV2({
           },
           "input:disabled + &:hover": { textShadow: "none" },
         },
+      },
+    },
+    panel: {
+      base: {
+        borderColor: "var(--inv-line)",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        padding: "0.25em",
       },
     },
   },

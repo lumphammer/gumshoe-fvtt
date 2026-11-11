@@ -4,23 +4,23 @@ import { defineThemeV2 } from "./theme";
 // const gradient =
 //   "linear-gradient(90deg, oklch(49.2% 0.110 46) 0%, oklch(88.9% 0.105 83) 18%, oklch(87.3% 0.105 81) 21%, oklch(66.5% 0.115 59) 41%, oklch(68.1% 0.108 61) 43%, oklch(91.2% 0.054 84) 56%, oklch(98.1% 0.018 90) 65%, oklch(96.3% 0.026 85) 67%, oklch(68.8% 0.137 63) 83%, oklch(46.6% 0.113 44) 100%)";
 
-const gold06 = `
-    linear-gradient(90deg,
-    oklch(74.3% 0.086 82) 0%,
-    oklch(91.2% 0.107 98) 8%,
-    oklch(93.3% 0.112 100) 10%,
-    oklch(73.2% 0.109 85) 20%,
-    oklch(74.7% 0.109 85) 22%,
-    oklch(85.4% 0.113 95) 29%,
-    oklch(66.9% 0.120 79) 43%,
-    oklch(90.4% 0.066 99) 61%,
-    oklch(99.0% 0.015 101) 69%,
-    oklch(96.8% 0.014 84) 71%,
-    oklch(60.5% 0.107 72) 84%,
-    oklch(61.1% 0.112 74) 86%,
-    oklch(74.5% 0.135 88) 96%,
-    oklch(75.8% 0.145 90) 100%)
-  `;
+// const gold06 = `
+//     linear-gradient(90deg,
+//     oklch(74.3% 0.086 82) 0%,
+//     oklch(91.2% 0.107 98) 8%,
+//     oklch(93.3% 0.112 100) 10%,
+//     oklch(73.2% 0.109 85) 20%,
+//     oklch(74.7% 0.109 85) 22%,
+//     oklch(85.4% 0.113 95) 29%,
+//     oklch(66.9% 0.120 79) 43%,
+//     oklch(90.4% 0.066 99) 61%,
+//     oklch(99.0% 0.015 101) 69%,
+//     oklch(96.8% 0.014 84) 71%,
+//     oklch(60.5% 0.107 72) 84%,
+//     oklch(61.1% 0.112 74) 86%,
+//     oklch(74.5% 0.135 88) 96%,
+//     oklch(75.8% 0.145 90) 100%)
+//   `;
 
 const copper02 = `
   linear-gradient(90deg,
@@ -44,41 +44,50 @@ const textShadow = [
 ].join(",");
 // "linear-gradient(135deg, #efb183 0%,#222 30%,#efb183 90%)"
 
-export const tealDarkTheme = defineThemeV2({
+export const cthulhuByCandlelightTheme = defineThemeV2({
   schemaVersion: "v2",
-  displayName: "Teal of Cthulhu",
+  displayName: "Cthulhu by Candlelight",
   layout: "full-frame",
   palette: {
-    polarity: "light",
-    wallpaper: "#ddd",
-    surface: "rgba(255,255,255,0.5)",
-    surfaceNested: "rgba(255,255,255,0.2)",
-    control: "rgba(0,0,0,0.1)",
-    text: "#433",
-    accent: "#1d5d5d",
-    line: "#baa",
+    polarity: "dark",
+    wallpaper: "#222",
+    // surface: "oklch(0.25 0.005 195deg / 100%)",
+    surface: "oklch(from var(--accent) 0.25 0.005 h / 100%)",
+    surfaceNested: "oklch(from var(--accent) 0.3 0.005 h / 100%)",
+    control: "oklch(from var(--accent) 0.35 0.005 h / 100%)",
+    text: "oklch(from var(--accent) 0.8 0.005 h / 100%)",
+    accent: "var(--accent)",
+    line: "oklch(from var(--accent) 0.4 0.005 h / 100%)",
     feedback: "#5effff",
     danger: "#ff0000",
     warning: "#d68a00",
     success: "#008000",
     info: "#2b6cb0",
     textMuted: "color-mix(in srgb, #433 70%, rgb(238, 238, 238))",
-    onAccent: "white",
+    onAccent: "black",
     bodyFont: "16px 'Averia Libre', sans-serif",
     displayFont: "normal small-caps normal 1em 'Federo', serif",
     cardGap: "0.5em 0.5em",
   },
   catalogue: {
+    appFrame: {
+      base: {
+        root: {
+          "--accent": "oklch(0.7 0.06 195)",
+        },
+      },
+    },
     sheetRoot: {
       variants: {
         size: {
           large: {
             backgroundSize: "cover",
             backgroundPosition: "center",
-            backgroundBlendMode: "hard-light, normal",
+            backgroundBlendMode: "normal",
             backgroundImage: [
-              `linear-gradient(to top, #0000 0%, #0000 70%, #000f 100%)`,
-              `url(systems/${systemId}/assets/wallpaper/marjanblan-5Ft4NWTmeJE-unsplash.webp)`,
+              // `linear-gradient(to top, #0000 0%, #0000 70%, #000f 100%)`,
+              "linear-gradient(oklch(from var(--accent) 0.05 0.1 h / 50%))",
+              `url(systems/${systemId}/assets/wallpaper/annie-spratt-osuiatBDTww-unsplash.webp)`,
             ].join(","),
           },
           small: {
@@ -99,7 +108,7 @@ export const tealDarkTheme = defineThemeV2({
         text: {
           font: "var(--inv-display-font)",
           textTransform: "var(--inv-display-case)",
-          // fontSize: "0.7em",
+          fontSize: "0.7em",
           caretColor: "black",
 
           "--line-height": "1",
@@ -143,6 +152,24 @@ export const tealDarkTheme = defineThemeV2({
         rear_sub: {
           fontSize: "0.5em",
           textShadow,
+        },
+      },
+    },
+    panel: {
+      base: {
+        //
+        padding: "0.5em",
+        borderStyle: "solid",
+        borderWidth: "1px",
+        borderColor: "var(--inv-line)",
+        // borderRadius: "5px",
+      },
+      variants: {
+        depth: {
+          top: {
+            //
+            background: "oklch(from var(--accent) 0.15 0.005 h / 70%)",
+          },
         },
       },
     },
@@ -309,52 +336,6 @@ export const tealDarkTheme = defineThemeV2({
         description: {},
         effect: {
           fontStyle: "italic",
-        },
-      },
-    },
-    tabs: {
-      base: {
-        tab: {
-          font: "var(--inv-display-font)",
-          textTransform: "var(--inv-display-case)",
-          letterSpacing: "var(--inv-display-letter-spacing)",
-          textAlign: "center",
-          flex: 1,
-          padding: "0.3em",
-          display: "inline-block",
-          fontSize: "1.2em",
-          background: "rgba(255,255,255,0.2)",
-          borderRadius: "0.2em 0.2em 0 0",
-          color: "#1d5d5d",
-          "&:hover": {
-            textShadow: "0 0 0.3em #5effff",
-          },
-          ":not([data-wrapped]) > input:checked + &": {
-            background: "rgba(255,255,255,0.5)",
-            "&:hover": {
-              textShadow: "none",
-            },
-          },
-          "[data-wrapped] > &": {
-            borderRadius: "0.2em",
-          },
-          "[data-wrapped] > input:checked + &": {
-            background: "rgba(255,255,255,0.5)",
-            "&:hover": {
-              textShadow: "none",
-            },
-          },
-          "input:disabled + &:hover": {
-            textShadow: "none",
-          },
-        },
-        spacer: {
-          width: "0.5em",
-        },
-        content: {
-          padding: "0.5em",
-          backgroundColor: "rgba(255,255,255,0.5)",
-          "[data-wrapped] + &": {},
         },
       },
     },
