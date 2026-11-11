@@ -18,8 +18,8 @@ export const fogTheme = defineThemeV2({
     warning: "#d68a00",
     success: "#2e7d32",
     info: "#2b6cb0",
-    bodyFont: "16px 'Averia Libre', sans-serif",
-    displayFont: "16px 'Averia Libre', sans-serif",
+    bodyFont: "16px 'Averia Sans Libre', sans-serif",
+    displayFont: "16px 'Averia Serif Libre', sans-serif",
   },
   // the sheet runs up under a see-through titlebar, a strip across the top
   layout: "full-frame",
@@ -27,8 +27,9 @@ export const fogTheme = defineThemeV2({
     logo: {
       base: {
         text: {
-          transform: "scale(1)",
+          transform: "scale(0.8)",
           fontWeight: "bold",
+          fontSize: "0.7em",
         },
       },
     },
