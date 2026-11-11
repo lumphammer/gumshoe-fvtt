@@ -29,6 +29,7 @@ export const fogTheme = defineThemeV2({
         text: {
           transform: "scale(1)",
           fontWeight: "bold",
+          fontSize: "0.7em",
         },
         front_wrapper: {},
         rear_wrapper: {},
