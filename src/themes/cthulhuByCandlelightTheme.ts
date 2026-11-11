@@ -124,7 +124,7 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
           //   perspective(calc(var(--n) * var(--w)))
           //   rotateY(var(--a))`,
 
-          transform: "rotateY(0deg)",
+          transform: "rotateY(0deg) scale(0.9)",
           // transform:
           //   "rotateY(-45deg) rotateZ(-1deg) translateX(-0%) scaleX(120%)",
         },
