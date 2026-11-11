@@ -10,17 +10,16 @@ import { claimFrame, type FrameClaim } from "./frame";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 /**
- * What the layout means for what's inside this root (and not inside another
- * root in it). In the full-frame layout, the logo's text keeps below the
- * see-through titlebar, as far down as the titlebar overlaps the logo
- * (`LogoEditable` measures it), less `--inv-logo-strip-tuck`: how far the
- * text may start inside the strip, which lets it sit a little higher, more
- * centred between the window's top and the fields, at the cost of a sliver
- * of the name being under the titlebar (a press there drags the window).
- * Tune it here, or live in the browser's devtools on the themed root.
+ * In the full-frame layout, the logo's text stays below the see-through
+ * titlebar, by shrinking down by the same distance the titlebar overlaps the
+ * logo (measured by `LogoEditable`), minus `--inv-logo-strip-tuck`, which is
+ * "how far the text can start inside the strip". This lets it sit a little
+ * higher, more centred between the top of the window and the fields, at the
+ * cost of a sliver of the name being under the titlebar (a press there drags
+ * the window).
  */
 const logoTuning = css({
-  "--inv-logo-strip-tuck": "0px",
+  "--inv-logo-strip-tuck": "15px",
 });
 
 type CSSResetProps = PropsWithChildren<{
