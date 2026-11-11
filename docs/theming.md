@@ -431,14 +431,17 @@ A strip of tabs and the content of the selected one, applied by
 (`inv-tabs__tab` and so on). _`tab` is an expected override, selected and
 not._
 
-- **States**, from the DOM rather than variants: a tab is selected when its
-  hidden radio, just before it, is checked (`input:checked + &`); the strip
-  is wrapped into a grid when the code that measures it sets `data-wrapped`
-  on the list (`[data-wrapped] > &`, `[data-wrapped] + &` for the content).
-  A theme's override can target these as nested rules. The default selected
-  and wrapped looks have their context in `:where()`, so they're part of the
-  tab's rule rather than states over it: an override of `tab` replaces them
-  too. Disabled (`input:disabled + &`) still applies over an override.
+- **States**, as attributes on the elements themselves, rather than
+  variants: the selected tab has `data-selected` (`&[data-selected]`), and
+  when the code that measures the strip wraps it into a grid, the list, the
+  tabs, the spacers and the content all get `data-wrapped`
+  (`&[data-wrapped]`). So a theme's override targets them as nested rules on
+  the slot itself: `"&[data-selected]"`, `"&[data-wrapped]"`,
+  `"&[data-selected]:not([data-wrapped])"` (selected, in a row). The tabs are
+  measured unwrapped, so a wrapped look can change their size. The default
+  selected and wrapped looks are in `:where()`, so they're part of the tab's
+  rule rather than states over it: an override of `tab` replaces them too.
+  Disabled (`input:disabled + &`) still applies over an override.
 - **Look**: the selected tab is `surface`, like the content, so they read as
   one, with `accent` ink. The others are a fainter `surface`, with `text`
   ink: 40% of its opacity on a light theme, whose pale surface is close to

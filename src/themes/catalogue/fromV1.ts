@@ -128,7 +128,8 @@ function panelsFromV1(theme: ThemeV1): ThemeCatalogue {
  * content had 0.5em padding from the call site, with `tabContentStyle` over
  * it, and `tabContentWrappedStyle` over that under a grid. `themeFactory`
  * fills in all seven, so every V1 theme gets V1's tabs, its defaults
- * included, and not the catalogue's.
+ * included, and not the catalogue's. The states are the tabs' attributes
+ * (`data-selected`, `data-wrapped`: the `tabs` recipe).
  */
 function tabsFromV1(theme: ThemeV1): ThemeCatalogue {
   const tab: OverrideStyle = {
@@ -137,20 +138,16 @@ function tabsFromV1(theme: ThemeV1): ThemeCatalogue {
     letterSpacing: `var(${paletteVar("displayLetterSpacing")})`,
     textAlign: "center",
     ...fromEmotion(theme.tabStyle),
-    ":not([data-wrapped]) > input:checked + &": fromEmotion(
-      theme.tabActiveStyle,
-    ),
-    "[data-wrapped] > &": fromEmotion(theme.tabWrappedStyle),
-    "[data-wrapped] > input:checked + &": fromEmotion(
-      theme.tabWrappedActiveStyle,
-    ),
+    "&[data-selected]:not([data-wrapped])": fromEmotion(theme.tabActiveStyle),
+    "&[data-wrapped]": fromEmotion(theme.tabWrappedStyle),
+    "&[data-selected][data-wrapped]": fromEmotion(theme.tabWrappedActiveStyle),
     // V1's tabs dropped any hover glow on a disabled tab
     "input:disabled + &:hover": { textShadow: "none" },
   };
   const content: OverrideStyle = {
     padding: "0.5em",
     ...fromEmotion(theme.tabContentStyle),
-    "[data-wrapped] + &": fromEmotion(theme.tabContentWrappedStyle),
+    "&[data-wrapped]": fromEmotion(theme.tabContentWrappedStyle),
   };
   return {
     tabs: {

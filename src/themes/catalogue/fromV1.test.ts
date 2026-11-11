@@ -167,7 +167,7 @@ describe("tabs", () => {
       background: colors.backgroundSecondary,
       color: colors.accent,
       "&:hover": { textShadow: `0 0 0.3em ${colors.glow}` },
-      ":not([data-wrapped]) > input:checked + &": {
+      "&[data-selected]:not([data-wrapped])": {
         background: colors.backgroundPrimary,
       },
       "input:disabled + &:hover": { textShadow: "none" },
@@ -192,15 +192,15 @@ describe("tabs", () => {
     expect(overrides["tabs__tab"]).toMatchObject({
       color: "red",
       "&:hover": { color: "blue" },
-      ":not([data-wrapped]) > input:checked + &": { background: "white" },
-      "[data-wrapped] > &": { borderRadius: "1em" },
-      "[data-wrapped] > input:checked + &": { background: "grey" },
+      "&[data-selected]:not([data-wrapped])": { background: "white" },
+      "&[data-wrapped]": { borderRadius: "1em" },
+      "&[data-selected][data-wrapped]": { background: "grey" },
     });
     expect(overrides["tabs__spacer"]).toEqual({ width: "1em" });
     expect(overrides["tabs__content"]).toEqual({
       padding: "0.5em",
       border: "1px solid",
-      "[data-wrapped] + &": { borderStyle: "dashed" },
+      "&[data-wrapped]": { borderStyle: "dashed" },
     });
   });
 });

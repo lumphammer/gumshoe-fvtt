@@ -312,16 +312,16 @@ export const unsafeRealityTheme = defineThemeV2({
           "&:hover": {
             textShadow: "0 0 0.3em #f4bcf0",
           },
-          ":not([data-wrapped]) > input:checked + &": {
+          "&[data-selected]:not([data-wrapped])": {
             background: "#5447",
             "&:hover": {
               textShadow: "none",
             },
           },
-          "[data-wrapped] > &": {
+          "&[data-wrapped]": {
             borderRadius: "0.2em",
           },
-          "[data-wrapped] > input:checked + &": {
+          "&[data-selected][data-wrapped]": {
             background: "#5447",
             "&:hover": {
               textShadow: "none",
@@ -337,7 +337,7 @@ export const unsafeRealityTheme = defineThemeV2({
         content: {
           padding: "0.5em",
           backgroundColor: "#5447",
-          "[data-wrapped] + &": {},
+          "&[data-wrapped]": {},
         },
       },
     },

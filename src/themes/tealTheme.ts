@@ -273,16 +273,16 @@ export const tealTheme = defineThemeV2({
           "&:hover": {
             textShadow: "0 0 0.3em #5effff",
           },
-          ":not([data-wrapped]) > input:checked + &": {
+          "&[data-selected]:not([data-wrapped])": {
             background: "rgba(255,255,255,0.5)",
             "&:hover": {
               textShadow: "none",
             },
           },
-          "[data-wrapped] > &": {
+          "&[data-wrapped]": {
             borderRadius: "0.2em",
           },
-          "[data-wrapped] > input:checked + &": {
+          "&[data-selected][data-wrapped]": {
             background: "rgba(255,255,255,0.5)",
             "&:hover": {
               textShadow: "none",
@@ -298,7 +298,7 @@ export const tealTheme = defineThemeV2({
         content: {
           padding: "0.5em",
           backgroundColor: "rgba(255,255,255,0.5)",
-          "[data-wrapped] + &": {},
+          "&[data-wrapped]": {},
         },
       },
     },

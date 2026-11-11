@@ -282,16 +282,16 @@ export const antiquarianTheme = defineThemeV2({
           "&:hover": {
             textShadow: "0 0 0.3em #cfffc2",
           },
-          ":not([data-wrapped]) > input:checked + &": {
+          "&[data-selected]:not([data-wrapped])": {
             background: "#fff9",
             "&:hover": {
               textShadow: "none",
             },
           },
-          "[data-wrapped] > &": {
+          "&[data-wrapped]": {
             borderRadius: "0.2em",
           },
-          "[data-wrapped] > input:checked + &": {
+          "&[data-selected][data-wrapped]": {
             background: "#fff9",
             "&:hover": {
               textShadow: "none",
@@ -307,7 +307,7 @@ export const antiquarianTheme = defineThemeV2({
         content: {
           padding: "0.5em",
           backgroundColor: "#fff9",
-          "[data-wrapped] + &": {},
+          "&[data-wrapped]": {},
         },
       },
     },

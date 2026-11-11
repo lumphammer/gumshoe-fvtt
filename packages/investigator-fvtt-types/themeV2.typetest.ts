@@ -6,7 +6,9 @@ export const accepted: ThemeCatalogue = {
   badge: {
     base: { borderRadius: 0, color: "accent", "--x": "1px" },
     variants: { tone: { danger: { fontWeight: "bold" } } },
-    compoundVariants: [{ tone: "danger", weight: "strong", css: { color: "onDanger" } }],
+    compoundVariants: [
+      { tone: "danger", weight: "strong", css: { color: "onDanger" } },
+    ],
   },
   // a slot recipe: styles by slot
   tabs: {
@@ -14,7 +16,7 @@ export const accepted: ThemeCatalogue = {
       tab: {
         background: "oklch(from var(--inv-surface) calc(l - 0.1) c h)",
         "&:hover": { textShadow: "0 0 0.3em var(--inv-feedback)" },
-        "input:checked + &": { color: "accent" },
+        "&[data-selected]": { color: "accent" },
         "@media (min-width: 40em)": { padding: 4 },
       },
     },

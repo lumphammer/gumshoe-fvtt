@@ -13,7 +13,7 @@ type Properties = CSS.PropertiesFallback<StyleValue>;
  * A style in a theme's override: CSS properties in camelCase (a number is
  * pixels, for properties that take a length; an array is fallbacks), custom
  * properties, and nested rules keyed by a selector that contains `&` (`&:hover`,
- * `input:checked + &`) or an at-rule (`@media ...`).
+ * `&[data-selected]`) or an at-rule (`@media ...`).
  *
  * A colour property whose value is exactly the name of one of the palette's
  * colours (`color: "accent"`) is that colour. Anywhere else, a palette entry is

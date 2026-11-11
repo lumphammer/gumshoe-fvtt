@@ -509,17 +509,17 @@ export const mutantCityBlueTheme = defineThemeV2({
           backgroundColor: "#9992",
           backgroundImage:
             "linear-gradient(to top, #00000017 0%, #00000017 10%, #00000000 10%)",
-          ":not([data-wrapped]) > input:checked + &": {
+          "&[data-selected]:not([data-wrapped])": {
             background: "rgba(255,255,255,0.5)",
             "&:hover": {
               textShadow: "none",
             },
             borderBottomStyle: "none",
           },
-          "[data-wrapped] > &": {
+          "&[data-wrapped]": {
             borderRadius: "0.2em",
           },
-          "[data-wrapped] > input:checked + &": {
+          "&[data-selected][data-wrapped]": {
             background: "rgba(255,255,255,0.5)",
             "&:hover": {
               textShadow: "none",
@@ -538,7 +538,7 @@ export const mutantCityBlueTheme = defineThemeV2({
           backgroundColor: "rgba(255,255,255,0.5)",
           border: "1px solid #005d89",
           borderStyle: "none solid solid solid",
-          "[data-wrapped] + &": {
+          "&[data-wrapped]": {
             borderStyle: "solid",
             borderRadius: "0.2em",
           },

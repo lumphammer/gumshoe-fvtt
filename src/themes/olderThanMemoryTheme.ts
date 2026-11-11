@@ -281,16 +281,16 @@ export const olderThanMemoryTheme = defineThemeV2({
           "&:hover": {
             textShadow: "0 0 0.3em #fda994",
           },
-          ":not([data-wrapped]) > input:checked + &": {
+          "&[data-selected]:not([data-wrapped])": {
             background: "#211616cc",
             "&:hover": {
               textShadow: "none",
             },
           },
-          "[data-wrapped] > &": {
+          "&[data-wrapped]": {
             borderRadius: "0.2em",
           },
-          "[data-wrapped] > input:checked + &": {
+          "&[data-selected][data-wrapped]": {
             background: "#211616cc",
             "&:hover": {
               textShadow: "none",
@@ -306,7 +306,7 @@ export const olderThanMemoryTheme = defineThemeV2({
         content: {
           padding: "0.5em",
           backgroundColor: "#211616cc",
-          "[data-wrapped] + &": {},
+          "&[data-wrapped]": {},
         },
       },
     },

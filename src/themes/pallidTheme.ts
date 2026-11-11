@@ -279,16 +279,16 @@ export const pallidTheme = defineThemeV2({
           "&:hover": {
             textShadow: "0 0 0.3em #7be9e9",
           },
-          ":not([data-wrapped]) > input:checked + &": {
+          "&[data-selected]:not([data-wrapped])": {
             background: "#16181c7f",
             "&:hover": {
               textShadow: "none",
             },
           },
-          "[data-wrapped] > &": {
+          "&[data-wrapped]": {
             borderRadius: "0.2em",
           },
-          "[data-wrapped] > input:checked + &": {
+          "&[data-selected][data-wrapped]": {
             background: "#16181c7f",
             "&:hover": {
               textShadow: "none",
@@ -304,7 +304,7 @@ export const pallidTheme = defineThemeV2({
         content: {
           padding: "0.5em",
           backgroundColor: "#16181c7f",
-          "[data-wrapped] + &": {},
+          "&[data-wrapped]": {},
         },
       },
     },

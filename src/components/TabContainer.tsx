@@ -20,10 +20,27 @@ import { OnSurface } from "./Panel";
 const wrappedGapEm = 0.25;
 
 /**
+ * The strip, its tabs and spacers, and the content: what `data-wrapped` goes
+ * on, so a theme can style each by its own attribute (the `tabs` recipe).
+ */
+function wrappable(strip: HTMLElement) {
+  const content = strip.parentElement?.querySelector(":scope > .tab-content");
+  return [strip, ...strip.children, ...(content ? [content] : [])];
+}
+
+function setWrapped(strip: HTMLElement, wrapped: boolean) {
+  for (const element of wrappable(strip)) {
+    element.toggleAttribute("data-wrapped", wrapped);
+  }
+}
+
+/**
  * When the tabs don't fit in one row, lay them out in a grid with as few rows
- * as will fit, by setting `data-wrapped` and `--tab-columns` on the strip.
- * Done on the DOM rather than through React state, so it happens before the
- * first paint, and on resizing without re-rendering.
+ * as will fit, by setting `data-wrapped` on the strip, its tabs and spacers
+ * and the content, and `--tab-columns` on the strip. Done on the DOM rather
+ * than through React state, so it happens before the first paint, and on
+ * resizing without re-rendering. The tabs are measured unwrapped, so in their
+ * unwrapped look.
  */
 function fitTabStrip(strip: HTMLElement) {
   const available = strip.getBoundingClientRect().width;
@@ -34,7 +51,7 @@ function fitTabStrip(strip: HTMLElement) {
   // measure each tab at its narrowest, in one row. Everything is measured on
   // screen, so with any transform (Foundry can scale windows), and the gap is
   // scaled to match
-  strip.removeAttribute("data-wrapped");
+  setWrapped(strip, false);
   strip.setAttribute("data-measuring", "");
   const width = (element: Element) => element.getBoundingClientRect().width;
   const widths = Array.from(strip.querySelectorAll(":scope > label"), width);
@@ -49,7 +66,7 @@ function fitTabStrip(strip: HTMLElement) {
 
   const columns = chooseTabColumns(widths, rowSpacing, gap, available);
   if (columns !== null) {
-    strip.setAttribute("data-wrapped", "");
+    setWrapped(strip, true);
     strip.style.setProperty("--tab-columns", String(columns));
   }
 }
@@ -206,6 +223,8 @@ export const TabContainer = ({
                 htmlFor={htmlId}
                 tabIndex={0}
                 data-interactive={id === selected ? undefined : true}
+                // the selected tab's state, for its look (the tabs recipe)
+                data-selected={id === selected ? true : undefined}
                 className={cx(
                   classes.tab,
                   css({

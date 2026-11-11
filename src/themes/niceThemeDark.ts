@@ -277,16 +277,16 @@ export const niceThemeDark = defineThemeV2({
           "&:hover": {
             textShadow: "0 0 0.3em #f33",
           },
-          ":not([data-wrapped]) > input:checked + &": {
+          "&[data-selected]:not([data-wrapped])": {
             background: "#0007",
             "&:hover": {
               textShadow: "none",
             },
           },
-          "[data-wrapped] > &": {
+          "&[data-wrapped]": {
             borderRadius: "0.2em",
           },
-          "[data-wrapped] > input:checked + &": {
+          "&[data-selected][data-wrapped]": {
             background: "#0007",
             "&:hover": {
               textShadow: "none",
@@ -302,7 +302,7 @@ export const niceThemeDark = defineThemeV2({
         content: {
           padding: "0.5em",
           backgroundColor: "#0007",
-          "[data-wrapped] + &": {},
+          "&[data-wrapped]": {},
         },
       },
     },
