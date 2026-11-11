@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 
+import { isStateLayer, stateLayers } from "./stateLayers";
+
 /**
  * Styles for a catalogue override: CSS properties in camel case, plus nested
  * rules keyed by a selector (`&:hover`, `& > img`) or an at-rule (`@media
@@ -246,10 +248,61 @@ const nest = (parents: string[], key: string) =>
 export const hasParent = (selector: string) =>
   replaceParent(selector, "") !== selector;
 
+/** CSS2's pseudo-elements, which take one colon (`:before`). */
+const legacyPseudoElement =
+  /^:(?:before|after|first-line|first-letter)(?![\w-])/i;
+
+/**
+ * `selector` with `filter` (a zero-specificity condition: `notInOtherTheme`)
+ * on its subject, the last compound: before any pseudo-element there
+ * (`::before`, or CSS2's `:before`), which nothing can follow, or at the end.
+ */
+export function onSubject(selector: string, filter: string) {
+  const text = selector.trimEnd();
+  if (!filter) return text;
+  /** Each top-level position from `start`, outside brackets and strings. */
+  const topLevel = function* (start: number) {
+    let depth = 0;
+    let quote: string | null = null;
+    for (let i = start; i < text.length; i++) {
+      const char = text[i];
+      if (char === "\\") {
+        i++;
+      } else if (quote) {
+        if (char === quote) quote = null;
+      } else if (char === '"' || char === "'") {
+        quote = char;
+      } else if (char === "(" || char === "[") {
+        depth++;
+      } else if (char === ")" || char === "]") {
+        depth--;
+      } else if (depth === 0) {
+        yield i;
+      }
+    }
+  };
+  // the subject starts after the last combinator
+  let subject = 0;
+  for (const i of topLevel(0)) {
+    if (/[\s>+~]/.test(text[i])) subject = i + 1;
+  }
+  for (const i of topLevel(subject)) {
+    if (
+      text[i] === ":" &&
+      (text[i + 1] === ":" || legacyPseudoElement.test(text.slice(i)))
+    ) {
+      return `${text.slice(0, i)}${filter}${text.slice(i)}`;
+    }
+  }
+  return `${text}${filter}`;
+}
+
 function serialize(
   selectors: string[],
   style: OverrideStyle,
   replace: boolean,
+  /** On each nested rule's subject: the theme's boundary (`onSubject`). */
+  subject = "",
 ): string[] {
   const declarations = replace ? ["all: revert-layer;"] : [];
   const nested: string[] = [];
@@ -272,8 +325,16 @@ function serialize(
     } else if (typeof value === "object") {
       nested.push(
         ...(key.startsWith("@")
-          ? [`${key} { ${serialize(selectors, value, false).join("\n")} }`]
-          : serialize(nest(selectors, key), value, false)),
+          ? [
+              `${key} { ${serialize(selectors, value, false, subject).join("\n")} }`,
+            ]
+          : serialize(
+              // what a nested rule styles stops at another theme too
+              nest(selectors, key).map((nested) => onSubject(nested, subject)),
+              value,
+              false,
+              subject,
+            )),
       );
     } else if (isSafeValue(escapeStrings(cssValue(key, value)))) {
       declarations.push(
@@ -307,37 +368,103 @@ function serialize(
  * stylesheet). So the class's state rules, which are more specific
  * (`.inv-badge--...:is([aria-pressed=true])`), still beat it, and so do its
  * other layers, such as its variants.
+ *
+ * A state layer's override (`:hoverFeedback`, the whole theme's, or
+ * `tabs__tab:hoverFeedback`, a class's: `compileCatalogue`) goes in that
+ * layer's sub-layer, with its selectors (`stateLayers`), and patches it:
+ * the theme's as specific as the default, the class's as specific too, and
+ * each later than the one before, so a class's wins over the theme's, which
+ * wins over the default. The layers after it still win (focus).
  */
+/**
+ * Not in another theme's root inside this theme's (`scope`), nor that root
+ * itself: a theme's rules stop where another theme takes over (a theme
+ * farm's specimens, inside a themed window), rather than reaching into it
+ * (its `<style>` comes after the roots inside it, so it would win). In
+ * `:where()`, so it adds nothing to a rule's specificity.
+ *
+ * CSS can't say "the nearest themed root is this theme's", so a root of
+ * this theme inside another theme's, inside this one's, is cut off too:
+ * nothing nests themes like that.
+ */
+export const notInOtherTheme = (scope: string) => {
+  const other = `${scope} [data-inv-theme]:not(${scope})`;
+  return `:where(:not(${other}, ${other} *))`;
+};
+
 export function catalogueOverridesCss(
   slug: string,
   overrides: CatalogueOverrides,
 ) {
-  return Object.entries(overrides)
-    .filter(([name]) => {
-      const ok = /^[a-z0-9_-]+(\.[a-z0-9_-]+)*$/.test(name);
-      if (!ok) console.warn(`Catalogue override: no such class "${name}"`);
-      return ok;
-    })
-    .map(([name, style]) => {
+  const parsed = Object.entries(overrides).flatMap(([name, style]) => {
+    const match = /^([a-z0-9_-]+(?:\.[a-z0-9_-]+)*)?(?::([A-Za-z]+))?$/.exec(
+      name,
+    );
+    // either group can be missing
+    const [, className, stateName]: (string | undefined)[] = match ?? [];
+    const state =
+      stateName !== undefined && isStateLayer(stateName) ? stateName : null;
+    if (
+      !match ||
+      (className === undefined && stateName === undefined) ||
+      (stateName !== undefined && state === null)
+    ) {
+      console.warn(`Catalogue override: no such class "${name}"`);
+      return [];
+    }
+    return [{ className, state, style }];
+  });
+  // a state layer's overrides after the rest, the theme's own before a
+  // class's: in the same sub-layer, as specific, the later wins
+  const order = ({ className, state }: (typeof parsed)[number]) =>
+    state === null ? 0 : className === undefined ? 1 : 2;
+  return parsed
+    .sort((a, b) => order(a) - order(b))
+    .map(({ className, state, style }) => {
       // the window around a root is Foundry's, and has its own attribute
-      const attribute = name.startsWith("app-frame")
+      const attribute = className?.startsWith("app-frame")
         ? "data-inv-frame"
         : "data-inv-theme";
       const scope = `[${attribute}="${slug}"]`;
+      // a window's frame has no theme inside it to stop at
+      const own = attribute === "data-inv-theme" ? notInOtherTheme(scope) : "";
+      if (className === undefined) {
+        // a state layer, everywhere in the theme: as the default is written
+        // (a name without a class has a state: see above)
+        if (state === null) return "";
+        const { layer, selectors } = stateLayers[state];
+        return `@layer ${layer} {\n${serialize(
+          selectors(`${scope} `, own),
+          style,
+          false,
+          own,
+        ).join("\n")}\n}`;
+      }
       // a compound: the first class as it is, the others in :where(), so
       // it's as specific as Panda's compound class, and the class's states
       // still win
-      const [first, ...others] = name.split(".");
+      const [first, ...others] = className.split(".");
       const classes = `.inv-${first}${
         others.length > 0
           ? `:where(${others.map((part) => `.inv-${part}`).join("")})`
           : ""
-      }`;
-      return `@layer ${layerOf(name)} {\n${serialize(
-        [`${classes}:where(${scope}, ${scope} *)`],
+      }:where(${scope}, ${scope} *)${own}`;
+      if (state !== null) {
+        // a state layer, on this class: patched, as the layers are
+        const { layer, selectors } = stateLayers[state];
+        return `@layer ${layer} {\n${serialize(
+          selectors("", classes),
+          style,
+          false,
+          own,
+        ).join("\n")}\n}`;
+      }
+      return `@layer ${layerOf(className)} {\n${serialize(
+        [classes],
         style,
         // a base or slot is replaced; a variant is patched (see above)
-        layerOf(name).endsWith(".base"),
+        layerOf(className).endsWith(".base"),
+        own,
       ).join("\n")}\n}`;
     })
     .join("\n");

@@ -4,6 +4,7 @@ import { paletteColorKeys, paletteVar } from "../palette";
 import type { CatalogueOverrides, OverrideStyle } from "./overrides";
 import { logoLayout } from "./logoDefaults";
 import { recipeShapes } from "./recipeShapes.generated";
+import { isStateLayer } from "./stateLayers";
 
 type Warn = (message: string) => void;
 
@@ -122,7 +123,10 @@ type Shape = (typeof recipeShapes)[keyof typeof recipeShapes];
 
 /**
  * A theme's catalogue (ThemeV2: by recipe, shaped like the recipes) as the
- * overrides `catalogueOverridesCss` renders, by class name. What doesn't fit
+ * overrides `catalogueOverridesCss` renders, by class name. A state layer's
+ * override is keyed by the class and the state's name, after a colon
+ * (`tabs__tab:hoverFeedback`), or the state's alone for the whole theme
+ * (`:hoverFeedback`). What doesn't fit
  * the catalogue (an unknown recipe, slot, variant or value; a style that
  * isn't one) is left out, with a warning: a theme from a JSON file, or from
  * a module built against older types, can have anything in it.
@@ -149,6 +153,24 @@ export function compileCatalogue(
   }
 
   for (const [recipeName, override] of Object.entries(catalogue)) {
+    if (recipeName === "states") {
+      // the theme's own, everywhere
+      if (!isObject(override)) {
+        warn("states: not styles by state");
+        continue;
+      }
+      for (const [state, style] of Object.entries(override)) {
+        if (isStateLayer(state)) {
+          add(
+            `:${state}`,
+            compileStyle(style, `states.${state}`, warn, literal),
+          );
+        } else {
+          warn(`states: no such state "${state}"`);
+        }
+      }
+      continue;
+    }
     if (!Object.hasOwn(recipeShapes, recipeName)) {
       warn(`no such recipe "${recipeName}"`);
       continue;
@@ -266,9 +288,25 @@ export function compileCatalogue(
             ).join(".");
           });
         });
+      } else if (part === "states") {
+        if (!isObject(value)) {
+          warn(`${recipeName}.states: not styles by state`);
+          continue;
+        }
+        for (const [state, styles] of Object.entries(value)) {
+          if (!isStateLayer(state)) {
+            warn(`${recipeName}.states: no such state "${state}"`);
+            continue;
+          }
+          addPart(
+            styles,
+            `${recipeName}.states.${state}`,
+            (slot) => `${element(slot)}:${state}`,
+          );
+        }
       } else {
         warn(
-          `${recipeName}: "${part}" isn't base, variants or compoundVariants`,
+          `${recipeName}: "${part}" isn't base, variants, compoundVariants or states`,
         );
       }
     }

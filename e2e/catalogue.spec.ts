@@ -95,6 +95,101 @@ test("a theme's badge override replaces the default but keeps tone, states and h
   await expect(badge).toHaveAttribute("aria-pressed", "true");
 });
 
+test("a theme can turn hover feedback off everywhere, restyle it just on tabs, and focus still shows", async ({
+  page,
+}) => {
+  const blue = "rgb(0, 0, 200)";
+  const green = "rgb(0, 200, 0)";
+  await page.evaluate(
+    (theme) => CONFIG.Investigator!.installTheme("statesTheme", theme),
+    testTheme("States", colors, {
+      catalogue: {
+        states: { hoverFeedback: { boxShadow: "none" } },
+        tabs: {
+          states: {
+            hoverFeedback: {
+              tab: {
+                boxShadow: `0 0 0 3px ${blue}`,
+                outline: `3px solid ${green}`,
+              },
+            },
+          },
+        },
+      },
+    }),
+  );
+  await setSettings(page, { defaultThemeName: "statesTheme" });
+  const actorId = await createActor(page, { name: "Stately", type: "pc" });
+  await updateAbility(page, actorId, "Stealth", {
+    situationalModifiers: [
+      { id: "dark", situation: "In the dark", modifier: 1 },
+    ],
+  });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+
+  // everywhere: no glow, but still a pointer
+  const badge = sheet.locator(".inv-badge", { hasText: "In the dark: +1" });
+  await expect(badge).toHaveAttribute("data-interactive");
+  await badge.hover();
+  await expect(badge).toHaveCSS("box-shadow", "none");
+  await expect(badge).toHaveCSS("cursor", "pointer");
+
+  // on tabs, the tabs' own
+  const tab = sheet.locator("input:not(:checked) + .inv-tabs__tab").first();
+  await tab.hover();
+  await expect(tab).toHaveCSS("box-shadow", `${blue} 0px 0px 0px 3px`);
+  await expect(tab).toHaveCSS("outline-color", green);
+
+  // focused from the keyboard, the focus ring still wins over it
+  await tab.focus();
+  await page.keyboard.press("Shift");
+  await tab.hover();
+  await expect(tab).toHaveCSS("outline-color", colors.glow);
+  await expect(tab).toHaveCSS("outline-width", "2px");
+
+  // and none of it reaches into another theme's root inside this one's (a
+  // theme farm's specimens): this theme's own rules, from the sheet, on a
+  // root of it with another theme's root inside
+  const slug = await sheet
+    .locator("[data-inv-theme]")
+    .first()
+    .getAttribute("data-inv-theme");
+  await sheet.evaluate((frame, slug) => {
+    const rules = [...frame.querySelectorAll(`[data-inv-theme] > style`)]
+      .map((style) => style.textContent)
+      .join("\n");
+    const outer = document.createElement("div");
+    outer.id = "nestedThemes";
+    outer.dataset["invTheme"] = slug!;
+    outer.style.setProperty("--inv-feedback", "rgb(200, 100, 0)");
+    outer.innerHTML = `
+      <style></style>
+      <span class="inv-badge" data-interactive id="inOwn">own</span>
+      <div data-inv-theme="someOtherTheme">
+        <span class="inv-badge" data-interactive id="inOther">other</span>
+      </div>`;
+    outer.querySelector("style")!.textContent = rules;
+    Object.assign(outer.style, {
+      position: "fixed",
+      top: "0",
+      left: "0",
+      zIndex: "100000",
+    });
+    document.body.append(outer);
+  }, slug);
+  try {
+    const own = page.locator("#inOwn");
+    const other = page.locator("#inOther");
+    await own.hover();
+    await expect(own).toHaveCSS("box-shadow", "none");
+    await other.hover();
+    await expect(other).toHaveCSS("box-shadow", /rgb\(200, 100, 0\)/);
+  } finally {
+    // the page is shared with the tests after this one
+    await page.evaluate(() => document.getElementById("nestedThemes")?.remove());
+  }
+});
+
 test("a panel's depth comes from where it sits, and V1 panel and root styles still apply", async ({
   page,
 }) => {

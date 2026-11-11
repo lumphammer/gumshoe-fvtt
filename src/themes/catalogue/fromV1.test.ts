@@ -5,7 +5,22 @@ import { tealTheme } from "../v1/tealTheme";
 import { themeFactory } from "../functions";
 import { compileCatalogue } from "./compileCatalogue";
 import { catalogueFromV1 } from "./fromV1";
-import { catalogueOverridesCss } from "./overrides";
+import {
+  type CatalogueOverrides,
+  catalogueOverridesCss as renderOverrides,
+  notInOtherTheme,
+} from "./overrides";
+
+/**
+ * The CSS for a theme's overrides, without the theme's boundary
+ * (`notInOtherTheme`), which goes on every rule's subject: where it goes is
+ * tested on its own.
+ */
+const catalogueOverridesCss = (slug: string, overrides: CatalogueOverrides) =>
+  renderOverrides(slug, overrides).replaceAll(
+    notInOtherTheme(`[data-inv-theme="${slug}"]`),
+    "",
+  );
 
 /**
  * A V1 theme's catalogue, compiled to overrides by class (as `themeFromV1`

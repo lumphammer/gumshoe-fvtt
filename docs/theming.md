@@ -120,7 +120,13 @@ defineThemeV2({
       ],
     },
     // a slot recipe: styles by slot
-    tabs: { base: { tab: { textTransform: "uppercase" } } },
+    tabs: {
+      base: { tab: { textTransform: "uppercase" } },
+      // hover on tabs only, by slot
+      states: { hoverFeedback: { tab: { textDecoration: "underline" } } },
+    },
+    // the state layers, everywhere in the theme
+    states: { hoverFeedback: { boxShadow: "none" } },
   },
   globalCss: "@import url(modules/my-theme/fonts.css);",
 });
@@ -166,11 +172,17 @@ Keyed by recipe name as written in code (`badge`, `partyCell`,
   patch an element with every one of the variants they name, whether or not
   the recipe has a compound variant for them. A boolean variant's value can
   be `true` or `"true"`.
+- `states` (`{ hoverFeedback: {...} }`, by slot for a slot recipe:
+  `{ hoverFeedback: { tab: {...} } }`) **patch** the state layers on this
+  recipe's elements only. See State layers, below.
+
+And `states` on its own, beside the recipes (`{ states: { hoverFeedback:
+{...} } }`), patches the state layers everywhere in the theme.
 
 A style is CSS properties in camelCase (a number is pixels, for a property
 that takes a length; an array is fallbacks, one declaration each), custom
 properties (`"--my-thing"`), and nested rules keyed by a selector containing
-`&` (`"&:hover"`, `"input:checked + &"`, `"& img"`) or by an at-rule
+`&` (`"&:hover"`, `"&[data-selected]"`, `"& img"`) or by an at-rule
 (`"@media (...)"`). There are no bare descendant selectors, and no Panda
 shortcuts (`_hover`). In a colour property (`color`, `background`, `fill`,
 `stroke`, and any `…Color`), a value that's exactly the name of a palette
@@ -649,6 +661,36 @@ they always show.
 `focusRing` comes last, so a focused element shows focus whatever other
 layer is drawing its outline.
 
+Each layer is a sub-layer of `system.states` of its own (`hover`, `drop`,
+`focus`, in that order), after the catalogue and its overrides. So a theme's
+`base` or `variants` can't change what a layer does, even by accident (a
+static `boxShadow` on a card doesn't hide the hover glow, nor an
+`outline: none` the focus ring). A theme changes a layer on purpose, with
+`states`:
+
+```ts
+catalogue: {
+  // everywhere in the theme: no glow on hover (the pointer stays)
+  states: { hoverFeedback: { boxShadow: "none" } },
+  // just on tabs: their own hover look
+  tabs: {
+    states: { hoverFeedback: { tab: { boxShadow: "none", color: "accent" } } },
+  },
+}
+```
+
+- An override of a state **patches** it: it says only what it changes, so
+  `boxShadow: "none"` turns the glow off and leaves the pointer.
+- `&` is the element in that state: `[data-interactive]:hover` for
+  `hoverFeedback`; either drop state for `dropTarget` (`'&[data-drop-state="over"]'`
+  for over only); `:focus-visible` for `focusRing` (and, for a visually
+  hidden input, the label or span after it).
+- It goes in that layer's sub-layer, with the same selectors as the default
+  (`stateLayers.ts`, which a test checks against `states.css`), so it's as
+  specific: the theme's beats the default, and a recipe's beats the
+  theme's, by coming later. The layers after it still win: a tab's hover
+  outline doesn't hide the focus ring.
+
 A drop target sets `data-drop-state` itself: `ready` while something it takes
 is being dragged (or always, if it can't tell, like a Bond's actor row, which
 takes actors dragged from Foundry's sidebar), and `over` from `dragover` to
@@ -671,7 +713,8 @@ holds:
 
 A replaced base or slot loses all of its default's declarations, but the
 class's other parts still apply on top: replacing `badge` keeps its tones and
-its pressed state, and every override keeps the state layers. A variant is
+its pressed state, and every override keeps the state layers (only a
+`states` override changes those). A variant is
 patched rather than replaced because all of a class's variants share one
 cascade layer: replacing one would drop an element's other variants with it
 (a row that's `interactive` and `divided` would lose its divider). To take a

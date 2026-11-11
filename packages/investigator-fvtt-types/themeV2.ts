@@ -24,6 +24,15 @@ export type ThemeStyle = { [K in keyof Properties]?: Properties[K] } & {
   [nested: `@${string}` | `${string}&${string}`]: ThemeStyle | undefined;
 };
 
+/**
+ * The state layers: feedback that looks the same on anything, whatever its
+ * class (docs/theming.md, "State layers"). `hoverFeedback` is
+ * `[data-interactive]:hover` (a glow, and a pointer), `dropTarget` is
+ * `[data-drop-state]` (a dashed outline, accent with a tint when something's
+ * over it), and `focusRing` is `:focus-visible` (an outline).
+ */
+export type StateLayer = "hoverFeedback" | "dropTarget" | "focusRing";
+
 /** What a recipe's catalogue shape looks like. */
 interface RecipeShape {
   slots: string;
@@ -58,11 +67,16 @@ type CompoundVariant<S extends RecipeShape> = {
  *   the variant's own.
  * - `compoundVariants` patch an element with every one of the variants they
  *   name, whether or not the recipe has a compound variant for them.
+ * - `states` patch the state layers, for this recipe's elements only (by
+ *   slot, for a slot recipe): `&` is the element in that state. They go
+ *   over the theme's own `states`, and still under the layers after them
+ *   (focus always shows).
  *
- * A recipe without variants has neither.
+ * A recipe without variants has neither `variants` nor `compoundVariants`.
  */
 export type RecipeOverride<S extends RecipeShape> = {
   base?: PartStyles<S>;
+  states?: { [State in StateLayer]?: PartStyles<S> };
 } & ([keyof S["variants"]] extends [never]
   ? { variants?: never; compoundVariants?: never }
   : {
@@ -74,11 +88,19 @@ export type RecipeOverride<S extends RecipeShape> = {
       compoundVariants?: ReadonlyArray<CompoundVariant<S>>;
     });
 
-/** A theme's overrides of the catalogue's recipes, by recipe name. */
+/**
+ * A theme's overrides of the catalogue's recipes, by recipe name, and of the
+ * state layers everywhere in the theme (`states`), which they **patch**: `&`
+ * is anything in that state. A state's default can't be beaten from a
+ * recipe's `base` or `variants` (the state layers come after them), only
+ * here, or in a recipe's own `states`.
+ */
 export type ThemeCatalogue = {
   [Name in keyof CatalogueRecipeShapes]?: RecipeOverride<
     CatalogueRecipeShapes[Name]
   >;
+} & {
+  states?: { [State in StateLayer]?: ThemeStyle };
 };
 
 /**

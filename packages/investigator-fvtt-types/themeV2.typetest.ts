@@ -6,9 +6,7 @@ export const accepted: ThemeCatalogue = {
   badge: {
     base: { borderRadius: 0, color: "accent", "--x": "1px" },
     variants: { tone: { danger: { fontWeight: "bold" } } },
-    compoundVariants: [
-      { tone: "danger", weight: "strong", css: { color: "onDanger" } },
-    ],
+    compoundVariants: [{ tone: "danger", weight: "strong", css: { color: "onDanger" } }],
   },
   // a slot recipe: styles by slot
   tabs: {
@@ -28,6 +26,15 @@ export const accepted: ThemeCatalogue = {
   },
   // fallbacks
   input: { base: { width: ["1em", "1lh"] } },
+  // a state layer, on a recipe without slots...
+  button: { states: { hoverFeedback: { boxShadow: "none" } } },
+  // ...and, by slot, on one with
+  card: { states: { focusRing: { root: { outlineColor: "accent" } } } },
+  // and everywhere in the theme
+  states: {
+    hoverFeedback: { boxShadow: "none", textDecoration: "underline" },
+    dropTarget: { '&[data-drop-state="over"]': { outlineColor: "danger" } },
+  },
 };
 
 export const refused: ThemeCatalogue[] = [
@@ -55,4 +62,10 @@ export const refused: ThemeCatalogue[] = [
   { input: { variants: { typo: { wat: { color: "red" } } } } },
   // @ts-expect-error -- nor compound ones
   { input: { compoundVariants: [] } },
+  // @ts-expect-error -- no such state
+  { states: { pressed: {} } },
+  // @ts-expect-error -- no such state on a recipe
+  { button: { states: { pressed: {} } } },
+  // @ts-expect-error -- a slot recipe's states are by slot
+  { tabs: { states: { hoverFeedback: { boxShadow: "none" } } } },
 ];

@@ -30,7 +30,9 @@ const theme: ThemeV2 = {
   (`--inv-surface`), for use in overrides' values and `globalCss`.
 - `ThemeCatalogue` is the overrides, shaped like the system's catalogue
   recipes: `base` replaces a recipe's own; `variants` and `compoundVariants`
-  patch them. Its keys come from the recipes (`CatalogueRecipeShapes`, which
+  patch them. `states` patches the state layers (hover, drop target, focus):
+  at the top level, everywhere in the theme; in a recipe, just on its
+  elements. `StateLayer` names them. Its keys come from the recipes (`CatalogueRecipeShapes`, which
   is generated), so a recipe, slot, variant or value that doesn't exist is a
   type error. The catalogue's names are public API: renaming or removing one
   is a breaking change for this package.

@@ -2,7 +2,22 @@ import type { ThemeCatalogue } from "@lumphammer/investigator-fvtt-types";
 import { describe, expect, test, vi } from "vitest";
 
 import { compileCatalogue } from "./compileCatalogue";
-import { catalogueOverridesCss } from "./overrides";
+import {
+  type CatalogueOverrides,
+  catalogueOverridesCss as renderOverrides,
+  notInOtherTheme,
+} from "./overrides";
+
+/**
+ * The CSS for a theme's overrides, without the theme's boundary
+ * (`notInOtherTheme`), which goes on every rule's subject: where it goes is
+ * tested on its own.
+ */
+const catalogueOverridesCss = (slug: string, overrides: CatalogueOverrides) =>
+  renderOverrides(slug, overrides).replaceAll(
+    notInOtherTheme(`[data-inv-theme="${slug}"]`),
+    "",
+  );
 
 /** Compiled, with the warnings it gave. */
 const compile = (catalogue: unknown) => {
@@ -123,7 +138,7 @@ describe("compileCatalogue", () => {
       'badge.compoundVariants[0]: no such variant value for "tone"',
       "badge.compoundVariants[1]: names no variants",
       "badge.compoundVariants[2]: not a compound variant",
-      'badge: "extends" isn\'t base, variants or compoundVariants',
+      'badge: "extends" isn\'t base, variants, compoundVariants or states',
       'tabs.base: no such slot "tub"',
       "card.base: not a style for each slot",
     ]);
@@ -278,4 +293,72 @@ test("a compound override is a rule for an element with all its variants, in the
   );
   // a patch, not a replacement
   expect(css).not.toContain("revert-layer");
+});
+
+describe("state layers", () => {
+  test("the theme's, everywhere, and a recipe's, by slot or not", () => {
+    const { overrides, warnings } = compile({
+      states: { hoverFeedback: { boxShadow: "none" } },
+      tabs: {
+        states: { hoverFeedback: { tab: { color: "accent" } } },
+      },
+      button: { states: { focusRing: { outlineColor: "danger" } } },
+    });
+    expect(warnings).toEqual([]);
+    expect(overrides).toEqual({
+      ":hoverFeedback": { boxShadow: "none" },
+      "tabs__tab:hoverFeedback": { color: "var(--inv-accent)" },
+      "button:focusRing": { outlineColor: "var(--inv-danger)" },
+    });
+  });
+
+  test("an unknown state, or states that aren't by state, are left out with a warning", () => {
+    const { overrides, warnings } = compile({
+      states: { pressed: { color: "red" } },
+      badge: { states: { pressed: { color: "red" } } },
+      callout: { states: "loud" },
+      tabs: { states: { hoverFeedback: { tub: { color: "red" } } } },
+    });
+    expect(overrides).toEqual({});
+    expect(warnings).toEqual([
+      'states: no such state "pressed"',
+      'badge.states: no such state "pressed"',
+      "callout.states: not styles by state",
+      'tabs.states.hoverFeedback: no such slot "tub"',
+    ]);
+  });
+});
+
+test("a state override goes in its state's sub-layer, as specific as the default, the theme's before a class's", () => {
+  const css = catalogueOverridesCss(
+    "t",
+    compile({
+      // the class's first, to show it's put after the theme's
+      tabs: { states: { hoverFeedback: { tab: { boxShadow: "none" } } } },
+      states: {
+        hoverFeedback: { boxShadow: "0 0 1px red" },
+        dropTarget: { '&[data-drop-state="over"]': { outlineColor: "blue" } },
+      },
+      badge: { base: { color: "red" } },
+    }).overrides,
+  );
+  const root = '[data-inv-theme="t"]';
+  const tab = `.inv-tabs__tab:where(${root}, ${root} *)`;
+  const hover =
+    ':not(:disabled, [aria-disabled="true"], [data-disabled]):hover';
+  const theme = css.indexOf(
+    `@layer system.states.hover {\n${root} [data-interactive]${hover} { box-shadow: 0 0 1px red; }`,
+  );
+  const onTabs = css.indexOf(
+    `@layer system.states.hover {\n${tab}[data-interactive]${hover} { box-shadow: none; }`,
+  );
+  expect(theme).toBeGreaterThan(-1);
+  expect(onTabs).toBeGreaterThan(theme);
+  // after the recipes' overrides too
+  expect(css.indexOf("@layer system.recipes.base")).toBeLessThan(theme);
+  expect(css).toContain(
+    `${root} :is([data-drop-state="ready"], [data-drop-state="over"])[data-drop-state="over"] { outline-color: blue; }`,
+  );
+  // patched, not replaced
+  expect(css.slice(theme)).not.toContain("revert-layer");
 });

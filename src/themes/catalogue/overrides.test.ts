@@ -1,11 +1,25 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import {
-  catalogueOverridesCss,
+  type CatalogueOverrides,
+  catalogueOverridesCss as renderOverrides,
   escapeStrings,
   isSafeValue,
   layerOf,
+  notInOtherTheme,
+  onSubject,
 } from "./overrides";
+
+/**
+ * The CSS for a theme's overrides, without the theme's boundary
+ * (`notInOtherTheme`), which goes on every rule's subject: where it goes is
+ * tested on its own.
+ */
+const catalogueOverridesCss = (slug: string, overrides: CatalogueOverrides) =>
+  renderOverrides(slug, overrides).replaceAll(
+    notInOtherTheme(`[data-inv-theme="${slug}"]`),
+    "",
+  );
 
 describe("layerOf", () => {
   test.each([
@@ -148,6 +162,28 @@ describe("catalogueOverridesCss", () => {
     expect(css).not.toContain("/*");
     expect(css).toContain("padding: 1em;");
   });
+  test("a state override on a class: focus on what stands for a hidden input too", () => {
+    const css = catalogueOverridesCss("teal", {
+      "tabs__tab:focusRing": { outlineColor: "red" },
+    });
+    const tab = `.inv-tabs__tab:where(${root}, ${root} *)`;
+    expect(css).toContain(
+      `@layer system.states.focus {\n${tab}:focus-visible, input:focus-visible + ${tab}:is(label, span) { outline-color: red; }`,
+    );
+  });
+
+  test("a state that doesn't exist, or a name that's only a colon, is no class", () => {
+    const warn = vi.spyOn(console, "warn").mockReturnValue(undefined);
+    expect(
+      catalogueOverridesCss("teal", {
+        ":pressed": { color: "red" },
+        "badge:pressed": { color: "red" },
+        ":": { color: "red" },
+      }),
+    ).toBe("");
+    expect(warn).toHaveBeenCalledTimes(3);
+    warn.mockRestore();
+  });
 });
 
 describe("isSafeValue", () => {
@@ -213,4 +249,48 @@ describe("values", () => {
   test("escapeStrings only touches quoted strings", () => {
     expect(escapeStrings(`a<b "c<d" 'e<f'`)).toBe(`a<b "c\\3c d" 'e\\3c f'`);
   });
+});
+
+describe("onSubject", () => {
+  const f = ":where(.f)";
+  test.each([
+    [".a", ".a:where(.f)"],
+    [".a .b", ".a .b:where(.f)"],
+    [".a > .b:hover", ".a > .b:hover:where(.f)"],
+    [".a::before", ".a:where(.f)::before"],
+    [".a:after", ".a:where(.f):after"],
+    [".a .b::after:hover", ".a .b:where(.f)::after:hover"],
+    // combinators and colons inside brackets and strings aren't the subject's
+    [".a:not(.b .c)", ".a:not(.b .c):where(.f)"],
+    ['.a [title="x ::y"]', '.a [title="x ::y"]:where(.f)'],
+    [".a :is(.b, .c::before)", ".a :is(.b, .c::before):where(.f)"],
+    [".a:before-ish", ".a:before-ish:where(.f)"],
+    [".a ", ".a:where(.f)"],
+  ])("%s", (selector, expected) => {
+    expect(onSubject(selector, f)).toBe(expected);
+  });
+
+  test("nothing to add, nothing added", () => {
+    expect(onSubject(".a .b", "")).toBe(".a .b");
+  });
+});
+
+test("every rule's subject stops at another theme's root: the class, a nested rule's, a state's", () => {
+  const own = notInOtherTheme(root);
+  const css = renderOverrides("teal", {
+    badge: { color: "red", "& .x::before": { color: "blue" } },
+    ":hoverFeedback": { boxShadow: "none", "& .y": { color: "green" } },
+  });
+  expect(css).toContain(`.inv-badge:where(${root}, ${root} *)${own} {`);
+  expect(css).toContain(
+    `.inv-badge:where(${root}, ${root} *)${own} .x${own}::before {`,
+  );
+  expect(css).toContain(`${root} ${own}[data-interactive]`);
+  expect(css).toContain(`:hover .y${own} {`);
+  // but not a window's frame, which no theme is inside
+  expect(
+    renderOverrides("teal", {
+      "app-frame__root": { "& .z": { color: "red" } },
+    }),
+  ).not.toContain(":not(");
 });

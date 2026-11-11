@@ -3,9 +3,17 @@
  * catalogue class, so classes don't each draw their own. They come after the
  * classes (and theme overrides of them), so they always show. See
  * docs/theming.md.
+ *
+ * Each is a sub-layer of its own, so a theme can override one, everywhere or
+ * just on one class (the catalogue's `states`), in that sub-layer, and still
+ * not beat the ones after it: focus is last, so it always shows. The
+ * selectors are `stateLayers.ts`'s (a test checks), so a theme's override is
+ * as specific as the default here.
  */
-@layer system.states {
-  /* hoverFeedback: anything that does something when clicked */
+@layer system.states.hover, system.states.drop, system.states.focus;
+
+/* hoverFeedback: anything that does something when clicked */
+@layer system.states.hover {
   [data-inv-theme]
     [data-interactive]:not(
       :disabled,
@@ -15,11 +23,12 @@
     cursor: pointer;
     box-shadow: 0 0 0.5em var(--inv-feedback);
   }
+}
 
-  /* dropTarget: somewhere you can drop what you're dragging ("ready"), and
-     what you're dragging is over it ("over") */
-  [data-inv-theme] [data-drop-state="ready"],
-  [data-inv-theme] [data-drop-state="over"] {
+/* dropTarget: somewhere you can drop what you're dragging ("ready"), and
+   what you're dragging is over it ("over") */
+@layer system.states.drop {
+  [data-inv-theme] :is([data-drop-state="ready"], [data-drop-state="over"]) {
     outline: 2px dashed var(--inv-line);
     outline-offset: 0.2em;
   }
@@ -27,9 +36,11 @@
     outline-color: var(--inv-accent);
     background-color: color-mix(in srgb, var(--inv-feedback) 25%, transparent);
   }
+}
 
-  /* focusRing: anything focused from the keyboard. Last, so it wins over the
-     other layers' outlines (a focused drop target still shows focus) */
+/* focusRing: anything focused from the keyboard. Last, so it wins over the
+   other layers' outlines (a focused drop target still shows focus) */
+@layer system.states.focus {
   [data-inv-theme] :focus-visible,
   /* a visually hidden input shows focus on what stands for it, after it
      (a CheckButtons label, a Checkbox's box) */
