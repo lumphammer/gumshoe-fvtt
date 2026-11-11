@@ -160,12 +160,8 @@ test("the full-frame layout is the latest owner's, and goes with it", () => {
   expect(header.className).toContain(
     "inv-app-frame__header--layout_full-frame",
   );
-  expect(frame.style.getPropertyValue("--inv-window-controls-width")).toBe(
-    "0px",
-  );
   fullFrame!();
   expect(frame.dataset["invLayout"]).toBeUndefined();
-  expect(frame.style.getPropertyValue("--inv-window-controls-width")).toBe("");
   expect(header.className).not.toContain("layout_full-frame");
   expect(header.className).toContain("inv-app-frame__header--layout_standard");
   standard!();

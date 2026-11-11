@@ -194,27 +194,25 @@ fonts. It isn't supported: it can break as the markup changes.
 
 How the character sheets are laid out: `"standard"` (the default) or
 `"full-frame"`. In the full-frame layout the sheet runs up to the window's top
-edge, under a see-through titlebar. Only the titlebar's buttons take clicks;
-everything else goes through to the sheet, so the window is dragged by the logo
-instead (`data-inv-window-handle`, `frame.ts`). A press there that moves is a
-drag; one that doesn't is a click, which starts editing the name. Once the
-name is being edited, a drag over it selects its text. A double click on the
-logo, off its text, minimizes the window. The title shows only when the window
-is minimized, as an ordinary titlebar.
+edge, under a see-through titlebar: a strip across the top, as tall as
+Foundry's own (`--header-height`), with no title. It's still the titlebar: it
+drags the window, and a double click on it minimizes it, and its buttons are in
+a row at the right, with room for a module's. It shows a faint tint on hover,
+so you can see where it is. The title shows only when the window is minimized,
+as an ordinary titlebar.
 
-The titlebar's buttons are stacked down the window's right edge, the close
-button at the top. The PC and NPC sheets put the portrait (and the sidebar) on
-the left, so the buttons are over the logo's right end, on the wallpaper. The
-logo
-keeps its name clear of them: `frame.ts` measures them, as
-`--inv-window-controls-width` on the window, and the logo's text keeps that far
-in from each side, so the name stays centred. The sheets' grids follow `data-inv-layout` on the themed root.
+The logo runs up under the strip, but its text keeps below it
+(`--inv-logo-top-inset`, `CSSReset`): the name and the subtext are scaled down
+together to fit the height left, and the name further, if it needs to, to fit
+the width (`LogoEditable`). The PC and NPC sheets put the portrait (and the
+sidebar) on the left, its top under the strip too. The sheets' grids follow
+`data-inv-layout` on the themed root.
 
-Only for windows with a logo (character sheets): other windows, with nothing
-to drag them by, keep the standard titlebar. A detached window keeps the look,
-but the logo doesn't drag it: that's the operating system's to move. The
-titlebar's look is the `appFrame` recipe's `layout: full-frame` variant, which
-a theme can patch (a backing for the buttons, say).
+Only for windows with a logo (character sheets), which keeps its text clear of
+the strip (`data-inv-clears-titlebar`): other windows keep the standard
+titlebar. A detached window keeps the look. The titlebar's look is the
+`appFrame` recipe's `layout: full-frame` variant, which a theme can patch (its
+tint, or a backing for the buttons, say).
 
 ### Types and checks
 

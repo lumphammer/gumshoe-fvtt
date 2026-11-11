@@ -21,8 +21,7 @@ export const fogTheme = defineThemeV2({
     bodyFont: "16px 'Averia Libre', sans-serif",
     displayFont: "16px 'Averia Libre', sans-serif",
   },
-  // the sheet runs under a see-through titlebar: the window's dragged by the
-  // logo
+  // the sheet runs up under a see-through titlebar, a strip across the top
   layout: "full-frame",
   catalogue: {
     logo: {

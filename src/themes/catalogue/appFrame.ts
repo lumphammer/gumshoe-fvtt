@@ -1,12 +1,12 @@
 import { defineSlotRecipe } from "@pandacss/dev";
 
 /**
- * The window, when its titlebar is see-through, over the content: it has
- * something to drag it by (`data-inv-window-handle`, the logo), and isn't
+ * The window, when its titlebar is see-through, over the content: its content
+ * leaves room for it (`data-inv-clears-titlebar`, the logo), and it isn't
  * minimized. Otherwise, it keeps the standard titlebar.
  */
 const overlaid =
-  ":where(.application:not(.minimized):has([data-inv-window-handle])) > &";
+  ":where(.application:not(.minimized):has([data-inv-clears-titlebar])) > &";
 
 /**
  * **appFrame**: Foundry's window around a themed root: the application
@@ -16,13 +16,13 @@ const overlaid =
  * frame is Foundry's, so it doesn't get our element defaults.
  *
  * Variant `layout` is the theme's (`ThemeV2.layout`): `standard` is
- * Foundry's own titlebar; `full-frame`'s is see-through, over the top of the
- * content, with only its buttons taking clicks, and no title. The window is
- * dragged by the content's logo instead (`frame.ts`). The sheet keeps its
- * own content clear of the buttons (`--inv-window-controls-width`).
+ * Foundry's own titlebar; `full-frame`'s is a see-through strip across the
+ * top of the content, still the titlebar (it drags the window, and a double
+ * click minimizes it), with no title, and a faint tint on hover to show where
+ * it is. The sheet's logo keeps its text below it (`LogoEditable`).
  *
  * Empty by default: a window looks like Foundry's own. *Expected override:* a
- * theme's glow or border goes on `root`.
+ * theme's glow or border goes on `root`; its titlebar's tint on `header`.
  */
 export const appFrame = defineSlotRecipe({
   className: "inv-app-frame",
@@ -34,23 +34,28 @@ export const appFrame = defineSlotRecipe({
       standard: {},
       "full-frame": {
         header: {
-          // the buttons stacked down the window's right edge, over the end of
-          // the logo, which keeps clear of them
+          // a strip across the top, as tall as Foundry's own titlebar, its
+          // buttons in a row at the right, with room for a module's to the
+          // left of them
           [overlaid]: {
             position: "absolute",
             top: "0",
+            left: "0",
             right: "0",
             zIndex: 1,
-            flexDirection: "column-reverse",
-            alignItems: "center",
-            width: "auto",
-            height: "auto",
-            pointerEvents: "none",
+            height: "[var(--header-height)]",
             background: "[transparent]",
             borderBottom: "none",
-            "& .window-title, & .window-icon": { display: "none" },
+            transition: "[background-color 0.2s]",
+            "&:hover": {
+              backgroundColor:
+                "[color-mix(in srgb, var(--inv-text) 8%, transparent)]",
+            },
+            // keeping its place, so the buttons stay at the right
+            "& .window-title": { visibility: "hidden" },
+            "& .window-icon": { display: "none" },
             // on the sheet's wallpaper, not Foundry's header
-            "& .header-control": { pointerEvents: "auto", color: "text" },
+            "& .header-control": { color: "text" },
           },
         },
         content: {

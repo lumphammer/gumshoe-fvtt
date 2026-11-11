@@ -36,7 +36,9 @@ type PartStyles<S extends RecipeShape> = [S["slots"]] extends [never]
   : { [Slot in S["slots"]]?: ThemeStyle };
 
 /** A variant's value: a boolean variant's can be a boolean too. */
-type VariantValue<V extends string> = V extends "true" | "false" ? V | boolean : V;
+type VariantValue<V extends string> = V extends "true" | "false"
+  ? V | boolean
+  : V;
 
 /** A compound variant: at least one of the recipe's variants, and its css. */
 type CompoundVariant<S extends RecipeShape> = {
@@ -74,7 +76,9 @@ export type RecipeOverride<S extends RecipeShape> = {
 
 /** A theme's overrides of the catalogue's recipes, by recipe name. */
 export type ThemeCatalogue = {
-  [Name in keyof CatalogueRecipeShapes]?: RecipeOverride<CatalogueRecipeShapes[Name]>;
+  [Name in keyof CatalogueRecipeShapes]?: RecipeOverride<
+    CatalogueRecipeShapes[Name]
+  >;
 };
 
 /**
@@ -156,7 +160,8 @@ type Kebab<S extends string> = S extends `${infer Head}${infer Tail}`
  * (`--inv-surface-nested`): a stable contract, for overrides' expressions and
  * `globalCss`.
  */
-export type PaletteVar = `--inv-${Kebab<Exclude<keyof ThemePalette, "polarity">>}`;
+export type PaletteVar =
+  `--inv-${Kebab<Exclude<keyof ThemePalette, "polarity">>}`;
 
 /** A theme (docs/theming.md, "Themes (ThemeV2)"). */
 export interface ThemeV2 {
@@ -169,14 +174,14 @@ export interface ThemeV2 {
   /**
    * How the character sheets are laid out. `"standard"` (the default) has
    * Foundry's titlebar over the sheet. `"full-frame"` runs the sheet up to
-   * the window's top edge, under a see-through titlebar: only its buttons
-   * take clicks, and the window is dragged by the sheet's logo instead (a
-   * click there edits the name; once it's being edited, a drag selects). The
-   * portrait and the sidebar move to the left, so the buttons are over the
-   * logo's right end, which the name keeps clear of. The title shows only
-   * when the window is minimized. Windows without a logo (items, say) keep
-   * the standard titlebar. The titlebar's look is the `appFrame` recipe's
-   * `layout: full-frame` variant.
+   * the window's top edge, under a see-through titlebar: a strip across the
+   * top, still the titlebar (it drags the window, and a double click on it
+   * minimizes it), with its buttons in a row at the right, a faint tint on
+   * hover, and no title. The logo runs up under it, but its text keeps below
+   * it, scaled down to fit. The portrait and the sidebar move to the left.
+   * The title shows only when the window is minimized. Windows without a
+   * logo (items, say) keep the standard titlebar. The titlebar's look is the
+   * `appFrame` recipe's `layout: full-frame` variant.
    */
   layout?: "standard" | "full-frame";
   /**

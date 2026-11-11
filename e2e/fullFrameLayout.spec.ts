@@ -8,10 +8,10 @@ import {
   test,
 } from "./foundry.ts";
 
-// A theme with the full-frame layout (ThemeV2.layout): the sheet runs under a
-// see-through titlebar, which lets clicks through to the logo, which is what
-// the window is dragged by. The portrait and sidebar are on the left, so the
-// titlebar's buttons are over the logo, which keeps its name clear of them.
+// A theme with the full-frame layout (ThemeV2.layout): the sheet runs up under
+// a see-through titlebar, a strip across the top that's still the titlebar,
+// with its buttons in a row. The logo's text keeps below it. The portrait and
+// sidebar are on the left.
 
 const name = "Al";
 
@@ -37,47 +37,76 @@ const position = (sheet: Locator) =>
 const nameText = (sheet: Locator) =>
   sheet.locator(".logo .front-text-element [contenteditable]").first();
 
-/** The logo's name, where it's under the titlebar. */
-async function nameUnderTitlebar(sheet: Locator) {
-  const text = nameText(sheet);
-  const header = await sheet.locator(".window-header").boundingBox();
-  const box = await text.boundingBox();
-  // the layout puts the logo under the titlebar, at least partly
-  expect(box!.y).toBeLessThan(header!.y + header!.height);
-  return {
-    text,
-    box: box!,
-    x: box!.x + box!.width / 2,
-    y: Math.max(box!.y + 2, header!.y + header!.height / 2),
-  };
+/** The titlebar, and a point on it over the logo, left of the buttons. */
+async function titlebar(sheet: Locator) {
+  const header = sheet.locator(".window-header");
+  const box = (await header.boundingBox())!;
+  const logo = (await sheet.locator(".logo").boundingBox())!;
+  return { header, box, x: logo.x + 20, y: box.y + box.height / 2 };
 }
 
-const selection = (page: Page) =>
-  page.evaluate(() => document.getSelection()?.toString() ?? "");
-
-test("the titlebar lets clicks through to the logo, which can be edited", async ({
+test("the titlebar is a see-through strip across the top, over the logo", async ({
   page,
 }) => {
   const { sheet } = await openFogSheet(page);
-  await expect(sheet.locator(".window-header")).toHaveCSS(
-    "pointer-events",
-    "none",
-  );
-  await expect(
-    sheet.locator(".window-header .header-control").first(),
-  ).toHaveCSS("pointer-events", "auto");
-  const { text, x, y } = await nameUnderTitlebar(sheet);
-  const before = await position(sheet);
-  await page.mouse.click(x, y);
-  await expect(text).toBeFocused();
-  expect(await position(sheet)).toEqual(before);
+  const { header, box } = await titlebar(sheet);
+  const frame = (await sheet.boundingBox())!;
+  // inside the window's border
+  expect(Math.abs(box.x - frame.x)).toBeLessThanOrEqual(2);
+  expect(Math.abs(box.width - frame.width)).toBeLessThanOrEqual(4);
+  await expect(header).toHaveCSS("pointer-events", "auto");
+  await expect(header).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(sheet.locator(".window-title")).toBeHidden();
+  // the logo runs up under it
+  const logo = (await sheet.locator(".logo").boundingBox())!;
+  expect(logo.y).toBeLessThan(box.y + box.height);
 });
 
-test("dragging the logo moves the window, without editing or selecting", async ({
+test("a module's buttons join the row, inside the strip, and take clicks", async ({
   page,
 }) => {
   const { sheet } = await openFogSheet(page);
-  const { text, x, y } = await nameUnderTitlebar(sheet);
+  // as a module adds them: before Foundry's own
+  await sheet.evaluate((frame) => {
+    const header = frame.querySelector(".window-header")!;
+    const first = header.querySelector(".header-control")!;
+    for (let i = 0; i < 4; i++) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "header-control icon fa-solid fa-magnifying-glass";
+      button.dataset["testModule"] = String(i);
+      button.addEventListener("click", () => {
+        button.dataset["clicked"] = "true";
+      });
+      header.insertBefore(button, first);
+    }
+  });
+  const { box: strip } = await titlebar(sheet);
+  const controls = await sheet
+    .locator(".window-header .header-control")
+    .evaluateAll((all) =>
+      all
+        .map((control) => control.getBoundingClientRect())
+        .filter((box) => box.width > 0)
+        .map(({ top, bottom }) => ({ top, bottom })),
+    );
+  expect(controls.length).toBeGreaterThan(4);
+  for (const box of controls) {
+    expect(box.top).toBeGreaterThanOrEqual(strip.y - 1);
+    expect(box.bottom).toBeLessThanOrEqual(strip.y + strip.height + 1);
+    // one row
+    expect(box.top).toBeCloseTo(controls[0].top, 0);
+  }
+  const added = sheet.locator("[data-test-module='0']");
+  await added.click();
+  await expect(added).toHaveAttribute("data-clicked", "true");
+});
+
+test("dragging the titlebar, over the logo, moves the window", async ({
+  page,
+}) => {
+  const { sheet } = await openFogSheet(page);
+  const { x, y } = await titlebar(sheet);
   const before = await position(sheet);
   await page.mouse.move(x, y);
   await page.mouse.down();
@@ -87,43 +116,18 @@ test("dragging the logo moves the window, without editing or selecting", async (
   await expect
     .poll(() => position(sheet))
     .toEqual({ left: before.left + 60, top: before.top + 20 });
-  await expect(text).not.toBeFocused();
-  expect(await selection(page)).toBe("");
-  await expect(text).toHaveText(name);
 });
 
-test("once the name is being edited, dragging over it selects", async ({
-  page,
-}) => {
-  const { sheet } = await openFogSheet(page, "pc", "Alberta Moss");
-  const { text, box } = await nameUnderTitlebar(sheet);
-  const y = box.y + box.height / 2;
-  await page.mouse.click(box.x + box.width / 2, y);
-  await expect(text).toBeFocused();
-  const before = await position(sheet);
-  await page.mouse.move(box.x + 2, y);
-  await page.mouse.down();
-  await page.mouse.move(box.x + box.width / 2, y, { steps: 5 });
-  await page.mouse.move(box.x + box.width - 2, y, { steps: 5 });
-  await page.mouse.up();
-  expect((await selection(page)).length).toBeGreaterThan(3);
-  expect(await position(sheet)).toEqual(before);
-  await expect(text).toBeFocused();
-});
-
-test("a double click on the logo, off its text, minimizes the window", async ({
+test("a double click on the titlebar minimizes the window", async ({
   page,
 }) => {
   const { sheet } = await openFogSheet(page);
-  const logo = await sheet.locator(".logo").boundingBox();
-  // the logo's left end: a short name is in the middle
-  await page.mouse.dblclick(logo!.x + 10, logo!.y + logo!.height - 10);
+  const { x, y } = await titlebar(sheet);
+  await page.mouse.dblclick(x, y);
   await expect(sheet).toHaveClass(/minimized/);
   // minimized, it's an ordinary titlebar, with its title
-  const header = sheet.locator(".window-header");
-  await expect(header).toHaveCSS("pointer-events", "auto");
   await expect(sheet.locator(".window-title")).toBeVisible();
-  await header.dblclick();
+  await sheet.locator(".window-header").dblclick();
   await expect(sheet).not.toHaveClass(/minimized/);
   // restored, not still restoring: closing it then would fail
   await expect
@@ -131,94 +135,66 @@ test("a double click on the logo, off its text, minimizes the window", async ({
     .toBe(0);
 });
 
-for (const type of ["pc", "npc"] as const) {
-  test(`${type}: the portrait is on the left, and a long name keeps clear of the titlebar's buttons`, async ({
-    page,
-  }) => {
-    const { sheet } = await openFogSheet(
-      page,
-      type,
-      "Bartholomew Fitzwilliam-Haversham the Third",
-    );
-    const logo = await sheet.locator(".logo").boundingBox();
-    const portrait = await sheet
-      .getByTestId("image-pickle")
-      .first()
-      .boundingBox();
-    expect(portrait!.x + portrait!.width).toBeLessThanOrEqual(logo!.x + 1);
-    const controls = await sheet
-      .locator(".window-header .header-control")
-      .evaluateAll((all) =>
-        Math.min(
-          ...all
-            .map((control) => control.getBoundingClientRect())
-            .filter((box) => box.width > 0)
-            .map((box) => box.left),
-        ),
-      );
-    // the name, at the size it's fitted to
-    await expect
-      .poll(async () => {
-        const box = await nameText(sheet).boundingBox();
-        return box!.x + box!.width;
-      })
-      .toBeLessThanOrEqual(controls);
-  });
-}
-
-test("a drag stops when the window stops being full-frame", async ({
-  page,
-}) => {
+test("the name, below the titlebar, can be edited", async ({ page }) => {
   const { sheet } = await openFogSheet(page);
-  const { x, y } = await nameUnderTitlebar(sheet);
-  const before = await position(sheet);
-  await page.mouse.move(x, y);
-  await page.mouse.down();
-  await page.mouse.move(x + 30, y + 10, { steps: 5 });
-  await expect
-    .poll(() => position(sheet))
-    .toEqual({ left: before.left + 30, top: before.top + 10 });
-  await setSettings(page, { defaultThemeName: "tealTheme" });
-  await expect(sheet).not.toHaveAttribute("data-inv-layout");
-  const moved = await position(sheet);
-  await page.mouse.move(x + 90, y + 40, { steps: 5 });
-  await page.mouse.up();
-  expect(await position(sheet)).toEqual(moved);
-});
-
-test("a double click on the name minimizes nothing, even when it can't be edited", async ({
-  page,
-}) => {
-  const { sheet } = await openFogSheet(page, "pc", "Alberta Moss");
   const text = nameText(sheet);
-  // as a Limited user's is
-  await text.evaluate((el) => el.setAttribute("contenteditable", "false"));
-  await text.dblclick();
-  await page.waitForTimeout(500);
-  await expect(sheet).not.toHaveClass(/minimized/);
+  await text.click();
+  await expect(text).toBeFocused();
 });
 
-test("the controls are measured unscaled, when the window is scaled", async ({
-  page,
-}) => {
-  const { sheet } = await openFogSheet(page);
-  const measured = () =>
-    sheet.evaluate((frame) =>
-      parseFloat(frame.style.getPropertyValue("--inv-window-controls-width")),
-    );
-  await expect.poll(measured).toBeGreaterThan(0);
-  const unscaled = await measured();
-  // scaled, then the titlebar changes, so they're measured again at that
-  // scale
-  await sheet.evaluate((frame) => {
-    foundry.applications.instances.get(frame.id)!.setPosition({ scale: 0.5 });
-    frame
-      .querySelector(".window-header")!
-      .append(document.createElement("span"));
-  });
-  await page.waitForTimeout(300);
-  await expect.poll(measured).toBeCloseTo(unscaled, -0.5);
-});
+for (const type of ["pc", "npc"] as const) {
+  for (const actorName of [
+    "Al",
+    "Bartholomew Fitzwilliam-Haversham the Third",
+  ]) {
+    test(`${type}: the portrait is on the left, and the logo's text, for "${actorName}", keeps below the titlebar and inside the logo`, async ({
+      page,
+    }) => {
+      const { sheet } = await openFogSheet(page, type, actorName);
+      // the name and the subtext, at the size they're fitted to
+      const text = sheet.locator(
+        ".logo .front-text-element > :not([aria-hidden])",
+      );
+      // all measured together, once the window has settled
+      await expect(async () => {
+        const logo = (await sheet.locator(".logo").boundingBox())!;
+        const portrait = (await sheet
+          .getByTestId("image-pickle")
+          .first()
+          .boundingBox())!;
+        expect(portrait.x + portrait.width).toBeLessThanOrEqual(logo.x + 1);
+        const { box: header } = await titlebar(sheet);
+        // up and down, the lines' boxes; across, the glyphs (the elements
+        // have padding)
+        const boxes = await text.evaluateAll((all) =>
+          all.map((el) => {
+            const { top, bottom } = el.getBoundingClientRect();
+            const range = document.createRange();
+            range.setStart(el, 0);
+            range.setEnd(el, el.childNodes.length);
+            const texts = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+            let left = Infinity;
+            let right = -Infinity;
+            for (let node = texts.nextNode(); node; node = texts.nextNode()) {
+              range.selectNodeContents(node);
+              const glyphs = range.getBoundingClientRect();
+              left = Math.min(left, glyphs.left);
+              right = Math.max(right, glyphs.right);
+            }
+            return { top, bottom, left, right };
+          }),
+        );
+        expect(boxes.length).toBeGreaterThan(0);
+        for (const box of boxes) {
+          expect(box.top).toBeGreaterThanOrEqual(header.y + header.height - 1);
+          expect(box.bottom).toBeLessThanOrEqual(logo.y + logo.height + 1);
+          expect(box.left).toBeGreaterThanOrEqual(logo.x - 1);
+          expect(box.right).toBeLessThanOrEqual(logo.x + logo.width + 1);
+        }
+      }).toPass();
+    });
+  }
+}
 
 test("a detached window keeps the look", async ({ page }) => {
   const { sheet, actorId } = await openFogSheet(page);
@@ -234,10 +210,7 @@ test("a detached window keeps the look", async ({ page }) => {
   await popup.waitForLoadState();
   const frame = popup.locator(`[id="${sheetId}"]`);
   await expect(frame).toBeVisible();
-  await expect(frame.locator(".window-header")).toHaveCSS(
-    "pointer-events",
-    "none",
-  );
+  await expect(frame).toHaveAttribute("data-inv-layout", "full-frame");
   await expect(frame.locator(".window-title")).toBeHidden();
   await popup.close();
 });
