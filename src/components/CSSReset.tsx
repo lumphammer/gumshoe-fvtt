@@ -11,14 +11,16 @@ import { ErrorBoundary } from "./ErrorBoundary";
 
 /**
  * What the layout means for what's inside this root (and not inside another
- * root in it): in the full-frame layout, how far down the logo's text keeps,
- * below the see-through titlebar (Foundry's `--header-height`, `appFrame`).
+ * root in it). In the full-frame layout, the logo's text keeps below the
+ * see-through titlebar, as far down as the titlebar overlaps the logo
+ * (`LogoEditable` measures it), less `--inv-logo-strip-tuck`: how far the
+ * text may start inside the strip, which lets it sit a little higher, more
+ * centred between the window's top and the fields, at the cost of a sliver
+ * of the name being under the titlebar (a press there drags the window).
+ * Tune it here, or live in the browser's devtools on the themed root.
  */
-const layoutVars = css({
-  "--inv-logo-top-inset": "0px",
-  "&[data-inv-layout=full-frame]": {
-    "--inv-logo-top-inset": "var(--header-height, 0px)",
-  },
+const logoTuning = css({
+  "--inv-logo-strip-tuck": "0px",
 });
 
 type CSSResetProps = PropsWithChildren<{
@@ -69,7 +71,7 @@ export const CSSReset = ({
     <ErrorBoundary>
       <div
         ref={ref}
-        className={cx(sheetRoot({ size: mode }), layoutVars, className)}
+        className={cx(sheetRoot({ size: mode }), logoTuning, className)}
         data-inv-theme={slug}
         // for the sheets' grids, which follow it
         data-inv-layout={theme.layout}

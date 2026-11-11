@@ -196,6 +196,145 @@ for (const type of ["pc", "npc"] as const) {
   }
 }
 
+/** The top of the logo's text box, and how far the strip overlaps the logo. */
+const textTop = (sheet: Locator) =>
+  sheet.evaluate((frame) => {
+    const logo = frame.querySelector<HTMLElement>(".logo")!;
+    const wrapper = logo.querySelector(".text-elements-wrapper")!;
+    const header = frame.querySelector(".window-header")!;
+    return {
+      top: wrapper.getBoundingClientRect().top,
+      strip: header.getBoundingClientRect().bottom,
+      overlap: parseFloat(logo.style.getPropertyValue("--inv-logo-overlap")),
+    };
+  });
+
+test("the text starts at the strip's bottom edge, less the tuck", async ({
+  page,
+}) => {
+  const { sheet } = await openFogSheet(page);
+  await expect
+    .poll(async () => {
+      const { top, strip } = await textTop(sheet);
+      return Math.round(top - strip);
+    })
+    .toBe(0);
+  await sheet
+    .locator("[data-inv-theme]")
+    .first()
+    .evaluate((root) =>
+      (root as HTMLElement).style.setProperty("--inv-logo-strip-tuck", "6px"),
+    );
+  await expect
+    .poll(async () => {
+      const { top, strip } = await textTop(sheet);
+      return Math.round(top - strip);
+    })
+    .toBe(-6);
+});
+
+/** Make the window's titlebar taller, by `by` pixels (unscaled). */
+const growTitlebar = (frame: Locator, by: number) =>
+  frame.evaluate((frame, by) => {
+    const header = frame.querySelector<HTMLElement>(".window-header")!;
+    header.style.height = `${header.offsetHeight + by}px`;
+  }, by);
+
+test("the overlap is measured unscaled, when the window is scaled", async ({
+  page,
+}) => {
+  const { sheet } = await openFogSheet(page);
+  await expect
+    .poll(async () => (await textTop(sheet)).overlap)
+    .toBeGreaterThan(0);
+  const unscaled = (await textTop(sheet)).overlap;
+  await sheet.evaluate((frame) => {
+    foundry.applications.instances.get(frame.id)!.setPosition({ scale: 0.5 });
+  });
+  // measured again, at that scale
+  await growTitlebar(sheet, 12);
+  await expect
+    .poll(async () => (await textTop(sheet)).overlap)
+    .toBeCloseTo(unscaled + 12, 0);
+  // and the text still starts at the strip's edge
+  await expect
+    .poll(async () => {
+      const { top, strip } = await textTop(sheet);
+      return Math.abs(top - strip) < 1;
+    })
+    .toBe(true);
+});
+
+test("the overlap is measured again when the logo moves in the window", async ({
+  page,
+}) => {
+  const { sheet } = await openFogSheet(page);
+  await expect
+    .poll(async () => (await textTop(sheet)).overlap)
+    .toBeGreaterThan(8);
+  const before = (await textTop(sheet)).overlap;
+  // the sheet's grid, 8px further down
+  await sheet.locator(".logo").evaluate((logo) => {
+    const grid = logo.parentElement!.parentElement!;
+    const padding = parseFloat(getComputedStyle(grid).paddingTop);
+    grid.style.paddingTop = `${padding + 8}px`;
+  });
+  await expect
+    .poll(async () => (await textTop(sheet)).overlap)
+    .toBeCloseTo(before - 8, 0);
+});
+
+test("in a detached window, the overlap is still measured", async ({
+  page,
+}) => {
+  const { sheet, actorId } = await openFogSheet(page);
+  const sheetId = (await sheet.getAttribute("id"))!;
+  const popupPromise = page.waitForEvent("popup");
+  await page.evaluate(async (actorId) => {
+    const sheet = game.actors.get(actorId)!.sheet as unknown as {
+      detachWindow: () => Promise<void>;
+    };
+    await sheet.detachWindow();
+  }, actorId);
+  const popup = await popupPromise;
+  await popup.waitForLoadState();
+  const frame = popup.locator(`[id="${sheetId}"]`);
+  await expect(frame).toBeVisible();
+  await expect
+    .poll(async () => (await textTop(frame)).overlap)
+    .toBeGreaterThan(0);
+  const before = (await textTop(frame)).overlap;
+  await growTitlebar(frame, 24);
+  await expect
+    .poll(async () => (await textTop(frame)).overlap)
+    .toBeCloseTo(before + 24, 0);
+  await popup.close();
+});
+
+test("in the standard layout, the logo's text has its whole height", async ({
+  page,
+}) => {
+  await setSettings(page, { defaultThemeName: "tealTheme" });
+  const actorId = await createActor(page, { name, type: "pc" });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  await expect
+    .poll(() =>
+      sheet.locator(".logo").evaluate((logo) => {
+        // in layout, not on screen: the theme transforms the text
+        const wrapper = logo.querySelector<HTMLElement>(
+          ".text-elements-wrapper",
+        )!;
+        return {
+          overlap: (logo as HTMLElement).style.getPropertyValue(
+            "--inv-logo-overlap",
+          ),
+          inset: wrapper.offsetTop,
+        };
+      }),
+    )
+    .toEqual({ overlap: "0px", inset: 0 });
+});
+
 test("a detached window keeps the look", async ({ page }) => {
   const { sheet, actorId } = await openFogSheet(page);
   const sheetId = (await sheet.getAttribute("id"))!;

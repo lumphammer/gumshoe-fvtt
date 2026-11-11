@@ -201,8 +201,10 @@ a row at the right, with room for a module's. It shows a faint tint on hover,
 so you can see where it is. The title shows only when the window is minimized,
 as an ordinary titlebar.
 
-The logo runs up under the strip, but its text keeps below it
-(`--inv-logo-top-inset`, `CSSReset`): the name and the subtext are scaled down
+The logo runs up under the strip, but its text keeps below it: `LogoEditable`
+measures how far the strip overlaps the logo (`--inv-logo-overlap`), less
+`--inv-logo-strip-tuck` (`CSSReset`, 0 by default), how far the text may start
+inside the strip, to sit more centred. The name and the subtext are scaled down
 together to fit the height left, and the name further, if it needs to, to fit
 the width (`LogoEditable`). The PC and NPC sheets put the portrait (and the
 sidebar) on the left, its top under the strip too. The sheets' grids follow

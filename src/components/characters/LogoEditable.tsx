@@ -15,11 +15,45 @@ type LogoEditableProps = {
 };
 
 /**
+ * Run `setup` (observers, say) with `element`'s window, and again, after
+ * cleaning up, whenever the Foundry window it's in moves to another document:
+ * detached into a popup, or attached again. Observers made in one document
+ * don't see changes in another. Returns how to stop.
+ */
+function inEachDocument(
+  element: HTMLElement,
+  setup: (view: Window & typeof globalThis) => () => void,
+) {
+  let cleanup: (() => void) | undefined;
+  let watcher: MutationObserver | undefined;
+  const start = () => {
+    cleanup?.();
+    watcher?.disconnect();
+    const doc = element.ownerDocument;
+    const view = doc.defaultView;
+    if (!view) return;
+    cleanup = setup(view);
+    // the window is moved by taking it out of its parent here
+    const parent = (element.closest(".application") ?? element).parentNode;
+    if (!parent) return;
+    watcher = new view.MutationObserver(() => {
+      if (element.ownerDocument !== doc) start();
+    });
+    watcher.observe(parent, { childList: true });
+  };
+  start();
+  return () => {
+    cleanup?.();
+    watcher?.disconnect();
+  };
+}
+
+/**
  * Fit the main text to the width of the logo by setting `--logo-fit` on
  * `wrapper`: a scale factor, at most 1, for the main text's font size.
  *
  * When the text keeps below the full-frame layout's titlebar (`wrapper` is
- * inset from the top), the name and the subtext together are fitted to the
+ * inset from the top, `useTitlebarOverlap`), the name and the subtext together are fitted to the
  * height left as well: `--logo-fit-height`, for both. The name gets the
  * smaller of the two fits. Otherwise the text has the logo's whole height,
  * and is fitted by width alone, as it always was.
@@ -65,7 +99,7 @@ const useFitText = (
         });
       });
     };
-    const observer = new ResizeObserver(() => {
+    const refit = () => {
       const available = wrapper.clientWidth;
       const natural = measure.offsetWidth;
       if (!available || !natural) {
@@ -88,16 +122,87 @@ const useFitText = (
         started = true;
         void startAnimating();
       }
+    };
+    // in a detached window too
+    const stopObserving = inEachDocument(wrapper, (view) => {
+      const observer = new view.ResizeObserver(refit);
+      observer.observe(wrapper);
+      observer.observe(measure);
+      if (measureSub) observer.observe(measureSub);
+      return () => observer.disconnect();
     });
-    observer.observe(wrapper);
-    observer.observe(measure);
-    if (measureSub) observer.observe(measureSub);
     return () => {
       stopped = true;
-      observer.disconnect();
+      stopObserving();
       if (frame !== undefined) cancelAnimationFrame(frame);
     };
   }, [wrapperRef, measureRef, measureSubRef, hasSubtext]);
+};
+
+/**
+ * Keep `--inv-logo-overlap` on `root`, the logo: how far the window's
+ * titlebar reaches down over it, in its own (unscaled) pixels. That's only in
+ * the full-frame layout, where the titlebar is a see-through strip over the
+ * top of the sheet (`appFrame`); otherwise it's above the sheet, so 0. The
+ * text keeps below it (less `--inv-logo-strip-tuck`, `CSSReset`).
+ *
+ * Measured again when the logo, the titlebar, or anything between the logo
+ * and the window resizes (which is what moves the logo in it), something in
+ * the window scrolls, or the window changes its layout or is minimized or
+ * restored; in a detached window too.
+ */
+const useTitlebarOverlap = (rootRef: RefObject<HTMLElement | null>) => {
+  useEffect(() => {
+    const root = rootRef.current;
+    const frame = root?.closest<HTMLElement>(".application");
+    const header = frame?.querySelector<HTMLElement>(":scope > .window-header");
+    if (!root || !frame || !header) {
+      return;
+    }
+    const measure = () => {
+      const logo = root.getBoundingClientRect();
+      // in CSS pixels, not scaled ones (the window's `position.scale`)
+      const scale = root.offsetHeight > 0 ? logo.height / root.offsetHeight : 1;
+      if (!scale) return;
+      const overlap = header.getBoundingClientRect().bottom - logo.top;
+      root.style.setProperty(
+        "--inv-logo-overlap",
+        `${Math.max(0, overlap / scale)}px`,
+      );
+    };
+    const stop = inEachDocument(frame, (view) => {
+      const resizes = new view.ResizeObserver(measure);
+      resizes.observe(header);
+      for (
+        let el: HTMLElement | null = root;
+        el && el !== frame;
+        el = el.parentElement
+      ) {
+        resizes.observe(el);
+      }
+      const changes = new view.MutationObserver(measure);
+      changes.observe(frame, {
+        attributes: true,
+        attributeFilter: ["class", "data-inv-layout"],
+      });
+      const scrolls = new AbortController();
+      frame.addEventListener("scroll", measure, {
+        capture: true,
+        passive: true,
+        signal: scrolls.signal,
+      });
+      measure();
+      return () => {
+        resizes.disconnect();
+        changes.disconnect();
+        scrolls.abort();
+      };
+    });
+    return () => {
+      stop();
+      root.style.removeProperty("--inv-logo-overlap");
+    };
+  }, [rootRef]);
 };
 
 /**
@@ -165,6 +270,8 @@ export const LogoEditable = ({
       }),
   );
 
+  const rootRef = useRef<HTMLDivElement>(null);
+  useTitlebarOverlap(rootRef);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const measureSubRef = useRef<HTMLDivElement>(null);
@@ -212,6 +319,7 @@ export const LogoEditable = ({
       // keeps its text below the full-frame layout's see-through titlebar
       // (appFrame)
       data-inv-clears-titlebar
+      ref={rootRef}
     >
       {/* Backdrop: filling the logo, whatever the theme says */}
       <div
@@ -239,7 +347,7 @@ export const LogoEditable = ({
       >
         {/* inner - apply the transform. In the full-frame layout, the
           window's see-through titlebar is over the logo's top, so the text
-          keeps below it (--inv-logo-top-inset, CSSReset) */}
+          keeps below it (useTitlebarOverlap) */}
         <div
           className={cx(
             "text-elements-wrapper",
@@ -247,8 +355,8 @@ export const LogoEditable = ({
             css({
               position: "absolute",
               inset: "0",
-              // (--inv-logo-top-inset: the nearest themed root's, CSSReset)
-              top: "[var(--inv-logo-top-inset, 0px)]",
+              // below the titlebar, less the tuck (CSSReset)
+              top: "[max(0px, var(--inv-logo-overlap, 0px) - var(--inv-logo-strip-tuck, 0px))]",
             }),
           )}
           ref={wrapperRef}
