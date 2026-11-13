@@ -164,9 +164,13 @@ translations, adding fields and settings, releases).
   palette entry means, and the rules (components apply catalogue classes and
   write layout with Panda's `css()`; only the catalogue reads the palette).
   There's no Emotion and no `css` prop: JSX is plain React's.
-- Converted components apply recipes from `styled-system/recipes` (defined in
-  `src/themes/catalogue/`) and write only layout. When converting, take the
-  file off the list in `src/themes/catalogue/paletteReads.test.ts`.
+- Components apply recipes from `styled-system/recipes` (defined in
+  `src/themes/catalogue/`) and write only layout. The native world (chat
+  cards, combat tracker) never uses the catalogue or reads the theme:
+  `src/themes/catalogue/nativeWorld.test.ts` checks it.
+- A theme's overrides patch the catalogue's defaults (start a part from
+  nothing with `all: "revert-layer"`); palette entries in a theme's values are
+  `var(--inv-…)`, not bare names. V1 themes are converted in `fromV1.ts`.
 - Our CSS goes in sub-layers of Foundry's `system` layer (`src/panda.css`),
   never directly in `system`: rules there beat every sub-layer.
 - Theme colours include `danger`, `warning` and `success` (seeded, with

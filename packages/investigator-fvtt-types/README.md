@@ -4,8 +4,8 @@ This package contains TypeScript types for people wishing to write custom addons
 
 Currently this includes types for
 
-* creating and registering themes: `ThemeV2`, and the older `ThemeSeedV1`
-* creating and registering system presets
+- creating and registering themes: `ThemeV2`, and the older `ThemeSeedV1`
+- creating and registering system presets
 
 ## Themes
 
@@ -20,22 +20,32 @@ const theme: ThemeV2 = {
   displayName: "My Theme",
   palette: { polarity: "light", surface: "#fff", accent: "#c00", … },
   catalogue: {
-    badge: { variants: { tone: { danger: { fontWeight: "bold" } } } },
+    badge: {
+      variants: {
+        tone: { danger: { fontWeight: "bold", color: "var(--inv-on-danger)" } },
+      },
+    },
   },
 };
 ```
 
 - `ThemePalette` is the palette: a required core, and the rest worked out
-  unless a theme sets it. `PaletteVar` names its CSS custom properties
-  (`--inv-surface`), for use in overrides' values and `globalCss`.
+  (in CSS) unless a theme sets it. A theme with translucent surfaces also sets
+  `surfaceSolid` and `surfaceNestedSolid`, opaque versions for things that
+  overlap other content. `PaletteVar` names its CSS custom properties
+  (`--inv-surface`).
+- Style values are plain CSS. A palette entry is its custom property:
+  `color: "var(--inv-accent)"`, not `"accent"`.
 - `ThemeCatalogue` is the overrides, shaped like the system's catalogue
-  recipes: `base` replaces a recipe's own; `variants` and `compoundVariants`
-  patch them. `states` patches the state layers (hover, drop target, focus):
-  at the top level, everywhere in the theme; in a recipe, just on its
-  elements. `StateLayer` names them. Its keys come from the recipes (`CatalogueRecipeShapes`, which
-  is generated), so a recipe, slot, variant or value that doesn't exist is a
-  type error. The catalogue's names are public API: renaming or removing one
-  is a breaking change for this package.
+  recipes. Every part (`base`, `variants`, `compoundVariants`) patches: its
+  declarations go over the recipe's own, and what it doesn't say stays. To
+  start a part from nothing, begin its style with `all: "revert-layer"`.
+  `states` changes the state layers (hover, drop target, focus): at the top
+  level, everywhere in the theme; in a recipe, just on its elements.
+  `StateLayer` names them. Its keys come from the recipes
+  (`CatalogueRecipeShapes`, which is generated), so a recipe, slot, variant or
+  value that doesn't exist is a type error. The catalogue's names are public
+  API: renaming or removing one is a breaking change for this package.
 - A V2 theme that isn't one is refused when it's installed, with an error that
   says why; an override that doesn't fit the catalogue is skipped, with a
   warning.
