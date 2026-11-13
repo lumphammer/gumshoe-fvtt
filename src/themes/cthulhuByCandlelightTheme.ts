@@ -73,7 +73,8 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
     appFrame: {
       base: {
         root: {
-          "--accent": "oklch(0.7 0.06 195)",
+          // "--accent": "oklch(0.7 0.06 195)",
+          "--accent": "oklch(0.8 0.07 67)",
           "--gold": "oklch(0.56 0.105 67 / 50%)",
           "--light-gold": "oklch(from var(--gold) 0.9 0.02 h)",
           borderColor: "oklch(0.53 0.07 69.22 / 0.5)",
@@ -184,7 +185,7 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
     },
     panel: {
       base: {
-        //
+        // all: "revert-layer",
         padding: "0.5em",
         // borderStyle: "solid",
         borderWidth: "1px",
