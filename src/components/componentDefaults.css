@@ -63,23 +63,13 @@
     min-width: 0;
   }
 
-  /* InputGrid; the same as `inputGridStyle` */
+  /* InputGrid's structure; the same as `inputGridStyle`. Its look (the gaps)
+     is the fieldGrid recipe's */
   .inv-default-input-grid {
     display: grid;
     grid-template-rows: auto;
     grid-template-columns: [label] fit-content(50%) [control] 1fr [end];
     grid-auto-rows: auto;
-    row-gap: 0.2em;
-  }
-
-  /* GridField's label */
-  .inv-default-grid-field-label {
-    grid-column: label;
-    padding-top: 0.3em;
-    padding-right: 0.5em;
-    align-self: start;
-    text-align: end;
-    overflow-wrap: anywhere;
   }
 
   .inv-default-settings-sortable-list {

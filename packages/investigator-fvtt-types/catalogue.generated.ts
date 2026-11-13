@@ -46,6 +46,10 @@ export interface CatalogueRecipeShapes {
     slots: never;
     variants: Record<never, never>;
   };
+  fieldGrid: {
+    slots: "root" | "label" | "control";
+    variants: { stacked: "true" | "false" };
+  };
   floating: {
     slots: never;
     variants: { kind: "overlay" | "drawer" | "bar" | "chip" };

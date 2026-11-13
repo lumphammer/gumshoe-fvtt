@@ -34,7 +34,8 @@ import { SpendButtons } from "../inputs/SpendButtons";
 import { EmbeddedItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
 import { Panel } from "../Panel";
-import { css } from "../../styled-system/css";
+import { css, cx } from "../../styled-system/css";
+import { fieldGrid } from "../../styled-system/recipes";
 
 /** the book's losses run from 1 to 8; a little room beyond */
 const potentialLosses = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -149,7 +150,12 @@ export const AbilityTest = memo(function AbilityTest({
   const spendLabel = bonds.length > 0 ? ability.name : undefined;
 
   return (
-    <Panel className={css({ ...inputGridStyle, marginBottom: "0.5em" })}>
+    <Panel
+      className={cx(
+        fieldGrid().root,
+        css({ ...inputGridStyle, marginBottom: "0.5em" }),
+      )}
+    >
       {canTestTrauma && (
         <>
           <GridField label="Trauma">

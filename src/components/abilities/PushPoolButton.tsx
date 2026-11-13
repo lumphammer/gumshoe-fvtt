@@ -7,7 +7,8 @@ import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { inputGridStyle } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 import { Panel } from "../Panel";
-import { css } from "../../styled-system/css";
+import { css, cx } from "../../styled-system/css";
+import { fieldGrid } from "../../styled-system/recipes";
 
 export const PushPoolButton = memo(function PushPoolButton({
   item,
@@ -22,7 +23,12 @@ export const PushPoolButton = memo(function PushPoolButton({
   }, [push]);
 
   return (
-    <Panel className={css({ ...inputGridStyle, marginBottom: "0.5em" })}>
+    <Panel
+      className={cx(
+        fieldGrid().root,
+        css({ ...inputGridStyle, marginBottom: "0.5em" }),
+      )}
+    >
       <GridFieldStacked>
         <div
           className={css({

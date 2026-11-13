@@ -42,6 +42,11 @@ export const recipeShapes = {
   },
   dragHandle: { className: "inv-drag-handle", slots: [], variants: {} },
   emptyState: { className: "inv-empty-state", slots: [], variants: {} },
+  fieldGrid: {
+    className: "inv-field-grid",
+    slots: ["root", "label", "control"],
+    variants: { stacked: ["true", "false"] },
+  },
   floating: {
     className: "inv-floating",
     slots: [],

@@ -8,6 +8,7 @@ import { button } from "./src/themes/catalogue/button";
 import { callout } from "./src/themes/catalogue/callout";
 import { card } from "./src/themes/catalogue/card";
 import { checkbox } from "./src/themes/catalogue/checkbox";
+import { fieldGrid } from "./src/themes/catalogue/fieldGrid";
 import { input, richText } from "./src/themes/catalogue/input";
 import {
   dragHandle,
@@ -106,7 +107,7 @@ export default defineConfig({
       surface,
       tableHeader,
     },
-    slotRecipes: { appFrame, card, checkbox, logo, tabs, toggle },
+    slotRecipes: { appFrame, card, checkbox, fieldGrid, logo, tabs, toggle },
     // names are global, so they're prefixed: Foundry has keyframes too
     keyframes: {
       invSpin: { to: { rotate: "1turn" } },
