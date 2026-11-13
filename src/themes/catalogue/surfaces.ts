@@ -3,7 +3,9 @@ import { defineRecipe } from "@pandacss/dev";
 import { paletteVar } from "../palette";
 
 /** A surface tinted halfway to `danger`: an area that's in trouble. */
-const dangerTint = (surface: "surface" | "surfaceNested") =>
+const dangerTint = (
+  surface: "surface" | "surfaceNested" | "surfaceSolid" | "surfaceNestedSolid",
+) =>
   `[color-mix(in srgb, var(${paletteVar("danger")}) 50%, var(${paletteVar(surface)}))]` as const;
 
 /**
@@ -12,9 +14,9 @@ const dangerTint = (surface: "surface" | "surfaceNested") =>
  * cover over an image, a loading screen.
  *
  * Variants: `depth` (`top` is `surface`, `nested` is `surfaceNested`), and
- * `solid`, for one that overlaps or scrolls over other content. Surfaces are
- * expected to be opaque, so it looks the same; it's there for a theme whose
- * surfaces are translucent, to keep these ones opaque (as V1's do).
+ * `solid`, for one that overlaps or scrolls over other content: the solid
+ * surfaces (`surfaceSolid`, `surfaceNestedSolid`), which are opaque even in
+ * a theme whose surfaces aren't.
  * Not for: a block of content (panel); something raised above the sheet
  * (floating).
  */
@@ -35,11 +37,11 @@ export const surface = defineRecipe({
       solid: false,
       css: { backgroundColor: "surfaceNested" },
     },
-    { depth: "top", solid: true, css: { backgroundColor: "surface" } },
+    { depth: "top", solid: true, css: { backgroundColor: "surfaceSolid" } },
     {
       depth: "nested",
       solid: true,
-      css: { backgroundColor: "surfaceNested" },
+      css: { backgroundColor: "surfaceNestedSolid" },
     },
   ],
   defaultVariants: { depth: "top", solid: false },
@@ -47,8 +49,7 @@ export const surface = defineRecipe({
 
 /**
  * **floating**: something raised above the sheet, overlapping it, on
- * `surface`. (A V1 theme's override replaces this base with its opaque
- * surface: keep the base to the background.)
+ * `surfaceSolid`.
  *
  * Variants: `kind`:
  * - `overlay`: a message over everything (the party sheet's "drop actors
@@ -63,7 +64,7 @@ export const surface = defineRecipe({
 export const floating = defineRecipe({
   className: "inv-floating",
   description: "Something raised above the sheet, overlapping it.",
-  base: { background: "surface" },
+  base: { background: "surfaceSolid" },
   variants: {
     kind: {
       overlay: { borderRadius: "0.5em", boxShadow: "elevation" },
@@ -97,10 +98,8 @@ export const floating = defineRecipe({
  * the party has is on them tinted halfway to `danger`.
  *
  * Variants: `odd`, `zero` (nobody has it), `header`: the actors' names and
- * the abilities' names, stuck over the other cells as the grid scrolls. They
- * look the same as the others, as surfaces are expected to be opaque; the
- * variant is there for a theme whose surfaces are translucent, to keep the
- * headers opaque (as V1's do).
+ * the abilities' names, stuck over the other cells as the grid scrolls, so
+ * they're on the solid surfaces.
  */
 export const partyCell = defineRecipe({
   className: "inv-party-cell",
@@ -123,13 +122,13 @@ export const partyCell = defineRecipe({
       odd: true,
       zero: false,
       header: true,
-      css: { background: "surface" },
+      css: { background: "surfaceSolid" },
     },
     {
       odd: false,
       zero: false,
       header: true,
-      css: { background: "surfaceNested" },
+      css: { background: "surfaceNestedSolid" },
     },
     {
       odd: true,
@@ -147,13 +146,13 @@ export const partyCell = defineRecipe({
       odd: true,
       zero: true,
       header: true,
-      css: { background: dangerTint("surface") },
+      css: { background: dangerTint("surfaceSolid") },
     },
     {
       odd: false,
       zero: true,
       header: true,
-      css: { background: dangerTint("surfaceNested") },
+      css: { background: dangerTint("surfaceNestedSolid") },
     },
   ],
   defaultVariants: { odd: false, zero: false, header: false },

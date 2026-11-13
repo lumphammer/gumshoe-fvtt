@@ -19,8 +19,9 @@ const fadedSurface = (scale: number) =>
  * `data-wrapped` (`&[data-wrapped]`; set by the code that measures it). The
  * selected tab is `surface`, like the content, with `accent` ink; the others
  * are a fainter `surface`, with `text` ink. *`tab` is an expected override,
- * selected and not:* an override of it replaces the selected and wrapped
- * looks too.
+ * selected and not:* the selected and wrapped looks are no more specific
+ * than the tab's own, so what an override of `tab` sets applies to them too
+ * (it sets a selected tab's own look in `&[data-selected]`).
  */
 export const tabs = defineSlotRecipe({
   className: "inv-tabs",
@@ -42,8 +43,8 @@ export const tabs = defineSlotRecipe({
       borderRadius: "0.2em 0.2em 0 0",
       cursor: "pointer",
       // part of the tab's look, not states laid over it: their context is in
-      // :where(), so they're no more specific than the tab, and a theme's
-      // override of `tab` replaces them too
+      // :where(), so they're no more specific than the tab, and what a
+      // theme's override of `tab` sets goes over them too
       "&:where([data-wrapped])": { borderRadius: "0.2em" },
       "&:where([data-selected])": { background: "surface", color: "accent" },
       // a state over the tab, so it applies over a theme's override too

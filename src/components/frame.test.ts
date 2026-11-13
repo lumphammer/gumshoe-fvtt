@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { claimFrame, globalCss } from "./frame";
+import { claimFrame } from "./frame";
 
 /** Claim a root's window and style it, as CSSReset does; returns release. */
 function styleFrame(
@@ -93,61 +93,6 @@ describe("styleFrame", () => {
     expect(frame.dataset["invFrame"]).toBe("second");
     second!();
     expect(frame.classList).not.toContain("inv-app-frame__root");
-  });
-});
-
-describe("globalCss", () => {
-  const fontImport = "@import url('https://example.com/font.css');";
-
-  test("a string is used as it is", () => {
-    expect(globalCss(fontImport)).toBe(fontImport);
-  });
-
-  // what Emotion's `css` tag made of a labelled style composed with another
-  test("Emotion's labels go, adjacent ones too", () => {
-    const labelled = {
-      name: "x",
-      styles: `label:theme;label:font;${fontImport}`,
-    };
-    expect(globalCss(labelled)).not.toMatch(/label/);
-    expect(globalCss(labelled)).toContain(fontImport);
-  });
-
-  test("only real labels go: not text in strings, and after a brace too", () => {
-    expect(
-      globalCss({
-        name: "x",
-        styles: 'label:a;.x{label:b;content:"a;label:visible;"}/* label:c; */',
-      }),
-    ).toBe('.x{content:"a;label:visible;"}/* label:c; */');
-  });
-
-  test("a selector for label elements isn't a label", () => {
-    const styles = "label:hover{color:red}.x{label:hover {color:blue}}";
-    expect(globalCss({ name: "x", styles })).toBe(styles);
-  });
-
-  // what Emotion's `css` tag made of styles using its `keyframes`: the
-  // keyframes are linked on as `next`
-  const spin = {
-    name: "animation-spin",
-    styles: "@keyframes animation-spin{to{rotate:1turn;}}",
-  };
-  const withSpin = (styles: string) => ({ name: "x", styles, next: spin });
-
-  test("keyframes go after the styles, so an @import stays first", () => {
-    const out = globalCss(
-      withSpin(`${fontImport}body{animation:animation-spin 2s infinite;}`),
-    );
-    expect(out.startsWith("@import")).toBe(true);
-  });
-
-  test("keyframes the styles use come along", () => {
-    const out = globalCss(
-      withSpin("body{animation:animation-spin 2s infinite;}"),
-    );
-    expect(out).toContain("@keyframes animation-spin");
-    expect(out).toContain("animation:animation-spin");
   });
 });
 

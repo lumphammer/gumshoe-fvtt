@@ -9,8 +9,7 @@ import {
 } from "../presets";
 import type { RuntimeConfig } from "../runtime";
 import { baseThemes } from "../themes/baseThemes";
-import { tealTheme } from "../themes/v1/tealTheme";
-import { themeFromV1 } from "../themes/theme";
+import { tealTheme } from "../themes/tealTheme";
 import {
   buildReportedSettings,
   type ReportableSettings,
@@ -18,12 +17,10 @@ import {
 
 const runtime: RuntimeConfig = {
   themes: {
-    ...Object.fromEntries(
-      Object.keys(baseThemes).map((id) => [id, themeFromV1(tealTheme)]),
-    ),
-    "worlds/x/themes/mine.json": themeFromV1(tealTheme),
-    fromModule: themeFromV1(tealTheme),
-    fromConsole: themeFromV1(tealTheme),
+    ...Object.fromEntries(Object.keys(baseThemes).map((id) => [id, tealTheme])),
+    "worlds/x/themes/mine.json": tealTheme,
+    fromModule: tealTheme,
+    fromConsole: tealTheme,
   },
   themeSources: {
     "worlds/x/themes/mine.json": { type: "local" },
@@ -206,7 +203,7 @@ describe("buildReportedSettings", () => {
         runtime: {
           ...runtime,
           themeSources: { long: { type: "module", id: "x".repeat(65) } },
-          themes: { ...runtime.themes, long: themeFromV1(tealTheme) },
+          themes: { ...runtime.themes, long: tealTheme },
         },
       },
     );

@@ -13,11 +13,10 @@ type Properties = CSS.PropertiesFallback<StyleValue>;
  * A style in a theme's override: CSS properties in camelCase (a number is
  * pixels, for properties that take a length; an array is fallbacks), custom
  * properties, and nested rules keyed by a selector that contains `&` (`&:hover`,
- * `&[data-selected]`) or an at-rule (`@media ...`).
+ * `&[data-selected]`) or an at-rule (`@media ...`), as in CSS nesting.
  *
- * A colour property whose value is exactly the name of one of the palette's
- * colours (`color: "accent"`) is that colour. Anywhere else, a palette entry is
- * its custom property: `"oklch(from var(--inv-surface) calc(l - 0.1) c h)"`.
+ * Values are CSS. A palette entry is its custom property (`PaletteVar`):
+ * `color: "var(--inv-accent)"`.
  */
 export type ThemeStyle = { [K in keyof Properties]?: Properties[K] } & {
   [custom: `--${string}`]: StyleValue | undefined;
@@ -45,9 +44,7 @@ type PartStyles<S extends RecipeShape> = [S["slots"]] extends [never]
   : { [Slot in S["slots"]]?: ThemeStyle };
 
 /** A variant's value: a boolean variant's can be a boolean too. */
-type VariantValue<V extends string> = V extends "true" | "false"
-  ? V | boolean
-  : V;
+type VariantValue<V extends string> = V extends "true" | "false" ? V | boolean : V;
 
 /** A compound variant: at least one of the recipe's variants, and its css. */
 type CompoundVariant<S extends RecipeShape> = {
@@ -59,18 +56,19 @@ type CompoundVariant<S extends RecipeShape> = {
 }[keyof S["variants"]];
 
 /**
- * An override of one of the catalogue's recipes, shaped like the recipe:
+ * An override of one of the catalogue's recipes, shaped like the recipe.
+ * Every part **patches**: its declarations go over the recipe's own, and
+ * the rest of the recipe's stay. (To start a part from nothing, begin its
+ * style with `all: "revert-layer"`.)
  *
- * - `base` **replaces** the recipe's base (for a slot recipe, each slot's
- *   that it names): none of the recipe's own declarations survive there.
- * - `variants` **patch** the recipe's variants: their declarations go over
- *   the variant's own.
- * - `compoundVariants` patch an element with every one of the variants they
+ * - `base`: the recipe's base (for a slot recipe, by slot).
+ * - `variants`: the recipe's variants.
+ * - `compoundVariants`: an element with every one of the variants they
  *   name, whether or not the recipe has a compound variant for them.
- * - `states` patch the state layers, for this recipe's elements only (by
- *   slot, for a slot recipe): `&` is the element in that state. They go
- *   over the theme's own `states`, and still under the layers after them
- *   (focus always shows).
+ * - `states`: the state layers, for this recipe's elements only (by slot,
+ *   for a slot recipe): `&` is the element in that state. They go over the
+ *   theme's own `states`, and still under the layers after them (focus
+ *   always shows).
  *
  * A recipe without variants has neither `variants` nor `compoundVariants`.
  */
@@ -96,9 +94,7 @@ export type RecipeOverride<S extends RecipeShape> = {
  * here, or in a recipe's own `states`.
  */
 export type ThemeCatalogue = {
-  [Name in keyof CatalogueRecipeShapes]?: RecipeOverride<
-    CatalogueRecipeShapes[Name]
-  >;
+  [Name in keyof CatalogueRecipeShapes]?: RecipeOverride<CatalogueRecipeShapes[Name]>;
 } & {
   states?: { [State in StateLayer]?: ThemeStyle };
 };
@@ -113,13 +109,9 @@ export interface ThemePalette {
   polarity: "light" | "dark";
   /** The colour the sheet's backdrop averages to, shown while images load. */
   wallpaper: string;
-  /**
-   * What content sits on. Expected to be opaque: things that overlap other
-   * content sit on it too (a translucent one works if the theme keeps those
-   * opaque, with overrides).
-   */
+  /** What content sits on. */
   surface: string;
-  /** What content inside content sits on. Expected to be opaque. */
+  /** What content inside content sits on. */
   surfaceNested: string;
   /** The fill of controls: buttons, toggle tracks. */
   control: string;
@@ -140,7 +132,15 @@ export interface ThemePalette {
   /** Neutral information. */
   info: string;
 
-  /** Ink for secondary information. Default: `text`, faded towards `surface`. */
+  /**
+   * `surface` for things that overlap or scroll over other content (menus,
+   * sticky headers, cards). Only a theme whose `surface` is translucent
+   * needs to set it, to an opaque colour. Default: `surface`.
+   */
+  surfaceSolid?: string;
+  /** `surfaceNested`, in the same way. Default: `surfaceNested`. */
+  surfaceNestedSolid?: string;
+  /** Ink for secondary information. Default: `text`, faded towards `surfaceSolid`. */
   textMuted?: string;
   /** Ink for links within prose. Default: `accent`. */
   link?: string;
@@ -182,8 +182,7 @@ type Kebab<S extends string> = S extends `${infer Head}${infer Tail}`
  * (`--inv-surface-nested`): a stable contract, for overrides' expressions and
  * `globalCss`.
  */
-export type PaletteVar =
-  `--inv-${Kebab<Exclude<keyof ThemePalette, "polarity">>}`;
+export type PaletteVar = `--inv-${Kebab<Exclude<keyof ThemePalette, "polarity">>}`;
 
 /** A theme (docs/theming.md, "Themes (ThemeV2)"). */
 export interface ThemeV2 {

@@ -1,6 +1,12 @@
 import type { ThemeV2 } from "@lumphammer/investigator-fvtt-types";
 
-import { createActor, expect, openSheet, setSettings, test } from "./foundry.ts";
+import {
+  createActor,
+  expect,
+  openSheet,
+  setSettings,
+  test,
+} from "./foundry.ts";
 
 // ThemeV2 (docs/theming.md): installed through CONFIG.Investigator, like a V1
 // theme, and checked as it's installed
@@ -25,8 +31,12 @@ const theme: ThemeV2 = {
     cardGap: "1em 0.5em",
   },
   catalogue: {
-    // a slot recipe's slot, with a palette colour by name
-    tabs: { base: { content: { outlineStyle: "solid", outlineColor: "accent" } } },
+    // a slot recipe's slot, with a palette colour
+    tabs: {
+      base: {
+        content: { outlineStyle: "solid", outlineColor: "var(--inv-accent)" },
+      },
+    },
     // a compound variant for any combination of variants
     badge: {
       compoundVariants: [
@@ -48,15 +58,25 @@ test("a V2 theme styles a sheet: its palette, worked-out entries, overrides and 
   const sheet = await openSheet(page, `Actor.${actorId}`);
 
   const root = sheet.locator("[data-inv-theme]").first();
-  // the palette, with what it left out worked out: white ink on its red
+  // the palette
   await expect(root).toHaveCSS("--inv-surface", "rgb(255, 255, 255)");
-  await expect(root).toHaveCSS("--inv-on-accent", "#ffffff");
   await expect(root).toHaveCSS("--inv-card-gap-column", "0.5em");
   await expect(root).toHaveCSS("color-scheme", "light");
   // the selected tab is accent on surface, as the catalogue has it
   await expect(sheet.locator("input:checked + .inv-tabs__tab")).toHaveCSS(
     "color",
     "rgb(200, 0, 0)",
+  );
+  // what it left out, worked out (in CSS): white ink on its red accent
+  const ink = await root.evaluate((el) => {
+    const probe = el.appendChild(document.createElement("span"));
+    probe.style.color = "var(--inv-on-accent)";
+    const { color } = getComputedStyle(probe);
+    probe.remove();
+    return color;
+  });
+  expect(ink).toMatch(
+    /^(rgb\(255, 255, 255\)|oklch\(1 0 0\)|color\(srgb 1 1 1\))$/,
   );
   // its overrides
   await expect(sheet.locator(".inv-tabs__content").first()).toHaveCSS(
@@ -85,5 +105,7 @@ test("a V2 theme whose shape is wrong is refused, saying why", async ({
     }
   }, theme);
   // (it throws before it's installed)
-  expect(error).toContain('palette.polarity has to be "light" or "dark"');
+  expect(error).toMatch(
+    /^This isn't a V2 theme: .*"light"\|"dark" at "palette.polarity"/,
+  );
 });

@@ -1,162 +1,103 @@
 import type { ThemeV2 } from "@lumphammer/investigator-fvtt-types";
+import { z } from "zod";
+import { fromZodError } from "zod-validation-error/v4";
 
-import { globalCss } from "../components/frame";
-import { compileCatalogue } from "./catalogue/compileCatalogue";
-import { catalogueFromV1 } from "./catalogue/fromV1";
-import type { CatalogueOverrides } from "./catalogue/overrides";
-import {
-  optionalPaletteKeys as optionalPalette,
-  type Palette,
-  paletteFromV1,
-  requiredPaletteKeys as requiredPalette,
-  resolvePalette,
-} from "./palette";
-import type { ThemeV1 } from "./types";
+import { optionalPaletteKeys, requiredPaletteKeys } from "./palette";
 
 /**
- * A theme, ready to style a sheet: what every installed theme becomes, V1 or
- * V2, and the only kind the rest of the code sees (docs/theming.md).
+ * A theme, ready to style a sheet: a V2 theme. A V1 theme becomes one when
+ * it's installed (`themeFromV1`), so it's the only kind the rest of the code
+ * sees (docs/theming.md).
  */
-/** How the character sheets are laid out (`ThemeV2.layout`). */
-export type Layout = "standard" | "full-frame";
+export type Theme = ThemeV2;
 
-export interface Theme {
-  displayName: string;
-  description?: string;
-  /** The palette, complete. */
-  palette: Palette;
-  /** Its catalogue overrides, by class name (`catalogueOverridesCss`). */
-  catalogue: CatalogueOverrides;
-  /** Raw CSS, in the themed root. */
-  globalCss: string;
-  /** How the character sheets are laid out (`ThemeV2.layout`). */
-  layout: Layout;
-}
+/** How the character sheets are laid out (`ThemeV2.layout`). */
+export type Layout = NonNullable<ThemeV2["layout"]>;
 
 /** Type-checks a V2 theme: the built-in themes are defined with it. */
 export const defineThemeV2 = (theme: ThemeV2) => theme;
 
-const fromV1 = new WeakMap<ThemeV1, Theme>();
+const value = z.union([z.string(), z.number()]);
 
 /**
- * A V1 theme (as `themeFactory` made it from its seed) as a theme: its
- * palette from `paletteFromV1`, and its styles as a V2 catalogue from
- * `fromV1`, compiled as a V2 theme's is. The same theme for the same V1
- * theme.
+ * A style: values, lists of fallbacks, and nested rules (or slots). A value
+ * can be undefined, as a conditional one in a module's theme is.
  */
-export function themeFromV1(theme: ThemeV1): Theme {
-  let result = fromV1.get(theme);
-  if (!result) {
-    result = {
-      displayName: theme.displayName,
-      palette: paletteFromV1(theme),
-      // V1's values are CSS as written, palette names or not
-      catalogue: compileCatalogue(catalogueFromV1(theme), undefined, {
-        literal: true,
-      }),
-      globalCss: globalCss(theme.global),
-      layout: "standard",
-    };
-    fromV1.set(theme, result);
-  }
-  return result;
-}
+const style: z.ZodType = z.lazy(() =>
+  z.record(z.string(), z.union([value, z.array(value), style, z.undefined()])),
+);
 
-/** A V2 theme as a theme: its palette completed, its catalogue compiled. */
-export function themeFromV2(theme: ThemeV2): Theme {
-  return {
-    displayName: theme.displayName,
-    description: theme.description,
-    palette: resolvePalette(theme.palette),
-    catalogue: compileCatalogue(theme.catalogue ?? {}),
-    globalCss: theme.globalCss ?? "",
-    layout: theme.layout ?? "standard",
-  };
-}
+const byState = z.record(z.string(), style.optional()).optional();
 
-const isObject = (value: unknown): value is Record<string, unknown> =>
-  value !== null && typeof value === "object" && !Array.isArray(value);
-
-const topLevel = new Set([
-  "schemaVersion",
-  "displayName",
-  "description",
-  "palette",
-  "catalogue",
-  "globalCss",
-  "layout",
-]);
+/**
+ * The shape of a V2 theme. Names in its catalogue (recipes, slots, variants,
+ * states) aren't checked here: `catalogueRules` leaves out the ones it
+ * doesn't know, with a warning, so a theme built against other types still
+ * loads.
+ */
+const themeSchema = z.looseObject({
+  schemaVersion: z.literal("v2"),
+  displayName: z.string().min(1),
+  description: z.string().optional(),
+  palette: z.looseObject({
+    polarity: z.enum(["light", "dark"]),
+    ...Object.fromEntries(
+      requiredPaletteKeys.map((key) => [key, z.string().min(1)]),
+    ),
+    ...Object.fromEntries(
+      optionalPaletteKeys.map((key) => [key, z.string().optional()]),
+    ),
+  }),
+  catalogue: z
+    .object({ states: byState })
+    .catchall(
+      z
+        .looseObject({
+          base: style.optional(),
+          variants: z
+            .record(
+              z.string(),
+              z.record(z.string(), style.optional()).optional(),
+            )
+            .optional(),
+          compoundVariants: z
+            .array(z.looseObject({ css: style.optional() }))
+            .optional(),
+          states: byState,
+        })
+        .optional(),
+    )
+    .optional(),
+  layout: z.enum(["standard", "full-frame"]).optional(),
+  globalCss: z.string().optional(),
+});
 
 /**
  * A V2 theme from somewhere untyped (a theme file, another module), checked:
  * a theme whose shape is wrong is refused, with an error that says why.
- * (Its catalogue's overrides are checked one by one when it's compiled, and
- * a bad one is left out, with a warning.)
+ * What isn't part of a theme is ignored, with a warning.
  */
 export function validateThemeV2(
   theme: unknown,
   warn: (message: string) => void = (message) =>
     console.warn(`Theme: ${message}`),
 ): ThemeV2 {
-  const problems: string[] = [];
-  if (!isObject(theme)) throw new Error("A theme has to be an object");
-  if (theme["schemaVersion"] !== "v2") {
-    problems.push(
-      `schemaVersion is ${JSON.stringify(theme["schemaVersion"])}, not "v2"`,
+  const result = themeSchema.safeParse(theme);
+  if (!result.success) {
+    throw new Error(
+      `This isn't a V2 theme: ${fromZodError(result.error, { prefix: null }).message}`,
     );
   }
-  if (typeof theme["displayName"] !== "string" || theme["displayName"] === "") {
-    problems.push("displayName has to be a string, and not empty");
-  }
-  for (const key of ["description", "globalCss"]) {
-    if (theme[key] !== undefined && typeof theme[key] !== "string") {
-      problems.push(`${key} has to be a string`);
-    }
-  }
-  if (
-    theme["layout"] !== undefined &&
-    theme["layout"] !== "standard" &&
-    theme["layout"] !== "full-frame"
-  ) {
-    problems.push('layout has to be "standard" or "full-frame"');
-  }
-  if (theme["catalogue"] !== undefined && !isObject(theme["catalogue"])) {
-    problems.push("catalogue has to be an object");
-  }
-  const palette = theme["palette"];
-  if (!isObject(palette)) {
-    problems.push("palette has to be an object");
-  } else {
-    if (palette["polarity"] !== "light" && palette["polarity"] !== "dark") {
-      problems.push('palette.polarity has to be "light" or "dark"');
-    }
-    for (const key of requiredPalette) {
-      if (typeof palette[key] !== "string" || palette[key] === "") {
-        problems.push(`palette.${key} has to be a string, and not empty`);
-      }
-    }
-    for (const key of optionalPalette) {
-      if (palette[key] !== undefined && typeof palette[key] !== "string") {
-        problems.push(`palette.${key} has to be a string`);
-      }
-    }
-    for (const key of Object.keys(palette)) {
-      if (
-        key !== "polarity" &&
-        !(requiredPalette as readonly string[]).includes(key) &&
-        !(optionalPalette as readonly string[]).includes(key)
-      ) {
-        warn(`palette.${key} isn't a palette entry, so it's ignored`);
-      }
-    }
-  }
-  for (const key of Object.keys(theme)) {
-    if (!topLevel.has(key)) {
+  const { palette } = result.data;
+  for (const key of Object.keys(result.data)) {
+    if (!(key in themeSchema.shape)) {
       warn(`${key} isn't part of a theme, so it's ignored`);
     }
   }
-  if (problems.length > 0) {
-    throw new Error(`This isn't a V2 theme: ${problems.join("; ")}`);
+  for (const key of Object.keys(palette)) {
+    if (!(key in themeSchema.shape.palette.shape)) {
+      warn(`palette.${key} isn't a palette entry, so it's ignored`);
+    }
   }
-  return theme as unknown as ThemeV2;
+  return theme as ThemeV2;
 }

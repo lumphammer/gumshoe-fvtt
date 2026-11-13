@@ -11,9 +11,9 @@ import {
 } from "./foundry.ts";
 import { testTheme } from "./themes.ts";
 
-// The catalogue's runtime (docs/theming.md): a theme's override replaces a
-// class's default, and the class's variants and states still apply on top,
-// even when the override replaces the rule the state is in.
+// The catalogue's runtime (docs/theming.md): a theme's override patches a
+// class's default (or, starting with `all: "revert-layer"`, starts it from
+// nothing), and the class's variants and states still apply on top.
 
 const colors = {
   accent: "rgb(1, 2, 3)",
@@ -27,7 +27,7 @@ const colors = {
   controlBorder: "rgb(90, 90, 90)",
 };
 
-test("a theme's badge override replaces the default but keeps tone, states and hover", async ({
+test("a badge override from a clean slate keeps tone, states and hover", async ({
   page,
 }) => {
   await page.evaluate(
@@ -35,7 +35,7 @@ test("a theme's badge override replaces the default but keeps tone, states and h
     testTheme("Catalogue Review", colors, {
       catalogue: {
         badge: {
-          base: { fontStyle: "italic", borderRadius: 0 },
+          base: { all: "revert-layer", fontStyle: "italic", borderRadius: 0 },
           compoundVariants: [
             {
               tone: "neutral",
@@ -67,7 +67,7 @@ test("a theme's badge override replaces the default but keeps tone, states and h
   await expect(badge).toHaveCSS("padding-left", "0px");
   await expect(badge).toHaveCSS("border-top-style", "none");
 
-  // replacing the base keeps the tones (compound variants): neutral, strong
+  // clearing the base keeps the tones (compound variants): neutral, strong
   await expect(unlock).toHaveCSS("background-color", colors.backgroundButton);
   await expect(unlock).toHaveCSS("color", colors.text);
   // and a compound can be replaced too
@@ -186,7 +186,9 @@ test("a theme can turn hover feedback off everywhere, restyle it just on tabs, a
     await expect(other).toHaveCSS("box-shadow", /rgb\(200, 100, 0\)/);
   } finally {
     // the page is shared with the tests after this one
-    await page.evaluate(() => document.getElementById("nestedThemes")?.remove());
+    await page.evaluate(() =>
+      document.getElementById("nestedThemes")?.remove(),
+    );
   }
 });
 
@@ -344,7 +346,9 @@ test("a callout takes its tone, and a drop target shows when it's ready and when
       .get(id)!
       .items.filter((i) => i.type === "generalAbility")
       .slice(0, 2);
-    for (const pool of pools) await pool.update({ system: { isPushPool: true } });
+    for (const pool of pools) {
+      await pool.update({ system: { isPushPool: true } });
+    }
   }, actorId);
   const sheet = await openSheet(page, `Actor.${actorId}`);
   await sheet.getByLabel("Edit mode").click();
@@ -393,30 +397,34 @@ test("a callout takes its tone, and a drop target shows when it's ready and when
   await expect(actorRow).toHaveAttribute("data-drop-state", "ready");
 });
 
-test("controls: a checkbox's box can be replaced, check buttons work from the keyboard, toggles and invalid fields take the palette", async ({
+test("controls: a checkbox's box can be patched, check buttons work from the keyboard, toggles and invalid fields take the palette", async ({
   page,
 }) => {
   const danger = "rgb(200, 0, 0)";
   await page.evaluate(
     (theme) => CONFIG.Investigator!.installTheme("controlsReviewTheme", theme),
-    testTheme("Controls Review", { ...colors, danger }, {
-      catalogue: {
-        checkbox: {
-          base: { box: { background: "rgb(0, 160, 0)", width: "2em" } },
+    testTheme(
+      "Controls Review",
+      { ...colors, danger },
+      {
+        catalogue: {
+          checkbox: {
+            base: { box: { background: "rgb(0, 160, 0)", width: "2em" } },
+          },
         },
       },
-    }),
+    ),
   );
   await setSettings(page, { defaultThemeName: "controlsReviewTheme" });
   const actorId = await createActor(page, { name: "Checked", type: "pc" });
   await updateAbility(page, actorId, "Athletics", { pool: 3, rating: 3 });
 
-  // the checkbox's box: the override replaces it, border and all
+  // the checkbox's box: the override patches it, so the border stays
   const sheet = await openSheet(page, `Actor.${actorId}`);
   await sheet.getByLabel("Edit mode").click();
   const box = sheet.locator(".inv-checkbox__box").first();
   await expect(box).toHaveCSS("background-color", "rgb(0, 160, 0)");
-  await expect(box).toHaveCSS("border-top-style", "none");
+  await expect(box).toHaveCSS("border-top-style", "solid");
   // and the tick shows when it's checked
   const tick = box.locator(".inv-checkbox__tick");
   await expect(tick).toHaveCSS("visibility", "hidden");
@@ -440,10 +448,7 @@ test("controls: a checkbox's box can be replaced, check buttons work from the ke
     (id) => game.actors.get(id)!.items.getName("Athletics")!.id,
     actorId,
   );
-  const ability = await openSheet(
-    page,
-    `Actor.${actorId}.Item.${athletics}`,
-  );
+  const ability = await openSheet(page, `Actor.${actorId}.Item.${athletics}`);
   const zero = ability.getByRole("radio", { name: "0" });
   const label = (n: string) =>
     ability.locator("label.inv-button", { hasText: new RegExp(`^${n}$`) });
@@ -553,7 +558,7 @@ test("tabs: V1 themes get V1's tabs, defaults and their own styles alike; the ca
   await dropTabOverride();
   await expect(other().first()).toHaveCSS(
     "background-color",
-    /^oklch\(0\.99\d* [\d.]+ [\d.]+ \/ 0\.4\)$/,
+    /^oklch\(0\.99\d* [\d.e-]+ ([\d.]+|none) \/ 0\.4\)$/,
   );
   await expect(selected()).toHaveCSS(
     "background-color",
@@ -568,7 +573,7 @@ test("tabs: V1 themes get V1's tabs, defaults and their own styles alike; the ca
   await dropTabOverride();
   await expect(other().first()).toHaveCSS(
     "background-color",
-    /^oklch\([\d.]+ [\d.e-]+ [\d.]+ \/ 0\.8\)$/,
+    /^oklch\([\d.]+ [\d.e-]+ ([\d.]+|none) \/ 0\.8\)$/,
   );
 
   // a V1 theme's tab styles, as overrides
@@ -612,10 +617,7 @@ test("lists: headings and column headers are ruled in line, interactive rows are
   // the ability categories
   const heading = sheet.locator("h2.inv-section-heading").first();
   await expect(heading).toHaveCSS("border-bottom-style", "solid");
-  await expect(heading).toHaveCSS(
-    "border-bottom-color",
-    colors.controlBorder,
-  );
+  await expect(heading).toHaveCSS("border-bottom-color", colors.controlBorder);
 
   // the weapons table: bold, ruled headers, and a row that's highlighted
   // under the pointer and on keyboard focus
@@ -649,9 +651,10 @@ test("lists: headings and column headers are ruled in line, interactive rows are
   // an equipment row, drawn as cells: its bar is highlighted from them, and
   // its column headers are bold
   await sheet.locator(".tab-strip > label", { hasText: "Equipment" }).click();
-  await expect(
-    sheet.locator(".inv-table-header > div").first(),
-  ).toHaveCSS("font-weight", "700");
+  await expect(sheet.locator(".inv-table-header > div").first()).toHaveCSS(
+    "font-weight",
+    "700",
+  );
   await sheet.getByText("Lantern", { exact: true }).hover();
   await expect(sheet.locator("[data-highlighted]")).toHaveCSS(
     "background-image",
@@ -720,7 +723,10 @@ test("text: element defaults and the text classes take the palette", async ({
 
   // links are `link` (from the V1 accent)
   // a plain link (not one with a class of its own, like a pool's pips)
-  const link = sheet.locator("a:not([class*=inv-])").filter({ hasText: /\S/ }).first();
+  const link = sheet
+    .locator("a:not([class*=inv-])")
+    .filter({ hasText: /\S/ })
+    .first();
   await expect(link).toHaveCSS("color", colors.accent);
 
   // mutedText: the empty card list
@@ -755,7 +761,7 @@ test("text: element defaults and the text classes take the palette", async ({
 test("sheet root: a V1 root style's backdrop (a data URL) and padding still apply", async ({
   page,
 }) => {
-  const svg = "url(\"data:image/svg+xml;base64,PHN2Zy8+\")";
+  const svg = 'url("data:image/svg+xml;base64,PHN2Zy8+")';
   await page.evaluate(
     ({ colors, svg }) => {
       CONFIG.Investigator!.installTheme("rootReviewTheme", {
@@ -785,7 +791,7 @@ test("sheet root: a V1 root style's backdrop (a data URL) and padding still appl
   await expect(root).toHaveCSS("background-color", colors.wallpaper);
 });
 
-test("cards: a V1 category's style wins over the base, as in V1, whatever its key", async ({
+test("cards: a V1 category's style patches the base, whatever its key", async ({
   page,
 }) => {
   await page.evaluate((colors) => {
@@ -801,7 +807,7 @@ test("cards: a V1 category's style wins over the base, as in V1, whatever its ke
       },
       colors,
       cards: {
-        base: { titleStyle: { color: "rgb(200, 0, 0) !important" } },
+        base: { titleStyle: { color: "rgb(200, 0, 0)" } },
         categories: {
           "mental stress": { titleStyle: { color: "rgb(0, 0, 200)" } },
         },
@@ -847,15 +853,14 @@ test("cards: a V1 category's style wins over the base, as in V1, whatever its ke
   }
   const sheet = await openSheet(page, `Actor.${actorId}`);
   await sheet.locator(".tab-strip > label", { hasText: "Cards" }).click();
-  // the category's colour replaces the base's, though the base's is !important
+  // the category's colour goes over the base's
   await expect(
     sheet.locator(".inv-card__title", { hasText: "Shaken" }),
   ).toHaveCSS("color", "rgb(0, 0, 200)");
   // a card in a category the theme doesn't style has the base's
-  await expect(sheet.locator(".inv-card__title", { hasText: "Lead" })).toHaveCSS(
-    "color",
-    "rgb(200, 0, 0)",
-  );
+  await expect(
+    sheet.locator(".inv-card__title", { hasText: "Lead" }),
+  ).toHaveCSS("color", "rgb(200, 0, 0)");
 });
 
 test("surfaces: the party sheet's empty message floats, and an ability nobody has is on the danger surface", async ({
@@ -896,16 +901,17 @@ test("surfaces: the party sheet's empty message floats, and an ability nobody ha
   const odd = await zeroCell.evaluate((el) =>
     el.classList.contains("inv-party-cell--odd_true"),
   );
-  // V1's danger tint: the surface (white, at 50% or 20%) halfway to red,
-  // keeping the surface's opacity
+  // the recipe's danger tint: the surface (white, at 50% or 20%) mixed
+  // halfway with red
   await expect(zeroCell).toHaveCSS(
     "background-color",
     odd
-      ? /^rgba\(255, 12[78], 12[78], 0\.5\)$/
-      : /^rgba\(255, 12[78], 12[78], 0\.2\)$/,
+      ? /^color\(srgb 1 0\.3\d* 0\.3\d* \/ 0\.75\d*\)$/
+      : /^color\(srgb 1 0\.\d+ 0\.\d+ \/ 0\.6\d*\)$/,
   );
   // the header cells, stuck over the others, are opaque
-  await expect(
-    sheet.locator(".inv-party-cell--header_true").first(),
-  ).toHaveCSS("background-color", /^rgb\(/);
+  await expect(sheet.locator(".inv-party-cell--header_true").first()).toHaveCSS(
+    "background-color",
+    /^rgb\(/,
+  );
 });

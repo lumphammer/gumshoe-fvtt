@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef } from "react";
 
 import { css, cx } from "../styled-system/css";
 import { sheetRoot } from "../styled-system/recipes";
-import { catalogueOverridesCss } from "../themes/catalogue/overrides";
+import { themeCss } from "../themes/catalogue/themeCss";
 import { paletteStyle, themeSlug } from "../themes/palette";
 import type { Theme } from "../themes/theme";
 import { claimFrame, type FrameClaim } from "./frame";
@@ -39,6 +39,7 @@ export const CSSReset = ({
   const ref = useRef<HTMLDivElement>(null);
 
   const slug = themeSlug(theme);
+  const layout = theme.layout ?? "standard";
   const palette = useMemo(() => paletteStyle(theme.palette), [theme]);
 
   // the window around the root, if this is the window's root: claimed once,
@@ -57,14 +58,12 @@ export const CSSReset = ({
   useEffect(() => {
     // the palette, without colorScheme (Foundry's window has its own)
     const { colorScheme: _, ...properties } = palette;
-    frameClaim.current?.update(slug, properties, theme.layout);
-  }, [noStyleAppWindow, slug, palette, theme.layout]);
-  // the theme's replacements for catalogue classes, as a <style> inside the
-  // root, so that it goes wherever the root goes, detached windows included
-  const overridesCss = useMemo(
-    () => catalogueOverridesCss(slug, theme.catalogue),
-    [slug, theme.catalogue],
-  );
+    frameClaim.current?.update(slug, properties, layout);
+  }, [noStyleAppWindow, slug, palette, layout]);
+  // the theme's overrides of catalogue classes, as a <style> inside the
+  // root: its rules are scoped to the root by being there (themeCss), and it
+  // goes wherever the root goes, detached windows included
+  const overridesCss = themeCss(theme);
 
   return (
     <ErrorBoundary>
@@ -73,7 +72,7 @@ export const CSSReset = ({
         className={cx(sheetRoot({ size: mode }), logoTuning, className)}
         data-inv-theme={slug}
         // for the sheets' grids, which follow it
-        data-inv-layout={theme.layout}
+        data-inv-layout={layout}
         style={palette}
       >
         {children}

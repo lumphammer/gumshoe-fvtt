@@ -28,17 +28,18 @@ const blocks = new Map(
 );
 
 test.each(Object.entries(stateLayers))(
-  "%s is written in states.css as a theme's override of it is",
+  "%s's default is for what a theme's override of it is for",
   (_, { layer, selectors }) => {
-    // so an override is exactly as specific as the default
-    expect(blocks.get(layer)).toContain(
-      `${selectors("[data-inv-theme] ", "").join(", ")} {`,
+    expect(blocks.get(`${layer}.default`)).toContain(
+      `${selectors("")
+        .map((selector) => `[data-inv-theme] ${selector}`)
+        .join(", ")} {`,
     );
   },
 );
 
-test("the sub-layers are in order: focus last, so it always shows", () => {
+test("each override comes after its default, and focus last, so it always shows", () => {
   expect(statesCss).toContain(
-    "@layer system.states.hover, system.states.drop, system.states.focus;",
+    "@layer system.states.hover.default, system.states.hover.theme, system.states.drop.default, system.states.drop.theme, system.states.focus.default, system.states.focus.theme;",
   );
 });

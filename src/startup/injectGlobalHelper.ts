@@ -8,13 +8,9 @@ import * as constants from "../constants";
 import { getCallingModuleId } from "../functions/getCallingModuleId";
 import { assertNotNull } from "../functions/utilities";
 import { runtimeConfig, type InstallSource } from "../runtime";
+import { themeFromV1 } from "../themes/catalogue/fromV1";
 import { themeFactory } from "../themes/functions";
-import {
-  type Theme,
-  themeFromV1,
-  themeFromV2,
-  validateThemeV2,
-} from "../themes/theme";
+import { type Theme, validateThemeV2 } from "../themes/theme";
 
 /**
  * A theme, V1 or V2 (by its `schemaVersion`), as a theme. A V2 theme from
@@ -24,7 +20,7 @@ import {
 export function resolveTheme(theme: ThemeSeedV1 | ThemeV2): Theme {
   const version = (theme as { schemaVersion?: unknown } | null)?.schemaVersion;
   if (version === "v1") return themeFromV1(themeFactory(theme as ThemeSeedV1));
-  return themeFromV2(validateThemeV2(theme));
+  return validateThemeV2(theme);
 }
 
 function setSource(

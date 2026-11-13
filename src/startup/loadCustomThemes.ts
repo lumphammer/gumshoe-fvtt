@@ -5,7 +5,7 @@ import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { FilePicker } from "../fvtt-exports";
 import { settings } from "../settings/settings";
-import { highContrastTheme } from "../themes/v1/highContrastTheme";
+import { highContrastTheme } from "../themes/highContrastTheme";
 import { installTheme } from "./injectGlobalHelper";
 
 export function loadCustomThemes() {

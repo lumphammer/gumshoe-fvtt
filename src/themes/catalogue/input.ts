@@ -1,15 +1,23 @@
 import { defineRecipe } from "@pandacss/dev";
 
 import { paletteVar } from "../palette";
-import { fieldDefaults } from "./sharedDefaults";
 
-/** What a text field and a dropdown share (`fieldDefaults`, as tokens). */
+/** What a text field and a dropdown share. */
 export const fieldBase = {
-  ...fieldDefaults,
+  font: `var(${paletteVar("bodyFont")})`,
+  fontVariantLigatures: "none",
   color: "text",
+  padding: "0.1em 0.3em",
+  borderWidth: "1px",
+  borderStyle: "solid",
   borderColor: "line",
+  // Foundry's own field shadows and outlines: focus is the focusRing's
+  boxShadow: "none",
   "&:is(:hover, [data-hover])": { borderColor: "line" },
   "&:is(:focus, [data-focus])": { borderColor: "line", boxShadow: "none" },
+  "&:is(:disabled, [disabled], [data-disabled], [aria-disabled=true])": {
+    opacity: 0.7,
+  },
 } as const;
 
 /**

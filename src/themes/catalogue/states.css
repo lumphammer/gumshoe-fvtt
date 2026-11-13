@@ -4,16 +4,17 @@
  * classes (and theme overrides of them), so they always show. See
  * docs/theming.md.
  *
- * Each is a sub-layer of its own, so a theme can override one, everywhere or
- * just on one class (the catalogue's `states`), in that sub-layer, and still
- * not beat the ones after it: focus is last, so it always shows. The
- * selectors are `stateLayers.ts`'s (a test checks), so a theme's override is
- * as specific as the default here.
+ * Each is a layer of its own, with the defaults in its `default` sub-layer
+ * and a theme's overrides (the catalogue's `states`) in `theme`, after it.
+ * So a theme can change one, everywhere or just on one class, and still not
+ * beat the layers after it: focus is last, so it always shows. The selectors
+ * are `stateLayers.ts`'s (a test checks), so an override applies to exactly
+ * what the default does.
  */
-@layer system.states.hover, system.states.drop, system.states.focus;
+@layer system.states.hover.default, system.states.hover.theme, system.states.drop.default, system.states.drop.theme, system.states.focus.default, system.states.focus.theme;
 
 /* hoverFeedback: anything that does something when clicked */
-@layer system.states.hover {
+@layer system.states.hover.default {
   [data-inv-theme]
     [data-interactive]:not(
       :disabled,
@@ -27,7 +28,7 @@
 
 /* dropTarget: somewhere you can drop what you're dragging ("ready"), and
    what you're dragging is over it ("over") */
-@layer system.states.drop {
+@layer system.states.drop.default {
   [data-inv-theme] :is([data-drop-state="ready"], [data-drop-state="over"]) {
     outline: 2px dashed var(--inv-line);
     outline-offset: 0.2em;
@@ -40,7 +41,7 @@
 
 /* focusRing: anything focused from the keyboard. Last, so it wins over the
    other layers' outlines (a focused drop target still shows focus) */
-@layer system.states.focus {
+@layer system.states.focus.default {
   [data-inv-theme] :focus-visible,
   /* a visually hidden input shows focus on what stands for it, after it
      (a CheckButtons label, a Checkbox's box) */

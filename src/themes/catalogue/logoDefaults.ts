@@ -2,9 +2,8 @@ import { paletteVar } from "../palette";
 
 /**
  * The logo's default styles, per slot, in plain CSS: the `logo` recipe is
- * built from them, and a V1 theme's logo overrides start from them (an
- * override replaces its slot's default, but V1 spread a theme's logo styles
- * over these).
+ * built from them, and a V1 theme's logo overrides start from them (V1
+ * spread a theme's logo styles over these).
  *
  * The logo's layout and its look by default aren't here: `LogoEditable` has
  * them, outside the slots, so an override doesn't have to repeat them. It
@@ -41,22 +40,3 @@ export const logoDefaults = {
   front_sub: { fontSize: "0.5em", padding: "0 1em", minHeight: "1em" },
   rear_sub: { fontSize: "0.5em", padding: "0 1em", minHeight: "1em" },
 } as const;
-
-/**
- * What `LogoEditable` sets on these slots outside the theme's rules: an
- * override can't change it, even with `!important` (`compileCatalogue` leaves
- * these properties out). The outer box is what they're positioned in; the
- * backdrop and the text fill it; each copy is
- * centred in it, the rear one behind, with transparent text (a theme colours
- * the rear text on `rear` and `rear_sub`).
- */
-const fills = ["position", "inset", "top", "right", "bottom", "left"] as const;
-export const logoLayout = {
-  root: ["position"],
-  backdrop: fills,
-  text: fills,
-  front_wrapper: [...fills, "transform", "translate"],
-  rear_wrapper: [...fills, "transform", "translate", "zIndex", "color"],
-} as const satisfies Partial<
-  Record<keyof typeof logoDefaults, readonly string[]>
->;

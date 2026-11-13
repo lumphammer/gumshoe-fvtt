@@ -4,9 +4,9 @@ import type { ThemeCatalogue } from "./themeV2.js";
 
 export const accepted: ThemeCatalogue = {
   badge: {
-    base: { borderRadius: 0, color: "accent", "--x": "1px" },
+    base: { borderRadius: 0, color: "var(--inv-accent)", "--x": "1px" },
     variants: { tone: { danger: { fontWeight: "bold" } } },
-    compoundVariants: [{ tone: "danger", weight: "strong", css: { color: "onDanger" } }],
+    compoundVariants: [{ tone: "danger", weight: "strong", css: { color: "var(--inv-on-danger)" } }],
   },
   // a slot recipe: styles by slot
   tabs: {
@@ -14,7 +14,7 @@ export const accepted: ThemeCatalogue = {
       tab: {
         background: "oklch(from var(--inv-surface) calc(l - 0.1) c h)",
         "&:hover": { textShadow: "0 0 0.3em var(--inv-feedback)" },
-        "&[data-selected]": { color: "accent" },
+        "&[data-selected]": { color: "var(--inv-accent)" },
         "@media (min-width: 40em)": { padding: 4 },
       },
     },
@@ -22,18 +22,18 @@ export const accepted: ThemeCatalogue = {
   // a boolean variant, by string or boolean
   partyCell: {
     variants: { header: { true: { position: "sticky" } } },
-    compoundVariants: [{ header: true, zero: false, css: { color: "text" } }],
+    compoundVariants: [{ header: true, zero: false, css: { color: "var(--inv-text)" } }],
   },
   // fallbacks
   input: { base: { width: ["1em", "1lh"] } },
   // a state layer, on a recipe without slots...
   button: { states: { hoverFeedback: { boxShadow: "none" } } },
   // ...and, by slot, on one with
-  card: { states: { focusRing: { root: { outlineColor: "accent" } } } },
+  card: { states: { focusRing: { root: { outlineColor: "var(--inv-accent)" } } } },
   // and everywhere in the theme
   states: {
     hoverFeedback: { boxShadow: "none", textDecoration: "underline" },
-    dropTarget: { '&[data-drop-state="over"]': { outlineColor: "danger" } },
+    dropTarget: { '&[data-drop-state="over"]': { outlineColor: "var(--inv-danger)" } },
   },
 };
 

@@ -24,16 +24,11 @@ import { floating, partyCell, surface } from "./src/themes/catalogue/surfaces";
 import { tabs } from "./src/themes/catalogue/tabs";
 import { displayText, mutedText, outcome } from "./src/themes/catalogue/text";
 import { toggle } from "./src/themes/catalogue/toggle";
-import {
-  type Palette,
-  paletteColorKeys,
-  paletteVar,
-} from "./src/themes/palette";
+import { paletteColorKeys, paletteVar } from "./src/themes/palette";
 
-type PaletteKey = Exclude<keyof Palette, "polarity">;
+type PaletteKey = Parameters<typeof paletteVar>[0];
 
 const v = (key: PaletteKey) => ({ value: `var(${paletteVar(key)})` });
-
 
 export default defineConfig({
   // conditions (_hover, _selected...) and utilities, but not preset-panda:

@@ -31,8 +31,6 @@ export const fogTheme = defineThemeV2({
           fontWeight: "bold",
           fontSize: "0.7em",
         },
-        front_wrapper: {},
-        rear_wrapper: {},
       },
     },
     appFrame: {
@@ -42,7 +40,7 @@ export const fogTheme = defineThemeV2({
           fontFamily: "'Averia Libre', sans-serif",
         },
         root: {
-          background: "wallpaper",
+          background: "var(--inv-wallpaper)",
         },
       },
     },

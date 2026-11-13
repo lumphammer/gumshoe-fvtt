@@ -8,14 +8,15 @@ import { fieldBase } from "./input";
  * Use for: a choice from a fixed or long list.
  * Not for: a handful of numbers side by side (CheckButtons), on/off (toggle).
  *
- * On `surfaceNested`, with its options on `surface`.
+ * On `surfaceNestedSolid`, with its options on `surfaceSolid`: a native
+ * dropdown doesn't show what's behind it.
  */
 export const select = defineRecipe({
   className: "inv-select",
   description: "A dropdown, for choosing one of a list.",
   base: {
     ...fieldBase,
-    background: "surfaceNested",
-    "& option": { background: "surface", color: "text" },
+    background: "surfaceNestedSolid",
+    "& option": { background: "surfaceSolid", color: "text" },
   },
 });

@@ -1,0 +1,43 @@
+/*
+ * The palette entries a theme can leave out, worked out from the ones it has
+ * to set. A theme's own values are inline on the themed root (and the window
+ * around it), so they beat these. See docs/theming.md.
+ */
+@layer system.base {
+  :where([data-inv-theme], [data-inv-frame]) {
+    --inv-surface-solid: var(--inv-surface);
+    --inv-surface-nested-solid: var(--inv-surface-nested);
+    --inv-text-muted: color-mix(
+      in srgb,
+      var(--inv-text) 70%,
+      var(--inv-surface-solid)
+    );
+    --inv-link: var(--inv-accent);
+
+    /* black or white, whichever reads better: white on anything darker than
+       72% lightness, which is where APCA's contrast changes its mind */
+    --inv-on-accent: oklch(
+      from var(--inv-accent) calc((0.72 - l) * 999) 0 0 / 1
+    );
+    --inv-on-danger: oklch(
+      from var(--inv-danger) calc((0.72 - l) * 999) 0 0 / 1
+    );
+    --inv-on-warning: oklch(
+      from var(--inv-warning) calc((0.72 - l) * 999) 0 0 / 1
+    );
+    --inv-on-success: oklch(
+      from var(--inv-success) calc((0.72 - l) * 999) 0 0 / 1
+    );
+    --inv-on-info: oklch(from var(--inv-info) calc((0.72 - l) * 999) 0 0 / 1);
+
+    --inv-radius: 0.25em;
+    --inv-elevation: 0 0 0.5em black;
+    --inv-body-font: inherit;
+    --inv-display-font: inherit;
+    --inv-display-case: none;
+    --inv-display-letter-spacing: normal;
+    --inv-card-gap: 0.5em;
+    --inv-card-gap-row: 0.5em;
+    --inv-card-gap-column: 0.5em;
+  }
+}
