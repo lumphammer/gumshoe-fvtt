@@ -74,6 +74,21 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
       base: {
         root: {
           "--accent": "oklch(0.7 0.06 195)",
+          "--gold": "oklch(0.56 0.105 67 / 50%)",
+          "--light-gold": "oklch(from var(--gold) 0.9 0.02 h)",
+          borderColor: "oklch(0.53 0.07 69.22 / 0.5)",
+          borderImage: `linear-gradient(to bottom right,
+          var(--light-gold) 0%,
+          var(--gold) 25%,
+          var(--light-gold) 50%,
+          var(--gold) 75%,
+          var(--light-gold) 100%
+            ) 30`,
+          borderWidth: "1px",
+          boxShadow: `
+            0px 0px 10px 5px #0007,
+            0px 0px 20px 10px #0007
+            `,
         },
       },
     },
@@ -85,13 +100,18 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
             backgroundPosition: "center",
             backgroundBlendMode: "normal",
             backgroundImage: [
+              `linear-gradient(to bottom, #0000 0%, #0000 60px, #000a 120px)`,
+              // "linear-gradient(oklch(from var(--accent) 0.05 0.1 h / 50%))",
+              `url(systems/${systemId}/assets/wallpaper/north_studio-marble-2398956_1280.webp)`,
+              // `url(systems/${systemId}/assets/wallpaper/annie-spratt-osuiatBDTww-unsplash.webp)`,
+            ].join(","),
+          },
+          small: {
+            backgroundImage: [
               // `linear-gradient(to top, #0000 0%, #0000 70%, #000f 100%)`,
               "linear-gradient(oklch(from var(--accent) 0.05 0.1 h / 50%))",
               `url(systems/${systemId}/assets/wallpaper/annie-spratt-osuiatBDTww-unsplash.webp)`,
             ].join(","),
-          },
-          small: {
-            backgroundImage: `url(systems/${systemId}/assets/wallpaper/marjanblan-5Ft4NWTmeJE-unsplash.webp)`,
           },
         },
       },
@@ -159,16 +179,18 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
       base: {
         //
         padding: "0.5em",
-        borderStyle: "solid",
+        // borderStyle: "solid",
         borderWidth: "1px",
-        borderColor: "var(--inv-line)",
+        // borderColor: "var(--inv-line)",
+        // background: "none",
+        // backgroundColor: "transparent",
         // borderRadius: "5px",
       },
       variants: {
         depth: {
           top: {
             //
-            background: "oklch(from var(--inv-surface) l c  h / 50%)",
+            // background: "oklch(from var(--inv-surface) l c  h / 50%)",
             // background: "oklch(from var(--accent) 0.15 0.005 h / 70%)",
           },
         },
@@ -352,10 +374,11 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
       base: {
         content: {
           //
-          background: "oklch(from var(--inv-surface) l  c h / 80%)",
+          background: "oklch(from var(--inv-surface) calc(l * 0.8)  c h / 20%)",
           borderStyle: "solid",
           borderWidth: "1px",
           borderColor: "var(--inv-line)",
+          backdropFilter: "blur(5px)",
           padding: "0.5em",
         },
         tab: {
