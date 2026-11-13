@@ -97,7 +97,7 @@ system's CSS, a module theme's from its module's, and a folder theme's from
 like the recipe's own Panda config:
 
 - `base`: the recipe's base (by slot, for a slot recipe: `tabs`, `card`,
-  `logo`, `checkbox`, `toggle`, `appFrame`).
+  `logo`, `checkbox`, `toggle`, `fieldGrid`, `appFrame`).
 - `variants`: `{ tone: { danger: {...} } }` (by slot, for a slot recipe).
 - `compoundVariants`: `[{ tone: "danger", weight: "strong", css: {...} }]`
   apply to an element with every variant they name, whether or not the recipe
@@ -232,6 +232,13 @@ doesn't show what's behind it.
 `tick` (`accent`, shown when the input before the box is checked). **`toggle`**:
 an on/off switch for a setting or mode. Slots `track` and `thumb`; on
 (`data-state="checked"`, from Radix) is `accent` and `onAccent`.
+
+**`fieldGrid`**: a form as a grid of labelled fields (`InputGrid`, `GridField`,
+`GridFieldStacked`). Slots `root` (the grid: its gaps), `label` (end-aligned,
+towards its control) and `control` (the cell holding the input). The grid's
+structure (its columns, and which column each part sits in) is the components'
+layout, not the recipe's, so a theme can't move a part out of its column.
+`stacked`: a label above its control, across both columns (`GridFieldStacked`).
 
 **`panel`**: a block of content on the sheet (stats, pools, a box of controls);
 use `Panel`, which owns the look and padding, while the call site owns layout.

@@ -4,10 +4,10 @@ import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { AbilityItem } from "../../module/items/exports";
 import { Button } from "../inputs/Button";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
-import { inputGridStyle } from "../inputs/InputGrid";
+import { inputGridClassName } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 import { Panel } from "../Panel";
-import { css } from "../../styled-system/css";
+import { css, cx } from "../../styled-system/css";
 
 export const PushPoolButton = memo(function PushPoolButton({
   item,
@@ -22,7 +22,7 @@ export const PushPoolButton = memo(function PushPoolButton({
   }, [push]);
 
   return (
-    <Panel className={css({ ...inputGridStyle, marginBottom: "0.5em" })}>
+    <Panel className={cx(inputGridClassName, css({ marginBottom: "0.5em" }))}>
       <GridFieldStacked>
         <div
           className={css({

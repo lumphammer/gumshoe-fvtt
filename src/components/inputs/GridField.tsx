@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { IdContext } from "../IdContext";
 import { Translate } from "../Translate";
 import { css, cx } from "../../styled-system/css";
+import { fieldGrid } from "../../styled-system/recipes";
 
 type GridFieldProps = {
   label?: ReactNode;
@@ -33,13 +34,17 @@ export const GridField = ({
   labelClassName,
 }: GridFieldProps) => {
   const id = useMemo(() => nanoid(), []);
+  const classes = fieldGrid();
   return (
     <IdContext.Provider value={id}>
       <label
         title={labelTitle}
         htmlFor={noLabel ? undefined : id}
-        // layout, which call sites can change (componentDefaults.css)
-        className={cx("inv-default-grid-field-label", labelClassName)}
+        className={cx(
+          classes.label,
+          css({ gridColumn: "label" }),
+          labelClassName,
+        )}
         // drag handlers
         onDragOver={onDragOver}
         onDragLeave={onDragEnd}
@@ -55,11 +60,9 @@ export const GridField = ({
       </label>
       <div
         className={cx(
+          classes.control,
+          css({ gridColumn: "control" }),
           className,
-          css({
-            gridColumn: "control",
-            alignSelf: "center",
-          }),
         )}
         // drag handlers
         onDragOver={onDragOver}

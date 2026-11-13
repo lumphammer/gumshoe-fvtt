@@ -16,7 +16,7 @@ import { Button, ToolbarButton } from "../inputs/Button";
 import { CheckButtons } from "../inputs/CheckButtons";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
-import { InputGrid, inputGridStyle } from "../inputs/InputGrid";
+import { InputGrid, inputGridClassName } from "../inputs/InputGrid";
 import { EmbeddedItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
 import type { ExtraSpend } from "./performAttack";
@@ -32,7 +32,7 @@ import {
 import { hasAmmoFor } from "./consumeWeaponAmmo";
 import { Callout } from "../Callout";
 import { Panel } from "../Panel";
-import { css } from "../../styled-system/css";
+import { css, cx } from "../../styled-system/css";
 
 const defaultSpendOptions = Array.from({ length: 8 })
   .fill(null)
@@ -409,7 +409,7 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
 
   return (
     <>
-      <Panel className={css({ ...inputGridStyle, marginBottom: "0.5em" })}>
+      <Panel className={cx(inputGridClassName, css({ marginBottom: "0.5em" }))}>
         {fireModes.length > 1 && (
           <GridField label="Fire mode">
             <CheckButtons

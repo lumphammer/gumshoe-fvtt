@@ -28,13 +28,13 @@ import { traumaTest } from "../../module/stability/traumaTest";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
-import { inputGridStyle } from "../inputs/InputGrid";
+import { inputGridClassName } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
 import { SpendButtons } from "../inputs/SpendButtons";
 import { EmbeddedItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
 import { Panel } from "../Panel";
-import { css } from "../../styled-system/css";
+import { css, cx } from "../../styled-system/css";
 
 /** the book's losses run from 1 to 8; a little room beyond */
 const potentialLosses = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -149,7 +149,7 @@ export const AbilityTest = memo(function AbilityTest({
   const spendLabel = bonds.length > 0 ? ability.name : undefined;
 
   return (
-    <Panel className={css({ ...inputGridStyle, marginBottom: "0.5em" })}>
+    <Panel className={cx(inputGridClassName, css({ marginBottom: "0.5em" }))}>
       {canTestTrauma && (
         <>
           <GridField label="Trauma">
