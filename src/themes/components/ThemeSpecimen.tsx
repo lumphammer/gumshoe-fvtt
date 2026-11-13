@@ -145,6 +145,7 @@ export const ThemeSpecimen = ({
   const [toggled, setToggled] = useState(true);
   const [tab, setTab] = useState("one");
   const cardClasses = card();
+  const layout = theme.layout ?? "standard";
   // what a window around a sheet gets from frame.ts: the frame's classes and
   // attribute, for the theme's appFrame overrides (some themes' wallpaper is
   // on the window), and the palette, without colorScheme
@@ -156,9 +157,9 @@ export const ThemeSpecimen = ({
   return (
     <div
       data-inv-frame={themeSlug(theme)}
-      data-inv-layout={theme.layout === "full-frame" ? "full-frame" : undefined}
+      data-inv-layout={layout === "full-frame" ? "full-frame" : undefined}
       className={cx(
-        appFrame({ layout: theme.layout }).root,
+        appFrame({ layout }).root,
         css({
           width: "var(--farm-column-width)",
           flex: "none",
@@ -189,7 +190,7 @@ export const ThemeSpecimen = ({
             opacity: 0.7,
           })}
         >
-          {id} · {theme.layout}
+          {id} · {layout}
         </div>
         <div className={css({ position: "relative", height: "[6em]" })}>
           <LogoEditable

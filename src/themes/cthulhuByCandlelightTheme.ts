@@ -120,6 +120,7 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
       base: {
         root: {
           containerType: "inline-size",
+          perspective: "none",
         },
         backdrop: {
           // backgroundImage:
@@ -155,11 +156,14 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
           // textShadow: "-1px -1px 1px white",
         },
         front: {
+          padding: "0",
           background: gradient,
           backgroundClip: "text",
         },
         front_sub: {
           fontSize: "0.5em",
+          padding: "0",
+          minHeight: "auto",
           background: gradient,
           backgroundClip: "text",
         },
@@ -167,10 +171,13 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
           lineHeight: "var(--line-height)",
         },
         rear: {
+          padding: "0",
           textShadow,
         },
         rear_sub: {
           fontSize: "0.5em",
+          padding: "0",
+          minHeight: "auto",
           textShadow,
         },
       },
@@ -182,7 +189,7 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
         // borderStyle: "solid",
         borderWidth: "1px",
         // borderColor: "var(--inv-line)",
-        // background: "none",
+        background: "none",
         // backgroundColor: "transparent",
         // borderRadius: "5px",
       },
@@ -193,172 +200,6 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
             // background: "oklch(from var(--inv-surface) l c  h / 50%)",
             // background: "oklch(from var(--accent) 0.15 0.005 h / 70%)",
           },
-        },
-      },
-    },
-    surface: {
-      compoundVariants: [
-        {
-          depth: "top",
-          solid: true,
-          css: {
-            backgroundColor: "rgb(238, 238, 238)",
-          },
-        },
-        {
-          depth: "nested",
-          solid: true,
-          css: {
-            backgroundColor: "rgb(227, 227, 227)",
-          },
-        },
-      ],
-    },
-    floating: {
-      base: {
-        background: "rgb(238, 238, 238)",
-      },
-    },
-    partyCell: {
-      compoundVariants: [
-        {
-          header: true,
-          odd: true,
-          zero: false,
-          css: {
-            background: "rgb(238, 238, 238)",
-          },
-        },
-        {
-          header: true,
-          odd: false,
-          zero: false,
-          css: {
-            background: "rgb(227, 227, 227)",
-          },
-        },
-        {
-          header: true,
-          odd: true,
-          zero: true,
-          css: {
-            background: "rgb(238, 174, 174)",
-          },
-        },
-        {
-          header: true,
-          odd: false,
-          zero: true,
-          css: {
-            background: "rgb(227, 202, 202)",
-          },
-        },
-        {
-          header: false,
-          odd: true,
-          zero: true,
-          css: {
-            background: "rgba(255, 127, 127, 0.50)",
-          },
-        },
-        {
-          header: false,
-          odd: false,
-          zero: true,
-          css: {
-            background: "rgba(255, 127, 127, 0.20)",
-          },
-        },
-      ],
-    },
-    select: {
-      base: {
-        font: "var(--inv-body-font)",
-        fontVariantLigatures: "none",
-        color: "var(--inv-text)",
-        padding: "0.1em 0.3em",
-        borderWidth: "1px",
-        borderStyle: "solid",
-        borderColor: "var(--inv-line)",
-        boxShadow: "none",
-        "&:is(:hover, [data-hover])": {
-          borderColor: "var(--inv-line)",
-        },
-        "&:is(:focus, [data-focus])": {
-          borderColor: "var(--inv-line)",
-          boxShadow: "none",
-        },
-        "&:is(:disabled, [disabled], [data-disabled], [aria-disabled=true])": {
-          opacity: 0.7,
-        },
-        background: "rgb(227, 227, 227)",
-        "& option": {
-          background: "rgb(238, 238, 238)",
-          color: "var(--inv-text)",
-        },
-      },
-    },
-    dragHandle: {
-      base: {
-        cursor: "n-resize",
-        borderRadius: "0.35em",
-        color: "var(--inv-text-muted)",
-        background: "rgb(238, 238, 238)",
-        opacity: 0.7,
-        "&:is(:hover, [data-hover])": {
-          opacity: 1,
-          transform: "scale(1.1)",
-          color: "var(--inv-accent)",
-        },
-      },
-    },
-    callout: {
-      variants: {
-        tone: {
-          neutral: {
-            background:
-              "color-mix(in srgb, var(--inv-line) 30%, rgb(238, 238, 238))",
-          },
-          danger: {
-            background:
-              "color-mix(in srgb, var(--inv-danger) 30%, rgb(238, 238, 238))",
-          },
-          warning: {
-            background:
-              "color-mix(in srgb, var(--inv-warning) 30%, rgb(238, 238, 238))",
-          },
-          success: {
-            background:
-              "color-mix(in srgb, var(--inv-success) 30%, rgb(238, 238, 238))",
-          },
-          info: {
-            background:
-              "color-mix(in srgb, var(--inv-info) 30%, rgb(238, 238, 238))",
-          },
-        },
-      },
-    },
-    card: {
-      base: {
-        root: {
-          border: "1px solid #766",
-          padding: "0.5em",
-          transformOrigin: "top",
-          backgroundColor: "rgb(238, 238, 238)",
-          "&.investigator-card-array-card:hover": {
-            boxShadow: "0 0 0.3em 0.2em #5effff",
-          },
-        },
-        supertitle: {
-          fontSize: "0.9em",
-        },
-        title: {},
-        subtitle: {
-          fontWeight: "bold",
-        },
-        description: {},
-        effect: {
-          fontStyle: "italic",
         },
       },
     },
@@ -382,6 +223,8 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
           padding: "0.5em",
         },
         tab: {
+          // from nothing: none of the catalogue's tab
+          all: "revert-layer",
           font: "var(--inv-display-font)",
           fontSize: "1.1em",
           textAlign: "center",
@@ -390,8 +233,8 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
           borderColor: "transparent",
 
           "&[data-selected]": {
-            borderColor: "accent",
-            color: "accent",
+            borderColor: "var(--inv-accent)",
+            color: "var(--inv-accent)",
           },
         },
         list: {
