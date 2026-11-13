@@ -65,7 +65,7 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
     info: "#2b6cb0",
     textMuted: "color-mix(in srgb, #433 70%, rgb(238, 238, 238))",
     onAccent: "black",
-    bodyFont: "16px 'Averia Libre', sans-serif",
+    bodyFont: "normal normal normal 16px 'Parkinsans', sans-serif",
     displayFont: "normal small-caps normal 1em 'Federo', serif",
     cardGap: "0.5em 0.5em",
   },
@@ -242,6 +242,17 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
           marginBottom: "5px",
           marginTop: "5px",
         },
+      },
+    },
+    input: {
+      base: {
+        background: `
+          linear-gradient(to right,
+            oklch(from var(--inv-surface) l c h / 100%) 0%,
+            oklch(from var(--inv-surface) l c h / 0%) 100%
+          )
+        `,
+        backdropFilter: "blur(5px)",
       },
     },
   },
