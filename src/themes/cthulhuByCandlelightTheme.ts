@@ -58,7 +58,7 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
     text: "oklch(from var(--accent) 0.8 0.005 h / 100%)",
     accent: "var(--accent)",
     line: "oklch(from var(--accent) 0.4 0.005 h / 100%)",
-    feedback: "#5effff",
+    feedback: "var(--accent)",
     danger: "#ff0000",
     warning: "#d68a00",
     success: "#008000",
@@ -253,6 +253,50 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
           )
         `,
         backdropFilter: "blur(5px)",
+      },
+    },
+    fieldGrid: {
+      base: {
+        label: {
+          fontWeight: "normal",
+          marginTop: "0.3em",
+        },
+        control: {
+          marginTop: "0.3em",
+        },
+      },
+    },
+    button: {
+      base: {
+        boxShadow: `
+          // 0 0 5px 0 oklch(from var(--inv-control) 0.8 c h) inset
+        `,
+        background: `
+          linear-gradient(to bottom,
+          oklch(from var(--inv-control) calc(l * 1.2) c h) 0%,
+          oklch(from var(--inv-control) l c h) 100%
+          )
+        `,
+        borderLeftWidth: "1px",
+        borderStyle: "solid",
+        // borderTopColor: "oklch(from var(--inv-accent) l c h)",
+        borderLeftColor: "oklch(from var(--inv-accent) l c h)",
+        // borderBottomColor: "oklch(from var(--inv-accent) l c h)",
+      },
+      variants: {
+        kind: {
+          pip: {
+            background: "var(--inv-control)",
+            margin: "1px",
+            padding: "3px",
+          },
+        },
+      },
+      states: {
+        hoverFeedback: {
+          boxShadow: "none",
+          outline: "2px solid var(--inv-accent)",
+        },
       },
     },
   },
