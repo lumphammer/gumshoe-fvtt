@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { type ReactNode, useId } from "react";
 
 import { IdContext } from "../IdContext";
 import { Toggle } from "../inputs/Toggle";
@@ -8,12 +8,18 @@ import { css } from "../../styled-system/css";
 type EditModeToggleProps = {
   editMode: boolean;
   setEditMode: (editMode: boolean) => void;
+  /** Anything else for the strip, on its left */
+  children?: ReactNode;
 };
 
-/** The switch between playing with a sheet's abilities and editing them */
+/**
+ * The switch between playing with a sheet's abilities and editing them, at the
+ * right of a strip which can hold other things on its left
+ */
 export const EditModeToggle = ({
   editMode,
   setEditMode,
+  children,
 }: EditModeToggleProps) => {
   const id = useId();
   return (
@@ -26,7 +32,8 @@ export const EditModeToggle = ({
         marginBottom: "0.5em",
       })}
     >
-      <label htmlFor={id}>
+      {children}
+      <label htmlFor={id} className={css({ marginLeft: "auto" })}>
         <Translate>Edit mode</Translate>
       </label>
       <IdContext.Provider value={id}>

@@ -14,8 +14,13 @@ import { WeaponAttackPanel } from "../../equipment/WeaponAttackPanel";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { WeaponRow } from "./WeaponRow";
-import { sectionHeading, tableHeader } from "../../../styled-system/recipes";
+import {
+  panel,
+  sectionHeading,
+  tableHeader,
+} from "../../../styled-system/recipes";
 import { css, cx } from "../../../styled-system/css";
+import { PCSheetCombatStats } from "../PCSheetPanels";
 
 // the "&&" beats Foundry's own h2 margins
 const headingStyle = { "&&": { margin: 0 } };
@@ -66,6 +71,8 @@ export const WeaponsArea = memo(function WeaponsArea({
       })}
       style={{ height: fillHeight ? "100%" : undefined }}
     >
+      <PCSheetCombatStats />
+
       {/* the list gets whatever the ready weapon leaves, scrolling if need be */}
       <div
         className={css(
@@ -175,7 +182,7 @@ export const WeaponsArea = memo(function WeaponsArea({
           )}
         >
           {readyWeapon ? (
-            <>
+            <div className={panel()}>
               <div
                 className={cx(
                   sectionHeading(),
@@ -208,7 +215,7 @@ export const WeaponsArea = memo(function WeaponsArea({
                     over */}
                 <WeaponAttackPanel key={readyWeapon.id} weapon={readyWeapon} />
               </div>
-            </>
+            </div>
           ) : (
             <i>
               <Translate>Ready a weapon to attack with it</Translate>
