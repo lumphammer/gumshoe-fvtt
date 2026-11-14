@@ -248,12 +248,13 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
       base: {
         background: `
           linear-gradient(to right,
-            oklch(from var(--inv-control) l c  h / 100%) 0%,
-            oklch(from var(--inv-control) l c  h / 0%) 50%,
-            oklch(from var(--inv-control) l c  h / 100%) 100%
+            oklch(from var(--inv-control) 0.7 c  h / 30%) 0%,
+            oklch(from var(--inv-control) 0.7 c  h / 0%) 50%,
+            oklch(from var(--inv-control) 0.7 c  h / 30%) 100%
           )
         `,
-        backdropFilter: "blur(5px)",
+        // backgroundBlendMode: "difference",
+        backdropFilter: "blur(3px)",
         borderWidth: "0 0 1px 0",
       },
       states: {
@@ -262,9 +263,9 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
           borderColor: "var(--inv-accent)",
           background: `
             linear-gradient(to right,
-              oklch(from var(--inv-accent) 0.3 0.03 h / 100%) 0%,
-              oklch(from var(--inv-accent) 0.3 0.03 h / 0%) 50%,
-              oklch(from var(--inv-accent) 0.3 0.03 h / 100%) 100%
+              oklch(from var(--inv-accent) 0.7 0.03 h / 30%) 0%,
+              oklch(from var(--inv-accent) 0.7 0.03 h / 0%) 50%,
+              oklch(from var(--inv-accent) 0.7 0.03 h / 30%) 100%
             )
           `,
         },
@@ -295,6 +296,8 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
         borderLeftWidth: "1px",
         borderStyle: "solid",
         borderLeftColor: "oklch(from var(--inv-accent) l c h)",
+        borderRightWidth: "1px",
+        borderRightColor: "oklch(from var(--inv-control) 0.1 c h)",
       },
       variants: {
         kind: {
@@ -329,6 +332,48 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
             oklch(from var(--inv-control) calc(l * 1.2) c h) 100%
             )
           `,
+        },
+      },
+    },
+    checkbox: {
+      base: {
+        //
+      },
+    },
+    toggle: {
+      base: {
+        thumb: {
+          background: `
+            radial-gradient(farthest-corner at 5px 5px, #fff7 0%, transparent 50% ),
+            linear-gradient(to top, oklch(from var(--inv-control) 0.5 c h) 0%)
+          `,
+          "&[data-state=checked]": {
+            background: `
+              radial-gradient(farthest-corner at 5px 5px, #fff7 0%, transparent 50% ),
+              linear-gradient(to top, oklch(from var(--inv-accent) 0.3 c h) 0%)
+            `,
+          },
+        },
+        track: {
+          // borderWidth: "3px",
+          // borderColor: "var(--inv-line)",
+          // borderStyle: "inset",
+          boxShadow: `
+            3px 3px 3px 0 #0007 inset
+          `,
+        },
+      },
+      states: {
+        hoverFeedback: {
+          thumb: {
+            //
+          },
+          track: {
+            boxShadow: `
+              3px 3px 3px 0 #0007 inset
+            `,
+            borderColor: "var(--inv-accent)",
+          },
         },
       },
     },
