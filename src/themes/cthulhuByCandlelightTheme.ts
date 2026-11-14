@@ -279,23 +279,41 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
         `,
         borderLeftWidth: "1px",
         borderStyle: "solid",
-        // borderTopColor: "oklch(from var(--inv-accent) l c h)",
         borderLeftColor: "oklch(from var(--inv-accent) l c h)",
-        // borderBottomColor: "oklch(from var(--inv-accent) l c h)",
       },
       variants: {
         kind: {
           pip: {
             background: "var(--inv-control)",
             margin: "1px",
-            padding: "3px",
+            padding: "1px 3px 0px 0px",
+            textAlign: "right",
           },
         },
       },
+      compoundVariants: [
+        {
+          kind: "pip",
+          states: {
+            hoverFeedback: {
+              boxShadow: "none",
+              outline: "2px solid oklch(from var(--inv-accent) 0.6 c h)",
+            },
+          },
+          css: {
+            //
+          },
+        }, //
+      ],
       states: {
         hoverFeedback: {
           boxShadow: "none",
-          outline: "2px solid var(--inv-accent)",
+          background: `
+            linear-gradient(to bottom,
+            oklch(from var(--inv-control) l c h) 0%,
+            oklch(from var(--inv-control) calc(l * 1.2) c h) 100%
+            )
+          `,
         },
       },
     },
