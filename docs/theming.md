@@ -102,7 +102,9 @@ like the recipe's own Panda config:
 - `compoundVariants`: `[{ tone: "danger", weight: "strong", css: {...} }]`
   apply to an element with every variant they name, whether or not the recipe
   has a compound variant for them. A boolean variant's value is `true` or
-  `"true"`.
+  `"true"`. Beside `css`, or instead of it, `states` changes the state layers
+  on that element only: `[{ kind: "pip", states: { hoverFeedback: {...} } }]`
+  is the hover feedback of pip buttons.
 - `states`: `{ hoverFeedback: {...} }` (by slot, for a slot recipe) changes the
   state layers on this recipe's elements only. `states` beside the recipes
   changes them everywhere in the theme (State layers, below).
@@ -376,7 +378,9 @@ still loses to the layers after it (focus is last, so it always shows).
   (`{ hoverFeedback: { boxShadow: "none" } }` turns the glow off and leaves the
   pointer). A recipe's `states`
   (`tabs: { states: { hoverFeedback: { tab: {...} } } }`) name its class, and
-  come after the theme-wide ones, so they win.
+  come after the theme-wide ones, so they win. A compound variant's `states`
+  (`button: { compoundVariants: [{ kind: "pip", states: {...} }] }`) name the
+  variants' classes too, so they win over the recipe's.
 - `&` is the element in that state: `[data-interactive]:hover` for
   `hoverFeedback`; either drop state for `dropTarget`
   (`'&[data-drop-state="over"]'` for over only); `:focus-visible` for

@@ -23,12 +23,18 @@ export interface Rule {
 /** A style, or a style for each slot of a slot recipe. */
 type Styles = ThemeStyle | Record<string, ThemeStyle>;
 
+/** The state layers' styles, by state. */
+type States = Record<string, Styles | undefined>;
+
 /** A recipe's override, as loosely as a theme from a JSON file has it. */
 interface Override {
   base?: Styles;
   variants?: Record<string, Record<string, Styles | undefined> | undefined>;
-  compoundVariants?: readonly ({ css?: Styles } & Record<string, unknown>)[];
-  states?: Record<string, Styles | undefined>;
+  compoundVariants?: readonly ({ css?: Styles; states?: States } & Record<
+    string,
+    unknown
+  >)[];
+  states?: States;
 }
 
 interface Shape {
@@ -163,7 +169,8 @@ export function catalogueRules(
       }
     }
 
-    (override.compoundVariants ?? []).forEach(({ css, ...conditions }, i) => {
+    (override.compoundVariants ?? []).forEach((compound, i) => {
+      const { css, states, ...conditions } = compound;
       const where = `${recipeName}.compoundVariants[${i}]`;
       const chosen = Object.entries(conditions);
       const unknown = chosen.find(([variant, option]) => {
@@ -177,21 +184,37 @@ export function catalogueRules(
         );
         return;
       }
-      each(css, where, (style, where, slot) => {
-        // an element with all of the variants' classes: the first as it is,
-        // the others in :where(), so it's as specific as one class, like
-        // Panda's own compound classes
+      // an element with all of the variants' classes: the first as it is,
+      // the others in :where(), so it's as specific as one class, like
+      // Panda's own compound classes
+      const withVariants = (slot?: string) => {
         const [first, ...others] = chosen.map(([variant, option]) =>
           variantClass(variant, String(option), slot),
         );
+        return others.length > 0 ? `${first}:where(${others.join("")})` : first;
+      };
+      each(css, where, (style, where, slot) =>
         add(
           where,
           layer("compound_variants"),
-          [others.length > 0 ? `${first}:where(${others.join("")})` : first],
+          [withVariants(slot)],
           style,
           frame,
+        ),
+      );
+      // its states: the recipe's class too, so they're more specific than
+      // the recipe's own `states` (in the same sub-layer), and go over them
+      for (const [state, styles] of Object.entries(states ?? {})) {
+        each(styles, `${where}.states`, (style, _, slot) =>
+          addState(
+            `${where}.states`,
+            state,
+            `${element(slot)}${withVariants(slot)}`,
+            style,
+            frame,
+          ),
         );
-      });
+      }
     });
 
     for (const [state, styles] of Object.entries(override.states ?? {})) {

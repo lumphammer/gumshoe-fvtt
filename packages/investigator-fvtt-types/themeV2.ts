@@ -46,13 +46,22 @@ type PartStyles<S extends RecipeShape> = [S["slots"]] extends [never]
 /** A variant's value: a boolean variant's can be a boolean too. */
 type VariantValue<V extends string> = V extends "true" | "false" ? V | boolean : V;
 
-/** A compound variant: at least one of the recipe's variants, and its css. */
+/** The state layers' styles, for a recipe's elements. */
+type StateStyles<S extends RecipeShape> = { [State in StateLayer]?: PartStyles<S> };
+
+/**
+ * A compound variant: at least one of the recipe's variants, and its css,
+ * its states, or both.
+ */
 type CompoundVariant<S extends RecipeShape> = {
   [Named in keyof S["variants"]]: {
     [Variant in Named]: VariantValue<S["variants"][Variant]>;
   } & {
     [Variant in keyof S["variants"]]?: VariantValue<S["variants"][Variant]>;
-  } & { css: PartStyles<S> };
+  } & (
+      | { css: PartStyles<S>; states?: StateStyles<S> }
+      | { css?: PartStyles<S>; states: StateStyles<S> }
+    );
 }[keyof S["variants"]];
 
 /**
@@ -64,7 +73,10 @@ type CompoundVariant<S extends RecipeShape> = {
  * - `base`: the recipe's base (for a slot recipe, by slot).
  * - `variants`: the recipe's variants.
  * - `compoundVariants`: an element with every one of the variants they
- *   name, whether or not the recipe has a compound variant for them.
+ *   name, whether or not the recipe has a compound variant for them: its
+ *   look (`css`), and the state layers on it (`states`, like the recipe's
+ *   own, which they go over). One variant is enough: a variant's own
+ *   states are `[{ kind: "pip", states: {...} }]`.
  * - `states`: the state layers, for this recipe's elements only (by slot,
  *   for a slot recipe): `&` is the element in that state. They go over the
  *   theme's own `states`, and still under the layers after them (focus
@@ -74,7 +86,7 @@ type CompoundVariant<S extends RecipeShape> = {
  */
 export type RecipeOverride<S extends RecipeShape> = {
   base?: PartStyles<S>;
-  states?: { [State in StateLayer]?: PartStyles<S> };
+  states?: StateStyles<S>;
 } & ([keyof S["variants"]] extends [never]
   ? { variants?: never; compoundVariants?: never }
   : {

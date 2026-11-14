@@ -6,7 +6,9 @@ export const accepted: ThemeCatalogue = {
   badge: {
     base: { borderRadius: 0, color: "var(--inv-accent)", "--x": "1px" },
     variants: { tone: { danger: { fontWeight: "bold" } } },
-    compoundVariants: [{ tone: "danger", weight: "strong", css: { color: "var(--inv-on-danger)" } }],
+    compoundVariants: [
+      { tone: "danger", weight: "strong", css: { color: "var(--inv-on-danger)" } },
+    ],
   },
   // a slot recipe: styles by slot
   tabs: {
@@ -30,6 +32,16 @@ export const accepted: ThemeCatalogue = {
   button: { states: { hoverFeedback: { boxShadow: "none" } } },
   // ...and, by slot, on one with
   card: { states: { focusRing: { root: { outlineColor: "var(--inv-accent)" } } } },
+  // a variant's states (with or without css), and by slot
+  panel: {
+    compoundVariants: [
+      { depth: "nested", states: { hoverFeedback: { boxShadow: "none" } } },
+      { depth: "top", css: { color: "red" }, states: { focusRing: { outlineWidth: 3 } } },
+    ],
+  },
+  fieldGrid: {
+    compoundVariants: [{ stacked: true, states: { focusRing: { label: { outlineWidth: 3 } } } }],
+  },
   // and everywhere in the theme
   states: {
     hoverFeedback: { boxShadow: "none", textDecoration: "underline" },
@@ -54,8 +66,12 @@ export const refused: ThemeCatalogue[] = [
   { tabs: { base: { color: "red" } } },
   // @ts-expect-error -- a compound variant's value has to be one of the variant's
   { badge: { compoundVariants: [{ tone: "scary", css: {} }] } },
-  // @ts-expect-error -- a compound variant needs its css
+  // @ts-expect-error -- a compound variant needs its css, or its states
   { badge: { compoundVariants: [{ tone: "danger" }] } },
+  // @ts-expect-error -- no such state on a compound variant
+  { badge: { compoundVariants: [{ tone: "danger", states: { pressed: {} } }] } },
+  // @ts-expect-error -- a slot recipe's compound variant's states are by slot
+  { fieldGrid: { compoundVariants: [{ stacked: true, states: { focusRing: { color: "red" } } }] } },
   // @ts-expect-error -- a compound variant names at least one variant
   { badge: { compoundVariants: [{ css: { color: "red" } }] } },
   // @ts-expect-error -- a recipe without variants has no variant overrides

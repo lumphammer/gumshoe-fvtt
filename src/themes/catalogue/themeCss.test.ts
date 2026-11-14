@@ -47,6 +47,46 @@ describe("catalogueRules", () => {
     );
   });
 
+  test("a compound variant's states are the state layer's, on an element with its variants", () => {
+    expect(
+      rules({
+        button: {
+          states: { hoverFeedback: style },
+          compoundVariants: [
+            { kind: "pip", states: { hoverFeedback: style } },
+            { kind: "pip", css: style, states: { focusRing: style } },
+          ],
+        },
+        fieldGrid: {
+          compoundVariants: [
+            { stacked: true, states: { focusRing: { label: style } } },
+          ],
+        },
+      }).map(({ layer, selectors }) => [layer, selectors[0]]),
+    ).toEqual([
+      [
+        "system.states.hover.theme",
+        expect.stringMatching(
+          /^\.inv-button\.inv-button--kind_pip\[data-interactive].*:hover$/,
+        ),
+      ],
+      ["system.recipes.compound_variants", ".inv-button--kind_pip"],
+      [
+        "system.states.focus.theme",
+        ".inv-button.inv-button--kind_pip:focus-visible",
+      ],
+      // the recipe's own, which the variant's go over: they're more specific
+      [
+        "system.states.hover.theme",
+        expect.stringMatching(/^\.inv-button\[data-interactive].*:hover$/),
+      ],
+      [
+        "system.states.focus.theme",
+        ".inv-field-grid__label.inv-field-grid__label--stacked_true:focus-visible",
+      ],
+    ]);
+  });
+
   test("the app frame's rules are the frame's", () => {
     expect(rules({ appFrame: { base: { root: style } } })[0].frame).toBe(true);
     expect(rules({ badge: { base: style } })[0].frame).toBe(false);
@@ -57,10 +97,16 @@ describe("catalogueRules", () => {
     const out = catalogueRules(
       {
         badger: { base: style },
-        badge: { variants: { tone: { scary: style } } },
+        badge: {
+          variants: { tone: { scary: style } },
+          compoundVariants: [
+            { tone: "danger", states: { pressed: style } },
+            { tone: "scary", states: { hoverFeedback: style } },
+          ],
+        },
         tabs: { base: { tub: style } },
         states: { pressed: style },
-      } as ThemeCatalogue,
+      } as unknown as ThemeCatalogue,
       (message) => warnings.push(message),
     );
     expect(out).toEqual([]);
@@ -68,6 +114,8 @@ describe("catalogueRules", () => {
       'states: no such state "pressed"',
       'no such recipe "badger"',
       "badge.variants.tone.scary: no such variant value",
+      'badge.compoundVariants[0].states: no such state "pressed"',
+      'badge.compoundVariants[1]: no such variant value for "tone"',
       'tabs.base: no such slot "tub"',
     ]);
   });
