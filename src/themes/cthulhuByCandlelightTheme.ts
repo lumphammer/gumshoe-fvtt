@@ -59,7 +59,7 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
     accent: "var(--accent)",
     line: "oklch(from var(--accent) 0.4 0.005 h / 100%)",
     feedback: "var(--accent)",
-    danger: "#ff0000",
+    danger: "#cc0000",
     warning: "#d68a00",
     success: "#008000",
     info: "#2b6cb0",
