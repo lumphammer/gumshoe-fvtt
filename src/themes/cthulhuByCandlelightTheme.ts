@@ -248,11 +248,26 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
       base: {
         background: `
           linear-gradient(to right,
-            oklch(from var(--inv-surface) l c h / 100%) 0%,
-            oklch(from var(--inv-surface) l c h / 0%) 100%
+            oklch(from var(--inv-control) l c  h / 100%) 0%,
+            oklch(from var(--inv-control) l c  h / 0%) 50%,
+            oklch(from var(--inv-control) l c  h / 100%) 100%
           )
         `,
         backdropFilter: "blur(5px)",
+        borderWidth: "0 0 1px 0",
+      },
+      states: {
+        focusRing: {
+          outline: "none",
+          borderColor: "var(--inv-accent)",
+          background: `
+            linear-gradient(to right,
+              oklch(from var(--inv-accent) 0.3 0.03 h / 100%) 0%,
+              oklch(from var(--inv-accent) 0.3 0.03 h / 0%) 50%,
+              oklch(from var(--inv-accent) 0.3 0.03 h / 100%) 100%
+            )
+          `,
+        },
       },
     },
     fieldGrid: {
