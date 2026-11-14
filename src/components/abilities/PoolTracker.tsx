@@ -46,10 +46,7 @@ export const PoolTracker = memo(function PoolTracker({
     <div
       data-testid="pool-tracker"
       style={{
-        width: "8em",
-        height: "auto",
         display: "grid",
-        position: "relative",
         gridTemplateColumns: "[start] 1fr 1fr 1fr 1fr [end]",
       }}
     >
