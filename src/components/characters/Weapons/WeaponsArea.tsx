@@ -14,12 +14,9 @@ import { WeaponAttackPanel } from "../../equipment/WeaponAttackPanel";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { WeaponRow } from "./WeaponRow";
-import {
-  panel,
-  sectionHeading,
-  tableHeader,
-} from "../../../styled-system/recipes";
+import { sectionHeading, tableHeader } from "../../../styled-system/recipes";
 import { css, cx } from "../../../styled-system/css";
+import { Panel } from "../../Panel";
 
 // the "&&" beats Foundry's own h2 margins
 const headingStyle = { "&&": { margin: 0 } };
@@ -179,7 +176,7 @@ export const WeaponsArea = memo(function WeaponsArea({
           )}
         >
           {readyWeapon ? (
-            <div className={panel()}>
+            <Panel>
               <div
                 className={cx(
                   sectionHeading(),
@@ -212,7 +209,7 @@ export const WeaponsArea = memo(function WeaponsArea({
                     over */}
                 <WeaponAttackPanel key={readyWeapon.id} weapon={readyWeapon} />
               </div>
-            </div>
+            </Panel>
           ) : (
             <i>
               <Translate>Ready a weapon to attack with it</Translate>
