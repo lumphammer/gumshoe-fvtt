@@ -15,7 +15,12 @@ import { TabContainer } from "../TabContainer";
 import { AbilitiesAreaEdit } from "./AbilitiesAreaEdit";
 import { AbilitiesAreaPlay } from "./AbilitiesAreaPlay";
 import { EditModeToggle } from "./EditModeToggle";
-import { NPCSheetHeader, NPCSheetSidebar } from "./NPCSheetPanels";
+import { InitiativeAbilityPicker } from "./InitiativeAbilityPicker";
+import {
+  NPCSheetHeader,
+  NPCSheetRefreshButton,
+  NPCSheetSidebar,
+} from "./NPCSheetPanels";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
 import { WeaponsAreaEdit } from "./Weapons/WeaponsAreaEdit";
 import { css } from "../../styled-system/css";
@@ -112,7 +117,9 @@ export const NPCSheetFull = memo(function NPCSheetFull() {
                   <EditModeToggle
                     editMode={abilitiesEditMode}
                     setEditMode={setAbilitiesEditMode}
-                  />
+                  >
+                    <NPCSheetRefreshButton />
+                  </EditModeToggle>
                   {abilitiesEditMode ? (
                     <AbilitiesAreaEdit npcMode />
                   ) : (
@@ -137,7 +144,9 @@ export const NPCSheetFull = memo(function NPCSheetFull() {
                   <EditModeToggle
                     editMode={combatEditMode}
                     setEditMode={setCombatEditMode}
-                  />
+                  >
+                    <InitiativeAbilityPicker actor={actor} inline />
+                  </EditModeToggle>
                   {combatEditMode ? (
                     <WeaponsAreaEdit />
                   ) : (

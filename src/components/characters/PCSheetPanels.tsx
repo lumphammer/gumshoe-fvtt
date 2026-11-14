@@ -16,15 +16,13 @@ import { GridField } from "../inputs/GridField";
 import { IndexedAsyncTextInput } from "../inputs/IndexedAsyncTextInput";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
-import { InitiativeAbilityPicker } from "./InitiativeAbilityPicker";
 import { LogoEditable } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { PersonalDetailField } from "./PersonalDetailField";
-import { StatField } from "./StatField";
+import { CombatStats } from "./Weapons/CombatStats";
 import { TrackersArea } from "./TrackersArea";
 import { Panel } from "../Panel";
-import { css, cx } from "../../styled-system/css";
-import { panel } from "../../styled-system/recipes";
+import { css } from "../../styled-system/css";
 
 // The PC sheet's panels subscribe independently to the data they display.
 // Foundry root re-renders are disabled; descendants keep themselves current.
@@ -211,45 +209,6 @@ export const PCSheetRefreshButtons = memo(function PCSheetRefreshButtons() {
 });
 
 /**
- * The PC's stats (e.g. Hit threshold) and initiative ability: a strip along the
- * top of the combat tab, or a column in the pools panel when there's no combat
- * tab
- */
-export const PCSheetCombatStats = memo(function PCSheetCombatStats({
-  inColumn = false,
-}: {
-  inColumn?: boolean;
-}) {
-  const { actor } = useActorSheetContext();
-  assertPCActor(actor);
-  const pcStats = useSettings((s) => s.pcStats);
-
-  return (
-    <div
-      className={cx(
-        panel(),
-        css(
-          inColumn
-            ? { display: "flex", flexDirection: "column", gap: "0.5em" }
-            : {
-                display: "flex",
-                flexWrap: "wrap",
-                alignItems: "center",
-                gap: "0.5em 1.5em",
-                marginBottom: "0.5em",
-              },
-        ),
-      )}
-    >
-      {Object.keys(pcStats).map((key) => (
-        <StatField key={key} id={key} stat={pcStats[key]} inline={!inColumn} />
-      ))}
-      <InitiativeAbilityPicker actor={actor} inline={!inColumn} />
-    </div>
-  );
-});
-
-/**
  * The pool trackers (and Moribund World's injury status). The stats and
  * initiative ability join them when there's no combat tab to hold them.
  */
@@ -285,7 +244,7 @@ export const PCSheetPools = memo(function PCSheetPools() {
         />
       )}
       <TrackersArea />
-      {noCombatTab && <PCSheetCombatStats inColumn />}
+      {noCombatTab && <CombatStats inColumn />}
     </Panel>
   );
 });

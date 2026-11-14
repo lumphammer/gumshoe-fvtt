@@ -29,6 +29,7 @@ import {
 } from "./PCSheetPanels";
 import { SettingArea } from "./SettingsArea";
 import { useSettingsButton } from "./useSettingsButton";
+import { CombatStats } from "./Weapons/CombatStats";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
 import { css } from "../../styled-system/css";
 
@@ -132,6 +133,7 @@ export const PCSheetFull = memo(function PCSheetFull() {
                     height: "100%",
                   })}
                 >
+                  <CombatStats />
                   <div className={css({ flex: "[1]", minHeight: 0 })}>
                     <WeaponsArea fillHeight />
                   </div>

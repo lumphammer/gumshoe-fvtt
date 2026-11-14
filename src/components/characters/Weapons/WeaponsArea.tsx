@@ -20,7 +20,6 @@ import {
   tableHeader,
 } from "../../../styled-system/recipes";
 import { css, cx } from "../../../styled-system/css";
-import { PCSheetCombatStats } from "../PCSheetPanels";
 
 // the "&&" beats Foundry's own h2 margins
 const headingStyle = { "&&": { margin: 0 } };
@@ -71,8 +70,6 @@ export const WeaponsArea = memo(function WeaponsArea({
       })}
       style={{ height: fillHeight ? "100%" : undefined }}
     >
-      <PCSheetCombatStats />
-
       {/* the list gets whatever the ready weapon leaves, scrolling if need be */}
       <div
         className={css(

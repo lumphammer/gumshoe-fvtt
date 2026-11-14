@@ -1,6 +1,7 @@
 import { type ReactNode, useId } from "react";
 
 import { IdContext } from "../IdContext";
+import { Panel } from "../Panel";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 import { css } from "../../styled-system/css";
@@ -23,7 +24,7 @@ export const EditModeToggle = ({
 }: EditModeToggleProps) => {
   const id = useId();
   return (
-    <div
+    <Panel
       className={css({
         display: "flex",
         justifyContent: "flex-end",
@@ -40,6 +41,6 @@ export const EditModeToggle = ({
         {/* observers can look at edit mode too, with its inputs disabled */}
         <Toggle checked={editMode} onChange={setEditMode} alwaysEnabled />
       </IdContext.Provider>
-    </div>
+    </Panel>
   );
 };
