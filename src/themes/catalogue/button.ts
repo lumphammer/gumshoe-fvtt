@@ -16,9 +16,7 @@ import { paletteVar } from "../palette";
  *   Bond", "Test"). One per panel at most.
  * - `toolbar`: compact, for a row of tools.
  * - `ghost`: no fill or border, just the ink: icon buttons such as delete.
- * - `pip`: one of a row of small number picks (a pool tracker's boxes):
- *   the body text, no padding, square, on `surface`; pressed when it's the
- *   current value.
+ * - `pip`: one of a row of small number picks (a pool tracker's boxes).
  *
  * States (`buttonStates`): `pressed` (`aria-pressed="true"`, or
  * `data-pressed` on a label standing for a checked radio) shows as
@@ -58,6 +56,8 @@ export const button = defineRecipe({
         borderRadius: "0",
         borderColor: "transparent",
         background: "surface",
+        textAlign: "right",
+        paddingRight: "0.5em",
       },
     },
   },

@@ -2,7 +2,6 @@ import { memo, useCallback } from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
 import { button } from "../../styled-system/recipes";
-import { css, cx } from "../../styled-system/css";
 
 type PoolCheckboxProps = {
   value: number;
@@ -28,16 +27,7 @@ export const PoolCheckbox = memo(function PoolCheckbox({
       // a pip, pressed when it's the pool's value
       data-interactive
       data-pressed={selected || undefined}
-      className={cx(
-        button({ kind: "pip" }),
-        css({
-          width: "auto",
-          height: "1.2em",
-          textAlign: "center",
-          display: "inline-block",
-          position: "relative",
-        }),
-      )}
+      className={button({ kind: "pip" })}
     >
       {value}
     </a>
