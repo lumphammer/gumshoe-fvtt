@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 
 import { useDragStart } from "../../hooks/useDragStart";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { badge } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 interface SlugProps {
   onClick?: () => void;
@@ -11,7 +12,6 @@ interface SlugProps {
 }
 
 export const Slug = ({ onClick, item, children }: SlugProps) => {
-  const theme = useContext(ThemeContext);
   const onDragStart = useDragStart();
 
   return (
@@ -24,36 +24,36 @@ export const Slug = ({ onClick, item, children }: SlugProps) => {
       data-item-id={item?.id}
       onDragStart={onDragStart}
       draggable="true"
-      css={{
-        display: "block",
-        borderRadius: "0.7em",
-        padding: "0.1em 0.5em",
-        margin: "0.1em 0.1em 0.1em 0",
-        backgroundColor: theme.colors.backgroundButton,
-        color: theme.colors.accent,
-        lineHeight: "1em",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        // width: "100%",
-        borderStyle: "solid",
-        borderWidth: "1px",
-        borderColor: theme.colors.accent,
-        flex: 1,
-        minWidth: "max-content",
-      }}
+      data-interactive={onClick !== undefined || undefined}
+      className={cx(
+        badge({ weight: "strong" }),
+        css({
+          display: "block",
+          // the size of the text around it, not a badge's smaller size
+          fontSize: "inherit",
+          padding: "0.1em 0.5em",
+          margin: "0.1em 0.1em 0.1em 0",
+          lineHeight: "1em",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          // width: "100%",
+          flex: "[1]",
+          minWidth: "max-content",
+        }),
+      )}
     >
       {item && (
         <div
-          css={{
+          className={css({
             display: "inline-block",
             height: "1em",
             width: "1em",
             marginRight: "0.5em",
 
-            backgroundImage: `url(${item.img})`,
             backgroundSize: "cover",
-          }}
+          })}
+          style={{ backgroundImage: `url(${item.img})` }}
         />
       )}
       {children}

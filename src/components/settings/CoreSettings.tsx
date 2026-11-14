@@ -9,6 +9,7 @@ import { DispatchContext, StateContext } from "./contexts";
 import { SettingsGridField } from "./SettingsGridField";
 import { store } from "./store";
 import type { Setters } from "./types";
+import { css } from "../../styled-system/css";
 
 interface CoreSettingsProps {
   setters: Setters;
@@ -39,10 +40,10 @@ export const CoreSettings = ({ setters }: CoreSettingsProps) => {
   );
   return (
     <InputGrid
-      css={{
-        flex: 1,
+      className={css({
+        flex: "[1]",
         overflow: "auto",
-      }}
+      })}
     >
       <SettingsGridField label="System Preset">
         <Select value={settings.systemPreset} onChange={onSelectPreset}>

@@ -1,4 +1,4 @@
-import { memo, type ReactNode, useCallback, useContext, useState } from "react";
+import { memo, type ReactNode, useCallback, useState } from "react";
 
 import * as c from "../../constants";
 import { getTranslated, getTranslatedOr } from "../../functions/getTranslated";
@@ -11,13 +11,12 @@ import { isPCActor } from "../../module/actors/pc";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { findGeneralAbilityIn } from "../../module/items/findGeneralAbility";
 import type { WeaponItem } from "../../module/items/weapon";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button, ToolbarButton } from "../inputs/Button";
 import { CheckButtons } from "../inputs/CheckButtons";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
-import { InputGrid } from "../inputs/InputGrid";
+import { InputGrid, inputGridStyle } from "../inputs/InputGrid";
 import { EmbeddedItemSheetLink } from "../ItemSheetLink";
 import { Translate } from "../Translate";
 import type { ExtraSpend } from "./performAttack";
@@ -31,7 +30,10 @@ import {
   getSpendAfterRange,
 } from "../../module/attacks/rules";
 import { hasAmmoFor } from "./consumeWeaponAmmo";
-import { Hint } from "../inputs/Hint";
+import { Callout } from "../Callout";
+import { Panel } from "../Panel";
+import { css, cx } from "../../styled-system/css";
+import { fieldGrid } from "../../styled-system/recipes";
 
 const defaultSpendOptions = Array.from({ length: 8 })
   .fill(null)
@@ -111,7 +113,6 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
   const [extraSpendsByName, setExtraSpendsByName] = useState<
     Record<string, number>
   >({});
-  const theme = useContext(ThemeContext);
 
   // everything but the notes, which the panel doesn't show
   const weapon = useItemSelector(item, (snapshot) => {
@@ -409,13 +410,11 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
 
   return (
     <>
-      <InputGrid
-        className={theme.panelClass}
-        css={{
-          padding: "0.5em",
-          marginBottom: "0.5em",
-          ...theme.panelStyleSecondary,
-        }}
+      <Panel
+        className={cx(
+          fieldGrid().root,
+          css({ ...inputGridStyle, marginBottom: "0.5em" }),
+        )}
       >
         {fireModes.length > 1 && (
           <GridField label="Fire mode">
@@ -433,7 +432,9 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
         )}
         {fireModes.length === 1 && effectiveFireMode !== "single" && (
           <GridField label="Fire mode">
-            <span css={{ display: "inline-block", paddingTop: "0.3em" }}>
+            <span
+              className={css({ display: "inline-block", paddingTop: "0.3em" })}
+            >
               <Translate>{fireModeText[effectiveFireMode]}</Translate>
             </span>
           </GridField>
@@ -512,7 +513,8 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
         )}
         <GridFieldStacked>
           <Button
-            css={{ lineHeight: 1.5, margin: 0 }}
+            kind="cta"
+            className={css({ lineHeight: 1.5, margin: 0 })}
             disabled={blockers.length > 0}
             title={attackTitle}
             onClick={onAttack}
@@ -524,14 +526,14 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
             the attack button so it doesn't move as hints come and go. */}
         {blockers.map((blocker) => (
           <GridFieldStacked key={blocker.key}>
-            <Hint severity="danger" action={blocker.action}>
+            <Callout tone="danger" action={blocker.action}>
               {blocker.message}
-            </Hint>
+            </Callout>
           </GridFieldStacked>
         ))}
         {wastedExtraSpend > 0 && (
           <GridFieldStacked>
-            <Hint severity="warning">
+            <Callout tone="warning">
               <Translate
                 values={{
                   Wasted: String(wastedExtraSpend),
@@ -540,11 +542,11 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
               >
                 WastedExtraSpend
               </Translate>
-            </Hint>
+            </Callout>
           </GridFieldStacked>
         )}
-      </InputGrid>
-      <InputGrid css={{ rowGap: "0.3em" }}>
+      </Panel>
+      <InputGrid className={css({ rowGap: "0.3em" })}>
         <GridField label="Bonus pool">
           <AsyncNumberInput onChange={setBonusPool} value={bonusPool} />
         </GridField>
@@ -555,24 +557,24 @@ export const WeaponAttackPanel = memo(function WeaponAttackPanel({
             noTranslate
           >
             <div
-              css={{
+              className={css({
                 display: "flex",
                 flexDirection: "row",
-              }}
+              })}
             >
               <AsyncNumberInput
-                css={{ flex: 1 }}
+                className={css({ flex: "[1]" })}
                 min={0}
                 max={system.ammo.max}
                 value={system.ammo.value}
                 onChange={setAmmo}
               />
               <Button
-                css={{
+                className={css({
                   flexBasis: "min-content",
-                  flex: 0,
+                  flex: "[0]",
                   lineHeight: "inherit",
-                }}
+                })}
                 onClick={reload}
               >
                 <Translate>Reload</Translate>

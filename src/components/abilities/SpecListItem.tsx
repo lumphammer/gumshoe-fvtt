@@ -23,13 +23,6 @@ export const SpecListItem = ({
   );
 
   return (
-    <AsyncTextInput
-      value={value}
-      onChange={onChange}
-      disabled={disabled}
-      // css={{
-
-      // }}
-    />
+    <AsyncTextInput value={value} onChange={onChange} disabled={disabled} />
   );
 };

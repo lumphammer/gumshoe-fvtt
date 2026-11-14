@@ -1,3 +1,8 @@
+import "./panda.css";
+import "./themes/catalogue/palette.css";
+import "./themes/catalogue/elements.css";
+import "./themes/catalogue/states.css";
+import "./components/componentDefaults.css";
 import "./investigator.less";
 import "./configuration";
 
@@ -40,12 +45,6 @@ import { registerBabele } from "./startup/registerBabele";
 import { registerDevModeDebugFlag } from "./startup/registerDevModeDebugFlag";
 import { registerSettingsMenu } from "./startup/registerSettingsMenu";
 import { registerUsageStats, runUsageStats } from "./startup/installUsageStats";
-
-// @emotion/react 11.13 introduced a ~breaking change that labelling is now
-// opt-in. There are good perf reasons for this, but personally I like it
-// see https://emotion.sh/docs/labels#automatic-labeling-at-runtime
-// see https://github.com/emotion-js/emotion/blob/main/packages/react/CHANGELOG.md#11120
-window.EMOTION_RUNTIME_AUTO_LABEL = true;
 
 injectGlobalHelper();
 

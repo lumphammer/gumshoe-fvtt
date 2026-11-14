@@ -14,6 +14,7 @@ import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 import { OrphanedField } from "./OrphanedField";
+import { css } from "../../styled-system/css";
 
 interface EquipmentConfigProps {
   /** Only to write through (and for its actor, when deleting): read from `system`. */
@@ -63,17 +64,17 @@ export const EquipmentConfig = memo(function EquipmentConfig({
         {system.categoryId ? (
           <>
             <code
-              css={{
+              className={css({
                 display: "inline-block",
                 margin: "0.3em 1em 0.3em 0",
-              }}
+              })}
             >
               {system.categoryId}
             </code>
             <a
-              css={{
+              className={css({
                 gridArea: "cog",
-              }}
+              })}
               onClick={async () => {
                 await game.clipboard?.copyPlainText(system.categoryId);
                 ui.notifications?.info(
@@ -90,16 +91,16 @@ export const EquipmentConfig = memo(function EquipmentConfig({
       </GridField>
       <GridFieldStacked
         label="Orphaned fields"
-        css={{
+        className={css({
           display: "grid",
           gridTemplateColumns: "auto auto auto auto",
           gridAutoRows: "auto",
           maxWidth: "100%",
           gap: "0.2em 2em",
-        }}
+        })}
       >
         {unknownFields.length === 0 && (
-          <i css={{ margin: "1em" }}>
+          <i className={css({ margin: "1em" })}>
             <Translate>No Orphaned Fields</Translate>
           </i>
         )}

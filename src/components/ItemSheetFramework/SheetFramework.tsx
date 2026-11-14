@@ -10,6 +10,7 @@ import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { ImagePickle } from "../ImagePickle";
 import { ModeContext } from "./modeContext";
 import { ItemSheetMode } from "./types";
+import { css } from "../../styled-system/css";
 
 type ItemSheetFrameworkProps = PropsWithChildren<{
   supertitle?: ReactNode;
@@ -51,7 +52,7 @@ export const ItemSheetFramework = ({
       value={configMode ? ItemSheetMode.Config : ItemSheetMode.Main}
     >
       <div
-        css={{
+        className={css({
           paddingBottom: "1em",
           display: "grid",
           gap: "0.3em",
@@ -63,19 +64,19 @@ export const ItemSheetFramework = ({
             '"image slug     cog" ' +
             '"image headline headline" ' +
             '"body  body     body" ',
-        }}
+        })}
       >
         {/* Supertitle */}
-        <div css={{ gridArea: "slug" }}>{supertitle}</div>
+        <div className={css({ gridArea: "slug" })}>{supertitle}</div>
 
         {/* Headline */}
-        <h1 css={{ gridArea: "headline" }}>
+        <h1 className={css({ gridArea: "headline" })}>
           <span
             contentEditable={isEditable}
-            css={{
+            className={css({
               minWidth: "1em",
               display: "inline-block",
-            }}
+            })}
             ref={contentEditableRef}
             onInput={onInput}
             onKeyDown={onKeyDown}
@@ -88,21 +89,21 @@ export const ItemSheetFramework = ({
         {/* Image */}
         <ImagePickle
           img={header.img}
-          css={{
+          className={css({
             gridArea: "image",
             transform: "rotateZ(-2deg)",
             width: "4em",
             height: "4em",
             margin: "0 1em 0.5em 0",
-          }}
+          })}
         />
 
         {/* Cog (people with Limited permission don't get the config) */}
         {!isLimited && (
           <a
-            css={{
+            className={css({
               gridArea: "cog",
-            }}
+            })}
             onClick={() => {
               setConfigMode((mode) => !mode);
             }}
@@ -112,13 +113,13 @@ export const ItemSheetFramework = ({
         )}
         {/* regular editing stuff */}
         <div
-          css={{
+          className={css({
             gridArea: "body",
             display: "flex",
             flexDirection: "column",
             overflowY: "auto",
             position: "relative",
-          }}
+          })}
         >
           {children}
         </div>

@@ -17,6 +17,7 @@ import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Select } from "../inputs/Select";
 import { TextInput } from "../inputs/TextInput";
 import { EquipmentField } from "./EquipmentField";
+import { css } from "../../styled-system/css";
 
 interface EquipmentMainProps {
   /** Only to write through: read from `system`. */
@@ -58,10 +59,10 @@ export const EquipmentMain = memo(function EquipmentMain({
 
   return (
     <InputGrid
-      css={{
-        gridTemplateRows: `repeat(${fieldsLength}, auto) 1fr`,
+      className={css({
         ...absoluteCover,
-      }}
+      })}
+      style={{ gridTemplateRows: `repeat(${fieldsLength}, auto) 1fr` }}
     >
       <GridField label="Item Name">
         <TextInput value={name} onChange={onChangeName} />
@@ -69,19 +70,19 @@ export const EquipmentMain = memo(function EquipmentMain({
 
       <GridField label="Category">
         <div
-          css={{
+          className={css({
             display: "flex",
             flexDirection: "row",
-          }}
+          })}
         >
           <div>
             <Select
               value={selectedCat}
               onChange={onChangeCategory}
-              css={{
+              className={css({
                 lineHeight: "inherit",
                 height: "inherit",
-              }}
+              })}
             >
               {Object.entries(categories).map(([id, cat]) => (
                 <option key={id} value={id}>
@@ -107,11 +108,11 @@ export const EquipmentMain = memo(function EquipmentMain({
       })}
 
       <div
-        css={{
-          flex: 1,
+        className={css({
+          flex: "[1]",
           position: "relative",
           gridColumn: "1/-1",
-        }}
+        })}
       >
         <RichTextEditor name="notes" html={system.notes} onSave={setNotes} />
       </div>

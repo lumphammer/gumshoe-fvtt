@@ -1,14 +1,15 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import { useDragStart } from "../../../hooks/useDragStart";
 import { openSheet } from "../../../functions/openSheet";
 import { getTranslated } from "../../../functions/getTranslated";
 import { useItemSelector } from "../../../hooks/useItemSnapshot";
 import type { WeaponItem } from "../../../module/items/weapon";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { Toggle } from "../../inputs/Toggle";
 import { ItemNameWithIcon } from "../ItemNameWithIcon";
+import { row as rowClass } from "../../../styled-system/recipes";
+import { css, cx } from "../../../styled-system/css";
 
 type WeaponRowProps = {
   /** The live weapon: the row reads it through a snapshot */
@@ -34,7 +35,6 @@ export const WeaponRow = memo(function WeaponRow({
     ability: snapshot.system.ability,
   }));
   const onDragStart = useDragStart();
-  const theme = useContext(ThemeContext);
 
   const openWeaponSheet = () => {
     openSheet(weapon);
@@ -43,12 +43,12 @@ export const WeaponRow = memo(function WeaponRow({
   return (
     <>
       <div
-        css={{
+        className={css({
           gridColumn: 1,
           display: "flex",
           alignItems: "center",
           paddingInline: "0.25em",
-        }}
+        })}
       >
         <Toggle
           checked={isReady}
@@ -61,20 +61,18 @@ export const WeaponRow = memo(function WeaponRow({
       <div
         role="button"
         tabIndex={0}
-        css={{
-          gridColumn: "2 / -2",
-          display: "grid",
-          gridTemplateColumns: "subgrid",
-          alignItems: "center",
-          padding: "0.2em 0",
-          cursor: "pointer",
-          borderRadius: "0.2em",
-          "& > *": { paddingInline: "0.25em" },
-          "&:hover, &:focus-visible": {
-            background: `color-mix(in srgb, ${theme.colors.glow} 25%, transparent)`,
-            outline: "none",
-          },
-        }}
+        className={cx(
+          rowClass({ interactive: true }),
+          css({
+            gridColumn: "2 / -2",
+            display: "grid",
+            gridTemplateColumns: "subgrid",
+            alignItems: "center",
+            padding: "0.2em 0",
+            borderRadius: "[0.2em]",
+            "& > *": { paddingInline: "0.25em" },
+          }),
+        )}
         onClick={openWeaponSheet}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -86,11 +84,11 @@ export const WeaponRow = memo(function WeaponRow({
         draggable="true"
         onDragStart={onDragStart}
       >
-        <ItemNameWithIcon item={row} css={{ color: theme.colors.accent }} />
-        <span css={{ textAlign: "center" }}>
+        <ItemNameWithIcon item={row} />
+        <span className={css({ textAlign: "center" })}>
           {row.usesAmmo ? `${row.ammo.value}/${row.ammo.max}` : "—"}
         </span>
-        <span css={{ overflow: "hidden", textOverflow: "ellipsis" }}>
+        <span className={css({ overflow: "hidden", textOverflow: "ellipsis" })}>
           {row.ability}
         </span>
       </div>

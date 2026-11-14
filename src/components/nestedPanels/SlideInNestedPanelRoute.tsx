@@ -8,6 +8,7 @@ import React from "react";
 
 import { absoluteCover } from "../absoluteCover";
 import { NestedPanel } from "./NestedPanel";
+import { css } from "../../styled-system/css";
 
 type SlideInNestedPanelRouteProps = PropsWithChildrenAndDirection<{
   className?: string;
@@ -29,10 +30,10 @@ const BlurPanel = () => {
         e.stopPropagation();
         navigate("here", "up");
       }}
-      css={{
+      className={css({
         ...absoluteCover,
         pointerEvents: "all",
-      }}
+      })}
     />
   );
 };

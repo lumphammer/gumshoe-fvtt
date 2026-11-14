@@ -11,6 +11,7 @@ import { assertActiveCharacterActor } from "../../../module/actors/types";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { WeaponRowEdit } from "./WeaponRowEdit";
+import { css, cx } from "../../../styled-system/css";
 
 /**
  * The character's weapons, to edit. Reads the actor through a snapshot,
@@ -31,21 +32,21 @@ export const WeaponsAreaEdit = memo(function WeaponsAreaEdit() {
   return (
     <div>
       <div
-        css={{
+        className={css({
           display: "flex",
           flexDirection: "row",
-        }}
+        })}
       >
         {/* as in play mode (WeaponsArea) */}
-        <h2 css={{ flex: 1, "&&": { margin: 0 } }}>
+        <h2 className={css({ flex: "[1]", "&&": { margin: 0 } })}>
           <Translate>Weapons</Translate>
         </h2>
         <Button
-          css={{
+          className={css({
             flexBasis: "max-content",
             // not stretched to the heading's height
             alignSelf: "flex-start",
-          }}
+          })}
           onClick={async () => {
             await actor.createEmbeddedDocuments("Item", [
               {
@@ -61,18 +62,26 @@ export const WeaponsAreaEdit = memo(function WeaponsAreaEdit() {
       </div>
       {items.length === 0 && (
         <i
-          css={{
+          className={css({
             display: "block",
             fontSize: "1.2em",
-          }}
+          })}
         >
           <Translate>No weapons yet!</Translate>
         </i>
       )}
       {items.length > 0 && (
         <div
-          css={{
+          className={css({
             display: "grid",
+            gridAutoRows: "min-content",
+            gap: "0.5em",
+            whiteSpace: "nowrap",
+            "& .header": {
+              fontWeight: "bold",
+            },
+          })}
+          style={{
             gridTemplateColumns: useExtendedRange
               ? "10em repeat(6, 1fr) 2em 2em"
               : "10em repeat(5, 1fr) 2em 2em",
@@ -81,89 +90,89 @@ export const WeaponsAreaEdit = memo(function WeaponsAreaEdit() {
                 '"ammo notes notes notes notes notes notes notes notes"'
               : '"name base  pb    cr    nr    lr    back  delete" ' +
                 '"ammo notes notes notes notes notes notes notes"',
-            gridAutoRows: "min-content",
-            gap: "0.5em",
-            whiteSpace: "nowrap",
-            ".header": {
-              fontWeight: "bold",
-            },
           }}
         >
           <div
-            className="header"
-            css={{
-              gridColumn: "name",
-              alignSelf: "end",
-              gridRow: 2,
-              textAlign: "center",
-            }}
+            className={cx(
+              "header",
+              css({
+                gridColumn: "name",
+                alignSelf: "end",
+                gridRow: 2,
+                textAlign: "center",
+              }),
+            )}
           >
             <Translate>Item Name</Translate>
           </div>
           <div
-            className="header"
-            css={{
+            className={cx(
+              "header",
+              css({
+                alignSelf: "end",
+                gridRow: 1,
+                borderBottom: "1px solid currentColor",
+                textAlign: "center",
+              }),
+            )}
+            style={{
               gridColumn: useExtendedRange ? "base / span 7" : "base / span 6",
-              alignSelf: "end",
-              gridRow: 1,
-              borderBottom: "1px solid currentColor",
-              textAlign: "center",
             }}
           >
             <Translate>Damage</Translate>
           </div>
 
           <div
-            css={{
+            className={css({
               gridColumn: "base",
               gridRow: 2,
-            }}
+            })}
           >
             <Translate>Base </Translate>
           </div>
 
           <div
-            css={{
+            className={css({
               gridColumn: "pb",
               gridRow: 2,
-            }}
+            })}
           >
             <Translate>PB</Translate>
           </div>
 
           <div
-            css={{
+            className={css({
               gridColumn: "cr",
               gridRow: 2,
-            }}
+            })}
           >
             <Translate>CR</Translate>
           </div>
 
           <div
-            css={{
+            className={css({
               gridColumn: "nr",
               gridRow: 2,
-            }}
+            })}
           >
             <Translate>NR</Translate>
           </div>
 
           <div
-            css={{
+            className={css({
               gridColumn: "lr",
               gridRow: 2,
-            }}
+            })}
           >
             <Translate>LR</Translate>
           </div>
 
           {useExtendedRange && (
             <div
-              css={{
+              className={css({
                 gridColumn: "er",
                 gridRow: 2,
-              }}
+              })}
             >
               <Translate>ER</Translate>
             </div>

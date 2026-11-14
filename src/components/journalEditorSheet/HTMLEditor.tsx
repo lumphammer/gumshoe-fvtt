@@ -18,6 +18,7 @@ import { useToolbarContent } from "./magicToolbar";
 import { ToolbarButton } from "./magicToolbar/ToolbarButton";
 import { notifyJournalSaveError } from "./notifyJournalSaveError";
 import { savePage } from "./savePage";
+import { css } from "../../styled-system/css";
 
 interface HTMLEditorProps {
   page: any;
@@ -205,14 +206,14 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
   return (
     <div
       data-testid="html-editor"
-      css={{
+      className={css({
         position: "relative",
         width: "100%",
         height: "100%",
         display: "flex",
         flexDirection: "column",
         gap: "0.5em",
-      }}
+      })}
     >
       <div data-testid="html-classes">
         <AsyncTextInput
@@ -222,7 +223,7 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
         />
       </div>
 
-      <div css={{ position: "relative", flex: 1 }}>
+      <div className={css({ position: "relative", flex: "[1]" })}>
         <MonacoEditor
           key={page.id}
           height="100%"

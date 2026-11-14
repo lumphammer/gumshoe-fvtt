@@ -1,12 +1,13 @@
-import React, { memo, useContext } from "react";
+import React, { memo } from "react";
 
 import { openSheet } from "../../../functions/openSheet";
 import { mwItem } from "../../../constants";
 import { useActorSheetContext } from "../../../hooks/useSheetContexts";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import type { MwType } from "../../../types";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
+import { row } from "../../../styled-system/recipes";
+import { css, cx } from "../../../styled-system/css";
 
 /** An item, as the group shows it */
 export type MwItemSummary = { id: string; name: string };
@@ -26,32 +27,30 @@ export const MwItemGroup = memo(function MwItemGroup({
   mwType,
 }: MwItemGroupProps) {
   const { actor } = useActorSheetContext();
-  const theme = useContext(ThemeContext);
   const openItemSheet = (id: string) => {
     openSheet(actor.items.get(id));
   };
 
   return (
     <div
-      css={{
-        marginBottom: "0.5em",
-        paddingBottom: "0.5em",
-        borderBottom: `1px solid ${theme.colors.controlBorder}`,
-      }}
+      className={cx(
+        row({ divided: true }),
+        css({ marginBottom: "0.5em", paddingBottom: "0.5em" }),
+      )}
     >
       <div>
         <h1
-          css={{
+          className={css({
             display: "inline",
-          }}
+          })}
         >
           <Translate>{name}</Translate>
         </h1>
         <Button
-          css={{
+          className={css({
             float: "right",
             width: "auto",
-          }}
+          })}
           onClick={async () => {
             await actor.createEmbeddedDocuments(
               "Item",
@@ -76,27 +75,27 @@ export const MwItemGroup = memo(function MwItemGroup({
       </div>
       {items.length === 0 && (
         <i
-          css={{
+          className={css({
             display: "block",
             fontSize: "1.2em",
-          }}
+          })}
         >
           <Translate>No items yet.</Translate>
         </i>
       )}
 
       <div
-        css={{
+        className={css({
           columns: "auto 12em",
-        }}
+        })}
       >
         {items.map((item) => (
           <a
             key={item.id}
-            css={{
+            className={css({
               display: "block",
               position: "relative",
-            }}
+            })}
             onClick={() => openItemSheet(item.id)}
             data-item-id={item.id}
             onDragStart={onDragStart}

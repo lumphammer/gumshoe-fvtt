@@ -67,6 +67,9 @@ import { SettingsMenu } from "./SettingsMenu";
 import { stabilityPages } from "./Stability/stabilityPages";
 import { StabilitySettings } from "./Stability/StabilitySettings";
 import { StabilitySettingsRoutes } from "./Stability/StabilitySettingsRoutes";
+import { Panel } from "../Panel";
+import { outcome, surface } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 /** the height of the back button and the status, beside the breadcrumbs */
 const headerFloatHeight = "1.75em";
@@ -221,12 +224,12 @@ export const Settings = () => {
             <CSSReset
               mode="small"
               theme={theme}
-              css={{
+              className={css({
                 ...absoluteCover,
                 display: "flex",
                 flexDirection: "column",
                 padding: "0.5em",
-              }}
+              })}
             >
               <ShowBackLinkContext.Provider value={false}>
                 <Router>
@@ -235,52 +238,61 @@ export const Settings = () => {
                   between. Floats come first so the breadcrumbs flow around
                   them. They're the same height, so the breadcrumbs clear both together. */}
                   <div
-                    css={{
+                    className={css({
                       display: "flow-root",
                       padding: "0 0.5em 0.25em 0.5em",
-                    }}
+                    })}
                   >
                     <SettingsBackButton
-                      css={{
+                      className={css({
                         float: "left",
                         height: headerFloatHeight,
                         margin: "0.25em 0.5em 0.25em 0",
-                      }}
+                      })}
                     />
                     <div
                       role="status"
-                      css={{
-                        float: "right",
-                        height: headerFloatHeight,
-                        lineHeight: headerFloatHeight,
-                        margin: "0.25em 0 0.25em 0.5em",
-                        whiteSpace: "nowrap",
-                        color: theme.colors.accent,
-                        visibility: hasChanges ? "visible" : "hidden",
-                      }}
+                      className={cx(
+                        outcome({ tone: "warning" }),
+                        css({
+                          float: "right",
+                          height: headerFloatHeight,
+                          lineHeight: headerFloatHeight,
+                          margin: "0.25em 0 0.25em 0.5em",
+                          whiteSpace: "nowrap",
+                          visibility: hasChanges ? "visible" : "hidden",
+                        }),
+                      )}
                     >
                       <FaCircle
-                        css={{ fontSize: "0.6em", verticalAlign: "middle" }}
+                        className={css({
+                          fontSize: "0.6em",
+                          verticalAlign: "middle",
+                        })}
                       />{" "}
                       <Translate>Unsaved changes</Translate>
                     </div>
                     <SettingsBreadcrumbs
-                      css={{ display: "inline-block" }}
+                      className={css({ display: "inline-block" })}
                       pages={pages}
                     />
                   </div>
                   <div
-                    css={{ flex: 1, overflow: "hidden", position: "relative" }}
+                    className={css({
+                      flex: "[1]",
+                      overflow: "hidden",
+                      position: "relative",
+                    })}
                   >
-                    <SettingsMenu
-                      data-testid="settings-menu"
-                      pages={pages}
-                      css={{
+                    <Panel
+                      className={css({
                         ...absoluteCover,
                         overflow: "auto",
-                        ...theme.panelStylePrimary,
-                      }}
-                    />
+                        padding: 0,
+                      })}
+                    >
+                      <SettingsMenu data-testid="settings-menu" pages={pages} />
+                    </Panel>
                     {pages.map(({ direction, label, content, childRoutes }) => (
                       <SlideInNestedPanelRoute
                         key={label}
@@ -289,7 +301,12 @@ export const Settings = () => {
                         childRoutes={childRoutes}
                       >
                         {/* some pages cover their parent, so give them one */}
-                        <div css={{ height: "100%", position: "relative" }}>
+                        <div
+                          className={css({
+                            height: "100%",
+                            position: "relative",
+                          })}
+                        >
                           {content}
                         </div>
                       </SlideInNestedPanelRoute>
@@ -298,21 +315,31 @@ export const Settings = () => {
                 </Router>
               </ShowBackLinkContext.Provider>
               <div
-                css={{
-                  display: "flex",
-                  flexDirection: "row",
-                  padding: "0.5em",
-                  background: theme.colors.backgroundSecondary,
-                }}
+                className={cx(
+                  surface({ depth: "nested" }),
+                  css({
+                    display: "flex",
+                    flexDirection: "row",
+                    padding: "0.5em",
+                  }),
+                )}
               >
                 <Button
-                  css={{ flex: 1, paddingTop: "0.5em", paddingBottom: "0.5em" }}
+                  className={css({
+                    flex: "[1]",
+                    paddingTop: "0.5em",
+                    paddingBottom: "0.5em",
+                  })}
                   onClick={handleClickClose}
                 >
                   <i className="fas fa-times" /> <Translate>Cancel</Translate>
                 </Button>
                 <Button
-                  css={{ flex: 1, paddingTop: "0.5em", paddingBottom: "0.5em" }}
+                  className={css({
+                    flex: "[1]",
+                    paddingTop: "0.5em",
+                    paddingBottom: "0.5em",
+                  })}
                   onClick={handleClickSave}
                 >
                   <i className="fas fa-save" />{" "}

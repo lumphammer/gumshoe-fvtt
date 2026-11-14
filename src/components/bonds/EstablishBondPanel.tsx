@@ -27,8 +27,9 @@ import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
 import { TextInput } from "../inputs/TextInput";
-import { Hint } from "../inputs/Hint";
+import { Callout } from "../Callout";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 /**
  * Full width, so a long Bond name shrinks the dropdown (and is cut off)
@@ -156,7 +157,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
         {reformable.length > 0 && (
           <GridField label="Who">
             <Select
-              css={selectCss}
+              className={css(selectCss)}
               value={whoId}
               onChange={(e) => setWhoId(e.currentTarget.value)}
             >
@@ -178,7 +179,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
         )}
         <GridField label="Spend">
           <Select
-            css={selectCss}
+            className={css(selectCss)}
             // with nothing to spend, show the first (empty) one, not a blank
             value={ability?.id ?? abilities[0]?.id ?? ""}
             onChange={(e) => setAbilityId(e.currentTarget.value)}
@@ -202,7 +203,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
             </i>
           ) : (
             <Select
-              css={selectCss}
+              className={css(selectCss)}
               value={neglect.id}
               onChange={(e) => setNeglectId(e.currentTarget.value)}
             >
@@ -217,6 +218,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
         </GridField>
         <GridFieldStacked>
           <Button
+            kind="cta"
             onClick={onEstablish}
             disabled={!canEstablish}
             title={noPointsMessage}
@@ -227,7 +229,7 @@ export const EstablishBondPanel = ({ actor }: { actor: PCActor }) => {
         {/* below the button, as on the weapon sheet */}
         {noPointsMessage && (
           <GridFieldStacked>
-            <Hint severity="danger">{noPointsMessage}</Hint>
+            <Callout tone="danger">{noPointsMessage}</Callout>
           </GridFieldStacked>
         )}
       </InputGrid>

@@ -13,6 +13,7 @@ import { Translate } from "../Translate";
 import { CardDisplay } from "./CardDisplay";
 import { CardMain } from "./CardMain";
 import { edit } from "./directions";
+import { css, cx } from "../../styled-system/css";
 
 /**
  * Reads the card through snapshots (`CardDisplay` and `CardMain` read their
@@ -60,19 +61,19 @@ export const CardSheet = memo(function CardSheet() {
   return (
     <Router>
       <div
-        css={{
+        className={css({
           ...absoluteCover,
           margin: "0.5em",
           display: "flex",
           flexDirection: "column",
-        }}
+        })}
       >
         <div
-          css={{
+          className={css({
             display: "flex",
             flexDirection: "row",
             paddingBottom: "0.5em",
-          }}
+          })}
         >
           <ToolbarButton onClick={handleClickDiscard}>
             <Translate>{isOwned ? "Discard" : "Delete"}</Translate>
@@ -86,36 +87,38 @@ export const CardSheet = memo(function CardSheet() {
               <Translate>Activate</Translate>
             </ToolbarButton>
           )}
-          <div css={{ flex: 1 }} />
+          <div className={css({ flex: "[1]" })} />
           <ArrowLink to={edit()}>Edit</ArrowLink>
         </div>
         <div
-          css={{
-            flex: 1,
+          className={css({
+            flex: "[1]",
             opacity: active ? 1 : 0.5,
-            transition: "opacity 200ms ease-in-out",
+            transition: "[opacity 200ms ease-in-out]",
             display: "flex",
             flexDirection: "column",
             overflow: "auto",
             // create a containment context so the card can read themes
             containerType: "inline-size",
-          }}
+          })}
         >
           <CardDisplay card={item} viewMode="full" />
         </div>
       </div>
       <SlideInNestedPanelRoute
         direction={edit}
-        css={{ display: "flex", flexDirection: "column" }}
+        className={css({ display: "flex", flexDirection: "column" })}
       >
         <div
-          className="fooey"
-          css={{
-            // ...absoluteCover,
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-          }}
+          className={cx(
+            "fooey",
+            css({
+              // ...absoluteCover,
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+            }),
+          )}
         >
           <CardMain item={item} />
         </div>

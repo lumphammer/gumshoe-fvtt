@@ -1,11 +1,10 @@
 import { type AnyStep, Link } from "@lumphammer/minirouter";
 import type { ReactNode } from "react";
-import { useContext } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 
-import { ThemeContext } from "../../themes/ThemeContext";
 import { Translate } from "../Translate";
-import { useListHoverBg } from "./useListHoverBg";
+import { displayText, mutedText, row } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type SettingsMenuLinkProps = {
   to: AnyStep;
@@ -27,62 +26,52 @@ export const SettingsMenuLink = ({
   summary,
   icon,
 }: SettingsMenuLinkProps) => {
-  const theme = useContext(ThemeContext);
-  const hoverBg = useListHoverBg();
-
   return (
     <Link
       to={to}
-      css={{
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        gap: "0.75em",
-        padding: "0.6em 1em",
-        borderBottom: `1px solid ${theme.colors.controlBorder}`,
-        textShadow: "none",
-        "&:hover, &:focus-visible": {
-          backgroundColor: hoverBg,
-          textShadow: "none",
-        },
-        "&:hover .chevron, &:focus-visible .chevron": {
-          transform: "translateX(0.2em)",
-        },
-      }}
+      className={cx(
+        row({ interactive: true, divided: true }),
+        css({
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: "0.75em",
+          padding: "0.6em 1em",
+          "&:hover .chevron, &:focus-visible .chevron": {
+            transform: "translateX(0.2em)",
+          },
+        }),
+      )}
     >
       {icon && (
         <span
-          css={{
+          className={css({
             width: "1.2em",
             textAlign: "center",
             opacity: 0.8,
             fontSize: "1.2em",
-          }}
+          })}
         >
           {icon}
         </span>
       )}
-      <span css={{ flex: 1, minWidth: 0 }}>
+      <span className={css({ flex: "[1]", minWidth: 0 })}>
         <span
-          css={{
-            display: "block",
-            font: theme.displayFont,
-            textTransform: theme.displayFontTextTransform,
-            fontSize: "1.2em",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
+          className={cx(
+            displayText(),
+            css({
+              display: "block",
+              fontSize: "1.2em",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }),
+          )}
         >
           <Translate>{label}</Translate>
         </span>
         {description && (
           <span
-            css={{
-              display: "block",
-              fontSize: "0.9em",
-              color: theme.colors.text,
-              opacity: 0.75,
-            }}
+            className={cx(mutedText({ size: "sm" }), css({ display: "block" }))}
           >
             <Translate>{description}</Translate>
           </span>
@@ -90,22 +79,25 @@ export const SettingsMenuLink = ({
       </span>
       {summary !== undefined && summary !== null && (
         <span
-          css={{
-            flex: "0 1 auto",
-            maxWidth: "40%",
-            overflow: "hidden",
-            whiteSpace: "nowrap",
-            textOverflow: "ellipsis",
-            color: theme.colors.text,
-            opacity: 0.75,
-          }}
+          className={cx(
+            mutedText(),
+            css({
+              flex: "[0 1 auto]",
+              maxWidth: "40%",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+            }),
+          )}
         >
           {summary}
         </span>
       )}
       <FaChevronRight
-        className="chevron"
-        css={{ opacity: 0.6, transition: "transform 100ms ease-out" }}
+        className={cx(
+          "chevron",
+          css({ opacity: 0.6, transition: "[transform 100ms ease-out]" }),
+        )}
       />
     </Link>
   );

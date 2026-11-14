@@ -1,17 +1,18 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import { confirmAndDeleteItem } from "../../../functions/confirmAndDeleteItem";
 import { useItemSelector } from "../../../hooks/useItemSnapshot";
 import { useSettings } from "../../../hooks/useSettings";
 import { useSystemMethods } from "../../../hooks/useSystemMethods";
 import type { WeaponItem } from "../../../module/items/weapon";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
 import { IndexedRichTextEditor } from "../../inputs/IndexedRichTextEditor";
 import { OtherableDropDown } from "../../inputs/OtherableDropDown";
 import { Toggle } from "../../inputs/Toggle";
+import { row as rowClass } from "../../../styled-system/recipes";
+import { css, cx } from "../../../styled-system/css";
 
 // the icons get Font Awesome's fixed width (1.25em), which is wider than the
 // button, so they stuck out to the right: let them be as wide as the chevron
@@ -34,7 +35,6 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
   weapon,
   index,
 }: WeaponRowEditProps) {
-  const theme = useContext(ThemeContext);
   const row = useItemSelector(weapon, ({ name, system: s }) => ({
     name,
     damage: s.damage,
@@ -97,27 +97,29 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
   return (
     <>
       <div
-        css={{
-          gridColumn: "1/-1",
-          gridRow: `${gridRow}/${gridRow + 2}`,
-          background: theme.colors.backgroundButton,
-          margin: "-0.5em",
-        }}
+        className={cx(
+          rowClass({ alternate: true }),
+          css({
+            gridColumn: "1/-1",
+            margin: "-0.5em",
+          }),
+        )}
+        style={{ gridRow: `${gridRow}/${gridRow + 2}` }}
       />
       <div
-        css={{
+        className={css({
           gridColumn: "1/-1",
-          gridRow: `${gridRow + 2}/${gridRow + 3}`,
           height: "0.5em",
-        }}
+        })}
+        style={{ gridRow: `${gridRow + 2}/${gridRow + 3}` }}
       />
 
       {/* NAME */}
       <AsyncTextInput
-        css={{
+        className={css({
           gridColumn: "name",
-          gridRow,
-        }}
+        })}
+        style={{ gridRow }}
         value={row.name}
         onChange={weapon.setName}
       />
@@ -129,14 +131,14 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
               value={value}
               onChange={onChange}
               noPlusMinus
-              css={{ gridColumn: column, gridRow }}
+              style={{ gridColumn: column, gridRow }}
             />
           ),
       )}
 
       {/* left/right arrows */}
       <div
-        css={{
+        className={css({
           gridColumn: hasExtendedRange
             ? "back"
             : row.isLongRange
@@ -150,16 +152,16 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
                   : row.isPointBlank
                     ? "cr"
                     : "pb",
-          gridRow,
           // the buttons stretch to the height of the inputs beside them
           display: "flex",
-        }}
+        })}
+        style={{ gridRow }}
       >
-        <Button css={rangeButtonStyle} onClick={weaponRangeReduce}>
+        <Button className={css(rangeButtonStyle)} onClick={weaponRangeReduce}>
           <i className="fa fa-chevron-left" />
         </Button>
         {(useExtendedRange ? hasExtendedRange : row.isLongRange) || (
-          <Button css={rangeButtonStyle} onClick={weaponRangeExpand}>
+          <Button className={css(rangeButtonStyle)} onClick={weaponRangeExpand}>
             <i className="fa fa-chevron-right" />
           </Button>
         )}
@@ -167,13 +169,13 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
 
       {/* delete */}
       <Button
-        css={{
+        className={css({
           gridColumn: "delete",
-          gridRow,
           width: "1.6em",
           padding: "0.2em 0.1em",
           // margin: "0.5em 0.5em 0 0",
-        }}
+        })}
+        style={{ gridRow }}
         onClick={() => void confirmAndDeleteItem(weapon)}
       >
         <i className="fa fa-trash" />
@@ -181,17 +183,17 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
 
       {/* SIDEBAR */}
       <div
-        css={{
+        className={css({
           gridColumn: "ammo",
-          gridRow: gridRow + 1,
-        }}
+        })}
+        style={{ gridRow: gridRow + 1 }}
       >
         <OtherableDropDown
           value={row.ability}
           onChange={m.setAbility}
           pickerValues={combatAbilities.toSorted()}
         />
-        <div css={{ marginTop: "0.5em" }}>
+        <div className={css({ marginTop: "0.5em" })}>
           <label>
             Use ammo? <Toggle checked={row.usesAmmo} onChange={m.setUsesAmmo} />
           </label>
@@ -215,12 +217,12 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
       </div>
 
       <div
-        css={{
+        className={css({
           position: "relative",
           gridColumn: "notes / -1",
-          gridRow: gridRow + 1,
           minHeight: "6em",
-        }}
+        })}
+        style={{ gridRow: gridRow + 1 }}
       >
         <IndexedRichTextEditor
           index={index}

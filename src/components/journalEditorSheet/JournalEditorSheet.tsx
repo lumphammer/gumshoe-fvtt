@@ -17,6 +17,7 @@ import { ToolbarButton } from "./magicToolbar/ToolbarButton";
 import { NoPageSelected } from "./NoPageSelected";
 import { PageEditor } from "./PageEditor";
 import { PageNavigation } from "./PageNavigation";
+import { css } from "../../styled-system/css";
 
 const KEEPALIVE_INTERVAL_MS = 30_000;
 
@@ -103,12 +104,12 @@ export const JournalEditorSheet = () => {
         <CSSReset
           theme={theme}
           mode="large"
-          css={{
+          className={css({
             ...absoluteCover,
             display: "flex",
             gap: "0.5em",
             flexDirection: "column",
-          }}
+          })}
         >
           <MagicToolbar
             categories={["Core", "Create new", "Page", "HTML", "History"]}
@@ -117,11 +118,11 @@ export const JournalEditorSheet = () => {
             {toolBarContent}
           </MagicToolbar>
           <div
-            css={{
+            className={css({
               display: "flex",
               flexDirection: "row",
               gap: "0.5em",
-            }}
+            })}
           >
             <AsyncTextInput value={view.name} onChange={handleTitleChange} />
             <AsyncTextInput
@@ -131,20 +132,20 @@ export const JournalEditorSheet = () => {
             />
           </div>
           <div
-            css={{
+            className={css({
               display: "flex",
               flexDirection: "row",
               gap: "0.5em",
-              flex: 1,
-            }}
+              flex: "[1]",
+            })}
           >
             <div
               data-testid="page-navigation"
-              css={{
+              className={css({
                 flexBasis: "20em",
                 minWidth: "20em",
                 position: "relative",
-              }}
+              })}
             >
               <PageNavigation
                 journalEntry={journalEntry}
@@ -154,11 +155,11 @@ export const JournalEditorSheet = () => {
             </div>
             <div
               data-testid="page-editor"
-              css={{
-                flex: 1,
+              className={css({
+                flex: "[1]",
                 overflow: "hidden",
                 position: "relative",
-              }}
+              })}
             >
               {activePageId !== null && view.pageIds.includes(activePageId) ? (
                 <PageEditor page={journalEntry.pages.get(activePageId)} />

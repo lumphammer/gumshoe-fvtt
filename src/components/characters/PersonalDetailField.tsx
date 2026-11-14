@@ -5,6 +5,7 @@ import type { PCActor } from "../../module/actors/pc";
 import { GridField } from "../inputs/GridField";
 import { PersonalDetailSlug } from "./PersonalDetailSlug";
 import { Slug } from "./Slug";
+import { css } from "../../styled-system/css";
 
 export const PersonalDetailField = ({
   actor,
@@ -28,14 +29,14 @@ export const PersonalDetailField = ({
     <GridField
       noTranslate
       label={name}
-      css={{
+      className={css({
         position: "relative",
         display: "flex",
         flexWrap: "wrap",
         flexDirection: "row",
         // alignItems: "center",
         // justifyContent: "end",
-      }}
+      })}
     >
       {personalDetails.map((detail) => (
         <PersonalDetailSlug key={detail.id} actor={actor} detail={detail} />

@@ -9,6 +9,7 @@ import { isClassicCombat } from "../../module/combat/classicCombat";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { format, localize } from "./functions";
 import type { TrackerContextValue } from "./TrackerContext";
+import { css } from "../../styled-system/css";
 
 type ClassicTurnNavProps = {
   combat: TrackerContextValue<"classic">["combat"];
@@ -72,14 +73,17 @@ export const ClassicTurnNav = memo(function ClassicTurnNav({
                 aria-label={localize("COMBAT.TurnPrev")}
               />
               <strong
-                css={{
-                  flex: 1,
+                className={css({
+                  flex: "[1]",
                   display: "flex",
                   justifyContent: "center",
-                }}
+                })}
               >
                 <NativeDropdownMenu
-                  css={{ flex: 1, minHeight: "var(--button-size)" }}
+                  className={css({
+                    flex: "[1]",
+                    minHeight: "var(--button-size)",
+                  })}
                   label={
                     <>
                       {format("COMBAT.Round", {
@@ -156,9 +160,7 @@ export const ClassicTurnNav = memo(function ClassicTurnNav({
               className="combat-control combat-control-lg"
               onClick={handleStartCombat}
               disabled={turnCount === 0}
-              css={{
-                cursor: turnCount === 0 ? "not-allowed" : "pointer",
-              }}
+              style={{ cursor: turnCount === 0 ? "not-allowed" : "pointer" }}
             >
               <LuSwords />
               <span>{localize("COMBAT.Begin")}</span>
@@ -179,12 +181,12 @@ export const ClassicTurnNav = memo(function ClassicTurnNav({
               />
             )}
             <strong
-              css={{
-                flex: 1,
+              className={css({
+                flex: "[1]",
                 display: "flex",
                 justifyContent: "center",
                 color: "var(--color-text-primary)",
-              }}
+              })}
             >
               {round
                 ? format("COMBAT.Round", {

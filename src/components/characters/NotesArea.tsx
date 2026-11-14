@@ -7,6 +7,7 @@ import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
 import { IndexedRichTextEditor } from "../inputs/IndexedRichTextEditor";
 import { NotesTypeContext } from "../NotesTypeContext";
+import { css } from "../../styled-system/css";
 
 /** The PC's long notes, read through a snapshot */
 export const NotesArea = memo(function NotesArea() {
@@ -28,24 +29,24 @@ export const NotesArea = memo(function NotesArea() {
 
   return (
     <div
-      css={{
+      className={css({
         position: "absolute",
         inset: "0.5em",
         display: "flex",
         flexDirection: "column",
         gap: "0.5em",
-      }}
+      })}
     >
       {longNotesNames.map((name, i) => {
         return (
           <NotesTypeContext.Provider key={`${name}--${i}`} value="pcNote">
             <h3>{name}</h3>
             <div
-              css={{
-                flex: 1,
+              className={css({
+                flex: "[1]",
                 position: "relative",
                 minHeight: "10em",
-              }}
+              })}
             >
               <IndexedRichTextEditor
                 name="longNotes"

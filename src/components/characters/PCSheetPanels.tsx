@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext } from "react";
+import { memo, useCallback } from "react";
 
 import * as c from "../../constants";
 import { occupationSlotIndex } from "../../constants";
@@ -9,7 +9,6 @@ import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
 import type { PersonalDetailItem } from "../../module/items/personalDetail";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { ImagePickle } from "../ImagePickle";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { Button } from "../inputs/Button";
@@ -17,12 +16,13 @@ import { GridField } from "../inputs/GridField";
 import { IndexedAsyncTextInput } from "../inputs/IndexedAsyncTextInput";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
-import { InitiativeAbilityPicker } from "./InitiativeAbilityPicker";
 import { LogoEditable } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { PersonalDetailField } from "./PersonalDetailField";
-import { StatField } from "./StatField";
+import { CombatStats } from "./Weapons/CombatStats";
 import { TrackersArea } from "./TrackersArea";
+import { Panel } from "../Panel";
+import { css } from "../../styled-system/css";
 
 // The PC sheet's panels subscribe independently to the data they display.
 // Foundry root re-renders are disabled; descendants keep themselves current.
@@ -61,11 +61,11 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
   return (
     <>
       <div
-        css={{
+        className={css({
           gridArea: "title",
           textAlign: "center",
           position: "relative",
-        }}
+        })}
       >
         <LogoEditable
           mainText={header.name}
@@ -77,10 +77,10 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
       </div>
       <ImagePickle
         img={header.img}
-        css={{
+        className={css({
           gridArea: "image",
           transform: "rotateZ(2deg)",
-        }}
+        })}
       />
     </>
   );
@@ -91,7 +91,6 @@ export const PCSheetStats = memo(function PCSheetStats() {
   assertGame(game);
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const theme = useContext(ThemeContext);
   const stats = useActorSnapshot(actor, (snapshot) => ({
     name: snapshot.name,
     shortNotes: snapshot.system.shortNotes,
@@ -119,14 +118,11 @@ export const PCSheetStats = memo(function PCSheetStats() {
   );
 
   return (
-    <div
-      className={theme.panelClass}
-      css={{
+    <Panel
+      className={css({
         gridArea: "stats",
-        padding: "0.5em",
         position: "relative",
-        ...theme.panelStyleSecondary,
-      }}
+      })}
     >
       <InputGrid>
         <GridField label="Person Name">
@@ -166,41 +162,26 @@ export const PCSheetStats = memo(function PCSheetStats() {
             </GridField>
           ))}
       </InputGrid>
-    </div>
+    </Panel>
   );
 });
 
-/** Refreshes, pool trackers, stats and the initiative ability */
-export const PCSheetPools = memo(function PCSheetPools() {
+/** The refresh buttons, for the strip at the top of the abilities tab */
+export const PCSheetRefreshButtons = memo(function PCSheetRefreshButtons() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const theme = useContext(ThemeContext);
-  const pools = useActorSnapshot(actor, (snapshot) => ({
-    mwInjuryStatus: snapshot.system.mwInjuryStatus,
-  }));
-  const { useMwStyleAbilities, useMwInjuryStatus, pcStats } = useSettings(
-    (s) => ({
-      useMwStyleAbilities: s.useMwStyleAbilities,
-      useMwInjuryStatus: s.useMwInjuryStatus,
-      pcStats: s.pcStats,
-    }),
-  );
+  const useMwStyleAbilities = useSettings((s) => s.useMwStyleAbilities);
   const methods = useSystemMethods(actor);
 
   return (
     <div
-      className={theme.panelClass}
-      css={{
-        gridArea: "pools",
-        position: "relative",
-        overflowX: "visible",
-        overflowY: "auto",
-        padding: "0.5em",
+      className={css({
         display: "flex",
-        flexDirection: "column",
+        flexWrap: "wrap",
         gap: "0.5em",
-        ...theme.panelStylePrimary,
-      }}
+        // as wide as their labels, not the whole strip (componentDefaults.css)
+        "& > button": { width: "auto", whiteSpace: "nowrap" },
+      })}
     >
       {useMwStyleAbilities && (
         <>
@@ -223,6 +204,39 @@ export const PCSheetPools = memo(function PCSheetPools() {
           <Translate>24h Refresh</Translate>
         </Button>
       )}
+    </div>
+  );
+});
+
+/**
+ * The pool trackers (and Moribund World's injury status). The stats and
+ * initiative ability join them when there's no combat tab to hold them.
+ */
+export const PCSheetPools = memo(function PCSheetPools() {
+  const { actor } = useActorSheetContext();
+  assertPCActor(actor);
+  const pools = useActorSnapshot(actor, (snapshot) => ({
+    mwInjuryStatus: snapshot.system.mwInjuryStatus,
+  }));
+  const { useMwInjuryStatus, noCombatTab } = useSettings((s) => ({
+    useMwInjuryStatus: s.useMwInjuryStatus,
+    // Moribund World's alternative item types have no weapons (PCSheetFull)
+    noCombatTab: s.mwUseAlternativeItemTypes,
+  }));
+  const methods = useSystemMethods(actor);
+
+  return (
+    <Panel
+      className={css({
+        gridArea: "pools",
+        position: "relative",
+        overflowX: "visible",
+        overflowY: "auto",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.5em",
+      })}
+    >
       {useMwInjuryStatus && (
         <MwInjuryStatusWidget
           status={pools.mwInjuryStatus}
@@ -230,10 +244,7 @@ export const PCSheetPools = memo(function PCSheetPools() {
         />
       )}
       <TrackersArea />
-      {Object.keys(pcStats).map((key) => (
-        <StatField key={key} id={key} stat={pcStats[key]} />
-      ))}
-      <InitiativeAbilityPicker actor={actor} />
-    </div>
+      {noCombatTab && <CombatStats inColumn />}
+    </Panel>
   );
 });

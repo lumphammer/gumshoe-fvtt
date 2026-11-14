@@ -1,12 +1,14 @@
-import { memo, useCallback, useContext } from "react";
+import { memo, useCallback } from "react";
 
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { AbilityItem } from "../../module/items/exports";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { Button } from "../inputs/Button";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
-import { InputGrid } from "../inputs/InputGrid";
+import { inputGridStyle } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
+import { Panel } from "../Panel";
+import { css, cx } from "../../styled-system/css";
+import { fieldGrid } from "../../styled-system/recipes";
 
 export const PushPoolButton = memo(function PushPoolButton({
   item,
@@ -14,7 +16,6 @@ export const PushPoolButton = memo(function PushPoolButton({
   /** Only to write through */
   item: AbilityItem;
 }) {
-  const theme = useContext(ThemeContext);
   const { push } = useSystemMethods(item);
 
   const handleClickPush = useCallback(() => {
@@ -22,26 +23,24 @@ export const PushPoolButton = memo(function PushPoolButton({
   }, [push]);
 
   return (
-    <InputGrid
-      className={theme.panelClass}
-      css={{
-        padding: "0.5em",
-        marginBottom: "0.5em",
-        ...theme.panelStyleSecondary,
-      }}
+    <Panel
+      className={cx(
+        fieldGrid().root,
+        css({ ...inputGridStyle, marginBottom: "0.5em" }),
+      )}
     >
       <GridFieldStacked>
         <div
-          css={{
+          className={css({
             display: "flex",
             flexDirection: "row",
-          }}
+          })}
         >
-          <Button css={{ flex: 1 }} onClick={handleClickPush}>
+          <Button className={css({ flex: "[1]" })} onClick={handleClickPush}>
             <Translate>Push</Translate>
           </Button>
         </div>
       </GridFieldStacked>
-    </InputGrid>
+    </Panel>
   );
 });

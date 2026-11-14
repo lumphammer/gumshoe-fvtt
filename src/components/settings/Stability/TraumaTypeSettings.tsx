@@ -17,6 +17,7 @@ import { SettingsNote } from "../SettingsNote";
 import { SettingsStringList } from "../SettingsStringList";
 import { traumaType } from "./directions";
 import { NamedTranslate } from "./NamedTranslate";
+import { css } from "../../../styled-system/css";
 
 /** One trauma type: how hard it is, what it costs, and adapting to it */
 export const TraumaTypeSettings = () => {
@@ -129,7 +130,10 @@ export const TraumaTypeSettings = () => {
           onChange={handleChangeId}
         />
         <SettingsGridField label="Delete">
-          <Button css={{ width: "auto" }} onClick={handleClickDelete}>
+          <Button
+            className={css({ width: "auto" })}
+            onClick={handleClickDelete}
+          >
             <i className="fas fa-trash" /> <Translate>Delete</Translate>
           </Button>
         </SettingsGridField>

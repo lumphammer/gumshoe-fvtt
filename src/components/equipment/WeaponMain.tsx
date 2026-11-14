@@ -5,6 +5,7 @@ import type { WeaponItem } from "../../module/items/weapon";
 import { absoluteCover } from "../absoluteCover";
 import { RichTextEditor } from "../inputs/RichTextEditor";
 import { WeaponAttackPanel } from "./WeaponAttackPanel";
+import { css } from "../../styled-system/css";
 
 interface WeaponMainProps {
   /** Only to write through (and for the attack panel, which reads it itself) */
@@ -18,9 +19,21 @@ export const WeaponMain = memo(function WeaponMain({
 }: WeaponMainProps) {
   const { setNotes } = useSystemMethods(item);
   return (
-    <div css={{ ...absoluteCover, display: "flex", flexDirection: "column" }}>
+    <div
+      className={css({
+        ...absoluteCover,
+        display: "flex",
+        flexDirection: "column",
+      })}
+    >
       <WeaponAttackPanel weapon={item} />
-      <div css={{ flex: 1, position: "relative", marginTop: "0.3em" }}>
+      <div
+        className={css({
+          flex: "[1]",
+          position: "relative",
+          marginTop: "0.3em",
+        })}
+      >
         <RichTextEditor name="notes" html={notes} onSave={setNotes} />
       </div>
     </div>

@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Official GUMSHOE support for FoundryVTT. Ships with compatiblity for several settings, and can be customized to work with any other setting.",
   "scripts": {
-    "build": "vite build",
+    "prepare": "panda codegen",
+    "build": "panda codegen && vite build",
     "build:profiling": "PROFILE_REACT=1 vite build",
     "build:dev": "vite build --mode dev",
     "build:watch": "vite build --watch --mode dev",
@@ -33,7 +34,8 @@
     "do-full-release": "./packages/shared-fvtt-bits/scripts/do-full-release.sh",
     "update-legacy-release-branch": "./scripts/update-legacy-release-branch.sh",
     "extract-packs": "./tasks.ts extractPacks",
-    "check": "pnpm run typecheck && pnpm run test --run && pnpm run lint:check && pnpm run format:check && pnpm run build"
+    "generate:catalogue": "tsx scripts/generateCatalogueShapes.ts",
+    "check": "pnpm run generate:catalogue --check && pnpm run typecheck && pnpm run test --run && pnpm run lint:check && pnpm run format:check && pnpm run build"
   },
   "author": "",
   "license": "",
@@ -42,9 +44,6 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@emotion/cache": "^11.14.0",
-    "@emotion/css": "^11.13.5",
-    "@emotion/react": "^11.14.0",
     "@fontsource-variable/big-shoulders-text": "^5.3.0",
     "@fontsource-variable/cormorant": "^5.3.0",
     "@fontsource-variable/roboto-flex": "^5.3.0",
@@ -65,6 +64,8 @@
     "@lumphammer/minirouter": "workspace:^",
     "@lumphammer/shared-fvtt-bits": "workspace:^",
     "@monaco-editor/react": "^4.7.0",
+    "@pandacss/dev": "2.5.0",
+    "@pandacss/preset-base": "2.5.0",
     "@playwright/test": "^1.65.0",
     "@radix-ui/react-context-menu": "^2.4.1",
     "@radix-ui/react-dropdown-menu": "^2.2.1",

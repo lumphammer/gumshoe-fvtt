@@ -3,7 +3,6 @@ import { useContext, useId, useState } from "react";
 import { assertGame } from "../../../functions/isGame";
 import type { ItemPackView } from "../../../hooks/useItemPacks";
 import { useItemPacks } from "../../../hooks/useItemPacks";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import { IdContext } from "../../IdContext";
 import { Toggle } from "../../inputs/Toggle";
 import { getTranslated } from "../../../functions/getTranslated";
@@ -11,6 +10,14 @@ import { Translate } from "../../Translate";
 import { StateContext } from "../contexts";
 import { SettingsEmptyState } from "../SettingsEmptyState";
 import type { Setters } from "../types";
+import {
+  input,
+  mutedText,
+  outcome,
+  row,
+  surface,
+} from "../../../styled-system/recipes";
+import { css, cx } from "../../../styled-system/css";
 
 /**
  * Where a pack comes from: the system itself, the world, or a module (by
@@ -57,7 +64,6 @@ export const AbilityPacksSettings = ({
   setters,
 }: AbilityPacksSettingsProps) => {
   const { settings } = useContext(StateContext);
-  const theme = useContext(ThemeContext);
   const selectedPacks = settings[which];
   const setSelectedPacks = setters[which];
 
@@ -99,7 +105,7 @@ export const AbilityPacksSettings = ({
 
   return (
     <div>
-      <p css={{ marginTop: 0 }}>
+      <p className={css({ marginTop: 0 })}>
         <Translate>
           {which === "newPCPacks"
             ? "Items from these compendium packs are added to every new PC."
@@ -107,27 +113,29 @@ export const AbilityPacksSettings = ({
         </Translate>
       </p>
       <div
-        css={{
-          position: "sticky",
-          top: 0,
-          zIndex: 1,
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: "0.5em",
-          padding: "0.5em 0",
-          background: theme.colors.bgOpaquePrimary,
-        }}
+        className={cx(
+          surface({ solid: true }),
+          css({
+            position: "sticky",
+            top: 0,
+            zIndex: 1,
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "0.5em",
+            padding: "0.5em 0",
+          }),
+        )}
       >
         <input
+          className={cx(input(), css({ flex: "[1]" }))}
           type="search"
-          css={{ flex: 1 }}
           value={search}
           onChange={(e) => setSearch(e.currentTarget.value)}
           placeholder={getTranslated("Search compendium packs")}
           aria-label={getTranslated("Search compendium packs")}
         />
-        <span css={{ whiteSpace: "nowrap", opacity: 0.75 }}>
+        <span className={css({ whiteSpace: "nowrap", opacity: 0.75 })}>
           <Translate values={{ Count: selectedCount.toString() }}>
             CountSelected
           </Translate>
@@ -143,26 +151,27 @@ export const AbilityPacksSettings = ({
         />
       )}
       <div
-        css={{
+        className={css({
           display: "grid",
           gridTemplateColumns: "max-content 1fr max-content",
           columnGap: "0.5em",
-        }}
+        })}
       >
         {visiblePacks.map(({ collection, label, source, missing }, i) => {
           const id = `${baseId}-${collection}`;
           return (
             <IdContext.Provider value={id} key={collection}>
               <div
-                css={{
-                  gridColumn: "1 / -1",
-                  display: "grid",
-                  gridTemplateColumns: "subgrid",
-                  alignItems: "center",
-                  padding: "0.3em 0.5em",
-                  background:
-                    i % 2 === 0 ? theme.colors.backgroundButton : undefined,
-                }}
+                className={cx(
+                  row({ alternate: i % 2 === 0 }),
+                  css({
+                    gridColumn: "1 / -1",
+                    display: "grid",
+                    gridTemplateColumns: "subgrid",
+                    alignItems: "center",
+                    padding: "0.3em 0.5em",
+                  }),
+                )}
               >
                 <Toggle
                   checked={selectedPacks.includes(collection)}
@@ -178,11 +187,10 @@ export const AbilityPacksSettings = ({
                   {label}
                 </label>
                 <span
-                  css={{
-                    fontStyle: "italic",
-                    opacity: missing ? undefined : 0.75,
-                    color: missing ? theme.colors.warning : undefined,
-                  }}
+                  className={cx(
+                    missing ? outcome({ tone: "warning" }) : mutedText(),
+                    css({ fontStyle: "italic" }),
+                  )}
                 >
                   {source}
                 </span>

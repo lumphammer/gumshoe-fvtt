@@ -1,5 +1,4 @@
-import type { CSSObject } from "@emotion/react";
-
+import { css } from "../styled-system/css";
 import { useActorTheme } from "../hooks/useActorTheme";
 import { useItemSheetContext } from "../hooks/useSheetContexts";
 import { useSheetPermissions } from "../hooks/useSheetPermissions";
@@ -37,21 +36,13 @@ export const ItemSheet = () => {
   const permissions = useSheetPermissions(item);
   const theme = useActorTheme(item.actor);
 
-  const style: CSSObject =
+  const className =
     isAbilityItem(item) || isMwItem(item)
-      ? {
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-        }
-      : {
-          position: "relative",
-        };
+      ? css({ position: "absolute", inset: 0 })
+      : css({ position: "relative" });
 
   return (
-    <CSSReset theme={theme} mode="small" css={style}>
+    <CSSReset theme={theme} mode="small" className={className}>
       <SheetPermissionsContext value={permissions}>
         <NotesTypeContext.Provider value="itemNote">
           {isAbilityItem(item) ? (

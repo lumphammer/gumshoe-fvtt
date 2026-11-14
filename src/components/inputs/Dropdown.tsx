@@ -12,6 +12,7 @@ import { FaChevronDown } from "react-icons/fa";
 import { systemLogger } from "../../functions/utilities";
 import { useShowHideTransition } from "../transitions/useShowHideTransition";
 import { Button } from "./Button";
+import { css, cx } from "../../styled-system/css";
 
 export const DropdownContainerContext =
   React.createContext<RefObject<HTMLElement> | null>(null);
@@ -115,10 +116,12 @@ export const Dropdown = ({
         onClick={handleClick}
         onDoubleClick={handleDoubleClick}
         style={style}
-        className={className}
-        css={{
-          cursor: "pointer",
-        }}
+        className={cx(
+          className,
+          css({
+            cursor: "pointer",
+          }),
+        )}
       >
         {label}
         {showArrow ? (

@@ -11,6 +11,7 @@ import {
 import { NativeMenuLabel } from "../../inputs/NativeMenu/NativeMenuLabel";
 import { useCombatantContext } from "./CombatantContext";
 import { useInititative } from "./useInititative";
+import { css } from "../../../styled-system/css";
 
 export const ClassicInitiative = memo(function ClassicInitiative() {
   assertGame(game);
@@ -76,7 +77,7 @@ export const ClassicInitiative = memo(function ClassicInitiative() {
           aria-label="Initiative Score"
           disabled={!game.user.isGM}
           onBlur={updateInitiative}
-          css={{
+          className={css({
             width: "2em",
             padding: "0.1em 0.2em",
             height: "1.8em",
@@ -84,13 +85,15 @@ export const ClassicInitiative = memo(function ClassicInitiative() {
             // fontSize: "0.8em",
             marginLeft: "0.5em",
             marginRight: "0.5em",
-          }}
+          })}
         />
       </form>
 
       {game.user.isGM && (
         <>
-          <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
+          <NativeDualFunctionMenu
+            className={css({ flex: "[0]", padding: "0 0.3em" })}
+          >
             <NativeMenuLabel>{combatantState.name}</NativeMenuLabel>
             <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
               {localize("COMBATANT.ACTIONS.Update")}

@@ -6,6 +6,7 @@ import { SettingsSortableList } from "../SettingsSortableList";
 import { store } from "../store";
 import type { PcOrNpc } from "../types";
 import { stat } from "./directions";
+import { css } from "../../../styled-system/css";
 
 export const StatsListSettings = ({ which }: { which: PcOrNpc }) => {
   const stats = useContext(StateContext).settings[which];
@@ -35,7 +36,7 @@ export const StatsListSettings = ({ which }: { which: PcOrNpc }) => {
 
   return (
     <SettingsSortableList
-      css={{ height: "100%" }}
+      className={css({ height: "100%" })}
       rows={ids.map((id) => ({
         name: stats[id].name,
         detail: <code>{id}</code>,

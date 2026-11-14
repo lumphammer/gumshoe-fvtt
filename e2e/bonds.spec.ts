@@ -1314,7 +1314,11 @@ test("Adapted to Violence caps Interpersonal ratings and Bonds", async ({
     lastChatMessage(page).getByTestId("establish-bond-points"),
   ).toHaveText("Ruth: 2");
 
-  // a refresh only goes up to the cap
+  // a refresh only goes up to the cap (the refresh buttons are on the
+  // abilities tab)
+  await actorSheet
+    .locator(".tab-strip > label", { hasText: "Abilities" })
+    .click();
   await actorSheet.getByRole("button", { name: "Full Refresh" }).click();
   await dialog.getByRole("button", { name: "Refresh" }).click();
   await expect
@@ -1378,6 +1382,10 @@ test("Adapted to Helplessness: refreshes give a point fewer", async ({
   await expect(actorSheet.getByTestId("adapted-helplessness")).toBeVisible();
 
   const dialog = page.locator(".application.dialog");
+  // the refresh buttons are on the abilities tab
+  await actorSheet
+    .locator(".tab-strip > label", { hasText: "Abilities" })
+    .click();
   await actorSheet.getByRole("button", { name: "24h Refresh" }).click();
   await dialog.getByRole("button", { name: "Refresh" }).click();
   // a point short; already within a point, nothing
@@ -1404,7 +1412,13 @@ test("Adapted to Helplessness: refreshes give a point fewer", async ({
     .poll(() => getAbility(page, actorId, "Athletics"))
     .toEqual({ rating: 8, pool: 7 });
 
-  // but not a Full Refresh, at the end of an operation
+  // but not a Full Refresh, at the end of an operation (closing the ability's
+  // sheet, which is over the button)
+  await page.evaluate(
+    (actorId) =>
+      game.actors.get(actorId)!.items.getName("Athletics")!.sheet!.close(),
+    actorId,
+  );
   await actorSheet.getByRole("button", { name: "Full Refresh" }).click();
   await dialog.getByRole("button", { name: "Refresh" }).click();
   await expect

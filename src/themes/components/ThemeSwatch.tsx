@@ -1,58 +1,59 @@
 import { CSSReset } from "../../components/CSSReset";
-import type { ThemeV1 } from "../types";
+import type { Theme } from "../theme";
+import { css } from "../../styled-system/css";
 
 type ThemeSwatchProps = {
-  theme: ThemeV1;
+  theme: Theme;
 };
 
 export const ThemeSwatch = ({ theme }: ThemeSwatchProps) => {
   return (
     <div
-      css={{
+      className={css({
         display: "flex",
         flexDirection: "column",
         gap: "1em",
-      }}
+      })}
     >
       <CSSReset
         noStyleAppWindow
         mode="small"
         theme={theme}
-        css={{
+        className={css({
           display: "flex",
           flexDirection: "column",
           gap: "1em",
-        }}
+        })}
       >
         <div
-          css={{
-            flex: 1,
+          className={css({
+            flex: "[1]",
             backgroundColor: "transparent",
-          }}
+          })}
         >
           {theme.displayName}
           <br />
           transparent
         </div>
         <div
-          css={{
-            flex: 1,
-            backgroundColor: theme.colors.backgroundPrimary,
-          }}
+          className={css({
+            flex: "[1]",
+          })}
+          style={{ backgroundColor: theme.palette.surface }}
         >
           {theme.displayName}
           <br />
-          bgTransPrimary
+          surface
         </div>
         <div
-          css={{
-            flex: 1,
-            backgroundColor: theme.colors.backgroundSecondary,
-          }}
+          className={css({
+            flex: "[1]",
+          })}
+          style={{ backgroundColor: theme.palette.surfaceNested }}
         >
           {theme.displayName}
           <br />
-          bgTransSecondary
+          surfaceNested
         </div>
       </CSSReset>
     </div>

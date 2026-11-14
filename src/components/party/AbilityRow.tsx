@@ -5,14 +5,14 @@ import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import type { AbilityItem } from "../../module/items/exports";
 import { isAbilityItem } from "../../module/items/exports";
-import type { ThemeV1 } from "../../themes/types";
 import type { AbilityRowData, PartyMemberView } from "./types";
+import { partyCell } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type AbilityRowProps = {
   abilityRowData: AbilityRowData;
   index: number;
   actors: readonly PartyMemberView[];
-  theme: ThemeV1;
 };
 
 /**
@@ -67,25 +67,10 @@ export const AbilityRow = ({
   abilityRowData,
   index,
   actors,
-  theme,
 }: AbilityRowProps) => {
   const zero = abilityRowData.total === 0;
   const odd = index % 2 === 0;
 
-  const bg = zero
-    ? odd
-      ? theme.colors.bgTransDangerPrimary
-      : theme.colors.bgTransDangerSecondary
-    : odd
-      ? theme.colors.backgroundPrimary
-      : theme.colors.backgroundSecondary;
-  const headerBg = zero
-    ? odd
-      ? theme.colors.bgOpaqueDangerPrimary
-      : theme.colors.bgOpaqueDangerSecondary
-    : odd
-      ? theme.colors.bgOpaquePrimary
-      : theme.colors.bgOpaqueSecondary;
   return (
     <>
       {/* Ability name */}
@@ -95,16 +80,18 @@ export const AbilityRow = ({
             ? getTranslated("Ability not in configured packs")
             : undefined
         }
-        css={{
-          gridRow: index + 2,
-          backgroundColor: headerBg,
-          padding: "0.5em",
-          textAlign: "left",
-          position: "sticky",
-          left: 0,
-          // extras aren't part of the configured set, so set them apart
-          fontStyle: abilityRowData.isExtra ? "italic" : undefined,
-        }}
+        className={cx(
+          partyCell({ header: true, odd, zero }),
+          css({
+            padding: "0.5em",
+            textAlign: "left",
+            position: "sticky",
+            left: 0,
+            // extras aren't part of the configured set, so set them apart
+            fontStyle: abilityRowData.isExtra ? "italic" : undefined,
+          }),
+        )}
+        style={{ gridRow: index + 2 }}
       >
         {abilityRowData.ability.name}
       </div>
@@ -123,14 +110,15 @@ export const AbilityRow = ({
                 actorInfo?.abilityUuid,
               );
             }}
-            css={{
-              background: bg,
-              display: "block",
-              gridRow: index + 2,
-              gridColumn: j + 2,
-              padding: "0.5em",
-              textAlign: "center",
-            }}
+            className={cx(
+              partyCell({ odd, zero }),
+              css({
+                display: "block",
+                padding: "0.5em",
+                textAlign: "center",
+              }),
+            )}
+            style={{ gridRow: index + 2, gridColumn: j + 2 }}
           >
             {actorInfo?.rating ?? "–"}
           </a>
@@ -139,15 +127,16 @@ export const AbilityRow = ({
 
       {/* Total */}
       <div
-        css={{
-          background: headerBg,
-          gridRow: index + 2,
-          gridColumn: actors.length + 2,
-          position: "sticky",
-          right: 0,
-          padding: "0.5em",
-          textAlign: "center",
-        }}
+        className={cx(
+          partyCell({ header: true, odd, zero }),
+          css({
+            position: "sticky",
+            right: 0,
+            padding: "0.5em",
+            textAlign: "center",
+          }),
+        )}
+        style={{ gridRow: index + 2, gridColumn: actors.length + 2 }}
       >
         {abilityRowData.total}
       </div>

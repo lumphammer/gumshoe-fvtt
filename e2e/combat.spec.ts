@@ -253,7 +253,9 @@ test("in turn-passing, everyone acts, then a new round gives turns back", async 
   }
 });
 
-test("turn totals follow the actor's default without advancing combat", async ({ page }) => {
+test("turn totals follow the actor's default without advancing combat", async ({
+  page,
+}) => {
   await setSettings(page, { useTurnPassingInitiative: true });
   const actorId = await createActor(page, { name: "Extra turns", type: "pc" });
   await page.evaluate(async () => {
@@ -265,14 +267,18 @@ test("turn totals follow the actor's default without advancing combat", async ({
   const row = tracker.locator("li", { hasText: "Extra turns" });
   await expect(row).toContainText("1/1");
   await page.evaluate(async (actorId) => {
-    await game.actors.get(actorId)!.update({ system: { initiativePassingTurns: 3 } });
+    await game.actors
+      .get(actorId)!
+      .update({ system: { initiativePassingTurns: 3 } });
   }, actorId);
   // Creation records the first round, even before combat starts.
   await expect(row).toContainText("1/3");
   await tracker.getByRole("button", { name: "Start Combat" }).click();
   await expect.poll(() => getCombat(page)).toMatchObject({ round: 1 });
   await page.evaluate(async (actorId) => {
-    await game.actors.get(actorId)!.update({ system: { initiativePassingTurns: 5 } });
+    await game.actors
+      .get(actorId)!
+      .update({ system: { initiativePassingTurns: 5 } });
   }, actorId);
   // A recorded round retains its remaining turns while its total updates.
   await expect(row).toContainText("1/5");

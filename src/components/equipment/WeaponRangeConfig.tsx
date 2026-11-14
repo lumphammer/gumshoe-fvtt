@@ -4,6 +4,7 @@ import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { GridField } from "../inputs/GridField";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 // the toggle, then damage, then (if shown) spend, lined up down the rows
 const toggleColumnWidth = "2.5em";
@@ -18,13 +19,13 @@ export const WeaponRangeHeadings = () => {
   return (
     <GridField noLabel>
       <div
-        css={{
+        className={css({
           display: "grid",
-          gridTemplateColumns: getColumns(true),
           gap: "0.5em",
           fontSize: "0.85em",
           opacity: 0.8,
-        }}
+        })}
+        style={{ gridTemplateColumns: getColumns(true) }}
       >
         <span />
         <Translate>Damage</Translate>
@@ -58,12 +59,12 @@ export const WeaponRange = memo(function WeaponRange({
   return (
     <GridField label={label}>
       <div
-        css={{
+        className={css({
           display: "grid",
-          gridTemplateColumns: getColumns(showSpend),
           gap: "0.5em",
           alignItems: "center",
-        }}
+        })}
+        style={{ gridTemplateColumns: getColumns(showSpend) }}
       >
         <Toggle checked={enabled} onChange={setEnabled} />
         <AsyncNumberInput
@@ -75,7 +76,7 @@ export const WeaponRange = memo(function WeaponRange({
           <AsyncNumberInput
             // a spend of 0 is the usual case, so it shouldn't stand out (fade
             // the number only: faded buttons look disabled)
-            css={spend === 0 ? { input: { opacity: 0.6 } } : undefined}
+            className={css(spend === 0 ? { "& input": { opacity: 0.6 } } : {})}
             disabled={!enabled}
             min={0}
             integer

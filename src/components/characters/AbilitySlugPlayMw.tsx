@@ -7,6 +7,7 @@ import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
 import { isGeneralAbilitySnapshot } from "../../module/items/abilitySnapshots";
 import type { AbilityItem } from "../../module/items/exports";
 import { Button } from "../inputs/Button";
+import { css, cx } from "../../styled-system/css";
 
 type AbilitySlugPlayMwProps = {
   /** The live ability: the row reads it through a snapshot */
@@ -46,42 +47,48 @@ export const AbilitySlugPlayMw = memo(function AbilitySlugPlayMw({
       <AbilityNameLink
         ability={ability}
         name={row.name}
-        css={{ lineHeight: 0.9 }}
+        className={css({ lineHeight: 0.9 })}
       />
-      <div css={{ gridColumn: "rating", justifySelf: "right" }}>
+      <div className={css({ gridColumn: "rating", justifySelf: "right" })}>
         {row.pool}/{row.rating}
       </div>
       <div
-        css={{
+        className={css({
           gridColumn: "set",
           display: "grid",
           gridTemplateColumns: "1.6em 1.6em",
-        }}
+        })}
       >
         <Button
-          css={{ gridColumn: "1" }}
+          className={css({ gridColumn: "1" })}
           onClick={onClickDec}
           disabled={boonLevy <= -2}
         >
-          <i css={{ fontSize: "x-small" }} className="fa fa-minus" />
+          <i className={cx("fa fa-minus", css({ fontSize: "x-small" }))} />
         </Button>
         <Button
-          css={{ gridColumn: "2" }}
+          className={css({ gridColumn: "2" })}
           onClick={onClickInc}
           disabled={boonLevy >= 2}
         >
-          <i css={{ fontSize: "x-small" }} className="fa fa-plus" />
+          <i className={cx("fa fa-plus", css({ fontSize: "x-small" }))} />
         </Button>
       </div>
-      <div css={{ gridColumn: "spend" }}>
+      <div className={css({ gridColumn: "spend" })}>
         {row.isGeneral && (
-          <Button css={{ width: "4.1em" }} onClick={onTest}>
+          <Button className={css({ width: "4.1em" })} onClick={onTest}>
             <i className="fa fa-dice" title="Test" />+{boonLevy}
           </Button>
         )}
       </div>
       {row.hasSpecialities && (
-        <div css={{ paddingLeft: "1em", gridColumn: "ability", width: "2em" }}>
+        <div
+          className={css({
+            paddingLeft: "1em",
+            gridColumn: "ability",
+            width: "2em",
+          })}
+        >
           {row.specialities.map((x, i) => (
             <div key={i}>{x.trim()}</div>
           ))}

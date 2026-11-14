@@ -2,6 +2,8 @@ import { getTranslated } from "../../../functions/getTranslated";
 import { assertGame } from "../../../functions/isGame";
 import { useIsEditable } from "../../../hooks/useIsEditable";
 import type { MwInjuryStatus } from "../../../types";
+import { select } from "../../../styled-system/recipes";
+import { css, cx } from "../../../styled-system/css";
 
 interface MwInjuryStatusWidgetProps {
   status: MwInjuryStatus;
@@ -28,22 +30,27 @@ export const MwInjuryStatusWidget = ({
 
   return (
     <div
-      css={{
+      className={css({
         padding: "0.5em 0 1em 0",
+      })}
+      style={{
         backgroundImage: `radial-gradient(closest-side, ${color}, #0000)`,
       }}
     >
       <div
-        css={{
+        className={css({
           fontSize: "0.8em",
-        }}
+        })}
       >
         Injury Status
       </div>
       <select
-        css={{
-          width: "100%",
-        }}
+        className={cx(
+          select(),
+          css({
+            width: "100%",
+          }),
+        )}
         // uncontrolled, so a new choice shows straight away; the key resets
         // it when the saved status changes
         key={status}

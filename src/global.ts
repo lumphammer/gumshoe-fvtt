@@ -30,9 +30,4 @@ declare global {
       window: Window;
     }
   }
-
-  // I'd rather achieve this with `globalThis` but it's super hard to extend
-  interface Window {
-    EMOTION_RUNTIME_AUTO_LABEL: boolean;
-  }
 }

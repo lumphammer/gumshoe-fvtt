@@ -13,6 +13,7 @@ import { Translate } from "../../Translate";
 import { ModifyContext } from "../contexts";
 import { useStateSelector } from "../hooks";
 import { personalDetail } from "./directions";
+import { css } from "../../../styled-system/css";
 
 export const PersonalDetailSettings = () => {
   const index = useParams(personalDetail);
@@ -77,7 +78,7 @@ export const PersonalDetailSettings = () => {
         </Select>
       </SettingsGridField>
       <SettingsGridField label="Delete">
-        <Button css={{ width: "auto" }} onClick={handleClickDelete}>
+        <Button className={css({ width: "auto" })} onClick={handleClickDelete}>
           <i className="fas fa-trash" /> <Translate>Delete</Translate>
         </Button>
       </SettingsGridField>

@@ -8,6 +8,7 @@ import {
 } from "../../module/items/abilitySnapshots";
 import type { AbilityItem } from "../../module/items/exports";
 import { SpecListItem } from "./SpecListItem";
+import { css } from "../../styled-system/css";
 
 type SpecialityListProps = {
   /**
@@ -40,15 +41,15 @@ export const SpecialityList = memo(function SpecialityList({
 
   return (
     <div
-      css={{
-        flex: 1,
+      className={css({
+        flex: "[1]",
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(6em, 1fr))",
-        gridAutoColumns: "minMax(6em, 1fr)",
+        gridAutoColumns: "[minMax(6em, 1fr)]",
         gridAutoRows: "auto",
         gap: "0.5em",
         flexWrap: "wrap",
-      }}
+      })}
     >
       {specialities.map((spec, i) => (
         <SpecListItem

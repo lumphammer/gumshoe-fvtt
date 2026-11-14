@@ -3,7 +3,6 @@ import type { ChangeEvent, ReactNode } from "react";
 import {
   Fragment,
   useCallback,
-  useContext,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -11,18 +10,37 @@ import {
   useTransition,
 } from "react";
 
-import { ThemeContext } from "../themes/ThemeContext";
+import { css, cx } from "../styled-system/css";
+import { tabs } from "../styled-system/recipes";
 import { chooseTabColumns } from "./chooseTabColumns";
 import { Translate } from "./Translate";
+import { OnSurface } from "./Panel";
 
 // gap between the tabs when they're in a grid
 const wrappedGapEm = 0.25;
 
 /**
+ * The strip, its tabs and spacers, and the content: what `data-wrapped` goes
+ * on, so a theme can style each by its own attribute (the `tabs` recipe).
+ */
+function wrappable(strip: HTMLElement) {
+  const content = strip.parentElement?.querySelector(":scope > .tab-content");
+  return [strip, ...strip.children, ...(content ? [content] : [])];
+}
+
+function setWrapped(strip: HTMLElement, wrapped: boolean) {
+  for (const element of wrappable(strip)) {
+    element.toggleAttribute("data-wrapped", wrapped);
+  }
+}
+
+/**
  * When the tabs don't fit in one row, lay them out in a grid with as few rows
- * as will fit, by setting `data-wrapped` and `--tab-columns` on the strip.
- * Done on the DOM rather than through React state, so it happens before the
- * first paint, and on resizing without re-rendering.
+ * as will fit, by setting `data-wrapped` on the strip, its tabs and spacers
+ * and the content, and `--tab-columns` on the strip. Done on the DOM rather
+ * than through React state, so it happens before the first paint, and on
+ * resizing without re-rendering. The tabs are measured unwrapped, so in their
+ * unwrapped look.
  */
 function fitTabStrip(strip: HTMLElement) {
   const available = strip.getBoundingClientRect().width;
@@ -33,7 +51,7 @@ function fitTabStrip(strip: HTMLElement) {
   // measure each tab at its narrowest, in one row. Everything is measured on
   // screen, so with any transform (Foundry can scale windows), and the gap is
   // scaled to match
-  strip.removeAttribute("data-wrapped");
+  setWrapped(strip, false);
   strip.setAttribute("data-measuring", "");
   const width = (element: Element) => element.getBoundingClientRect().width;
   const widths = Array.from(strip.querySelectorAll(":scope > label"), width);
@@ -48,7 +66,7 @@ function fitTabStrip(strip: HTMLElement) {
 
   const columns = chooseTabColumns(widths, rowSpacing, gap, available);
   if (columns !== null) {
-    strip.setAttribute("data-wrapped", "");
+    setWrapped(strip, true);
     strip.style.setProperty("--tab-columns", String(columns));
   }
 }
@@ -97,15 +115,16 @@ export const TabContainer = ({
     [onSelect],
   );
 
-  const theme = useContext(ThemeContext);
   const stripTabDefs = tabDefs.filter((t) => !t.hidden);
 
   // would love to do this point-free, but react compiler wants to see a
   // function literal
   const radioGroup = useMemo(() => nanoid(), []);
 
-  // fit the strip when it's created, resized, or a font loads. It's replaced
-  // when the selected tab changes (see the `key` below)
+  // fit the strip when it's created, resized, a font loads, or the theme
+  // changes (its fonts can change the tabs' widths but not the strip's, so
+  // the ResizeObserver won't notice). It's replaced when the selected tab
+  // changes (see the `key` below)
   const stripRef = useRef<HTMLDivElement | null>(null);
   const observeStrip = useCallback((strip: HTMLDivElement | null) => {
     stripRef.current = strip;
@@ -125,15 +144,25 @@ export const TabContainer = ({
     const fonts = strip.ownerDocument.fonts;
     const refit = () => fitTabStrip(strip);
     fonts.addEventListener("loadingdone", refit);
+    // a change of theme is a new slug and palette on the themed root
+    const themed = strip.closest("[data-inv-theme]");
+    const themeObserver = new MutationObserver(refit);
+    if (themed) {
+      themeObserver.observe(themed, {
+        attributes: true,
+        attributeFilter: ["data-inv-theme", "style"],
+      });
+    }
     return () => {
       observer.disconnect();
+      themeObserver.disconnect();
       fonts.removeEventListener("loadingdone", refit);
     };
   }, []);
 
   // and when the tabs or their labels change (Bonds and Adapted to share an
-  // id), or the theme does: that can change the tabs' widths but not the
-  // strip's, so the ResizeObserver won't notice
+  // id): that can change the tabs' widths but not the strip's, so the
+  // ResizeObserver won't notice
   const fitKey = stripTabDefs
     .map(({ id, label }) => `${id}:${typeof label === "string" ? label : ""}`)
     .join("\n");
@@ -141,56 +170,43 @@ export const TabContainer = ({
     if (stripRef.current) {
       fitTabStrip(stripRef.current);
     }
-  }, [fitKey, theme]);
+  }, [fitKey]);
+
+  const classes = tabs();
 
   return (
     <div
-      className="tab-container-outer"
-      key={selected}
-      css={{
-        position: "absolute",
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        display: "flex",
-        flexDirection: "column",
-        ".tab-strip": {
+      className={cx(
+        "tab-container-outer",
+        css({
+          position: "absolute",
+          inset: "0",
           display: "flex",
-          flexDirection: "row",
-          "&[data-measuring]": {
-            width: "min-content",
-          },
-          "&[data-wrapped]": {
-            display: "grid",
-            gridTemplateColumns: "repeat(var(--tab-columns), 1fr)",
-            gap: `${wrappedGapEm}em`,
-            marginBottom: "0.4em",
-            ".tab-spacer": {
-              display: "none",
-            },
-          },
-        },
-        "input[type=radio]": {
-          display: "none",
-          "+label": theme.tabStyle,
-          "&[disabled]+label": {
-            opacity: 0.3,
-            ":hover": {
-              textShadow: "none",
-            },
-          },
-        },
-        ".tab-strip:not([data-wrapped]) input[type=radio]:checked+label":
-          theme.tabActiveStyle,
-        ".tab-strip[data-wrapped] input[type=radio]": {
-          "+label": theme.tabWrappedStyle,
-          "&:checked+label": theme.tabWrappedActiveStyle,
-        },
-        ".tab-strip[data-wrapped]+.tab-content": theme.tabContentWrappedStyle,
-      }}
+          flexDirection: "column",
+          // the hidden radios: the labels after them are the tabs
+          "& input[type=radio]": { display: "none" },
+        }),
+      )}
+      key={selected}
     >
-      <div className="tab-strip" ref={observeStrip}>
+      <div
+        className={cx(
+          "tab-strip",
+          classes.list,
+          css({
+            display: "flex",
+            flexDirection: "row",
+            "&[data-measuring]": { width: "min-content" },
+            "&[data-wrapped]": {
+              display: "grid",
+              gridTemplateColumns: "repeat(var(--tab-columns), 1fr)",
+              gap: `${wrappedGapEm}em`,
+              marginBottom: "0.4em",
+            },
+          }),
+        )}
+        ref={observeStrip}
+      >
         {stripTabDefs.map(({ id, label, translate = true }, index) => {
           const htmlId = nanoid();
           return (
@@ -206,14 +222,20 @@ export const TabContainer = ({
               <label
                 htmlFor={htmlId}
                 tabIndex={0}
-                className={theme.tabClass}
-                css={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  opacity: pending && id === optimistic ? 0.5 : 1,
-                  font: theme.displayFont,
-                  textTransform: theme.displayFontTextTransform,
+                data-interactive={id === selected ? undefined : true}
+                // the selected tab's state, for its look (the tabs recipe)
+                data-selected={id === selected ? true : undefined}
+                className={cx(
+                  classes.tab,
+                  css({
+                    flex: "1",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }),
+                )}
+                style={{
+                  opacity: pending && id === optimistic ? 0.5 : undefined,
                 }}
               >
                 {typeof label === "string" ? (
@@ -227,23 +249,21 @@ export const TabContainer = ({
                 )}
               </label>
               {index < stripTabDefs.length - 1 && (
-                <div className="tab-spacer" css={theme.tabSpacerStyle} />
+                <div className={cx("tab-spacer", classes.spacer)} />
               )}
             </Fragment>
           );
         })}
       </div>
       <div
-        className={`tab-content ${theme.panelClass ?? ""}`}
-        css={{
-          flex: 1,
-          position: "relative",
-          overflow: "auto",
-          padding: "0.5em",
-          ...theme.tabContentStyle,
-        }}
+        className={cx(
+          "tab-content",
+          classes.content,
+          css({ flex: "1", position: "relative", overflow: "auto" }),
+        )}
       >
-        {activeTabDef?.content}
+        {/* a surface, so panels in it are nested */}
+        <OnSurface>{activeTabDef?.content}</OnSurface>
       </div>
     </div>
   );

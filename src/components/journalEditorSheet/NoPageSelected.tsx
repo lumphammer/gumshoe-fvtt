@@ -1,6 +1,7 @@
 import { FaArrowLeft } from "react-icons/fa6";
 
 import { absoluteCover } from "../absoluteCover";
+import { css } from "../../styled-system/css";
 
 /**
  * Content to display when no page is selected
@@ -8,14 +9,14 @@ import { absoluteCover } from "../absoluteCover";
 export const NoPageSelected = () => {
   return (
     <div
-      css={{
+      className={css({
         ...absoluteCover,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         fontSize: "1.5em",
         // color: "gray",
-      }}
+      })}
     >
       <FaArrowLeft />
       &nbsp; Select a page to edit

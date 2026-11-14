@@ -6,6 +6,7 @@ import { BottomRow } from "./BottomRow";
 import { useCombatantContext } from "./CombatantContext";
 import { Grip } from "./Grip";
 import { TopRow } from "./TopRow";
+import { css } from "../../../styled-system/css";
 
 interface ContentProps {
   setActivatorNodeRef: (node: HTMLElement | null) => void;
@@ -32,14 +33,14 @@ export const Content = memo(
           loading="lazy"
         />
         <div
-          css={{
+          className={css({
             overflow: "hidden",
-            flex: 1,
+            flex: "[1]",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-evenly",
             alignSelf: "stretch",
-          }}
+          })}
         >
           <TopRow />
           <BottomRow />

@@ -4,6 +4,7 @@ import React from "react";
 
 import { Suspense } from "../../components/Suspense";
 import { ItemSheetV2 } from "../../fvtt-exports";
+import { NoDocumentTypeInTitleMixin } from "@lumphammer/shared-fvtt-bits/src/NoDocumentTypeInTitleMixin";
 
 const InvestigatorItemSheet = React.lazy(() =>
   import("../../components/ItemSheet").then(({ ItemSheet }) => ({
@@ -35,7 +36,7 @@ class ItemSheetClassBase extends ItemSheetV2 {
 
 export const ItemSheetClass = ReactApplicationV2Mixin(
   "ItemSheetClass",
-  OverrideAutoDisableMixin(ItemSheetClassBase),
+  NoDocumentTypeInTitleMixin(OverrideAutoDisableMixin(ItemSheetClassBase)),
   render,
   // every item sheet reads everything through snapshots, ownership included
   // (docs/immutable-data.md), so Foundry's re-renders needn't reach React

@@ -1,5 +1,66 @@
-import type { CSSObject, SerializedStyles } from "@emotion/react";
-export { CSSObject } from "@emotion/react";
+import type * as CSS from "csstype";
+
+export type {
+  CatalogueRecipeShapes,
+  PaletteVar,
+  RecipeOverride,
+  StateLayer,
+  ThemeCatalogue,
+  ThemePalette,
+  ThemeStyle,
+  ThemeV2,
+} from "./themeV2.js";
+import type { ThemeV2 } from "./themeV2.js";
+
+/**
+ * A style object: CSS properties in camelCase (a number is pixels, as in
+ * React's `style`, for properties that take a length), with nested rules
+ * keyed by selector (`&:hover`, `& img`) or at-rule. These are Emotion's types
+ * of the same names, copied (Emotion 11, `@emotion/serialize`), so styles
+ * written for Emotion still fit, both ways, without depending on it.
+ */
+export type CSSProperties = CSS.PropertiesFallback<number | string>;
+export type CSSPropertiesWithMultiValues = {
+  [K in keyof CSSProperties]: CSSProperties[K] | ReadonlyArray<Extract<CSSProperties[K], string>>;
+};
+export type CSSPseudos = { [K in CSS.Pseudos]?: CSSObject };
+// oxlint-disable-next-line no-empty-object-type -- an interface, not a type alias, so the type can refer to itself (as in Emotion)
+export interface ArrayCSSInterpolation extends ReadonlyArray<CSSInterpolation> {}
+export interface ComponentSelector {
+  __emotion_styles: any;
+}
+export type Keyframes = {
+  name: string;
+  styles: string;
+  anim: number;
+  toString: () => string;
+} & string;
+export type InterpolationPrimitive =
+  | null
+  | undefined
+  | boolean
+  | number
+  | string
+  | ComponentSelector
+  | Keyframes
+  | SerializedStyles
+  | CSSObject;
+export type CSSInterpolation = InterpolationPrimitive | ArrayCSSInterpolation;
+export interface CSSOthersObject {
+  [propertiesName: string]: CSSInterpolation;
+}
+export interface CSSObject extends CSSPropertiesWithMultiValues, CSSPseudos, CSSOthersObject {}
+
+/**
+ * Emotion's serialised styles (from its `css` tag), which a theme's `global`
+ * can still be: its CSS is used, and the keyframes it refers to.
+ */
+export interface SerializedStyles {
+  name: string;
+  styles: string;
+  map?: string;
+  next?: SerializedStyles;
+}
 
 /**
  * Essential colors for a theme. Some are typed as optional. If these are left
@@ -115,7 +176,8 @@ export interface ThemeSeedV1 {
    */
   appWindowStyle?: CSSObject;
   /**
-   * Classname to be added to active tabs
+   * @deprecated Ignored. A class for the tabs, from before the catalogue: style
+   * the tabs with `tabStyle` and the rest, or in ThemeV2, the `tabs` recipe.
    */
   tabClass?: string;
   /**
@@ -152,7 +214,9 @@ export interface ThemeSeedV1 {
    */
   tabContentWrappedStyle?: CSSObject;
   /**
-   * Classname that will be applied to all panels
+   * @deprecated Ignored. A class for panels, from before the catalogue: style
+   * panels with `panelStylePrimary` and `panelStyleSecondary`, or in ThemeV2,
+   * the `panel` recipe.
    */
   panelClass?: string;
   /**
@@ -244,6 +308,7 @@ export interface ThemeSeedV1 {
    */
   colors: SeedColorsV1;
 
+  /** @deprecated Ignored: nothing has read it for a long time. */
   notesCssClasses?: {
     scopingContainer?: string;
     pcNote?: string;
@@ -558,7 +623,8 @@ interface InvestigatorConfig {
   /**
    * Install a theme.
    */
-  installTheme: (id: string, seed: ThemeSeedV1) => void;
+  /** Install a theme, V1 or V2 (by its `schemaVersion`), or replace one. */
+  installTheme: (id: string, theme: ThemeSeedV1 | ThemeV2) => void;
   /**
    * Install a preset.
    */

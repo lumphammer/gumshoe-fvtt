@@ -6,6 +6,7 @@ import type { GeneralAbilityItem } from "../../module/items/generalAbility";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
+import { css } from "../../styled-system/css";
 
 interface AbilityMwExtraFieldsProps {
   /** Only to write through (a general ability, in Moribund World) */
@@ -25,9 +26,9 @@ export const AbilityMwExtraFields = memo(function AbilityMwExtraFields({
 
   return (
     <InputGrid
-      css={{
+      className={css({
         paddingTop: "0.5em",
-      }}
+      })}
     >
       <GridField label="Trumps">
         <AsyncTextInput value={trumps} onChange={setMwTrumps} />

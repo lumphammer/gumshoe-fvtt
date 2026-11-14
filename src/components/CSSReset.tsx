@@ -1,40 +1,33 @@
-import createCache from "@emotion/cache";
-import { css } from "@emotion/css";
-import type { CSSObject } from "@emotion/react";
-import { CacheProvider as EmotionCacheProvider, Global } from "@emotion/react";
-import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
 import type { PropsWithChildren } from "react";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
-import { assertGame } from "../functions/isGame";
-import { ApplicationV2 } from "../fvtt-exports";
-import { irid } from "../irid/irid";
-import { ThemeContext } from "../themes/ThemeContext";
-import type { ThemeV1 } from "../themes/types";
+import { css, cx } from "../styled-system/css";
+import { sheetRoot } from "../styled-system/recipes";
+import { themeCss } from "../themes/catalogue/themeCss";
+import { paletteStyle, themeSlug } from "../themes/palette";
+import type { Theme } from "../themes/theme";
+import { claimFrame, type FrameClaim } from "./frame";
 import { ErrorBoundary } from "./ErrorBoundary";
+
+/**
+ * In the full-frame layout, the logo's text stays below the see-through
+ * titlebar, by shrinking down by the same distance the titlebar overlaps the
+ * logo (measured by `LogoEditable`), minus `--inv-logo-strip-tuck`, which is
+ * "how far the text can start inside the strip". This lets it sit a little
+ * higher, more centred between the top of the window and the fields, at the
+ * cost of a sliver of the name being under the titlebar (a press there drags
+ * the window).
+ */
+const logoTuning = css({
+  "--inv-logo-strip-tuck": "15px",
+});
 
 type CSSResetProps = PropsWithChildren<{
   className?: string;
-  theme: ThemeV1;
+  theme: Theme;
   mode: "large" | "small" | "none";
   noStyleAppWindow?: boolean;
 }>;
-
-function safeGetAppId(app: ApplicationV2 | undefined | null) {
-  if (app instanceof ApplicationV2) {
-    return app.id;
-  } else {
-    return undefined;
-  }
-}
-
-function safeGetAppElement(app: ApplicationV2 | undefined | null) {
-  if (app instanceof ApplicationV2) {
-    return app.element;
-  } else {
-    return undefined;
-  }
-}
 
 export const CSSReset = ({
   className,
@@ -45,254 +38,47 @@ export const CSSReset = ({
 }: CSSResetProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  // add app window styles if there's a containing app window
+  const slug = themeSlug(theme);
+  const layout = theme.layout ?? "standard";
+  const palette = useMemo(() => paletteStyle(theme.palette), [theme]);
+
+  // the window around the root, if this is the window's root: claimed once,
+  // so it keeps its place among other roots in the window (frame.ts), then
+  // styled with the theme, whenever that changes
+  const frameClaim = useRef<FrameClaim>(undefined);
   useEffect(() => {
-    // interacting with Foundry's stuff with jQuery feels a bit 2001 but putting
-    // it in a hook keeps is nice and encapsulated.
-    const className = css(theme.appWindowStyle);
-    if (ref.current !== null && !noStyleAppWindow) {
-      const el = jQuery(ref.current).closest(".window-app");
-      el.addClass(className);
-      return function () {
-        el.removeClass(className);
-      };
-    }
-  }, [noStyleAppWindow, theme.appWindowStyle]);
-
-  const app = useContext(FoundryAppContext);
-
-  const [head, setHead] = useState(safeGetAppElement(app)?.closest("head"));
-
-  useEffect(() => {
-    // if we don't have an id, we can't tell whether a popped-out app is ours,
-    // so don't try to match - two undefineds are not the same app.
-    const appId = safeGetAppId(app);
-    const popoutHandler = (poppedApp: ApplicationV2, newWindow: Window) => {
-      if (appId !== undefined && safeGetAppId(poppedApp) === appId) {
-        setHead(newWindow.document.head);
-      }
-    };
-    const dialogHandler = (
-      dialoggedApp: ApplicationV2,
-      info: PopOut.DialogHookInfo,
-    ) => {
-      if (appId !== undefined && safeGetAppId(dialoggedApp) === appId) {
-        setHead(info.window.document.head);
-      }
-    };
-    Hooks.on("PopOut:popout", popoutHandler);
-    Hooks.on("PopOut:dialog", dialogHandler);
+    if (ref.current === null || noStyleAppWindow) return;
+    const claim = claimFrame(ref.current);
+    frameClaim.current = claim;
     return () => {
-      Hooks.off("PopOut:popout", popoutHandler);
-      Hooks.off("PopOut:dialog", dialogHandler);
+      claim?.release();
+      frameClaim.current = undefined;
     };
-  }, [app]);
-
-  const cache = useMemo(() => {
-    return createCache({
-      key: "investigator",
-      container: head ?? undefined,
-    });
-  }, [head]);
-
-  const styles = useMemo<CSSObject>(() => {
-    const rootStyle =
-      mode === "large"
-        ? theme.largeSheetRootStyle
-        : mode === "small"
-          ? theme.smallSheetRootStyle
-          : {};
-
-    const groove1 = irid(theme.colors.controlBorder);
-    const groove2 = groove1.contrast();
-
-    const [grooveLight, grooveDark] =
-      groove1.luma() < groove2.luma()
-        ? [groove1.toString(), groove2.toString()]
-        : [groove2.toString(), groove1.toString()];
-
-    const styles: CSSObject = {
-      font: theme.bodyFont,
-      padding: mode === "none" ? "0" : "0.5em",
-      color: theme.colors.text,
-      backgroundColor: mode === "none" ? "transparent" : theme.colors.wallpaper,
-      height: "100%",
-      accentColor: theme.colors.accent,
-      // this is outside the `:where` cluse below because we need to
-      // override Foundry's CSS for buttons, which use the
-      // selector `form button` (specificity 0 0 2).
-      // `:where(.abc123) button` has a specificity of 0 0 1.
-      // Putting this up here comes out as `.abc123 button` which is
-      // specificity 0 1 1.
-      "button, input[type=button]": {
-        borderStyle: "solid",
-        borderWidth: "1px",
-        borderColor: `${grooveLight} ${grooveDark} ${grooveDark} ${grooveLight}`,
-        background: theme.colors.backgroundButton,
-        boxShadow: ` -1px -1px 0 0 ${grooveLight} inset, 1px 1px 0 0 ${grooveDark} inset`,
-      },
-      // fix specificity. The comma causes this to be interpreted as a
-      // new selector, i.e. it comes out as
-      // ```
-      // , :where(.abc123) button { ... }
-      // ```
-      // the :where means that this selector does not add to specificity
-      // so we can override all these rules without having to use
-      // specificity hacks like `"&&": {...}`.
-      //
-      // The downside of controlling specificity this way is that these
-      // rules will *not* override Foundry's own styles in some
-      // circumstances.
-      ",:where(&) ": {
-        "*": {
-          scrollbarWidth: "thin",
-          userSelect: "auto",
-          boxSizing: "border-box",
-          scrollbarColor: `${theme.colors.accent} ${theme.colors.backgroundButton}`,
-        },
-
-        "h1, h2, h3, h4": {
-          border: "none",
-          margin: "0.3em 0 0 0",
-          marginBottom: "0.3em",
-          padding: 0,
-          fontWeight: "inherit",
-          font: theme.displayFont,
-          textTransform: theme.displayFontTextTransform,
-        },
-        h1: {
-          fontSize: "1.5em",
-        },
-        h2: {
-          fontSize: "1.3em",
-        },
-        h3: {
-          fontSize: "1.1em",
-        },
-        h4: {
-          fontSize: "1em",
-        },
-        "button, input[type=button]": {
-          font: theme.displayFont,
-          textTransform: theme.displayFontTextTransform,
-          color: theme.colors.accent,
-          borderRadius: "5px",
-          // 100% was causing scrollbars in some places
-          width: "99%",
-          "&[disabled]": {
-            opacity: 0.5,
-            color: theme.colors.text,
-            "&:hover": {
-              boxShadow: "none",
-              textShadow: "none",
-            },
-          },
-          "&:hover": {
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-            textShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-          "&:focus": {
-            boxShadow: "none",
-          },
-        },
-        label: {
-          fontWeight: "bold",
-        },
-        "a, label.parp": {
-          color: theme.colors.accent,
-        },
-        "a:hover, a.hover, .hover a, label.parp:hover, label.parp.hover, .hover label.parp":
-          {
-            textDecoration: "underline",
-            textShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-        "input, input[type=text], textarea, select, option": {
-          font: theme.bodyFont,
-          fontVariantLigatures: "none",
-          color: theme.colors.accent,
-          padding: "0.1em 0.3em",
-          borderStyle: "solid",
-          borderWidth: "1px",
-          borderColor: theme.colors.controlBorder,
-          background: theme.colors.backgroundPrimary,
-          resize: "vertical",
-          ":focus": {
-            borderColor: theme.colors.accent,
-            outline: "none",
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-          "&:hover": {
-            borderStyle: "solid",
-            borderWidth: "1px",
-            borderColor: theme.colors.controlBorder,
-          },
-        },
-        select: {
-          color: theme.colors.text,
-          background: theme.colors.bgOpaqueSecondary,
-          option: {
-            background: theme.colors.bgOpaquePrimary,
-            color: theme.colors.text,
-          },
-          ":focus": {
-            borderColor: theme.colors.accent,
-            outline: "none",
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-        },
-        textarea: {
-          lineHeight: 1,
-        },
-        hr: {
-          borderColor: theme.colors.controlBorder,
-          width: "calc(100% - 2em)",
-          borderWidth: 0,
-          height: "2px",
-          backgroundImage: `linear-gradient(
-              90deg,
-              oklch(from ${theme.colors.controlBorder} l c h / 0%) 0%,
-              oklch(from ${theme.colors.controlBorder} l c h / 50%) 50%,
-              oklch(from ${theme.colors.controlBorder} l c h / 0%) 100%)`,
-        },
-        "i.fa:last-child": {
-          margin: 0,
-        },
-      },
-      ...rootStyle,
-    };
-
-    return styles;
-  }, [mode, theme]);
-
-  // v13+ only (CSS Layers)
-  // we put these styles into the `system` layer to play nice with Foundry's
-  // layering system. If we left them outside of a layer they would still work,
-  // but they would take priority over other like `modules` and `exceptions` which
-  // are supposed to be above `system`.
-  // We wouldn't need to do this if we were exporting our CSS into a file and
-  // getting Foundry to load it, but see https://github.com/lumphammer/gumshoe-fvtt/issues/928
-  // for why we don't do that.
-  const layeredStyles = useMemo((): CSSObject => {
-    assertGame(game);
-    if (foundry.utils.isNewerVersion(game.version, "13.0")) {
-      return {
-        "@layer system": styles,
-      };
-    } else {
-      return styles;
-    }
-  }, [styles]);
+  }, [noStyleAppWindow]);
+  useEffect(() => {
+    // the palette, without colorScheme (Foundry's window has its own)
+    const { colorScheme: _, ...properties } = palette;
+    frameClaim.current?.update(slug, properties, layout);
+  }, [noStyleAppWindow, slug, palette, layout]);
+  // the theme's overrides of catalogue classes, as a <style> inside the
+  // root: its rules are scoped to the root by being there (themeCss), and it
+  // goes wherever the root goes, detached windows included
+  const overridesCss = themeCss(theme);
 
   return (
     <ErrorBoundary>
-      <EmotionCacheProvider value={cache}>
-        <ThemeContext.Provider value={theme}>
-          <Global styles={theme.global} />
-          <div ref={ref} className={className} css={layeredStyles}>
-            {children}
-          </div>
-        </ThemeContext.Provider>
-      </EmotionCacheProvider>
+      <div
+        ref={ref}
+        className={cx(sheetRoot({ size: mode }), logoTuning, className)}
+        data-inv-theme={slug}
+        // for the sheets' grids, which follow it
+        data-inv-layout={layout}
+        style={palette}
+      >
+        {children}
+        {theme.globalCss && <style>{theme.globalCss}</style>}
+        {overridesCss && <style>{overridesCss}</style>}
+      </div>
     </ErrorBoundary>
   );
 };

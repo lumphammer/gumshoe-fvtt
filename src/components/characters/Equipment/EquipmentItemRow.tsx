@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 
 import { openSheet } from "../../../functions/openSheet";
 import { useItemSelector } from "../../../hooks/useItemSnapshot";
@@ -6,10 +6,11 @@ import type {
   EquipmentCategoriesSnapshot,
   EquipmentItem,
 } from "../../../module/items/equipment";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import { DeleteItemButton } from "../../inputs/DeleteItemButton";
 import { ItemNameWithIcon } from "../ItemNameWithIcon";
 import { CheckOrCross } from "./CheckOrCross";
+import { row as rowClass } from "../../../styled-system/recipes";
+import { css, cx } from "../../../styled-system/css";
 
 interface EquipmentItemRowProps {
   /** The live item: the row reads it through a snapshot */
@@ -32,7 +33,6 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
     img: snapshot.img,
     fields: snapshot.system.fields,
   }));
-  const theme = useContext(ThemeContext);
   const [hover, setHover] = useState(false);
   const handleMouseOver = useCallback((e: React.MouseEvent<HTMLElement>) => {
     setHover(true);
@@ -49,26 +49,24 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
     <>
       {/* hover bar */}
       <div
-        css={{
-          gridColumn: "1/-1",
-          gridRow,
-          backgroundColor: hover ? theme.colors.backgroundButton : undefined,
-          // padding: "0.5em",
-          // ":hover": {
-          // },
-        }}
+        className={cx(
+          rowClass({ interactive: true }),
+          css({ gridColumn: "1/-1" }),
+        )}
+        data-highlighted={hover || undefined}
+        style={{ gridRow }}
       />
       <a
         key={item.id}
-        css={{
+        className={css({
           gridColumn: "1",
-          gridRow,
           // mouseEvents: "none",
           // pointerEvents: "",
           cursor: "pointer",
           // so a long name is cut off, rather than widening the table
           minWidth: 0,
-        }}
+        })}
+        style={{ gridRow }}
         onClick={openItemSheet}
         data-item-id={item.id}
         onDragStart={(e) => onDragStart(e, item)}
@@ -83,11 +81,7 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
         return (
           <a
             key={fieldId}
-            css={{
-              gridColumn: j + 2,
-              gridRow,
-              mouseEvents: "none",
-            }}
+            style={{ gridColumn: j + 2, gridRow }}
             onMouseOver={handleMouseOver}
             onMouseOut={handleMouseOut}
             onClick={openItemSheet}
@@ -102,10 +96,7 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
       })}
       <DeleteItemButton
         item={item}
-        css={{
-          gridColumn: Object.keys(fields).length + 2,
-          gridRow,
-        }}
+        style={{ gridColumn: Object.keys(fields).length + 2, gridRow }}
         onMouseOver={handleMouseOver}
         onMouseOut={handleMouseOut}
       />
