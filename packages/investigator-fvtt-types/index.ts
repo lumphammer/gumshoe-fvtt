@@ -4,6 +4,7 @@ export type {
   CatalogueRecipeShapes,
   PaletteVar,
   RecipeOverride,
+  ElementState,
   StateLayer,
   ThemeCatalogue,
   ThemePalette,

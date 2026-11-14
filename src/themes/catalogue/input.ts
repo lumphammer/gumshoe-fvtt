@@ -1,4 +1,5 @@
 import { defineRecipe } from "@pandacss/dev";
+import type { ThemeStyle } from "@lumphammer/investigator-fvtt-types";
 
 import { paletteVar } from "../palette";
 
@@ -15,10 +16,12 @@ export const fieldBase = {
   boxShadow: "none",
   "&:is(:hover, [data-hover])": { borderColor: "line" },
   "&:is(:focus, [data-focus])": { borderColor: "line", boxShadow: "none" },
-  "&:is(:disabled, [disabled], [data-disabled], [aria-disabled=true])": {
-    opacity: 0.7,
-  },
 } as const;
+
+/** The element states a text field and a dropdown share. */
+export const fieldStates = {
+  disabled: { opacity: 0.7 },
+} satisfies Record<string, ThemeStyle>;
 
 /**
  * **input**: a field to type into: a text or number input, or a text area.
@@ -26,8 +29,9 @@ export const fieldBase = {
  * Use for: anything the user types.
  * Not for: rich text (richText), choosing from a list (select).
  *
- * States: invalid, via `aria-invalid="true"`: a `danger` border and tint.
- * Typed text is `text` ink; a placeholder is faded and italic.
+ * States (`inputStates`): `invalid` (`aria-invalid="true"`), a `danger`
+ * border and tint; `disabled`, faded. Typed text is `text` ink; a
+ * placeholder is faded and italic.
  */
 export const input = defineRecipe({
   className: "inv-input",
@@ -38,12 +42,17 @@ export const input = defineRecipe({
     resize: "vertical",
     _placeholder: { opacity: 0.5, fontStyle: "italic" },
     "&:is(textarea)": { lineHeight: "1" },
-    "&[aria-invalid=true]": {
-      borderColor: "danger",
-      background: `[color-mix(in srgb, var(${paletteVar("danger")}) 30%, var(${paletteVar("surface")}))]`,
-    },
   },
 });
+
+/** The input's element states (stateLayers.ts). */
+export const inputStates = {
+  ...fieldStates,
+  invalid: {
+    borderColor: `var(${paletteVar("danger")})`,
+    background: `color-mix(in srgb, var(${paletteVar("danger")}) 30%, var(${paletteVar("surface")}))`,
+  },
+} satisfies Record<string, ThemeStyle>;
 
 /**
  * **richText**: an editor for formatted text (notes, descriptions): a field

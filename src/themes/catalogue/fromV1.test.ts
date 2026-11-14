@@ -132,22 +132,31 @@ describe("panels", () => {
   });
 });
 
-test("tabs replace the catalogue's, with V1's states as the tabs' attributes", () => {
-  const { tab, spacer, content } = catalogue({
-    tabStyle: { color: "red" },
+test("tabs replace the catalogue's, with V1's selected styles as the tabs' selected state", () => {
+  const { base, states } = catalogue({
+    tabStyle: { color: "red", ":hover": { color: "blue" } },
     tabActiveStyle: { background: "white" },
-    tabWrappedStyle: { borderRadius: "1em" },
+    tabWrappedStyle: { borderRadius: "1em", backgroundColor: "pink" },
     tabWrappedActiveStyle: { background: "grey" },
     tabSpacerStyle: { width: "1em" },
     tabContentStyle: { border: "1px solid" },
     tabContentWrappedStyle: { borderStyle: "dashed" },
-  }).tabs!.base!;
+  }).tabs!;
+  const { tab, spacer, content } = base!;
   expect(tab).toMatchObject({
     all: "revert-layer",
     color: "red",
-    "&[data-selected]:not([data-wrapped])": { background: "white" },
-    "&[data-wrapped]": { borderRadius: "1em" },
-    "&[data-selected][data-wrapped]": { background: "grey" },
+    "&[data-wrapped]": { borderRadius: "1em", backgroundColor: "pink" },
+  });
+  // from nothing (the tab's own look, not the catalogue's selected one),
+  // then V1's active styles
+  expect(states?.selected?.tab).toEqual({
+    all: "revert-layer",
+    "&:not([data-wrapped])": { background: "white" },
+    "&[data-wrapped]": { background: "grey" },
+  });
+  expect(states?.disabled?.tab).toEqual({
+    "&:hover": { textShadow: "none" },
   });
   expect(spacer).toEqual({ all: "revert-layer", width: "1em" });
   expect(content).toEqual({

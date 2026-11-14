@@ -6,7 +6,17 @@ import type {
 
 import { themeSlug } from "../palette";
 import { recipeShapes } from "./recipeShapes.generated";
-import { isStateLayer, stateLayers } from "./stateLayers";
+import {
+  elementStates,
+  elementStateTells,
+  isElementState,
+  isStateLayer,
+  type StateDefinition,
+  stateLayers,
+} from "./stateLayers";
+import { styleCss } from "./styleCss";
+
+export { styleCss };
 
 type Warn = (message: string) => void;
 
@@ -23,29 +33,42 @@ export interface Rule {
 /** A style, or a style for each slot of a slot recipe. */
 type Styles = ThemeStyle | Record<string, ThemeStyle>;
 
+/** The states' styles, by state. */
+type States = Record<string, Styles | undefined>;
+
 /** A recipe's override, as loosely as a theme from a JSON file has it. */
 interface Override {
   base?: Styles;
-  variants?: Record<string, Record<string, Styles | undefined> | undefined>;
-  compoundVariants?: readonly ({ css?: Styles } & Record<string, unknown>)[];
-  states?: Record<string, Styles | undefined>;
+  variants?: Record<string, Record<string, unknown> | undefined>;
+  compoundVariants?: readonly ({ css?: Styles; states?: States } & Record<
+    string,
+    unknown
+  >)[];
+  states?: States;
 }
 
 interface Shape {
   className: string;
   slots: readonly string[];
   variants: Record<string, readonly string[]>;
+  states: readonly string[];
 }
+
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
 
 /**
  * A theme's catalogue (by recipe, shaped like the recipes) as rules: each
- * part's selector, and the layer Panda puts that part's default in (see the
- * layers in panda.config.ts), so the theme's rule goes over the default and
- * nothing else. What doesn't fit is left out, with a warning: a name the
- * catalogue doesn't have (a recipe, slot, variant, value or state), or
- * something that isn't a style where one should be. A theme may be built
- * against older types, or be a JSON file (`validateThemeV2` checks only its
- * general shape).
+ * part's selector, and the layer its default is in (Panda's, in
+ * panda.config.ts, for a recipe's parts; the state's, for a state), so the
+ * theme's rule goes over the default and nothing else. What doesn't fit is
+ * left out, with a warning: a name the catalogue doesn't have (a recipe,
+ * slot, variant, value or state), or something that isn't a style where one
+ * should be. A theme may be built against older types, or be a JSON file
+ * (`validateThemeV2` checks only its general shape). A nested selector for an
+ * element state the recipe has (`"&[data-pressed]"` in a button's `base`)
+ * is kept, with a warning: the state's own default goes over it, so it
+ * belongs in `states`.
  */
 export function catalogueRules(
   catalogue: ThemeCatalogue,
@@ -62,30 +85,42 @@ export function catalogueRules(
     frame = false,
   ) => {
     if (style === undefined) return;
-    if (style === null || typeof style !== "object" || Array.isArray(style)) {
+    if (!isObject(style)) {
       warn(`${where}: not a style`);
       return;
     }
     rules.push({ layer, frame, selectors, style: style as ThemeStyle });
   };
 
-  /** A state layer's rule, for an element (a class, or nothing: anything). */
+  /**
+   * A state's rule, for an element (a class, or nothing: anything): a state
+   * layer, or one of the recipe's element states (`shape`, for a recipe).
+   */
   const addState = (
     where: string,
     state: string,
     element: string,
     style: unknown,
     frame = false,
+    recipe?: { name: string; shape: Shape },
   ) => {
-    if (!isStateLayer(state)) {
-      warn(`${where}: no such state "${state}"`);
+    let definition: StateDefinition | undefined;
+    if (isStateLayer(state)) {
+      definition = stateLayers[state];
+    } else if (isElementState(state) && recipe?.shape.states.includes(state)) {
+      definition = elementStates[state];
+    } else {
+      warn(
+        isElementState(state)
+          ? `${where}: ${recipe ? `${recipe.name} has` : "a theme's own states have"} no "${state}" state`
+          : `${where}: no such state "${state}"`,
+      );
       return;
     }
-    const { layer, selectors } = stateLayers[state];
     add(
       `${where}.${state}`,
-      `${layer}.theme`,
-      selectors(element),
+      definition.themeLayer,
+      definition.selectors(element),
       style,
       frame,
     );
@@ -104,6 +139,7 @@ export function catalogueRules(
       continue;
     }
     const shape: Shape = recipeShapes[recipeName as keyof typeof recipeShapes];
+    const recipe = { name: recipeName, shape };
     const override = value as Override;
     const frame = recipeName === "appFrame";
     const layer = (part: string) =>
@@ -118,7 +154,7 @@ export function catalogueRules(
 
     /** Each style in `styles`, with its slot (none, for a plain recipe). */
     const each = (
-      styles: Styles | undefined,
+      styles: unknown,
       where: string,
       to: (style: unknown, where: string, slot?: string) => void,
     ) => {
@@ -126,10 +162,68 @@ export function catalogueRules(
         to(styles, where);
         return;
       }
+      if (styles !== undefined && !isObject(styles)) {
+        warn(`${where}: not a style for each slot`);
+        return;
+      }
       for (const [slot, style] of Object.entries(styles ?? {})) {
         if (shape.slots.includes(slot)) to(style, `${where}.${slot}`, slot);
         else warn(`${where}: no such slot "${slot}"`);
       }
+    };
+
+    /**
+     * Warn of a nested selector for one of the recipe's element states in a
+     * style: the state's default would go over it.
+     */
+    const tell = (style: unknown, where: string) => {
+      if (!isObject(style)) return;
+      for (const [key, nested] of Object.entries(style)) {
+        if (!isObject(nested)) continue;
+        const state = shape.states.find(
+          (state) =>
+            isElementState(state) && elementStateTells[state].test(key),
+        );
+        if (state) {
+          warn(
+            `${where}: "${key}" is the ${state} state, whose default goes over it: style it in \`states.${state}\`, the recipe's or beside a variant's style`,
+          );
+        }
+        tell(nested, `${where}.${key}`);
+      }
+    };
+
+    /** A part's rule for each of its styles, after checking them. */
+    const addPart = (
+      styles: unknown,
+      where: string,
+      part: string,
+      selector: (slot?: string) => string,
+    ) =>
+      each(styles, where, (style, where, slot) => {
+        tell(style, where);
+        add(where, layer(part), [selector(slot)], style, frame);
+      });
+
+    /** A part's states, on its element (`selector`), after its own. */
+    const statesAfter: (() => void)[] = [];
+    const addStates = (
+      states: unknown,
+      where: string,
+      selector: (slot?: string) => string,
+    ) => {
+      if (states === undefined) return;
+      if (!isObject(states)) {
+        warn(`${where}: not a style for each state`);
+        return;
+      }
+      statesAfter.push(() => {
+        for (const [state, styles] of Object.entries(states)) {
+          each(styles, `${where}.${state}`, (style, _, slot) =>
+            addState(where, state, selector(slot), style, frame, recipe),
+          );
+        }
+      });
     };
 
     for (const part of Object.keys(override)) {
@@ -140,30 +234,39 @@ export function catalogueRules(
       }
     }
 
-    each(override.base, `${recipeName}.base`, (style, where, slot) =>
-      add(where, layer("base"), [element(slot)], style, frame),
-    );
+    // the recipe's own states first: a variant's and a compound variant's
+    // are more specific, and go over them
+    addStates(override.states, `${recipeName}.states`, element);
+
+    addPart(override.base, `${recipeName}.base`, "base", element);
 
     for (const [variant, options] of Object.entries(override.variants ?? {})) {
-      for (const [option, styles] of Object.entries(options ?? {})) {
+      for (const [option, value] of Object.entries(options ?? {})) {
         const where = `${recipeName}.variants.${variant}.${option}`;
         if (!isOption(variant, option)) {
           warn(`${where}: no such variant value`);
           continue;
         }
-        each(styles, where, (style, where, slot) =>
-          add(
-            where,
-            layer("variants"),
-            [variantClass(variant, option, slot)],
-            style,
-            frame,
-          ),
+        // its style, and its elements' states beside it (a variant can have
+        // only states)
+        const { states, ...styles } = isObject(value)
+          ? value
+          : { states: undefined };
+        if (!isObject(value) || Object.keys(styles).length > 0) {
+          addPart(isObject(value) ? styles : value, where, "variants", (slot) =>
+            variantClass(variant, option, slot),
+          );
+        }
+        addStates(
+          states,
+          `${where}.states`,
+          (slot) => `${element(slot)}${variantClass(variant, option, slot)}`,
         );
       }
     }
 
-    (override.compoundVariants ?? []).forEach(({ css, ...conditions }, i) => {
+    (override.compoundVariants ?? []).forEach((compound, i) => {
+      const { css, states, ...conditions } = compound;
       const where = `${recipeName}.compoundVariants[${i}]`;
       const chosen = Object.entries(conditions);
       const unknown = chosen.find(([variant, option]) => {
@@ -177,112 +280,28 @@ export function catalogueRules(
         );
         return;
       }
-      each(css, where, (style, where, slot) => {
-        // an element with all of the variants' classes: the first as it is,
-        // the others in :where(), so it's as specific as one class, like
-        // Panda's own compound classes
+      // an element with all of the variants' classes: the first as it is,
+      // the others in :where(), so it's as specific as one class, like
+      // Panda's own compound classes
+      const withVariants = (slot?: string) => {
         const [first, ...others] = chosen.map(([variant, option]) =>
           variantClass(variant, String(option), slot),
         );
-        add(
-          where,
-          layer("compound_variants"),
-          [others.length > 0 ? `${first}:where(${others.join("")})` : first],
-          style,
-          frame,
-        );
-      });
+        return others.length > 0 ? `${first}:where(${others.join("")})` : first;
+      };
+      addPart(css, where, "compound_variants", withVariants);
+      // its states: the recipe's class too, as a variant's are; as specific
+      // as a variant's, and after them, so they go over them
+      addStates(
+        states,
+        `${where}.states`,
+        (slot) => `${element(slot)}${withVariants(slot)}`,
+      );
     });
 
-    for (const [state, styles] of Object.entries(override.states ?? {})) {
-      each(styles, `${recipeName}.states`, (style, _, slot) =>
-        addState(`${recipeName}.states`, state, element(slot), style, frame),
-      );
-    }
+    for (const states of statesAfter) states();
   }
   return rules;
-}
-
-/**
- * Properties whose numbers have no unit; any other number is pixels, as in
- * React's `style`. (React's own list.)
- */
-const unitless = new Set([
-  "animationIterationCount",
-  "aspectRatio",
-  "borderImageOutset",
-  "borderImageSlice",
-  "borderImageWidth",
-  "boxFlex",
-  "boxFlexGroup",
-  "boxOrdinalGroup",
-  "columnCount",
-  "columns",
-  "flex",
-  "flexGrow",
-  "flexPositive",
-  "flexShrink",
-  "flexNegative",
-  "flexOrder",
-  "gridArea",
-  "gridRow",
-  "gridRowEnd",
-  "gridRowSpan",
-  "gridRowStart",
-  "gridColumn",
-  "gridColumnEnd",
-  "gridColumnSpan",
-  "gridColumnStart",
-  "fontWeight",
-  "lineClamp",
-  "lineHeight",
-  "opacity",
-  "order",
-  "orphans",
-  "scale",
-  "tabSize",
-  "widows",
-  "zIndex",
-  "zoom",
-  "fillOpacity",
-  "floodOpacity",
-  "stopOpacity",
-  "strokeDasharray",
-  "strokeDashoffset",
-  "strokeMiterlimit",
-  "strokeOpacity",
-  "strokeWidth",
-]);
-
-const declaration = (key: string, value: string | number) => {
-  const custom = key.startsWith("--");
-  const property = custom
-    ? key
-    : key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
-  const px =
-    typeof value === "number" && value !== 0 && !custom && !unitless.has(key);
-  return `${property}: ${value}${px ? "px" : ""};`;
-};
-
-/**
- * A style's declarations, then its nested rules, written as CSS nesting has
- * them: the browser works out what `&` is. A list of values is fallbacks,
- * one declaration each, so a browser keeps the last it understands.
- */
-export function styleCss(style: ThemeStyle): string {
-  const declarations: string[] = [];
-  const nested: string[] = [];
-  for (const [key, value] of Object.entries(style)) {
-    if (value === undefined || value === null) continue;
-    if (Array.isArray(value)) {
-      declarations.push(...value.map((each) => declaration(key, each)));
-    } else if (typeof value === "object") {
-      nested.push(`${key} { ${styleCss(value as ThemeStyle)} }`);
-    } else {
-      declarations.push(declaration(key, value));
-    }
-  }
-  return [...declarations, ...nested].join(" ");
 }
 
 /**
@@ -305,9 +324,8 @@ const inScope = (selector: string) =>
  * specificity, so a theme's rule is exactly as specific as the default, in
  * the same layer, and wins by being scoped (a scoped rule beats an unscoped
  * one that's as specific, wherever each is in the document): it patches the
- * default, one declaration at a time. The class's state rules
- * (`:is([aria-pressed=true])` and the like) are more specific, so they
- * still apply over it.
+ * default, one declaration at a time. The states are in layers after the
+ * recipes', so they still apply over it.
  */
 export function rulesCss(rules: Rule[], slug: string): string {
   return rules

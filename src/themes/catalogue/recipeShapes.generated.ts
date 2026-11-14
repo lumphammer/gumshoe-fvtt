@@ -2,14 +2,15 @@
 // recipes (src/themes/catalogue): don't edit. Run `pnpm generate:catalogue`.
 
 /**
- * The catalogue's recipes, by name: each one's class name, slots and
- * variants, with their values.
+ * The catalogue's recipes, by name: each one's class name, slots, variants,
+ * with their values, and element states.
  */
 export const recipeShapes = {
   appFrame: {
     className: "inv-app-frame",
     slots: ["root", "header", "content"],
     variants: { layout: ["standard", "full-frame"] },
+    states: [],
   },
   badge: {
     className: "inv-badge",
@@ -18,41 +19,68 @@ export const recipeShapes = {
       tone: ["neutral", "danger", "warning", "success", "info"],
       weight: ["subtle", "strong"],
     },
+    states: ["pressed"],
   },
   button: {
     className: "inv-button",
     slots: [],
     variants: { kind: ["default", "cta", "toolbar", "ghost", "pip"] },
+    states: ["pressed", "disabled"],
   },
   callout: {
     className: "inv-callout",
     slots: [],
     variants: { tone: ["neutral", "danger", "warning", "success", "info"] },
+    states: [],
   },
   card: {
     className: "inv-card",
     slots: ["root", "supertitle", "title", "subtitle", "description", "effect"],
     variants: {},
+    states: [],
   },
-  checkbox: { className: "inv-checkbox", slots: ["box", "tick"], variants: {} },
+  checkbox: {
+    className: "inv-checkbox",
+    slots: ["box", "tick"],
+    variants: {},
+    states: ["checked", "disabled"],
+  },
   displayText: {
     className: "inv-display-text",
     slots: [],
     variants: { size: ["sm", "md", "lg"] },
+    states: [],
   },
-  dragHandle: { className: "inv-drag-handle", slots: [], variants: {} },
-  emptyState: { className: "inv-empty-state", slots: [], variants: {} },
+  dragHandle: {
+    className: "inv-drag-handle",
+    slots: [],
+    variants: {},
+    states: [],
+  },
+  emptyState: {
+    className: "inv-empty-state",
+    slots: [],
+    variants: {},
+    states: [],
+  },
   fieldGrid: {
     className: "inv-field-grid",
     slots: ["root", "label", "control"],
     variants: { stacked: ["true", "false"] },
+    states: [],
   },
   floating: {
     className: "inv-floating",
     slots: [],
     variants: { kind: ["overlay", "drawer", "bar", "chip"] },
+    states: [],
   },
-  input: { className: "inv-input", slots: [], variants: {} },
+  input: {
+    className: "inv-input",
+    slots: [],
+    variants: {},
+    states: ["invalid", "disabled"],
+  },
   logo: {
     className: "inv-logo",
     slots: [
@@ -67,21 +95,25 @@ export const recipeShapes = {
       "rear_sub",
     ],
     variants: {},
+    states: [],
   },
   mutedText: {
     className: "inv-muted-text",
     slots: [],
     variants: { size: ["sm", "md"] },
+    states: [],
   },
   outcome: {
     className: "inv-outcome",
     slots: [],
     variants: { tone: ["neutral", "danger", "warning", "success", "info"] },
+    states: [],
   },
   panel: {
     className: "inv-panel",
     slots: [],
     variants: { depth: ["top", "nested"] },
+    states: [],
   },
   partyCell: {
     className: "inv-party-cell",
@@ -91,8 +123,9 @@ export const recipeShapes = {
       zero: ["true", "false"],
       header: ["true", "false"],
     },
+    states: [],
   },
-  richText: { className: "inv-rich-text", slots: [], variants: {} },
+  richText: { className: "inv-rich-text", slots: [], variants: {}, states: [] },
   row: {
     className: "inv-row",
     slots: [],
@@ -102,24 +135,48 @@ export const recipeShapes = {
       striped: ["true", "false"],
       divided: ["true", "false"],
     },
+    states: ["selected"],
   },
-  sectionHeading: { className: "inv-section-heading", slots: [], variants: {} },
-  select: { className: "inv-select", slots: [], variants: {} },
+  sectionHeading: {
+    className: "inv-section-heading",
+    slots: [],
+    variants: {},
+    states: [],
+  },
+  select: {
+    className: "inv-select",
+    slots: [],
+    variants: {},
+    states: ["disabled"],
+  },
   sheetRoot: {
     className: "inv-sheet-root",
     slots: [],
     variants: { size: ["large", "small", "none"] },
+    states: [],
   },
   surface: {
     className: "inv-surface",
     slots: [],
     variants: { depth: ["top", "nested"], solid: ["true", "false"] },
+    states: [],
   },
-  tableHeader: { className: "inv-table-header", slots: [], variants: {} },
+  tableHeader: {
+    className: "inv-table-header",
+    slots: [],
+    variants: {},
+    states: [],
+  },
   tabs: {
     className: "inv-tabs",
     slots: ["list", "tab", "spacer", "content"],
     variants: {},
+    states: ["selected", "disabled"],
   },
-  toggle: { className: "inv-toggle", slots: ["track", "thumb"], variants: {} },
+  toggle: {
+    className: "inv-toggle",
+    slots: ["track", "thumb"],
+    variants: {},
+    states: ["checked", "disabled"],
+  },
 } as const;

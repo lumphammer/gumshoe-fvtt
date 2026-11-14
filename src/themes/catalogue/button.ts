@@ -1,4 +1,7 @@
 import { defineRecipe } from "@pandacss/dev";
+import type { ThemeStyle } from "@lumphammer/investigator-fvtt-types";
+
+import { paletteVar } from "../palette";
 
 /**
  * **button**: something you click to do something.
@@ -17,9 +20,9 @@ import { defineRecipe } from "@pandacss/dev";
  *   the body text, no padding, square, on `surface`; pressed when it's the
  *   current value.
  *
- * States: `:disabled`; pressed (`aria-pressed="true"`, or `data-pressed`
- * on a label standing for a checked radio), which shows as selected: an
- * `accent` fill with `onAccent` ink, whatever the kind. Hover and focus come
+ * States (`buttonStates`): `pressed` (`aria-pressed="true"`, or
+ * `data-pressed` on a label standing for a checked radio) shows as
+ * selected, whatever the kind; `disabled` is faded. Hover and focus come
  * from the state layers.
  */
 export const button = defineRecipe({
@@ -38,7 +41,6 @@ export const button = defineRecipe({
     boxShadow: "none",
     textShadow: "none",
     cursor: "pointer",
-    _disabled: { opacity: 0.5, cursor: "default" },
   },
   variants: {
     kind: {
@@ -59,19 +61,18 @@ export const button = defineRecipe({
       },
     },
   },
-  // selected, whatever the kind: in the same layer as the kinds' colours,
-  // after them
-  compoundVariants: [
-    {
-      kind: ["default", "cta", "toolbar", "ghost", "pip"],
-      css: {
-        _pressed: {
-          color: "onAccent",
-          background: "accent",
-          borderColor: "accent",
-        },
-      },
-    },
-  ],
   defaultVariants: { kind: "default" },
 });
+
+/** Selected: an `accent` fill with `onAccent` ink. */
+export const selectedLook = {
+  color: `var(${paletteVar("onAccent")})`,
+  background: `var(${paletteVar("accent")})`,
+  borderColor: `var(${paletteVar("accent")})`,
+} satisfies ThemeStyle;
+
+/** The button's element states (stateLayers.ts), over every kind. */
+export const buttonStates = {
+  pressed: selectedLook,
+  disabled: { opacity: 0.5, cursor: "default" },
+} satisfies Record<string, ThemeStyle>;

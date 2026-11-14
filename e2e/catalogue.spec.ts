@@ -472,6 +472,88 @@ test("controls: a checkbox's box can be patched, check buttons work from the key
   await expect(rating).toHaveCSS("border-top-color", danger);
 });
 
+test("element states: a theme's pressed, by recipe and beside a variant, goes over its base; disabled takes the theme's look; a selected tab's starts from nothing", async ({
+  page,
+}) => {
+  const base = "rgb(9, 9, 9)";
+  const pressed = "rgb(200, 0, 0)";
+  const pipPressed = "rgb(0, 150, 0)";
+  const selectedInk = "rgb(0, 0, 200)";
+  await page.evaluate(
+    (theme) => CONFIG.Investigator!.installTheme("elementStatesTheme", theme),
+    testTheme("Element States", colors, {
+      catalogue: {
+        button: {
+          // a theme's base doesn't hide its pressed look
+          base: { background: base },
+          states: {
+            pressed: { background: pressed },
+            disabled: { opacity: 0.25 },
+          },
+          variants: {
+            kind: { pip: { states: { pressed: { background: pipPressed } } } },
+          },
+        },
+        // from nothing: the tab's own look, not the default selected one,
+        // then the theme's ink
+        tabs: {
+          states: {
+            selected: { tab: { all: "revert-layer", color: selectedInk } },
+          },
+        },
+      },
+    }),
+  );
+  await setSettings(page, { defaultThemeName: "elementStatesTheme" });
+  const actorId = await createActor(page, { name: "Pressing", type: "pc" });
+  await updateAbility(page, actorId, "Athletics", {
+    pool: 2,
+    rating: 3,
+    showTracker: true,
+  });
+
+  // the pool tracker's pips: the pool's is pressed, as the pip variant says
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const pips = sheet
+    .getByTestId("pool-tracker")
+    .filter({ hasText: "Athletics" })
+    .locator(".inv-button--kind_pip");
+  const pressedPip = pips.and(sheet.locator("[data-pressed]"));
+  await expect(pressedPip).toHaveCount(1);
+  await expect(pressedPip).toHaveText("2");
+  await expect(pressedPip).toHaveCSS("background-color", pipPressed);
+  await expect(pips.filter({ hasText: /^1$/ }).first()).not.toHaveCSS(
+    "background-color",
+    pipPressed,
+  );
+
+  // the selected tab: the theme's ink, and the tab's own background, not
+  // the default selected look's surface
+  const selectedTab = sheet.locator(".inv-tabs__tab[data-selected]");
+  await expect(selectedTab).toHaveCSS("color", selectedInk);
+  const otherTab = sheet.locator(".inv-tabs__tab:not([data-selected])").first();
+  const ownBackground = await otherTab.evaluate(
+    (el) => getComputedStyle(el).backgroundColor,
+  );
+  expect(ownBackground).not.toBe(colors.backgroundPrimary);
+  await expect(selectedTab).toHaveCSS("background-color", ownBackground);
+
+  // check buttons (toolbar kind): the recipe's pressed, over the theme's base
+  const athletics = await page.evaluate(
+    (id) => game.actors.get(id)!.items.getName("Athletics")!.id,
+    actorId,
+  );
+  const ability = await openSheet(page, `Actor.${actorId}.Item.${athletics}`);
+  const label = (n: string) =>
+    ability.locator("label.inv-button", { hasText: new RegExp(`^${n}$`) });
+  await expect(label("0")).toHaveAttribute("data-pressed", "true");
+  await expect(label("0")).toHaveCSS("background-color", pressed);
+  await expect(label("1")).toHaveCSS("background-color", base);
+  // more than the pool: disabled, the theme's look for it
+  await expect(label("4")).toHaveAttribute("data-disabled", "true");
+  await expect(label("4")).toHaveCSS("opacity", "0.25");
+});
+
 test("tabs: V1 themes get V1's tabs, defaults and their own styles alike; the catalogue's own are text on a fainter surface", async ({
   page,
 }) => {

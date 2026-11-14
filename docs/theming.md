@@ -75,8 +75,30 @@ defineThemeV2({
         },
       ],
     },
-    // a slot recipe: styles by slot
-    tabs: { base: { tab: { textTransform: "uppercase" } } },
+    button: {
+      // pressed, and focused, whatever the kind
+      states: {
+        pressed: { background: "var(--inv-accent)" },
+        focusRing: { outlineStyle: "dashed" },
+      },
+      variants: {
+        kind: {
+          // a pip: its look, and beside it, its own states
+          pip: {
+            textAlign: "center",
+            states: {
+              pressed: { outline: "1px solid var(--inv-line)" },
+              hoverFeedback: { boxShadow: "none" },
+            },
+          },
+        },
+      },
+    },
+    // a slot recipe: styles by slot, and its states too
+    tabs: {
+      base: { tab: { textTransform: "uppercase" } },
+      states: { selected: { tab: { fontWeight: "bold" } } },
+    },
     // the state layers, everywhere in the theme
     states: { hoverFeedback: { boxShadow: "none" } },
   },
@@ -98,14 +120,23 @@ like the recipe's own Panda config:
 
 - `base`: the recipe's base (by slot, for a slot recipe: `tabs`, `card`,
   `logo`, `checkbox`, `toggle`, `fieldGrid`, `appFrame`).
-- `variants`: `{ tone: { danger: {...} } }` (by slot, for a slot recipe).
+- `variants`: `{ tone: { danger: {...} } }` (by slot, for a slot recipe). A
+  value's style can have `states` beside it, for that variant's elements only:
+  everything about a pip, pressed and hovered too, is in
+  `variants: { kind: { pip: { ..., states: {...} } } }`.
 - `compoundVariants`: `[{ tone: "danger", weight: "strong", css: {...} }]`
   apply to an element with every variant they name, whether or not the recipe
   has a compound variant for them. A boolean variant's value is `true` or
-  `"true"`.
-- `states`: `{ hoverFeedback: {...} }` (by slot, for a slot recipe) changes the
-  state layers on this recipe's elements only. `states` beside the recipes
-  changes them everywhere in the theme (State layers, below).
+  `"true"`. Beside `css`, or instead of it, `states`, for that element only.
+- `states`: this recipe's elements' states (by slot, for a slot recipe): the
+  state layers (`hoverFeedback`, `focusRing`, `dropTarget`) and the element
+  states the recipe has (`pressed`, `disabled`...). `states` beside the
+  recipes changes the state layers everywhere in the theme. See States, below.
+
+A state is never a nested selector in `base` or `variants`
+(`"&[data-pressed]"`): the state's default goes over those, so a theme's look
+for it there wouldn't show. Such a selector, for a state the recipe has, is
+kept, with a warning that says where it belongs.
 
 **Every part patches.** Its declarations go over the default's, in the same
 cascade layer, at the same specificity (a theme's rules are scoped, and a
@@ -114,8 +145,9 @@ stays. To take a declaration away, set it
 (`borderBottomStyle: "none"`). To start a part from nothing, write
 `all: "revert-layer"` first in its style: it drops what the recipe says for
 that part (in `variants`, for every variant, as they share a layer, so use it
-on `base`). A class's own state rules (`:is([aria-pressed=true])` and the like)
-are more specific, so they still apply over an override.
+on `base`). `all: "revert-layer"` there doesn't drop a state's look: the states
+are in layers of their own, after the recipes' (start a state from nothing in
+its own `states`, below).
 
 A style is CSS properties in camelCase (a number is pixels, for a property that
 takes a length; an array is fallbacks, one declaration each), custom
@@ -207,8 +239,8 @@ they're layout.
 ("Boosted", an unlock). _Not for_ messages (`callout`) or links. Fully rounded.
 Variants `tone` and `weight`: `subtle` (default) is an outline in the tone's
 colour, `strong` is filled with it (`control` for neutral) and its `on-` ink.
-`data-interactive` if clickable; `aria-pressed` makes it a toggle, shown as
-selected (`accent` fill, `onAccent` ink). `Translate` sets an inline
+`data-interactive` if clickable; `aria-pressed` makes it a toggle: `pressed`
+is selected (`accent` fill, `onAccent` ink), whatever the tone. `Translate` sets an inline
 `background`, so put a badge on a wrapper around it.
 
 **`button`**: something you click to do something; use `Button`, which sets
@@ -216,22 +248,23 @@ selected (`accent` fill, `onAccent` ink). `Translate` sets an inline
 links, or on/off settings (`toggle`). `kind`: `default`; `cta`, the call to
 action, what you're probably about to click (the button that commits a panel),
 at most one per panel, `accent` fill; `toolbar`, compact; `ghost`, no fill or
-border, for icon buttons; `pip`, one of a row of small number picks. Pressed
+border, for icon buttons; `pip`, one of a row of small number picks. `pressed`
 (`aria-pressed="true"`, or `data-pressed` on a label standing for a checked
-radio) shows as selected, whatever the kind. A `<button>` that isn't a `Button`
+radio) is selected, whatever the kind; `disabled` is faded. A `<button>` that isn't a `Button`
 looks like Foundry's: there's no global button style, nor for inputs.
 
 **`input`**: a field to type into (`TextInput`, `TextArea`, a raw `<input>`
 applying `input()`). _Not for_ rich text (`richText`) or choosing from a list.
-`surface`, `line` border, `body` style; `aria-invalid="true"` gives a `danger`
-border and tint. **`select`**: a dropdown, like `input` but on
-`surfaceNestedSolid` with options on `surfaceSolid`, as a native dropdown
-doesn't show what's behind it.
+`surface`, `line` border, `body` style; `invalid` (`aria-invalid="true"`) is a
+`danger` border and tint, and `disabled` is faded. **`select`**: a dropdown,
+like `input` but on `surfaceNestedSolid` with options on `surfaceSolid`, as a
+native dropdown doesn't show what's behind it.
 
 **`checkbox`**: a box ticked or not, for yes/no in a list. Slots `box` and
-`tick` (`accent`, shown when the input before the box is checked). **`toggle`**:
-an on/off switch for a setting or mode. Slots `track` and `thumb`; on
-(`data-state="checked"`, from Radix) is `accent` and `onAccent`.
+`tick` (`accent`, shown when `checked`: the input before the box is).
+**`toggle`**: an on/off switch for a setting or mode. Slots `track` and
+`thumb`; `checked` (on: `data-state="checked"`, from Radix) is `accent` and
+`onAccent`.
 
 **`fieldGrid`**: a form as a grid of labelled fields (`InputGrid`, `GridField`,
 `GridFieldStacked`). Slots `root` (the grid: its gaps), `label` (end-aligned,
@@ -256,22 +289,19 @@ left (`line` for neutral). One that says why an action can't happen goes just
 below that action's button; advice about an area goes at its top.
 
 **`tabs`**: a strip of tabs and the selected one's content (`TabContainer`).
-Slots `list`, `tab`, `spacer`, `content`. _`tab` is an expected override._
+Slots `list`, `tab`, `spacer`, `content`. _`tab` is an expected override, and so
+is its `selected` state._
 
-- The selected tab is `surface`, like the content, with `accent` ink; the others
-  are a fainter `surface` (40% opacity on a light theme, 80% on a dark one, by
-  `light-dark()`) with `text` ink, and `data-interactive`.
-- States are attributes on the elements themselves: the selected tab has
-  `data-selected`; when the strip is wrapped into a grid (by the code that
-  measures it), the list, tabs, spacers and content all have `data-wrapped`. A
-  theme targets them with nested rules (`"&[data-selected]"`,
-  `"&[data-wrapped]"`, `"&[data-selected]:not([data-wrapped])"`). The tabs are
-  measured unwrapped, so a wrapped look can change their size. Disabled
-  (`input:disabled + &`) is more specific than an override, so it still applies.
-- The default selected and wrapped looks are in `:where()`, so they're no more
-  specific than the tab's own rule: a theme that sets `color` or `background`
-  on `tab` also beats the selected look, and has to restate it
-  in `"&[data-selected]"`.
+- The `selected` tab is `surface`, like the content, with `accent` ink; the
+  others are a fainter `surface` (40% opacity on a light theme, 80% on a dark
+  one, by `light-dark()`) with `text` ink, and `data-interactive`. A
+  `disabled` tab is faded.
+- When the strip is wrapped into a grid (by the code that measures it), the
+  list, tabs, spacers and content all have `data-wrapped`: a layout, not a
+  state, so a theme targets it with a nested rule (`"&[data-wrapped]"`, and in
+  `states.selected` for a selected tab that's wrapped). The tabs are measured
+  unwrapped, so a wrapped look can change their size. The default wrapped look
+  is in `:where()`, so it's no more specific than the tab's own rule.
 
 **Lists.** `sectionHeading`: a heading that divides a sheet into sections, with
 a `line` rule (_not for_ column headers). `tableHeader`: a table's column
@@ -280,7 +310,7 @@ even a link. Variants: `interactive` (it opens or does something: a `feedback`
 wash under the pointer, on focus, or with `data-highlighted`; rows don't use
 `data-interactive`, as a glow round a row is too much), `alternate` and
 `striped` (on `control`, by the call site or by position), `divided` (a `line`
-under it). Selected (`aria-current`, `aria-selected`, `data-selected`) is
+under it). `selected` (`aria-current`, `aria-selected`, `data-selected`) is
 `control`. `dragHandle`: the grip to reorder a list, `textMuted` on
 `surfaceSolid`, `accent` when hovered. `emptyState`: stands in for a list with
 nothing in it: dashed `line` border, italic `textMuted` (_not for_ warnings).
@@ -352,10 +382,68 @@ the rest as it scrolls, so they're on the solid surfaces. `richText`: an editor
 for formatted text, `surface` with a `line` border; its content (ProseMirror's)
 keeps Foundry's styling.
 
-## State layers
+## States
 
-Feedback that looks the same on anything, whatever its class, so classes don't
-each draw their own. They're plain CSS in `src/themes/catalogue/states.css`.
+A state is something an element is, or feedback on it. Each has a default look,
+and a theme changes it in `states`: a recipe's, a variant value's or a compound
+variant's (one element), or beside the recipes (everything, for a state layer).
+A state goes over `base`, `variants` and `compoundVariants`, the defaults' and
+a theme's alike, so a theme's look for a recipe never hides it by accident. The
+states are sub-layers of `system.states`, after the catalogue, and a theme's
+change to one still loses to the states after it. Their order: `selected`,
+`checked`, `pressed`, then `invalid`, then `disabled` (a disabled button
+that's pressed looks disabled), then the state layers, `hover`, `drop` and
+`focus` (focus is last, so it always shows).
+
+- Within a state, the more specific wins: a compound variant's over a variant
+  value's, over the recipe's, over the theme's own.
+- A change patches: it says only what it changes
+  (`{ hoverFeedback: { boxShadow: "none" } }` turns the glow off and leaves the
+  pointer).
+- `&` is the element in that state. The selectors are `stateLayers.ts`'s.
+
+**Element states**: what an element is. Each recipe has the ones it has a look
+for (its `…States`, next to it, collected in `elementStateDefaults.ts`), and a
+theme can style only those, on that recipe's elements: `button.states.checked`
+is a type error, and there's no element state beside the recipes. A theme's
+change goes in the state's layer, with the defaults, and patches them as a
+change to a recipe does (it's scoped, and as specific or more). So it says only
+what it changes, and `all: "revert-layer"` first starts the state from nothing:
+from the element's own look, without the default's look for the state.
+`pnpm generate:catalogue` writes their defaults as CSS
+(`elementStates.generated.css`), the recipes' types and this table:
+
+<!-- element-states:start (pnpm generate:catalogue) -->
+
+| Recipe     | `selected` | `checked` | `pressed` | `invalid` | `disabled` |
+| ---------- | ---------- | --------- | --------- | --------- | ---------- |
+| `badge`    |            |           | ✓         |           |            |
+| `button`   |            |           | ✓         |           | ✓          |
+| `checkbox` |            | ✓         |           |           | ✓          |
+| `input`    |            |           |           | ✓         | ✓          |
+| `row`      | ✓          |           |           |           |            |
+| `select`   |            |           |           |           | ✓          |
+| `tabs`     | ✓          |           |           |           | ✓          |
+| `toggle`   |            | ✓         |           |           | ✓          |
+
+<!-- element-states:end -->
+
+| State      | When                                                                                                                                          |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `selected` | The current one of several: `aria-current` (`page` or `true`), `aria-selected="true"`, `data-selected`                                        |
+| `checked`  | On: `:checked`, `data-state="checked"` (Radix), or it's a label or span after a checked, visually hidden input (or in one: a checkbox's tick) |
+| `pressed`  | A toggle button that's down (`aria-pressed="true"`), or a label standing for a checked radio (`data-pressed`)                                 |
+| `invalid`  | `aria-invalid="true"`                                                                                                                         |
+| `disabled` | `:disabled`, `disabled`, `aria-disabled="true"`, `data-disabled`, or it's a label or span after a disabled, visually hidden input (or in one) |
+
+**State layers**: feedback that looks the same on anything, whatever its class,
+so classes don't each draw their own. Their defaults are plain CSS in
+`src/themes/catalogue/states.css`, which a test checks against
+`stateLayers.ts`, in each layer's `default` sub-layer; a theme's changes go in
+its `theme` sub-layer, after it, so they win whatever their specificity (one
+for everything is less specific than its default). A recipe's `base` or `variants` can't change one by accident
+(a static `boxShadow` doesn't hide the hover glow, nor `outline: none` the
+focus ring).
 
 | Layer           | When                                                                                   | Look                                               |
 | --------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------- |
@@ -364,25 +452,10 @@ each draw their own. They're plain CSS in `src/themes/catalogue/states.css`.
 | `dropTarget`    | `[data-drop-state="ready"]`: you can drop what you're dragging here                    | A dashed `line` outline, outside the element       |
 |                 | `[data-drop-state="over"]`: and it's over it                                           | The outline turns `accent`, with a `feedback` tint |
 
-Each layer is a sub-layer of `system.states` (`hover`, `drop`, `focus`, in that
-order), after the catalogue and its overrides, with its defaults in a `default`
-sub-layer. So a theme's `base` or `variants` can't change one by accident (a
-static `boxShadow` doesn't hide the hover glow, nor `outline: none` the focus
-ring). A theme changes one on purpose, with `states`, which goes in the layer's
-`theme` sub-layer after the default, so it wins whatever its specificity, and
-still loses to the layers after it (focus is last, so it always shows).
-
-- An override patches: it says only what it changes
-  (`{ hoverFeedback: { boxShadow: "none" } }` turns the glow off and leaves the
-  pointer). A recipe's `states`
-  (`tabs: { states: { hoverFeedback: { tab: {...} } } }`) name its class, and
-  come after the theme-wide ones, so they win.
-- `&` is the element in that state: `[data-interactive]:hover` for
-  `hoverFeedback`; either drop state for `dropTarget`
-  (`'&[data-drop-state="over"]'` for over only); `:focus-visible` for
-  `focusRing` (and, for a visually hidden input, the label or span after it).
-  The selectors are `stateLayers.ts`'s, which a test checks against
-  `states.css`.
+- `&` is `[data-interactive]:hover` for `hoverFeedback`; either drop state for
+  `dropTarget` (`'&[data-drop-state="over"]'` for over only); `:focus-visible`
+  for `focusRing` (and, for a visually hidden input, the label or span after
+  it).
 - A drop target sets `data-drop-state` itself: `ready` while something it takes
   is being dragged (or always, if it can't tell, like a Bond's actor row), and
   `over` from `dragover` to `dragleave` or `drop`.
@@ -417,8 +490,11 @@ How its styles map:
   `panel` `depth` variants; one without a background gets
   `backgroundColor: transparent`.
 - The seven `tab*Style` fields become the `tabs` slots `tab`, `spacer` and
-  `content`, each starting `all: "revert-layer"`, with V1's selected and wrapped
-  states as nested rules.
+  `content`, each starting `all: "revert-layer"`, with V1's wrapped styles as
+  nested rules. V1's selected styles (`tabActiveStyle`, and
+  `tabWrappedActiveStyle` for a wrapped tab) become the tab's `selected` state,
+  starting from nothing, as in V1 the active style went over the tab's own
+  look.
 - `largeSheetRootStyle` and `smallSheetRootStyle` patch the `sheetRoot` `size`
   variants; `appWindowStyle` goes in the `appFrame` `root`.
 - Each `logo` style goes on its slots, spread over `logoDefaults.ts` (a relative
@@ -522,13 +598,15 @@ Foundry v14 orders its CSS in cascade layers, and a system's styles belong in
 `system.defaults`, `system.states`, `system.utilities`. Panda splits
 `system.recipes` into `base`, `slots` (with its own `base`, `variants` and
 `compound_variants`), `variants` and `compound_variants`; `system.states` is
-`hover`, `drop` and `focus`, each with `default` and `theme`. **Nothing goes
+the element states (`selected`, `checked`, `pressed`, `invalid`, `disabled`)
+(a layer each), and then `hover`, `drop` and `focus`, each with `default` and
+`theme`. **Nothing goes
 directly in `system`**: rules there beat everything in its sub-layers.
 `system.base` has the palette's defaults (`palette.css`), the element defaults
 (`elements.css`) and `investigator.less`'s Foundry fixes; `system.recipes` the
 catalogue classes and a theme's overrides of them; `system.defaults` components'
-own overridable layout; `system.states` the state layers (`states.css`) and a
-theme's changes to them; `system.utilities` layout from `css()` at call sites.
+own overridable layout; `system.states` the states' defaults (`states.css`,
+`elementStates.generated.css`) and a theme's changes to them; `system.utilities` layout from `css()` at call sites.
 
 A theme's `globalCss` is a `<style>` in the root, like its overrides. The
 palette is an inline `style` on the themed root, not in a stylesheet: a detached

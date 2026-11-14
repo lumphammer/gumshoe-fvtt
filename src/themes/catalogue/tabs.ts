@@ -1,4 +1,5 @@
 import { defineSlotRecipe } from "@pandacss/dev";
+import type { ThemeStyle } from "@lumphammer/investigator-fvtt-types";
 
 import { paletteVar } from "../palette";
 
@@ -13,15 +14,13 @@ const fadedSurface = (scale: number) =>
  * Slots: `list` (the strip), `tab` (a label, after its hidden radio),
  * `spacer` (between tabs in a row) and `content`.
  *
- * States, as attributes on the elements themselves: the selected tab has
- * `data-selected` (`&[data-selected]`), and when the strip is wrapped into a
- * grid, the list, the tabs, the spacers and the content all have
- * `data-wrapped` (`&[data-wrapped]`; set by the code that measures it). The
- * selected tab is `surface`, like the content, with `accent` ink; the others
- * are a fainter `surface`, with `text` ink. *`tab` is an expected override,
- * selected and not:* the selected and wrapped looks are no more specific
- * than the tab's own, so what an override of `tab` sets applies to them too
- * (it sets a selected tab's own look in `&[data-selected]`).
+ * States (`tabsStates`), on the tab: `selected` is `surface`, like the
+ * content, with `accent` ink (the others are a fainter `surface`, with
+ * `text` ink); `disabled` (its radio is) is faded. When the strip is wrapped
+ * into a grid, the list, the tabs, the spacers and the content all have
+ * `data-wrapped` (`&[data-wrapped]`; set by the code that measures it): a
+ * layout, not a state. *`tab` is an expected override, and so is its
+ * `selected` state.*
  */
 export const tabs = defineSlotRecipe({
   className: "inv-tabs",
@@ -42,13 +41,9 @@ export const tabs = defineSlotRecipe({
       background: `[light-dark(${fadedSurface(0.4)}, ${fadedSurface(0.8)})]`,
       borderRadius: "0.2em 0.2em 0 0",
       cursor: "pointer",
-      // part of the tab's look, not states laid over it: their context is in
-      // :where(), so they're no more specific than the tab, and what a
-      // theme's override of `tab` sets goes over them too
+      // part of the tab's look: no more specific than the tab, so what a
+      // theme's override of `tab` sets goes over it too
       "&:where([data-wrapped])": { borderRadius: "0.2em" },
-      "&:where([data-selected])": { background: "surface", color: "accent" },
-      // a state over the tab, so it applies over a theme's override too
-      "input:disabled + &": { opacity: 0.3, cursor: "default" },
     },
     spacer: {
       width: "0.5em",
@@ -60,3 +55,14 @@ export const tabs = defineSlotRecipe({
     },
   },
 });
+
+/** The tabs' element states (stateLayers.ts), on the tab. */
+export const tabsStates = {
+  selected: {
+    tab: {
+      background: `var(${paletteVar("surface")})`,
+      color: `var(${paletteVar("accent")})`,
+    },
+  },
+  disabled: { tab: { opacity: 0.3, cursor: "default" } },
+} satisfies Record<string, Record<string, ThemeStyle>>;

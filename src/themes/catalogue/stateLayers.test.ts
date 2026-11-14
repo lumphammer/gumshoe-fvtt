@@ -3,7 +3,7 @@ import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { expect, test } from "vitest";
 
-import { stateLayers } from "./stateLayers";
+import { elementStates, stateLayers } from "./stateLayers";
 
 /** CSS without comments, its whitespace collapsed, and none inside brackets. */
 const normalise = (css: string) =>
@@ -29,8 +29,8 @@ const blocks = new Map(
 
 test.each(Object.entries(stateLayers))(
   "%s's default is for what a theme's override of it is for",
-  (_, { layer, selectors }) => {
-    expect(blocks.get(`${layer}.default`)).toContain(
+  (_, { defaultLayer, selectors }) => {
+    expect(blocks.get(defaultLayer)).toContain(
       `${selectors("")
         .map((selector) => `[data-inv-theme] ${selector}`)
         .join(", ")} {`,
@@ -38,8 +38,17 @@ test.each(Object.entries(stateLayers))(
   },
 );
 
-test("each override comes after its default, and focus last, so it always shows", () => {
-  expect(statesCss).toContain(
-    "@layer system.states.hover.default, system.states.hover.theme, system.states.drop.default, system.states.drop.theme, system.states.focus.default, system.states.focus.theme;",
-  );
+test("the element states come first, in their order, each a layer for its defaults and a theme's changes; then the state layers, each override after its default, and focus last, so it always shows", () => {
+  const layers = [
+    ...Object.values(elementStates).map(({ defaultLayer }) => defaultLayer),
+    ...["hoverFeedback", "dropTarget", "focusRing"].flatMap((state) => {
+      const { defaultLayer, themeLayer } =
+        stateLayers[state as keyof typeof stateLayers];
+      return [defaultLayer, themeLayer];
+    }),
+  ];
+  expect(statesCss).toContain(`@layer ${layers.join(", ")};`);
+  for (const { defaultLayer, themeLayer } of Object.values(elementStates)) {
+    expect(themeLayer).toBe(defaultLayer);
+  }
 });

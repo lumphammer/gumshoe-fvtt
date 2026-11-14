@@ -1,4 +1,7 @@
 import { defineSlotRecipe } from "@pandacss/dev";
+import type { ThemeStyle } from "@lumphammer/investigator-fvtt-types";
+
+import { paletteVar } from "../palette";
 
 /**
  * **toggle**: an on/off switch, for a setting that switches something on.
@@ -6,8 +9,9 @@ import { defineSlotRecipe } from "@pandacss/dev";
  * Use for: settings and modes ("Edit mode", "Is a Push Pool?").
  * Not for: ticking items in a list (checkbox).
  *
- * Slots: `track` (the switch, a `<button>`) and `thumb`. States: on, via
- * `data-state="checked"`: the track is `accent`, the thumb `onAccent`.
+ * Slots: `track` (the switch, a `<button>`) and `thumb`. States
+ * (`toggleStates`): `checked` (on): the track is `accent`, and the thumb
+ * `onAccent`, at the other end; `disabled` is faded.
  */
 export const toggle = defineSlotRecipe({
   className: "inv-toggle",
@@ -29,8 +33,6 @@ export const toggle = defineSlotRecipe({
       borderRadius: "9999px",
       boxShadow: "none",
       cursor: "pointer",
-      "&[data-state=checked]": { background: "accent", borderColor: "accent" },
-      _disabled: { opacity: 0.5, cursor: "default" },
     },
     thumb: {
       display: "block",
@@ -41,10 +43,21 @@ export const toggle = defineSlotRecipe({
       transition: "transform 100ms",
       transform: "translateX(2px)",
       willChange: "transform",
-      "&[data-state=checked]": {
-        transform: "translateX(calc(2em - 5px))",
-        background: "onAccent",
-      },
     },
   },
 });
+
+/** The toggle's element states (stateLayers.ts). */
+export const toggleStates = {
+  checked: {
+    track: {
+      background: `var(${paletteVar("accent")})`,
+      borderColor: `var(${paletteVar("accent")})`,
+    },
+    thumb: {
+      transform: "translateX(calc(2em - 5px))",
+      background: `var(${paletteVar("onAccent")})`,
+    },
+  },
+  disabled: { track: { opacity: 0.5, cursor: "default" } },
+} satisfies Record<string, Record<string, ThemeStyle>>;

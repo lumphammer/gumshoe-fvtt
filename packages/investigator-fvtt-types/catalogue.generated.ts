@@ -3,16 +3,18 @@
 
 /**
  * The catalogue's recipes, by name: each one's slots (`never` for a recipe
- * without) and variants, with their values (`"true" | "false"` for a
- * boolean one).
+ * without), variants, with their values (`"true" | "false"` for a boolean
+ * one), and element states (`never` for a recipe without).
  */
 export interface CatalogueRecipeShapes {
   appFrame: {
     slots: "root" | "header" | "content";
+    states: never;
     variants: { layout: "standard" | "full-frame" };
   };
   badge: {
     slots: never;
+    states: "pressed";
     variants: {
       tone: "neutral" | "danger" | "warning" | "success" | "info";
       weight: "subtle" | "strong";
@@ -20,42 +22,52 @@ export interface CatalogueRecipeShapes {
   };
   button: {
     slots: never;
+    states: "pressed" | "disabled";
     variants: { kind: "default" | "cta" | "toolbar" | "ghost" | "pip" };
   };
   callout: {
     slots: never;
+    states: never;
     variants: { tone: "neutral" | "danger" | "warning" | "success" | "info" };
   };
   card: {
     slots: "root" | "supertitle" | "title" | "subtitle" | "description" | "effect";
+    states: never;
     variants: Record<never, never>;
   };
   checkbox: {
     slots: "box" | "tick";
+    states: "checked" | "disabled";
     variants: Record<never, never>;
   };
   displayText: {
     slots: never;
+    states: never;
     variants: { size: "sm" | "md" | "lg" };
   };
   dragHandle: {
     slots: never;
+    states: never;
     variants: Record<never, never>;
   };
   emptyState: {
     slots: never;
+    states: never;
     variants: Record<never, never>;
   };
   fieldGrid: {
     slots: "root" | "label" | "control";
+    states: never;
     variants: { stacked: "true" | "false" };
   };
   floating: {
     slots: never;
+    states: never;
     variants: { kind: "overlay" | "drawer" | "bar" | "chip" };
   };
   input: {
     slots: never;
+    states: "invalid" | "disabled";
     variants: Record<never, never>;
   };
   logo: {
@@ -69,30 +81,37 @@ export interface CatalogueRecipeShapes {
       | "rear_wrapper"
       | "rear"
       | "rear_sub";
+    states: never;
     variants: Record<never, never>;
   };
   mutedText: {
     slots: never;
+    states: never;
     variants: { size: "sm" | "md" };
   };
   outcome: {
     slots: never;
+    states: never;
     variants: { tone: "neutral" | "danger" | "warning" | "success" | "info" };
   };
   panel: {
     slots: never;
+    states: never;
     variants: { depth: "top" | "nested" };
   };
   partyCell: {
     slots: never;
+    states: never;
     variants: { odd: "true" | "false"; zero: "true" | "false"; header: "true" | "false" };
   };
   richText: {
     slots: never;
+    states: never;
     variants: Record<never, never>;
   };
   row: {
     slots: never;
+    states: "selected";
     variants: {
       interactive: "true" | "false";
       alternate: "true" | "false";
@@ -102,30 +121,37 @@ export interface CatalogueRecipeShapes {
   };
   sectionHeading: {
     slots: never;
+    states: never;
     variants: Record<never, never>;
   };
   select: {
     slots: never;
+    states: "disabled";
     variants: Record<never, never>;
   };
   sheetRoot: {
     slots: never;
+    states: never;
     variants: { size: "large" | "small" | "none" };
   };
   surface: {
     slots: never;
+    states: never;
     variants: { depth: "top" | "nested"; solid: "true" | "false" };
   };
   tableHeader: {
     slots: never;
+    states: never;
     variants: Record<never, never>;
   };
   tabs: {
     slots: "list" | "tab" | "spacer" | "content";
+    states: "selected" | "disabled";
     variants: Record<never, never>;
   };
   toggle: {
     slots: "track" | "thumb";
+    states: "checked" | "disabled";
     variants: Record<never, never>;
   };
 }

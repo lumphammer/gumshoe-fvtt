@@ -1,5 +1,8 @@
 import { defineRecipe } from "@pandacss/dev";
 
+import type { ThemeStyle } from "@lumphammer/investigator-fvtt-types";
+
+import { selectedLook } from "./button";
 import { type Tone, tones } from "./tones";
 
 type Look = { color: string; background: string; borderColor: string };
@@ -32,9 +35,9 @@ const looks: Record<Tone, Record<"subtle" | "strong", Look>> = {
  * Not for: messages or warnings (a callout), links to documents.
  *
  * Variants: `tone`, and `weight` (`subtle` is an outline, `strong` is filled).
- * States: a badge that can be clicked has `data-interactive` (hover
- * feedback), and if it's a toggle, `aria-pressed`, which shows it as
- * selected.
+ * States (`badgeStates`): a badge that can be clicked has
+ * `data-interactive` (hover feedback), and if it's a toggle, `aria-pressed`:
+ * `pressed` shows it as selected, whatever its tone.
  */
 export const badge = defineRecipe({
   className: "inv-badge",
@@ -67,19 +70,11 @@ export const badge = defineRecipe({
         css: looks[tone][weight],
       })),
     ),
-    // selected, whatever the tone: in the same layer as the tones' colours,
-    // and after them, so it wins
-    {
-      tone: [...tones],
-      weight: ["subtle", "strong"],
-      css: {
-        _pressed: {
-          color: "onAccent",
-          background: "accent",
-          borderColor: "accent",
-        },
-      },
-    },
   ],
   defaultVariants: { tone: "neutral", weight: "subtle" },
 });
+
+/** The badge's element states (stateLayers.ts), over every tone. */
+export const badgeStates = {
+  pressed: selectedLook,
+} satisfies Record<string, ThemeStyle>;

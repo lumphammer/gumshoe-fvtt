@@ -1,4 +1,5 @@
 import { defineSlotRecipe } from "@pandacss/dev";
+import type { ThemeStyle } from "@lumphammer/investigator-fvtt-types";
 
 /**
  * **checkbox**: a box that's ticked or not. `Checkbox` hides the real
@@ -8,8 +9,8 @@ import { defineSlotRecipe } from "@pandacss/dev";
  * Not for: settings that switch something on (toggle).
  *
  * Slots: `box` and `tick`, both real elements (not pseudo-elements), so a
- * theme can replace either. States: from the input before the box: checked
- * shows the `accent` tick; disabled is faded.
+ * theme can replace either. States (`checkboxStates`), from the input before
+ * the box: `checked` shows the `accent` tick; `disabled` is faded.
  */
 export const checkbox = defineSlotRecipe({
   className: "inv-checkbox",
@@ -29,14 +30,18 @@ export const checkbox = defineSlotRecipe({
       borderRadius: "5px",
       background: "control",
       cursor: "pointer",
-      "input:disabled + &": { cursor: "default", opacity: 0.5 },
     },
     tick: {
       fontSize: "0.75em",
       lineHeight: "1",
       color: "accent",
       visibility: "hidden",
-      "input:checked + * > &": { visibility: "visible" },
     },
   },
 });
+
+/** The checkbox's element states (stateLayers.ts). */
+export const checkboxStates = {
+  checked: { tick: { visibility: "visible" } },
+  disabled: { box: { cursor: "default", opacity: 0.5 } },
+} satisfies Record<string, Record<string, ThemeStyle>>;

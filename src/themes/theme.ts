@@ -61,7 +61,7 @@ const themeSchema = z.looseObject({
             )
             .optional(),
           compoundVariants: z
-            .array(z.looseObject({ css: style.optional() }))
+            .array(z.looseObject({ css: style.optional(), states: byState }))
             .optional(),
           states: byState,
         })

@@ -174,8 +174,12 @@ function panelsFromV1(theme: ThemeV1): ThemeCatalogue {
  * in a row, and `tabWrappedStyle` / `tabWrappedActiveStyle` over it in a
  * grid; the content was `tabContentStyle`, with `tabContentWrappedStyle`
  * over it under a grid. `themeFactory` fills in all seven, so every V1 theme
- * gets V1's tabs, and not the catalogue's. The states are the tabs'
- * attributes (the `tabs` recipe).
+ * gets V1's tabs, and not the catalogue's. Wrapped is the tabs' attribute;
+ * selected and disabled are the tabs' states.
+ *
+ * In V1, a selected tab was the tab's look with the active style over it,
+ * so the selected state starts from nothing (the tab's own look), not the
+ * catalogue's selected look.
  */
 function tabsFromV1(theme: ThemeV1): ThemeCatalogue {
   return {
@@ -187,15 +191,7 @@ function tabsFromV1(theme: ThemeV1): ThemeCatalogue {
             textTransform: "var(--inv-display-case)",
             textAlign: "center",
             ...fromEmotion(theme.tabStyle),
-            "&[data-selected]:not([data-wrapped])": fromEmotion(
-              theme.tabActiveStyle,
-            ),
             "&[data-wrapped]": fromEmotion(theme.tabWrappedStyle),
-            "&[data-selected][data-wrapped]": fromEmotion(
-              theme.tabWrappedActiveStyle,
-            ),
-            // V1's tabs dropped any hover glow on a disabled tab
-            "input:disabled + &:hover": { textShadow: "none" },
           }),
         ),
         spacer: themeStyle(replacing(fromEmotion(theme.tabSpacerStyle))),
@@ -206,6 +202,18 @@ function tabsFromV1(theme: ThemeV1): ThemeCatalogue {
             "&[data-wrapped]": fromEmotion(theme.tabContentWrappedStyle),
           }),
         ),
+      },
+      states: {
+        selected: {
+          tab: themeStyle(
+            replacing({
+              "&:not([data-wrapped])": fromEmotion(theme.tabActiveStyle),
+              "&[data-wrapped]": fromEmotion(theme.tabWrappedActiveStyle),
+            }),
+          ),
+        },
+        // V1's tabs dropped any hover glow on a disabled tab
+        disabled: { tab: { "&:hover": { textShadow: "none" } } },
       },
     },
   };

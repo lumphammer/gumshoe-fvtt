@@ -1,4 +1,5 @@
 import { defineRecipe } from "@pandacss/dev";
+import type { ThemeStyle } from "@lumphammer/investigator-fvtt-types";
 
 import { paletteVar } from "../palette";
 
@@ -56,8 +57,9 @@ export const tableHeader = defineRecipe({
  * - `striped`: for rows striped by position, not by the call site (a
  *   settings form, whose rows come and go): the odd ones are on `control`.
  *
- * States: selected (`aria-current`, `aria-selected` or `data-selected`): the
- * row is the current one (the page you're on), on `control`.
+ * States (`rowStates`): `selected` (`aria-current`, `aria-selected` or
+ * `data-selected`): the row is the current one (the page you're on), on
+ * `control`.
  */
 export const row = defineRecipe({
   className: "inv-row",
@@ -68,8 +70,6 @@ export const row = defineRecipe({
     color: "text",
     textDecoration: "none",
     textShadow: "none",
-    "&:is([aria-current=page], [aria-current=true], [aria-selected=true], [data-selected])":
-      { background: "control" },
   },
   variants: {
     interactive: {
@@ -107,6 +107,11 @@ export const row = defineRecipe({
     divided: false,
   },
 });
+
+/** The row's element states (stateLayers.ts). */
+export const rowStates = {
+  selected: { background: `var(${paletteVar("control")})` },
+} satisfies Record<string, ThemeStyle>;
 
 /**
  * **dragHandle**: the grip you drag to reorder a list.

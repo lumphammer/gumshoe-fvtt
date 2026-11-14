@@ -1,6 +1,6 @@
 import { defineRecipe } from "@pandacss/dev";
 
-import { fieldBase } from "./input";
+import { fieldBase, fieldStates } from "./input";
 
 /**
  * **select**: a dropdown, for choosing one of a list.
@@ -9,7 +9,8 @@ import { fieldBase } from "./input";
  * Not for: a handful of numbers side by side (CheckButtons), on/off (toggle).
  *
  * On `surfaceNestedSolid`, with its options on `surfaceSolid`: a native
- * dropdown doesn't show what's behind it.
+ * dropdown doesn't show what's behind it. States (`selectStates`):
+ * `disabled`, faded.
  */
 export const select = defineRecipe({
   className: "inv-select",
@@ -20,3 +21,6 @@ export const select = defineRecipe({
     "& option": { background: "surfaceSolid", color: "text" },
   },
 });
+
+/** The select's element states (stateLayers.ts): a text field's. */
+export const selectStates = fieldStates;

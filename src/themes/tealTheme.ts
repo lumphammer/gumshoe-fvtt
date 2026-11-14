@@ -71,12 +71,13 @@ export const tealTheme = defineThemeV2({
           color: "var(--inv-accent)",
           background: "var(--inv-surface-nested)",
           "&:hover": { textShadow: "0 0 0.3em var(--inv-feedback)" },
-          "&[data-selected]": {
-            background: "var(--inv-surface)",
-            "&:hover": { textShadow: "none" },
-          },
-          "input:disabled + &:hover": { textShadow: "none" },
         },
+      },
+      // the selected tab is the catalogue's (on the surface, accent ink),
+      // and neither it nor a disabled one glows
+      states: {
+        selected: { tab: { "&:hover": { textShadow: "none" } } },
+        disabled: { tab: { "&:hover": { textShadow: "none" } } },
       },
     },
   },

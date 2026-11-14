@@ -25,17 +25,28 @@ export type ThemeStyle = { [K in keyof Properties]?: Properties[K] } & {
 
 /**
  * The state layers: feedback that looks the same on anything, whatever its
- * class (docs/theming.md, "State layers"). `hoverFeedback` is
+ * class (docs/theming.md, "States"). `hoverFeedback` is
  * `[data-interactive]:hover` (a glow, and a pointer), `dropTarget` is
  * `[data-drop-state]` (a dashed outline, accent with a tint when something's
  * over it), and `focusRing` is `:focus-visible` (an outline).
  */
 export type StateLayer = "hoverFeedback" | "dropTarget" | "focusRing";
 
+/**
+ * The element states: what an element is, rather than feedback on it
+ * (docs/theming.md, "States"). `selected` (the current tab, the page you're
+ * on), `checked` (a switch or a checkbox that's on), `pressed` (a toggle
+ * button that's down), `invalid` (a field whose value is wrong), `disabled`.
+ * Each recipe has only the ones it styles (`CatalogueRecipeShapes`), and
+ * they go over its base, variants and compound variants.
+ */
+export type ElementState = "selected" | "checked" | "pressed" | "invalid" | "disabled";
+
 /** What a recipe's catalogue shape looks like. */
 interface RecipeShape {
   slots: string;
   variants: Record<string, string>;
+  states: string;
 }
 
 /** A style for each of a slot recipe's slots, or one style for a recipe without. */
@@ -46,13 +57,35 @@ type PartStyles<S extends RecipeShape> = [S["slots"]] extends [never]
 /** A variant's value: a boolean variant's can be a boolean too. */
 type VariantValue<V extends string> = V extends "true" | "false" ? V | boolean : V;
 
-/** A compound variant: at least one of the recipe's variants, and its css. */
+/**
+ * The states' styles, for a recipe's elements (by slot, for a slot recipe):
+ * the state layers, and the recipe's own element states.
+ */
+type StateStyles<S extends RecipeShape> = {
+  [State in StateLayer | S["states"]]?: PartStyles<S>;
+};
+
+/**
+ * A variant's style, and beside it, its elements' states: everything about a
+ * variant in one place (`pip: { background: …, states: { pressed: … } }`).
+ */
+type VariantStyles<S extends RecipeShape> = PartStyles<S> & {
+  states?: StateStyles<S>;
+};
+
+/**
+ * A compound variant: at least one of the recipe's variants, and its css,
+ * its states, or both.
+ */
 type CompoundVariant<S extends RecipeShape> = {
   [Named in keyof S["variants"]]: {
     [Variant in Named]: VariantValue<S["variants"][Variant]>;
   } & {
     [Variant in keyof S["variants"]]?: VariantValue<S["variants"][Variant]>;
-  } & { css: PartStyles<S> };
+  } & (
+      | { css: PartStyles<S>; states?: StateStyles<S> }
+      | { css?: PartStyles<S>; states: StateStyles<S> }
+    );
 }[keyof S["variants"]];
 
 /**
@@ -62,25 +95,29 @@ type CompoundVariant<S extends RecipeShape> = {
  * style with `all: "revert-layer"`.)
  *
  * - `base`: the recipe's base (for a slot recipe, by slot).
- * - `variants`: the recipe's variants.
+ * - `variants`: the recipe's variants. Each value's style can have `states`
+ *   beside it: its elements' states, which go over the recipe's.
  * - `compoundVariants`: an element with every one of the variants they
- *   name, whether or not the recipe has a compound variant for them.
- * - `states`: the state layers, for this recipe's elements only (by slot,
- *   for a slot recipe): `&` is the element in that state. They go over the
- *   theme's own `states`, and still under the layers after them (focus
- *   always shows).
+ *   name, whether or not the recipe has a compound variant for them: its
+ *   look (`css`), and its states (`states`), which go over the variants'.
+ * - `states`: this recipe's elements' states (by slot, for a slot recipe):
+ *   the state layers (hover, focus, drop), and the element states the
+ *   recipe has (pressed, disabled...). `&` is the element in that state. A
+ *   state goes over `base`, `variants` and `compoundVariants`, and under the
+ *   states after it (focus always shows); a recipe's go over the theme's own
+ *   `states`.
  *
  * A recipe without variants has neither `variants` nor `compoundVariants`.
  */
 export type RecipeOverride<S extends RecipeShape> = {
   base?: PartStyles<S>;
-  states?: { [State in StateLayer]?: PartStyles<S> };
+  states?: StateStyles<S>;
 } & ([keyof S["variants"]] extends [never]
   ? { variants?: never; compoundVariants?: never }
   : {
       variants?: {
         [Variant in keyof S["variants"]]?: {
-          [Value in S["variants"][Variant]]?: PartStyles<S>;
+          [Value in S["variants"][Variant]]?: VariantStyles<S>;
         };
       };
       compoundVariants?: ReadonlyArray<CompoundVariant<S>>;
@@ -90,8 +127,9 @@ export type RecipeOverride<S extends RecipeShape> = {
  * A theme's overrides of the catalogue's recipes, by recipe name, and of the
  * state layers everywhere in the theme (`states`), which they **patch**: `&`
  * is anything in that state. A state's default can't be beaten from a
- * recipe's `base` or `variants` (the state layers come after them), only
- * here, or in a recipe's own `states`.
+ * recipe's `base` or `variants` (the states come after them), only here, or
+ * in a recipe's own `states`. The element states (pressed, disabled...) are
+ * only a recipe's, not the theme's.
  */
 export type ThemeCatalogue = {
   [Name in keyof CatalogueRecipeShapes]?: RecipeOverride<CatalogueRecipeShapes[Name]>;
