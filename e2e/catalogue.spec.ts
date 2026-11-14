@@ -251,14 +251,19 @@ test("a panel's depth comes from where it sits, and V1 panel and root styles sti
     await expect(panel).toHaveCSS("padding-top", /^\d+(\.\d+)?px$/);
   }
 
-  // in a tab: the attack panel, with the secondary style and none of the
-  // primary's; and it's the grid itself, as before
+  // in a tab: the combat stats, the ready weapon and its attack panel, with
+  // the secondary style and none of the primary's
   await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
-  const attack = sheet.locator(".inv-panel--depth_nested");
-  await expect(attack).toContainText(/Revolver/);
-  await expect(attack).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-  await expect(attack).toHaveCSS("border-top-color", secondary);
-  await expect(attack).toHaveCSS("border-top-width", "2px");
+  const nested = sheet.locator(".inv-panel--depth_nested");
+  await expect(nested).toHaveCount(3);
+  for (const panel of await nested.all()) {
+    await expect(panel).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await expect(panel).toHaveCSS("border-top-color", secondary);
+    await expect(panel).toHaveCSS("border-top-width", "2px");
+  }
+  // the attack panel is the grid itself, as before
+  const attack = sheet.locator(".inv-panel--depth_nested.inv-field-grid__root");
+  await expect(attack).toContainText(/Fire Revolver/);
   await expect(attack).toHaveCSS("display", "grid");
 });
 

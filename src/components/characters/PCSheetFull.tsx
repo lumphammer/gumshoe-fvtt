@@ -21,9 +21,15 @@ import { EquipmentArea } from "./Equipment/EquipmentArea";
 import { AbilitiesAreaMW } from "./MoribundWorld/AbilitiesAreaMW";
 import { MwItemArea } from "./MoribundWorld/MwItemArea";
 import { NotesArea } from "./NotesArea";
-import { PCSheetHeader, PCSheetPools, PCSheetStats } from "./PCSheetPanels";
+import {
+  PCSheetHeader,
+  PCSheetPools,
+  PCSheetRefreshButtons,
+  PCSheetStats,
+} from "./PCSheetPanels";
 import { SettingArea } from "./SettingsArea";
 import { useSettingsButton } from "./useSettingsButton";
+import { CombatStats } from "./Weapons/CombatStats";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
 import { css } from "../../styled-system/css";
 
@@ -101,10 +107,9 @@ export const PCSheetFull = memo(function PCSheetFull() {
               label: "Abilities",
               content: (
                 <>
-                  <EditModeToggle
-                    editMode={editMode}
-                    setEditMode={setEditMode}
-                  />
+                  <EditModeToggle editMode={editMode} setEditMode={setEditMode}>
+                    <PCSheetRefreshButtons />
+                  </EditModeToggle>
                   {editMode ? (
                     <AbilitiesAreaEdit />
                   ) : s.useMwStyleAbilities ? (
@@ -119,7 +124,21 @@ export const PCSheetFull = memo(function PCSheetFull() {
             !s.mwUseAlternativeItemTypes && {
               id: "combat",
               label: "Combat",
-              content: <WeaponsArea fillHeight />,
+              content: (
+                // the tab's height, so the ready weapon can sit at the bottom
+                <div
+                  className={css({
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                  })}
+                >
+                  <CombatStats />
+                  <div className={css({ flex: "[1]", minHeight: 0 })}>
+                    <WeaponsArea fillHeight />
+                  </div>
+                </div>
+              ),
             },
             (s.bondsOn || s.hasAdaptableTraumaTypes) && {
               id: "bonds",

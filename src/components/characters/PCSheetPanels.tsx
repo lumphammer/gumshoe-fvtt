@@ -16,11 +16,10 @@ import { GridField } from "../inputs/GridField";
 import { IndexedAsyncTextInput } from "../inputs/IndexedAsyncTextInput";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
-import { InitiativeAbilityPicker } from "./InitiativeAbilityPicker";
 import { LogoEditable } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { PersonalDetailField } from "./PersonalDetailField";
-import { StatField } from "./StatField";
+import { CombatStats } from "./Weapons/CombatStats";
 import { TrackersArea } from "./TrackersArea";
 import { Panel } from "../Panel";
 import { css } from "../../styled-system/css";
@@ -167,32 +166,21 @@ export const PCSheetStats = memo(function PCSheetStats() {
   );
 });
 
-/** Refreshes, pool trackers, stats and the initiative ability */
-export const PCSheetPools = memo(function PCSheetPools() {
+/** The refresh buttons, for the strip at the top of the abilities tab */
+export const PCSheetRefreshButtons = memo(function PCSheetRefreshButtons() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const pools = useActorSnapshot(actor, (snapshot) => ({
-    mwInjuryStatus: snapshot.system.mwInjuryStatus,
-  }));
-  const { useMwStyleAbilities, useMwInjuryStatus, pcStats } = useSettings(
-    (s) => ({
-      useMwStyleAbilities: s.useMwStyleAbilities,
-      useMwInjuryStatus: s.useMwInjuryStatus,
-      pcStats: s.pcStats,
-    }),
-  );
+  const useMwStyleAbilities = useSettings((s) => s.useMwStyleAbilities);
   const methods = useSystemMethods(actor);
 
   return (
-    <Panel
+    <div
       className={css({
-        gridArea: "pools",
-        position: "relative",
-        overflowX: "visible",
-        overflowY: "auto",
         display: "flex",
-        flexDirection: "column",
+        flexWrap: "wrap",
         gap: "0.5em",
+        // as wide as their labels, not the whole strip (componentDefaults.css)
+        "& > button": { width: "auto", whiteSpace: "nowrap" },
       })}
     >
       {useMwStyleAbilities && (
@@ -216,6 +204,39 @@ export const PCSheetPools = memo(function PCSheetPools() {
           <Translate>24h Refresh</Translate>
         </Button>
       )}
+    </div>
+  );
+});
+
+/**
+ * The pool trackers (and Moribund World's injury status). The stats and
+ * initiative ability join them when there's no combat tab to hold them.
+ */
+export const PCSheetPools = memo(function PCSheetPools() {
+  const { actor } = useActorSheetContext();
+  assertPCActor(actor);
+  const pools = useActorSnapshot(actor, (snapshot) => ({
+    mwInjuryStatus: snapshot.system.mwInjuryStatus,
+  }));
+  const { useMwInjuryStatus, noCombatTab } = useSettings((s) => ({
+    useMwInjuryStatus: s.useMwInjuryStatus,
+    // Moribund World's alternative item types have no weapons (PCSheetFull)
+    noCombatTab: s.mwUseAlternativeItemTypes,
+  }));
+  const methods = useSystemMethods(actor);
+
+  return (
+    <Panel
+      className={css({
+        gridArea: "pools",
+        position: "relative",
+        overflowX: "visible",
+        overflowY: "auto",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.5em",
+      })}
+    >
       {useMwInjuryStatus && (
         <MwInjuryStatusWidget
           status={pools.mwInjuryStatus}
@@ -223,10 +244,7 @@ export const PCSheetPools = memo(function PCSheetPools() {
         />
       )}
       <TrackersArea />
-      {Object.keys(pcStats).map((key) => (
-        <StatField key={key} id={key} stat={pcStats[key]} />
-      ))}
-      <InitiativeAbilityPicker actor={actor} />
+      {noCombatTab && <CombatStats inColumn />}
     </Panel>
   );
 });

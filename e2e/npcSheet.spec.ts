@@ -14,7 +14,7 @@ test.afterEach(async ({ page }) => {
   await setSettings(page, { useTurnPassingInitiative: false });
 });
 
-test("the NPC sidebar follows initiative, turns and trackers changed elsewhere", async ({
+test("the NPC sidebar and combat tab follow initiative, turns and trackers changed elsewhere", async ({
   page,
 }) => {
   await setSettings(page, { useTurnPassingInitiative: true });
@@ -50,8 +50,10 @@ test("the NPC sidebar follows initiative, turns and trackers changed elsewhere",
     });
     return next;
   }, actorId);
-  await expect(initiative).toHaveValue(next);
   await expect(turns).toHaveValue("3");
+  // the initiative ability is on the combat tab
+  await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
+  await expect(initiative).toHaveValue(next);
 
   // the tracker goes when it's turned off elsewhere
   await page.evaluate(
