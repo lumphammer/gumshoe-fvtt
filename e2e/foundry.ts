@@ -31,7 +31,11 @@ export async function waitForGameReady(page: Page) {
  * Console errors which aren't bugs in the system. Keep this short, and say
  * why each one is here.
  */
-const ignoredErrors: RegExp[] = [];
+const ignoredErrors: RegExp[] = [
+  // Babele's bundled FileSaver listens for `unload`, which newer Chromiums
+  // report (pack translation tests)
+  /^Permissions policy violation: unload is not allowed in this document\.$/,
+];
 
 /**
  * Client settings (kept in localStorage) for a page, depending on whether it

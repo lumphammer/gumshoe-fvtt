@@ -6,7 +6,6 @@ import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppCo
 import type { PropsWithChildren } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 
-import { assertGame } from "../functions/isGame";
 import { ApplicationV2 } from "../fvtt-exports";
 import { irid } from "../irid/irid";
 import { ThemeContext } from "../themes/ThemeContext";
@@ -95,174 +94,170 @@ export const CSSReset = ({
     });
   }, [head]);
 
-  const styles = useMemo<CSSObject>(() => {
-    const rootStyle =
-      mode === "large"
-        ? theme.largeSheetRootStyle
-        : mode === "small"
-          ? theme.smallSheetRootStyle
-          : {};
+  const rootStyle =
+    mode === "large"
+      ? theme.largeSheetRootStyle
+      : mode === "small"
+        ? theme.smallSheetRootStyle
+        : {};
 
-    const groove1 = irid(theme.colors.controlBorder);
-    const groove2 = groove1.contrast();
+  const groove1 = irid(theme.colors.controlBorder);
+  const groove2 = groove1.contrast();
 
-    const [grooveLight, grooveDark] =
-      groove1.luma() < groove2.luma()
-        ? [groove1.toString(), groove2.toString()]
-        : [groove2.toString(), groove1.toString()];
+  const [grooveLight, grooveDark] =
+    groove1.luma() < groove2.luma()
+      ? [groove1.toString(), groove2.toString()]
+      : [groove2.toString(), groove1.toString()];
 
-    const styles: CSSObject = {
-      font: theme.bodyFont,
-      padding: mode === "none" ? "0" : "0.5em",
-      color: theme.colors.text,
-      backgroundColor: mode === "none" ? "transparent" : theme.colors.wallpaper,
-      height: "100%",
-      accentColor: theme.colors.accent,
-      // this is outside the `:where` cluse below because we need to
-      // override Foundry's CSS for buttons, which use the
-      // selector `form button` (specificity 0 0 2).
-      // `:where(.abc123) button` has a specificity of 0 0 1.
-      // Putting this up here comes out as `.abc123 button` which is
-      // specificity 0 1 1.
+  const styles: CSSObject = {
+    font: theme.bodyFont,
+    padding: mode === "none" ? "0" : "0.5em",
+    color: theme.colors.text,
+    backgroundColor: mode === "none" ? "transparent" : theme.colors.wallpaper,
+    height: "100%",
+    accentColor: theme.colors.accent,
+    // this is outside the `:where` cluse below because we need to
+    // override Foundry's CSS for buttons, which use the
+    // selector `form button` (specificity 0 0 2).
+    // `:where(.abc123) button` has a specificity of 0 0 1.
+    // Putting this up here comes out as `.abc123 button` which is
+    // specificity 0 1 1.
+    "button, input[type=button]": {
+      borderStyle: "solid",
+      borderWidth: "1px",
+      borderColor: `${grooveLight} ${grooveDark} ${grooveDark} ${grooveLight}`,
+      background: theme.colors.backgroundButton,
+      boxShadow: ` -1px -1px 0 0 ${grooveLight} inset, 1px 1px 0 0 ${grooveDark} inset`,
+    },
+    // fix specificity. The comma causes this to be interpreted as a
+    // new selector, i.e. it comes out as
+    // ```
+    // , :where(.abc123) button { ... }
+    // ```
+    // the :where means that this selector does not add to specificity
+    // so we can override all these rules without having to use
+    // specificity hacks like `"&&": {...}`.
+    //
+    // The downside of controlling specificity this way is that these
+    // rules will *not* override Foundry's own styles in some
+    // circumstances.
+    ",:where(&) ": {
+      "*": {
+        scrollbarWidth: "thin",
+        userSelect: "auto",
+        boxSizing: "border-box",
+        scrollbarColor: `${theme.colors.accent} ${theme.colors.backgroundButton}`,
+      },
+
+      "h1, h2, h3, h4": {
+        border: "none",
+        margin: "0.3em 0 0 0",
+        marginBottom: "0.3em",
+        padding: 0,
+        fontWeight: "inherit",
+        font: theme.displayFont,
+        textTransform: theme.displayFontTextTransform,
+      },
+      h1: {
+        fontSize: "1.5em",
+      },
+      h2: {
+        fontSize: "1.3em",
+      },
+      h3: {
+        fontSize: "1.1em",
+      },
+      h4: {
+        fontSize: "1em",
+      },
       "button, input[type=button]": {
+        font: theme.displayFont,
+        textTransform: theme.displayFontTextTransform,
+        color: theme.colors.accent,
+        borderRadius: "5px",
+        // 100% was causing scrollbars in some places
+        width: "99%",
+        "&[disabled]": {
+          opacity: 0.5,
+          color: theme.colors.text,
+          "&:hover": {
+            boxShadow: "none",
+            textShadow: "none",
+          },
+        },
+        "&:hover": {
+          boxShadow: `0 0 0.5em ${theme.colors.glow}`,
+          textShadow: `0 0 0.5em ${theme.colors.glow}`,
+        },
+        "&:focus": {
+          boxShadow: "none",
+        },
+      },
+      label: {
+        fontWeight: "bold",
+      },
+      "a, label.parp": {
+        color: theme.colors.accent,
+      },
+      "a:hover, a.hover, .hover a, label.parp:hover, label.parp.hover, .hover label.parp":
+        {
+          textDecoration: "underline",
+          textShadow: `0 0 0.5em ${theme.colors.glow}`,
+        },
+      "input, input[type=text], textarea, select, option": {
+        font: theme.bodyFont,
+        fontVariantLigatures: "none",
+        color: theme.colors.accent,
+        padding: "0.1em 0.3em",
         borderStyle: "solid",
         borderWidth: "1px",
-        borderColor: `${grooveLight} ${grooveDark} ${grooveDark} ${grooveLight}`,
-        background: theme.colors.backgroundButton,
-        boxShadow: ` -1px -1px 0 0 ${grooveLight} inset, 1px 1px 0 0 ${grooveDark} inset`,
-      },
-      // fix specificity. The comma causes this to be interpreted as a
-      // new selector, i.e. it comes out as
-      // ```
-      // , :where(.abc123) button { ... }
-      // ```
-      // the :where means that this selector does not add to specificity
-      // so we can override all these rules without having to use
-      // specificity hacks like `"&&": {...}`.
-      //
-      // The downside of controlling specificity this way is that these
-      // rules will *not* override Foundry's own styles in some
-      // circumstances.
-      ",:where(&) ": {
-        "*": {
-          scrollbarWidth: "thin",
-          userSelect: "auto",
-          boxSizing: "border-box",
-          scrollbarColor: `${theme.colors.accent} ${theme.colors.backgroundButton}`,
+        borderColor: theme.colors.controlBorder,
+        background: theme.colors.backgroundPrimary,
+        resize: "vertical",
+        ":focus": {
+          borderColor: theme.colors.accent,
+          outline: "none",
+          boxShadow: `0 0 0.5em ${theme.colors.glow}`,
         },
-
-        "h1, h2, h3, h4": {
-          border: "none",
-          margin: "0.3em 0 0 0",
-          marginBottom: "0.3em",
-          padding: 0,
-          fontWeight: "inherit",
-          font: theme.displayFont,
-          textTransform: theme.displayFontTextTransform,
-        },
-        h1: {
-          fontSize: "1.5em",
-        },
-        h2: {
-          fontSize: "1.3em",
-        },
-        h3: {
-          fontSize: "1.1em",
-        },
-        h4: {
-          fontSize: "1em",
-        },
-        "button, input[type=button]": {
-          font: theme.displayFont,
-          textTransform: theme.displayFontTextTransform,
-          color: theme.colors.accent,
-          borderRadius: "5px",
-          // 100% was causing scrollbars in some places
-          width: "99%",
-          "&[disabled]": {
-            opacity: 0.5,
-            color: theme.colors.text,
-            "&:hover": {
-              boxShadow: "none",
-              textShadow: "none",
-            },
-          },
-          "&:hover": {
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-            textShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-          "&:focus": {
-            boxShadow: "none",
-          },
-        },
-        label: {
-          fontWeight: "bold",
-        },
-        "a, label.parp": {
-          color: theme.colors.accent,
-        },
-        "a:hover, a.hover, .hover a, label.parp:hover, label.parp.hover, .hover label.parp":
-          {
-            textDecoration: "underline",
-            textShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-        "input, input[type=text], textarea, select, option": {
-          font: theme.bodyFont,
-          fontVariantLigatures: "none",
-          color: theme.colors.accent,
-          padding: "0.1em 0.3em",
+        "&:hover": {
           borderStyle: "solid",
           borderWidth: "1px",
           borderColor: theme.colors.controlBorder,
-          background: theme.colors.backgroundPrimary,
-          resize: "vertical",
-          ":focus": {
-            borderColor: theme.colors.accent,
-            outline: "none",
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
-          "&:hover": {
-            borderStyle: "solid",
-            borderWidth: "1px",
-            borderColor: theme.colors.controlBorder,
-          },
         },
-        select: {
+      },
+      select: {
+        color: theme.colors.text,
+        background: theme.colors.bgOpaqueSecondary,
+        option: {
+          background: theme.colors.bgOpaquePrimary,
           color: theme.colors.text,
-          background: theme.colors.bgOpaqueSecondary,
-          option: {
-            background: theme.colors.bgOpaquePrimary,
-            color: theme.colors.text,
-          },
-          ":focus": {
-            borderColor: theme.colors.accent,
-            outline: "none",
-            boxShadow: `0 0 0.5em ${theme.colors.glow}`,
-          },
         },
-        textarea: {
-          lineHeight: 1,
+        ":focus": {
+          borderColor: theme.colors.accent,
+          outline: "none",
+          boxShadow: `0 0 0.5em ${theme.colors.glow}`,
         },
-        hr: {
-          borderColor: theme.colors.controlBorder,
-          width: "calc(100% - 2em)",
-          borderWidth: 0,
-          height: "2px",
-          backgroundImage: `linear-gradient(
+      },
+      textarea: {
+        lineHeight: 1,
+      },
+      hr: {
+        borderColor: theme.colors.controlBorder,
+        width: "calc(100% - 2em)",
+        borderWidth: 0,
+        height: "2px",
+        backgroundImage: `linear-gradient(
               90deg,
               oklch(from ${theme.colors.controlBorder} l c h / 0%) 0%,
               oklch(from ${theme.colors.controlBorder} l c h / 50%) 50%,
               oklch(from ${theme.colors.controlBorder} l c h / 0%) 100%)`,
-        },
-        "i.fa:last-child": {
-          margin: 0,
-        },
       },
-      ...rootStyle,
-    };
-
-    return styles;
-  }, [mode, theme]);
+      "i.fa:last-child": {
+        margin: 0,
+      },
+    },
+    ...rootStyle,
+  };
 
   // v13+ only (CSS Layers)
   // we put these styles into the `system` layer to play nice with Foundry's
@@ -272,16 +267,11 @@ export const CSSReset = ({
   // We wouldn't need to do this if we were exporting our CSS into a file and
   // getting Foundry to load it, but see https://github.com/lumphammer/gumshoe-fvtt/issues/928
   // for why we don't do that.
-  const layeredStyles = useMemo((): CSSObject => {
-    assertGame(game);
-    if (foundry.utils.isNewerVersion(game.version, "13.0")) {
-      return {
+  const layeredStyles = foundry.utils.isNewerVersion(game.version, "13.0")
+    ? {
         "@layer system": styles,
-      };
-    } else {
-      return styles;
-    }
-  }, [styles]);
+      }
+    : styles;
 
   return (
     <ErrorBoundary>
