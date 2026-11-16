@@ -26,9 +26,9 @@
   "license": "ISC",
   "devDependencies": {
     "@emotion/react": "^11.14.0",
-    "oxfmt": "^0.77.0",
-    "oxlint": "^1.92.0",
-    "oxlint-tsgolint": "^7.0.2006",
+    "oxfmt": "^0.78.0",
+    "oxlint": "^1.93.0",
+    "oxlint-tsgolint": "^7.0.2007",
     "typescript": "catalog:"
   }
 }
