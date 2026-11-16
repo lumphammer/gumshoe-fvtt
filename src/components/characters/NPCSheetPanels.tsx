@@ -14,7 +14,7 @@ import { LogoEditable } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { StatField } from "./StatField";
 import { TrackersArea } from "./TrackersArea";
-import { Panel } from "../Panel";
+import { Region } from "../Region";
 import { css } from "../../styled-system/css";
 
 // The NPC sheet's panels subscribe independently to the data they display.
@@ -99,7 +99,7 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
   const methods = useSystemMethods(actor);
 
   return (
-    <Panel
+    <Region
       className={css({
         gridArea: "sidebar",
         position: "relative",
@@ -175,6 +175,6 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
           />
         </>
       )}
-    </Panel>
+    </Region>
   );
 });

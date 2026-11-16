@@ -21,7 +21,7 @@ import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { PersonalDetailField } from "./PersonalDetailField";
 import { CombatStats } from "./Weapons/CombatStats";
 import { TrackersArea } from "./TrackersArea";
-import { Panel } from "../Panel";
+import { Region } from "../Region";
 import { css } from "../../styled-system/css";
 
 // The PC sheet's panels subscribe independently to the data they display.
@@ -118,7 +118,7 @@ export const PCSheetStats = memo(function PCSheetStats() {
   );
 
   return (
-    <Panel
+    <Region
       className={css({
         gridArea: "stats",
         position: "relative",
@@ -162,7 +162,7 @@ export const PCSheetStats = memo(function PCSheetStats() {
             </GridField>
           ))}
       </InputGrid>
-    </Panel>
+    </Region>
   );
 });
 
@@ -226,7 +226,7 @@ export const PCSheetPools = memo(function PCSheetPools() {
   const methods = useSystemMethods(actor);
 
   return (
-    <Panel
+    <Region
       className={css({
         gridArea: "pools",
         position: "relative",
@@ -245,6 +245,6 @@ export const PCSheetPools = memo(function PCSheetPools() {
       )}
       <TrackersArea />
       {noCombatTab && <CombatStats inColumn />}
-    </Panel>
+    </Region>
   );
 });

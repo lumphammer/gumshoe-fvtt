@@ -109,12 +109,7 @@ export const recipeShapes = {
     variants: { tone: ["neutral", "danger", "warning", "success", "info"] },
     states: [],
   },
-  panel: {
-    className: "inv-panel",
-    slots: [],
-    variants: { depth: ["top", "nested"] },
-    states: [],
-  },
+  panel: { className: "inv-panel", slots: [], variants: {}, states: [] },
   partyCell: {
     className: "inv-party-cell",
     slots: [],
@@ -125,6 +120,7 @@ export const recipeShapes = {
     },
     states: [],
   },
+  region: { className: "inv-region", slots: [], variants: {}, states: [] },
   richText: { className: "inv-rich-text", slots: [], variants: {}, states: [] },
   row: {
     className: "inv-row",

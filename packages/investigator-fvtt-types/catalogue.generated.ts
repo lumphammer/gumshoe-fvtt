@@ -97,12 +97,17 @@ export interface CatalogueRecipeShapes {
   panel: {
     slots: never;
     states: never;
-    variants: { depth: "top" | "nested" };
+    variants: Record<never, never>;
   };
   partyCell: {
     slots: never;
     states: never;
     variants: { odd: "true" | "false"; zero: "true" | "false"; header: "true" | "false" };
+  };
+  region: {
+    slots: never;
+    states: never;
+    variants: Record<never, never>;
   };
   richText: {
     slots: never;

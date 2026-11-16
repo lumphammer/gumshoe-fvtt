@@ -14,7 +14,6 @@ import { css, cx } from "../styled-system/css";
 import { tabs } from "../styled-system/recipes";
 import { chooseTabColumns } from "./chooseTabColumns";
 import { Translate } from "./Translate";
-import { OnSurface } from "./Panel";
 
 // gap between the tabs when they're in a grid
 const wrappedGapEm = 0.25;
@@ -262,8 +261,7 @@ export const TabContainer = ({
           css({ flex: "1", position: "relative", overflow: "auto" }),
         )}
       >
-        {/* a surface, so panels in it are nested */}
-        <OnSurface>{activeTabDef?.content}</OnSurface>
+        {activeTabDef?.content}
       </div>
     </div>
   );

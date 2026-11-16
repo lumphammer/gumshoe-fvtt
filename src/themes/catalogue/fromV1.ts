@@ -142,14 +142,15 @@ export function paletteFromV1(theme: ThemeV1): ThemePalette {
 
 /**
  * In V1, a panel style replaced the panel's background, and a nested panel
- * used `panelStyleSecondary`, else `panelStylePrimary`. Each depth gets its
- * own override, so the two stay independent. A style without a background of
- * its own clears the default's.
+ * used `panelStyleSecondary`, else `panelStylePrimary`. V1's top panels are
+ * regions now, and its nested ones panels: the primary style patches
+ * `region`, and the secondary (else the primary) `panel`. A style without a
+ * background of its own clears the default's.
  */
 function panelsFromV1(theme: ThemeV1): ThemeCatalogue {
   const { panelStylePrimary: primary, panelStyleSecondary: secondary } = theme;
   if (!primary && !secondary) return {};
-  const depth = (style: CSSObject | undefined) => {
+  const patch = (style: CSSObject | undefined) => {
     const own = fromEmotion(style);
     return themeStyle(
       "background" in own || "backgroundColor" in own
@@ -158,14 +159,8 @@ function panelsFromV1(theme: ThemeV1): ThemeCatalogue {
     );
   };
   return {
-    panel: {
-      variants: {
-        depth: {
-          ...(primary ? { top: depth(primary) } : {}),
-          nested: depth(secondary ?? primary),
-        },
-      },
-    },
+    ...(primary ? { region: { base: patch(primary) } } : {}),
+    panel: { base: patch(secondary ?? primary) },
   };
 }
 

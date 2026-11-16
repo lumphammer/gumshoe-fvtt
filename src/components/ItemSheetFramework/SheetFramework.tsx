@@ -8,6 +8,7 @@ import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useIsLimited } from "../../hooks/useIsEditable";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { ImagePickle } from "../ImagePickle";
+import { Region } from "../Region";
 import { ModeContext } from "./modeContext";
 import { ItemSheetMode } from "./types";
 import { css } from "../../styled-system/css";
@@ -111,8 +112,9 @@ export const ItemSheetFramework = ({
             <i className={`fa fa-${configMode ? "check" : "cog"}`} />
           </a>
         )}
-        {/* regular editing stuff */}
-        <div
+        {/* regular editing stuff, in a region: the header above is on the
+            wallpaper */}
+        <Region
           className={css({
             gridArea: "body",
             display: "flex",
@@ -122,7 +124,7 @@ export const ItemSheetFramework = ({
           })}
         >
           {children}
-        </div>
+        </Region>
       </div>
     </ModeContext.Provider>
   );

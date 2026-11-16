@@ -198,8 +198,8 @@ kebab case: `surfaceNested` is `--inv-surface-nested`), and a Panda token
 | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `polarity`                                                 | `light` or `dark`. Sets `color-scheme` on the themed root, so scrollbars and native controls match                                                                                                                   |
 | `wallpaper`                                                | The colour the sheet's backdrop averages to. Shown while images load. Must agree with the backdrop image                                                                                                             |
-| `surface`                                                  | What content sits on. May be translucent, so the wallpaper shows through; things that overlap or scroll over other content use `surfaceSolid`                                                                        |
-| `surfaceNested`                                            | What content _inside_ content sits on. A panel inside a panel uses it, worked out from the structure, never chosen by the call site                                                                                  |
+| `surface`                                                  | What a sheet's content sits on: a region, or a tab's content. May be translucent or even transparent, so the wallpaper shows through; things that overlap or scroll over other content use `surfaceSolid`            |
+| `surfaceNested`                                            | What a box _within_ that content is made of: a panel                                                                                                                                                                 |
 | `surfaceSolid`, `surfaceNestedSolid`                       | Opaque versions of the two, for things that overlap or scroll over other content (menus, sticky headers, floating messages, cards). Default: `surface`, `surfaceNested`. A theme with translucent surfaces sets them |
 | `control`                                                  | The fill of controls: buttons, toggle tracks                                                                                                                                                                         |
 | `text`                                                     | The default ink. Legible on both surfaces and on `control`                                                                                                                                                           |
@@ -273,12 +273,22 @@ structure (its columns, and which column each part sits in) is the components'
 layout, not the recipe's, so a theme can't move a part out of its column.
 `stacked`: a label above its control, across both columns (`GridFieldStacked`).
 
-**`panel`**: a block of content on the sheet (stats, pools, a box of controls);
-use `Panel`, which owns the look and padding, while the call site owns layout.
-_Not for_ things above the sheet (`floating`) or boxed messages (`callout`).
-`depth` is never a call site's choice (`Panel` works it out from where it sits):
-`top` is `surface`; `nested` is `surfaceNested`, inside another `Panel` or
-something marked `OnSurface`, such as a tab's content.
+**`region`**: an area of a sheet's layout (a character's stats, pools or
+sidebar; the body of an item's sheet, below its header); use `Region`, which
+owns the look and padding, while the call site owns layout. `surface`. _Not
+for_ a box within an area (`panel`). A sheet is wallpaper, then regions, then
+panels: regions don't nest, and a tab's content counts as one, though it's the
+`tabs` recipe's own `content` slot, so a theme can style the two apart. A theme
+may make a region solid, tinted or transparent, and it's the theme's job to
+keep text and controls legible on it. _An expected override._
+
+**`panel`**: a box of controls or content within a region (an ability test, a
+weapon's attack, the ready weapon); use `Panel`, which owns the look and
+padding, while the call site owns layout. `surfaceNested`. _Not for_ an area of
+the sheet (`region`), things above the sheet (`floating`) or boxed messages
+(`callout`). A panel always goes inside a region or a tab's content, never
+straight on the wallpaper, where nothing promises it's legible. A panel inside
+a panel looks the same as its parent.
 
 **`callout`**: a boxed message about the content around it: why an action can't
 happen ("Out of ammo"), or advice; use `Callout`, which adds the tone's icon and
@@ -368,7 +378,7 @@ has `data-category` (the card's style key), so a theme can style a category's
 cards (the base defines none). _`root` is an expected override._
 
 **Surfaces.** `surface`: a plain area of surface that isn't a block of content (a
-panel has padding and nests; this doesn't): a notes area, a cover over a
+region or panel has padding; this doesn't): a notes area, a cover over a
 picture. `depth: top | nested` is `surface` or `surfaceNested`; `solid` is
 `surfaceSolid` or `surfaceNestedSolid`, for one that overlaps or scrolls over
 other content. It sets only the background colour, so it can go on an element
@@ -486,8 +496,9 @@ that's ThemeV2. Its values are CSS as written.
 
 How its styles map:
 
-- `panelStylePrimary` and `panelStyleSecondary` (else the primary) patch the
-  `panel` `depth` variants; one without a background gets
+- `panelStylePrimary` patches `region`, and `panelStyleSecondary` (else the
+  primary) patches `panel`: V1's top-level panels are regions now, and its
+  nested ones panels. One without a background gets
   `backgroundColor: transparent`.
 - The seven `tab*Style` fields become the `tabs` slots `tab`, `spacer` and
   `content`, each starting `all: "revert-layer"`, with V1's wrapped styles as
@@ -514,6 +525,14 @@ eleven are still their small V1 sources (`src/themes/*Theme.ts`), which
 goals, native ThemeV2 authoring, `ThemeV1` as only a step from `ThemeSeedV1`,
 no `ThemeContext`, and custom V1 and V2 themes are done; every built-in being
 ThemeV2 with a makeover is not.
+
+Still to do:
+
+- Check every theme for legibility now that an item's sheet has a region: its
+  fields used to sit on the wallpaper, and its boxes of controls were
+  `surface`, not `surfaceNested`.
+- The `surface` recipe's `depth` is still chosen by its call sites. Work out
+  whether it should follow regions and panels instead.
 
 ## The native world
 

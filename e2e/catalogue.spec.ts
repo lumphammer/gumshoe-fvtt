@@ -192,7 +192,7 @@ test("a theme can turn hover feedback off everywhere, restyle it just on tabs, a
   }
 });
 
-test("a panel's depth comes from where it sits, and V1 panel and root styles still apply", async ({
+test("regions and panels, and V1 panel and root styles still apply", async ({
   page,
 }) => {
   const primary = "rgb(0, 0, 200)";
@@ -242,29 +242,42 @@ test("a panel's depth comes from where it sits, and V1 panel and root styles sti
     "30px",
   );
 
-  // on the sheet: stats and pools, with the primary style
-  const top = sheet.locator(".inv-panel--depth_top");
-  await expect(top).toHaveCount(2);
-  for (const panel of await top.all()) {
-    await expect(panel).toHaveCSS("background-color", primary);
-    await expect(panel).toHaveCSS("border-top-width", "3px");
-    await expect(panel).toHaveCSS("padding-top", /^\d+(\.\d+)?px$/);
+  // the sheet's areas: stats and pools, with the primary style
+  const regions = sheet.locator(".inv-region");
+  await expect(regions).toHaveCount(2);
+  for (const region of await regions.all()) {
+    await expect(region).toHaveCSS("background-color", primary);
+    await expect(region).toHaveCSS("border-top-width", "3px");
+    await expect(region).toHaveCSS("padding-top", /^\d+(\.\d+)?px$/);
   }
 
   // in a tab: the combat stats, the ready weapon and its attack panel, with
   // the secondary style and none of the primary's
   await sheet.locator(".tab-strip > label", { hasText: "Combat" }).click();
-  const nested = sheet.locator(".inv-panel--depth_nested");
-  await expect(nested).toHaveCount(3);
-  for (const panel of await nested.all()) {
+  const panels = sheet.locator(".inv-panel");
+  await expect(panels).toHaveCount(3);
+  for (const panel of await panels.all()) {
     await expect(panel).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await expect(panel).toHaveCSS("border-top-color", secondary);
     await expect(panel).toHaveCSS("border-top-width", "2px");
   }
   // the attack panel is the grid itself, as before
-  const attack = sheet.locator(".inv-panel--depth_nested.inv-field-grid__root");
+  const attack = sheet.locator(".inv-panel.inv-field-grid__root");
   await expect(attack).toContainText(/Fire Revolver/);
   await expect(attack).toHaveCSS("display", "grid");
+
+  // an item's sheet: its body is a region, and its box of controls a panel
+  // in it, as on the character's
+  const weaponSheet = await openSheet(
+    page,
+    `Actor.${actorId}.Item.${revolverId}`,
+  );
+  const body = weaponSheet.locator(".inv-region");
+  await expect(body).toHaveCount(1);
+  await expect(body).toHaveCSS("background-color", primary);
+  const weaponAttack = body.locator(".inv-panel");
+  await expect(weaponAttack).toHaveCount(1);
+  await expect(weaponAttack).toHaveCSS("border-top-color", secondary);
 });
 
 /** A colour as the browser computes it where `near` is (for color-mix). */

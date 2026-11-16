@@ -67,7 +67,7 @@ import { SettingsMenu } from "./SettingsMenu";
 import { stabilityPages } from "./Stability/stabilityPages";
 import { StabilitySettings } from "./Stability/StabilitySettings";
 import { StabilitySettingsRoutes } from "./Stability/StabilitySettingsRoutes";
-import { Panel } from "../Panel";
+import { Region } from "../Region";
 import { outcome, surface } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
 
@@ -284,7 +284,7 @@ export const Settings = () => {
                       position: "relative",
                     })}
                   >
-                    <Panel
+                    <Region
                       className={css({
                         ...absoluteCover,
                         overflow: "auto",
@@ -292,7 +292,7 @@ export const Settings = () => {
                       })}
                     >
                       <SettingsMenu data-testid="settings-menu" pages={pages} />
-                    </Panel>
+                    </Region>
                     {pages.map(({ direction, label, content, childRoutes }) => (
                       <SlideInNestedPanelRoute
                         key={label}

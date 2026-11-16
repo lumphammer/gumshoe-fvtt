@@ -51,7 +51,7 @@ export const accepted: ThemeCatalogue = {
   // ...and, by slot, on one with
   card: { states: { focusRing: { root: { outlineColor: "var(--inv-accent)" } } } },
   // a variant's states (with or without css), and by slot
-  panel: {
+  surface: {
     compoundVariants: [
       { depth: "nested", states: { hoverFeedback: { boxShadow: "none" } } },
       { depth: "top", css: { color: "red" }, states: { focusRing: { outlineWidth: 3 } } },

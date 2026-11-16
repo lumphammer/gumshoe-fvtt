@@ -81,36 +81,45 @@ describe("paletteFromV1", () => {
 });
 
 describe("panels", () => {
-  const depths = (overrides: Partial<ThemeSeedV1>) =>
-    catalogue(overrides).panel?.variants?.depth;
+  const bases = (overrides: Partial<ThemeSeedV1>) => {
+    const { region, panel } = catalogue(overrides);
+    return { region: region?.base, panel: panel?.base };
+  };
 
   test("nothing, when a seed has no panel styles", () => {
-    expect(catalogue().panel).toBeUndefined();
+    expect(bases({})).toEqual({ region: undefined, panel: undefined });
   });
 
-  test("a primary style is for top panels, and nested ones without their own", () => {
-    expect(depths({ panelStylePrimary: { backgroundColor: "red" } })).toEqual({
-      top: { backgroundColor: "red" },
-      nested: { backgroundColor: "red" },
+  test("a primary style is for regions, and panels without their own", () => {
+    expect(bases({ panelStylePrimary: { backgroundColor: "red" } })).toEqual({
+      region: { backgroundColor: "red" },
+      panel: { backgroundColor: "red" },
     });
   });
 
   // V1's panel style replaced the background
-  test("a secondary style is for nested panels; one without a background clears it", () => {
+  test("a secondary style is for panels; one without a background clears it", () => {
     expect(
-      depths({
+      bases({
         panelStylePrimary: { border: "1px solid" },
         panelStyleSecondary: { boxShadow: "0 0 1px" },
       }),
     ).toEqual({
-      top: { backgroundColor: "transparent", border: "1px solid" },
-      nested: { backgroundColor: "transparent", boxShadow: "0 0 1px" },
+      region: { backgroundColor: "transparent", border: "1px solid" },
+      panel: { backgroundColor: "transparent", boxShadow: "0 0 1px" },
+    });
+  });
+
+  test("a secondary style alone leaves regions as they are", () => {
+    expect(bases({ panelStyleSecondary: { background: "red" } })).toEqual({
+      region: undefined,
+      panel: { background: "red" },
     });
   });
 
   test("Emotion's selectors as CSS nesting has them, merged where they're the same", () => {
     expect(
-      depths({
+      bases({
         panelStylePrimary: {
           background: "red",
           ":hover, :focus-within": { color: "red" },
@@ -120,7 +129,7 @@ describe("panels", () => {
           "@media (min-width: 40em)": { padding: 4 },
           width: ["1em", "1lh"],
         },
-      })?.top,
+      }).region,
     ).toEqual({
       background: "red",
       "&:hover, &:focus-within": { color: "red" },
