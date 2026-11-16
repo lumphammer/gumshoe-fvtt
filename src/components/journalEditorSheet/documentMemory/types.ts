@@ -1,4 +1,4 @@
-import type { Change } from "textdiff-create";
+import type { Delta } from "textdiff-create";
 
 /**
  * An edit to a document. The change itself is a diff from textdiff-create, and
@@ -6,7 +6,7 @@ import type { Change } from "textdiff-create";
  */
 export interface Edit {
   /** The actual change, as a diff */
-  changes: Change[];
+  changes: Delta;
   /** The timestamp of the edit, in epoch seconds */
   timestamp: number;
   /** The serial number of the edit, unique for the document */
