@@ -9,6 +9,7 @@ const logoShadow =
 export const tealTheme = defineThemeV2({
   schemaVersion: "v2",
   displayName: "Teal of Cthulhu",
+  layout: "full-frame",
   palette: {
     polarity: "light",
     wallpaper: "#ddd",
@@ -21,7 +22,7 @@ export const tealTheme = defineThemeV2({
     control: "rgba(0,0,0,0.1)",
     text: "#433",
     accent: "#1d5d5d",
-    line: "#766",
+    line: "#aaa",
     feedback: "#5effff",
     danger: "#ff0000",
     warning: "#d68a00",
@@ -45,22 +46,39 @@ export const tealTheme = defineThemeV2({
     },
     logo: {
       base: {
+        // the container --w is measured in (cqw), and no perspective of its
+        // own: the text's transform has it
+        root: { containerType: "inline-size", perspective: "none" },
         backdrop: {
-          perspective: "500px",
-          perspectiveOrigin: "50% 50%",
           backgroundImage:
             "radial-gradient(closest-side, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%)",
         },
         text: {
+          fontSize: "0.7em",
           caretColor: "black",
-          transform: "rotateY(-30deg) rotateZ(-1deg) translateX(-5%)",
+          lineHeight: "0.9",
+          "--w": "calc(100cqw - 2 * var(--inv-logo-inset, 0px))",
+          "--a": "-25deg", // the turn: negative brings the right end towards you
+          "--n": "1.5", // how far away the viewer is, in text widths (smaller = stronger)
+          transform: `
+            translateX(calc(var(--w) * sin(var(--a)) / (4 * var(--n))))
+            scale(calc((1 - pow(sin(var(--a)) / (2 * var(--n)), 2)) / cos(var(--a))))
+            perspective(calc(var(--n) * var(--w)))
+            rotateY(var(--a))`,
         },
-        // the front copy's text is a gradient, clipped to the letters
-        front_wrapper: { color: "transparent" },
-        front: { background: logoGradient, backgroundClip: "text" },
-        front_sub: { background: logoGradient, backgroundClip: "text" },
-        rear: { textShadow: logoShadow },
-        rear_sub: { textShadow: logoShadow },
+        // the front copy's text is a gradient, clipped to the letters, across
+        // the name and the subtext
+        front_wrapper: {
+          color: "transparent",
+          background: logoGradient,
+          backgroundClip: "text",
+        },
+        rear_wrapper: { textShadow: logoShadow },
+        // no room around the text
+        front: { padding: "0" },
+        rear: { padding: "0" },
+        front_sub: { padding: "0", minHeight: "auto" },
+        rear_sub: { padding: "0", minHeight: "auto" },
       },
     },
     tabs: {
@@ -78,6 +96,14 @@ export const tealTheme = defineThemeV2({
       states: {
         selected: { tab: { "&:hover": { textShadow: "none" } } },
         disabled: { tab: { "&:hover": { textShadow: "none" } } },
+      },
+    },
+    panel: {
+      base: {
+        borderColor: "var(--inv-line)",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        padding: "0.25em",
       },
     },
   },
