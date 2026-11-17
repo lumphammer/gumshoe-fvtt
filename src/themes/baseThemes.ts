@@ -16,6 +16,7 @@ import { tealTheme } from "./tealTheme";
 import { unsafeRealityTheme } from "./unsafeRealityTheme";
 import { fogTheme } from "./fogTheme";
 import { nightFogTheme } from "./nightFogTheme";
+import { cthulhuByCandlelightTheme } from "./cthulhuByCandlelightTheme";
 import type { ThemeV1 } from "./types";
 
 // The themes that are still V1, converted here until each gets its makeover.
@@ -36,6 +37,7 @@ const v1Themes: { [themeName: string]: ThemeV1 } = {
 // remember to update the HMR setup below any time you modify this export.
 export const baseThemes: { [themeName: string]: ThemeV2 } = {
   tealTheme,
+  cthulhuByCandlelightTheme,
   ...Object.fromEntries(
     Object.entries(v1Themes).map(([id, theme]) => [id, themeFromV1(theme)]),
   ),
@@ -59,6 +61,7 @@ if (import.meta.hot) {
     import.meta.hot.accept(
       [
         "./tealTheme.ts",
+        "./cthulhuByCandlelightTheme.ts",
         "./niceTheme.ts",
         "./niceThemeDark.ts",
         "./highContrastTheme.ts",

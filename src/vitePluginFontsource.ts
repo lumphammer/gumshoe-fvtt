@@ -26,6 +26,11 @@ export const fontsourceFamilies: FontsourceFamily[] = [
     css: ["300", "300-italic", "400", "400-italic", "700", "700-italic"],
   },
   {
+    family: "Averia Sans Libre",
+    pkg: "@fontsource/averia-sans-libre",
+    css: ["300", "300-italic", "400", "400-italic", "700", "700-italic"],
+  },
+  {
     family: "Averia Serif Libre",
     pkg: "@fontsource/averia-serif-libre",
     css: ["300", "300-italic", "400", "400-italic", "700", "700-italic"],
@@ -74,6 +79,11 @@ export const fontsourceFamilies: FontsourceFamily[] = [
     family: "Saira",
     css: ["wdth"],
     pkg: "@fontsource-variable/saira",
+  },
+  {
+    family: "Parkinsans",
+    css: ["wght"],
+    pkg: "@fontsource-variable/parkinsans",
   },
 ];
 
