@@ -84,13 +84,16 @@ export const AbilityMainBits = memo(function AbilityMainBits({
     [setRatingAndRefreshPool],
   );
 
+  // the quick shock toggle, or the pool and rating; initiative
+  const fieldRows = (isQuickShock ? 1 : 2) + (isCombatAbility ? 1 : 0);
+
   return (
     <InputGrid
       className={css({ flex: "[1]", rowGap: "0.3em" })}
-      // a runtime value: Panda can't build every combination of a template
-      style={{
-        gridTemplateRows: `${isQuickShock ? "2em" : "2em 2em"} ${isCombatAbility ? "2em" : ""} [notes] 1fr`,
-      }}
+      // the fields' rows fit them (the rating's badges), and the notes fill
+      // the rest (a runtime value: Panda can't build every combination of a
+      // template)
+      style={{ gridTemplateRows: `repeat(${fieldRows}, auto) [notes] 1fr` }}
     >
       {isQuickShock && (
         <GridField label="Enabled">
@@ -139,7 +142,6 @@ export const AbilityMainBits = memo(function AbilityMainBits({
             />
             <AbilityBadges
               className={css({
-                gridColumn: "1 / 4",
                 justifyContent: "start",
                 marginTop: "0.2em",
                 // only when there are badges, to keep them off what's below
