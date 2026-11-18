@@ -1,7 +1,15 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { OnChange } from "./createSnapshotStore";
-import { createSnapshotStore } from "./createSnapshotStore";
+import { createSnapshotStore, watchGraceMs } from "./createSnapshotStore";
+
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 /** Some mutable data, and a way to say it changed. */
 function setUp() {
@@ -31,16 +39,37 @@ describe("createSnapshotStore", () => {
     expect(store.getSnapshot()).not.toBe(live);
   });
 
-  it("only watches while subscribed", () => {
+  it("watches from when it's made, for a while", () => {
     const { store, watch, unwatch } = setUp();
-    expect(watch).not.toHaveBeenCalled();
+    store.getSnapshot();
+    expect(watch).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(watchGraceMs);
+    expect(unwatch).toHaveBeenCalledTimes(1);
+  });
+
+  it("watches while subscribed, and for a while after", () => {
+    const { store, watch, unwatch } = setUp();
     const unsubscribeA = store.subscribe(vi.fn());
     const unsubscribeB = store.subscribe(vi.fn());
+    vi.advanceTimersByTime(watchGraceMs * 2);
     expect(watch).toHaveBeenCalledTimes(1);
-    unsubscribeA();
     expect(unwatch).not.toHaveBeenCalled();
+    unsubscribeA();
     unsubscribeB();
+    vi.advanceTimersByTime(watchGraceMs - 1);
+    expect(unwatch).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
     expect(unwatch).toHaveBeenCalledTimes(1);
+  });
+
+  it("reads once for many reads with nothing subscribed", () => {
+    const read = vi.fn(() => ({ a: 1 }));
+    const store = createSnapshotStore(read, () => () => undefined);
+    vi.advanceTimersByTime(watchGraceMs);
+    read.mockClear();
+    for (let i = 0; i < 10; i++) store.getSnapshot();
+    store.subscribe(vi.fn());
+    expect(read).toHaveBeenCalledTimes(1);
   });
 
   it("shares what didn't change, and notifies", () => {
@@ -67,10 +96,20 @@ describe("createSnapshotStore", () => {
     expect(store.getSnapshot()).toBe(before);
   });
 
-  it("is up to date while nothing is subscribed", () => {
-    const { live, store } = setUp();
+  it("follows changes while nothing is subscribed", () => {
+    const { live, store, change } = setUp();
     const before = store.getSnapshot();
     expect(store.getSnapshot()).toBe(before);
+    live.a.x = 9;
+    change();
+    expect(store.getSnapshot().a).toEqual({ x: 9 });
+    expect(store.getSnapshot().b).toBe(before.b);
+  });
+
+  it("reads again once it has stopped watching", () => {
+    const { live, store } = setUp();
+    const before = store.getSnapshot();
+    vi.advanceTimersByTime(watchGraceMs);
     live.a.x = 9;
     expect(store.getSnapshot().a).toEqual({ x: 9 });
     expect(store.getSnapshot().b).toBe(before.b);
@@ -78,6 +117,7 @@ describe("createSnapshotStore", () => {
 
   it("catches up on changes made before subscribing", () => {
     const { live, store } = setUp();
+    vi.advanceTimersByTime(watchGraceMs);
     live.a.x = 5;
     store.subscribe(vi.fn());
     expect(store.getSnapshot().a).toEqual({ x: 5 });
@@ -86,6 +126,7 @@ describe("createSnapshotStore", () => {
   it("starts watching again after being unsubscribed", () => {
     const { live, store, watch, change } = setUp();
     store.subscribe(vi.fn())();
+    vi.advanceTimersByTime(watchGraceMs);
     live.a.x = 6;
     const listener = vi.fn();
     store.subscribe(listener);

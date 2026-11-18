@@ -10,6 +10,13 @@ not make its data reactive. Use it for writes, not render-time reads.
   Stores copy fresh **prepared** data for the changed document and preserve
   unchanged identities with `replaceEqualDeep`. Hook diffs only identify
   documents; they are never patched into snapshots.
+- A store watches its hooks while subscribed, and for a few seconds
+  (`watchGraceMs`) after being read with nothing subscribed or losing its
+  last subscriber. React reads stores while rendering but only subscribes
+  after committing, so without the grace every component mounting in a
+  sheet's first render read all the data again: settings reads build a
+  Foundry `Setting` document each, and opening the PC sheet cost hundreds of
+  ms.
 - Read through `useActorSnapshot`, `useItemSelector`, `useCombatSnapshot` and
   `useSettings`, selecting only displayed values. Use `useActorAndSettings`
   for derived rules and `useActorsSnapshot` for several actors. Domain rules

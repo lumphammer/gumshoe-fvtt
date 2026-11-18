@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { watchGraceMs } from "./createSnapshotStore";
 import {
   cachedPer,
   createHookCounter,
@@ -42,12 +43,19 @@ describe("createHookStore", () => {
     expect(listener).not.toHaveBeenCalled();
   });
 
-  it("stops listening when nothing is subscribed", () => {
-    const store = createHookStore(() => 1, [onHook("ready"), onHook("init")]);
-    const unsubscribe = store.subscribe(vi.fn());
-    expect(hooks.count()).toBe(2);
-    unsubscribe();
-    expect(hooks.count()).toBe(0);
+  it("stops listening a while after nothing is subscribed", () => {
+    vi.useFakeTimers();
+    try {
+      const store = createHookStore(() => 1, [onHook("ready"), onHook("init")]);
+      const unsubscribe = store.subscribe(vi.fn());
+      expect(hooks.count()).toBe(2);
+      unsubscribe();
+      expect(hooks.count()).toBe(2);
+      vi.advanceTimersByTime(watchGraceMs);
+      expect(hooks.count()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 
