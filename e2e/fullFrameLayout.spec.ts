@@ -7,6 +7,7 @@ import {
   setSettings,
   test,
 } from "./foundry.ts";
+import { testTheme } from "./themes.ts";
 
 // A theme with the full-frame layout (ThemeV2.layout): the sheet runs up under
 // a see-through titlebar, a strip across the top that's still the titlebar,
@@ -24,6 +25,33 @@ async function openFogSheet(
   const actorId = await createActor(page, { name: actorName, type });
   const sheet = await openSheet(page, `Actor.${actorId}`);
   return { sheet, actorId };
+}
+
+// for measuring the layout: no transforms on the logo, unlike fog's
+const plainColors = {
+  accent: "rgb(200, 0, 0)",
+  accentContrast: "rgb(255, 255, 255)",
+  glow: "rgb(255, 136, 0)",
+  wallpaper: "rgb(238, 238, 238)",
+  text: "rgb(34, 34, 34)",
+  backgroundButton: "rgb(221, 221, 221)",
+  backgroundPrimary: "rgb(255, 255, 255)",
+  backgroundSecondary: "rgb(244, 244, 244)",
+};
+
+/** A sheet in a plain theme, in the full-frame layout or the standard one. */
+async function openPlainSheet(
+  page: Page,
+  layout: "full-frame" | "standard" = "full-frame",
+) {
+  const id = layout === "full-frame" ? "plainFullFrameTheme" : "plainTheme";
+  await page.evaluate(
+    ([id, theme]) => CONFIG.Investigator!.installTheme(id, theme),
+    [id, { ...testTheme(id, plainColors), layout }] as const,
+  );
+  await setSettings(page, { defaultThemeName: id });
+  const actorId = await createActor(page, { name, type: "pc" });
+  return openSheet(page, `Actor.${actorId}`);
 }
 
 const position = (sheet: Locator) =>
@@ -226,7 +254,7 @@ const textTop = (sheet: Locator) =>
 test("the text starts at the strip's bottom edge, less the tuck", async ({
   page,
 }) => {
-  const { sheet } = await openFogSheet(page);
+  const sheet = await openPlainSheet(page);
   const tuck = await tuckOf(sheet);
   await expect
     .poll(async () => {
@@ -258,7 +286,7 @@ const growTitlebar = (frame: Locator, by: number) =>
 test("the overlap is measured unscaled, when the window is scaled", async ({
   page,
 }) => {
-  const { sheet } = await openFogSheet(page);
+  const sheet = await openPlainSheet(page);
   await expect
     .poll(async () => (await textTop(sheet)).overlap)
     .toBeGreaterThan(0);
@@ -331,9 +359,7 @@ test("in a detached window, the overlap is still measured", async ({
 test("in the standard layout, the logo's text has its whole height", async ({
   page,
 }) => {
-  await setSettings(page, { defaultThemeName: "tealTheme" });
-  const actorId = await createActor(page, { name, type: "pc" });
-  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const sheet = await openPlainSheet(page, "standard");
   await expect
     .poll(() =>
       sheet.locator(".logo").evaluate((logo) => {

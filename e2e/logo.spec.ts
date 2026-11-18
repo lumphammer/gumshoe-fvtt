@@ -39,11 +39,20 @@ function measure(sheet: Locator) {
       scale,
       settled: Math.abs(scale - target) < 0.001,
       fits: glyphs.left >= box.left && glyphs.right <= box.right,
+      // the fit to the height left below the full-frame layout's strip
+      heightFit: Number(
+        wrapper.style.getPropertyValue("--logo-fit-height") || 1,
+      ),
     };
   });
 }
 
-const settledAtFullSize = { scale: 1, settled: true, fits: true };
+const settledAtFullSize = {
+  scale: 1,
+  settled: true,
+  fits: true,
+  heightFit: 1,
+};
 
 test("a short name is shown at full size", async ({ page }) => {
   const actorId = await createActor(page, { name: "Al", type: "pc" });
@@ -71,7 +80,13 @@ for (const theme of ["highContrastTheme", "niceTheme", "fearTheme"]) {
     await page.evaluate(async (id) => {
       await game.actors.get(id)!.update({ name: "Al" });
     }, actorId);
-    await expect.poll(() => measure(sheet)).toEqual(settledAtFullSize);
+    // as big as the height left below the full-frame layout's strip allows
+    await expect
+      .poll(async () => {
+        const { scale, settled, fits, heightFit } = await measure(sheet);
+        return settled && fits && Math.abs(scale - heightFit) < 0.001;
+      })
+      .toBe(true);
   });
 }
 
