@@ -210,6 +210,10 @@ The themes' fonts are self-hosted (not loaded from Google Fonts, which would sen
 
 To add a font, `pnpm add @fontsource/<name>` (or `@fontsource-variable/<name>`, if it's a variable font and you want several weights), and add it to `fontsourceFamilies` in that file. Don't `import` Fontsource's CSS from the code: Vite's library mode would inline every font into the bundle as base64.
 
+## Third-party licences
+
+The build writes `THIRD-PARTY-LICENSES.txt` and our `LICENSE` into `build/` ([`src/vitePluginThirdPartyLicenses.ts`](src/vitePluginThirdPartyLicenses.ts)), because the minifier drops the licence comments of the packages we bundle. It lists every package in the bundle (with any notices for code bundled into it, like Prettier's) and every react-icons set in use, so it keeps up by itself. react-icons doesn't ship its sets' licences, and a few packages are published without one, so we keep their upstream licences in `licenses/react-icons/<set>.txt` and `licenses/packages/<name>.txt`: the build fails, naming the file to add, when it finds one it has no licence for. Assets we add by hand (wallpapers, fonts outside Fontsource) need a credit in the README.
+
 ## Usage stats
 
 GMs can opt in to sending anonymous usage stats once a day (see [lumphammer/fvtt-telemetry](https://github.com/lumphammer/fvtt-telemetry), which has the server and [the plan](https://github.com/lumphammer/fvtt-telemetry/blob/main/docs/plan.md)). Reports go to `usageStatsEndpoint` in [`src/constants.ts`](src/constants.ts); setting it to `null` turns usage stats off (nothing is asked or sent, and the settings page is hidden).
