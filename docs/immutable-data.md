@@ -16,8 +16,8 @@ not make its data reactive. Use it for writes, not render-time reads.
   while rendering but only subscribes after committing, so without the grace
   every component mounting in a sheet's first render read all the data
   again: settings reads build a Foundry `Setting` document each, and opening
-  the PC sheet cost hundreds of ms. A store's first subscriber still reads it
-  again, in case its hooks missed something.
+  the PC sheet cost hundreds of ms (see "PC sheet, end to end"). A store's
+  first subscriber still reads it again, in case its hooks missed something.
 - Read through `useActorSnapshot`, `useItemSelector`, `useCombatSnapshot` and
   `useSettings`, selecting only displayed values. Use `useActorAndSettings`
   for derived rules and `useActorsSnapshot` for several actors. Domain rules
@@ -274,6 +274,81 @@ PC (76 items).
 - **"Next turn" re-renders every row of the combat tracker,** even though
   the tracker is already memoised. The likely causes are dnd-kit's sortable
   context, or the rows reading `combat.turn` from the live document.
+
+## PC sheet, end to end
+
+`e2e/reactWork.bench.ts` measures everything a user's action costs on the PC
+sheet: opening it cold (after a reload) and again, switching to the Abilities
+tab, turning on edit mode, and clicking an ability's "+", including the
+response to Foundry's update. Each sample counts only the sheet's own React
+root, and ends once it has been quiet for 150 ms and two frames have drawn.
+It reports two figures:
+
+- **React time:** the total render time of the sheet's commits, from React's
+  profiling build.
+- **Main-thread time:** all of the browser's work (script, style, layout),
+  from Chrome's `Performance.getMetrics`, from a production build. The
+  commit recorder only walks fibers in profiling builds, so this figure
+  doesn't include the recorder's own work.
+
+```sh
+pnpm build:profiling   # for React time; `pnpm build` for main-thread time
+REACT_WORK_LABEL=prof pnpm bench:foundry e2e/reactWork.bench.ts
+```
+
+Results go to `test-results/react-work-<label>-<test>.json`. To bench another
+build, set `E2E_BUILD_PATH` to its folder. The selectors work on builds from
+`before-immutability` onwards.
+
+### Results
+
+The medians of 45 samples per step (3 rounds of 15 per build), in ms, as
+React time / main-thread time. All builds ran in the same session; the
+rounds agreed within a few ms.
+
+| Step                       | `before-immutability` | `4ea0fd0e` | `main`, before fix | `theming`, before fix | `main` + fix | `theming` + fix |
+| -------------------------- | --------------------- | ---------- | ------------------ | --------------------- | ------------ | --------------- |
+| Open again                 | 12 / 59               | 78 / 127   | 217 / 269          | 213 / 277             | 7.1 / 59     | 4.7 / 74        |
+| Cold open                  | 22 / 101              | 106 / 188  | 255 / 353          | 254 / 339             | 20 / 99      | 17 / 104        |
+| Abilities tab              | 11 / 42               | 5.1 / 37   | 5.9 / 39           | 4.2 / 33              | 4.5 / 37     | 3.2 / 31        |
+| Edit mode                  | 26 / 86               | 12 / 71    | 13 / 73            | 8.1 / 59              | 11 / 70      | 6.4 / 58        |
+| "+"                        | 18 / 99               | 0.5 / 80   | 0.4 / 80           | 0.3 / 78              | 0.4 / 81     | 0.2 / 76        |
+| Components rendered on "+" | 1,602                 | 82         | 32                 | 10                    | 32           | 10              |
+
+- `before-immutability`: before snapshots and React Compiler.
+- `4ea0fd0e`: snapshots, without React Compiler (the merge before it).
+- `main`, before fix: snapshots and React Compiler (`a974bf6a`).
+- `theming`, before fix: Panda CSS instead of Emotion (`43d9b3b0`).
+- "+ fix": with the store fix below (`4e5aaf88`, and `theming` rebased onto
+  it).
+
+Idle background work is about 10 ms per sample on every build.
+
+### Findings
+
+- **Snapshots and React Compiler made opening the sheet four times slower.**
+  A store with nothing subscribed read its document and the settings again on
+  every `getSnapshot`. React reads stores while rendering but only subscribes
+  after committing, so every component mounting in the sheet's first render
+  (mostly the 27 `AbilityBadges`) read everything again: a copy of the actor,
+  and a Foundry `Setting` document built for each setting by
+  `game.settings.get`. A CPU profile found it.
+- **The fix:** a store keeps watching its hooks for `watchGraceMs` (5 s) after
+  it is made, read with nothing subscribed, or loses its last subscriber, so
+  one read serves the whole first render. A store's first subscriber still
+  reads it again, in case its hooks missed something. Opening the sheet again
+  went from 269 ms of main-thread work to 59, the same as
+  `before-immutability`, with less React time.
+- **Every other step is cheaper than before snapshots.** React's work on "+"
+  is about 100 times smaller, and main-thread work is 15–30% lower.
+- **Panda CSS cuts React time by 25–50% on every step,** because Emotion's
+  `css` prop wraps each styled element in a component: the "+" renders 10
+  components instead of 32. It saves the most main-thread work on edit mode
+  (about 12 ms).
+- **On `theming`, opening again costs more main-thread time (74 ms against
+  59), but less script.** Style recalculation takes 36 ms against 21. This is
+  probably the new full-frame themes and wallpapers rather than Panda itself,
+  but that hasn't been checked.
 
 ## Progress
 
