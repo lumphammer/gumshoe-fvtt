@@ -136,6 +136,30 @@ test("an open ability sheet follows the Boost setting", async ({ page }) => {
   await expect(sheet.getByText("Boost?")).toBeVisible();
 });
 
+test("an ability sheet's rating row grows to fit its badges", async ({
+  page,
+}) => {
+  await setSettings(page, { useBoost: true });
+  const actorId = await createActor(page, { name: "Booster", type: "pc" });
+  await updateAbility(page, actorId, "Athletics", { boost: true });
+  const id = await getAbilityId(page, actorId, "Athletics");
+  const sheet = await openSheet(page, `Actor.${actorId}.Item.${id}`);
+  const badge = sheet.getByText("Boosted", { exact: true });
+  await expect(badge).toBeVisible();
+
+  // top to bottom, without overlapping: the pool, the rating, its badges,
+  // the notes
+  const box = async (locator: ReturnType<Page["locator"]>) =>
+    (await locator.boundingBox())!;
+  const pool = await box(sheet.getByLabel("Pool"));
+  const rating = await box(sheet.getByLabel("Rating"));
+  const badgeBox = await box(badge);
+  const notes = await box(sheet.locator("prose-mirror").first());
+  expect(rating.y).toBeGreaterThanOrEqual(pool.y + pool.height);
+  expect(badgeBox.y).toBeGreaterThanOrEqual(rating.y + rating.height);
+  expect(notes.y).toBeGreaterThanOrEqual(badgeBox.y + badgeBox.height);
+});
+
 test.describe("with the canvas", () => {
   // an actor's ownership changing makes Foundry cycle the player's tokens,
   // which throws (before any hooks) when there's no canvas

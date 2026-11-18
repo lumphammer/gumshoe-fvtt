@@ -9,6 +9,11 @@ export type CreateFvttViteConfigArgs = {
   sourceMap?: boolean;
   includeReact?: boolean;
   /**
+   * Where JSX comes from: `"react"`, or `"@emotion/react"` (the default) for
+   * Emotion's `css` prop.
+   */
+  jsxImportSource?: string;
+  /**
    * Run React Compiler over the code: `true`, or its options (e.g.
    * `{ compilationMode: "annotation" }` to compile only functions marked
    * `"use memo"`). Off by default.

@@ -2,7 +2,10 @@
   "extends": "../packages/shared-fvtt-bits/dotfiles/import/tsconfig.fvtt.json",
   "compilerOptions": {
     "lib": ["DOM", "ESNext"],
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    // plain React JSX, like the root project
+    "jsxImportSource": "react",
+    "paths": {}
   },
   // the system's document types, so `page.evaluate` code knows about them
   "files": ["../src/configuration.ts", "../src/global.ts"],

@@ -34,6 +34,7 @@ export function createViteUserConfig({
   port = 40000,
   sourceMap = false,
   includeReact = true,
+  jsxImportSource = "@emotion/react",
   reactCompiler = false,
   plugins = [],
   allowedHosts,
@@ -186,7 +187,7 @@ export function createViteUserConfig({
       ...plugins,
       includeReact &&
         react({
-          jsxImportSource: "@emotion/react",
+          jsxImportSource,
           // Oxc's port of React Compiler (needs `oxc-transform-react`)
           compiler: reactCompiler,
         }),

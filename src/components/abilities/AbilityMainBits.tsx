@@ -22,6 +22,7 @@ import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 import { AbilityBadges } from "./AbilityBadges";
 import { SpecialityList } from "./SpecialityList";
+import { css } from "../../styled-system/css";
 
 interface AbilityMainBitsProps {
   /** Only to write through: read from `ability`. */
@@ -83,13 +84,16 @@ export const AbilityMainBits = memo(function AbilityMainBits({
     [setRatingAndRefreshPool],
   );
 
+  // the quick shock toggle, or the pool and rating; initiative
+  const fieldRows = (isQuickShock ? 1 : 2) + (isCombatAbility ? 1 : 0);
+
   return (
     <InputGrid
-      css={{
-        flex: 1,
-        gridTemplateRows: `${isQuickShock ? "2em" : "2em 2em"} ${isCombatAbility ? "2em" : ""} [notes] 1fr`,
-        rowGap: "0.3em",
-      }}
+      className={css({ flex: "[1]", rowGap: "0.3em" })}
+      // the fields' rows fit them (the rating's badges), and the notes fill
+      // the rest (a runtime value: Panda can't build every combination of a
+      // template)
+      style={{ gridTemplateRows: `repeat(${fieldRows}, auto) [notes] 1fr` }}
     >
       {isQuickShock && (
         <GridField label="Enabled">
@@ -103,26 +107,26 @@ export const AbilityMainBits = memo(function AbilityMainBits({
         <>
           <GridField label="Pool">
             <div
-              css={{
+              className={css({
                 display: "flex",
                 flexDirection: "row",
-              }}
+              })}
             >
               <AsyncNumberInput
                 min={system.min}
                 max={poolMax}
                 value={system.pool}
                 onChange={methods.setPool}
-                css={{
-                  flex: 1,
-                }}
+                className={css({
+                  flex: "[1]",
+                })}
               />
               <Button
-                css={{
+                className={css({
                   flexBasis: "min-content",
-                  flex: 0,
+                  flex: "[0]",
                   lineHeight: "inherit",
-                }}
+                })}
                 onClick={onClickRefresh}
               >
                 <Translate>Refresh</Translate>
@@ -137,13 +141,12 @@ export const AbilityMainBits = memo(function AbilityMainBits({
               onChange={methods.setRating}
             />
             <AbilityBadges
-              css={{
-                gridColumn: "1 / 4",
+              className={css({
                 justifyContent: "start",
                 marginTop: "0.2em",
                 // only when there are badges, to keep them off what's below
                 "&:not(:empty)": { marginBottom: "0.5em" },
-              }}
+              })}
               ability={item}
             />
           </GridField>
@@ -152,12 +155,14 @@ export const AbilityMainBits = memo(function AbilityMainBits({
       {isCombatAbility && (
         <GridField label="Initiative">
           {isAbilityUsed ? (
-            <span css={{ display: "inline-block", paddingTop: "0.2em" }}>
+            <span
+              className={css({ display: "inline-block", paddingTop: "0.2em" })}
+            >
               <Translate>Active</Translate> ✓
             </span>
           ) : (
             <ToolbarButton
-              css={{ display: "inline", marginLeft: "0.5em" }}
+              className={css({ display: "inline", marginLeft: "0.5em" })}
               onClick={onClickUseForInitiative}
             >
               Activate
@@ -166,19 +171,19 @@ export const AbilityMainBits = memo(function AbilityMainBits({
         </GridField>
       )}
       <div
-        css={{
-          flex: 1,
+        className={css({
+          flex: "[1]",
           position: "relative",
           gridColumn: "1/-1",
-        }}
+        })}
       >
         <RichTextEditor
           name="notes"
           html={system.notes}
           onSave={methods.setNotes}
-          css={{
+          className={css({
             gridRow: "notes",
-          }}
+          })}
         />
       </div>
       {system.hasSpecialities && (
@@ -190,10 +195,10 @@ export const AbilityMainBits = memo(function AbilityMainBits({
           }
         >
           <div
-            css={{
+            className={css({
               display: "flex",
               flexDirection: "row",
-            }}
+            })}
           >
             <SpecialityList ability={item} />
           </div>

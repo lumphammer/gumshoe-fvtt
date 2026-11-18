@@ -21,10 +21,17 @@ import { EquipmentArea } from "./Equipment/EquipmentArea";
 import { AbilitiesAreaMW } from "./MoribundWorld/AbilitiesAreaMW";
 import { MwItemArea } from "./MoribundWorld/MwItemArea";
 import { NotesArea } from "./NotesArea";
-import { PCSheetHeader, PCSheetPools, PCSheetStats } from "./PCSheetPanels";
+import {
+  PCSheetHeader,
+  PCSheetPools,
+  PCSheetRefreshButtons,
+  PCSheetStats,
+} from "./PCSheetPanels";
 import { SettingArea } from "./SettingsArea";
 import { useSettingsButton } from "./useSettingsButton";
+import { CombatStats } from "./Weapons/CombatStats";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
+import { css } from "../../styled-system/css";
 
 /**
  * The PC sheet. Memoised (it has no props), so Foundry's own re-render stops
@@ -55,7 +62,7 @@ export const PCSheetFull = memo(function PCSheetFull() {
     <CSSReset
       theme={theme}
       mode="large"
-      css={{
+      className={css({
         position: "absolute",
         top: 0,
         right: 0,
@@ -69,18 +76,26 @@ export const PCSheetFull = memo(function PCSheetFull() {
           '"title title image" ' +
           '"pools stats image" ' +
           '"pools body  body" ',
-      }}
+        // the portrait on the left, so the window's buttons are over the
+        // logo (ThemeV2.layout)
+        "&[data-inv-layout=full-frame]": {
+          gridTemplateAreas:
+            '"image title title" ' +
+            '"image stats stats" ' +
+            '"pools body  body" ',
+        },
+      })}
     >
       <PCSheetHeader />
       <PCSheetStats />
       <PCSheetPools />
 
       <div
-        css={{
+        className={css({
           gridArea: "body",
           position: "relative",
           overflow: "hidden",
-        }}
+        })}
       >
         <TabContainer
           defaultTab="abilities"
@@ -92,10 +107,9 @@ export const PCSheetFull = memo(function PCSheetFull() {
               label: "Abilities",
               content: (
                 <>
-                  <EditModeToggle
-                    editMode={editMode}
-                    setEditMode={setEditMode}
-                  />
+                  <EditModeToggle editMode={editMode} setEditMode={setEditMode}>
+                    <PCSheetRefreshButtons />
+                  </EditModeToggle>
                   {editMode ? (
                     <AbilitiesAreaEdit />
                   ) : s.useMwStyleAbilities ? (
@@ -110,7 +124,21 @@ export const PCSheetFull = memo(function PCSheetFull() {
             !s.mwUseAlternativeItemTypes && {
               id: "combat",
               label: "Combat",
-              content: <WeaponsArea fillHeight />,
+              content: (
+                // the tab's height, so the ready weapon can sit at the bottom
+                <div
+                  className={css({
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                  })}
+                >
+                  <CombatStats />
+                  <div className={css({ flex: "[1]", minHeight: 0 })}>
+                    <WeaponsArea fillHeight />
+                  </div>
+                </div>
+              ),
             },
             (s.bondsOn || s.hasAdaptableTraumaTypes) && {
               id: "bonds",

@@ -25,6 +25,8 @@ import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 import { SituationalModifiersEditor } from "./SituationalModifiersEditor";
 import { UnlocksEditor } from "./UnlocksEditor";
+import { select } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 interface AbilityConfigProps {
   /** Only to write through: read from `ability`. */
@@ -105,20 +107,23 @@ export const AbilityConfig = memo(function AbilityConfig({
       </GridField>
       <GridField label="Category">
         <div
-          css={{
+          className={css({
             display: "flex",
             flexDirection: "row",
-          }}
+          })}
         >
           <div>
             <select
+              className={cx(
+                select(),
+                css({
+                  lineHeight: "inherit",
+                  height: "inherit",
+                }),
+              )}
               disabled={!isEditable}
               value={selectedCat}
               onChange={onChangeCategory}
-              css={{
-                lineHeight: "inherit",
-                height: "inherit",
-              }}
             >
               {categories.map((cat) => (
                 <option key={cat}>{cat}</option>
@@ -127,9 +132,9 @@ export const AbilityConfig = memo(function AbilityConfig({
             </select>
           </div>
           <div
-            css={{
-              flex: 1,
-            }}
+            className={css({
+              flex: "[1]",
+            })}
           >
             {showCustomField && (
               <AsyncTextInput
@@ -258,7 +263,11 @@ export const AbilityConfig = memo(function AbilityConfig({
       {isGeneralAbilitySnapshot(ability) && (
         <GridField
           label="Link to resource?"
-          css={{ display: "flex", flexDirection: "row", gap: "0.5em" }}
+          className={css({
+            display: "flex",
+            flexDirection: "row",
+            gap: "0.5em",
+          })}
         >
           <Toggle
             checked={ability.system.linkToResource}
@@ -309,9 +318,9 @@ export const AbilityConfig = memo(function AbilityConfig({
       <GridField label="Delete ability">
         <Button
           onClick={onClickDelete}
-          css={{
+          className={css({
             margin: 0,
-          }}
+          })}
         >
           <Translate>Delete</Translate>
         </Button>

@@ -20,6 +20,7 @@ import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
 import { SpendButtons } from "../inputs/SpendButtons";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 /**
  * A Network contact's sheet (Fall of DELTA GREEN, p. 068): who and where they
@@ -29,7 +30,11 @@ import { Translate } from "../Translate";
  */
 /** a line across the sheet, between who the contact is and what they do */
 const Divider = () => {
-  return <hr css={{ gridColumn: "1/-1", width: "100%", margin: "0.25em 0" }} />;
+  return (
+    <hr
+      className={css({ gridColumn: "1/-1", width: "100%", margin: "0.25em 0" })}
+    />
+  );
 };
 
 type NetworkContactMainProps = {
@@ -59,12 +64,11 @@ export const NetworkContactMain = ({
 
   return (
     <InputGrid
-      css={{
-        ...absoluteCover,
-        // name, location, pool, then the actions, with dividers; the notes
-        // fill the rest
-        gridTemplateRows: `repeat(${isOnPC ? 10 : 4}, auto) 1fr`,
-      }}
+      className={css(absoluteCover)}
+      // name, location, pool, then the actions, with dividers; the notes fill
+      // the rest (a runtime value: Panda can't build every combination of a
+      // template)
+      style={{ gridTemplateRows: `repeat(${isOnPC ? 10 : 4}, auto) 1fr` }}
     >
       <GridField label="Name">
         <AsyncTextInput value={name} onChange={item.setName} />
@@ -113,7 +117,11 @@ export const NetworkContactMain = ({
             ) : (
               <div
                 data-testid="give-row"
-                css={{ display: "flex", gap: "0.5em", alignItems: "center" }}
+                className={css({
+                  display: "flex",
+                  gap: "0.5em",
+                  alignItems: "center",
+                })}
               >
                 <SpendButtons
                   value={give}
@@ -142,7 +150,7 @@ export const NetworkContactMain = ({
           <GridField noLabel>
             <Button
               data-testid="test-contact"
-              css={{ width: "100%" }}
+              className={css({ width: "100%" })}
               // with nothing left, the favors are used up
               disabled={pool === 0}
               onClick={() => {
@@ -155,7 +163,7 @@ export const NetworkContactMain = ({
           </GridField>
           <Divider />
           <GridField label="Information">
-            <div css={{ display: "flex", gap: "0.5em" }}>
+            <div className={css({ display: "flex", gap: "0.5em" })}>
               <Button
                 data-testid="tap-contact-1"
                 disabled={pool < 1}
@@ -174,7 +182,7 @@ export const NetworkContactMain = ({
           </GridField>
         </>
       )}
-      <div css={{ position: "relative", gridColumn: "1/-1" }}>
+      <div className={css({ position: "relative", gridColumn: "1/-1" })}>
         <RichTextEditor
           html={system.notes}
           onSave={methods.setNotes}

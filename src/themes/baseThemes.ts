@@ -1,4 +1,7 @@
+import type { ThemeV2 } from "@lumphammer/investigator-fvtt-types";
+
 import * as constants from "../constants";
+import { themeFromV1 } from "./catalogue/fromV1";
 import { antiquarianTheme } from "./antiquarianTheme";
 import { deltaGroovyTheme } from "./deltaGroovyTheme";
 import { fearTheme } from "./fearTheme";
@@ -10,12 +13,14 @@ import { niceThemeDark } from "./niceThemeDark";
 import { olderThanMemoryTheme } from "./olderThanMemoryTheme";
 import { pallidTheme } from "./pallidTheme";
 import { tealTheme } from "./tealTheme";
-import type { ThemeV1 } from "./types";
 import { unsafeRealityTheme } from "./unsafeRealityTheme";
+import { fogTheme } from "./fogTheme";
+import { nightFogTheme } from "./nightFogTheme";
+import { cthulhuByCandlelightTheme } from "./cthulhuByCandlelightTheme";
+import type { ThemeV1 } from "./types";
 
-// remember to update the HMR setup below any time you modify this export.
-export const baseThemes: { [themeName: string]: ThemeV1 } = {
-  tealTheme,
+// The themes that are still V1, converted here until each gets its makeover.
+const v1Themes: { [themeName: string]: ThemeV1 } = {
   niceTheme,
   niceThemeDark,
   highContrastTheme,
@@ -29,7 +34,18 @@ export const baseThemes: { [themeName: string]: ThemeV1 } = {
   mutantCityBlueTheme,
 };
 
-export const reregisterBaseTheme = (name: string, theme: ThemeV1) => {
+// remember to update the HMR setup below any time you modify this export.
+export const baseThemes: { [themeName: string]: ThemeV2 } = {
+  tealTheme,
+  cthulhuByCandlelightTheme,
+  ...Object.fromEntries(
+    Object.entries(v1Themes).map(([id, theme]) => [id, themeFromV1(theme)]),
+  ),
+  fogTheme,
+  nightFogTheme,
+};
+
+export const reregisterBaseTheme = (name: string, theme: ThemeV2) => {
   baseThemes[name] = theme;
 };
 
@@ -45,6 +61,7 @@ if (import.meta.hot) {
     import.meta.hot.accept(
       [
         "./tealTheme.ts",
+        "./cthulhuByCandlelightTheme.ts",
         "./niceTheme.ts",
         "./niceThemeDark.ts",
         "./highContrastTheme.ts",
@@ -56,6 +73,8 @@ if (import.meta.hot) {
         "./olderThanMemoryTheme.ts",
         "./unsafeRealityTheme.ts",
         "./mutantCityBlueTheme.ts",
+        "./fogTheme.ts",
+        "./nightFogTheme.ts",
       ],
       // keep this list in sync with the exports above.
       // unfortunately the HMR API is staticaly analysed so we can't do anything

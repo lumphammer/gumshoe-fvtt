@@ -4,6 +4,8 @@ import { useMemo } from "react";
 
 import { IdContext } from "../IdContext";
 import { Translate } from "../Translate";
+import { css, cx } from "../../styled-system/css";
+import { fieldGrid } from "../../styled-system/recipes";
 
 type GridFieldStackedProps = {
   label?: string | ReactNode;
@@ -19,17 +21,18 @@ export const GridFieldStacked = ({
   noTranslate = false,
 }: GridFieldStackedProps) => {
   const htmlId = useMemo(() => nanoid(), []);
+  const classes = fieldGrid({ stacked: true });
   return (
     <IdContext.Provider value={htmlId}>
       <div
-        css={{
+        className={css({
           gridColumn: "label / end",
           position: "relative",
           display: "flex",
           flexDirection: "column",
-        }}
+        })}
       >
-        <label htmlFor={htmlId} css={{}}>
+        <label htmlFor={htmlId} className={classes.label}>
           {label &&
             (noTranslate || typeof label !== "string" ? (
               label
@@ -38,11 +41,14 @@ export const GridFieldStacked = ({
             ))}
         </label>
         <div
-          css={{
-            position: "relative",
-            flex: 1,
-          }}
-          className={className}
+          className={cx(
+            classes.control,
+            css({
+              position: "relative",
+              flex: "[1]",
+            }),
+            className,
+          )}
         >
           {children}
         </div>

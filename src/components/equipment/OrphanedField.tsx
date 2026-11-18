@@ -2,6 +2,7 @@ import { Fragment } from "react";
 
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 interface OrphanedFieldProps {
   fieldId: string;
@@ -21,30 +22,30 @@ export const OrphanedField = ({
   return (
     <Fragment key={fieldId}>
       <b
-        css={{
+        className={css({
           gridColumn: "1",
-          gridRow: index * gridRowsPerField + 1,
-        }}
+        })}
+        style={{ gridRow: index * gridRowsPerField + 1 }}
       >
         Id
       </b>
       <code
-        css={{
+        className={css({
           gridColumn: 2,
-          gridRow: index * gridRowsPerField + 1,
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-        }}
+        })}
+        style={{ gridRow: index * gridRowsPerField + 1 }}
       >
         {fieldId}
       </code>
       <a
         title="Copy field ID to clipboard"
-        css={{
+        className={css({
           gridColumn: 3,
-          gridRow: index * gridRowsPerField + 1,
-        }}
+        })}
+        style={{ gridRow: index * gridRowsPerField + 1 }}
         onClick={async () => {
           await game.clipboard?.copyPlainText(fieldId);
           ui.notifications?.info(`Copied field ID "${fieldId}" to clipboard`);
@@ -53,30 +54,30 @@ export const OrphanedField = ({
         <i className={"fa fa-copy"} />
       </a>
       <b
-        css={{
+        className={css({
           gridColumn: "1",
-          gridRow: index * gridRowsPerField + 2,
-        }}
+        })}
+        style={{ gridRow: index * gridRowsPerField + 2 }}
       >
         Value
       </b>
       <code
-        css={{
+        className={css({
           gridColumn: 2,
-          gridRow: index * gridRowsPerField + 2,
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-        }}
+        })}
+        style={{ gridRow: index * gridRowsPerField + 2 }}
       >
         {fieldValue}
       </code>
       <a
         title="Copy field value to clipboard"
-        css={{
+        className={css({
           gridColumn: 3,
-          gridRow: index * gridRowsPerField + 2,
-        }}
+        })}
+        style={{ gridRow: index * gridRowsPerField + 2 }}
         onClick={async () => {
           await game.clipboard?.copyPlainText(String(fieldValue));
           ui.notifications?.info("Copied value to clipboard");
@@ -85,8 +86,10 @@ export const OrphanedField = ({
         <i className={"fa fa-copy"} />
       </a>
       <Button
-        css={{
+        className={css({
           gridColumn: 4,
+        })}
+        style={{
           gridRow: `${index * gridRowsPerField + 1} / ${index * gridRowsPerField + 3}`,
         }}
         onClick={() => {
@@ -96,10 +99,10 @@ export const OrphanedField = ({
         <Translate>Delete</Translate>
       </Button>
       <hr
-        css={{
+        className={css({
           gridColumn: "1 / -1",
-          gridRow: index * gridRowsPerField + 3,
-        }}
+        })}
+        style={{ gridRow: index * gridRowsPerField + 3 }}
       />
     </Fragment>
   );

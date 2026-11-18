@@ -11,6 +11,7 @@ import { AbilityBadges } from "../abilities/AbilityBadges";
 import { SpecialityList } from "../abilities/SpecialityList";
 import { AsyncCheckbox } from "../inputs/AsyncCheckbox";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
+import { css } from "../../styled-system/css";
 
 type AbilitySlugEditProps = {
   /** The live ability: the row reads it through a snapshot */
@@ -46,9 +47,9 @@ export const AbilitySlugEdit = memo(function AbilitySlugEdit({
       <AbilityNameLink
         ability={ability}
         name={row.name}
-        css={{ lineHeight: "1" }}
+        className={css({ lineHeight: "1" })}
       />
-      <div css={{ gridColumn: "rating", justifySelf: "center" }}>
+      <div className={css({ gridColumn: "rating", justifySelf: "center" })}>
         <AsyncNumberInput
           min={0}
           max={Math.min(row.max, ratingCap ?? Infinity)}
@@ -58,7 +59,7 @@ export const AbilitySlugEdit = memo(function AbilitySlugEdit({
         />
       </div>
       {showOcc && (
-        <div css={{ gridColumn: "isocc", justifySelf: "center" }}>
+        <div className={css({ gridColumn: "isocc", justifySelf: "center" })}>
           <AsyncCheckbox
             checked={row.occupational}
             onChange={setOccupational}
@@ -67,9 +68,12 @@ export const AbilitySlugEdit = memo(function AbilitySlugEdit({
         </div>
       )}
 
-      <AbilityBadges ability={ability} css={{ gridColumn: "1/-1" }} />
+      <AbilityBadges
+        ability={ability}
+        className={css({ gridColumn: "1/-1" })}
+      />
       {row.hasSpecialities && row.specialitiesCount > 0 && (
-        <div css={{ paddingLeft: "2em", gridColumn: "1/-1" }}>
+        <div className={css({ paddingLeft: "2em", gridColumn: "1/-1" })}>
           <SpecialityList ability={ability} />
         </div>
       )}

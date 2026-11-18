@@ -1,11 +1,10 @@
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
-import { useContext, useMemo } from "react";
 import { FaGripLines } from "react-icons/fa6";
 
 import { getTranslated } from "../../functions/getTranslated";
-import { irid } from "../../irid/irid";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { dragHandle } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type DragHandleProps = {
   setActivatorNodeRef?: (node: HTMLDivElement) => void;
@@ -19,40 +18,23 @@ export const DragHandle = ({
   listeners,
   attributes,
 }: DragHandleProps) => {
-  const theme = useContext(ThemeContext);
-
-  const gripColor = useMemo(
-    () =>
-      irid(theme.colors.accent)
-        .blend(theme.colors.bgOpaquePrimary, 0.4)
-        .toString(),
-    [theme.colors.accent, theme.colors.bgOpaquePrimary],
-  );
-
   return (
     <div
       tabIndex={0}
       {...attributes}
       aria-label={getTranslated("Drag to reorder")}
-      css={{
-        height: "100%",
-        width: "3em",
-        cursor: "n-resize",
-        borderRadius: "0.35em",
-        color: gripColor,
-        textAlign: "center",
-        backgroundColor: theme.colors.bgOpaquePrimary,
-        opacity: 0.7,
-        gridColumn: "1",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        ":hover": {
-          opacity: 1,
-          transform: "scale(1.1)",
-          color: theme.colors.accent,
-        },
-      }}
+      className={cx(
+        dragHandle(),
+        css({
+          height: "100%",
+          width: "3em",
+          textAlign: "center",
+          gridColumn: "1",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }),
+      )}
       ref={setActivatorNodeRef}
       {...listeners}
     >

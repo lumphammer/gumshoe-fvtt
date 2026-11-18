@@ -15,9 +15,15 @@ import { TabContainer } from "../TabContainer";
 import { AbilitiesAreaEdit } from "./AbilitiesAreaEdit";
 import { AbilitiesAreaPlay } from "./AbilitiesAreaPlay";
 import { EditModeToggle } from "./EditModeToggle";
-import { NPCSheetHeader, NPCSheetSidebar } from "./NPCSheetPanels";
+import { InitiativeAbilityPicker } from "./InitiativeAbilityPicker";
+import {
+  NPCSheetHeader,
+  NPCSheetRefreshButton,
+  NPCSheetSidebar,
+} from "./NPCSheetPanels";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
 import { WeaponsAreaEdit } from "./Weapons/WeaponsAreaEdit";
+import { css } from "../../styled-system/css";
 
 /** The Notes or GM Notes tab, which reads only its own notes */
 const NPCNotesTab = memo(function NPCNotesTab({
@@ -32,11 +38,11 @@ const NPCNotesTab = memo(function NPCNotesTab({
 
   return (
     <InputGrid
-      css={{
+      className={css({
         ...absoluteCover,
         gridTemplateRows: "1fr",
         padding: "0.5em",
-      }}
+      })}
     >
       <NotesTypeContext.Provider value="npcNote">
         <RichTextEditor
@@ -67,7 +73,7 @@ export const NPCSheetFull = memo(function NPCSheetFull() {
     <CSSReset
       theme={theme}
       mode="large"
-      css={{
+      className={css({
         position: "absolute",
         top: 0,
         right: 0,
@@ -78,19 +84,27 @@ export const NPCSheetFull = memo(function NPCSheetFull() {
         gridTemplateColumns: "max-content 1fr 4em",
         gap: "0.5em",
         gridTemplateAreas: '"sidebar title image" ' + '"sidebar main main" ',
-      }}
+        // the portrait over the sidebar, square, so the window's buttons are
+        // over the logo (ThemeV2.layout)
+        "&[data-inv-layout=full-frame]": {
+          gridTemplateRows: "min-content auto 1fr",
+          gridTemplateColumns: "max-content 1fr",
+          gridTemplateAreas:
+            '"image   title" ' + '"image   main" ' + '"sidebar main" ',
+        },
+      })}
     >
       <NPCSheetHeader />
       <NPCSheetSidebar />
 
       {/* MAIN TABS AREA */}
       <div
-        css={{
+        className={css({
           gridArea: "main",
           position: "relative",
           padding: "0.5em",
           overflow: "auto",
-        }}
+        })}
       >
         <TabContainer
           defaultTab="abilities"
@@ -103,7 +117,9 @@ export const NPCSheetFull = memo(function NPCSheetFull() {
                   <EditModeToggle
                     editMode={abilitiesEditMode}
                     setEditMode={setAbilitiesEditMode}
-                  />
+                  >
+                    <NPCSheetRefreshButton />
+                  </EditModeToggle>
                   {abilitiesEditMode ? (
                     <AbilitiesAreaEdit npcMode />
                   ) : (
@@ -119,20 +135,22 @@ export const NPCSheetFull = memo(function NPCSheetFull() {
                 // out of edit mode, the tab's height, so the ready weapon can
                 // sit at the bottom
                 <div
-                  css={{
-                    height: combatEditMode ? undefined : "100%",
+                  className={css({
                     display: "flex",
                     flexDirection: "column",
-                  }}
+                  })}
+                  style={{ height: combatEditMode ? undefined : "100%" }}
                 >
                   <EditModeToggle
                     editMode={combatEditMode}
                     setEditMode={setCombatEditMode}
-                  />
+                  >
+                    <InitiativeAbilityPicker actor={actor} inline />
+                  </EditModeToggle>
                   {combatEditMode ? (
                     <WeaponsAreaEdit />
                   ) : (
-                    <div css={{ flex: 1, minHeight: 0 }}>
+                    <div className={css({ flex: "[1]", minHeight: 0 })}>
                       <WeaponsArea fillHeight />
                     </div>
                   )}

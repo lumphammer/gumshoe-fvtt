@@ -5,6 +5,7 @@ import { DispatchContext, StateContext } from "../contexts";
 import { SettingsSortableList } from "../SettingsSortableList";
 import { store } from "../store";
 import { equipmentCategory } from "./directions";
+import { css } from "../../../styled-system/css";
 
 export const EquipmentSettings = () => {
   const dispatch = useContext(DispatchContext);
@@ -34,7 +35,7 @@ export const EquipmentSettings = () => {
 
   return (
     <SettingsSortableList
-      css={{ height: "100%" }}
+      className={css({ height: "100%" })}
       rows={ids.map((id) => ({
         name: categories[id].name,
         detail: <code>{id}</code>,

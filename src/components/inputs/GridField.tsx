@@ -1,10 +1,11 @@
-import type { CSSObject } from "@lumphammer/investigator-fvtt-types";
 import { nanoid } from "nanoid";
 import type { DragEventHandler, ReactNode } from "react";
 import { useMemo } from "react";
 
 import { IdContext } from "../IdContext";
 import { Translate } from "../Translate";
+import { css, cx } from "../../styled-system/css";
+import { fieldGrid } from "../../styled-system/recipes";
 
 type GridFieldProps = {
   label?: ReactNode;
@@ -16,7 +17,8 @@ type GridFieldProps = {
   onDragOver?: DragEventHandler<HTMLElement>;
   onDragEnd?: DragEventHandler<HTMLElement>;
   onDrop?: DragEventHandler<HTMLElement>;
-  labelStyle?: CSSObject;
+  /** For the label: the call site's changes to its layout */
+  labelClassName?: string;
 };
 
 export const GridField = ({
@@ -29,23 +31,20 @@ export const GridField = ({
   onDragOver,
   onDragEnd,
   onDrop,
-  labelStyle,
+  labelClassName,
 }: GridFieldProps) => {
   const id = useMemo(() => nanoid(), []);
+  const classes = fieldGrid();
   return (
     <IdContext.Provider value={id}>
       <label
         title={labelTitle}
         htmlFor={noLabel ? undefined : id}
-        css={{
-          gridColumn: "label",
-          paddingTop: "0.3em",
-          paddingRight: "0.5em",
-          alignSelf: "start",
-          textAlign: "end",
-          overflowWrap: "anywhere",
-          ...labelStyle,
-        }}
+        className={cx(
+          classes.label,
+          css({ gridColumn: "label" }),
+          labelClassName,
+        )}
         // drag handlers
         onDragOver={onDragOver}
         onDragLeave={onDragEnd}
@@ -60,11 +59,11 @@ export const GridField = ({
           ))}
       </label>
       <div
-        className={className}
-        css={{
-          gridColumn: "control",
-          alignSelf: "center",
-        }}
+        className={cx(
+          classes.control,
+          css({ gridColumn: "control" }),
+          className,
+        )}
         // drag handlers
         onDragOver={onDragOver}
         onDragLeave={onDragEnd}

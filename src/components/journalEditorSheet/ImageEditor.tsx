@@ -6,6 +6,7 @@ import { AsyncTextArea } from "../inputs/AsyncTextArea";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { ImageArea } from "./ImageArea";
+import { css } from "../../styled-system/css";
 
 interface ImageEditorProps {
   page: any;
@@ -29,20 +30,22 @@ export const ImageEditor = ({ page }: ImageEditorProps) => {
 
   return (
     <div
-      css={{
+      className={css({
         ...absoluteCover,
         display: "grid",
         gridTemplateColumns: "1fr 1fr ",
         gridTemplateRows: "1fr",
-      }}
+      })}
     >
       <ImageArea page={page} />
-      <InputGrid css={{ padding: "0.5em", gridTemplateRows: "1fr 1fr" }}>
+      <InputGrid
+        className={css({ padding: "0.5em", gridTemplateRows: "1fr 1fr" })}
+      >
         <GridFieldStacked label="Caption">
           <AsyncTextArea
             value={caption}
             onChange={handleChange}
-            css={{ flex: 1 }}
+            className={css({ flex: "[1]" })}
           />
         </GridFieldStacked>
       </InputGrid>

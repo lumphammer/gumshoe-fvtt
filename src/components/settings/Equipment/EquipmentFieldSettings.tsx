@@ -20,6 +20,7 @@ import { CheckboxFieldSettings } from "./CheckboxFieldSettings";
 import { equipmentCategory, equipmentField } from "./directions";
 import { NumberFieldSettings } from "./NumberFieldSettings";
 import { StringFieldSettings } from "./StringFieldSettings";
+import { css } from "../../../styled-system/css";
 
 export const EquipmentFieldSettings = () => {
   const categoryIndex = useParams(equipmentCategory);
@@ -176,7 +177,7 @@ export const EquipmentFieldSettings = () => {
         />
       </SettingsGridField>
       <SettingsGridField label="Delete">
-        <Button css={{ width: "auto" }} onClick={handleClickDelete}>
+        <Button className={css({ width: "auto" })} onClick={handleClickDelete}>
           <i className="fas fa-trash" /> <Translate>Delete</Translate>
         </Button>
       </SettingsGridField>

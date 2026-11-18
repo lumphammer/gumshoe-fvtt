@@ -6,6 +6,7 @@ import { Button } from "../inputs/Button";
 import { useListShowHideTransition } from "../transitions/useListShowHideTransition";
 import { Translate } from "../Translate";
 import { getListTransitionStyles } from "./getListTransitionStyles";
+import { css } from "../../styled-system/css";
 
 const transitionTime = 400;
 
@@ -25,7 +26,7 @@ export function AbilityListEditor<T extends { readonly id: string }>({
     transitionTime,
   );
   return (
-    <div css={{ marginBottom: "1em" }}>
+    <div className={css({ marginBottom: "1em" })}>
       {transitioned.map(({ item, isShowing, isEntering, key }, index) => (
         <div
           key={key}
@@ -34,7 +35,7 @@ export function AbilityListEditor<T extends { readonly id: string }>({
           {children(item, index)}
         </div>
       ))}
-      <Button onClick={onAdd} css={{ margin: 0 }}>
+      <Button onClick={onAdd} className={css({ margin: 0 })}>
         <i className="fas fa-plus" /> <Translate>Add item</Translate>
       </Button>
     </div>
@@ -57,15 +58,16 @@ export function NumberTextEditorRow({
   onDelete: (index: number) => void;
 }) {
   return (
-    <div css={{ marginBottom: "0.5em" }}>
-      <div css={{ display: "flex", flexDirection: "row" }}>
+    <div className={css({ marginBottom: "0.5em" })}>
+      <div className={css({ display: "flex", flexDirection: "row" })}>
         <AsyncNumberInput
-          css={{ flex: 1 }}
+          className={css({ flex: "[1]" })}
           value={number}
           onChange={(value) => onChangeNumber(index, value)}
         />
         <Button
-          css={{ flexBasis: "min-content" }}
+          kind="ghost"
+          className={css({ flexBasis: "min-content" })}
           onClick={() => onDelete(index)}
         >
           <i className="fas fa-trash" />

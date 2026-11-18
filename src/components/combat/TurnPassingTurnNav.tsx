@@ -1,23 +1,13 @@
-import { keyframes } from "@emotion/react";
 import { memo, useCallback } from "react";
 import { FaChevronDown, FaCog, FaRecycle, FaShoePrints } from "react-icons/fa";
 import { LuSwords } from "react-icons/lu";
 
 import { assertGame } from "../../functions/isGame";
 import { CombatTrackerConfig } from "../../fvtt-exports";
+import { css, cx } from "../../styled-system/css";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { format, localize } from "./functions";
 import type { TrackerContextValue } from "./TrackerContext";
-
-const throbbingBg = keyframes({
-  "0%": {
-    backgroundColor: "transparent",
-  },
-  "100%": {
-    backgroundColor:
-      "oklch(from var(--button-hover-background-color) l c h / 0.5)",
-  },
-});
 
 type TurnPassingTurnNavProps = {
   combat: TrackerContextValue<"turnPassing">["combat"];
@@ -67,14 +57,17 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav({
               />
 
               <strong
-                css={{
-                  flex: 1,
+                className={css({
+                  flex: "1",
                   display: "flex",
                   justifyContent: "center",
-                }}
+                })}
               >
                 <NativeDropdownMenu
-                  css={{ flex: 1, minHeight: "var(--button-size)" }}
+                  className={css({
+                    flex: "1",
+                    minHeight: "var(--button-size)",
+                  })}
                   label={
                     <>
                       {format("COMBAT.Round", {
@@ -119,25 +112,31 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav({
               </strong>
               <button
                 type="button"
-                className="inline-control combat-control"
                 onClick={handleNextRound}
                 data-tooltip=""
                 aria-label={localize("COMBAT.RoundNext")}
-                css={{
-                  ":not(:hover)": {
-                    animation: allTurnsDone
-                      ? `${throbbingBg} 1000ms infinite`
-                      : "none",
-                    animationDirection: "alternate",
-                  },
-                  animationTimingFunction: "ease-in-out",
-                  color: allTurnsDone
-                    ? "var(--color-text-primary)"
-                    : "var(--color-text-secondary)",
-                  ":hover": {
-                    color: "var(--button-hover-text-color)",
-                  },
-                }}
+                className={cx(
+                  "inline-control combat-control",
+                  css(
+                    {
+                      animationTimingFunction: "ease-in-out",
+                      color: "var(--color-text-secondary)",
+                      "&:hover": { color: "var(--button-hover-text-color)" },
+                    },
+                    allTurnsDone
+                      ? {
+                          color: "var(--color-text-primary)",
+                          // invThrob is in panda.config.ts
+                          "&:not(:hover)": {
+                            animationName: "invThrob",
+                            animationDuration: "1000ms",
+                            animationIterationCount: "infinite",
+                            animationDirection: "alternate",
+                          },
+                        }
+                      : {},
+                  ),
+                )}
               >
                 {localize("COMBAT.RoundNext")}
                 <i className="fa-solid fa-chevrons-right" inert />
@@ -146,12 +145,15 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav({
           ) : (
             <button
               type="button"
-              className="combat-control combat-control-lg"
               onClick={handleStartCombat}
               disabled={turnCount === 0}
-              css={{
-                cursor: turnCount === 0 ? "not-allowed" : "pointer",
-              }}
+              className={cx(
+                "combat-control combat-control-lg",
+                css({
+                  cursor: "pointer",
+                  "&:disabled": { cursor: "not-allowed" },
+                }),
+              )}
             >
               <LuSwords />
               <span>{localize("COMBAT.Begin")}</span>
@@ -161,12 +163,12 @@ export const TurnPassingTurnNav = memo(function TurnPassingTurnNav({
       ) : (
         game.user && (
           <strong
-            css={{
-              flex: 1,
+            className={css({
+              flex: "1",
               display: "flex",
               justifyContent: "center",
               color: "var(--color-text-primary)",
-            }}
+            })}
           >
             {round
               ? format("COMBAT.Round", {

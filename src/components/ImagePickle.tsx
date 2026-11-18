@@ -1,12 +1,13 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { getTokenizer } from "../functions/getTokenizer";
 import { assertGame } from "../functions/isGame";
 import { FilePicker, ImagePopout } from "../fvtt-exports";
 import { useIsDocumentOwner } from "../hooks/useIsDocumentOwner";
 import { useDocumentSheetContext } from "../hooks/useSheetContexts";
-import { ThemeContext } from "../themes/ThemeContext";
 import { ImagePickerLink } from "./ImagePickerLink";
+import { surface } from "../styled-system/recipes";
+import { css, cx } from "../styled-system/css";
 
 const cover = {
   position: "absolute",
@@ -33,7 +34,6 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
     throw new Error("ImagePickle must be used within an Actor or Item");
   }
   const [showOverlay, setShowOverlay] = useState(false);
-  const theme = useContext(ThemeContext);
   assertGame(game);
   const isOwner = useIsDocumentOwner();
 
@@ -102,44 +102,50 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
 
   return (
     <div
-      className={className}
+      className={cx(
+        className,
+        css({
+          borderRadius: "[0.2em]",
+          boxShadow: "[0em 0em 0.5em 0.1em rgba(0,0,0,0.5)]",
+          position: "relative",
+        }),
+      )}
       data-testid="image-pickle"
-      css={{
-        borderRadius: "0.2em",
-        boxShadow: "0em 0em 0.5em 0.1em rgba(0,0,0,0.5)",
-        position: "relative",
-      }}
       onClick={(e) => onClickImage(e)}
     >
       <div
-        css={{
+        className={css({
           ...cover,
           overflow: "hidden",
-        }}
+        })}
       >
         <div
-          css={{
-            ...cover,
-            backgroundImage: `url("${img}")`,
-            backgroundSize: "cover",
-            backgroundPosition: "center top",
-            filter: showOverlay ? "blur(0.7em)" : undefined,
-            transition: `filter ${transitionTime} ease-in`,
-          }}
+          className={css(
+            {
+              ...cover,
+              backgroundSize: "cover",
+              backgroundPosition: "center top",
+              transition: `[filter ${transitionTime} ease-in]`,
+            },
+            showOverlay ? { filter: "[blur(0.7em)]" } : {},
+          )}
+          style={{ backgroundImage: `url("${img}")` }}
         />
       </div>
 
       <div
-        css={{
-          ...cover,
-          opacity: showOverlay ? 1 : 0,
-          transition: `opacity ${transitionTime} ease-in`,
-          background: theme.colors.backgroundSecondary,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-around",
-          alignItems: "center",
-        }}
+        className={cx(
+          surface({ depth: "nested" }),
+          css({
+            ...cover,
+            opacity: showOverlay ? 1 : 0,
+            transition: `[opacity ${transitionTime} ease-in]`,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-around",
+            alignItems: "center",
+          }),
+        )}
       >
         {showOverlay && (
           <>

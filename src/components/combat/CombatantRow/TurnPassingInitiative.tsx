@@ -1,4 +1,3 @@
-import { keyframes } from "@emotion/react";
 import { memo, useCallback } from "react";
 import { FaEdit, FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { HiDocumentText } from "react-icons/hi";
@@ -6,6 +5,7 @@ import { HiDocumentText } from "react-icons/hi";
 import { getTranslated } from "../../../functions/getTranslated";
 import { assertGame } from "../../../functions/isGame";
 import { requestTurnPass } from "../../../functions/utilities";
+import { css } from "../../../styled-system/css";
 import type { TurnPassingCombatant } from "../../../module/combat/turnPassingCombatant";
 import { NativeMenuItem } from "../../inputs/NativeMenu";
 import { NativeDualFunctionMenu } from "../../inputs/NativeMenu/NativeDualFunctionMenu";
@@ -14,18 +14,10 @@ import { useTurnPassingCombatantContext } from "./CombatantContext";
 import { useCombatantTurn, usePassingTurns } from "./CombatantTurnContext";
 import { useInititative } from "./useInititative";
 
+// (invScrollBg, in panda.config.ts, scrolls by this width too)
 const playButtonGradientWidth = "3em";
 const playButtonColor1 = "oklch(0.2 0.3 130)";
 const playButtonColor2 = "oklch(0.8 0.3 130)";
-
-const scrollBg = keyframes({
-  "0%": {
-    backgroundPositionX: "0em",
-  },
-  "100%": {
-    backgroundPositionX: playButtonGradientWidth,
-  },
-});
 
 /**
  * The GM's menu for a combatant (also its context menu). Memoised, and given
@@ -54,7 +46,9 @@ const TurnPassingMenu = memo(function TurnPassingMenu({
   }, [combatant]);
 
   return (
-    <NativeDualFunctionMenu css={{ flex: 0, padding: "0 0.3em" }}>
+    <NativeDualFunctionMenu
+      className={css({ flex: "[0]", padding: "0 0.3em" })}
+    >
       <NativeMenuLabel>{name}</NativeMenuLabel>
       <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>
         {localize("COMBATANT.ACTIONS.Update")}
@@ -101,40 +95,40 @@ export const TurnPassingInitiative = memo(function TurnPassingInitiative() {
 
   return (
     <>
-      <div css={{ flex: 0, padding: "0.3em 01em 0 0" }}>
+      <div className={css({ flex: "[0]", padding: "0.3em 01em 0 0" })}>
         {passingTurns?.remaining}/{passingTurns?.total}
       </div>
 
-      <div css={{ flex: 0 }}>
+      <div className={css({ flex: "[0]" })}>
         <button
-          className="inline-control"
-          css={{
+          className={`inline-control ${css({
             display: "block",
             fontSize: "1.4em",
             margin: 0,
             padding: "0 0.2em",
             color: "var(--color-text-secondary)",
-            ":hover": {
+            "&:hover": {
               color: "var(--button-hover-text-color)",
             },
-          }}
+          })}`}
           title={getTranslated("Turn")}
           // disabled={combat.round === 0}
           onClick={onTakeTurn}
         >
           {isActive && (
             <i
-              className="fas fa-play"
-              css={{
+              className={`fas fa-play ${css({
                 color: "transparent",
                 backgroundImage: `repeating-linear-gradient(to right, ${playButtonColor1}, ${playButtonColor2} 50%, ${playButtonColor1} 100%)`,
                 backgroundSize: playButtonGradientWidth,
                 backgroundPositionX: 0,
                 backgroundPositionY: 0,
                 backgroundClip: "text",
-                animation: `${scrollBg} 2000ms infinite`,
+                animationName: "invScrollBg",
+                animationDuration: "2000ms",
+                animationIterationCount: "infinite",
                 animationTimingFunction: "linear",
-              }}
+              })}`}
             />
           )}
           {!isActive && !depleted && <i className="fas fa-pause" />}

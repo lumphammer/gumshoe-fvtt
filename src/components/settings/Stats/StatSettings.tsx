@@ -15,6 +15,7 @@ import { SettingsIdField } from "../SettingsIdField";
 import { store } from "../store";
 import type { PcOrNpc } from "../types";
 import { stat as statDirection } from "./directions";
+import { css } from "../../../styled-system/css";
 
 export const StatSettings = ({ which }: { which: PcOrNpc }) => {
   const index = useParams(statDirection);
@@ -150,7 +151,7 @@ export const StatSettings = ({ which }: { which: PcOrNpc }) => {
         />
       </SettingsGridField>
       <SettingsGridField label="Delete">
-        <Button css={{ width: "auto" }} onClick={handleClickDelete}>
+        <Button className={css({ width: "auto" })} onClick={handleClickDelete}>
           <i className="fas fa-trash" /> <Translate>Delete</Translate>
         </Button>
       </SettingsGridField>

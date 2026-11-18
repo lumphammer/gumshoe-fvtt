@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext } from "react";
+import React, { memo, useCallback } from "react";
 
 import { getTranslated } from "../../functions/getTranslated";
 import { assertGame } from "../../functions/isGame";
@@ -9,7 +9,6 @@ import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
 import { useRuntimeRegistries } from "../../hooks/useRuntimeRegistries";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -17,6 +16,8 @@ import { InputGrid } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
+import { surface } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 const defaultThemeIdentifier = "PQkMK35MWjRI2";
 /** The PC's own settings, read through a snapshot */
@@ -47,7 +48,6 @@ export const SettingArea = memo(function SettingArea() {
     },
     [setSheetTheme],
   );
-  const theme = useContext(ThemeContext);
   const isDevMode = getDevMode();
   const defaultThemeDisplayName = themes[s.defaultThemeName]?.displayName;
   return (
@@ -108,13 +108,15 @@ export const SettingArea = memo(function SettingArea() {
       </InputGrid>
 
       <p
-        css={{
-          textTransform: "initial",
-          border: "1px dashed currentColor",
-          padding: "1em",
-          margin: "2em 1em 1em 1em",
-          backgroundColor: theme.colors.backgroundSecondary,
-        }}
+        className={cx(
+          surface({ depth: "nested" }),
+          css({
+            textTransform: "initial",
+            border: "1px dashed currentColor",
+            padding: "1em",
+            margin: "2em 1em 1em 1em",
+          }),
+        )}
       >
         <a target="_new" href="https://github.com/n3dst4/investigator-fvtt">
           GUMSHOE for FoundryVTT (aka INVESTIGATOR)

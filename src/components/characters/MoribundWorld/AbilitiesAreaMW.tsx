@@ -8,6 +8,7 @@ import { useActorSheetContext } from "../../../hooks/useSheetContexts";
 import { getCategorizedAbilitiesIn } from "../../../module/actors/abilitiesDerived";
 import { assertPCActor } from "../../../module/actors/pc";
 import { AbilitiesColumnMW } from "../AbilitiesColumnMW";
+import { css } from "../../../styled-system/css";
 
 /**
  * Moribund World's abilities, to test. Reads the actor through a snapshot,
@@ -37,12 +38,12 @@ export const AbilitiesAreaMW = memo(function AbilitiesAreaMW() {
 
   return (
     <div
-      css={{
+      className={css({
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
         columnGap: "1em",
         rowGap: "1em",
-      }}
+      })}
     >
       {Object.keys(generalAbilities).map((cat) => {
         const abilities = getAbilities(generalAbilities[cat]);
@@ -53,7 +54,7 @@ export const AbilitiesAreaMW = memo(function AbilitiesAreaMW() {
           return (
             <div
               key={cat}
-              css={{
+              className={css({
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gridAutoRows: "min-content",
@@ -61,9 +62,9 @@ export const AbilitiesAreaMW = memo(function AbilitiesAreaMW() {
                 rowGap: "0.4em",
                 alignItems: "center",
                 gridColumn: "1/-1",
-              }}
+              })}
             >
-              <h2 css={{ gridColumn: "1 / -1" }}>{cat}</h2>
+              <h2 className={css({ gridColumn: "1 / -1" })}>{cat}</h2>
               <AbilitiesColumnMW abilities={part1} />
               <AbilitiesColumnMW abilities={part2} />
             </div>
@@ -71,7 +72,7 @@ export const AbilitiesAreaMW = memo(function AbilitiesAreaMW() {
         } else {
           return (
             <div key={cat}>
-              <h2 css={{ gridColumn: "1 / -1" }}>{cat}</h2>
+              <h2 className={css({ gridColumn: "1 / -1" })}>{cat}</h2>
               <AbilitiesColumnMW abilities={abilities} />
             </div>
           );

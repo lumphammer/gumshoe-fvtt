@@ -1,7 +1,7 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 
-import { ThemeContext } from "../../../themes/ThemeContext";
 import { Button } from "../../inputs/Button";
+import { css } from "../../../styled-system/css";
 
 type ToolbarButtonProps = {
   text?: React.ReactNode;
@@ -16,8 +16,6 @@ export const ToolbarButton = ({
   icon: Icon,
   disabled = false,
 }: ToolbarButtonProps) => {
-  const theme = useContext(ThemeContext);
-
   // Use props in your component
   const handleClick = useCallback(() => {
     void onClick();
@@ -25,8 +23,9 @@ export const ToolbarButton = ({
 
   return (
     <Button
+      kind="toolbar"
       disabled={disabled}
-      css={{
+      className={css({
         padding: "0.3em",
         lineHeight: "1em",
         display: "flex",
@@ -34,21 +33,20 @@ export const ToolbarButton = ({
         justifyContent: "flex-start",
         flexBasis: "max-content",
         minWidth: "4em",
-        color: theme.colors.text,
-        ":hover": {
+        "&:hover": {
           transform: disabled ? undefined : "scale(1.1)",
         },
-        transition: "transform 0.1s ease",
-      }}
+        transition: "[transform 0.1s ease]",
+      })}
       onClick={handleClick}
     >
       {Icon && (
-        <div css={{ fontSize: "2em" }}>
+        <div className={css({ fontSize: "2em" })}>
           <Icon />
         </div>
       )}
 
-      <div css={{}}>{text}</div>
+      <div className={css({})}>{text}</div>
     </Button>
   );
 };

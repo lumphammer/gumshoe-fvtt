@@ -17,7 +17,7 @@ import {
 
 const runtime: RuntimeConfig = {
   themes: {
-    ...baseThemes,
+    ...Object.fromEntries(Object.keys(baseThemes).map((id) => [id, tealTheme])),
     "worlds/x/themes/mine.json": tealTheme,
     fromModule: tealTheme,
     fromConsole: tealTheme,

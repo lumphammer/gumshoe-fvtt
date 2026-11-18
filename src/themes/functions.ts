@@ -119,9 +119,6 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
     tabSpacerStyle: seed.tabSpacerStyle ?? {
       width: "0.5em",
     },
-    panelStylePrimary: seed.panelStylePrimary || {
-      backgroundColor: seed.colors.backgroundPrimary,
-    },
     tabContentStyle,
     tabWrappedStyle: seed.tabWrappedStyle ?? {
       borderRadius: "0.2em",
@@ -137,10 +134,6 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
       },
     },
     tabContentWrappedStyle: seed.tabContentWrappedStyle ?? {},
-    panelStyleSecondary: seed.panelStyleSecondary ||
-      seed.panelStylePrimary || {
-        backgroundColor: seed.colors.backgroundSecondary,
-      },
     colors: {
       ...seed.colors,
       bgOpaquePrimary,

@@ -18,6 +18,7 @@ import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Select } from "../inputs/Select";
 import { TextInput } from "../inputs/TextInput";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 /**
  * Reads the item through its snapshot (the item itself only to write
@@ -67,7 +68,7 @@ export const MwItemSheet = memo(function MwItemSheet() {
 
   return (
     <div
-      css={{
+      className={css({
         ...absoluteCover,
         padding: "1em",
         display: "grid",
@@ -77,16 +78,16 @@ export const MwItemSheet = memo(function MwItemSheet() {
           '"image  slug      trash" ' +
           '"image  headline  headline" ' +
           '"body   body      body" ',
-      }}
+      })}
     >
       {/* Slug */}
-      <div css={{ gridArea: "slug" }}>
+      <div className={css({ gridArea: "slug" })}>
         <Translate>MWItem</Translate>
       </div>
 
       {/* Headline */}
       <h1
-        css={{ gridArea: "headline" }}
+        className={css({ gridArea: "headline" })}
         contentEditable
         onInput={onInput}
         onKeyDown={onKeyDown}
@@ -99,20 +100,20 @@ export const MwItemSheet = memo(function MwItemSheet() {
       {/* Image */}
       <ImagePickle
         img={snapshot.img}
-        css={{
+        className={css({
           gridArea: "image",
           transform: "rotateZ(-2deg)",
           width: "4em",
           height: "4em",
           margin: "0 1em 0.5em 0",
-        }}
+        })}
       />
 
       {/* Trash */}
       <a
-        css={{
+        className={css({
           gridArea: "trash",
-        }}
+        })}
         onClick={() => {
           void onClickDelete();
         }}
@@ -122,11 +123,11 @@ export const MwItemSheet = memo(function MwItemSheet() {
 
       {/* Body */}
       <InputGrid
-        css={{
+        className={css({
           gridArea: "body",
           gridTemplateRows: "auto auto 1fr",
           gridAutoRows: "auto",
-        }}
+        })}
       >
         <GridField label="Item Name">
           <TextInput
@@ -140,9 +141,9 @@ export const MwItemSheet = memo(function MwItemSheet() {
           <Select
             value={system.mwType}
             onChange={onChangeType}
-            css={{
+            className={css({
               width: "100%",
-            }}
+            })}
           >
             <option value="tweak">Tweak</option>
             <option value="spell">Spell</option>
@@ -156,34 +157,34 @@ export const MwItemSheet = memo(function MwItemSheet() {
           </Select>
         </GridField>
         <div
-          css={{
-            flex: 1,
+          className={css({
+            flex: "[1]",
             position: "relative",
             gridColumn: "1/-1",
-          }}
+          })}
         >
           <RichTextEditor
             name="notes"
             html={system.notes}
             onSave={methods.setNotes}
-            css={{
+            className={css({
               height: "100%",
               "&&": {
                 resize: "none",
               },
-            }}
+            })}
           />
         </div>
         {/* <GridFieldStacked label="Notes">
           <AsyncTextArea
             value={item.getNotes().source}
             onChange={item.setNotesSource}
-            css={{
+            className={css({
               height: "100%",
               "&&": {
                 resize: "none",
               },
-            }}
+            })}
           />
         </GridFieldStacked> */}
         {system.mwType === "enchantedItem" && (
@@ -198,19 +199,19 @@ export const MwItemSheet = memo(function MwItemSheet() {
         {system.mwType === "missileWeapon" && (
           <GridFieldStacked label="Ranges">
             <div
-              css={{
+              className={css({
                 display: "flex",
                 flexDirection: "row",
-              }}
+              })}
             >
-              <GridFieldStacked label="Short" css={{ flex: 1 }}>
+              <GridFieldStacked label="Short" className={css({ flex: "[1]" })}>
                 <AsyncNumberInput
                   onChange={setRange(0)}
                   value={system.ranges[0]}
                   min={0}
                 />
               </GridFieldStacked>
-              <GridFieldStacked label="Medium" css={{ flex: 1 }}>
+              <GridFieldStacked label="Medium" className={css({ flex: "[1]" })}>
                 <AsyncNumberInput
                   onChange={setRange(1)}
                   value={system.ranges[1]}
@@ -219,19 +220,22 @@ export const MwItemSheet = memo(function MwItemSheet() {
               </GridFieldStacked>
             </div>
             <div
-              css={{
+              className={css({
                 display: "flex",
                 flexDirection: "row",
-              }}
+              })}
             >
-              <GridFieldStacked label="Long" css={{ flex: 1 }}>
+              <GridFieldStacked label="Long" className={css({ flex: "[1]" })}>
                 <AsyncNumberInput
                   onChange={setRange(2)}
                   value={system.ranges[2]}
                   min={0}
                 />
               </GridFieldStacked>
-              <GridFieldStacked label="Extreme" css={{ flex: 1 }}>
+              <GridFieldStacked
+                label="Extreme"
+                className={css({ flex: "[1]" })}
+              >
                 <AsyncNumberInput
                   onChange={setRange(3)}
                   value={system.ranges[3]}

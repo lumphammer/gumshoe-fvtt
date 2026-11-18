@@ -4,6 +4,7 @@ import { useSettings } from "../../hooks/useSettings";
 import { CategorizedCardArrayCategory } from "./CategorizedCardArrayCategory";
 import type { CardLayoutView } from "./functions";
 import { categorizeCards } from "./functions";
+import { css } from "../../styled-system/css";
 
 interface CategorizedCardArrayProps {
   /** the cards, in order, from the actor's snapshot */
@@ -18,7 +19,7 @@ export const CategorizedCardArray = ({ cards }: CategorizedCardArrayProps) => {
     <>
       {categories.map((cat, i) => (
         <Fragment key={cat.id}>
-          {i !== 0 && <hr css={{ margin: "2em 0em 0em" }} />}
+          {i !== 0 && <hr className={css({ margin: "2em 0em 0em" })} />}
           <CategorizedCardArrayCategory
             category={cat}
             cards={categoriesMap[cat.id]}
@@ -27,7 +28,7 @@ export const CategorizedCardArray = ({ cards }: CategorizedCardArrayProps) => {
       ))}
       {uncategorized.length > 0 && (
         <>
-          <hr css={{ margin: "2em 0em 0em" }} />
+          <hr className={css({ margin: "2em 0em 0em" })} />
           <CategorizedCardArrayCategory category={null} cards={uncategorized} />
         </>
       )}

@@ -1,4 +1,4 @@
-import { tealTheme } from "../themes/tealTheme";
+import { runtimeConfig } from "../runtime";
 import { useRuntimeRegistries } from "./useRuntimeRegistries";
 import { useSettings } from "./useSettings";
 
@@ -6,5 +6,9 @@ import { useSettings } from "./useSettings";
 export const useTheme = (name: string | null = null) => {
   const defaultName = useSettings((s) => s.defaultThemeName);
   const { themes } = useRuntimeRegistries();
-  return themes[name ?? defaultName] ?? tealTheme;
+  return (
+    themes[name ?? defaultName] ??
+    themes["tealTheme"] ??
+    runtimeConfig.themes["tealTheme"]
+  );
 };

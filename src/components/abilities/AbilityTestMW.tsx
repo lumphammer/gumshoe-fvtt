@@ -1,16 +1,17 @@
-import React, { memo, useCallback, useContext, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 
 import { mwNegateCost, mwWallopCost } from "../../constants";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { AbilityItem } from "../../module/items/exports";
 import type { GeneralAbilityItem } from "../../module/items/generalAbility";
-import { ThemeContext } from "../../themes/ThemeContext";
 import type { MWDifficulty } from "../../types";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { Select } from "../inputs/Select";
 import { Translate } from "../Translate";
+import { Panel } from "../Panel";
+import { css } from "../../styled-system/css";
 
 interface AbilityTestMWProps {
   /** Only to write through (a general ability, in Moribund World) */
@@ -25,7 +26,6 @@ export const AbilityTestMW = memo(function AbilityTestMW({
   const { mwTestAbility, mWWallop, mWNegateIllustrious } = useSystemMethods(
     item as GeneralAbilityItem,
   );
-  const theme = useContext(ThemeContext);
   const [difficulty, setDifficulty] = useState<MWDifficulty>(0);
   const [boonLevy, setBoonLevy] = useState(0);
 
@@ -54,21 +54,18 @@ export const AbilityTestMW = memo(function AbilityTestMW({
   };
 
   return (
-    <div
-      css={{
-        border: `1px solid ${theme.colors.controlBorder}`,
-        padding: "0.5em",
+    <Panel
+      className={css({
         marginBottom: "1em",
-        background: theme.colors.backgroundSecondary,
         display: "flex",
         flexDirection: "column",
         gap: "0.5em",
-      }}
+      })}
     >
       <InputGrid>
         <GridField label="Difficulty">
           <Select
-            css={{ display: "block", width: "100%" }}
+            className={css({ display: "block", width: "100%" })}
             value={difficulty}
             onChange={onChangeDifficulty}
           >
@@ -79,9 +76,9 @@ export const AbilityTestMW = memo(function AbilityTestMW({
           </Select>
         </GridField>
         <GridField label="Boon/levy">
-          <div css={{ position: "relative" }}>
+          <div className={css({ position: "relative" })}>
             <Select
-              css={{ display: "block", width: "100%" }}
+              className={css({ display: "block", width: "100%" })}
               value={boonLevy}
               onChange={onChangeBoonLevy}
             >
@@ -95,29 +92,29 @@ export const AbilityTestMW = memo(function AbilityTestMW({
         </GridField>
       </InputGrid>
       <div
-        css={{
+        className={css({
           display: "flex",
           flexDirection: "row",
-        }}
+        })}
       >
         <Button
           disabled={pool < mwNegateCost}
-          css={{ flex: "1" }}
+          className={css({ flex: "1" })}
           onClick={onNegateIllustrious}
         >
           <Translate>Negate</Translate>
         </Button>
         <Button
           disabled={pool < mwWallopCost}
-          css={{ flex: "1" }}
+          className={css({ flex: "1" })}
           onClick={onWallop}
         >
           <Translate>Wallop</Translate>
         </Button>
-        <Button css={{ flex: "2" }} onClick={onTest}>
+        <Button kind="cta" className={css({ flex: "[2]" })} onClick={onTest}>
           <Translate>Test</Translate>
         </Button>
       </div>
-    </div>
+    </Panel>
   );
 });

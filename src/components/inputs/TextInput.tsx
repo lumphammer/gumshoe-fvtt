@@ -1,14 +1,15 @@
-import { cx } from "@emotion/css";
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, CSSProperties } from "react";
 import { useCallback, useContext } from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { cx } from "../../styled-system/css";
+import { input } from "../../styled-system/recipes";
 import { IdContext } from "../IdContext";
 import type { ValidationResult } from "./types";
 
 type TextInputProps = {
   className?: string;
+  style?: CSSProperties;
   value?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
@@ -21,6 +22,7 @@ type TextInputProps = {
 
 export const TextInput = ({
   className,
+  style,
   value,
   defaultValue,
   onChange,
@@ -40,28 +42,16 @@ export const TextInput = ({
     [onChange],
   );
 
-  const theme = useContext(ThemeContext);
-
-  const errorColor = theme.colors.bgTransDangerPrimary;
+  const invalid = validation?.state === "failed";
 
   return (
     <input
       role="text-input"
       size={3}
       id={id}
-      css={{
-        flex: 1,
-        width: "100%",
-        "::placeholder": {
-          opacity: 0.5,
-          fontStyle: "italic",
-        },
-      }}
-      style={{
-        backgroundColor:
-          validation?.state === "failed" ? errorColor : undefined,
-      }}
-      className={cx(className, validation?.state === "failed" && "error")}
+      aria-invalid={invalid || undefined}
+      className={cx(input(), "inv-default-text-input", className)}
+      style={style}
       data-lpignore="true"
       value={value}
       defaultValue={defaultValue}

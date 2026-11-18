@@ -24,6 +24,7 @@ import { BondBadges } from "./BondBadges";
 import { BondActor } from "./BondActor";
 import { BurnBondButton } from "./BurnBondButton";
 import { rebuild } from "./directions";
+import { css } from "../../styled-system/css";
 
 /** What a Bond's sheet needs from the PC it's on */
 export type BondOwner = {
@@ -65,13 +66,13 @@ export const BondMain = ({ item, name, system, owner }: BondMainProps) => {
 
   return (
     <InputGrid
-      css={{
+      className={css({
         ...absoluteCover,
         // name, points, DELTA GREEN toggle, actor, (Burn,) (badges,)
         // (Rebuild,)
         // then notes fill the rest
-        gridTemplateRows: `repeat(${autoRows}, auto) 1fr`,
-      }}
+      })}
+      style={{ gridTemplateRows: `repeat(${autoRows}, auto) 1fr` }}
     >
       <GridField label="Person Name">
         <AsyncTextInput value={name} onChange={item.setName} />
@@ -121,10 +122,10 @@ export const BondMain = ({ item, name, system, owner }: BondMainProps) => {
         </GridFieldStacked>
       )}
       <div
-        css={{
+        className={css({
           position: "relative",
           gridColumn: "1/-1",
-        }}
+        })}
       >
         <RichTextEditor
           html={system.notes}

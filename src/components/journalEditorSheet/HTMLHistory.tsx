@@ -11,6 +11,7 @@ import { getStoredDocumentMemory } from "./getStoredDocumentMemory";
 import { ToolbarButton, useToolbarContent } from "./magicToolbar";
 import { notifyJournalSaveError } from "./notifyJournalSaveError";
 import { savePage } from "./savePage";
+import { css } from "../../styled-system/css";
 
 interface HTMLHistoryProps {
   page: any;
@@ -95,7 +96,7 @@ export const HTMLHistory = ({
 
   return (
     <div
-      css={{
+      className={css({
         position: "absolute",
         top: 0,
         bottom: 0,
@@ -103,21 +104,21 @@ export const HTMLHistory = ({
         right: 0,
         display: "flex",
         flexDirection: "row",
-      }}
+      })}
     >
       <div
-        css={{
+        className={css({
           width: "15em",
           overflow: "auto",
-        }}
+        })}
       >
         <h3>Revisions</h3>
         {revisions.map((edit, i) => (
           <div
             key={edit.serial}
-            css={{
+            className={css({
               textDecoration: activeDiffIndex === i ? "underline" : "none",
-            }}
+            })}
           >
             <a onClick={() => setActiveDiffIndex(i)}>
               {edit.serial}: {new Date(edit.timestamp * 1000).toLocaleString()}
@@ -126,9 +127,9 @@ export const HTMLHistory = ({
         ))}
       </div>
       <div
-        css={{
-          flex: 1,
-        }}
+        className={css({
+          flex: "[1]",
+        })}
       >
         <DiffEditor
           key={page.id}

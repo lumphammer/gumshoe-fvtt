@@ -1,5 +1,5 @@
 import type React from "react";
-import { memo, useCallback, useContext, useState } from "react";
+import { memo, useCallback, useState } from "react";
 
 import { liveItems } from "../../../functions/liveItems";
 import { isEquipmentItem } from "../../../module/items/equipment";
@@ -10,10 +10,11 @@ import type {
   EquipmentCategoriesSnapshot,
   EquipmentItem,
 } from "../../../module/items/equipment";
-import { ThemeContext } from "../../../themes/ThemeContext";
 import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { EquipmentItemRow } from "./EquipmentItemRow";
+import { tableHeader } from "../../../styled-system/recipes";
+import { css, cx } from "../../../styled-system/css";
 
 interface EquipmentCategoryProps {
   categoryId: string;
@@ -36,7 +37,6 @@ export const EquipmentCategory = memo(function EquipmentCategory({
   setDraggedItem,
 }: EquipmentCategoryProps) {
   const dragStart = useDragStart();
-  const theme = useContext(ThemeContext);
   const { createEquipment } = useSystemMethods(actor);
   // the live items, only to pass to the rows
   const items = liveItems(actor, ids, isEquipmentItem);
@@ -81,49 +81,45 @@ export const EquipmentCategory = memo(function EquipmentCategory({
         setDraggedItem(null);
         void draggedItem.system.setCategoryId(categoryId);
       }}
-      css={{
-        borderRadius: "0.3em",
-        outline: canDrop
-          ? `2px dashed ${isOver ? theme.colors.accent : theme.colors.controlBorder}`
-          : "2px dashed transparent",
-        outlineOffset: "0.2em",
-        background: isOver
-          ? `color-mix(in srgb, ${theme.colors.glow} 25%, transparent)`
-          : undefined,
+      data-drop-state={canDrop ? (isOver ? "over" : "ready") : undefined}
+      className={css({
+        borderRadius: "[0.3em]",
         display: "grid",
         // the name, the fields, then each row's delete button (`repeat()`
         // can't take 0, so no fields means none of it)
+        gridTemplateRows: "[title] auto [headers] auto [items] auto",
+        // gap: "0.5em",
+      })}
+      style={{
         gridTemplateColumns: [
           "1fr",
           ...Object.keys(fields).map(() => "1fr"),
           "max-content",
         ].join(" "),
-        gridTemplateRows: "[title] auto [headers] auto [items] auto",
-        // gap: "0.5em",
       }}
     >
       {/* Top row */}
       <div
-        css={{
+        className={css({
           gridColumn: "1/-1",
           gridRow: "title",
           display: "flex",
           flexDirection: "row",
           margin: "0 0 0 0",
-        }}
+        })}
       >
         <h2
-          css={{
-            flex: 1,
-          }}
+          className={css({
+            flex: "[1]",
+          })}
         >
           {name}
         </h2>
         {categoryId !== undefined && categoryId !== "" && (
           <Button
-            css={{
+            className={css({
               flexBasis: "max-content",
-            }}
+            })}
             onClick={async () => {
               await createEquipment(categoryId);
             }}
@@ -136,31 +132,32 @@ export const EquipmentCategory = memo(function EquipmentCategory({
 
       {/* Headers */}
       <div
-        css={{
-          gridColumn: "1/-1",
-          gridRow: "headers",
-          borderBottom: `1px solid ${theme.colors.controlBorder}`,
-        }}
-      />
-      <div css={{ gridColumn: "1", gridRow: "headers" }}>
-        <Translate>Item Name</Translate>
+        className={cx(
+          tableHeader(),
+          css({
+            gridColumn: "1/-1",
+            gridRow: "headers",
+            display: "grid",
+            gridTemplateColumns: "subgrid",
+          }),
+        )}
+      >
+        <div>
+          <Translate>Item Name</Translate>
+        </div>
+        {Object.entries(fields).map(([fieldId, field]) => (
+          <div key={fieldId}>{field.name}</div>
+        ))}
       </div>
-      {Object.entries(fields).map(([fieldId, field], i) => {
-        return (
-          <div key={fieldId} css={{ gridColumn: i + 2, gridRow: "headers" }}>
-            {field.name}
-          </div>
-        );
-      })}
 
       {/* Nothing */}
       {items.length === 0 && (
         <i
-          css={{
+          className={css({
             gridColumn: "1 / -1",
             gridRow: "items",
             fontSize: "1.2em",
-          }}
+          })}
         >
           <Translate>No equipment yet.</Translate>
         </i>
@@ -180,11 +177,11 @@ export const EquipmentCategory = memo(function EquipmentCategory({
 
       {/* Spacing */}
       <div
-        css={{
+        className={css({
           gridColumn: "1 / -1",
-          gridRow: items.length + 4,
           height: "2em",
-        }}
+        })}
+        style={{ gridRow: items.length + 4 }}
       />
     </div>
   );

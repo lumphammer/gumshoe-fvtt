@@ -1,9 +1,8 @@
-import { useContext } from "react";
-
 import { getTranslated } from "../../functions/getTranslated";
 import { useIsEditable } from "../../hooks/useIsEditable";
 import { useOtherable } from "../../hooks/useOtherable";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { css, cx } from "../../styled-system/css";
+import { badge, select } from "../../styled-system/recipes";
 import { Translate } from "../Translate";
 import { AsyncTextInput } from "./AsyncTextInput";
 
@@ -22,8 +21,6 @@ export const OtherableDropDown = ({
   pickerValues,
   validValues,
 }: OtherableDropDownProps) => {
-  const theme = useContext(ThemeContext);
-
   const {
     customValueToken,
     effectiveValue,
@@ -40,10 +37,13 @@ export const OtherableDropDown = ({
 
   return (
     <div
-      css={{ display: "flex", flexDirection: "column", gap: "0.2em" }}
-      className={className}
+      className={cx(
+        className,
+        css({ display: "flex", flexDirection: "column", gap: "0.2em" }),
+      )}
     >
       <select
+        className={select()}
         value={effectiveValue}
         onChange={handleChange}
         disabled={!isEditable}
@@ -58,13 +58,10 @@ export const OtherableDropDown = ({
       )}
       {notFound && (
         <span
-          css={{
-            background: theme.colors.danger,
-            color: theme.colors.accentContrast,
-            display: "inline-block",
-            padding: "0 0.2em",
-            borderRadius: "0.2em",
-          }}
+          className={cx(
+            badge({ tone: "danger", weight: "strong" }),
+            css({ alignSelf: "start" }),
+          )}
         >
           <Translate>NotFound!</Translate>
         </span>

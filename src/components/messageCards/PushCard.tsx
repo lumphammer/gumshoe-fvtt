@@ -1,10 +1,10 @@
 import React from "react";
 
-import { useTheme } from "../../hooks/useTheme";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import { Translate } from "../Translate";
 import { useAbilityCardHeader } from "./useAbilityCardHeader";
 import type { AbilityCardMode } from "./types";
+import { css, cx } from "../../styled-system/css";
 
 interface PushCardProps {
   msg: ChatMessage;
@@ -19,61 +19,61 @@ const shadowBlur = "1px";
 
 export const PushCard = React.memo(
   ({ msg, ability, mode, name, imageUrl }: PushCardProps) => {
-    const theme = useTheme();
     const { header, openSheet: onClickAbilityName } =
       useAbilityCardHeader(ability);
 
     return (
       <div
-        className="dice-roll"
-        css={{
-          position: "relative",
-          display: "grid",
-          gridTemplateColumns: "max-content 1fr",
-          gridTemplateRows: "auto",
-          gridTemplateAreas: '"image headline"',
-          alignItems: "center",
-          justifyItems: "start",
-        }}
+        className={cx(
+          "dice-roll",
+          css({
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: "max-content 1fr",
+            gridTemplateRows: "auto",
+            gridTemplateAreas: '"image headline"',
+            alignItems: "center",
+            justifyItems: "start",
+          }),
+        )}
       >
         {/* IMAGE */}
         <div
-          css={{
+          className={css({
             height: "4em",
             width: "4em",
             gridArea: "image",
-            backgroundImage: `url(${imageUrl})`,
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             justifyItems: "center",
             transform: "scale(0.9) rotate(-5deg)",
-            boxShadow: "0 0 0.5em black",
+            boxShadow: "[0 0 0.5em black]",
             marginRight: "1em",
             // alignSelf: "start",
-          }}
+          })}
+          style={{ backgroundImage: `url(${imageUrl})` }}
         />
         {/* TERMS */}
         <a
           onClick={onClickAbilityName}
-          css={{
+          className={css({
             gridArea: "headline",
             fontSize: "1.5em",
-            color: theme.colors.accent,
             fontStyle: "italic",
-            textShadow: `
+            textShadow: `[
             -${shadowOffset} -${shadowOffset} ${shadowBlur} #0007,
             ${shadowOffset} ${shadowOffset} ${shadowBlur} #fff
-          `,
-            ":hover": {
-              textShadow: `
+          ]`,
+            "&:hover": {
+              textShadow: `[
               0 0 10px #fff,
               0 0 10px #fff,
               -${shadowOffset} -${shadowOffset} ${shadowBlur} #0007,
               ${shadowOffset} ${shadowOffset} ${shadowBlur} #fff
-            `,
+            ]`,
             },
-          }}
+          })}
         >
           <Translate values={{ AbilityName: header?.name ?? "" }}>
             AbilityNamePush

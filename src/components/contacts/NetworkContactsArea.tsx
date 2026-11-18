@@ -1,4 +1,4 @@
-import { memo, useContext } from "react";
+import { memo } from "react";
 
 import { liveItems } from "../../functions/liveItems";
 import { isNetworkContactItem } from "../../module/items/networkContact";
@@ -13,11 +13,12 @@ import {
   getNetworkAbilityIn,
   getNetworkContactsIn,
 } from "../../module/actors/pcDerived";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
 import { NetworkContactRow } from "./NetworkContactRow";
+import { tableHeader } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 /**
  * The Contacts tab on the PC sheet (Fall of DELTA GREEN, p. 068): what's left
@@ -26,7 +27,6 @@ import { NetworkContactRow } from "./NetworkContactRow";
 export const NetworkContactsArea = memo(function NetworkContactsArea() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
-  const theme = useContext(ThemeContext);
   const networkName = useSettings((s) => s.networkAbility);
   // the contacts' ids, by name; the Network ability's pool and rating; and
   // the points the contacts hold
@@ -54,21 +54,21 @@ export const NetworkContactsArea = memo(function NetworkContactsArea() {
   return (
     <div
       data-testid="network-contacts-area"
-      css={{ ...absoluteCover, overflow: "auto", padding: "0.5em" }}
+      className={css({ ...absoluteCover, overflow: "auto", padding: "0.5em" })}
     >
       <div
-        css={{
+        className={css({
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
           gap: "0.5em",
-        }}
+        })}
       >
-        <h2 css={{ flex: 1, "&&": { margin: 0 } }}>
+        <h2 className={css({ flex: "[1]", "&&": { margin: 0 } })}>
           <Translate>Contacts</Translate>
         </h2>
         <Button
-          css={{ flexBasis: "max-content" }}
+          className={css({ flexBasis: "max-content" })}
           onClick={createNetworkContact}
           title={newContactTooltip}
         >
@@ -76,7 +76,7 @@ export const NetworkContactsArea = memo(function NetworkContactsArea() {
           <Translate>New contact</Translate>
         </Button>
       </div>
-      <div data-testid="network-summary" css={{ margin: "0.5em 0" }}>
+      <div data-testid="network-summary" className={css({ margin: "0.5em 0" })}>
         {network === undefined ? (
           <i>
             <Translate values={{ AbilityName: networkName }}>
@@ -98,30 +98,31 @@ export const NetworkContactsArea = memo(function NetworkContactsArea() {
       </div>
 
       {contacts.length === 0 ? (
-        <i css={{ display: "block", fontSize: "1.2em" }}>
+        <i className={css({ display: "block", fontSize: "1.2em" })}>
           <Translate>No contacts yet!</Translate>
         </i>
       ) : (
         <div
-          css={{
+          className={css({
             display: "grid",
             // name, location, pool, delete
             gridTemplateColumns:
               "minmax(0, 2fr) minmax(0, 2fr) max-content max-content",
             gridAutoRows: "min-content",
             columnGap: "0.5em",
-          }}
+          })}
         >
           {/* the header row, underlined like the ability categories */}
           <div
-            css={{
-              gridColumn: "1/-1",
-              display: "grid",
-              gridTemplateColumns: "subgrid",
-              fontWeight: "bold",
-              borderBottom: `1px solid ${theme.colors.text}`,
-              "& > *": { paddingInline: "0.25em" },
-            }}
+            className={cx(
+              tableHeader(),
+              css({
+                gridColumn: "1/-1",
+                display: "grid",
+                gridTemplateColumns: "subgrid",
+                "& > *": { paddingInline: "0.25em" },
+              }),
+            )}
           >
             <div>
               <Translate>Name</Translate>
@@ -129,7 +130,7 @@ export const NetworkContactsArea = memo(function NetworkContactsArea() {
             <div>
               <Translate>Location</Translate>
             </div>
-            <div css={{ textAlign: "end" }}>
+            <div className={css({ textAlign: "end" })}>
               <Translate>Pool</Translate>
             </div>
           </div>

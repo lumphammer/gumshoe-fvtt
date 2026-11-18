@@ -197,30 +197,36 @@ You can create new themes for INVESTIGATOR in two ways:
 
 ## Credits
 
-<span>Photo by <a href="https://unsplash.com/@anniespratt?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Annie Spratt</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+Wallpapers and masks are in `public/assets/wallpaper` unless noted. Each
+credit lists the files made from that image.
 
-<span>Photo by <a href="https://unsplash.com/@marjan_blan?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Марьян Блан | @marjanblan</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+Photos from [Unsplash](https://unsplash.com/):
 
-<span>Photo by <a href="https://unsplash.com/@leyameera?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Tina Dawson</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+- [Annie Spratt](https://unsplash.com/@anniespratt):
+  - [osuiatBDTww](https://unsplash.com/photos/osuiatBDTww): `annie-spratt-osuiatBDTww-unsplash.webp`
+  - [xTaOPMa6wAE](https://unsplash.com/photos/xTaOPMa6wAE): `annie-spratt-xTaOPMa6wAE-unsplash.webp`
+  - [xvU-X0GV9-o](https://unsplash.com/photos/xvU-X0GV9-o): `annie-spratt-xvU-X0GV9-o-unsplash.webp`
+  - [UR2DMIFuc5c](https://unsplash.com/photos/UR2DMIFuc5c): `stonelike-mask.webp`
+- [Марьян Блан | @marjanblan](https://unsplash.com/@marjan_blan): [photo](https://unsplash.com/photos/5Ft4NWTmeJE): `marjanblan-5Ft4NWTmeJE-unsplash.webp`
+- [Tina Dawson](https://unsplash.com/@leyameera): [photo](https://unsplash.com/photos/Kim9COAIEGc): `nice_red_agents.webp`
+- [Philipp Trubchenko](https://unsplash.com/@seresigo): [photo](https://unsplash.com/photos/jObj_p885Gg): `philipp-trubchenko-jObj_p885Gg-unsplash.webp`
+- [guille pozzi](https://unsplash.com/@guillepozzi): [photo](https://unsplash.com/photos/sbcIAn4Mn14): `guille-pozzi-sbcIAn4Mn14-unsplash.webp`
+- [Scott Webb](https://unsplash.com/@scottwebb): [photo](https://unsplash.com/photos/UjupleczBOY): `scott-webb-UjupleczBOY-unsplash.webp`
+- [Kiwihug](https://unsplash.com/@kiwihug): [photo](https://unsplash.com/photos/white-wall-paint-with-black-shadow-y_2GC4EhOP4): `pulpy_paper.webp`
+- [Paweł Czerwiński](https://unsplash.com/@pawel_czerwinski): [photo](https://unsplash.com/photos/RPMcxbm2zi4): `monochrome-unreality-cropped.webp`
+- [Jarrod Erbe](https://unsplash.com/@erbephoto): [photo](https://unsplash.com/photos/white-and-gray-concrete-wall-e0pkhy2hWic): `grunge-gradient.webp`
+- [Meriç Dağlı](https://unsplash.com/@meric): `red_sands.jpg`
+- [remi skatulski](https://unsplash.com/@remiskatulski): `assets/cover.webp` (the cover image)
 
-<span>Photo by <a href="https://unsplash.com/@seresigo?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Philipp Trubchenko</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+Marble texture by north_studio from
+[Pixabay](https://pixabay.com/illustrations/marble-background-black-texture-2398956/):
+`north_studio-marble-2398956_1280.webp`.
 
-<span>Photo by <a href="https://unsplash.com/@guillepozzi?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">guille pozzi</a> on <a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+Illustrations from [Old Book Illustrations](https://www.oldbookillustrations.com/):
+`tailpiece9-768.webp`.
 
-<span>Photo by <a href="https://unsplash.com/@remiskatulski?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">remi skatulski</a> on <a href="https://unsplash.com/s/photos/mystery?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></span>
-
-Photo by <a href="https://unsplash.com/@stilclassics?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">STIL</a> on <a href="https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
-
-Photo by <a href="https://unsplash.com/@sammywilliams?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Sammy Williams</a> on <a href="https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
-
-Photo by <a href="https://unsplash.com/@kiwihug?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Kiwihug</a> on <a href="https://unsplash.com/?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
-
-Photo by <a href="https://unsplash.com/@scottwebb?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Scott Webb</a> on <a href="https://unsplash.com/s/photos/granite?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
-
-Photo by <a href="https://unsplash.com/@meric?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Meriç Dağlı</a> on <a href="https://unsplash.com/s/photos/texture?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
-
-
-Illustrations from [Old Book Illustrations](https://www.oldbookillustrations.com/).
+`esoterica.webp` and `textured-mask.webp` are our own, made with public domain
+brushes.
 
 Huge thanks to Nick van Oosten/NickEast for [Foundry Project Creator](https://gitlab.com/foundry-projects/foundry-pc/create-foundry-project) and the original [the Typescript types to go with it](https://gitlab.com/foundry-projects/foundry-pc/foundry-pc-types).
 

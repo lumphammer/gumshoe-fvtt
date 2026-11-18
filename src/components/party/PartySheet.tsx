@@ -25,6 +25,8 @@ import { AbilityRow } from "./AbilityRow";
 import { buildRowData, getSystemAbilities, toMemberView } from "./functions";
 import type { PartyAbilityView } from "./types";
 import { isCategoryHeader, isTypeHeader } from "./types";
+import { floating, partyCell } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 const PartySheetBody = ({ party }: { party: PartyActor }) => {
   const header = useActorSnapshot(party, (snapshot) => ({
@@ -59,19 +61,11 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
 
   const rowData = buildRowData(abilities, actors);
 
-  const onClickRemoveActor = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const actorId = e.currentTarget.dataset["actorId"];
-    if (actorId !== undefined) {
-      void party.system.removeActorId(actorId);
-    }
-  };
-
   return (
     <CSSReset
       mode="small"
       theme={theme}
-      css={{
+      className={css({
         position: "absolute",
         top: 0,
         right: 0,
@@ -79,10 +73,11 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
         left: 0,
         display: "flex",
         flexDirection: "column",
-      }}
+      })}
     >
       {header.actorIds.length === 0 && (
         <div
+          className={floating({ kind: "overlay" })}
           style={{
             position: "absolute",
             top: "50%",
@@ -90,10 +85,6 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
             transform: "translate(-50%, -50%)",
             zIndex: 100,
             padding: "1em",
-            // border: `1px solid ${theme.colors.text}`,
-            borderRadius: "0.5em",
-            background: theme.colors.bgOpaquePrimary,
-            boxShadow: `0 0 1em 0em ${theme.colors.text}`,
             fontSize: "1.4em",
             textAlign: "center",
           }}
@@ -106,14 +97,14 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
       )}
       {/* Name field */}
       <InputGrid
-        css={{
+        className={css({
           paddingBottom: "0.5em",
-        }}
+        })}
       >
         <GridField label="Party Name">
-          <div css={{ display: "flex", gap: "0.5em" }}>
+          <div className={css({ display: "flex", gap: "0.5em" })}>
             <AsyncTextInput
-              css={{ flex: 1 }}
+              className={css({ flex: "[1]" })}
               value={header.name}
               onChange={party.setName}
             />
@@ -121,7 +112,11 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
             {bondsOn && isGM && (
               <Button
                 data-testid="call-team-crisis"
-                css={{ width: "auto", margin: 0, whiteSpace: "nowrap" }}
+                className={css({
+                  width: "auto",
+                  margin: 0,
+                  whiteSpace: "nowrap",
+                })}
                 title={callTeamCrisisTooltip}
                 onClick={() => callTeamCrisis(party)}
               >
@@ -135,39 +130,41 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
 
       {/* Grid */}
       <div
-        css={{
-          flex: 1,
+        className={css({
+          flex: "[1]",
           display: "grid",
           gridTemplateRows: "min-content",
           gridAutoRows: "auto",
           gridTemplateColumns: "max-content",
-          gridAutoColumns: "minmax(min-content, auto)",
+          gridAutoColumns: "[minmax(min-content, auto)]",
           overflow: "auto",
           position: "relative",
-        }}
+        })}
       >
         {/* Top left block */}
         <div
-          css={{
-            gridRow: 1,
-            gridColumn: 1,
-            position: "sticky",
-            top: 0,
-            left: 0,
-            background: theme.colors.bgOpaqueSecondary,
-            padding: "0.5em",
-            textAlign: "center",
-            zIndex: 3,
-          }}
+          className={cx(
+            partyCell({ header: true }),
+            css({
+              gridRow: 1,
+              gridColumn: 1,
+              position: "sticky",
+              top: 0,
+              left: 0,
+              padding: "0.5em",
+              textAlign: "center",
+              zIndex: 3,
+            }),
+          )}
         >
           <ImagePickle
             img={header.img}
-            css={{
+            className={css({
               height: "5em",
               width: "4em",
               transform: "rotateZ(-2deg)",
               margin: "0 auto",
-            }}
+            })}
           />
         </div>
 
@@ -176,69 +173,63 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
           return (
             <div
               key={actor.id}
-              css={{
-                gridRow: 1,
-                gridColumn: j + 2,
-                position: "sticky",
-                top: 0,
-                backgroundColor: theme.colors.bgOpaquePrimary,
-                padding: "0.5em",
-                zIndex: 2,
-                lineHeight: 1,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                textAlign: "center",
-              }}
+              className={cx(
+                partyCell({ header: true, odd: true }),
+                css({
+                  gridRow: 1,
+                  position: "sticky",
+                  top: 0,
+                  padding: "0.5em",
+                  zIndex: 2,
+                  lineHeight: 1,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  textAlign: "center",
+                }),
+              )}
+              style={{ gridColumn: j + 2 }}
             >
               <a
-                css={{
+                className={css({
                   textAlign: "center",
-                  // shenanigans to get the line count limited to 2
-                  display: "-webkit-box",
-                  "-webkit-line-clamp": "2",
-                  "-webkit-box-orient": "vertical",
-                  overflow: "hidden",
-                }}
+                  // at most 2 lines (Panda's lineClamp: the -webkit-box
+                  // shenanigans, and overflow hidden)
+                  lineClamp: "2",
+                })}
                 onClick={(e) => {
                   e.preventDefault();
                   openSheet(game.actors?.get(actor.id));
                 }}
               >
                 <div
-                  css={{
+                  className={css({
                     width: "3em",
                     height: "3em",
-                    backgroundImage: `url("${actor.img}")`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     margin: "0 auto",
-                  }}
+                  })}
+                  style={{ backgroundImage: `url("${actor.img}")` }}
                 />
                 {actor.name}
               </a>
-              <div css={{ height: "1.5em" }} />
+              <div className={css({ height: "1.5em" })} />
               <div
-                css={{
+                className={css({
                   position: "absolute",
                   bottom: "0.5em",
                   left: "50%",
                   transform: "translateX(-50%)",
-                }}
+                })}
               >
-                <button
-                  css={{
-                    "&&": {
-                      fontSize: "0.7em",
-                      padding: "0.1em 0.3em",
-                      border: `1px solid ${theme.colors.text}`,
-                      width: "auto",
-                    },
-                  }}
+                <Button
+                  kind="toolbar"
+                  className={css({ fontSize: "0.7em" })}
                   data-actor-id={actor.id}
-                  onClick={onClickRemoveActor}
+                  onClick={() => void party.system.removeActorId(actor.id)}
                 >
                   <Translate>REMOVE</Translate>
-                </button>
+                </Button>
               </div>
             </div>
           );
@@ -246,18 +237,20 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
 
         {/* TOTAL header */}
         <div
-          css={{
-            gridRow: 1,
-            gridColumn: actors.length + 2,
-            position: "sticky",
-            top: 0,
-            right: 0,
-            background: theme.colors.bgOpaqueSecondary,
-            padding: "0.5em",
-            textAlign: "center",
-            zIndex: 3,
-            lineHeight: 1,
-          }}
+          className={cx(
+            partyCell({ header: true }),
+            css({
+              gridRow: 1,
+              position: "sticky",
+              top: 0,
+              right: 0,
+              padding: "0.5em",
+              textAlign: "center",
+              zIndex: 3,
+              lineHeight: 1,
+            }),
+          )}
+          style={{ gridColumn: actors.length + 2 }}
         >
           <Translate>Total</Translate>
         </div>
@@ -268,17 +261,16 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
         properly. On Chrome this has no effect because the space was allocated
         correctly anyway. */}
         <div
-          css={{
+          className={css({
             visibility: "hidden",
             gridRow: 1,
-            gridColumn: actors.length + 2,
             top: 0,
             right: 0,
-            background: theme.colors.bgOpaquePrimary,
             padding: "0.5em",
             textAlign: "center",
             lineHeight: 1,
-          }}
+          })}
+          style={{ gridColumn: actors.length + 2 }}
         >
           <Translate>Total</Translate>
         </div>
@@ -291,18 +283,19 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
             return (
               <React.Fragment key={data.abilityType}>
                 <h1
-                  css={{
-                    "&&": {
-                      gridRow: i + 2,
-                      gridColumn: 1,
-                      padding: "0.5em",
-                      textAlign: "left",
-                      position: "sticky",
-                      left: 0,
-                      // opaque so the point counters can't scroll underneath
-                      background: theme.colors.bgOpaqueSecondary,
-                    },
-                  }}
+                  className={cx(
+                    partyCell({ header: true }),
+                    css({
+                      "&&": {
+                        gridColumn: 1,
+                        padding: "0.5em",
+                        textAlign: "left",
+                        position: "sticky",
+                        left: 0,
+                      },
+                    }),
+                  )}
+                  style={{ gridRow: i + 2 }}
                 >
                   {data.abilityType === constants.generalAbility ? (
                     <Translate>General</Translate>
@@ -313,33 +306,35 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
                 {actors.map((actor, j) => (
                   <div
                     key={actor.id}
-                    css={{
-                      gridRow: i + 2,
-                      gridColumn: j + 2,
-                      background: theme.colors.backgroundSecondary,
-                      padding: "0.5em",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontWeight: "bold",
-                    }}
+                    className={cx(
+                      partyCell({}),
+                      css({
+                        padding: "0.5em",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: "bold",
+                      }),
+                    )}
+                    style={{ gridRow: i + 2, gridColumn: j + 2 }}
                   >
                     {data.actorTotals[actor.id] ?? 0}
                   </div>
                 ))}
                 <div
-                  css={{
-                    gridRow: i + 2,
-                    gridColumn: actors.length + 2,
-                    position: "sticky",
-                    right: 0,
-                    background: theme.colors.bgOpaqueSecondary,
-                    padding: "0.5em",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "bold",
-                  }}
+                  className={cx(
+                    partyCell({ header: true }),
+                    css({
+                      position: "sticky",
+                      right: 0,
+                      padding: "0.5em",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: "bold",
+                    }),
+                  )}
+                  style={{ gridRow: i + 2, gridColumn: actors.length + 2 }}
                 >
                   {data.grandTotal}
                 </div>
@@ -350,15 +345,15 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
             return (
               <h2
                 key={data.category + i}
-                css={{
+                className={css({
                   "&&": {
-                    gridRow: i + 2,
                     padding: "0.5em",
                     textAlign: "left",
                     position: "sticky",
                     left: 0,
                   },
-                }}
+                })}
+                style={{ gridRow: i + 2 }}
               >
                 {data.category}
               </h2>
@@ -371,7 +366,6 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
                 abilityRowData={data}
                 index={i}
                 actors={actors}
-                theme={theme}
               />
             );
           }

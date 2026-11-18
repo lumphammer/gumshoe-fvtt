@@ -1,5 +1,11 @@
 {
-  "include": ["index.ts"],
+  "include": [
+    "index.ts",
+    "emotionCompat.ts",
+    "themeV2.ts",
+    "catalogue.generated.ts",
+    "themeV2.typetest.ts"
+  ],
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",

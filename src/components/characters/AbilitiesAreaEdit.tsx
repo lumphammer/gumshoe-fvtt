@@ -1,4 +1,4 @@
-import { Fragment, memo, useContext } from "react";
+import { Fragment, memo } from "react";
 
 import { liveItem } from "../../functions/liveItems";
 import { isAbilityItem } from "../../module/items/exports";
@@ -14,11 +14,13 @@ import {
   sumRatingsIn,
 } from "../../module/actors/abilitiesDerived";
 import { assertActiveCharacterActor } from "../../module/actors/types";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { AbilitySlugEdit } from "./AbilitySlugEdit";
 import { AbilitySlugEditQuickShockInvestigative } from "./AbilitySlugEditQuickShockInvestigative";
 import { BuildPointsBar } from "./BuildPointsBar";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
+import { Callout } from "../Callout";
+import { displayText, sectionHeading } from "../../styled-system/recipes";
+import { css, cx } from "../../styled-system/css";
 
 type AbilitiesAreaEditProps = {
   npcMode?: boolean;
@@ -34,7 +36,6 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
 }: AbilitiesAreaEditProps) {
   const { actor } = useActorSheetContext();
   assertActiveCharacterActor(actor);
-  const theme = useContext(ThemeContext);
   const mwMode = useSettings((s) => s.useMwStyleAbilities);
 
   const layout = useActorAndSettings(actor, (snapshot, settings) => {
@@ -87,70 +88,68 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
         />
       )}
       <div
-        css={{
+        className={css({
           display: "grid",
           gridTemplateColumns: "minmax(33%, auto) minmax(33%, auto)",
+          columnGap: "1em",
+          marginBottom: "1em",
+        })}
+        style={{
           gridTemplateAreas:
             "'warnings warnings'" +
             (simplifiedMode
               ? "'general investigative'"
               : "'investigative general'"),
-          columnGap: "1em",
-          marginBottom: "1em",
         }}
       >
-        <div css={{ gridArea: "warnings" }}>
+        <div className={css({ gridArea: "warnings" })}>
           {pushPoolWarnings.map((warning, i) => (
-            <div
+            <Callout
               key={i}
-              css={{
-                background: theme.colors.danger,
-                color: theme.colors.accentContrast,
-                borderRadius: "0.5em",
-                padding: "0.2em 0.7em",
-                marginBottom: "0.5em",
-              }}
+              tone="warning"
+              className={css({ marginBottom: "0.5em" })}
             >
-              ⚠️
               {warning}
-            </div>
+            </Callout>
           ))}
         </div>
         {!mwMode && (
           <div
-            css={{
+            className={css({
               gridArea: "investigative",
               display: "grid",
               gridTemplateAreas: "'ability rating isocc'",
-              gridTemplateColumns: showInvestigativeOccupationalColumn
-                ? "1fr max-content auto"
-                : "1fr max-content",
               columnGap: "0.5em",
               rowGap: "0.1em",
               alignItems: "center",
               alignContent: "start",
+            })}
+            style={{
+              gridTemplateColumns: showInvestigativeOccupationalColumn
+                ? "1fr max-content auto"
+                : "1fr max-content",
             }}
           >
             {simplifiedMode || (
               <i
-                css={{
-                  gridColumn: "rating",
-                  font: theme.displayFont,
-                  textTransform: theme.displayFontTextTransform,
-                  fontSize: "smaller",
-                }}
+                className={cx(
+                  displayText({ size: "sm" }),
+                  css({
+                    gridColumn: "rating",
+                  }),
+                )}
               >
                 Rating
               </i>
             )}
             {showInvestigativeOccupationalColumn && (
               <i
-                css={{
-                  gridColumn: "isocc",
-                  font: theme.displayFont,
-                  textTransform: theme.displayFontTextTransform,
-                  fontSize: "smaller",
-                }}
+                className={cx(
+                  displayText({ size: "sm" }),
+                  css({
+                    gridColumn: "isocc",
+                  }),
+                )}
                 title="Occupational Ability"
               >
                 Oc.
@@ -159,12 +158,10 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
             {Object.keys(investigativeAbilities).map((cat) => (
               <Fragment key={cat}>
                 <h2
-                  css={{
-                    gridColumn: "1 / -1",
-                    borderWidth: "1px",
-                    borderStyle: "none none solid none",
-                    borderColor: theme.colors.text,
-                  }}
+                  className={cx(
+                    sectionHeading(),
+                    css({ gridColumn: "1 / -1" }),
+                  )}
                 >
                   {cat}
                 </h2>
@@ -193,39 +190,41 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
         )}
 
         <div
-          css={{
+          className={css({
             gridArea: "general",
             display: "grid",
             gridTemplateAreas: "'ability rating isocc'",
-            gridTemplateColumns: simplifiedMode
-              ? "1fr max-content"
-              : "1fr max-content auto",
             columnGap: "0.5em",
             rowGap: "0.1em",
             alignItems: "center",
             alignContent: "start",
+          })}
+          style={{
+            gridTemplateColumns: simplifiedMode
+              ? "1fr max-content"
+              : "1fr max-content auto",
           }}
         >
           {simplifiedMode || (
             <i
-              css={{
-                gridColumn: "rating",
-                font: theme.displayFont,
-                textTransform: theme.displayFontTextTransform,
-                fontSize: "smaller",
-              }}
+              className={cx(
+                displayText({ size: "sm" }),
+                css({
+                  gridColumn: "rating",
+                }),
+              )}
             >
               Rating
             </i>
           )}
           {simplifiedMode || (
             <i
-              css={{
-                gridColumn: "isocc",
-                font: theme.displayFont,
-                textTransform: theme.displayFontTextTransform,
-                fontSize: "smaller",
-              }}
+              className={cx(
+                displayText({ size: "sm" }),
+                css({
+                  gridColumn: "isocc",
+                }),
+              )}
               title="Occupational Ability"
             >
               Oc.
@@ -235,12 +234,7 @@ export const AbilitiesAreaEdit = memo(function AbilitiesAreaEdit({
           {Object.keys(generalAbilities).map((cat) => (
             <Fragment key={cat}>
               <h2
-                css={{
-                  gridColumn: "1 / -1",
-                  borderWidth: "1px",
-                  borderStyle: "none none solid none",
-                  borderColor: theme.colors.text,
-                }}
+                className={cx(sectionHeading(), css({ gridColumn: "1 / -1" }))}
               >
                 {cat}
               </h2>

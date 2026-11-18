@@ -8,6 +8,7 @@ import type { AbilityItem } from "../../module/items/exports";
 import { AbilityBadges } from "../abilities/AbilityBadges";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 type AbilitySlugPlayQuickShockInvestigativeProps = {
   /** The live ability: the row reads it through a snapshot */
@@ -36,20 +37,23 @@ export const AbilitySlugPlayQuickShockInvestigative = memo(
         <AbilityNameLink
           ability={ability}
           name={row.name}
-          css={{ lineHeight: 0.9 }}
+          className={css({ lineHeight: 0.9 })}
         />
-        <div css={{ gridColumn: "rating/-1", justifySelf: "right" }}>
+        <div className={css({ gridColumn: "rating/-1", justifySelf: "right" })}>
           <Button
-            css={{ width: "4.1em" }}
+            className={css({ width: "4.1em" })}
             onClick={handleClickPush}
             disabled={disabled}
           >
             <Translate>Push</Translate>
           </Button>
         </div>
-        <AbilityBadges ability={ability} css={{ gridColumn: "1/-1" }} />
+        <AbilityBadges
+          ability={ability}
+          className={css({ gridColumn: "1/-1" })}
+        />
         {row.hasSpecialities && (
-          <div css={{ paddingLeft: "1em", gridColumn: "1/-1" }}>
+          <div className={css({ paddingLeft: "1em", gridColumn: "1/-1" })}>
             {row.specialities.map((x, i) => (
               <div key={i}>{x.trim()}</div>
             ))}

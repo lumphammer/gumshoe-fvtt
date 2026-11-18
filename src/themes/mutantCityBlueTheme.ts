@@ -2,7 +2,6 @@ import type { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
 
 import { averiaLibre } from "./constants";
 import { createBasicTabStyle, themeFactory } from "./functions";
-import { tealTheme } from "./tealTheme";
 import type { ThemeV1 } from "./types";
 
 const stripe1 = "#e2e3e9";
@@ -23,6 +22,9 @@ const colors: ThemeSeedV1["colors"] = {
   text: "#433",
   controlBorder: "#766",
 };
+
+// Teal of Cthulhu's primary background, which this theme borrows
+const tealBackground = "rgba(255,255,255,0.5)";
 
 const accentTrans = `${colors.accent}77`;
 
@@ -73,20 +75,20 @@ export const mutantCityBlueTheme: ThemeV1 = themeFactory({
     backgroundImage: `linear-gradient(to top, ${shadow1} 0%, ${shadow1} 10%, ${shadow2} 10%)`,
   },
   tabActiveStyle: {
-    ...tealTheme.tabActiveStyle,
+    background: tealBackground,
+    ":hover": { textShadow: "none" },
     borderBottomStyle: "none",
   },
   tabSpacerStyle: {
-    ...tealTheme.tabSpacerStyle,
+    width: "0.5em",
     borderBottom: `1px solid ${colors.accent}`,
   },
   panelStylePrimary: {
-    ...tealTheme.panelStylePrimary,
+    backgroundColor: tealBackground,
     border: `1px solid ${colors.accent}`,
-    // borderStyle: "none solid solid solid",
   },
   tabContentStyle: {
-    ...tealTheme.panelStylePrimary,
+    backgroundColor: tealBackground,
     border: `1px solid ${colors.accent}`,
     borderStyle: "none solid solid solid",
   },

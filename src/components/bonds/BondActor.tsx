@@ -1,5 +1,5 @@
 import type React from "react";
-import { useContext, useState } from "react";
+import { useState } from "react";
 
 import { openSheet } from "../../functions/openSheet";
 import { getTranslated } from "../../functions/getTranslated";
@@ -11,9 +11,9 @@ import type { ActiveCharacterActor } from "../../module/actors/types";
 import { isActiveCharacterActor } from "../../module/actors/types";
 import type { BondItem } from "../../module/items/bond";
 import { getWorldActorsStore } from "../../module/snapshots/documentStores";
-import { ThemeContext } from "../../themes/ThemeContext";
 import { parseFoundryDragData } from "../inputs/parseFoundryDragData";
 import { Translate } from "../Translate";
+import { css } from "../../styled-system/css";
 
 /**
  * Which actors a Bond can be linked to: another character, not a party, and
@@ -62,7 +62,6 @@ type BondActorProps = {
 };
 
 export const BondActor = ({ bond, actorUuid }: BondActorProps) => {
-  const theme = useContext(ThemeContext);
   const [isDragOver, setIsDragOver] = useState(false);
   const methods = useSystemMethods(bond);
   const linkedName = useActorName(actorUuid);
@@ -100,20 +99,20 @@ export const BondActor = ({ bond, actorUuid }: BondActorProps) => {
       onDragOver={onDragOver}
       onDragLeave={() => setIsDragOver(false)}
       onDrop={onDrop}
-      css={{
+      // always ready: we can't tell an actor is being dragged until it's here
+      data-drop-state={isDragOver ? "over" : "ready"}
+      className={css({
         display: "flex",
         alignItems: "center",
         gap: "0.5em",
         minHeight: "1.8em",
         padding: "0 0.5em",
-        borderRadius: "0.2em",
-        border: `1px dashed ${isDragOver ? theme.colors.accent : theme.colors.controlBorder}`,
-        backgroundColor: isDragOver ? theme.colors.backgroundButton : undefined,
-      }}
+        borderRadius: "[0.2em]",
+      })}
     >
       {actorUuid !== null && linkedName !== null ? (
         <a
-          css={{ flex: 1 }}
+          className={css({ flex: "[1]" })}
           onClick={() => {
             const linked = fromUuidSync(actorUuid);
             if (!(linked instanceof Actor)) return;
@@ -123,7 +122,7 @@ export const BondActor = ({ bond, actorUuid }: BondActorProps) => {
           {linkedName}
         </a>
       ) : (
-        <i css={{ flex: 1 }}>
+        <i className={css({ flex: "[1]" })}>
           <Translate>
             {actorUuid ? "Actor not found" : "Drag an actor here"}
           </Translate>

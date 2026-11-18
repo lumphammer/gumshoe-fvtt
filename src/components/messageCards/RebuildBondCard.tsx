@@ -1,9 +1,8 @@
-import { useContext } from "react";
-
 import type { RebuildOutcome, RebuildRecord } from "../../module/bonds/rebuild";
-import { ThemeContext } from "../../themes/ThemeContext";
+import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
+import { css, cx } from "../../styled-system/css";
 
 type RebuildBondCardProps = {
   record: RebuildRecord;
@@ -22,43 +21,44 @@ const outcomeText: Record<RebuildOutcome, string> = {
  * all settled when the test is rolled, so it just shows the record.
  */
 export const RebuildBondCard = ({ record, imageUrl }: RebuildBondCardProps) => {
-  const theme = useContext(ThemeContext);
   const succeeded =
     record.outcome === "successful6" || record.outcome === "success";
   const spendTotal = record.total - record.die;
 
   return (
     <div
-      className="dice-roll"
+      className={cx(
+        "dice-roll",
+        css({
+          display: "grid",
+          gridTemplateColumns: "max-content 1fr",
+          gridTemplateAreas: '"image headline" "image body"',
+          alignItems: "center",
+        }),
+      )}
       data-testid="rebuild-bond-card"
-      css={{
-        display: "grid",
-        gridTemplateColumns: "max-content 1fr",
-        gridTemplateAreas: '"image headline" "image body"',
-        alignItems: "center",
-      }}
     >
       <div
-        css={{
+        className={css({
           height: "4em",
           width: "4em",
           gridArea: "image",
-          backgroundImage: imageUrl ? `url(${imageUrl})` : undefined,
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
           transform: "scale(0.9) rotate(-5deg)",
-          boxShadow: "0 0 0.5em black",
+          boxShadow: "[0 0 0.5em black]",
           marginRight: "1em",
           alignSelf: "start",
-        }}
+        })}
+        style={{ backgroundImage: imageUrl ? `url(${imageUrl})` : undefined }}
       />
-      <b css={{ gridArea: "headline" }}>
+      <b className={css({ gridArea: "headline" })}>
         <Translate values={{ BondName: record.bondName }}>
           RebuildingBondWithBondName
         </Translate>
       </b>
-      <div css={{ gridArea: "body" }}>
+      <div className={css({ gridArea: "body" })}>
         <div>
           <Translate values={{ AbilityName: record.stabilityName }}>
             AbilityNameTest
@@ -83,12 +83,14 @@ export const RebuildBondCard = ({ record, imageUrl }: RebuildBondCardProps) => {
         )}
         <div
           data-testid="rebuild-outcome"
-          css={{
-            fontWeight: "bold",
-            fontSize: "1.2em",
-            margin: "0.25em 0",
-            color: succeeded ? theme.colors.success : theme.colors.danger,
-          }}
+          className={cx(
+            nativeStatus({ tone: succeeded ? "success" : "danger" }),
+            css({
+              fontWeight: "bold",
+              fontSize: "1.2em",
+              margin: "0.25em 0",
+            }),
+          )}
         >
           <Translate>{outcomeText[record.outcome]}</Translate>
         </div>
