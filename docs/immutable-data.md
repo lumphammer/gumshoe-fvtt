@@ -677,63 +677,63 @@ abstraction.
 ### Maintainability
 
 - [x] **Restore a shared, self-subscribing initiative picker.**
-  `PCSheetPanels.tsx` and `NPCSheetPanels.tsx` duplicate the initiative
-  heading/dropdown, settings selection and general-ability filtering. The
-  migration deleted `CharacterCombatAbilityPicker` and distributed its
-  responsibility into these parents. An `InitiativeAbilityPicker` taking
-  the actor could own its selectors and setter, using the existing
-  `getGeneralAbilityNamesIn`. This would also prevent initiative-only
-  changes from invalidating the larger panels. This is the clearest
-  immediate factoring win. Done: `InitiativeAbilityPicker` owns these subscriptions
-  and writes; both panels now delegate to it.
+      `PCSheetPanels.tsx` and `NPCSheetPanels.tsx` duplicate the initiative
+      heading/dropdown, settings selection and general-ability filtering. The
+      migration deleted `CharacterCombatAbilityPicker` and distributed its
+      responsibility into these parents. An `InitiativeAbilityPicker` taking
+      the actor could own its selectors and setter, using the existing
+      `getGeneralAbilityNamesIn`. This would also prevent initiative-only
+      changes from invalidating the larger panels. This is the clearest
+      immediate factoring win. Done: `InitiativeAbilityPicker` owns these subscriptions
+      and writes; both panels now delegate to it.
 - [x] **Preserve type information in derived-rule interfaces.**
-  In `module/actors/pcDerived.ts`, `ItemView.type`, `ItemView.system` and
-  `PCView.system` are `unknown`. Helpers recover their shape through
-  assertions and string-keyed access such as `numberOf(item, "rating")`;
-  `abilitiesDerived.ts` uses a similar approach. This accommodates live
-  documents and snapshots, but a field rename can silently become a
-  zero/default instead of a compiler error. Introduce small typed
-  structural views for the data each rule needs, derived from existing
-  schema types where practical, which both representations can satisfy.
-  This is a maintenance concern, not a finding that the current
-  calculations are wrong. Done: schema-derived item views now discriminate by
-  type; rules read checked properties directly, and PC adaptations are typed.
+      In `module/actors/pcDerived.ts`, `ItemView.type`, `ItemView.system` and
+      `PCView.system` are `unknown`. Helpers recover their shape through
+      assertions and string-keyed access such as `numberOf(item, "rating")`;
+      `abilitiesDerived.ts` uses a similar approach. This accommodates live
+      documents and snapshots, but a field rename can silently become a
+      zero/default instead of a compiler error. Introduce small typed
+      structural views for the data each rule needs, derived from existing
+      schema types where practical, which both representations can satisfy.
+      This is a maintenance concern, not a finding that the current
+      calculations are wrong. Done: schema-derived item views now discriminate by
+      type; rules read checked properties directly, and PC adaptations are typed.
 - [x] **Check the configuration of `createParentStore`.**
-  In `module/snapshots/documentStores.ts`, callers supply `TData`, but
-  `ownData` returns only `object`, collections have arbitrary string keys,
-  and serializers return `unknown`. `RefreshEmbedded` likewise accepts any
-  key and data. Connect collection keys and serialized values to the
-  resulting snapshot type, so a misspelled key or incorrect serializer is
-  caught. Keep unavoidable Foundry casts inside the adapter. The shared
-  lifecycle abstraction is useful; strengthen its existing interface. Done:
-  collection keys now determine own-data omissions, serializer results and
-  refresh arguments, with compile-time regression checks.
+      In `module/snapshots/documentStores.ts`, callers supply `TData`, but
+      `ownData` returns only `object`, collections have arbitrary string keys,
+      and serializers return `unknown`. `RefreshEmbedded` likewise accepts any
+      key and data. Connect collection keys and serialized values to the
+      resulting snapshot type, so a misspelled key or incorrect serializer is
+      caught. Keep unavoidable Foundry casts inside the adapter. The shared
+      lifecycle abstraction is useful; strengthen its existing interface. Done:
+      collection keys now determine own-data omissions, serializer results and
+      refresh arguments, with compile-time regression checks.
 - [x] **Share the ability-list editors' repeated presentation.**
-  `UnlocksEditorRow.tsx` and `SituationalModifiersEditorRow.tsx` repeat the
-  number input, text input, delete button, layout and indexed callbacks.
-  Their parent editors also repeat transition scaffolding. This duplication
-  predates the migration. Extract a small number/text/delete row and, if it
-  stays simple, an animated-list wrapper; keep domain-specific setters in
-  the two editors. Done: both editors share `AbilityListEditor` transitions
-  and `NumberTextEditorRow`; their setters remain explicit.
+      `UnlocksEditorRow.tsx` and `SituationalModifiersEditorRow.tsx` repeat the
+      number input, text input, delete button, layout and indexed callbacks.
+      Their parent editors also repeat transition scaffolding. This duplication
+      predates the migration. Extract a small number/text/delete row and, if it
+      stays simple, an animated-list wrapper; keep domain-specific setters in
+      the two editors. Done: both editors share `AbilityListEditor` transitions
+      and `NumberTextEditorRow`; their setters remain explicit.
 - [x] **Narrow the weapon edit row's selector.**
-  `characters/Weapons/WeaponRowEdit.tsx` selects the entire weapon `system`
-  although it displays only part of it. Changes to cost, lethality or fire
-  modes therefore invalidate the row unnecessarily, contrary to AGENTS.md's
-  guidance to select only what is shown. Select the displayed fields
-  explicitly, making its dependencies clear and preventing newly added
-  fields from automatically becoming rendering dependencies. This is an
-  optimization inconsistency, not a correctness bug. Done: the selector names
-  the displayed fields, and one range-input loop replaces six repeated inputs.
+      `characters/Weapons/WeaponRowEdit.tsx` selects the entire weapon `system`
+      although it displays only part of it. Changes to cost, lethality or fire
+      modes therefore invalidate the row unnecessarily, contrary to AGENTS.md's
+      guidance to select only what is shown. Select the displayed fields
+      explicitly, making its dependencies clear and preventing newly added
+      fields from automatically becoming rendering dependencies. This is an
+      optimization inconsistency, not a correctness bug. Done: the selector names
+      the displayed fields, and one range-input loop replaces six repeated inputs.
 - [x] **Separate current architecture guidance from historical findings.**
-  The opening of this document describes root-owned snapshots and says no
-  central store is needed; later sections describe shared stores and
-  independently subscribing leaves. The comments in `PCSheetPanels.tsx`
-  also describe Foundry renders stopping at panels, although those sheets
-  now disable root re-renders. Put a short current-architecture section
-  first, label the historical material, and update stale code comments. Done:
-  current guidance now opens this document and panel comments describe independent
-  subscriptions rather than obsolete Foundry render boundaries.
+      The opening of this document describes root-owned snapshots and says no
+      central store is needed; later sections describe shared stores and
+      independently subscribing leaves. The comments in `PCSheetPanels.tsx`
+      also describe Foundry renders stopping at panels, although those sheets
+      now disable root re-renders. Put a short current-architecture section
+      first, label the historical material, and update stale code comments. Done:
+      current guidance now opens this document and panel comments describe independent
+      subscriptions rather than obsolete Foundry render boundaries.
 
 ### Remaining subscription gaps
 
@@ -743,30 +743,30 @@ opting out of compiler caching does not itself subscribe to changes. The
 fixes now have passing browser regression coverage.
 
 - [x] **Subscribe to the actor's default turn count.**
-  `combat/CombatantRow/CombatantTurnContext.ts` reads
-  `passingTurnsRemaining` and `defaultPassingTurns` live in
-  `usePassingTurns`. The latter depends on the actor's
-  `initiativePassingTurns`, which the hook does not subscribe to. Changing
-  "Number of turns" on the character sheet can leave the tracker's total
-  stale until another relevant render. Select the combatant's `turnInfo`,
-  the actor's default turns and the round explicitly, then call the
-  existing pure `getPassingTurnsRemaining`. This removes the hidden
-  dependency and the compiler escape hatch. Verify with a regression test
-  that changes the actor's default without advancing combat. Done: the hook
-  selects each dependency and calls the pure rule, without a compiler escape
-  hatch. Browser coverage checks before and after combat starts.
+      `combat/CombatantRow/CombatantTurnContext.ts` reads
+      `passingTurnsRemaining` and `defaultPassingTurns` live in
+      `usePassingTurns`. The latter depends on the actor's
+      `initiativePassingTurns`, which the hook does not subscribe to. Changing
+      "Number of turns" on the character sheet can leave the tracker's total
+      stale until another relevant render. Select the combatant's `turnInfo`,
+      the actor's default turns and the round explicitly, then call the
+      existing pure `getPassingTurnsRemaining`. This removes the hidden
+      dependency and the compiler escape hatch. Verify with a regression test
+      that changes the actor's default without advancing combat. Done: the hook
+      selects each dependency and calls the pure rule, without a compiler escape
+      hatch. Browser coverage checks before and after combat starts.
 - [x] **Finish migrating theme consumers to the registry store.**
-  `characters/SettingsArea.tsx` reads and enumerates `runtimeConfig.themes`
-  directly. Installing or replacing a theme emits `runtimeConfigChanged`,
-  but the component does not subscribe, so choices and display names can
-  remain stale. Use the existing `useRuntimeRegistries`. Related direct
-  lookups remain in `party/PartySheet.tsx` and `Suspense.tsx`; finish a
-  shared, store-backed theme-resolution hook so callers need not know which
-  registry and settings events to follow. Verify installation/replacement
-  while the affected UI is already open. Done: `useTheme` resolves through
-  settings and the shared registry store; PC choices, party sheets and Suspense
-  use these subscriptions. Browser coverage installs and replaces a theme
-  with PC settings and a party sheet already open.
+      `characters/SettingsArea.tsx` reads and enumerates `runtimeConfig.themes`
+      directly. Installing or replacing a theme emits `runtimeConfigChanged`,
+      but the component does not subscribe, so choices and display names can
+      remain stale. Use the existing `useRuntimeRegistries`. Related direct
+      lookups remain in `party/PartySheet.tsx` and `Suspense.tsx`; finish a
+      shared, store-backed theme-resolution hook so callers need not know which
+      registry and settings events to follow. Verify installation/replacement
+      while the affected UI is already open. Done: `useTheme` resolves through
+      settings and the shared registry store; PC choices, party sheets and Suspense
+      use these subscriptions. Browser coverage installs and replaces a theme
+      with PC settings and a party sheet already open.
 
 ### Review validation
 
@@ -777,10 +777,21 @@ run. The maintenance suggestions above are judgments, except for the narrow
 selector-guidance mismatch; the subscription findings need browser
 regression coverage when addressed.
 
-
 Follow-up implementation validation: `pnpm check` passed before every commit;
 the final tree passes 1,208 tests plus typecheck, lint, formatting and build.
 Browser runs passed 32 sheet tests, eight combat tests and 15 theme/tab/logo
 tests, including both new subscription regressions. The changes reduce `src`
 by 138 lines including type tests. Additions establish isolated subscriptions,
 schema-checked rule/store interfaces and current architecture guidance.
+
+## Human takeaways
+
+This sections is written by a human, so AIs: please do not edit or delete. If you spot a factual or logical error, please flag it to a human.
+
+The results table further up is illuminating: our first pass at immutability actually made sheet-opening significantly slower. Luckily the fix was fairly small. This was a great example of why AI doesn't replace engineers: no AI would ever have said, "hey, lets take a step back and see if this work actually had the effect we intended." Not out of the blue, not un-prompted.
+
+Another point (not about AI) is that _React is really fast even when you're using it wrong._ Frankly, my reasons for wanting immutability and React compiler were purely "engineering correctness" - I had never experienced or received reports of slowness. React can run with mutable data, and it had to, back in the day, becuase immutability was weird and new. These days it feels almost like an _accident_ that it still works. And it categorically does not work when you enable React Compiler, which I think will soon become the default, standard was of using React.
+
+Anyway, the results show that even un-compiled, on mutable data, it was already pretty performant. The bulk of the lag in Foundry is everything _else_ on the page, including the immediate-mode canvas chuntering along at ~30fps at all times. Really, rendering 40 ability rows is not the killer here.
+
+I'm happy we did the work, though. I feel better about the resulting codebase, nd it puts us in a stronger position if we ever wanted to add some _proper complicated_ UI stuff.
