@@ -175,8 +175,12 @@ export function createParentStore<TData, K extends EmbeddedKeys<TData>>(
         });
       const isOurs = (doc: { parent: unknown }) => doc.parent === parent;
       const offs: Off[] = [
-        on(updateHook, ((doc: unknown) => {
-          if (doc === parent) refresh(null);
+        on(updateHook, ((doc: unknown, changed?: object) => {
+          if (doc !== parent) return;
+          // embedded documents changed through the parent's own update
+          // (`actor.update({ items: [...] })`) get no hooks of their own
+          if (changed && entries.some(([key]) => key in changed)) onChange();
+          else refresh(null);
         }) as Hooks.Function<typeof updateHook>),
       ];
       for (const [key, c] of entries) {
@@ -332,6 +336,7 @@ export const getSettingsStore = once(() => {
     [
       onHook("createSetting", isOurs),
       onHook("updateSetting", isOurs),
+      onHook("deleteSetting", isOurs),
       onHook("clientSettingChanged", (key) => key.startsWith(prefix)),
     ],
   );

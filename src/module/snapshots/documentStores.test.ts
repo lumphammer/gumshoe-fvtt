@@ -88,6 +88,13 @@ describe("createParentStore", () => {
     expect(t.store.getSnapshot().name).toBe("Renamed");
   });
 
+  it("reads its embedded documents again when the parent's update changes them", () => {
+    // (`entry.update({ pages: [...] })` fires no page hooks)
+    t.parent.pages[0].name = "A2";
+    t.call("updateJournalEntry", t.parent, { pages: [{ _id: "a" }] });
+    expect(t.store.getSnapshot().pages[0]).toEqual({ _id: "a", name: "A2" });
+  });
+
   it("ignores other documents", () => {
     const before = t.store.getSnapshot();
     t.call("updateJournalEntry", { name: "Other" });

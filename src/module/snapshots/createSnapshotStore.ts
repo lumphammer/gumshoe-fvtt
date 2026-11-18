@@ -38,8 +38,10 @@ export const watchGraceMs = 5000;
  * anything has subscribed (React subscribes after committing), so this makes
  * every component that mounts share one read, rather than each reading all
  * the data again; and a tab switch or a sheet reopened soon after reads
- * nothing. A store that stopped watching reads again when it's next read or
- * subscribed to, so how long it waits doesn't matter for being up to date.
+ * little (but its first subscriber reads it again). A store that stopped
+ * watching reads again when it's next read or subscribed to, so how long it
+ * waits doesn't matter for being up to date. Reading it again while it's
+ * waiting doesn't put the wait back; its last subscriber leaving does.
  *
  * @param read returns a fresh copy of the data (never the live object, which
  * would then be shared with, and mutated under, the snapshot).
@@ -93,8 +95,14 @@ export function createSnapshotStore<T>(
 
   return {
     subscribe: (listener) => {
+      const first = listeners.size === 0;
       listeners.add(listener);
-      startWatching(true);
+      if (unwatch === null) startWatching(true);
+      // the first subscriber reads again even if it was still watching: a
+      // change its hooks miss (which a sheet open at the time would show
+      // after its next re-read) mustn't outlast a sheet being reopened.
+      // Once per store per mount, rather than once per component
+      else if (first) change(read(), false);
       return () => {
         listeners.delete(listener);
         if (listeners.size === 0) stopWatchingLater();
@@ -112,7 +120,7 @@ export function createSnapshotStore<T>(
 }
 
 /** A store of `null`, for when there's no document to snapshot. */
-export const nullStore: SnapshotStore<null> = createSnapshotStore(
-  () => null,
-  () => () => undefined,
-);
+export const nullStore: SnapshotStore<null> = {
+  subscribe: () => () => undefined,
+  getSnapshot: () => null,
+};

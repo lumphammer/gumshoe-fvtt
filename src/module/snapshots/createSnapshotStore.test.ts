@@ -62,14 +62,15 @@ describe("createSnapshotStore", () => {
     expect(unwatch).toHaveBeenCalledTimes(1);
   });
 
-  it("reads once for many reads with nothing subscribed", () => {
+  it("reads once for many reads with nothing subscribed, and once to subscribe", () => {
     const read = vi.fn(() => ({ a: 1 }));
     const store = createSnapshotStore(read, () => () => undefined);
     vi.advanceTimersByTime(watchGraceMs);
     read.mockClear();
     for (let i = 0; i < 10; i++) store.getSnapshot();
-    store.subscribe(vi.fn());
     expect(read).toHaveBeenCalledTimes(1);
+    for (let i = 0; i < 10; i++) store.subscribe(vi.fn());
+    expect(read).toHaveBeenCalledTimes(2);
   });
 
   it("shares what didn't change, and notifies", () => {
@@ -113,6 +114,33 @@ describe("createSnapshotStore", () => {
     live.a.x = 9;
     expect(store.getSnapshot().a).toEqual({ x: 9 });
     expect(store.getSnapshot().b).toBe(before.b);
+  });
+
+  it("reads again for its first subscriber, even while still watching", () => {
+    const { live, store } = setUp();
+    store.subscribe(vi.fn())();
+    // a change its hooks missed, while the store was still watching
+    live.a.x = 8;
+    store.subscribe(vi.fn());
+    expect(store.getSnapshot().a).toEqual({ x: 8 });
+    live.a.x = 9;
+    store.subscribe(vi.fn());
+    expect(store.getSnapshot().a).toEqual({ x: 8 });
+  });
+
+  it("keeps its wait when read, and starts it again when left", () => {
+    const { store, unwatch } = setUp();
+    vi.advanceTimersByTime(watchGraceMs - 1);
+    store.getSnapshot();
+    vi.advanceTimersByTime(1);
+    expect(unwatch).toHaveBeenCalledTimes(1);
+    store.getSnapshot();
+    vi.advanceTimersByTime(watchGraceMs - 1);
+    store.subscribe(vi.fn())();
+    vi.advanceTimersByTime(watchGraceMs - 1);
+    expect(unwatch).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(1);
+    expect(unwatch).toHaveBeenCalledTimes(2);
   });
 
   it("catches up on changes made before subscribing", () => {
