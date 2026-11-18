@@ -16,6 +16,11 @@ export interface Commit {
   container: Element;
   /** How many of each component rendered, by name. */
   byComponent: Record<string, number>;
+  /**
+   * Time each component spent rendering itself (not its children), by name,
+   * in ms (profiling build only).
+   */
+  selfMsByComponent: Record<string, number>;
 }
 
 export interface RenderBench {
@@ -34,8 +39,15 @@ declare global {
  * Install a stand-in for React DevTools' global hook, which React calls on
  * every commit. Run with `page.addInitScript`, before React loads: so it must
  * be self-contained.
+ *
+ * `walk`: when to walk each commit's fibers, to count and time the components
+ * that rendered. "always" (the default), or "profiling" for only in React's
+ * profiling build, so that a production build's main-thread time doesn't
+ * include the walk (its commits then have `rendered: 0` and no names).
  */
-export function installCommitRecorder() {
+export function installCommitRecorder(
+  { walk }: { walk: "always" | "profiling" } = { walk: "always" },
+) {
   type Fiber = {
     tag: number;
     flags: number;
@@ -52,7 +64,7 @@ export function installCommitRecorder() {
   const performedWork = 1;
   const componentTags = new Set([0, 1, 11, 15]);
 
-  /** Components that rendered in the commit `fiber` is part of. */
+  /** A component's name, from its type. */
   const nameOf = (type: unknown): string => {
     if (typeof type === "function") {
       const fn = type as { displayName?: string; name?: string };
@@ -69,24 +81,48 @@ export function installCommitRecorder() {
     return "Anonymous";
   };
 
+  /** Count (and time) the components that rendered in `fiber`'s subtree. */
   const countRendered = (
     fiber: Fiber,
     byComponent: Record<string, number>,
+    selfMsByComponent: Record<string, number>,
+    /** The nearest named component above, to place anonymous ones. */
+    parentName = "root",
   ): number => {
     const previous = fiber.alternate;
-    let count = 0;
-    if (
-      componentTags.has(fiber.tag) &&
-      (previous === null || (fiber.flags & performedWork) !== 0)
-    ) {
-      count = 1;
-      const name = nameOf(fiber.type);
-      byComponent[name] = (byComponent[name] ?? 0) + 1;
-    }
     // a subtree React bailed out of keeps its old children
-    if (previous !== null && previous.child === fiber.child) return count;
+    const reusedChildren = previous !== null && previous.child === fiber.child;
+    let count = 0;
+    let nextParentName = parentName;
+    if (componentTags.has(fiber.tag)) {
+      const ownName = nameOf(fiber.type);
+      const name =
+        ownName === "Anonymous" ? `Anonymous in ${parentName}` : ownName;
+      // named ancestors place anonymous components whether they rendered or not
+      if (ownName !== "Anonymous") nextParentName = ownName;
+      if (previous === null || (fiber.flags & performedWork) !== 0) {
+        count = 1;
+        byComponent[name] = (byComponent[name] ?? 0) + 1;
+        if (fiber.actualDuration !== undefined) {
+          // React adds its children's time only when they rendered again
+          let self = fiber.actualDuration;
+          if (!reusedChildren) {
+            for (let c = fiber.child; c !== null; c = c.sibling) {
+              self -= c.actualDuration ?? 0;
+            }
+          }
+          selfMsByComponent[name] = (selfMsByComponent[name] ?? 0) + self;
+        }
+      }
+    }
+    if (reusedChildren) return count;
     for (let child = fiber.child; child !== null; child = child.sibling) {
-      count += countRendered(child, byComponent);
+      count += countRendered(
+        child,
+        byComponent,
+        selfMsByComponent,
+        nextParentName,
+      );
     }
     return count;
   };
@@ -105,13 +141,20 @@ export function installCommitRecorder() {
     onCommitFiberUnmount: () => undefined,
     onPostCommitFiberRoot: () => undefined,
     onCommitFiberRoot: (_rendererId: number, root: FiberRoot) => {
+      const time = performance.now();
+      const renderMs = root.current.actualDuration;
       const byComponent: Record<string, number> = {};
+      const selfMsByComponent: Record<string, number> = {};
+      const walkThis = walk === "always" || renderMs !== undefined;
       bench.commits.push({
-        time: performance.now(),
-        renderMs: root.current.actualDuration,
-        rendered: countRendered(root.current, byComponent),
+        time,
+        renderMs,
+        rendered: walkThis
+          ? countRendered(root.current, byComponent, selfMsByComponent)
+          : 0,
         container: root.containerInfo,
         byComponent,
+        selfMsByComponent,
       });
     },
   };

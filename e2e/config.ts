@@ -47,8 +47,12 @@ export const foundryServers: FoundryServer[] = (() => {
   }));
 })();
 
-/** The system build the tests install. */
-export const buildPath = path.join(dirname, "..", "build");
+/**
+ * The system build the tests install: `build/`, or `E2E_BUILD_PATH` (to
+ * benchmark other builds).
+ */
+export const buildPath =
+  process.env["E2E_BUILD_PATH"] ?? path.join(dirname, "..", "build");
 
 /**
  * The world the tests use. It is deleted and recreated at the start of every

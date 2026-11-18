@@ -89,7 +89,15 @@ async function deleteWorld(api: APIRequestContext) {
  * Call this while no world is running, so the packs are closed.
  */
 function installSystem(dataPath: string) {
-  if (!fs.existsSync(dataPath)) return;
+  if (!fs.existsSync(dataPath)) {
+    // a server elsewhere runs whatever it has, which isn't what was asked for
+    if (process.env["E2E_BUILD_PATH"]) {
+      throw new Error(
+        `E2E_BUILD_PATH is set, but can't be installed: no data folder at ${dataPath}`,
+      );
+    }
+    return;
+  }
   const systemPath = path.join(dataPath, "Data/systems/investigator");
   const manifest = (dir: string) =>
     fs.readFileSync(path.join(dir, "system.json"), "utf8");
