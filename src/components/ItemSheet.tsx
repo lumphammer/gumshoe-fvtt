@@ -1,4 +1,4 @@
-import { css } from "../styled-system/css";
+import { css, cx } from "../styled-system/css";
 import { useActorTheme } from "../hooks/useActorTheme";
 import { useItemSheetContext } from "../hooks/useSheetContexts";
 import { useSheetPermissions } from "../hooks/useSheetPermissions";
@@ -24,6 +24,20 @@ import { PersonalDetailSheet } from "./personalDetails/PersonalDetailSheet";
 import { ThrowError } from "./ThrowError";
 
 /**
+ * `--inv-titlebar-clearance`: how far the window's titlebar reaches down over
+ * the sheet. In the full-frame layout it's a see-through strip over the top
+ * of it (`appFrame`), and each sheet keeps its controls below it, letting its
+ * plain text (a supertitle) run up into it, so there's no band of empty
+ * wallpaper above the sheet. Otherwise the titlebar is above the sheet, so 0.
+ */
+const titlebarClearance = css({
+  "--inv-titlebar-clearance": "0px",
+  "&[data-inv-layout=full-frame]": {
+    "--inv-titlebar-clearance": "var(--header-height)",
+  },
+});
+
+/**
  * We only register one "Item" sheet with foundry and then dispatch based on
  * type here.
  *
@@ -36,13 +50,15 @@ export const ItemSheet = () => {
   const permissions = useSheetPermissions(item);
   const theme = useActorTheme(item.actor);
 
-  const className =
+  const className = cx(
     isAbilityItem(item) || isMwItem(item)
       ? css({ position: "absolute", inset: 0 })
-      : css({ position: "relative" });
+      : css({ position: "relative" }),
+    titlebarClearance,
+  );
 
   return (
-    <CSSReset theme={theme} mode="small" className={className}>
+    <CSSReset theme={theme} mode="small" className={className} clearsTitlebar>
       <SheetPermissionsContext value={permissions}>
         <NotesTypeContext.Provider value="itemNote">
           {isAbilityItem(item) ? (

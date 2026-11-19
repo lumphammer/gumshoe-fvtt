@@ -71,6 +71,9 @@ export const MwItemSheet = memo(function MwItemSheet() {
       className={css({
         ...absoluteCover,
         padding: "1em",
+        // below the full-frame layout's see-through titlebar, not as well
+        // (`ItemSheet`)
+        paddingTop: "[max(1em, var(--inv-titlebar-clearance))]",
         display: "grid",
         gridTemplateColumns: "auto 1fr auto",
         gridTemplateRows: "auto auto 1fr",

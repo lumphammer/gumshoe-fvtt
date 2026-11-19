@@ -27,6 +27,13 @@ type CSSResetProps = PropsWithChildren<{
   theme: Theme;
   mode: "large" | "small" | "none";
   noStyleAppWindow?: boolean;
+  /**
+   * The content leaves room for the full-frame layout's see-through titlebar
+   * itself (`appFrame`), as the item sheets do, through
+   * `--inv-titlebar-clearance`. (The PC and NPC sheets' logos say so
+   * themselves.)
+   */
+  clearsTitlebar?: boolean;
 }>;
 
 export const CSSReset = ({
@@ -35,6 +42,7 @@ export const CSSReset = ({
   theme,
   mode,
   noStyleAppWindow = false,
+  clearsTitlebar = false,
 }: CSSResetProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -73,6 +81,7 @@ export const CSSReset = ({
         data-inv-theme={slug}
         // for the sheets' grids, which follow it
         data-inv-layout={layout}
+        data-inv-clears-titlebar={clearsTitlebar || undefined}
         style={palette}
       >
         {children}

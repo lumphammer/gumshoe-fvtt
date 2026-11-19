@@ -2,7 +2,8 @@ import { defineSlotRecipe } from "@pandacss/dev";
 
 /**
  * The window, when its titlebar is see-through, over the content: its content
- * leaves room for it (`data-inv-clears-titlebar`, the logo), and it isn't
+ * leaves room for it (`data-inv-clears-titlebar`: the PC and NPC sheets' logo,
+ * or an item sheet's root, `CSSReset`), and it isn't
  * minimized. Otherwise, it keeps the standard titlebar.
  */
 const overlaid =

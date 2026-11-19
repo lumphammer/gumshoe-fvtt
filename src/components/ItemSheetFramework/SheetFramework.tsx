@@ -65,10 +65,37 @@ export const ItemSheetFramework = ({
             '"image slug     cog" ' +
             '"image headline headline" ' +
             '"body  body     body" ',
+          // under the full-frame layout's see-through titlebar
+          // (`--inv-titlebar-clearance`, `ItemSheet`), only the supertitle:
+          // the cog moves down beside the headline, clear of the window's
+          // buttons, and the image is lifted over the strip, so all of it
+          // stays clickable (the root's padding is already clear)
+          paddingTop:
+            "[max(0px, calc(var(--inv-titlebar-clearance) - 0.5em - 1lh))]",
+          "[data-inv-layout=full-frame] &": {
+            gridTemplateAreas:
+              '"image slug     slug" ' +
+              '"image headline cog" ' +
+              '"body  body     body" ',
+          },
         })}
       >
         {/* Supertitle */}
-        <div className={css({ gridArea: "slug" })}>{supertitle}</div>
+        <div
+          className={css({
+            gridArea: "slug",
+            // in the full-frame layout's titlebar, it keeps clear of the
+            // window's buttons
+            "[data-inv-layout=full-frame] &": {
+              marginRight: "[calc(3 * var(--header-height))]",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            },
+          })}
+        >
+          {supertitle}
+        </div>
 
         {/* Headline */}
         <h1 className={css({ gridArea: "headline" })}>
@@ -92,6 +119,8 @@ export const ItemSheetFramework = ({
           img={header.img}
           className={css({
             gridArea: "image",
+            position: "relative",
+            zIndex: 2,
             transform: "rotateZ(-2deg)",
             width: "4em",
             height: "4em",

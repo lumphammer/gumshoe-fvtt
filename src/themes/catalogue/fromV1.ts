@@ -426,7 +426,7 @@ export function themeFromV1(theme: ThemeV1): ThemeV2 {
     displayName: theme.displayName,
     palette: paletteFromV1(theme),
     catalogue: catalogueFromV1(theme),
-    layout: "full-frame",
+    layout: "standard",
     ...(globalCss ? { globalCss } : {}),
   };
 }
