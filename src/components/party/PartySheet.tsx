@@ -65,6 +65,7 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
     <CSSReset
       mode="small"
       theme={theme}
+      clearsTitlebar
       className={css({
         position: "absolute",
         top: 0,
@@ -73,6 +74,9 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
         left: 0,
         display: "flex",
         flexDirection: "column",
+        // below the full-frame layout's see-through titlebar, not as well
+        // (`CSSReset`)
+        paddingTop: "[max(0.5em, var(--inv-titlebar-clearance))]",
       })}
     >
       {header.actorIds.length === 0 && (

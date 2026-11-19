@@ -104,11 +104,15 @@ export const JournalEditorSheet = () => {
         <CSSReset
           theme={theme}
           mode="large"
+          clearsTitlebar
           className={css({
             ...absoluteCover,
             display: "flex",
             gap: "0.5em",
             flexDirection: "column",
+            // below the full-frame layout's see-through titlebar, not as well
+            // (`CSSReset`)
+            paddingTop: "[max(0.5em, var(--inv-titlebar-clearance))]",
           })}
         >
           <MagicToolbar

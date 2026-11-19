@@ -80,6 +80,10 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
         className={css({
           gridArea: "image",
           transform: "rotateZ(2deg)",
+          // at the top of the root, under the titlebar's strip in the
+          // full-frame layout, past its padding
+          "--inv-image-pickle-clearance":
+            "max(0px, calc(var(--inv-titlebar-clearance) - 0.5em))",
         })}
       />
     </>

@@ -13,6 +13,9 @@ const Fallback = () => {
     <CSSReset
       theme={theme}
       mode="large"
+      // so a full-frame sheet's titlebar is see-through from the start, not
+      // only once it's loaded (the spinner's in the middle, clear of it)
+      clearsTitlebar
       className={cx(surface(), css(absoluteCover))}
     >
       <i

@@ -9,7 +9,6 @@ import { assertEquipmentItem } from "../../module/items/equipment";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
 import { ItemSheetMode } from "../ItemSheetFramework/types";
-import { Translate } from "../Translate";
 import { EquipmentConfig } from "./EquipmentConfig";
 import { EquipmentMain } from "./EquipmentMain";
 
@@ -31,7 +30,7 @@ export const EquipmentSheet = memo(function EquipmentSheet() {
   const name = useAsyncUpdate(snapshot.name, item.setName);
 
   return (
-    <ItemSheetFramework supertitle={<Translate>Equipment</Translate>}>
+    <ItemSheetFramework>
       <ModeSelect mode={ItemSheetMode.Main}>
         <EquipmentMain
           item={item}

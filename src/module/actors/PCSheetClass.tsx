@@ -3,7 +3,10 @@ import { ReactApplicationV2Mixin } from "@lumphammer/shared-fvtt-bits/src/ReactA
 import type { DeepPartial } from "fvtt-types/utils";
 
 import { PCSheet } from "../../components/characters/PCSheet";
-import { settingsButtonAction } from "../../components/characters/useSettingsButton";
+import {
+  hideSettingsButton,
+  settingsFrameButton,
+} from "../../components/useSettingsButton";
 import { systemId } from "../../constants";
 import { ActorSheetV2 } from "../../fvtt-exports";
 import { NoDocumentTypeInTitleMixin } from "@lumphammer/shared-fvtt-bits/src/NoDocumentTypeInTitleMixin";
@@ -23,23 +26,14 @@ class PCSheetClassBase extends ActorSheetV2 {
   };
 
   protected override _getFrameButtons(options: DeepPartial<RenderOptions>) {
-    return [
-      ...super._getFrameButtons(options),
-      {
-        icon: "fa-solid fa-gear",
-        label: "investigator.Settings",
-        action: settingsButtonAction,
-      },
-    ];
+    return [...super._getFrameButtons(options), settingsFrameButton];
   }
 
   // the sheet shows it (not in the limited view) and handles clicks: see
   // `useSettingsButton`
   protected override async _renderFrame(options: DeepPartial<RenderOptions>) {
     const frame = await super._renderFrame(options);
-    frame
-      .querySelector<HTMLElement>(`[data-action="${settingsButtonAction}"]`)
-      ?.style.setProperty("display", "none");
+    hideSettingsButton(frame);
     return frame;
   }
 }

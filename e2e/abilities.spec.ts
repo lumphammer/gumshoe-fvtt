@@ -23,10 +23,12 @@ test("testing a general ability spends from its pool and rolls", async ({
   const actorSheet = await openSheet(page, `Actor.${actorId}`);
   await actorSheet.locator("a", { hasText: /^Athletics$/ }).click();
 
-  // the ability's own sheet (its title is just its name)
-  const abilitySheet = page.locator(".application", {
-    hasText: "General ability (Test Investigator)",
-  });
+  // the ability's own sheet (its window title is just its name): its type,
+  // owner and name at the top
+  const abilitySheet = page
+    .locator(".application", { hasText: "General Ability" })
+    .filter({ hasText: "Test Investigator" })
+    .filter({ has: page.locator("h1", { hasText: /^Athletics$/ }) });
   await abilitySheet.locator("label", { hasText: /^2$/ }).click();
   await abilitySheet.getByRole("button", { name: "Test" }).click();
 

@@ -14,6 +14,7 @@ import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
 import { ItemSheetMode } from "../ItemSheetFramework/types";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
+import { BelowTitlebar } from "../BelowTitlebar";
 import { BondConfig } from "./BondConfig";
 import type { BondOwner } from "./BondMain";
 import { BondMain } from "./BondMain";
@@ -59,9 +60,11 @@ export const BondSheet = memo(function BondSheet() {
           <BondConfig item={item} />
         </ModeSelect>
       </ItemSheetFramework>
-      <SlideInNestedPanelRoute direction={rebuild}>
-        <RebuildBondPanel bond={item} />
-      </SlideInNestedPanelRoute>
+      <BelowTitlebar>
+        <SlideInNestedPanelRoute direction={rebuild}>
+          <RebuildBondPanel bond={item} />
+        </SlideInNestedPanelRoute>
+      </BelowTitlebar>
     </Router>
   );
 });

@@ -396,3 +396,55 @@ test("a detached window keeps the look", async ({ page }) => {
   await expect(frame.locator(".window-title")).toBeHidden();
   await popup.close();
 });
+
+/** An item's sheet in the fog theme (full-frame), and the titlebar's strip. */
+async function openFogItemSheet(page: Page, type: "card" | "equipment") {
+  await setSettings(page, { defaultThemeName: "fogTheme" });
+  const itemId = await page.evaluate(
+    async (type) => (await Item.create({ name: `A ${type}`, type }))!.id,
+    type,
+  );
+  const sheet = await openSheet(page, `Item.${itemId}`);
+  const strip = (await sheet.locator(".window-header").boundingBox())!;
+  return { sheet, strip };
+}
+
+test("a drawer over an item's sheet starts below the titlebar, which still takes clicks", async ({
+  page,
+}) => {
+  const { sheet, strip } = await openFogItemSheet(page, "card");
+  await sheet.getByText("Edit", { exact: true }).click();
+  const back = sheet.getByText("Back", { exact: true });
+  await expect(back).toBeVisible();
+  const box = (await back.boundingBox())!;
+  expect(box.y).toBeGreaterThanOrEqual(strip.y + strip.height - 1);
+  await back.click();
+  await expect(back).toBeHidden();
+
+  // with the drawer open, the window's buttons are still over it
+  await sheet.getByText("Edit", { exact: true }).click();
+  await expect(back).toBeVisible();
+  await sheet.locator('.window-header [data-action="close"]').click();
+  await expect(sheet).toBeHidden();
+});
+
+test("an item's portrait runs up under the titlebar, its links below it", async ({
+  page,
+}) => {
+  const { sheet, strip } = await openFogItemSheet(page, "equipment");
+  const portrait = sheet.getByTestId("image-pickle");
+  expect((await portrait.boundingBox())!.y).toBeLessThan(
+    strip.y + strip.height,
+  );
+  await portrait.click({
+    position: { x: 10, y: (await portrait.boundingBox())!.height - 10 },
+  });
+  const show = sheet.getByText("Show", { exact: true });
+  await expect(show).toBeVisible();
+  expect((await show.boundingBox())!.y).toBeGreaterThanOrEqual(
+    strip.y + strip.height - 1,
+  );
+  // nothing over it: Playwright checks the click lands on it
+  await show.click();
+  await expect(page.locator(".image-popout")).toBeVisible();
+});

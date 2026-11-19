@@ -10,6 +10,7 @@ import { assertMwItem } from "../../module/items/mwItem";
 import type { MwType } from "../../types";
 import { absoluteCover } from "../absoluteCover";
 import { ImagePickle } from "../ImagePickle";
+import { ItemSheetTitle } from "../ItemSheetFramework/ItemSheetTitle";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
@@ -17,7 +18,6 @@ import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Select } from "../inputs/Select";
 import { TextInput } from "../inputs/TextInput";
-import { Translate } from "../Translate";
 import { css } from "../../styled-system/css";
 
 /**
@@ -32,8 +32,6 @@ export const MwItemSheet = memo(function MwItemSheet() {
   const { system } = snapshot;
   const methods = useSystemMethods(item);
 
-  const { contentEditableRef, onBlur, onFocus, onInput, onKeyDown, onPaste } =
-    useAsyncUpdate(snapshot.name, item.setName);
   const nameInput = useAsyncUpdate(snapshot.name, item.setName);
   // `setRange(n)` makes a setter from the system data it's called on, so
   // make it when the value's set, from the system data at the time
@@ -71,31 +69,16 @@ export const MwItemSheet = memo(function MwItemSheet() {
       className={css({
         ...absoluteCover,
         padding: "1em",
+        // below the full-frame layout's see-through titlebar, not as well
+        // (`CSSReset`)
+        paddingTop: "[max(1em, var(--inv-titlebar-clearance))]",
         display: "grid",
         gridTemplateColumns: "auto 1fr auto",
-        gridTemplateRows: "auto auto 1fr",
-        gridTemplateAreas:
-          '"image  slug      trash" ' +
-          '"image  headline  headline" ' +
-          '"body   body      body" ',
+        gridTemplateRows: "auto 1fr",
+        gridTemplateAreas: `"image title trash" "body body body"`,
       })}
     >
-      {/* Slug */}
-      <div className={css({ gridArea: "slug" })}>
-        <Translate>MWItem</Translate>
-      </div>
-
-      {/* Headline */}
-      <h1
-        className={css({ gridArea: "headline" })}
-        contentEditable
-        onInput={onInput}
-        onKeyDown={onKeyDown}
-        onPaste={onPaste}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        ref={contentEditableRef}
-      />
+      <ItemSheetTitle className={css({ gridArea: "title" })} />
 
       {/* Image */}
       <ImagePickle

@@ -224,11 +224,15 @@ export const Settings = () => {
             <CSSReset
               mode="small"
               theme={theme}
+              clearsTitlebar
               className={css({
                 ...absoluteCover,
                 display: "flex",
                 flexDirection: "column",
                 padding: "0.5em",
+                // below the full-frame layout's see-through titlebar, not as
+                // well (`CSSReset`)
+                paddingTop: "[max(0.5em, var(--inv-titlebar-clearance))]",
               })}
             >
               <ShowBackLinkContext.Provider value={false}>

@@ -42,7 +42,7 @@ export const ItemSheet = () => {
       : css({ position: "relative" });
 
   return (
-    <CSSReset theme={theme} mode="small" className={className}>
+    <CSSReset theme={theme} mode="small" className={className} clearsTitlebar>
       <SheetPermissionsContext value={permissions}>
         <NotesTypeContext.Provider value="itemNote">
           {isAbilityItem(item) ? (
