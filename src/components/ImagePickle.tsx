@@ -142,8 +142,9 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
             transition: `[opacity ${transitionTime} ease-in]`,
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-around",
             alignItems: "center",
+            justifyContent: "center",
+            gap: "1em",
           }),
         )}
       >

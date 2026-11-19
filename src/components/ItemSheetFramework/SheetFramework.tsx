@@ -70,14 +70,21 @@ export const ItemSheetFramework = ({
           gridTemplateColumns: "auto 1fr",
           gridTemplateRows: "auto auto 1fr",
           gridTemplateAreas: `"image slug" "image headline" "body body"`,
-          // just below the full-frame layout's see-through titlebar
-          // (`--inv-titlebar-clearance`, `ItemSheet`), clear of its buttons:
-          // the root's padding is already part of the way
-          paddingTop: "[max(0px, calc(var(--inv-titlebar-clearance) - 0.5em))]",
         })}
       >
-        {/* Supertitle */}
-        <div className={css({ gridArea: "slug" })}>{supertitle}</div>
+        {/* Supertitle: just below the full-frame layout's see-through
+            titlebar (`--inv-titlebar-clearance`, `ItemSheet`), clear of its
+            buttons (the root's padding is already part of the way), while the
+            image runs up under it */}
+        <div
+          className={css({
+            gridArea: "slug",
+            marginTop:
+              "[max(0px, calc(var(--inv-titlebar-clearance) - 0.5em))]",
+          })}
+        >
+          {supertitle}
+        </div>
 
         {/* Headline */}
         <h1 className={css({ gridArea: "headline" })}>
@@ -102,9 +109,11 @@ export const ItemSheetFramework = ({
           className={css({
             gridArea: "image",
             transform: "rotateZ(-2deg)",
-            width: "4em",
-            height: "4em",
-            margin: "0 1em 0.5em 0",
+            // as tall as the supertitle and headline (and the titlebar, in
+            // the full-frame layout), down to the body
+            width: "6em",
+            minHeight: "4em",
+            margin: "0 1em 0 0",
           })}
         />
 
