@@ -43,7 +43,8 @@ type CSSResetProps = PropsWithChildren<{
   noStyleAppWindow?: boolean;
   /**
    * The content leaves room for the full-frame layout's see-through titlebar
-   * itself (`appFrame`), as the item and party sheets do, through
+   * itself (`appFrame`), as the item and party sheets and the
+   * settings do, through
    * `--inv-titlebar-clearance` (`titlebarClearance`). (The PC and NPC sheets'
    * logos say so themselves.)
    */
