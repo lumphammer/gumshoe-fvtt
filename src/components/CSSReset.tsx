@@ -22,6 +22,20 @@ const logoTuning = css({
   "--inv-logo-strip-tuck": "15px",
 });
 
+/**
+ * `--inv-titlebar-clearance`, for a root which `clearsTitlebar`: how far the
+ * window's titlebar reaches down over it. In the full-frame layout it's a
+ * see-through strip over the top of it (`appFrame`), and the sheet starts
+ * just below it, instead of below it and its usual padding too. Otherwise
+ * the titlebar is above the sheet, so 0.
+ */
+const titlebarClearance = css({
+  "--inv-titlebar-clearance": "0px",
+  "&[data-inv-layout=full-frame]": {
+    "--inv-titlebar-clearance": "var(--header-height)",
+  },
+});
+
 type CSSResetProps = PropsWithChildren<{
   className?: string;
   theme: Theme;
@@ -29,9 +43,9 @@ type CSSResetProps = PropsWithChildren<{
   noStyleAppWindow?: boolean;
   /**
    * The content leaves room for the full-frame layout's see-through titlebar
-   * itself (`appFrame`), as the item sheets do, through
-   * `--inv-titlebar-clearance`. (The PC and NPC sheets' logos say so
-   * themselves.)
+   * itself (`appFrame`), as the item and party sheets do, through
+   * `--inv-titlebar-clearance` (`titlebarClearance`). (The PC and NPC sheets'
+   * logos say so themselves.)
    */
   clearsTitlebar?: boolean;
 }>;
@@ -77,7 +91,12 @@ export const CSSReset = ({
     <ErrorBoundary>
       <div
         ref={ref}
-        className={cx(sheetRoot({ size: mode }), logoTuning, className)}
+        className={cx(
+          sheetRoot({ size: mode }),
+          logoTuning,
+          clearsTitlebar && titlebarClearance,
+          className,
+        )}
         data-inv-theme={slug}
         // for the sheets' grids, which follow it
         data-inv-layout={layout}

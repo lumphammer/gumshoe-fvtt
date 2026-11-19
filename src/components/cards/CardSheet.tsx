@@ -65,7 +65,7 @@ export const CardSheet = memo(function CardSheet() {
           ...absoluteCover,
           margin: "0.5em",
           // below the full-frame layout's see-through titlebar, not as well
-          // (`ItemSheet`)
+          // (`CSSReset`)
           marginTop: "[max(0.5em, var(--inv-titlebar-clearance))]",
           display: "flex",
           flexDirection: "column",

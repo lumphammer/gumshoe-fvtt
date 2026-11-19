@@ -5,7 +5,7 @@ import { useIsEditable } from "../../hooks/useIsEditable";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { css, cx } from "../../styled-system/css";
-import { displayText, mutedText } from "../../styled-system/recipes";
+import { mutedText } from "../../styled-system/recipes";
 
 /**
  * The top of an item's sheet: what type of item it is, who owns it (if

@@ -59,7 +59,7 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
         })}
       >
         {/* Title: just below the full-frame layout's see-through titlebar
-            (`--inv-titlebar-clearance`, `ItemSheet`), clear of its buttons
+            (`--inv-titlebar-clearance`, `CSSReset`), clear of its buttons
             (the root's padding is already part of the way), while the image
             runs up under it */}
         <ItemSheetTitle
