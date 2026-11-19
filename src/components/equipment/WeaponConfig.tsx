@@ -2,7 +2,6 @@ import { memo, useCallback } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/isGame";
-import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import type { ItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
@@ -15,7 +14,6 @@ import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { OtherableDropDown } from "../inputs/OtherableDropDown";
 import { Select } from "../inputs/Select";
-import { TextInput } from "../inputs/TextInput";
 import { Toggle } from "../inputs/Toggle";
 import { Translate } from "../Translate";
 import { WeaponLethalityField } from "./WeaponLethalityField";
@@ -53,7 +51,6 @@ export const WeaponConfig = memo(function WeaponConfig({
     useLethalityAndAutofire: s.useLethalityAndAutofire,
     useExtendedRange: s.useExtendedRange,
   }));
-  const name = useAsyncUpdate(weapon.name, item.setName);
 
   const onClickDelete = useCallback(async () => {
     assertGame(game);
@@ -89,9 +86,6 @@ export const WeaponConfig = memo(function WeaponConfig({
 
   return (
     <InputGrid>
-      <GridField label="Item Name">
-        <TextInput value={name.display} onChange={name.onChange} />
-      </GridField>
       <GridField label="Cost">
         <AsyncNumberInput
           min={0}

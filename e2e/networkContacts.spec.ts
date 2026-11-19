@@ -54,7 +54,7 @@ test("a contact gets Network points, which they spend and never refresh", async 
     page,
     `Actor.${actorId}.Item.${contactId}`,
   );
-  await contactSheet.getByLabel("Name", { exact: true }).fill("Fred");
+  await contactSheet.locator("h1 [contenteditable]").fill("Fred");
   await contactSheet.getByLabel("Location").fill("Bangkok");
   await expect
     .poll(() =>

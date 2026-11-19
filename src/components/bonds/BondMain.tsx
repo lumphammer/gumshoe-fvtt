@@ -13,7 +13,6 @@ import type { BondItem, BondSystemData } from "../../module/items/bond";
 import { absoluteCover } from "../absoluteCover";
 import { Button } from "../inputs/Button";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
-import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
@@ -37,13 +36,12 @@ export type BondOwner = {
 type BondMainProps = {
   /** only to write through */
   item: BondItem;
-  name: string;
   system: BondSystemData;
   /** the PC it's on, or null if it isn't on one */
   owner: BondOwner | null;
 };
 
-export const BondMain = ({ item, name, system, owner }: BondMainProps) => {
+export const BondMain = ({ item, system, owner }: BondMainProps) => {
   const { navigate } = useNavigationContext();
   const methods = useSystemMethods(item);
   const isBroken = isBondBroken(system.points);
@@ -62,21 +60,17 @@ export const BondMain = ({ item, name, system, owner }: BondMainProps) => {
   const canRebuild = stability !== null && isBondRebuildable(system);
   const maxPoints = getMaxBondPoints(system.points, owner?.bondCap);
   const autoRows =
-    4 + (hasBadges ? 1 : 0) + (canHaveBurn ? 1 : 0) + (canRebuild ? 1 : 0);
+    3 + (hasBadges ? 1 : 0) + (canHaveBurn ? 1 : 0) + (canRebuild ? 1 : 0);
 
   return (
     <InputGrid
       className={css({
         ...absoluteCover,
-        // name, points, DELTA GREEN toggle, actor, (Burn,) (badges,)
-        // (Rebuild,)
+        // points, DELTA GREEN toggle, actor, (Burn,) (badges,) (Rebuild,)
         // then notes fill the rest
       })}
       style={{ gridTemplateRows: `repeat(${autoRows}, auto) 1fr` }}
     >
-      <GridField label="Person Name">
-        <AsyncTextInput value={name} onChange={item.setName} />
-      </GridField>
       <GridField label="Points">
         <AsyncNumberInput
           value={system.points}

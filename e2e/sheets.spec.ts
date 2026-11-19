@@ -305,10 +305,10 @@ test("a Moribund World item's range keeps the others, changed elsewhere", async 
     return item!.id;
   });
   const sheet = await openSheet(page, `Item.${itemId}`);
-  // the name, then the four ranges
+  // the four ranges
   const inputs = sheet.locator("input");
-  await expect(inputs).toHaveCount(5);
-  const range = (n: number) => inputs.nth(n + 1);
+  await expect(inputs).toHaveCount(4);
+  const range = (n: number) => inputs.nth(n);
 
   await page.evaluate(async (id) => {
     await game.items.get(id)!.update({ system: { ranges: [1, 2, 3, 4] } });

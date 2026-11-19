@@ -40,7 +40,6 @@ const Divider = () => {
 type NetworkContactMainProps = {
   /** only to write through, and to act on */
   item: NetworkContactItem;
-  name: string;
   system: NetworkContactSystemData;
   /** only a PC's contacts can be given points, tested or tapped */
   isOnPC: boolean;
@@ -51,7 +50,6 @@ type NetworkContactMainProps = {
 
 export const NetworkContactMain = ({
   item,
-  name,
   system,
   isOnPC,
   networkPool,
@@ -65,14 +63,11 @@ export const NetworkContactMain = ({
   return (
     <InputGrid
       className={css(absoluteCover)}
-      // name, location, pool, then the actions, with dividers; the notes fill
+      // location, pool, then the actions, with dividers; the notes fill
       // the rest (a runtime value: Panda can't build every combination of a
       // template)
-      style={{ gridTemplateRows: `repeat(${isOnPC ? 10 : 4}, auto) 1fr` }}
+      style={{ gridTemplateRows: `repeat(${isOnPC ? 9 : 3}, auto) 1fr` }}
     >
-      <GridField label="Name">
-        <AsyncTextInput value={name} onChange={item.setName} />
-      </GridField>
       <GridField label="Location">
         <AsyncTextInput
           value={system.location}

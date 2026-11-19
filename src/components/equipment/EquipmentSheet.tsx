@@ -1,7 +1,6 @@
 import { memo } from "react";
 import { useIsLimited } from "../../hooks/useIsEditable";
 
-import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
@@ -27,7 +26,6 @@ export const EquipmentSheet = memo(function EquipmentSheet() {
   const isLimited = useIsLimited();
   const snapshot = useItemSnapshot(item);
   const categories = useSettings((s) => s.equipmentCategories);
-  const name = useAsyncUpdate(snapshot.name, item.setName);
 
   return (
     <ItemSheetFramework>
@@ -37,8 +35,6 @@ export const EquipmentSheet = memo(function EquipmentSheet() {
           system={snapshot.system}
           categories={categories}
           isLimited={isLimited}
-          name={name.display}
-          onChangeName={name.onChange}
         />
       </ModeSelect>
       <ModeSelect mode={ItemSheetMode.Config}>

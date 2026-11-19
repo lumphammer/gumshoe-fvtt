@@ -41,7 +41,7 @@ test("creating, renaming and moving a personal detail", async ({ page }) => {
     page,
     `Actor.${actorId}.Item.${detailId}`,
   );
-  await detailSheet.getByLabel("Name", { exact: true }).fill("Revenge");
+  await detailSheet.locator("h1 [contenteditable]").fill("Revenge");
   await expect(driveField).toContainText("Revenge");
 
   // move it to the occupation slot, alongside the existing one

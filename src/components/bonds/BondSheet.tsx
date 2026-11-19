@@ -49,12 +49,7 @@ export const BondSheet = memo(function BondSheet() {
     <Router>
       <ItemSheetFramework>
         <ModeSelect mode={ItemSheetMode.Main}>
-          <BondMain
-            item={item}
-            name={view.name}
-            system={view.system}
-            owner={owner}
-          />
+          <BondMain item={item} system={view.system} owner={owner} />
         </ModeSelect>
         <ModeSelect mode={ItemSheetMode.Config}>
           <BondConfig item={item} />

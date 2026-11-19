@@ -2,7 +2,6 @@ import React, { memo } from "react";
 
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { assertGame } from "../../functions/isGame";
-import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
@@ -17,7 +16,6 @@ import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Select } from "../inputs/Select";
-import { TextInput } from "../inputs/TextInput";
 import { css } from "../../styled-system/css";
 
 /**
@@ -32,7 +30,6 @@ export const MwItemSheet = memo(function MwItemSheet() {
   const { system } = snapshot;
   const methods = useSystemMethods(item);
 
-  const nameInput = useAsyncUpdate(snapshot.name, item.setName);
   // `setRange(n)` makes a setter from the system data it's called on, so
   // make it when the value's set, from the system data at the time
   const setRange = (range: 0 | 1 | 2 | 3) => (value: number) =>
@@ -108,18 +105,10 @@ export const MwItemSheet = memo(function MwItemSheet() {
       <InputGrid
         className={css({
           gridArea: "body",
-          gridTemplateRows: "auto auto 1fr",
+          gridTemplateRows: "auto 1fr",
           gridAutoRows: "auto",
         })}
       >
-        <GridField label="Item Name">
-          <TextInput
-            value={nameInput.display}
-            onChange={nameInput.onChange}
-            onFocus={nameInput.onFocus}
-            onBlur={nameInput.onBlur}
-          />
-        </GridField>
         <GridField label="MwType">
           <Select
             value={system.mwType}

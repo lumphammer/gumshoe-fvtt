@@ -31,7 +31,6 @@ export const PersonalDetailSheet = memo(function PersonalDetailSheet() {
       <ModeSelect mode={ItemSheetMode.Main}>
         <PersonalDetailMain
           item={item}
-          name={view.name}
           system={view.system}
           detailNames={detailNames}
           occupationLabel={occupationLabel}
