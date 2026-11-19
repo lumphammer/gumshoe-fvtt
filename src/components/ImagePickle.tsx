@@ -145,6 +145,9 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
             alignItems: "center",
             justifyContent: "center",
             gap: "1em",
+            // its links below the full-frame layout's see-through titlebar,
+            // where the image runs up under it (set where it's placed)
+            paddingTop: "[var(--inv-image-pickle-clearance, 0px)]",
           }),
         )}
       >

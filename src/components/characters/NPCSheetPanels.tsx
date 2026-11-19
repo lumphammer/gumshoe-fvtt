@@ -69,7 +69,13 @@ export const NPCSheetHeader = memo(function NPCSheetHeader() {
           gridArea: "image",
           transform: "rotateZ(2deg)",
           // over the sidebar (NPCSheetFull)
-          "[data-inv-layout=full-frame] > &": { aspectRatio: "1" },
+          "[data-inv-layout=full-frame] > &": {
+            aspectRatio: "1",
+            // at the top of the root, under the titlebar's strip, past its
+            // padding
+            "--inv-image-pickle-clearance":
+              "max(0px, calc(var(--inv-titlebar-clearance) - 0.5em))",
+          },
         })}
       />
     </>

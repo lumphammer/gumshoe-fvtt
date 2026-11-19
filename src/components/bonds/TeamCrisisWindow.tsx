@@ -42,6 +42,7 @@ export const TeamCrisisWindow = () => {
         actor={app.actor}
         initialTeammateUuids={app.teammateUuids}
         onDone={() => void app.close()}
+        showActorName
       />
     </CSSReset>
   );

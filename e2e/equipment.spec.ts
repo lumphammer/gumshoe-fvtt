@@ -127,10 +127,15 @@ test("a player's open equipment sheet hides fields when they drop to Limited", a
     '.window-header [data-action="toggleSheetSettings"]',
   );
   await expect(config).toBeVisible();
+  // with the config open when they drop, it closes too
+  await config.click();
+  await expect(config).toHaveAttribute("aria-pressed", "true");
+  await expect(sheet).toContainText("Category ID");
 
   await setOwnership(page, itemId, playerId, "LIMITED");
-  await expect(sheet).not.toContainText("Mythos Bonus");
   await expect(config).toBeHidden();
+  await expect(sheet).not.toContainText("Category ID");
+  await expect(sheet).not.toContainText("Mythos Bonus");
   await expect(sheet.getByLabel("Language")).toHaveValue("French");
 });
 

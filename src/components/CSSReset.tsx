@@ -23,8 +23,8 @@ const logoTuning = css({
 });
 
 /**
- * `--inv-titlebar-clearance`, for a root which `clearsTitlebar`: how far the
- * window's titlebar reaches down over it. In the full-frame layout it's a
+ * `--inv-titlebar-clearance`: how far the window's titlebar reaches down over
+ * a root. In the full-frame layout it's a
  * see-through strip over the top of it (`appFrame`), and the sheet starts
  * just below it, instead of below it and its usual padding too. Otherwise
  * the titlebar is above the sheet, so 0.
@@ -95,7 +95,7 @@ export const CSSReset = ({
         className={cx(
           sheetRoot({ size: mode }),
           logoTuning,
-          clearsTitlebar && titlebarClearance,
+          titlebarClearance,
           className,
         )}
         data-inv-theme={slug}

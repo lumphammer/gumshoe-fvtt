@@ -60,7 +60,9 @@ export const appFrame = defineSlotRecipe({
           },
         },
         content: {
-          [overlaid]: { position: "absolute", inset: "0" },
+          // its own stacking context, under the strip: nothing in it (a
+          // drawer sliding in, say) can come up over the window's buttons
+          [overlaid]: { position: "absolute", inset: "0", zIndex: 0 },
         },
       },
     },

@@ -6,6 +6,7 @@ import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertCardItem } from "../../module/items/card";
 import { absoluteCover } from "../absoluteCover";
+import { BelowTitlebar } from "../BelowTitlebar";
 import { ToolbarButton } from "../inputs/Button";
 import { ArrowLink } from "../nestedPanels/ArrowLink";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
@@ -108,24 +109,26 @@ export const CardSheet = memo(function CardSheet() {
           <CardDisplay card={item} viewMode="full" />
         </div>
       </div>
-      <SlideInNestedPanelRoute
-        direction={edit}
-        className={css({ display: "flex", flexDirection: "column" })}
-      >
-        <div
-          className={cx(
-            "fooey",
-            css({
-              // ...absoluteCover,
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-            }),
-          )}
+      <BelowTitlebar>
+        <SlideInNestedPanelRoute
+          direction={edit}
+          className={css({ display: "flex", flexDirection: "column" })}
         >
-          <CardMain item={item} />
-        </div>
-      </SlideInNestedPanelRoute>
+          <div
+            className={cx(
+              "fooey",
+              css({
+                // ...absoluteCover,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+              }),
+            )}
+          >
+            <CardMain item={item} />
+          </div>
+        </SlideInNestedPanelRoute>
+      </BelowTitlebar>
     </Router>
   );
 });

@@ -53,6 +53,11 @@ type TeamCrisisPanelProps = {
   initialTeammateUuids?: string[];
   /** after the test: close the panel */
   onDone: () => void;
+  /**
+   * Say whose test it is in the heading: in a window of its own, whose title
+   * (which says so too) the full-frame layout hides
+   */
+  showActorName?: boolean;
 };
 
 /**
@@ -65,10 +70,12 @@ export const TeamCrisisPanel = ({
   actor,
   initialTeammateUuids = [],
   onDone,
+  showActorName = false,
 }: TeamCrisisPanelProps) => {
   // the actor's own data: the Bonds tab above is memoised, so this reads
   // what it shows itself
   const view = useActorAndSettings(actor, (pc, settings) => ({
+    name: pc.name,
     stability: getStabilityViewIn(pc.items, settings),
     bonds: getBondsIn(pc.items).map(
       (bond): CrisisBond & { isBroken: boolean } => ({
@@ -182,7 +189,13 @@ export const TeamCrisisPanel = ({
   return (
     <div data-testid="team-crisis-panel">
       <h2>
-        <Translate>Team Crisis</Translate>
+        {showActorName ? (
+          <Translate values={{ ActorName: view.name }}>
+            Team Crisis for ActorName
+          </Translate>
+        ) : (
+          <Translate>Team Crisis</Translate>
+        )}
       </h2>
       {/* outside the grid: spanning it, its width would squash the labels */}
       <p>

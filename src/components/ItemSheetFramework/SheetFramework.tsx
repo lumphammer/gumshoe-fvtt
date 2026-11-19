@@ -23,8 +23,11 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
 
   const img = useItemSelector(item, (snapshot) => snapshot.img);
 
-  const [configMode, setConfigMode] = useState(false);
+  const [configModeChosen, setConfigMode] = useState(false);
   const isLimited = useIsLimited();
+  // people with Limited permission don't get the config, even if they had
+  // it open when they lost permission
+  const configMode = configModeChosen && !isLimited;
   // the header's settings button (people with Limited permission don't get
   // the config)
   useSettingsButton({
@@ -75,6 +78,10 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
           img={img}
           className={css({
             gridArea: "image",
+            // at the top of the root, under the titlebar's strip in the
+            // full-frame layout, past its padding
+            "--inv-image-pickle-clearance":
+              "max(0px, calc(var(--inv-titlebar-clearance) - 0.5em))",
             transform: "rotateZ(-2deg)",
             // as tall as the title (and the titlebar, in the full-frame
             // layout), down to the body
