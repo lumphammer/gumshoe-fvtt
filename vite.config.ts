@@ -8,6 +8,7 @@ import packageManifest from "./package.json" with { type: "json" };
 import { createViteUserConfig } from "./packages/shared-fvtt-bits/dotfiles/import/createViteUserConfig.ts";
 import systemManifest from "./public/system.json" with { type: "json" };
 import { vitePluginFontsource } from "./src/vitePluginFontsource.ts";
+import { vitePluginThirdPartyLicenses } from "./src/vitePluginThirdPartyLicenses.ts";
 
 const config = defineConfig(({ mode }) => {
   const userConfig = createViteUserConfig({
@@ -15,7 +16,7 @@ const config = defineConfig(({ mode }) => {
     foundryPackageId: systemManifest.id,
     packageType: "system",
     importMetaUrl: import.meta.url,
-    plugins: [vitePluginFontsource()],
+    plugins: [vitePluginFontsource(), vitePluginThirdPartyLicenses()],
     // plain React: styles are Panda's (docs/theming.md), so no `css` prop
     jsxImportSource: "react",
     // every component and hook, except those marked `"use no memo"`, which

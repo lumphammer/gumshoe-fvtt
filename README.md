@@ -228,11 +228,20 @@ Illustrations from [Old Book Illustrations](https://www.oldbookillustrations.com
 `esoterica.webp` and `textured-mask.webp` are our own, made with public domain
 brushes.
 
+Longdon Decorative (`public/fonts/LongdonDecorative.woff2`) is by Roger White,
+who released his fonts into the public domain, asking only that commercial users
+acknowledge the source ([his site, archived](https://web.archive.org/web/20120416090521/http://www.rogersfonts.org.uk/)).
+We use [a fixed version](https://github.com/n3dst4/longdon-decorative-fixed).
+
 Huge thanks to Nick van Oosten/NickEast for [Foundry Project Creator](https://gitlab.com/foundry-projects/foundry-pc/create-foundry-project) and the original [the Typescript types to go with it](https://gitlab.com/foundry-projects/foundry-pc/foundry-pc-types).
 
 Current types are provided by the excellent [League of Foundry Developers](https://github.com/League-of-Foundry-Developers/foundry-vtt-types).
 
 Icons are created on https://game-icons.net/ and used under the [CC-BY-3.0 Creative Commons licence](https://creativecommons.org/licenses/by/3.0/).
+
+Interface icons come from [react-icons](https://react-icons.github.io/react-icons/), which collects several icon sets: [Font Awesome](https://fontawesome.com/) and [VS Code Codicons](https://github.com/microsoft/vscode-codicons) under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/), [Material Design icons](https://github.com/google/material-design-icons) under Apache-2.0, and Ant Design, Bootstrap, Heroicons, Lucide, Phosphor and Tabler icons under MIT or ISC.
+
+The build writes `THIRD-PARTY-LICENSES.txt`, with the licences of all the code and icon sets bundled into INVESTIGATOR.
 
 Thanks to [The Design Mechanism](https://thedesignmechanism.com) for permission to use the ability list from Casting the Runes.
 
