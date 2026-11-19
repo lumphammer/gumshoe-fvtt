@@ -122,12 +122,15 @@ test("a player's open equipment sheet hides fields when they drop to Limited", a
   const player = await joinAs("Dropped");
   const sheet = await openSheet(player, `Item.${itemId}`);
   await expect(sheet).toContainText("Mythos Bonus");
-  // the config cog, from the item sheets' shared framework
-  await expect(sheet.locator(".fa-cog")).toHaveCount(1);
+  // the config button in the header, from the item sheets' shared framework
+  const config = sheet.locator(
+    '.window-header [data-action="toggleSheetSettings"]',
+  );
+  await expect(config).toBeVisible();
 
   await setOwnership(page, itemId, playerId, "LIMITED");
   await expect(sheet).not.toContainText("Mythos Bonus");
-  await expect(sheet.locator(".fa-cog")).toHaveCount(0);
+  await expect(config).toBeHidden();
   await expect(sheet.getByLabel("Language")).toHaveValue("French");
 });
 

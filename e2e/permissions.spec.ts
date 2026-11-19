@@ -353,6 +353,8 @@ test("with Limited permission, players don't see equipment fields hidden from th
   await expect(sheet).toContainText("Bound in black leather");
   // the field that isn't marked, and the config, stay hidden
   await expect(sheet).not.toContainText("Mythos Bonus");
-  await expect(sheet.locator(".fa-cog")).toHaveCount(0);
+  await expect(
+    sheet.locator('.window-header [data-action="toggleSheetSettings"]'),
+  ).toBeHidden();
   await expect(sheet.locator("[contenteditable=true]")).toHaveCount(0);
 });

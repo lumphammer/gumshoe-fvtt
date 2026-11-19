@@ -9,6 +9,7 @@ import { useIsLimited } from "../../hooks/useIsEditable";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { ImagePickle } from "../ImagePickle";
 import { Region } from "../Region";
+import { useSettingsButton } from "../useSettingsButton";
 import { ModeContext } from "./modeContext";
 import { ItemSheetMode } from "./types";
 import { css } from "../../styled-system/css";
@@ -38,6 +39,13 @@ export const ItemSheetFramework = ({
   const [configMode, setConfigMode] = useState(false);
   const isLimited = useIsLimited();
   const isEditable = useIsEditable();
+  // the header's settings button (people with Limited permission don't get
+  // the config)
+  useSettingsButton({
+    pressed: configMode,
+    onToggle: () => setConfigMode((mode) => !mode),
+    enabled: !isLimited,
+  });
 
   assertApplicationV2(app);
 
@@ -59,25 +67,15 @@ export const ItemSheetFramework = ({
           gap: "0.3em",
           height: "100%",
           position: "relative",
-          gridTemplateColumns: "auto 1fr auto",
+          gridTemplateColumns: "auto 1fr",
           gridTemplateRows: "auto auto 1fr",
-          gridTemplateAreas:
-            '"image slug     cog" ' +
-            '"image headline headline" ' +
-            '"body  body     body" ',
+          gridTemplateAreas: `"image slug" "image headline" "body body"`,
           // under the full-frame layout's see-through titlebar
-          // (`--inv-titlebar-clearance`, `ItemSheet`), only the supertitle:
-          // the cog moves down beside the headline, clear of the window's
-          // buttons, and the image is lifted over the strip, so all of it
-          // stays clickable (the root's padding is already clear)
+          // (`--inv-titlebar-clearance`, `ItemSheet`), only the supertitle,
+          // and the image, lifted over the strip so all of it stays
+          // clickable (the root's padding is already clear)
           paddingTop:
             "[max(0px, calc(var(--inv-titlebar-clearance) - 0.5em - 1lh))]",
-          "[data-inv-layout=full-frame] &": {
-            gridTemplateAreas:
-              '"image slug     slug" ' +
-              '"image headline cog" ' +
-              '"body  body     body" ',
-          },
         })}
       >
         {/* Supertitle */}
@@ -85,9 +83,9 @@ export const ItemSheetFramework = ({
           className={css({
             gridArea: "slug",
             // in the full-frame layout's titlebar, it keeps clear of the
-            // window's buttons
+            // window's buttons (ours, Foundry's, and a module's or two)
             "[data-inv-layout=full-frame] &": {
-              marginRight: "[calc(3 * var(--header-height))]",
+              marginRight: "[calc(4 * var(--header-height))]",
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
@@ -128,19 +126,6 @@ export const ItemSheetFramework = ({
           })}
         />
 
-        {/* Cog (people with Limited permission don't get the config) */}
-        {!isLimited && (
-          <a
-            className={css({
-              gridArea: "cog",
-            })}
-            onClick={() => {
-              setConfigMode((mode) => !mode);
-            }}
-          >
-            <i className={`fa fa-${configMode ? "check" : "cog"}`} />
-          </a>
-        )}
         {/* regular editing stuff, in a region: the header above is on the
             wallpaper */}
         <Region

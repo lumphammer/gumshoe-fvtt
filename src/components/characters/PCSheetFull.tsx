@@ -28,7 +28,7 @@ import {
   PCSheetStats,
 } from "./PCSheetPanels";
 import { SettingArea } from "./SettingsArea";
-import { useSettingsButton } from "./useSettingsButton";
+import { useSettingsTabButton } from "../useSettingsButton";
 import { CombatStats } from "./Weapons/CombatStats";
 import { WeaponsArea } from "./Weapons/WeaponsArea";
 import { css } from "../../styled-system/css";
@@ -43,7 +43,7 @@ export const PCSheetFull = memo(function PCSheetFull() {
   // kept here, not in the tab, so it lasts while you look at other tabs
   const [editMode, setEditMode] = useState(false);
   const [selectedTab, setSelectedTab] = useState("abilities");
-  useSettingsButton(selectedTab, setSelectedTab, "settings");
+  useSettingsTabButton(selectedTab, setSelectedTab, "settings");
 
   assertGame(game);
   assertPCActor(actor);
