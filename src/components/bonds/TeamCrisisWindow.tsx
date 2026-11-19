@@ -27,11 +27,15 @@ export const TeamCrisisWindow = () => {
     <CSSReset
       theme={theme}
       mode="small"
+      clearsTitlebar
       className={css({
         position: "absolute",
         inset: 0,
         overflow: "auto",
         padding: "1em",
+        // below the full-frame layout's see-through titlebar, not as well
+        // (`CSSReset`)
+        paddingTop: "[max(1em, var(--inv-titlebar-clearance))]",
       })}
     >
       <TeamCrisisPanel
