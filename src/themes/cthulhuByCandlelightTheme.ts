@@ -70,7 +70,7 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
     warning: "#d68a00",
     success: "#008000",
     info: "#2b6cb0",
-    textMuted: "color-mix(in srgb, #433 70%, rgb(238, 238, 238))",
+    textMuted: "oklch(from var(--accent) 0.7 0.005 h / 100%)",
     onAccent: "black",
     bodyFont: "normal normal normal 16px 'Parkinsans', sans-serif",
     displayFont: "normal small-caps normal 1em 'Federo', serif",
