@@ -1,44 +1,30 @@
-import type { PropsWithChildren, ReactNode } from "react";
+import type { PropsWithChildren } from "react";
 import { useEffect, useState } from "react";
 
 import { assertApplicationV2 } from "../../functions/assertApplicationV2";
-import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
-import { useIsEditable } from "../../hooks/useIsEditable";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useIsLimited } from "../../hooks/useIsEditable";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { ImagePickle } from "../ImagePickle";
 import { Region } from "../Region";
 import { useSettingsButton } from "../useSettingsButton";
+import { ItemSheetTitle } from "./ItemSheetTitle";
 import { ModeContext } from "./modeContext";
 import { ItemSheetMode } from "./types";
 import { css } from "../../styled-system/css";
 
-type ItemSheetFrameworkProps = PropsWithChildren<{
-  supertitle?: ReactNode;
-}>;
-
 /**
- * A framework for item sheets. Reads the item's name, image and permissions
- * itself, through snapshots, so it's current whether or not the sheet around
- * it re-renders.
+ * A framework for item sheets: the image and title (`ItemSheetTitle`), and the
+ * config mode. Reads the item's name, image and permissions itself, through
+ * snapshots, so it's current whether or not the sheet around it re-renders.
  */
-export const ItemSheetFramework = ({
-  supertitle,
-  children,
-}: ItemSheetFrameworkProps) => {
+export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
   const { item, app } = useItemSheetContext();
 
-  const header = useItemSelector(item, (snapshot) => ({
-    name: snapshot.name,
-    img: snapshot.img,
-  }));
-  const { contentEditableRef, onBlur, onFocus, onInput, onKeyDown, onPaste } =
-    useAsyncUpdate(header.name, item.setName);
+  const img = useItemSelector(item, (snapshot) => snapshot.img);
 
   const [configMode, setConfigMode] = useState(false);
   const isLimited = useIsLimited();
-  const isEditable = useIsEditable();
   // the header's settings button (people with Limited permission don't get
   // the config)
   useSettingsButton({
@@ -68,49 +54,30 @@ export const ItemSheetFramework = ({
           height: "100%",
           position: "relative",
           gridTemplateColumns: "auto 1fr",
-          gridTemplateRows: "auto auto 1fr",
-          gridTemplateAreas: `"image slug" "image headline" "body body"`,
+          gridTemplateRows: "auto 1fr",
+          gridTemplateAreas: `"image title" "body body"`,
         })}
       >
-        {/* Supertitle: just below the full-frame layout's see-through
-            titlebar (`--inv-titlebar-clearance`, `ItemSheet`), clear of its
-            buttons (the root's padding is already part of the way), while the
-            image runs up under it */}
-        <div
+        {/* Title: just below the full-frame layout's see-through titlebar
+            (`--inv-titlebar-clearance`, `ItemSheet`), clear of its buttons
+            (the root's padding is already part of the way), while the image
+            runs up under it */}
+        <ItemSheetTitle
           className={css({
-            gridArea: "slug",
+            gridArea: "title",
             marginTop:
               "[max(0px, calc(var(--inv-titlebar-clearance) - 0.5em))]",
           })}
-        >
-          {supertitle}
-        </div>
-
-        {/* Headline */}
-        <h1 className={css({ gridArea: "headline" })}>
-          <span
-            contentEditable={isEditable}
-            className={css({
-              minWidth: "1em",
-              display: "inline-block",
-            })}
-            ref={contentEditableRef}
-            onInput={onInput}
-            onKeyDown={onKeyDown}
-            onPaste={onPaste}
-            onBlur={onBlur}
-            onFocus={onFocus}
-          />
-        </h1>
+        />
 
         {/* Image */}
         <ImagePickle
-          img={header.img}
+          img={img}
           className={css({
             gridArea: "image",
             transform: "rotateZ(-2deg)",
-            // as tall as the supertitle and headline (and the titlebar, in
-            // the full-frame layout), down to the body
+            // as tall as the title (and the titlebar, in the full-frame
+            // layout), down to the body
             width: "6em",
             minHeight: "4em",
             margin: "0 1em 0 0",

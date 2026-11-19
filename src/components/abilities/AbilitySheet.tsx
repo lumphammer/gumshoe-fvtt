@@ -1,6 +1,5 @@
 import { memo } from "react";
 
-import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
@@ -12,7 +11,6 @@ import { assertAbilityItem } from "../../module/items/exports";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
 import { ItemSheetMode } from "../ItemSheetFramework/types";
-import { Translate } from "../Translate";
 import { AbilityConfig } from "./AbilityConfig";
 import { AbilityMainBits } from "./AbilityMainBits";
 import { AbilityMwExtraFields } from "./AbilityMwExtraFields";
@@ -33,21 +31,11 @@ export const AbilitySheet = memo(function AbilitySheet() {
   assertAbilityItem(item);
   const ability = useItemSnapshot(item);
   const useMwStyleAbilities = useSettings((s) => s.useMwStyleAbilities);
-  const actorName = useActorSnapshot(item.actor, (actor) => actor?.name);
 
   const isGeneral = isGeneralAbilitySnapshot(ability);
 
   return (
-    <ItemSheetFramework
-      supertitle={
-        <>
-          <Translate>
-            {isGeneral ? "General ability" : "Investigative ability"}
-          </Translate>
-          {actorName !== undefined && <span> ({actorName})</span>}
-        </>
-      }
-    >
+    <ItemSheetFramework>
       <ModeSelect mode={ItemSheetMode.Config}>
         <AbilityConfig item={item} ability={ability} />
       </ModeSelect>

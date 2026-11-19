@@ -6,7 +6,6 @@ import { assertWeaponItem } from "../../module/items/weapon";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
 import { ItemSheetMode } from "../ItemSheetFramework/types";
-import { Translate } from "../Translate";
 import { WeaponConfig } from "./WeaponConfig";
 import { WeaponMain } from "./WeaponMain";
 
@@ -24,7 +23,7 @@ export const WeaponSheet = memo(function WeaponSheet() {
   const weapon = useItemSnapshot(item);
 
   return (
-    <ItemSheetFramework supertitle={<Translate>Weapon</Translate>}>
+    <ItemSheetFramework>
       <ModeSelect mode={ItemSheetMode.Main}>
         <WeaponMain item={item} notes={weapon.system.notes} />
       </ModeSelect>
