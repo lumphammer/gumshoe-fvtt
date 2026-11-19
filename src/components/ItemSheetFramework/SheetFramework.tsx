@@ -70,30 +70,14 @@ export const ItemSheetFramework = ({
           gridTemplateColumns: "auto 1fr",
           gridTemplateRows: "auto auto 1fr",
           gridTemplateAreas: `"image slug" "image headline" "body body"`,
-          // under the full-frame layout's see-through titlebar
-          // (`--inv-titlebar-clearance`, `ItemSheet`), only the supertitle,
-          // and the image, lifted over the strip so all of it stays
-          // clickable (the root's padding is already clear)
-          paddingTop:
-            "[max(0px, calc(var(--inv-titlebar-clearance) - 0.5em - 1lh))]",
+          // just below the full-frame layout's see-through titlebar
+          // (`--inv-titlebar-clearance`, `ItemSheet`), clear of its buttons:
+          // the root's padding is already part of the way
+          paddingTop: "[max(0px, calc(var(--inv-titlebar-clearance) - 0.5em))]",
         })}
       >
         {/* Supertitle */}
-        <div
-          className={css({
-            gridArea: "slug",
-            // in the full-frame layout's titlebar, it keeps clear of the
-            // window's buttons (ours, Foundry's, and a module's or two)
-            "[data-inv-layout=full-frame] &": {
-              marginRight: "[calc(4 * var(--header-height))]",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            },
-          })}
-        >
-          {supertitle}
-        </div>
+        <div className={css({ gridArea: "slug" })}>{supertitle}</div>
 
         {/* Headline */}
         <h1 className={css({ gridArea: "headline" })}>
@@ -117,8 +101,6 @@ export const ItemSheetFramework = ({
           img={header.img}
           className={css({
             gridArea: "image",
-            position: "relative",
-            zIndex: 2,
             transform: "rotateZ(-2deg)",
             width: "4em",
             height: "4em",

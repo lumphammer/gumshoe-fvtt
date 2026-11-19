@@ -26,9 +26,9 @@ import { ThrowError } from "./ThrowError";
 /**
  * `--inv-titlebar-clearance`: how far the window's titlebar reaches down over
  * the sheet. In the full-frame layout it's a see-through strip over the top
- * of it (`appFrame`), and each sheet keeps its controls below it, letting its
- * plain text (a supertitle) run up into it, so there's no band of empty
- * wallpaper above the sheet. Otherwise the titlebar is above the sheet, so 0.
+ * of it (`appFrame`), and each sheet starts just below it, instead of below
+ * it and its usual padding too. Otherwise the titlebar is above the sheet, so
+ * 0.
  */
 const titlebarClearance = css({
   "--inv-titlebar-clearance": "0px",
