@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 
 import { themeFactory } from "../functions";
 import { mutantCityBlueTheme } from "../mutantCityBlueTheme";
-import { niceTheme } from "../niceTheme";
+import { highContrastTheme } from "../highContrastTheme";
 import { niceThemeDark } from "../niceThemeDark";
 import {
   catalogueFromV1,
@@ -39,7 +39,7 @@ const seed: ThemeSeedV1 = {
 const catalogue = (overrides: Partial<ThemeSeedV1> = {}) =>
   catalogueFromV1(themeFactory({ ...seed, ...overrides }));
 
-test.each([niceTheme, niceThemeDark, mutantCityBlueTheme])(
+test.each([highContrastTheme, niceThemeDark, mutantCityBlueTheme])(
   "$displayName: the catalogue knows every name it makes",
   (theme) => {
     catalogueRules(catalogueFromV1(theme), (message) => {
@@ -50,8 +50,9 @@ test.each([niceTheme, niceThemeDark, mutantCityBlueTheme])(
 
 describe("paletteFromV1", () => {
   test("maps V1 colours to their new names, the flattened ones to the solid surfaces", () => {
-    const { colors } = niceTheme;
-    expect(paletteFromV1(niceTheme)).toMatchObject({
+    const theme = themeFactory(seed);
+    const { colors } = theme;
+    expect(paletteFromV1(theme)).toMatchObject({
       polarity: "light",
       surface: colors.backgroundPrimary,
       surfaceNested: colors.backgroundSecondary,
