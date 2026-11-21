@@ -26,6 +26,7 @@ import { floating, partyCell, surface } from "./src/themes/catalogue/surfaces";
 import { tabs } from "./src/themes/catalogue/tabs";
 import { displayText, mutedText, outcome } from "./src/themes/catalogue/text";
 import { toggle } from "./src/themes/catalogue/toggle";
+import { displayFontSize, textStyleCss } from "./src/themes/fonts";
 import { paletteColorKeys, paletteVar } from "./src/themes/palette";
 
 type PaletteKey = Parameters<typeof paletteVar>[0];
@@ -135,15 +136,13 @@ export default defineConfig({
       shadows: { elevation: v("elevation") },
     },
     textStyles: {
+      // the theme's fonts (fonts.ts): body text is sized once, on the
+      // sheet's root (sheetRoot); display text at its size, times its scale
       display: {
-        value: {
-          font: `var(${paletteVar("displayFont")})`,
-          textTransform: `var(${paletteVar("displayCase")})`,
-          letterSpacing: `var(${paletteVar("displayLetterSpacing")})`,
-        },
+        value: { ...textStyleCss("display"), fontSize: displayFontSize },
       },
       body: {
-        value: { font: `var(${paletteVar("bodyFont")})` },
+        value: textStyleCss("body"),
       },
     },
   },

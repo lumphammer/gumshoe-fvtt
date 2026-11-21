@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { css, cx } from "../styled-system/css";
 import { sheetRoot } from "../styled-system/recipes";
 import { themeCss } from "../themes/catalogue/themeCss";
-import { paletteStyle, themeSlug } from "../themes/palette";
+import { rootStyle, themeSlug } from "../themes/palette";
 import type { Theme } from "../themes/theme";
 import { claimFrame, type FrameClaim } from "./frame";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -63,7 +63,7 @@ export const CSSReset = ({
 
   const slug = themeSlug(theme);
   const layout = theme.layout ?? "standard";
-  const palette = useMemo(() => paletteStyle(theme.palette), [theme]);
+  const palette = useMemo(() => rootStyle(theme), [theme]);
 
   // the window around the root, if this is the window's root: claimed once,
   // so it keeps its place among other roots in the window (frame.ts), then

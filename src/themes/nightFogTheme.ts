@@ -19,9 +19,11 @@ export const nightFogTheme = defineThemeV2({
     warning: "#d68a00",
     success: "#2e7d32",
     info: "#2b6cb0",
-    bodyFont: "16px 'Averia Sans Libre', sans-serif",
-    displayFont: "16px 'Averia Serif Libre', sans-serif",
-    displayCase: "'Geist'",
+  },
+  fonts: {
+    baseSize: "16px",
+    body: { family: "'Averia Sans Libre', sans-serif" },
+    display: { family: "'Averia Serif Libre', sans-serif" },
   },
   catalogue: {
     logo: {

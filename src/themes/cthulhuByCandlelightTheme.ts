@@ -73,9 +73,12 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
     info: "#2b6cb0",
     textMuted: "oklch(from var(--accent) 0.7 0.005 h / 100%)",
     onAccent: "black",
-    bodyFont: "normal normal normal 16px 'Parkinsans', sans-serif",
-    displayFont: "normal small-caps normal 1em 'Federo', serif",
     cardGap: "0.5em 0.5em",
+  },
+  fonts: {
+    baseSize: "16px",
+    body: { family: "'Parkinsans', sans-serif" },
+    display: { family: "'Federo', serif", caps: "small-caps" },
   },
   catalogue: {
     appFrame: {
@@ -136,8 +139,6 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
           //   "radial-gradient(closest-side, #000a 0%, #0000 100%)",
         },
         text: {
-          font: "var(--inv-display-font)",
-          textTransform: "var(--inv-display-case)",
           fontSize: "0.7em",
           caretColor: "black",
 

@@ -1,4 +1,15 @@
 /*
+ * How big a piece of display text is, as a multiple of the text around it
+ * (fonts.ts): set where it's used, so not inherited, or display text inside
+ * it would be that much bigger again.
+ */
+@property --inv-display-size {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
+/*
  * The palette entries a theme can leave out, worked out from the ones it has
  * to set. A theme's own values are inline on the themed root (and the window
  * around it), so they beat these. See docs/theming.md.
@@ -32,10 +43,28 @@
 
     --inv-radius: 0.25em;
     --inv-elevation: 0 0 0.5em black;
-    --inv-body-font: inherit;
-    --inv-display-font: inherit;
-    --inv-display-case: none;
-    --inv-display-letter-spacing: normal;
+
+    /* fonts (fonts.ts): the body family is the window's (left unset, so
+       it's inherited); display is body's, but for its scale */
+    --inv-base-size: 1em;
+    --inv-body-weight: normal;
+    --inv-body-stretch: normal;
+    --inv-body-style: normal;
+    --inv-body-caps: normal;
+    --inv-body-case: none;
+    --inv-body-letter-spacing: normal;
+    --inv-body-line-height: normal;
+    --inv-body-scale: 1;
+    --inv-display-family: var(--inv-body-family);
+    --inv-display-weight: var(--inv-body-weight);
+    --inv-display-stretch: var(--inv-body-stretch);
+    --inv-display-style: var(--inv-body-style);
+    --inv-display-caps: var(--inv-body-caps);
+    --inv-display-case: var(--inv-body-case);
+    --inv-display-letter-spacing: var(--inv-body-letter-spacing);
+    --inv-display-line-height: var(--inv-body-line-height);
+    --inv-display-scale: 1;
+
     --inv-card-gap: 0.5em;
     --inv-card-gap-row: 0.5em;
     --inv-card-gap-column: 0.5em;

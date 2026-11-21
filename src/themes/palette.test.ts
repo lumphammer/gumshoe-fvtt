@@ -2,10 +2,12 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 
+import { fontFields, fontVar, textStyleNames } from "./fonts";
 import {
   optionalPaletteKeys,
   paletteStyle,
   paletteVar,
+  rootStyle,
   themeSlug,
 } from "./palette";
 import { tealTheme } from "./tealTheme";
@@ -36,6 +38,30 @@ test("the card gap's two axes are custom properties too", () => {
   ).not.toHaveProperty("--inv-card-gap-row");
 });
 
+test("rootStyle has the palette and the fonts the theme sets", () => {
+  const style = rootStyle({
+    ...tealTheme,
+    fonts: {
+      baseSize: "15px",
+      body: { family: "serif", letterSpacing: "0.1em" },
+      display: { weight: 600, scale: 1.2 },
+    },
+  });
+  expect(style).toMatchObject({
+    colorScheme: tealTheme.palette.polarity,
+    "--inv-surface": tealTheme.palette.surface,
+    "--inv-base-size": "15px",
+    "--inv-body-family": "serif",
+    "--inv-body-letter-spacing": "0.1em",
+    "--inv-display-weight": "600",
+    "--inv-display-scale": "1.2",
+  });
+  expect(style).not.toHaveProperty("--inv-display-family");
+  expect(rootStyle({ ...tealTheme, fonts: undefined })).toEqual(
+    paletteStyle(tealTheme.palette),
+  );
+});
+
 test("paletteVar", () => {
   expect(paletteVar("onAccent")).toBe("--inv-on-accent");
   expect(paletteVar("surfaceNested")).toBe("--inv-surface-nested");
@@ -61,6 +87,13 @@ test("palette.css has a default for every entry a theme can leave out", () => {
     ...optionalPaletteKeys.map(paletteVar),
     "--inv-card-gap-row",
     "--inv-card-gap-column",
+    "--inv-base-size",
+    // the body family is left unset, to be inherited
+    ...textStyleNames.flatMap((name) =>
+      fontFields
+        .filter((field) => !(name === "body" && field === "family"))
+        .map((field) => fontVar(name, field)),
+    ),
   ]) {
     expect(css, property).toContain(`${property}:`);
   }

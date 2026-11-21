@@ -4,7 +4,7 @@ How themes are defined and how components get their look. This is the
 contract: what each palette entry and catalogue class **means**, so that anyone
 writing a component or a theme makes the same choice in the same place.
 
-A theme is a **palette** (colours, fonts and a few shared values) and
+A theme is a **palette** (colours and a few shared values), its **fonts**, and
 overrides of the **catalogue**: named classes, one per kind of thing, built
 from the palette with Panda recipes. Components apply catalogue classes and
 write layout; none reads a theme's colours. Themes are written as ThemeV2
@@ -48,7 +48,7 @@ A theme is plain, JSON-serialisable data: no functions. The built-ins are
 TypeScript, through `defineThemeV2()` (which only type-checks); a module's theme
 or a file in the custom themes folder (JSON or YAML) has the same shape. The
 types are in `@lumphammer/investigator-fvtt-types`: `ThemeV2`, `ThemePalette`,
-`ThemeCatalogue`, `ThemeStyle`, `PaletteVar`.
+`ThemeFonts`, `ThemeCatalogue`, `ThemeStyle`, `PaletteVar`, `FontVar`.
 `CONFIG.Investigator.installTheme(id, theme)` and the folder take a V1 or a V2
 theme, by its `schemaVersion`. One palette per theme: light and dark versions
 of a design are separate themes. There's no `extends`: share code by spreading
@@ -62,6 +62,11 @@ defineThemeV2({
     polarity: "light",
     wallpaper: "#ddd",
     // ...and the other required entries (below)
+  },
+  fonts: {
+    baseSize: "16px",
+    body: { family: "'Saira', sans-serif", weight: 500 },
+    display: { family: "'Federo', serif", caps: "small-caps", scale: 1.1 },
   },
   catalogue: {
     badge: {
@@ -110,8 +115,8 @@ defineThemeV2({
 `surface`, `surfaceNested`, `control`, `text`, `accent`, `line`, `feedback`,
 `danger`, `warning`, `success`, `info`. Everything else is optional, with a
 default in CSS (`src/themes/catalogue/palette.css`, on every themed root); a
-theme's own values are inline on the root, so they win. Fonts are palette
-entries only: a theme doesn't load them. The built-ins' fonts come from the
+theme's own values are inline on the root, so they win. A theme names its
+fonts (below) but doesn't load them. The built-ins' fonts come from the
 system's CSS, a module theme's from its module's, and a folder theme's from
 `@font-face` or `@import` in its `globalCss`.
 
@@ -184,7 +189,7 @@ adding one isn't. A V2 theme is checked when it's installed, except the
 built-ins, as a module may be plain JavaScript or built against old types
 (`validateThemeV2`, a zod schema in `theme.ts`). A wrong shape is refused, with
 a message listing what's wrong (shown to the GM for a folder theme). An unknown
-top-level or palette key warns. An unknown recipe, slot, variant, value or state
+top-level, palette or font key warns. An unknown recipe, slot, variant, value or state
 in the catalogue is skipped, with a warning (`catalogueRules`). Nothing checks
 the CSS in a style.
 
@@ -212,8 +217,6 @@ kebab case: `surfaceNested` is `--inv-surface-nested`), and a Panda token
 | `onAccent`, `onDanger`, `onWarning`, `onSuccess`, `onInfo` | Ink on the matching fill. Default: black or white by the fill's lightness (below)                                                                                                                                    |
 | `radius`                                                   | The one corner radius classes share (Panda: `radii.standard`). Default: `0.25em`                                                                                                                                     |
 | `elevation`                                                | The shadow for anything floating (Panda: `shadows.elevation`). Default: `0 0 0.5em black`                                                                                                                            |
-| `bodyFont`                                                 | The `body` text style: prose and controls. A CSS `font` value. Default: `inherit`                                                                                                                                    |
-| `displayFont`, `displayCase`, `displayLetterSpacing`       | The `display` text style: titles, headings, tabs, labels (`textStyle: "display"`). Defaults: `inherit`, `none`, `normal`                                                                                             |
 | `cardGap`                                                  | The spacing between cards (a CSS `gap` value: a row gap, then a column gap), and around a card array; `CardArray` reads `--inv-card-gap`, `--inv-card-gap-row` and `--inv-card-gap-column`. Default: `0.5em`         |
 
 The `on*` inks are white below 72% OKLCH lightness (where APCA's contrast
@@ -221,6 +224,51 @@ flips) and black above, worked out in CSS with relative colour syntax, so they
 work for any CSS colour, including `color-mix()` and `var()`. Status-tinted
 surfaces (flagged rows, invalid inputs, callouts, abilities nobody has) are
 derived in their recipes, from the status colours and the surfaces.
+
+## Fonts
+
+Two text styles: **`body`** (prose and controls; the sheet's root has it) and
+**`display`** (titles, headings, tabs, labels, buttons: `textStyle: "display"`
+in a recipe). A theme's `fonts` sets each style's typeface, field by field, and
+the size of body text. Each field is a custom property on the themed root
+(`--inv-` and the style and field in kebab case: `display.letterSpacing` is
+`--inv-display-letter-spacing`), with defaults in `palette.css`:
+
+| Field           | CSS                 | Default                             |
+| --------------- | ------------------- | ----------------------------------- |
+| `family`        | `font-family`       | body: the window's; display: body's |
+| `weight`        | `font-weight`       | body: `normal`; display: body's     |
+| `stretch`       | `font-stretch`      | body: `normal`; display: body's     |
+| `style`         | `font-style`        | body: `normal`; display: body's     |
+| `caps`          | `font-variant-caps` | body: `normal`; display: body's     |
+| `case`          | `text-transform`    | body: `none`; display: body's       |
+| `letterSpacing` | `letter-spacing`    | body: `normal`; display: body's     |
+| `lineHeight`    | `line-height`       | body: `normal`; display: body's     |
+| `scale`         | (below)             | `1`                                 |
+
+`baseSize` (`--inv-base-size`, default `1em`, the window's) is the size of the
+sheet's body text, times body's `scale`; everything else is relative to it.
+
+**Sizes belong to the catalogue, not the theme.** How big a kind of text is
+(a tab's label, an `h1`) is the catalogue's choice. A typeface's `scale` is
+how big it _looks_: a condensed or small-caps face that looks small at a given
+size wants more than 1, and every size the style is set at is multiplied by
+it. So a theme can change typeface without retuning every size, and an
+override shared between themes gets each theme's scale.
+
+Display text's size is `--inv-display-size`, a multiple of the text around it
+(a number, default `1`, not inherited), set where it's used: the display style's
+`font-size` is `calc(1em * var(--inv-display-size) * var(--inv-display-scale))`.
+**To resize display text, set `--inv-display-size`**, not `fontSize`, which
+would lose the scale:
+
+```ts
+tabs: { base: { tab: { "--inv-display-size": "1.1" } } },
+```
+
+An override that starts from nothing (`all: "revert-layer"`) loses the text
+style too, as it's part of the recipe's base. `underlineTabs` in
+`src/themes/helpers.ts` puts it back.
 
 ## Catalogue
 
@@ -490,9 +538,16 @@ that's ThemeV2. Its values are CSS as written.
 | `glow`                                                | `feedback`                                            |
 | `controlBorder`                                       | `line`                                                |
 | `danger`, `warning`, `success`                        | The same. `info` is always `#2b6cb0`                  |
-| `bodyFont`, `displayFont`, `displayFontTextTransform` | `bodyFont`, `displayFont`, `displayCase`              |
+| `bodyFont`, `displayFont`, `displayFontTextTransform` | `fonts` (below)                                       |
 | `cards.area`                                          | `cardGap` (the vertical spacing, then the horizontal) |
 | (from `text`)                                         | `polarity`: light text means a dark theme             |
+
+V1's fonts were `font` shorthands (`fontsFromV1` takes them apart): body's size
+becomes `baseSize`, display's (in `em` or `%`, or `px` over a body size in
+`px`) its `scale`, and `displayFontTextTransform` its `case`. What a shorthand
+leaves out is `normal`, as the shorthand reset it, and a size keyword is a
+length. A system font (`caption`) can't be taken apart, so it's dropped. A V1
+tab keeps V1's size, without the scale (V1's tab style sets `1.2em`).
 
 How its styles map:
 

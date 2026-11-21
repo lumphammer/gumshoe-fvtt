@@ -1,4 +1,9 @@
-import type { ThemePalette } from "@lumphammer/investigator-fvtt-types";
+import type {
+  ThemePalette,
+  ThemeV2,
+} from "@lumphammer/investigator-fvtt-types";
+
+import { fontsStyle } from "./fonts";
 
 /**
  * A theme's palette is the values that catalogue classes are built from, each
@@ -39,10 +44,6 @@ export const optionalPaletteKeys = [
   "onInfo",
   "radius",
   "elevation",
-  "bodyFont",
-  "displayFont",
-  "displayCase",
-  "displayLetterSpacing",
   "cardGap",
 ] as const satisfies readonly PaletteKey[];
 
@@ -96,6 +97,15 @@ export function paletteStyle(palette: ThemePalette): Record<string, string> {
   }
   return style;
 }
+
+/**
+ * A theme's palette and fonts, as an inline style for a themed root (and the
+ * window around it).
+ */
+export const rootStyle = (theme: ThemeV2): Record<string, string> => ({
+  ...paletteStyle(theme.palette),
+  ...fontsStyle(theme.fonts),
+});
 
 const slugs = new WeakMap<{ displayName: string }, string>();
 let themeCount = 0;

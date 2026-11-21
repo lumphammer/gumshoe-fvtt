@@ -1,4 +1,4 @@
-import { paletteVar } from "../palette";
+import { textStyleCss } from "../fonts";
 
 /**
  * The logo's default styles, per slot, in plain CSS: the `logo` recipe is
@@ -17,11 +17,11 @@ export const logoDefaults = {
   root: { perspective: "500px", perspectiveOrigin: "50% 50%" },
   backdrop: {},
   // the text elements' wrapper. A V1 theme's style here could set `font`,
-  // which resets the size and line height, so they're set again after it (1em
-  // of the logo's text size)
+  // which resets the typeface, size and line height, so they're set again
+  // after it (1em of the logo's text size: the display style's scale makes
+  // no difference to text that's fitted to the width)
   text: {
-    font: `var(${paletteVar("displayFont")})`,
-    textTransform: `var(${paletteVar("displayCase")})`,
+    ...textStyleCss("display"),
     fontSize: "1em",
     whiteSpace: "nowrap",
     caretColor: "black",

@@ -196,19 +196,55 @@ export interface ThemePalette {
   radius?: string;
   /** The shadow of anything floating. Default: `0 0 0.5em black`. */
   elevation?: string;
-  /** The `body` text style's font (a CSS `font` value). Default: `inherit`. */
-  bodyFont?: string;
-  /** The `display` text style's font (a CSS `font` value). Default: `inherit`. */
-  displayFont?: string;
-  /** The `display` text style's case (`text-transform`). Default: `none`. */
-  displayCase?: string;
-  /** The `display` text style's letter spacing. Default: `normal`. */
-  displayLetterSpacing?: string;
   /**
    * The spacing between cards, as a CSS `gap` value (a row gap, then a column
    * gap, or one for both), and around a card array. Default: `0.5em`.
    */
   cardGap?: string;
+}
+
+/**
+ * A text style's typeface, and how it's set. Every field is optional: what's
+ * left out is the window's for `body`, and `body`'s for `display` (except
+ * `scale`).
+ */
+export interface ThemeFont {
+  /** `font-family`, e.g. `"'Saira', sans-serif"`. */
+  family?: CSS.Property.FontFamily;
+  /** `font-weight`, e.g. `600` or `"bold"`. Default: `normal`. */
+  weight?: CSS.Property.FontWeight;
+  /** `font-stretch`, e.g. `"condensed"`. Default: `normal`. */
+  stretch?: CSS.Property.FontStretch;
+  /** `font-style`, e.g. `"italic"`. Default: `normal`. */
+  style?: CSS.Property.FontStyle;
+  /** `font-variant-caps`, e.g. `"small-caps"`. Default: `normal`. */
+  caps?: CSS.Property.FontVariantCaps;
+  /** `text-transform`, e.g. `"uppercase"`. Default: `none`. */
+  case?: CSS.Property.TextTransform;
+  /** `letter-spacing`, e.g. `"0.05em"`. Default: `normal`. */
+  letterSpacing?: CSS.Property.LetterSpacing;
+  /** `line-height`, e.g. `1.2`. Default: `normal`. */
+  lineHeight?: CSS.Property.LineHeight;
+  /**
+   * A correction for how big the typeface looks, multiplying every size the
+   * style is set at: a face that looks small at a given size (a condensed
+   * one, small caps) wants more than 1. Not a size: the catalogue says how
+   * big each kind of text is. Default: `1`.
+   */
+  scale?: number;
+}
+
+/** A theme's type (docs/theming.md, "Fonts"). */
+export interface ThemeFonts {
+  /**
+   * The size of the sheet's body text, which everything else is relative to,
+   * e.g. `"16px"`. Default: `1em` (the window's).
+   */
+  baseSize?: string;
+  /** The `body` text style: prose and controls. */
+  body?: ThemeFont;
+  /** The `display` text style: titles, headings, tabs, labels, buttons. */
+  display?: ThemeFont;
 }
 
 type Kebab<S extends string> = S extends `${infer Head}${infer Tail}`
@@ -222,12 +258,27 @@ type Kebab<S extends string> = S extends `${infer Head}${infer Tail}`
  */
 export type PaletteVar = `--inv-${Kebab<Exclude<keyof ThemePalette, "polarity">>}`;
 
+/**
+ * The custom properties a theme's fonts are set in, on every themed root
+ * (`--inv-display-family`), and `--inv-display-size`: how big a piece of
+ * display text is, as a multiple of the text around it (default 1, and not
+ * inherited), which the display style multiplies by its `scale`. To resize
+ * display text, set `--inv-display-size` rather than `fontSize`, which would
+ * lose the scale.
+ */
+export type FontVar =
+  | "--inv-base-size"
+  | "--inv-display-size"
+  | `--inv-${"body" | "display"}-${Kebab<keyof ThemeFont>}`;
+
 /** A theme (docs/theming.md, "Themes (ThemeV2)"). */
 export interface ThemeV2 {
   schemaVersion: "v2";
   displayName: string;
   description?: string;
   palette: ThemePalette;
+  /** The theme's type: its typefaces, and the size of body text. */
+  fonts?: ThemeFonts;
   /** Overrides of the catalogue's recipes. */
   catalogue?: ThemeCatalogue;
   /**

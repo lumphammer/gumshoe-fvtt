@@ -5,7 +5,8 @@ import { paletteVar } from "../palette";
 
 /** What a text field and a dropdown share. */
 export const fieldBase = {
-  font: `var(${paletteVar("bodyFont")})`,
+  textStyle: "body",
+  fontSize: "inherit",
   fontVariantLigatures: "none",
   color: "text",
   padding: "0.1em 0.3em",

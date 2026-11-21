@@ -58,10 +58,9 @@ export const SettingsMenuLink = ({
       <span className={css({ flex: "[1]", minWidth: 0 })}>
         <span
           className={cx(
-            displayText(),
+            displayText({ size: "lg" }),
             css({
               display: "block",
-              fontSize: "1.2em",
               overflow: "hidden",
               textOverflow: "ellipsis",
             }),

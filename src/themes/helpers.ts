@@ -1,4 +1,9 @@
-import type { ThemeCatalogue } from "@lumphammer/investigator-fvtt-types";
+import type {
+  ThemeCatalogue,
+  ThemeStyle,
+} from "@lumphammer/investigator-fvtt-types";
+
+import { displayFontSize, displaySizeVar, textStyleCss } from "./fonts";
 
 export const underlineTabs: ThemeCatalogue["tabs"] = {
   states: {
@@ -31,10 +36,13 @@ export const underlineTabs: ThemeCatalogue["tabs"] = {
       padding: "0.5em",
     },
     tab: {
-      // from nothing: none of the catalogue's tab
+      // from nothing: none of the catalogue's tab but its text style (the
+      // recipe's base, so `revert-layer` would undo it)
       all: "revert-layer",
-      font: "var(--inv-display-font)",
-      fontSize: "1.1em",
+      // (csstype's `fontVariantCaps` doesn't take a var())
+      ...(textStyleCss("display") as ThemeStyle),
+      [displaySizeVar]: "1.1",
+      fontSize: displayFontSize,
       textAlign: "center",
       borderStyle: "solid",
       borderWidth: "0 0 2px 0",

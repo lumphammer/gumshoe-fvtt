@@ -1,12 +1,15 @@
 import type {
   CSSObject,
   ThemeCatalogue,
+  ThemeFont,
+  ThemeFonts,
   ThemePalette,
   ThemeStyle,
   ThemeV2,
 } from "@lumphammer/investigator-fvtt-types";
 
 import { irid } from "../../irid/irid";
+import { displayFontSize, displaySizeVar, textStyleCss } from "../fonts";
 import type { ThemeV1 } from "../types";
 import { logoDefaults } from "./logoDefaults";
 
@@ -130,14 +133,113 @@ export function paletteFromV1(theme: ThemeV1): ThemePalette {
     warning: colors.warning,
     success: colors.success,
     info: "#2b6cb0",
-    ...(theme.bodyFont ? { bodyFont: theme.bodyFont } : {}),
-    ...(theme.displayFont ? { displayFont: theme.displayFont } : {}),
-    ...(theme.displayFontTextTransform
-      ? { displayCase: String(theme.displayFontTextTransform) }
-      : {}),
     // a row gap, then a column gap
     cardGap: `${theme.cards.area.verticalSpacing} ${theme.cards.area.horizontalSpacing}`,
   };
+}
+
+/** The parts of a CSS `font` shorthand, as far as V1 themes used it. */
+type FontShorthand = Omit<ThemeFont, "case" | "letterSpacing" | "scale"> & {
+  size?: string;
+};
+
+const fontSize =
+  /(?:[\d.]+(?:px|em|rem|%|pt|ex|ch|vw|vh)|(?:xx?x?-)?(?:small|large)|medium|smaller|larger)/;
+
+/**
+ * Size keywords as lengths, so they can go in a `calc()`: the absolute ones
+ * at the browser's default 16px, and the relative ones by CSS's suggested
+ * ratio of 1.2.
+ */
+const sizeKeywords: Record<string, string> = {
+  "xx-small": "9px",
+  "x-small": "10px",
+  small: "13px",
+  medium: "16px",
+  large: "18px",
+  "x-large": "24px",
+  "xx-large": "32px",
+  "xxx-large": "48px",
+  smaller: `${1 / 1.2}em`,
+  larger: "1.2em",
+};
+
+/**
+ * A CSS `font` shorthand (`"normal small-caps 600 1.2em 'Saira', serif"`)
+ * taken apart: the keywords before the size, the size (a keyword as a
+ * length), a line height after it, and the family. What it doesn't give is
+ * `normal`, as the shorthand resets it. Undefined if it has no size, as a
+ * `font` value must (a system font, `caption`, can't be taken apart).
+ */
+export function parseFontShorthand(value: string): FontShorthand | undefined {
+  const match = new RegExp(
+    `^((?:\\S+\\s+)*?)(${fontSize.source})(?:\\s*/\\s*(\\S+))?\\s+(.+)$`,
+  ).exec(value.trim());
+  if (!match) return undefined;
+  const [, keywords = "", size = "", lineHeight = "normal", family = ""] =
+    match;
+  const font: FontShorthand = {
+    weight: "normal",
+    stretch: "normal",
+    style: "normal",
+    caps: "normal",
+    lineHeight,
+    size: sizeKeywords[size] ?? size,
+    family: family.trim(),
+  };
+  for (const word of keywords.split(/\s+/).filter(Boolean)) {
+    if (/^(italic|oblique)$/.test(word)) {
+      font.style = word;
+    } else if (font.style === "oblique" && /^-?[\d.]+deg$/.test(word)) {
+      font.style = `oblique ${word}`;
+    } else if (word === "small-caps") {
+      font.caps = word;
+    } else if (/^(bold|bolder|lighter|\d+)$/.test(word)) {
+      font.weight = word;
+    } else if (/^((ultra|extra|semi)-)?(condensed|expanded)$/.test(word)) {
+      font.stretch = word;
+    }
+  }
+  return font;
+}
+
+/**
+ * A V1 theme's fonts. V1 had a `font` shorthand for each text style: its
+ * size becomes the base size for body text, and the scale for display text
+ * (an em or percentage, or a size in pixels over a body size in pixels).
+ */
+export function fontsFromV1(theme: ThemeV1): ThemeFonts {
+  const fonts: ThemeFonts = {};
+  const body = theme.bodyFont ? parseFontShorthand(theme.bodyFont) : undefined;
+  if (body) {
+    const { size, ...font } = body;
+    fonts.baseSize = size;
+    fonts.body = font;
+  }
+  const display = theme.displayFont
+    ? parseFontShorthand(theme.displayFont)
+    : undefined;
+  if (display) {
+    const { size = "", ...font } = display;
+    const [, amount, unit] = /^([\d.]+)(em|%|px)$/.exec(size) ?? [];
+    const [, bodyPixels] = /^([\d.]+)px$/.exec(body?.size ?? "") ?? [];
+    const scale =
+      unit === "em"
+        ? Number(amount)
+        : unit === "%"
+          ? Number(amount) / 100
+          : unit === "px" && bodyPixels
+            ? Number(amount) / Number(bodyPixels)
+            : 1;
+    fonts.display = { ...font, ...(scale !== 1 ? { scale } : {}) };
+  }
+  if (theme.displayFontTextTransform) {
+    fonts.display = {
+      ...fonts.display,
+      case: theme.displayFontTextTransform as ThemeFont["case"],
+    };
+  }
+  return fonts;
 }
 
 /**
@@ -182,8 +284,12 @@ function tabsFromV1(theme: ThemeV1): ThemeCatalogue {
       base: {
         tab: themeStyle(
           replacing({
-            font: "var(--inv-display-font)",
-            textTransform: "var(--inv-display-case)",
+            ...textStyleCss("display"),
+            // the display style's own size (`revert-layer` doesn't undo
+            // the catalogue's custom property), unless V1's tab style has
+            // one, as it does by default
+            [displaySizeVar]: "1",
+            fontSize: displayFontSize,
             textAlign: "center",
             ...fromEmotion(theme.tabStyle),
             "&[data-wrapped]": fromEmotion(theme.tabWrappedStyle),
@@ -425,6 +531,7 @@ export function themeFromV1(theme: ThemeV1): ThemeV2 {
     schemaVersion: "v2",
     displayName: theme.displayName,
     palette: paletteFromV1(theme),
+    fonts: fontsFromV1(theme),
     catalogue: catalogueFromV1(theme),
     layout: "standard",
     ...(globalCss ? { globalCss } : {}),

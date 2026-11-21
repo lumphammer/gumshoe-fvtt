@@ -26,8 +26,22 @@ export const niceTheme = defineThemeV2({
     warning: "#d68a00",
     success: "#008000",
     info: "#2b6cb0",
-    bodyFont: "semi-condensed 500 16px 'Saira', sans-serif",
-    displayFont: "condensed normal small-caps 600 1.2em 'Saira', serif",
+  },
+  fonts: {
+    baseSize: "16px",
+    body: {
+      family: "'Saira', sans-serif",
+      weight: 500,
+      stretch: "semi-condensed",
+    },
+    display: {
+      family: "'Saira', serif",
+      weight: 600,
+      stretch: "condensed",
+      caps: "small-caps",
+      // condensed small caps look small
+      scale: 1.2,
+    },
   },
   catalogue: {
     sheetRoot: {

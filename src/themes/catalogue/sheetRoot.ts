@@ -1,5 +1,7 @@
 import { defineRecipe } from "@pandacss/dev";
 
+import { bodyFontSize } from "../fonts";
+
 /**
  * **sheetRoot**: the themed root of a window: its ink, body text style, and
  * the wallpaper behind everything. It's the element that carries
@@ -15,6 +17,8 @@ export const sheetRoot = defineRecipe({
   description: "The themed root of a window.",
   base: {
     textStyle: "body",
+    // the theme's base size, which all the sheet's text is relative to
+    fontSize: bodyFontSize,
     color: "text",
     accentColor: "accent",
   },

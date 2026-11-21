@@ -15,9 +15,9 @@ export const displayText = defineRecipe({
   base: { textStyle: "display" },
   variants: {
     size: {
-      sm: { fontSize: "smaller" },
+      sm: { "--inv-display-size": "0.85" },
       md: {},
-      lg: { fontSize: "larger" },
+      lg: { "--inv-display-size": "1.2" },
     },
   },
   defaultVariants: { size: "md" },

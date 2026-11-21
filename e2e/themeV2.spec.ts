@@ -30,6 +30,11 @@ const theme: ThemeV2 = {
     info: "rgb(43, 108, 176)",
     cardGap: "1em 0.5em",
   },
+  fonts: {
+    baseSize: "20px",
+    body: { family: "serif" },
+    display: { family: "monospace", caps: "small-caps", scale: 1.5 },
+  },
   catalogue: {
     // a slot recipe's slot, with a palette colour
     tabs: {
@@ -83,6 +88,14 @@ test("a V2 theme styles a sheet: its palette, worked-out entries, overrides and 
     "outline-color",
     "rgb(200, 0, 0)",
   );
+  // its fonts: body text at the base size, and display text at the
+  // catalogue's size times its scale (a tab is 1.2, so 20px * 1.2 * 1.5)
+  await expect(root).toHaveCSS("font-size", "20px");
+  await expect(root).toHaveCSS("font-family", "serif");
+  const tab = sheet.locator(".inv-tabs__tab").first();
+  await expect(tab).toHaveCSS("font-size", "36px");
+  await expect(tab).toHaveCSS("font-family", "monospace");
+  await expect(tab).toHaveCSS("font-variant-caps", "small-caps");
   // its global CSS
   await expect(sheet.locator(".inv-tabs__list").first()).toHaveCSS(
     "outline-style",
