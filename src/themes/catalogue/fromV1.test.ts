@@ -4,7 +4,7 @@ import { describe, expect, test } from "vitest";
 import { themeFactory } from "../functions";
 import { mutantCityBlueTheme } from "../mutantCityBlueTheme";
 import { highContrastTheme } from "../highContrastTheme";
-import { niceThemeDark } from "../niceThemeDark";
+import { fearTheme } from "../fearTheme";
 import {
   catalogueFromV1,
   fontsFromV1,
@@ -41,7 +41,7 @@ const seed: ThemeSeedV1 = {
 const catalogue = (overrides: Partial<ThemeSeedV1> = {}) =>
   catalogueFromV1(themeFactory({ ...seed, ...overrides }));
 
-test.each([highContrastTheme, niceThemeDark, mutantCityBlueTheme])(
+test.each([highContrastTheme, fearTheme, mutantCityBlueTheme])(
   "$displayName: the catalogue knows every name it makes",
   (theme) => {
     catalogueRules(catalogueFromV1(theme), (message) => {

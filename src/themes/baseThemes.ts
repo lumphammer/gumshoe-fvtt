@@ -21,7 +21,6 @@ import type { ThemeV1 } from "./types";
 
 // The themes that are still V1, converted here until each gets its makeover.
 const v1Themes: { [themeName: string]: ThemeV1 } = {
-  niceThemeDark,
   highContrastTheme,
   fearTheme,
   pallidTheme,
@@ -38,6 +37,7 @@ export const baseThemes: { [themeName: string]: ThemeV2 } = {
   tealTheme,
   cthulhuByCandlelightTheme,
   niceTheme,
+  niceThemeDark,
   ...Object.fromEntries(
     Object.entries(v1Themes).map(([id, theme]) => [id, themeFromV1(theme)]),
   ),
