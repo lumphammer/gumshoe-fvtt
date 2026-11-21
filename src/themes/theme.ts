@@ -2,6 +2,7 @@ import type { ThemeV2 } from "@lumphammer/investigator-fvtt-types";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error/v4";
 
+import { fontFields, textStyleNames } from "./fonts";
 import { optionalPaletteKeys, requiredPaletteKeys } from "./palette";
 
 /**
@@ -27,6 +28,22 @@ const style: z.ZodType = z.lazy(() =>
   z.record(z.string(), z.union([value, z.array(value), style, z.undefined()])),
 );
 
+/** A text style's font: every field optional (`ThemeFont`). */
+const fontSchema = z.looseObject(
+  Object.fromEntries(
+    fontFields.map((field) => [
+      field,
+      field === "scale"
+        ? z.number().positive().optional()
+        : field === "weight" || field === "lineHeight"
+          ? value.optional()
+          : field === "letterSpacing"
+            ? z.union([z.string(), z.literal(0)]).optional()
+            : z.string().optional(),
+    ]),
+  ),
+);
+
 const byState = z.record(z.string(), style.optional()).optional();
 
 /**
@@ -48,6 +65,14 @@ const themeSchema = z.looseObject({
       optionalPaletteKeys.map((key) => [key, z.string().optional()]),
     ),
   }),
+  fonts: z
+    .looseObject({
+      baseSize: z.string().optional(),
+      ...Object.fromEntries(
+        textStyleNames.map((name) => [name, fontSchema.optional()]),
+      ),
+    })
+    .optional(),
   catalogue: z
     .object({ states: byState })
     .catchall(
@@ -97,6 +122,18 @@ export function validateThemeV2(
   for (const key of Object.keys(palette)) {
     if (!(key in themeSchema.shape.palette.shape)) {
       warn(`palette.${key} isn't a palette entry, so it's ignored`);
+    }
+  }
+  const fontsShape = themeSchema.shape.fonts.unwrap().shape;
+  for (const [key, font] of Object.entries(result.data.fonts ?? {})) {
+    if (!(key in fontsShape)) {
+      warn(`fonts.${key} isn't part of a theme's fonts, so it's ignored`);
+    } else if (typeof font === "object" && font !== null) {
+      for (const field of Object.keys(font)) {
+        if (!(field in fontSchema.shape)) {
+          warn(`fonts.${key}.${field} isn't a font field, so it's ignored`);
+        }
+      }
     }
   }
   return theme as ThemeV2;

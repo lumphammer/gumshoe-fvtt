@@ -3,12 +3,14 @@ import { describe, expect, test } from "vitest";
 
 import { themeFactory } from "../functions";
 import { mutantCityBlueTheme } from "../mutantCityBlueTheme";
-import { niceTheme } from "../niceTheme";
-import { niceThemeDark } from "../niceThemeDark";
+import { highContrastTheme } from "../highContrastTheme";
+import { fearTheme } from "../fearTheme";
 import {
   catalogueFromV1,
+  fontsFromV1,
   globalCssFromV1,
   paletteFromV1,
+  parseFontShorthand,
   themeFromV1,
 } from "./fromV1";
 import { catalogueRules } from "./themeCss";
@@ -39,7 +41,7 @@ const seed: ThemeSeedV1 = {
 const catalogue = (overrides: Partial<ThemeSeedV1> = {}) =>
   catalogueFromV1(themeFactory({ ...seed, ...overrides }));
 
-test.each([niceTheme, niceThemeDark, mutantCityBlueTheme])(
+test.each([highContrastTheme, fearTheme, mutantCityBlueTheme])(
   "$displayName: the catalogue knows every name it makes",
   (theme) => {
     catalogueRules(catalogueFromV1(theme), (message) => {
@@ -50,8 +52,9 @@ test.each([niceTheme, niceThemeDark, mutantCityBlueTheme])(
 
 describe("paletteFromV1", () => {
   test("maps V1 colours to their new names, the flattened ones to the solid surfaces", () => {
-    const { colors } = niceTheme;
-    expect(paletteFromV1(niceTheme)).toMatchObject({
+    const theme = themeFactory(seed);
+    const { colors } = theme;
+    expect(paletteFromV1(theme)).toMatchObject({
       polarity: "light",
       surface: colors.backgroundPrimary,
       surfaceNested: colors.backgroundSecondary,
@@ -138,6 +141,103 @@ describe("panels", () => {
       "@media (min-width: 40em)": { padding: 4 },
       width: ["1em", "1lh"],
     });
+  });
+});
+
+describe("fonts", () => {
+  // what a `font` shorthand resets, when it doesn't say
+  const reset = {
+    weight: "normal",
+    stretch: "normal",
+    style: "normal",
+    caps: "normal",
+    lineHeight: "normal",
+  };
+
+  test("a font shorthand, taken apart", () => {
+    expect(
+      parseFontShorthand(
+        "condensed normal small-caps 600 1.2em 'Saira', serif",
+      ),
+    ).toEqual({
+      ...reset,
+      stretch: "condensed",
+      caps: "small-caps",
+      weight: "600",
+      size: "1.2em",
+      family: "'Saira', serif",
+    });
+    expect(parseFontShorthand("italic bold 16px/1.75 Some Font")).toEqual({
+      ...reset,
+      style: "italic",
+      weight: "bold",
+      size: "16px",
+      lineHeight: "1.75",
+      family: "Some Font",
+    });
+    expect(parseFontShorthand("oblique 12deg 1em A")).toMatchObject({
+      style: "oblique 12deg",
+    });
+    // a keyword size as a length, so it can go in a calc()
+    expect(parseFontShorthand("small Averia")).toEqual({
+      ...reset,
+      size: "13px",
+      family: "Averia",
+    });
+    expect(parseFontShorthand("larger Averia")?.size).toBe("1.2em");
+    // a family alone isn't a `font` value, and a system font can't be taken
+    // apart
+    expect(parseFontShorthand("'Averia Libre', sans-serif")).toBeUndefined();
+    expect(parseFontShorthand("caption")).toBeUndefined();
+  });
+
+  const fonts = (overrides: Partial<ThemeSeedV1>) =>
+    fontsFromV1(themeFactory({ ...seed, ...overrides }));
+
+  test("body's size is the base size; display's is its scale", () => {
+    expect(
+      fonts({
+        bodyFont: "semi-condensed 500 16px 'Saira', sans-serif",
+        displayFont: "condensed normal small-caps 600 1.2em 'Saira', serif",
+        displayFontTextTransform: "uppercase",
+      }),
+    ).toEqual({
+      baseSize: "16px",
+      body: {
+        ...reset,
+        family: "'Saira', sans-serif",
+        weight: "500",
+        stretch: "semi-condensed",
+      },
+      display: {
+        ...reset,
+        family: "'Saira', serif",
+        weight: "600",
+        stretch: "condensed",
+        caps: "small-caps",
+        case: "uppercase",
+        scale: 1.2,
+      },
+    });
+  });
+
+  test("a display size in pixels is a scale of a body size in pixels", () => {
+    expect(
+      fonts({ bodyFont: "16px A", displayFont: "20px B" }).display,
+    ).toMatchObject({ family: "B", scale: 1.25 });
+    expect(
+      fonts({ bodyFont: "1em A", displayFont: "20px B" }).display,
+    ).not.toHaveProperty("scale");
+    expect(fonts({ displayFont: "110% B" }).display).toMatchObject({
+      scale: 1.1,
+    });
+  });
+
+  test("the theme has them", () => {
+    expect(
+      themeFromV1(themeFactory({ ...seed, bodyFont: "1.1em sans-serif" }))
+        .fonts,
+    ).toEqual({ baseSize: "1.1em", body: { ...reset, family: "sans-serif" } });
   });
 });
 

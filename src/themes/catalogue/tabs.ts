@@ -30,7 +30,7 @@ export const tabs = defineSlotRecipe({
     list: {},
     tab: {
       textStyle: "display",
-      fontSize: "1.2em",
+      "--inv-display-size": "1.2",
       padding: "0.3em",
       textAlign: "center",
       color: "text",

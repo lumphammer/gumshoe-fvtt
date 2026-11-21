@@ -1,4 +1,5 @@
 import { systemId } from "../constants";
+import { underlineTabs } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 // const gradient =
@@ -70,11 +71,14 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
     warning: "#d68a00",
     success: "#008000",
     info: "#2b6cb0",
-    textMuted: "color-mix(in srgb, #433 70%, rgb(238, 238, 238))",
+    textMuted: "oklch(from var(--accent) 0.7 0.005 h / 100%)",
     onAccent: "black",
-    bodyFont: "normal normal normal 16px 'Parkinsans', sans-serif",
-    displayFont: "normal small-caps normal 1em 'Federo', serif",
     cardGap: "0.5em 0.5em",
+  },
+  fonts: {
+    baseSize: "16px",
+    body: { family: "'Parkinsans', sans-serif" },
+    display: { family: "'Federo', serif", caps: "small-caps" },
   },
   catalogue: {
     appFrame: {
@@ -135,8 +139,6 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
           //   "radial-gradient(closest-side, #000a 0%, #0000 100%)",
         },
         text: {
-          font: "var(--inv-display-font)",
-          textTransform: "var(--inv-display-case)",
           fontSize: "0.7em",
           caretColor: "black",
 
@@ -208,49 +210,7 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
         // borderRadius: "5px",
       },
     },
-    tabs: {
-      states: {
-        hoverFeedback: {
-          tab: {
-            boxShadow: "none",
-            borderColor: "oklch(from var(--inv-accent) l c h / 50%)",
-          },
-        },
-        // from nothing, like the tab: an accent underline and ink
-        selected: {
-          tab: {
-            all: "revert-layer",
-            borderColor: "var(--inv-accent)",
-            color: "var(--inv-accent)",
-          },
-        },
-      },
-      base: {
-        content: {
-          //
-          background: "oklch(from var(--inv-surface) calc(l * 0.8)  c h / 20%)",
-          borderStyle: "solid",
-          borderWidth: "1px",
-          borderColor: "var(--inv-line)",
-          backdropFilter: "blur(5px)",
-          padding: "0.5em",
-        },
-        tab: {
-          // from nothing: none of the catalogue's tab
-          all: "revert-layer",
-          font: "var(--inv-display-font)",
-          fontSize: "1.1em",
-          textAlign: "center",
-          borderStyle: "solid",
-          borderWidth: "0 0 2px 0",
-          borderColor: "transparent",
-        },
-        list: {
-          marginBottom: "5px",
-          marginTop: "5px",
-        },
-      },
-    },
+    tabs: underlineTabs,
     input: {
       base: {
         background: `

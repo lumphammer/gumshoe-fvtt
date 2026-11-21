@@ -15,7 +15,6 @@ import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Select } from "../inputs/Select";
-import { TextInput } from "../inputs/TextInput";
 import { EquipmentField } from "./EquipmentField";
 import { css } from "../../styled-system/css";
 
@@ -25,8 +24,6 @@ interface EquipmentMainProps {
   system: DeepReadonly<EquipmentSystemData>;
   categories: EquipmentCategoriesSnapshot;
   isLimited: boolean;
-  name: string;
-  onChangeName: (name: string) => void;
 }
 
 export const EquipmentMain = memo(function EquipmentMain({
@@ -34,8 +31,6 @@ export const EquipmentMain = memo(function EquipmentMain({
   system,
   categories,
   isLimited,
-  name,
-  onChangeName,
 }: EquipmentMainProps) {
   const { setCategoryId, setNotes } = useSystemMethods(item);
   const categoryMetadata = categories[system.categoryId];
@@ -55,7 +50,7 @@ export const EquipmentMain = memo(function EquipmentMain({
     ([, fieldMetadata]) => !isLimited || isVisibleToLimited(fieldMetadata),
   );
 
-  const fieldsLength = fields.length + 2;
+  const fieldsLength = fields.length + 1;
 
   return (
     <InputGrid
@@ -64,10 +59,6 @@ export const EquipmentMain = memo(function EquipmentMain({
       })}
       style={{ gridTemplateRows: `repeat(${fieldsLength}, auto) 1fr` }}
     >
-      <GridField label="Item Name">
-        <TextInput value={name} onChange={onChangeName} />
-      </GridField>
-
       <GridField label="Category">
         <div
           className={css({

@@ -72,9 +72,6 @@ test("an open equipment sheet shows changes made elsewhere", async ({
       system: { fields: { mythos: 4 }, notes: "<p>Rebound</p>" },
     });
   }, itemId);
-  await expect(sheet.getByLabel("Name", { exact: true })).toHaveValue(
-    "Cultes des Goules (2nd ed.)",
-  );
   // the title, from the item sheets' shared framework
   await expect(sheet.locator("h1 [contenteditable]")).toHaveText(
     "Cultes des Goules (2nd ed.)",
@@ -150,16 +147,16 @@ test("a player's open equipment sheet becomes editable when they're made its own
 
   const player = await joinAs("Promoted");
   const sheet = await openSheet(player, `Item.${itemId}`);
-  const name = sheet.getByLabel("Name", { exact: true });
-  await expect(name).toBeDisabled();
+  const name = sheet.locator("h1 [contenteditable]");
+  await expect(name).toHaveAttribute("contenteditable", "false");
   await expect(sheet.getByLabel("Language")).toBeDisabled();
 
   await setOwnership(page, itemId, playerId, "OWNER");
-  await expect(name).toBeEnabled();
+  await expect(name).toHaveAttribute("contenteditable", "true");
   await expect(sheet.getByLabel("Language")).toBeEnabled();
 
   await setOwnership(page, itemId, playerId, "OBSERVER");
-  await expect(name).toBeDisabled();
+  await expect(name).toHaveAttribute("contenteditable", "false");
 });
 
 test("a PC's Equipment tab follows items changed elsewhere", async ({

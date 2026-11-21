@@ -336,7 +336,12 @@ export const LogoEditable = ({
       <div
         className={css({
           display: "contents",
-          font: "var(--inv-display-font)",
+          // the display text style (fonts.ts), written out for Panda
+          fontFamily: "var(--inv-display-family)",
+          fontWeight: "var(--inv-display-weight)",
+          fontStretch: "var(--inv-display-stretch)",
+          fontStyle: "var(--inv-display-style)",
+          fontVariantCaps: "var(--inv-display-caps)",
           textTransform: "var(--inv-display-case)",
           letterSpacing: "var(--inv-display-letter-spacing)",
           fontSize: "4em",

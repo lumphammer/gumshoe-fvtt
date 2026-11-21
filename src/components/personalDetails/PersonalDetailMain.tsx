@@ -7,7 +7,6 @@ import type {
   PersonalDetailSystemData,
 } from "../../module/items/personalDetail";
 import { absoluteCover } from "../absoluteCover";
-import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { GridField } from "../inputs/GridField";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
@@ -17,7 +16,6 @@ import { css } from "../../styled-system/css";
 type PersonalDetailMainProps = {
   /** only to write through */
   item: PersonalDetailItem;
-  name: string;
   system: PersonalDetailSystemData;
   /** the personal details' names, from the settings */
   detailNames: readonly string[];
@@ -26,7 +24,6 @@ type PersonalDetailMainProps = {
 
 export const PersonalDetailMain = ({
   item,
-  name,
   system,
   detailNames,
   occupationLabel,
@@ -43,12 +40,9 @@ export const PersonalDetailMain = ({
     <InputGrid
       className={css({
         ...absoluteCover,
-        gridTemplateRows: "auto auto auto 1fr",
+        gridTemplateRows: "auto auto 1fr",
       })}
     >
-      <GridField label="Item Name">
-        <AsyncTextInput value={name} onChange={item.setName} />
-      </GridField>
       <GridField label="Slot">
         <Select
           value={system.slotIndex}

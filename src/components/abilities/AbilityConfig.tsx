@@ -102,9 +102,6 @@ export const AbilityConfig = memo(function AbilityConfig({
 
   return (
     <InputGrid>
-      <GridField label="Item Name">
-        <AsyncTextInput value={ability.name} onChange={item.setName} />
-      </GridField>
       <GridField label="Category">
         <div
           className={css({

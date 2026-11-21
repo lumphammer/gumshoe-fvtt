@@ -28,8 +28,11 @@ export const tealTheme = defineThemeV2({
     warning: "#d68a00",
     success: "#008000",
     info: "#2b6cb0",
-    bodyFont: "16px 'Averia Libre', sans-serif",
-    displayFont: "normal small-caps normal 1em 'Federo', serif",
+  },
+  fonts: {
+    baseSize: "16px",
+    body: { family: "'Averia Libre', sans-serif" },
+    display: { family: "'Federo', serif", caps: "small-caps" },
   },
   catalogue: {
     sheetRoot: {

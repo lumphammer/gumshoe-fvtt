@@ -89,8 +89,8 @@ export const SettingsBreadcrumbs = ({
   return (
     <nav
       className={cx(
-        cx(displayText(), className),
-        css({ padding: "0.3em 0 0.1em 0", fontSize: "1.2em" }),
+        cx(displayText({ size: "lg" }), className),
+        css({ padding: "0.3em 0 0.1em 0" }),
       )}
       aria-label={getTranslated("Breadcrumbs")}
     >

@@ -41,7 +41,6 @@ export const NetworkContactSheet = memo(function NetworkContactSheet() {
       <ModeSelect mode={ItemSheetMode.Main}>
         <NetworkContactMain
           item={item}
-          name={view.name}
           system={view.system}
           isOnPC={owner !== null}
           networkPool={owner?.networkPool ?? null}

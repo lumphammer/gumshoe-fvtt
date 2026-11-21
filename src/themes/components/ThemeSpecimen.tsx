@@ -36,12 +36,7 @@ import {
   tableHeader,
 } from "../../styled-system/recipes";
 import { tones } from "../catalogue/tones";
-import {
-  paletteColorKeys,
-  paletteStyle,
-  paletteVar,
-  themeSlug,
-} from "../palette";
+import { paletteColorKeys, rootStyle, paletteVar, themeSlug } from "../palette";
 import type { Theme } from "../theme";
 
 const buttonKinds = ["default", "cta", "toolbar", "ghost", "pip"] as const;
@@ -153,9 +148,9 @@ export const ThemeSpecimen = ({
   // attribute, for the theme's appFrame overrides (some themes' wallpaper is
   // on the window), and the palette, without colorScheme
   const frameStyle = useMemo(() => {
-    const { colorScheme: _, ...properties } = paletteStyle(theme.palette);
+    const { colorScheme: _, ...properties } = rootStyle(theme);
     return properties;
-  }, [theme.palette]);
+  }, [theme]);
 
   return (
     <div

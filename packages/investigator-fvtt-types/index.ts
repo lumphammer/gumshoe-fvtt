@@ -3,6 +3,9 @@ import type * as CSS from "csstype";
 export type {
   CatalogueRecipeShapes,
   PaletteVar,
+  FontVar,
+  ThemeFont,
+  ThemeFonts,
   RecipeOverride,
   ElementState,
   StateLayer,

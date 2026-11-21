@@ -89,7 +89,7 @@ test("adding, editing and breaking a Bond", async ({ page }) => {
     actorId,
   );
   const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
-  await bondSheet.getByLabel("Name", { exact: true }).fill("Mom");
+  await bondSheet.locator("h1 [contenteditable]").fill("Mom");
   await expect
     .poll(() => getBonds(page, actorId))
     .toContainEqual({ name: "Mom", points: 1, isDeltaGreen: false });
@@ -426,7 +426,7 @@ test("DELTA GREEN and broken Bonds can't be rebuilt", async ({ page }) => {
       system,
     });
     const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
-    await expect(bondSheet.getByText("Name", { exact: true })).toBeVisible();
+    await expect(bondSheet.getByText("Points", { exact: true })).toBeVisible();
     await expect(bondSheet.getByTestId("open-rebuild-bond")).toHaveCount(0);
   }
 });

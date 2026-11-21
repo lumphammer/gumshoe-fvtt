@@ -49,9 +49,9 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
     <ModeContext.Provider
       value={configMode ? ItemSheetMode.Config : ItemSheetMode.Main}
     >
-      <div
+      {/* everything (header and body) in one region */}
+      <Region
         className={css({
-          paddingBottom: "1em",
           display: "grid",
           gap: "0.3em",
           height: "100%",
@@ -63,8 +63,8 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
       >
         {/* Title: just below the full-frame layout's see-through titlebar
             (`--inv-titlebar-clearance`, `CSSReset`), clear of its buttons
-            (the root's padding is already part of the way), while the image
-            runs up under it */}
+            (the region's padding is already part of the way), while the
+            image runs up under it */}
         <ItemSheetTitle
           className={css({
             gridArea: "title",
@@ -79,7 +79,7 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
           className={css({
             gridArea: "image",
             // at the top of the root, under the titlebar's strip in the
-            // full-frame layout, past its padding
+            // full-frame layout, past the region's padding
             "--inv-image-pickle-clearance":
               "max(0px, calc(var(--inv-titlebar-clearance) - 0.5em))",
             transform: "rotateZ(-2deg)",
@@ -91,9 +91,8 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
           })}
         />
 
-        {/* regular editing stuff, in a region: the header above is on the
-            wallpaper */}
-        <Region
+        {/* regular editing stuff */}
+        <div
           className={css({
             gridArea: "body",
             display: "flex",
@@ -103,8 +102,8 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
           })}
         >
           {children}
-        </Region>
-      </div>
+        </div>
+      </Region>
     </ModeContext.Provider>
   );
 };
