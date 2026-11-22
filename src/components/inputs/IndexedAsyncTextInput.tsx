@@ -7,7 +7,7 @@ import { AsyncTextInput } from "./AsyncTextInput";
 // also accepts an index.
 type IndexedAsyncTextInputProps = Omit<AsyncTextInputProps, "onChange"> & {
   index: number;
-  onChange: (newValue: string, index: number) => void;
+  onChange: (newValue: string, index: number) => void | PromiseLike<unknown>;
 };
 
 /**
@@ -20,9 +20,7 @@ export const IndexedAsyncTextInput = ({
   ...props
 }: IndexedAsyncTextInputProps) => {
   const handleChange = useCallback(
-    (newValue: string) => {
-      onChange(newValue, index);
-    },
+    (newValue: string) => onChange(newValue, index),
     [index, onChange],
   );
 

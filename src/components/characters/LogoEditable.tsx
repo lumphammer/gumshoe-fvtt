@@ -10,8 +10,8 @@ type LogoEditableProps = {
   mainText: string;
   subText?: string;
   defaultSubText?: string;
-  onChangeMainText: (newValue: string) => void;
-  onChangeSubText?: (newValue: string) => void;
+  onChangeMainText: (newValue: string) => void | PromiseLike<unknown>;
+  onChangeSubText?: (newValue: string) => void | PromiseLike<unknown>;
 };
 
 /**

@@ -39,11 +39,11 @@ type WeaponRangeProps = {
   label: string;
   damage: number;
   enabled: boolean;
-  setDamage: (value: number) => void;
+  setDamage: (value: number) => void | PromiseLike<unknown>;
   setEnabled: (enabled: boolean) => void;
   /** leave out to hide the spend */
   spend?: number;
-  setSpend?: (value: number) => void;
+  setSpend?: (value: number) => void | PromiseLike<unknown>;
 };
 
 export const WeaponRange = memo(function WeaponRange({
