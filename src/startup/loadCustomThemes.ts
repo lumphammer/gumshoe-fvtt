@@ -1,12 +1,10 @@
-import type { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
-
 import { defaultCustomThemePath } from "../constants";
 import { assertGame } from "../functions/isGame";
 import { systemLogger } from "../functions/utilities";
 import { FilePicker } from "../fvtt-exports";
 import { settings } from "../settings/settings";
-import { highContrastTheme } from "../themes/highContrastTheme";
 import { installTheme } from "./injectGlobalHelper";
+import { v1SeedFromThemeFile } from "./v1SeedFromThemeFile";
 
 export function loadCustomThemes() {
   const jsonRe = /\.(?:json|json5)$/;
@@ -75,49 +73,7 @@ export function loadCustomThemes() {
           systemLogger.log(`Loaded local theme ${filename}`, blob);
           continue;
         }
-        if (
-          blob.layout !== undefined &&
-          blob.layout !== "standard" &&
-          blob.layout !== "full-frame"
-        ) {
-          throw new Error(`layout "${blob.layout}" not recognised`);
-        }
-        const seed: ThemeSeedV1 = {
-          colors: {
-            accent: highContrastTheme.colors.accent,
-            accentContrast: highContrastTheme.colors.accentContrast,
-            glow: highContrastTheme.colors.glow,
-            wallpaper: highContrastTheme.colors.wallpaper,
-            text: highContrastTheme.colors.text,
-            backgroundButton: highContrastTheme.colors.backgroundButton,
-            backgroundPrimary: highContrastTheme.colors.backgroundPrimary,
-            backgroundSecondary: highContrastTheme.colors.backgroundSecondary,
-            ...blob.colors,
-          },
-          displayName: blob.displayName,
-          largeSheetRootStyle: blob.largeSheetRootStyle ?? {},
-          logo: {
-            backdropStyle:
-              blob.logo?.backdropStyle ?? highContrastTheme.logo.backdropStyle,
-            frontTextElementStyle:
-              blob.logo?.frontTextElementStyle ??
-              highContrastTheme.logo.frontTextElementStyle,
-            rearTextElementStyle:
-              blob.logo?.rearTextElementStyle ??
-              highContrastTheme.logo.rearTextElementStyle,
-            textElementsStyle:
-              blob.logo?.textElementsStyle ??
-              highContrastTheme.logo.textElementsStyle,
-          },
-          schemaVersion: blob.schemaVersion,
-          appWindowStyle: blob.appWindowStyle ?? {},
-          bodyFont: blob.bodyFont ?? highContrastTheme.bodyFont,
-          displayFont: blob.displayFont ?? highContrastTheme.displayFont,
-          displayFontTextTransform: blob.displayFontTextTransform,
-          global: blob.global ?? highContrastTheme.global,
-          smallSheetRootStyle: blob.smallSheetRootStyle ?? {},
-          layout: blob.layout,
-        };
+        const seed = v1SeedFromThemeFile(blob);
         systemLogger.log(`Loaded local theme ${filename}`, seed);
         installTheme(filename, seed, { type: "local" });
       } catch (e: any) {
