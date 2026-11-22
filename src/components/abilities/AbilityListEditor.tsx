@@ -53,8 +53,8 @@ export function NumberTextEditorRow({
   number: number;
   text: string;
   index: number;
-  onChangeNumber: (index: number, value: number) => void;
-  onChangeText: (index: number, value: string) => void;
+  onChangeNumber: (index: number, value: number) => void | PromiseLike<unknown>;
+  onChangeText: (index: number, value: string) => void | PromiseLike<unknown>;
   onDelete: (index: number) => void;
 }) {
   return (

@@ -34,7 +34,7 @@ export const SpecialityList = memo(function SpecialityList({
       // from the live item, which has any change saved since this rendered
       const newSpecs = [...item.system.getSpecialities()];
       newSpecs[index] = newVal;
-      void item.system.setSpecialities(newSpecs);
+      return item.system.setSpecialities(newSpecs);
     },
     [item],
   );

@@ -8,7 +8,7 @@ import { AsyncTextInput } from "./AsyncTextInput";
 
 type OtherableDropDownProps = {
   value: string;
-  onChange: (newValue: string) => void;
+  onChange: (newValue: string) => void | PromiseLike<unknown>;
   className?: string;
   pickerValues: readonly string[];
   validValues?: readonly string[];

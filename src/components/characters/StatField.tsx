@@ -35,11 +35,10 @@ export const StatField = ({ stat, id, inline = false }: StatFieldProps) => {
     (snapshot): number | undefined => snapshot.system.stats[id],
   );
   const onChange = useCallback(
-    (newVal: number) => {
-      void actor.update({
+    (newVal: number) =>
+      actor.update({
         system: { stats: { ...actor.system.stats, [id]: newVal } },
-      });
-    },
+      }),
     [actor, id],
   );
 

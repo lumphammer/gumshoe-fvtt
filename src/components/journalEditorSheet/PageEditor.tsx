@@ -218,7 +218,12 @@ export const PageEditor = ({ page }: PageEditorProps) => {
       })}
     >
       <div data-testid="name">
-        <AsyncTextInput value={view.name} onChange={handleRename} />
+        {/* one per page, so what's typed in one never shows on another */}
+        <AsyncTextInput
+          key={page.id}
+          value={view.name}
+          onChange={handleRename}
+        />
       </div>
       <div
         data-testid="main-area"

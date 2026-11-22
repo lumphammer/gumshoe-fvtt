@@ -8,7 +8,8 @@ import { css, cx } from "../../styled-system/css";
 
 type AsyncNumberInputProps = {
   value: undefined | number;
-  onChange: (newValue: number) => void;
+  /** return the save's promise, so what's shown waits for it (see `useAsyncUpdate`) */
+  onChange: (newValue: number) => void | PromiseLike<unknown>;
   className?: string;
   style?: React.CSSProperties;
   min?: number;
@@ -84,7 +85,7 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
       (text: string) => {
         const result = validate(text);
         if (result.state === "succeeded") {
-          onChangeOrig(result.value);
+          return onChangeOrig(result.value);
         }
       },
       [onChangeOrig, validate],

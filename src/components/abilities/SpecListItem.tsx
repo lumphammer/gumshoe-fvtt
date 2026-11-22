@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { AsyncTextInput } from "../inputs/AsyncTextInput";
 
 type SpecListItemProps = {
-  onChange: (value: string, index: number) => void;
+  onChange: (value: string, index: number) => void | PromiseLike<unknown>;
   index: number;
   value: string;
   disabled?: boolean;
@@ -16,9 +16,7 @@ export const SpecListItem = ({
   disabled = false,
 }: SpecListItemProps) => {
   const onChange = useCallback(
-    (newVal: string) => {
-      onChangeProp(newVal, index);
-    },
+    (newVal: string) => onChangeProp(newVal, index),
     [index, onChangeProp],
   );
 
