@@ -383,6 +383,14 @@ test("the sheet root's styles patch its size variants", () => {
   });
 });
 
+test("the layout is the seed's, standard by default", () => {
+  expect(themeFromV1(themeFactory(seed), "light").layout).toBe("standard");
+  expect(
+    themeFromV1(themeFactory({ ...seed, layout: "full-frame" }), "light")
+      .layout,
+  ).toBe("full-frame");
+});
+
 test("a window style goes on the app frame", () => {
   expect(
     catalogue({ appWindowStyle: { boxShadow: "0 0 20px red" } }).appFrame,

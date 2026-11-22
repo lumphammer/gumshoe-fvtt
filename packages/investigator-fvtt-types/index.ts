@@ -312,6 +312,13 @@ export interface ThemeSeedV1 {
    */
   colors: SeedColorsV1;
 
+  /**
+   * How the character sheets are laid out: `ThemeV2`'s `layout`. Defaults to
+   * `"standard"` (as V1 themes always were); `"full-frame"` gives a V1 theme
+   * the see-through titlebar without converting it to V2.
+   */
+  layout?: ThemeV2["layout"];
+
   /** @deprecated Ignored: nothing has read it for a long time. */
   notesCssClasses?: {
     scopingContainer?: string;

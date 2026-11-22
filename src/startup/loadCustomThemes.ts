@@ -75,6 +75,13 @@ export function loadCustomThemes() {
           systemLogger.log(`Loaded local theme ${filename}`, blob);
           continue;
         }
+        if (
+          blob.layout !== undefined &&
+          blob.layout !== "standard" &&
+          blob.layout !== "full-frame"
+        ) {
+          throw new Error(`layout "${blob.layout}" not recognised`);
+        }
         const seed: ThemeSeedV1 = {
           colors: {
             accent: highContrastTheme.colors.accent,
@@ -109,6 +116,7 @@ export function loadCustomThemes() {
           displayFontTextTransform: blob.displayFontTextTransform,
           global: blob.global ?? highContrastTheme.global,
           smallSheetRootStyle: blob.smallSheetRootStyle ?? {},
+          layout: blob.layout,
         };
         systemLogger.log(`Loaded local theme ${filename}`, seed);
         installTheme(filename, seed, { type: "local" });

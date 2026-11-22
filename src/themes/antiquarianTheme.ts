@@ -6,6 +6,7 @@ import type { ThemeV1 } from "./types";
 export const antiquarianTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Antiquarian",
+  layout: "full-frame",
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/scott-webb-UjupleczBOY-unsplash.webp)`,
     backgroundPosition: "center",

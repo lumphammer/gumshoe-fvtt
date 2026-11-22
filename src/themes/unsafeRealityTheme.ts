@@ -13,6 +13,7 @@ const wallpaper = brick;
 export const unsafeRealityTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Unsafe Reality",
+  layout: "full-frame",
   largeSheetRootStyle: {
     backgroundImage: `
     linear-gradient(

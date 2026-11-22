@@ -6,6 +6,7 @@ import type { ThemeV1 } from "./types";
 export const fearTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Nothing To Fear",
+  layout: "full-frame",
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/annie-spratt-xvU-X0GV9-o-unsplash.webp)`,
   },

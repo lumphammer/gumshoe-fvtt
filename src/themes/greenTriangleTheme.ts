@@ -6,6 +6,7 @@ import type { ThemeV1 } from "./types";
 export const greenTriangleTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Green triangle",
+  layout: "full-frame",
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/annie-spratt-xTaOPMa6wAE-unsplash.webp)`,
   },
