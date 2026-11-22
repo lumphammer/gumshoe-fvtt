@@ -446,15 +446,32 @@ describe("cards", () => {
   });
 
   // the default backdrop is the surface layered over the wallpaper
-  test("a category's background colour replaces the default's layers", () => {
+  test("a background colour alone, anywhere, replaces the default's layers", () => {
     const card = catalogue({
       cards: {
-        categories: { stress: { backdropStyle: { backgroundColor: "red" } } },
+        base: {
+          backdropStyle: { border: "1px solid" },
+          hoverStyle: { backgroundColor: "blue" },
+        },
+        categories: {
+          stress: { backdropStyle: { backgroundColor: "red" } },
+          clue: {
+            backdropStyle: { backgroundColor: "green", backgroundImage: "x" },
+          },
+        },
       },
     }).card!.base!;
-    expect(card.root).toHaveProperty('&[data-category="stress"]', {
-      backgroundImage: "none",
-      backgroundColor: "red",
+    expect(card.root).toMatchObject({
+      "&.investigator-card-array-card:hover": {
+        backgroundColor: "blue",
+        backgroundImage: "none",
+      },
+      '&[data-category="stress"]': {
+        backgroundColor: "red",
+        backgroundImage: "none",
+      },
+      // its own image stays
+      '&[data-category="clue"]': { backgroundImage: "x" },
     });
   });
 });

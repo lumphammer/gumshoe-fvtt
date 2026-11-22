@@ -391,6 +391,21 @@ const attributeValue = (key: string) =>
   `"${key.replace(/[^\w-]/g, (c) => `\\${c.codePointAt(0)!.toString(16)} `)}"`;
 
 /**
+ * A background colour alone (in any rule) replaced the card's default
+ * background, which is a layer over the wallpaper now (`themeFactory`).
+ */
+function colourReplacesLayers(style: Style): Style {
+  const result: Style = {};
+  for (const [key, value] of Object.entries(style)) {
+    result[key] = isStyle(value) ? colourReplacesLayers(value) : value;
+  }
+  if ("backgroundColor" in style && !("background" in style)) {
+    result["backgroundImage"] ??= "none";
+  }
+  return result;
+}
+
+/**
  * In V1, each part of a card was its `themeFactory` style (the defaults, or
  * the seed's `cards.base` style for that part, replacing them whole), with
  * its category's (`cards.categories`, by the card's style key) spread over
@@ -400,18 +415,17 @@ const attributeValue = (key: string) =>
 function cardsFromV1({ cards }: ThemeV1): ThemeCatalogue {
   const slot = (slot: keyof typeof v1CardStyleNames) => {
     const name = v1CardStyleNames[slot];
-    const part = (styles: Partial<typeof cards.base>): Style => ({
-      // a colour alone replaced the base's, which is layered (`themeFactory`)
-      ...(styles[name]?.backgroundColor ? { backgroundImage: "none" } : {}),
-      ...fromEmotion(styles[name]),
-      ...(slot === "root" && styles.hoverStyle
-        ? {
-            "&.investigator-card-array-card:hover": fromEmotion(
-              styles.hoverStyle,
-            ),
-          }
-        : {}),
-    });
+    const part = (styles: Partial<typeof cards.base>): Style =>
+      colourReplacesLayers({
+        ...fromEmotion(styles[name]),
+        ...(slot === "root" && styles.hoverStyle
+          ? {
+              "&.investigator-card-array-card:hover": fromEmotion(
+                styles.hoverStyle,
+              ),
+            }
+          : {}),
+      });
     const style = replacing(part(cards.base));
     for (const [key, category] of Object.entries(cards.categories)) {
       const own = part(category);
