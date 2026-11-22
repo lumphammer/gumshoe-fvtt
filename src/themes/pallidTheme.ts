@@ -1,13 +1,10 @@
 import { systemId } from "../constants";
-import { irid } from "../irid/irid";
 import { themeFactory } from "./functions";
 import type { ThemeV1 } from "./types";
 
 const pallidBlur = "5px";
 const pallidOffset = "3px";
 const stripNewlines = (s: string) => s.replace("\n", "");
-const pallidColor = irid("#282c34");
-const pallidComplement = irid("#aff2f2");
 
 export const pallidTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
@@ -48,12 +45,12 @@ export const pallidTheme: ThemeV1 = themeFactory({
   },
   colors: {
     wallpaper: "#152938",
-    accent: pallidComplement.toString(),
+    accent: "#aff2f2",
     accentContrast: "#333",
-    glow: pallidComplement.lightness(0.7).toString(),
+    glow: "#7be9e9",
 
-    backgroundSecondary: pallidColor.lightness(0.3).opacity(0.5).toString(),
-    backgroundPrimary: pallidColor.lightness(0.1).opacity(0.5).toString(),
+    backgroundSecondary: "#4249567f",
+    backgroundPrimary: "#16181c7f",
 
     backgroundButton: "rgba(255,255,255,0.1)",
     text: "#ddd",

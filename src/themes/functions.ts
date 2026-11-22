@@ -3,20 +3,7 @@ import type {
   ThemeSeedV1,
 } from "@lumphammer/investigator-fvtt-types";
 
-import { irid } from "../irid/irid";
 import type { ThemeV1 } from "./types";
-
-/**
- * Given two colors, create a third which is the result of overlaying the second
- * on the first
- */
-const overlay = (baseString: string, layerString: string): string => {
-  const layer = irid(layerString);
-  const opacity = layer.opacity();
-  const layerOpaque = layer.opacity(1);
-  const result = irid(baseString).blend(layerOpaque, opacity);
-  return result.toRGBString();
-};
 
 /**
  * Generate a basic tab style from a seed.
@@ -45,38 +32,6 @@ export function createBasicTabStyle(colors: ThemeSeedV1["colors"]): CSSObject {
  * theme
  */
 export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
-  const bgOpaquePrimary = overlay(
-    seed.colors.wallpaper,
-    seed.colors.backgroundPrimary,
-  );
-  const bgOpaqueSecondary = overlay(
-    seed.colors.wallpaper,
-    seed.colors.backgroundSecondary,
-  );
-
-  const bgTransPrimary = irid(seed.colors.backgroundPrimary);
-  const bgTransSecondary = irid(seed.colors.backgroundSecondary);
-  const danger = irid(seed.colors.danger ?? "red");
-  const warning = irid(seed.colors.warning ?? "#d68a00");
-  const success = irid(seed.colors.success ?? "green");
-
-  const bgTransDangerPrimary = bgTransPrimary
-    .blend(danger, 0.5)
-    .opacity(bgTransPrimary.opacity())
-    .toRGBString();
-  const bgTransDangerSecondary = bgTransSecondary
-    .blend(danger, 0.5)
-    .opacity(bgTransSecondary.opacity())
-    .toRGBString();
-  const bgOpaqueDangerPrimary = overlay(
-    seed.colors.wallpaper,
-    bgTransDangerPrimary,
-  );
-  const bgOpaqueDangerSecondary = overlay(
-    seed.colors.wallpaper,
-    bgTransDangerSecondary,
-  );
-
   const controlBorder = seed.colors.controlBorder ?? seed.colors.text;
 
   const cardBase = {
@@ -84,7 +39,8 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
       border: `1px solid ${controlBorder}`,
       padding: "0.5em",
       transformOrigin: "top",
-      backgroundColor: bgOpaquePrimary,
+      // opaque: the surface over the wallpaper
+      background: `linear-gradient(${seed.colors.backgroundPrimary} 0 0), ${seed.colors.wallpaper}`,
     },
     supertitleStyle: { fontSize: "0.9em" },
     titleStyle: {},
@@ -136,16 +92,10 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
     tabContentWrappedStyle: seed.tabContentWrappedStyle ?? {},
     colors: {
       ...seed.colors,
-      bgOpaquePrimary,
-      bgOpaqueSecondary,
-      bgTransDangerPrimary,
-      bgTransDangerSecondary,
-      bgOpaqueDangerPrimary,
-      bgOpaqueDangerSecondary,
       controlBorder,
-      danger: danger.toString(),
-      warning: warning.toString(),
-      success: success.toString(),
+      danger: seed.colors.danger ?? "red",
+      warning: seed.colors.warning ?? "#d68a00",
+      success: seed.colors.success ?? "green",
     },
     logo: seed.logo,
     cards: {

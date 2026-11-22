@@ -1,6 +1,8 @@
 import type { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
 import { describe, expect, test } from "vitest";
 
+import config from "../../../panda.config";
+
 import { themeFactory } from "../functions";
 import {
   catalogueFromV1,
@@ -101,36 +103,72 @@ test.each([seed, everything])(
 );
 
 describe("paletteFromV1", () => {
-  test("maps V1 colours to their new names, the flattened ones to the solid surfaces", () => {
+  test("maps V1 colours to their new names, with no solid surfaces", () => {
     const theme = themeFactory(seed);
     const { colors } = theme;
-    expect(paletteFromV1(theme)).toMatchObject({
-      polarity: "light",
+    const palette = paletteFromV1(theme, "dark");
+    expect(palette).toMatchObject({
+      polarity: "dark",
       surface: colors.backgroundPrimary,
       surfaceNested: colors.backgroundSecondary,
-      surfaceSolid: colors.bgOpaquePrimary,
-      surfaceNestedSolid: colors.bgOpaqueSecondary,
       control: colors.backgroundButton,
       onAccent: colors.accentContrast,
       feedback: colors.glow,
       line: colors.controlBorder,
       cardGap: "0.5em 0.5em",
     });
+    expect(palette).not.toHaveProperty("surfaceSolid");
+    expect(palette).not.toHaveProperty("surfaceNestedSolid");
   });
+});
 
-  test.each([
-    ["#eee", "dark"],
-    ["#433", "light"],
-    // by lightness, for the colours Irid can't read
-    ["oklch(0.9 0.02 80)", "dark"],
-    ["oklch(25% 0.02 80)", "light"],
-    ["lab(85 0 0)", "dark"],
-    // not a colour it can read
-    ["var(--some-text)", "light"],
-  ])("text %s means a %s theme", (text, polarity) => {
-    const theme = themeFactory({ ...seed, colors: { ...seed.colors, text } });
-    expect(paletteFromV1(theme).polarity).toBe(polarity);
-  });
+type Css = Record<string, unknown>;
+const isCss = (value: unknown): value is Css =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
+
+// A V1 palette has no solid surfaces (paletteFromV1), so wherever the
+// catalogue paints one as a background, a V1 theme has to paint it instead
+test("every part on a solid surface is on V1's surface over the wallpaper", () => {
+  const solid = /surface(Nested)?Solid|--inv-surface(-nested)?-solid/;
+  const paints = (style: unknown): boolean =>
+    isCss(style) &&
+    Object.entries(style).some(([key, value]) =>
+      isCss(value)
+        ? paints(value)
+        : /^background(Color)?$/.test(key) && solid.test(String(value)),
+    );
+  const painted = (style: unknown) =>
+    isCss(style) &&
+    (style["backgroundImage"] !== undefined || style["all"] === "revert-layer");
+  const overrides = catalogueFromV1(themeFactory(seed)) as Css;
+  const missing: string[] = [];
+  const { recipes = {}, slotRecipes = {} } = config.theme ?? {};
+  for (const [name, recipe] of Object.entries<Css>({
+    ...recipes,
+    ...slotRecipes,
+  })) {
+    const own = isCss(overrides[name]) ? overrides[name] : {};
+    const slots = Array.isArray(recipe["slots"]) ? recipe["slots"] : [];
+    const check = (where: string, style: unknown, override: unknown) => {
+      for (const slot of slots.length ? slots : [undefined]) {
+        const part = (s: unknown) =>
+          slot === undefined ? s : isCss(s) ? s[slot] : undefined;
+        if (paints(part(style)) && !painted(part(override))) {
+          missing.push(`${name} ${where} ${slot ?? ""}`.trim());
+        }
+      }
+    };
+    check("base", recipe["base"], own["base"]);
+    const compounds = (value: unknown) =>
+      (Array.isArray(value) ? value : []) as Css[];
+    for (const { css, ...variants } of compounds(recipe["compoundVariants"])) {
+      const override = compounds(own["compoundVariants"]).find((c) =>
+        Object.entries(variants).every(([key, value]) => c[key] === value),
+      );
+      check(JSON.stringify(variants), css, override?.["css"]);
+    }
+  }
+  expect(missing).toEqual([]);
 });
 
 describe("panels", () => {
@@ -285,8 +323,10 @@ describe("fonts", () => {
 
   test("the theme has them", () => {
     expect(
-      themeFromV1(themeFactory({ ...seed, bodyFont: "1.1em sans-serif" }))
-        .fonts,
+      themeFromV1(
+        themeFactory({ ...seed, bodyFont: "1.1em sans-serif" }),
+        "light",
+      ).fonts,
     ).toEqual({ baseSize: "1.1em", body: { ...reset, family: "sans-serif" } });
   });
 });
@@ -411,7 +451,8 @@ describe("globalCssFromV1", () => {
   test("a string is used as it is, and goes on the theme", () => {
     expect(globalCssFromV1(fontImport)).toBe(fontImport);
     expect(
-      themeFromV1(themeFactory({ ...seed, global: fontImport })).globalCss,
+      themeFromV1(themeFactory({ ...seed, global: fontImport }), "light")
+        .globalCss,
     ).toBe(fontImport);
   });
 

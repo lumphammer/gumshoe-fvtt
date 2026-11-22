@@ -963,6 +963,50 @@ test("cards: a V1 category's style patches the base, whatever its key", async ({
   ).toHaveCSS("color", "rgb(200, 0, 0)");
 });
 
+test("a V1 theme's polarity is measured from its text, and what overlaps is on its surface over the wallpaper", async ({
+  page,
+}) => {
+  const install = (name: string, text: string) =>
+    page.evaluate(
+      ({ colors, name, text }) => {
+        CONFIG.Investigator!.installTheme(name, {
+          schemaVersion: "v1" as const,
+          displayName: name,
+          largeSheetRootStyle: {},
+          logo: {
+            frontTextElementStyle: {},
+            rearTextElementStyle: {},
+            textElementsStyle: {},
+            backdropStyle: {},
+          },
+          colors: {
+            ...colors,
+            text,
+            wallpaper: "rgb(20, 40, 60)",
+            backgroundPrimary: "rgba(255, 255, 255, 0.5)",
+          },
+        });
+      },
+      { colors, name, text },
+    );
+  await install("lightInkTheme", "oklch(0.9 0.02 80)");
+  await install("darkInkTheme", "#433");
+  await setSettings(page, { defaultThemeName: "lightInkTheme" });
+  const partyId = await createActor(page, { name: "Crew", type: "party" });
+  const sheet = await openSheet(page, `Actor.${partyId}`);
+  const root = sheet.locator("[data-inv-theme]").first();
+  await expect(root).toHaveCSS("color-scheme", "dark");
+  const message = sheet.locator(".inv-floating--kind_overlay");
+  await expect(message).toHaveCSS("background-color", "rgb(20, 40, 60)");
+  await expect(message).toHaveCSS(
+    "background-image",
+    "linear-gradient(rgba(255, 255, 255, 0.5) 0px, rgba(255, 255, 255, 0.5) 0px)",
+  );
+
+  await setSettings(page, { defaultThemeName: "darkInkTheme" });
+  await expect(root).toHaveCSS("color-scheme", "light");
+});
+
 test("surfaces: the party sheet's empty message floats, and an ability nobody has is on the danger surface", async ({
   page,
 }) => {
@@ -976,8 +1020,7 @@ test("surfaces: the party sheet's empty message floats, and an ability nobody ha
   await expect(message).toHaveCount(1);
   await expect(message).toContainText("No actors in this party yet");
   await expect(message).toHaveCSS("border-top-left-radius", /px$/);
-  // a V1 theme's overlapping things are on its surface flattened over the
-  // wallpaper: opaque, though the surface isn't
+  // on the solid surface: opaque, though the surface isn't
   await expect(message).toHaveCSS("background-color", /^rgb\(/);
   await expect(sheet.locator(".inv-sheet-root").first()).toHaveCSS(
     "border-top-left-radius",

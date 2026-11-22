@@ -1,9 +1,5 @@
-import { irid } from "../irid/irid";
 import { themeFactory } from "./functions";
 import type { ThemeV1 } from "./types";
-
-const white = irid("white");
-const black = irid("black");
 
 export const highContrastTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
@@ -31,9 +27,9 @@ export const highContrastTheme: ThemeV1 = themeFactory({
     accentContrast: "white",
     glow: "#bbf",
     wallpaper: "#666",
-    backgroundSecondary: white.opacity(0.7).toString(),
-    backgroundPrimary: white.opacity(0.9).toString(),
-    backgroundButton: black.opacity(0.1).toString(),
+    backgroundSecondary: "#ffffffb2",
+    backgroundPrimary: "#ffffffe5",
+    backgroundButton: "#00000019",
     text: "#000",
   },
 });

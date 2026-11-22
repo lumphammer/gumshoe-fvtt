@@ -8,8 +8,8 @@ import type {
   ThemeV2,
 } from "@lumphammer/investigator-fvtt-types";
 
-import { irid } from "../../irid/irid";
 import { displayFontSize, displaySizeVar, textStyleCss } from "../fonts";
+import { paletteVar } from "../palette";
 import type { ThemeV1 } from "../types";
 import { logoDefaults } from "./logoDefaults";
 
@@ -94,35 +94,40 @@ const replacing = (style: Style): Style => ({
   ...style,
 });
 
-/** Light ink means a dark theme. */
-function polarityOf(text: string): ThemePalette["polarity"] {
-  try {
-    // where black starts to read better than white on it (WCAG)
-    return irid(text).relativeLuminance() > 0.179 ? "dark" : "light";
-  } catch {
-    // not a colour Irid can read: the lightness of oklch(), oklab(), lch()
-    // and lab(), or light
-    const [, ok, lightness, percent] =
-      /^(ok)?l(?:ch|ab)\(\s*([\d.]+)(%?)/.exec(text.trim().toLowerCase()) ?? [];
-    const scale = ok && !percent ? 1 : 100;
-    return Number(lightness) / scale > 0.5 ? "dark" : "light";
-  }
+/**
+ * Light ink means a dark theme: the text's lightness, as the browser reads
+ * it. Light if it can't be read here (a `var()`, which only means something
+ * inside a themed root).
+ */
+export function polarityOf(text: string): ThemePalette["polarity"] {
+  if (text.includes("var(")) return "light";
+  const probe = document.createElement("div");
+  probe.style.color = `oklch(from ${text} l 0 0)`;
+  if (!probe.style.color) return "light";
+  document.documentElement.append(probe);
+  const [, lightness] =
+    /oklch\(([\d.]+)/.exec(getComputedStyle(probe).color) ?? [];
+  probe.remove();
+  // a grey's lightness where black starts to read better than white on it
+  return Number(lightness) > 0.56 ? "dark" : "light";
 }
 
 /**
- * A V1 theme's palette. V1's surfaces can be translucent, and things that
- * overlap other content were on them flattened over the wallpaper
- * (`bgOpaque*`): those are the solid surfaces.
+ * A V1 theme's palette. V1's surfaces can be translucent, so it has no solid
+ * surfaces: `palette.css` mixes with the translucent ones, which is the same
+ * once it's over the wallpaper, and the parts on the solid surfaces are
+ * layered over the wallpaper (`solidsFromV1`).
  */
-export function paletteFromV1(theme: ThemeV1): ThemePalette {
+export function paletteFromV1(
+  theme: ThemeV1,
+  polarity = polarityOf(theme.colors.text),
+): ThemePalette {
   const { colors } = theme;
   return {
-    polarity: polarityOf(colors.text),
+    polarity,
     wallpaper: colors.wallpaper,
     surface: colors.backgroundPrimary,
     surfaceNested: colors.backgroundSecondary,
-    surfaceSolid: colors.bgOpaquePrimary,
-    surfaceNestedSolid: colors.bgOpaqueSecondary,
     control: colors.backgroundButton,
     text: colors.text,
     accent: colors.accent,
@@ -427,6 +432,45 @@ function cardsFromV1({ cards }: ThemeV1): ThemeCatalogue {
   };
 }
 
+/** A surface over the wallpaper: opaque, as V1 flattened them (`bgOpaque*`). */
+const onWallpaper = (surface: string) =>
+  themeStyle({
+    backgroundColor: `var(${paletteVar("wallpaper")})`,
+    backgroundImage: `linear-gradient(${surface} 0 0)`,
+  });
+
+/**
+ * The parts on the solid surfaces, which a V1 palette doesn't have: on its
+ * surfaces over the wallpaper. `fromV1.test.ts` checks that it has them all.
+ */
+function solidsFromV1(): ThemeCatalogue {
+  const top = onWallpaper(`var(${paletteVar("surface")})`);
+  const nested = onWallpaper(`var(${paletteVar("surfaceNested")})`);
+  const danger = (surface: "surface" | "surfaceNested") =>
+    onWallpaper(
+      `color-mix(in srgb, var(${paletteVar("danger")}) 50%, var(${paletteVar(surface)}))`,
+    );
+  return {
+    surface: {
+      compoundVariants: [
+        { depth: "top", solid: true, css: top },
+        { depth: "nested", solid: true, css: nested },
+      ],
+    },
+    floating: { base: top },
+    partyCell: {
+      compoundVariants: [
+        { odd: true, zero: false, header: true, css: top },
+        { odd: false, zero: false, header: true, css: nested },
+        { odd: true, zero: true, header: true, css: danger("surface") },
+        { odd: false, zero: true, header: true, css: danger("surfaceNested") },
+      ],
+    },
+    dragHandle: { base: top },
+    select: { base: nested },
+  };
+}
+
 /**
  * The catalogue a V1 theme's styles become. `theme` is the seed as
  * `themeFactory` filled it in: V1's defaults for the fields a seed leaves
@@ -455,6 +499,7 @@ export function catalogueFromV1(theme: ThemeV1): ThemeCatalogue {
     ...cardsFromV1(theme),
     ...panelsFromV1(theme),
     ...tabsFromV1(theme),
+    ...solidsFromV1(),
   };
 }
 
@@ -525,12 +570,15 @@ export function globalCssFromV1(global: ThemeV1["global"]) {
 }
 
 /** A V1 theme (as `themeFactory` made it from its seed) as a V2 theme. */
-export function themeFromV1(theme: ThemeV1): ThemeV2 {
+export function themeFromV1(
+  theme: ThemeV1,
+  polarity?: ThemePalette["polarity"],
+): ThemeV2 {
   const globalCss = globalCssFromV1(theme.global);
   return {
     schemaVersion: "v2",
     displayName: theme.displayName,
-    palette: paletteFromV1(theme),
+    palette: paletteFromV1(theme, polarity),
     fonts: fontsFromV1(theme),
     catalogue: catalogueFromV1(theme),
     layout: "standard",
