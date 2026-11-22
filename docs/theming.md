@@ -549,10 +549,12 @@ tab keeps V1's size, without the scale (V1's tab style sets `1.2em`).
 
 A V1 palette has no solid surfaces: its surfaces can be translucent, and V1
 flattened them over the wallpaper where something overlapped other content.
-`palette.css` mixes colours with the translucent surfaces instead (the same,
-once it's over the wallpaper), and every part the catalogue puts on a solid
-surface is overridden with the surface layered over the wallpaper
-(`solidsFromV1`; a test checks it has them all).
+Instead, every part the catalogue puts on a solid surface, or on a tint of one,
+is overridden with the surface (or the same tint of it) layered over the
+wallpaper (`solidsFromV1`; a test checks it has them all). `color-mix()` takes
+alpha into account, so a tint of the translucent surface over the wallpaper is
+the tint of the flattened one. Muted text, which can't be layered, mixes with
+the translucent surface, and native `<option>`s are on it.
 
 How its styles map:
 

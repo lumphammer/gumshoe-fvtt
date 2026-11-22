@@ -12,6 +12,7 @@ import { displayFontSize, displaySizeVar, textStyleCss } from "../fonts";
 import { paletteVar } from "../palette";
 import type { ThemeV1 } from "../types";
 import { logoDefaults } from "./logoDefaults";
+import { type Tone, tones } from "./tones";
 
 /*
  * V1 themes (`ThemeSeedV1`, filled in by `themeFactory`) as V2 themes that
@@ -95,21 +96,22 @@ const replacing = (style: Style): Style => ({
 });
 
 /**
- * Light ink means a dark theme: the text's lightness, as the browser reads
- * it. Light if it can't be read here (a `var()`, which only means something
- * inside a themed root).
+ * Light ink means a dark theme: the text's relative luminance (WCAG's, which
+ * is XYZ's Y), as the browser reads it, so it's measured as a theme is
+ * installed, not converted. Light if it can't be read here (a `var()`, which
+ * only means something inside a themed root).
  */
 export function polarityOf(text: string): ThemePalette["polarity"] {
-  if (text.includes("var(")) return "light";
+  if (/var\(/i.test(text)) return "light";
   const probe = document.createElement("div");
-  probe.style.color = `oklch(from ${text} l 0 0)`;
+  probe.style.color = `color(from ${text} xyz y y y)`;
   if (!probe.style.color) return "light";
   document.documentElement.append(probe);
-  const [, lightness] =
-    /oklch\(([\d.]+)/.exec(getComputedStyle(probe).color) ?? [];
+  const [, luminance] =
+    /^color\(xyz-d65 (\S+)/.exec(getComputedStyle(probe).color) ?? [];
   probe.remove();
-  // a grey's lightness where black starts to read better than white on it
-  return Number(lightness) > 0.56 ? "dark" : "light";
+  // where black starts to read better than white on it
+  return Number(luminance) > 0.179 ? "dark" : "light";
 }
 
 /**
@@ -120,7 +122,7 @@ export function polarityOf(text: string): ThemePalette["polarity"] {
  */
 export function paletteFromV1(
   theme: ThemeV1,
-  polarity = polarityOf(theme.colors.text),
+  polarity: ThemePalette["polarity"],
 ): ThemePalette {
   const { colors } = theme;
   return {
@@ -399,6 +401,8 @@ function cardsFromV1({ cards }: ThemeV1): ThemeCatalogue {
   const slot = (slot: keyof typeof v1CardStyleNames) => {
     const name = v1CardStyleNames[slot];
     const part = (styles: Partial<typeof cards.base>): Style => ({
+      // a colour alone replaced the base's, which is layered (`themeFactory`)
+      ...(styles[name]?.backgroundColor ? { backgroundImage: "none" } : {}),
       ...fromEmotion(styles[name]),
       ...(slot === "root" && styles.hoverStyle
         ? {
@@ -432,10 +436,13 @@ function cardsFromV1({ cards }: ThemeV1): ThemeCatalogue {
   };
 }
 
-/** A surface over the wallpaper: opaque, as V1 flattened them (`bgOpaque*`). */
+/**
+ * A surface over the wallpaper: opaque, as V1 flattened them (`bgOpaque*`),
+ * even on a translucent wallpaper.
+ */
 const onWallpaper = (surface: string) =>
   themeStyle({
-    backgroundColor: `var(${paletteVar("wallpaper")})`,
+    backgroundColor: `rgb(from var(${paletteVar("wallpaper")}) r g b / 1)`,
     backgroundImage: `linear-gradient(${surface} 0 0)`,
   });
 
@@ -446,9 +453,14 @@ const onWallpaper = (surface: string) =>
 function solidsFromV1(): ThemeCatalogue {
   const top = onWallpaper(`var(${paletteVar("surface")})`);
   const nested = onWallpaper(`var(${paletteVar("surfaceNested")})`);
-  const danger = (surface: "surface" | "surfaceNested") =>
+  // a tint of a surface, as the catalogue mixes it with a solid one
+  const tint = (
+    color: Exclude<Tone, "neutral"> | "line",
+    percent: number,
+    surface: "surface" | "surfaceNested" = "surface",
+  ) =>
     onWallpaper(
-      `color-mix(in srgb, var(${paletteVar("danger")}) 50%, var(${paletteVar(surface)}))`,
+      `color-mix(in srgb, var(${paletteVar(color)}) ${percent}%, var(${paletteVar(surface)}))`,
     );
   return {
     surface: {
@@ -462,12 +474,27 @@ function solidsFromV1(): ThemeCatalogue {
       compoundVariants: [
         { odd: true, zero: false, header: true, css: top },
         { odd: false, zero: false, header: true, css: nested },
-        { odd: true, zero: true, header: true, css: danger("surface") },
-        { odd: false, zero: true, header: true, css: danger("surfaceNested") },
+        { odd: true, zero: true, header: true, css: tint("danger", 50) },
+        {
+          odd: false,
+          zero: true,
+          header: true,
+          css: tint("danger", 50, "surfaceNested"),
+        },
       ],
     },
     dragHandle: { base: top },
     select: { base: nested },
+    callout: {
+      variants: {
+        tone: Object.fromEntries(
+          tones.map((tone) => [
+            tone,
+            tint(tone === "neutral" ? "line" : tone, 30),
+          ]),
+        ) as Record<Tone, ThemeStyle>,
+      },
+    },
   };
 }
 
@@ -572,7 +599,7 @@ export function globalCssFromV1(global: ThemeV1["global"]) {
 /** A V1 theme (as `themeFactory` made it from its seed) as a V2 theme. */
 export function themeFromV1(
   theme: ThemeV1,
-  polarity?: ThemePalette["polarity"],
+  polarity: ThemePalette["polarity"],
 ): ThemeV2 {
   const globalCss = globalCssFromV1(theme.global);
   return {

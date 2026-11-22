@@ -40,7 +40,7 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
       padding: "0.5em",
       transformOrigin: "top",
       // opaque: the surface over the wallpaper
-      background: `linear-gradient(${seed.colors.backgroundPrimary} 0 0), ${seed.colors.wallpaper}`,
+      background: `linear-gradient(${seed.colors.backgroundPrimary} 0 0), rgb(from ${seed.colors.wallpaper} r g b / 1)`,
     },
     supertitleStyle: { fontSize: "0.9em" },
     titleStyle: {},

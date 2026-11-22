@@ -23,8 +23,8 @@ import { cthulhuByCandlelightTheme } from "./cthulhuByCandlelightTheme";
 import type { ThemeV1 } from "./types";
 
 // The themes that are still V1, converted here until each gets its makeover.
-// Their polarity is given, as it can only be measured in a browser, and this
-// also runs in Node (tests, scripts).
+// Their polarity is given, as it's measured in a browser (`polarityOf`), and
+// this also runs in Node (tests, scripts).
 const v1Themes: { [themeName: string]: [ThemeV1, ThemePalette["polarity"]] } = {
   highContrastTheme: [highContrastTheme, "light"],
   fearTheme: [fearTheme, "light"],

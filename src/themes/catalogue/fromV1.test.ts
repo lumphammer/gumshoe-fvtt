@@ -130,45 +130,46 @@ const isCss = (value: unknown): value is Css =>
 // catalogue paints one as a background, a V1 theme has to paint it instead
 test("every part on a solid surface is on V1's surface over the wallpaper", () => {
   const solid = /surface(Nested)?Solid|--inv-surface(-nested)?-solid/;
-  const paints = (style: unknown): boolean =>
-    isCss(style) &&
-    Object.entries(style).some(([key, value]) =>
-      isCss(value)
-        ? paints(value)
-        : /^background(Color)?$/.test(key) && solid.test(String(value)),
-    );
-  const painted = (style: unknown) =>
-    isCss(style) &&
-    (style["backgroundImage"] !== undefined || style["all"] === "revert-layer");
   const overrides = catalogueFromV1(themeFactory(seed)) as Css;
   const missing: string[] = [];
+  // a style (a slot's, a variant's, a nested rule's) and V1's override of
+  // it, side by side
+  const walk = (where: string, style: unknown, override: unknown) => {
+    if (!isCss(style)) return;
+    const own = isCss(override) ? override : {};
+    if (own["all"] === "revert-layer") return;
+    for (const [key, value] of Object.entries(style)) {
+      if (isCss(value)) {
+        walk(`${where} ${key}`, value, own[key]);
+      } else if (
+        /^background(Color)?$/.test(key) &&
+        solid.test(String(value)) &&
+        own["backgroundImage"] === undefined
+      ) {
+        missing.push(where);
+      }
+    }
+  };
   const { recipes = {}, slotRecipes = {} } = config.theme ?? {};
   for (const [name, recipe] of Object.entries<Css>({
     ...recipes,
     ...slotRecipes,
   })) {
     const own = isCss(overrides[name]) ? overrides[name] : {};
-    const slots = Array.isArray(recipe["slots"]) ? recipe["slots"] : [];
-    const check = (where: string, style: unknown, override: unknown) => {
-      for (const slot of slots.length ? slots : [undefined]) {
-        const part = (s: unknown) =>
-          slot === undefined ? s : isCss(s) ? s[slot] : undefined;
-        if (paints(part(style)) && !painted(part(override))) {
-          missing.push(`${name} ${where} ${slot ?? ""}`.trim());
-        }
-      }
-    };
-    check("base", recipe["base"], own["base"]);
+    walk(`${name} base`, recipe["base"], own["base"]);
+    walk(`${name} variants`, recipe["variants"], own["variants"]);
     const compounds = (value: unknown) =>
       (Array.isArray(value) ? value : []) as Css[];
     for (const { css, ...variants } of compounds(recipe["compoundVariants"])) {
       const override = compounds(own["compoundVariants"]).find((c) =>
         Object.entries(variants).every(([key, value]) => c[key] === value),
       );
-      check(JSON.stringify(variants), css, override?.["css"]);
+      walk(`${name} ${JSON.stringify(variants)}`, css, override?.["css"]);
     }
   }
-  expect(missing).toEqual([]);
+  // a native dropdown's options can't have a background image: they're on
+  // the translucent surface, over the dropdown's own background
+  expect(missing).toEqual(["select base & option"]);
 });
 
 describe("panels", () => {
@@ -441,6 +442,19 @@ describe("cards", () => {
     });
     expect(card.root).toHaveProperty('&[data-category="stress"]', {
       color: "blue",
+    });
+  });
+
+  // the default backdrop is the surface layered over the wallpaper
+  test("a category's background colour replaces the default's layers", () => {
+    const card = catalogue({
+      cards: {
+        categories: { stress: { backdropStyle: { backgroundColor: "red" } } },
+      },
+    }).card!.base!;
+    expect(card.root).toHaveProperty('&[data-category="stress"]', {
+      backgroundImage: "none",
+      backgroundColor: "red",
     });
   });
 });

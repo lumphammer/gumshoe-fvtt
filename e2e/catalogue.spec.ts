@@ -291,6 +291,15 @@ const resolve = (near: Locator, color: string) =>
     return resolved;
   }, color);
 
+/** A V1 callout's tint of its tone: a layer over the wallpaper. */
+const tinted = async (callout: Locator, tone: string) => {
+  const tint = await resolve(
+    callout,
+    `color-mix(in srgb, var(--inv-${tone}) 30%, var(--inv-surface))`,
+  );
+  return `linear-gradient(${tint} 0px, ${tint} 0px)`;
+};
+
 test("a callout takes its tone, and a drop target shows when it's ready and when something's over it", async ({
   page,
 }) => {
@@ -336,15 +345,12 @@ test("a callout takes its tone, and a drop target shows when it's ready and when
   await expect(callout).toHaveRole("status");
   await expect(callout).toHaveCSS("border-left-color", danger);
   await expect(callout).toHaveCSS("border-left-style", "solid");
-  // text ink on a tint of the tone over the surface (V1's flattened one,
-  // which for this theme's opaque surface is the same)
+  // text ink on a tint of the tone over the surface (a V1 theme's, over
+  // its wallpaper)
   await expect(callout).toHaveCSS("color", colors.text);
   await expect(callout).toHaveCSS(
-    "background-color",
-    await resolve(
-      callout,
-      "color-mix(in srgb, var(--inv-danger) 30%, var(--inv-surface))",
-    ),
+    "background-image",
+    await tinted(callout, "danger"),
   );
 
   // its action is as wide as its content, not the whole row
@@ -373,11 +379,8 @@ test("a callout takes its tone, and a drop target shows when it's ready and when
   const advice = sheet.locator(".inv-callout--tone_warning").first();
   await expect(advice).toHaveCSS("border-left-color", warning);
   await expect(advice).toHaveCSS(
-    "background-color",
-    await resolve(
-      advice,
-      "color-mix(in srgb, var(--inv-warning) 30%, var(--inv-surface))",
-    ),
+    "background-image",
+    await tinted(advice, "warning"),
   );
 
   // a Bond's actor row is always ready for an actor
@@ -982,7 +985,8 @@ test("a V1 theme's polarity is measured from its text, and what overlaps is on i
           colors: {
             ...colors,
             text,
-            wallpaper: "rgb(20, 40, 60)",
+            // translucent, but what overlaps is opaque all the same
+            wallpaper: "rgb(20 40 60 / 0.5)",
             backgroundPrimary: "rgba(255, 255, 255, 0.5)",
           },
         });
@@ -997,7 +1001,10 @@ test("a V1 theme's polarity is measured from its text, and what overlaps is on i
   const root = sheet.locator("[data-inv-theme]").first();
   await expect(root).toHaveCSS("color-scheme", "dark");
   const message = sheet.locator(".inv-floating--kind_overlay");
-  await expect(message).toHaveCSS("background-color", "rgb(20, 40, 60)");
+  await expect(message).toHaveCSS(
+    "background-color",
+    await resolve(message, "rgb(from rgb(20 40 60) r g b / 1)"),
+  );
   await expect(message).toHaveCSS(
     "background-image",
     "linear-gradient(rgba(255, 255, 255, 0.5) 0px, rgba(255, 255, 255, 0.5) 0px)",
