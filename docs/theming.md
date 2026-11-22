@@ -527,6 +527,10 @@ then `themeFromV1` (`src/themes/catalogue/fromV1.ts`, which holds everything
 V1) makes a ThemeV2. A V1 seed can't write catalogue overrides of its own:
 that's ThemeV2. Its values are CSS as written.
 
+A V1 seed's optional `layout` is ThemeV2's (above). It defaults to
+`"standard"`, so a V1 theme from a module or the theme folder keeps the layout
+it was written for; the built-in V1 themes set `"full-frame"`.
+
 | V1                                                    | Palette                                                             |
 | ----------------------------------------------------- | ------------------------------------------------------------------- |
 | `backgroundPrimary` / `backgroundSecondary`           | `surface` / `surfaceNested`                                         |

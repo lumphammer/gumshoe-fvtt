@@ -7,6 +7,7 @@ const glow = "#fda994";
 export const olderThanMemoryTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Older Than Memory",
+  layout: "full-frame",
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/red_sands.jpg)`,
     backgroundPosition: "top",

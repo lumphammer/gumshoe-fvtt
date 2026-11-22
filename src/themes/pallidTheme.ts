@@ -9,6 +9,7 @@ const stripNewlines = (s: string) => s.replace("\n", "");
 export const pallidTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Aching Stars",
+  layout: "full-frame",
   largeSheetRootStyle: {
     backgroundImage: `url(systems/${systemId}/assets/wallpaper/guille-pozzi-sbcIAn4Mn14-unsplash.webp)`,
   },

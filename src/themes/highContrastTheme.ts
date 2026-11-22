@@ -4,6 +4,7 @@ import type { ThemeV1 } from "./types";
 export const highContrastTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "High Contrast",
+  layout: "full-frame",
   global: "",
   largeSheetRootStyle: {},
   bodyFont: "1.1em sans-serif",

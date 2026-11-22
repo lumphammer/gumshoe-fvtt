@@ -24,6 +24,7 @@ const starburstGradientOffset = createStarburstGradient(
 export const deltaGroovyTheme: ThemeV1 = themeFactory({
   schemaVersion: "v1",
   displayName: "Delta Groovy",
+  layout: "full-frame",
   smallSheetRootStyle: {
     ":before": {
       backgroundImage: starburstGradientOffset,

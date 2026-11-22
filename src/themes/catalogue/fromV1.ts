@@ -624,7 +624,8 @@ export function themeFromV1(
     palette: paletteFromV1(theme, polarity),
     fonts: fontsFromV1(theme),
     catalogue: catalogueFromV1(theme),
-    layout: "standard",
+    // a module's seed isn't checked: anything else is the standard layout
+    layout: theme.layout === "full-frame" ? "full-frame" : "standard",
     ...(globalCss ? { globalCss } : {}),
   };
 }
