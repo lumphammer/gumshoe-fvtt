@@ -56,13 +56,6 @@ export const niceTheme = defineThemeV2({
         },
       },
     },
-    appFrame: {
-      base: {
-        header: {
-          backgroundColor: "red",
-        },
-      },
-    },
     logo: {
       base: {
         root: {
@@ -77,7 +70,6 @@ export const niceTheme = defineThemeV2({
           borderStyle: "solid",
           borderColor: "#433",
         },
-        // the display font, lighter
         text: { fontWeight: 400 },
         front_wrapper: { color: "#fff" },
         rear_wrapper: {

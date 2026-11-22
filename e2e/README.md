@@ -31,6 +31,9 @@ These aren't part of `pnpm check` or CI yet: they need a licensed Foundry.
    `pnpm exec playwright show-trace test-results/.../trace.zip` to step
    through a failure.
 
+The same servers take screenshots of the sheets in each built-in theme:
+`pnpm theme:shots` (see `docs/theming.md`, "The built-in themes").
+
 To use different Foundry servers, set `E2E_FOUNDRY_URL` to their URLs, and
 `E2E_FOUNDRY_DATA` to their data folders if they're on this machine (both
 comma-separated, in the same order). They must be licensed and have no admin

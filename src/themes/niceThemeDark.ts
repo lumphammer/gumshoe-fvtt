@@ -72,7 +72,6 @@ export const niceThemeDark = defineThemeV2({
     appFrame: {
       base: {
         root: {
-          // boxShadow: "0 0 20px #f00",
           border: "1px solid oklch(0.5 0.2 20deg)",
           boxShadow: `
             0px 0px 10px 5px #0007,
@@ -81,9 +80,6 @@ export const niceThemeDark = defineThemeV2({
 
           borderRadius: "0.5em",
           overflow: "hidden",
-        },
-        header: {
-          backgroundColor: "red",
         },
       },
     },
@@ -104,7 +100,6 @@ export const niceThemeDark = defineThemeV2({
           borderStyle: "none",
           borderColor: "#ccc",
         },
-        // the display font, lighter
         text: { fontWeight: 400 },
         rear_wrapper: {
           textShadow: "2px 0px 1px black, -1px 0px 0px rgba(255,255,255,0.5)",

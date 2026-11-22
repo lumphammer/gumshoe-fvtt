@@ -10,3 +10,4 @@ e2e/.auth
 test-results
 playwright-report
 /src/styled-system
+theme-shots
