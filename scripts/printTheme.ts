@@ -8,7 +8,7 @@ import { baseThemes } from "../src/themes/baseThemes";
 const name = process.argv[2];
 if (!name) {
   console.log(Object.keys(baseThemes).join("\n"));
-} else if (!(name in baseThemes)) {
+} else if (!Object.hasOwn(baseThemes, name)) {
   console.error(
     `No built-in theme "${name}". One of: ${Object.keys(baseThemes).join(", ")}`,
   );

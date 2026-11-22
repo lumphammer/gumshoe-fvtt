@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import {
   createActor,
   createOwnedItem,
+  expect,
   openSheet,
   setSettings,
   test,
@@ -40,26 +41,82 @@ if (unknown.length > 0) {
   );
 }
 
-/** Screenshot a window, with a margin for its shadow or glow. */
-async function shoot(page: Page, window: Locator, file: string) {
-  await page.evaluate(() => document.fonts.ready);
-  // the wallpaper images
-  await page.waitForLoadState("networkidle");
+// room around a window for its shadow or glow
+const margin = 60;
+
+/**
+ * Wait until a window has finished rendering: no Suspense spinner, no tab
+ * change still in its transition (the pending tab is dimmed), and its fonts
+ * and images loaded.
+ */
+async function settle(window: Locator) {
+  await expect(window.locator(".fa-spinner.fa-spin")).toHaveCount(0);
+  await expect(
+    window.locator(".tab-strip > label[style*=opacity]"),
+  ).toHaveCount(0);
+  await window.evaluate(async (root) => {
+    await root.ownerDocument.fonts.ready;
+    const urls = new Set<string>();
+    for (const el of [root, ...root.querySelectorAll("*")]) {
+      for (const pseudo of [null, "::before", "::after"]) {
+        const image = getComputedStyle(el, pseudo).backgroundImage;
+        for (const [, url] of image.matchAll(/url\("?([^")]+)"?\)/g)) {
+          urls.add(url);
+        }
+      }
+      if (el instanceof HTMLImageElement && el.currentSrc) {
+        urls.add(el.currentSrc);
+      }
+    }
+    // (a broken image is the theme's problem, and shows in the shot)
+    await Promise.allSettled(
+      [...urls].map((url) => {
+        const image = new Image();
+        image.src = url;
+        return image.decode();
+      }),
+    );
+  });
+}
+
+/**
+ * Screenshot a window, placed with room around it for its shadow or glow.
+ * Returns false, and takes none, if it looks the same as one already taken
+ * (`seen`: the text of each).
+ */
+async function shoot(
+  page: Page,
+  window: Locator,
+  file: string,
+  seen = new Set<string>(),
+) {
+  await settle(window);
+  const text = await window.innerText();
+  if (seen.has(text)) return false;
+  seen.add(text);
+  const id = await window.getAttribute("id");
+  await page.evaluate(
+    ({ id, margin }) =>
+      foundry.applications.instances
+        .get(id!)
+        ?.setPosition({ left: margin, top: margin }),
+    { id, margin },
+  );
   const box = await window.boundingBox();
   if (!box) throw new Error(`Nothing to screenshot for ${file}`);
   const viewport = page.viewportSize()!;
-  const margin = 30;
-  const x = Math.max(0, box.x - margin);
-  const y = Math.max(0, box.y - margin);
+  const width = box.width + 2 * margin;
+  const height = box.height + 2 * margin;
+  if (width > viewport.width || height > viewport.height) {
+    throw new Error(
+      `${file}: the window and its margin (${width}x${height}) don't fit the viewport (${viewport.width}x${viewport.height})`,
+    );
+  }
   await page.screenshot({
     path: file,
-    clip: {
-      x,
-      y,
-      width: Math.min(viewport.width, box.x + box.width + margin) - x,
-      height: Math.min(viewport.height, box.y + box.height + margin) - y,
-    },
+    clip: { x: box.x - margin, y: box.y - margin, width, height },
   });
+  return true;
 }
 
 async function closeWindow(page: Page, window: Locator) {
@@ -72,6 +129,9 @@ async function closeWindow(page: Page, window: Locator) {
 for (const name of names) {
   test(name, async ({ page }) => {
     test.setTimeout(120_000);
+    // the tests' 1000px is too short for the PC sheet and its margin. (The
+    // page is shared by a worker's tests, but these workers only take shots.)
+    await page.setViewportSize({ width: 1600, height: 1200 });
     const dir = path.join(outDir, name);
     rmSync(dir, { recursive: true, force: true });
     mkdirSync(dir, { recursive: true });
@@ -89,10 +149,10 @@ for (const name of names) {
 
     // every tab of the PC sheet, and its settings
     const pc = await openSheet(page, `Actor.${pcId}`);
-    let tab = 0;
+    // (it's called for the first tab before and after clicking it)
+    const seen = new Set<string>();
     await visitEveryTab(pc, async () => {
-      tab++;
-      await shoot(page, pc, path.join(dir, `pc-${tab}.png`));
+      await shoot(page, pc, path.join(dir, `pc-${seen.size + 1}.png`), seen);
     });
     await closeWindow(page, pc);
 
