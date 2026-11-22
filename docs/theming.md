@@ -573,9 +573,17 @@ How its styles map:
 
 ## The built-in themes
 
-`tealTheme`, `fogTheme` and `nightFogTheme` are hand-written ThemeV2. The other
-eleven are still their small V1 sources (`src/themes/*Theme.ts`), which
-`baseThemes.ts` converts at load, until each gets its makeover. Of the
+Each lives in `src/themes/*Theme.ts`. The ones in `v1Themes` in
+`baseThemes.ts` are still V1 sources, converted at load until each gets its
+makeover; the rest are hand-written ThemeV2.
+
+A makeover starts from what the V1 theme converts to: `pnpm theme:print
+<name>` prints a built-in as the ThemeV2 it installs as. To see a theme,
+`pnpm theme:shots` screenshots the sheets in each built-in theme (set
+`THEMES=niceTheme,niceThemeDark` for fewer) into `theme-shots/`, on the e2e
+servers (`e2e/README.md`), from `build/`: `pnpm build` first.
+
+Of the
 [theming epic](https://github.com/lumphammer/gumshoe-fvtt/issues/1532)'s end
 goals, native ThemeV2 authoring, `ThemeV1` as only a step from `ThemeSeedV1`,
 no `ThemeContext`, and custom V1 and V2 themes are done; every built-in being
