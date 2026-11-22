@@ -912,7 +912,10 @@ test("cards: a V1 category's style patches the base, whatever its key", async ({
       cards: {
         base: { titleStyle: { color: "rgb(200, 0, 0)" } },
         categories: {
-          "mental stress": { titleStyle: { color: "rgb(0, 0, 200)" } },
+          "mental stress": {
+            titleStyle: { color: "rgb(0, 0, 200)" },
+            backdropStyle: { backgroundColor: "rgb(0, 200, 0)" },
+          },
         },
       },
     });
@@ -964,6 +967,16 @@ test("cards: a V1 category's style patches the base, whatever its key", async ({
   await expect(
     sheet.locator(".inv-card__title", { hasText: "Lead" }),
   ).toHaveCSS("color", "rgb(200, 0, 0)");
+  // the base's backdrop is the surface layered over the wallpaper, and a
+  // category's own colour replaces it
+  const root = (name: string) =>
+    sheet.locator(".inv-card__root", { hasText: name });
+  await expect(root("Lead")).toHaveCSS(
+    "background-image",
+    /^linear-gradient\(/,
+  );
+  await expect(root("Shaken")).toHaveCSS("background-image", "none, none");
+  await expect(root("Shaken")).toHaveCSS("background-color", "rgb(0, 200, 0)");
 });
 
 test("a V1 theme's polarity is measured from its text, and what overlaps is on its surface over the wallpaper", async ({

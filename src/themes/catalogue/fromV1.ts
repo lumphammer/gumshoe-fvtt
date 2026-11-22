@@ -10,6 +10,7 @@ import type {
 
 import { displayFontSize, displaySizeVar, textStyleCss } from "../fonts";
 import { paletteVar } from "../palette";
+import { v1CardLayer } from "../functions";
 import type { ThemeV1 } from "../types";
 import { logoDefaults } from "./logoDefaults";
 import { type Tone, tones } from "./tones";
@@ -392,7 +393,8 @@ const attributeValue = (key: string) =>
 
 /**
  * A background colour alone (in any rule) replaced the card's default
- * background, which is a layer over the wallpaper now (`themeFactory`).
+ * background, which is a layer over the wallpaper now (`themeFactory`): it
+ * clears that layer, and not any image of the theme's own.
  */
 function colourReplacesLayers(style: Style): Style {
   const result: Style = {};
@@ -400,7 +402,7 @@ function colourReplacesLayers(style: Style): Style {
     result[key] = isStyle(value) ? colourReplacesLayers(value) : value;
   }
   if ("backgroundColor" in style && !("background" in style)) {
-    result["backgroundImage"] ??= "none";
+    result[v1CardLayer] ??= "none";
   }
   return result;
 }

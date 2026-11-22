@@ -5,6 +5,9 @@ import type {
 
 import type { ThemeV1 } from "./types";
 
+/** The default card backdrop's surface layer. */
+export const v1CardLayer = "--v1-card-layer";
+
 /**
  * Generate a basic tab style from a seed.
  *
@@ -39,8 +42,10 @@ export const themeFactory = (seed: ThemeSeedV1): ThemeV1 => {
       border: `1px solid ${controlBorder}`,
       padding: "0.5em",
       transformOrigin: "top",
-      // opaque: the surface over the wallpaper
-      background: `linear-gradient(${seed.colors.backgroundPrimary} 0 0), rgb(from ${seed.colors.wallpaper} r g b / 1)`,
+      // opaque: the surface over the wallpaper, a layer that a background
+      // colour of its own clears (`colourReplacesLayers`)
+      [v1CardLayer]: `linear-gradient(${seed.colors.backgroundPrimary} 0 0)`,
+      background: `var(${v1CardLayer}), rgb(from ${seed.colors.wallpaper} r g b / 1)`,
     },
     supertitleStyle: { fontSize: "0.9em" },
     titleStyle: {},

@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 
 import config from "../../../panda.config";
 
-import { themeFactory } from "../functions";
+import { themeFactory, v1CardLayer } from "../functions";
 import {
   catalogueFromV1,
   fontsFromV1,
@@ -446,32 +446,31 @@ describe("cards", () => {
   });
 
   // the default backdrop is the surface layered over the wallpaper
-  test("a background colour alone, anywhere, replaces the default's layers", () => {
+  test("a background colour alone, anywhere, clears the default's layer, not the theme's images", () => {
     const card = catalogue({
       cards: {
         base: {
-          backdropStyle: { border: "1px solid" },
+          backdropStyle: { backgroundImage: "url(art.png)" },
           hoverStyle: { backgroundColor: "blue" },
         },
         categories: {
           stress: { backdropStyle: { backgroundColor: "red" } },
-          clue: {
-            backdropStyle: { backgroundColor: "green", backgroundImage: "x" },
-          },
+          clue: { backdropStyle: { background: "green" } },
         },
       },
     }).card!.base!;
-    expect(card.root).toMatchObject({
+    expect(card.root).toEqual({
+      all: "revert-layer",
+      backgroundImage: "url(art.png)",
       "&.investigator-card-array-card:hover": {
         backgroundColor: "blue",
-        backgroundImage: "none",
+        [v1CardLayer]: "none",
       },
       '&[data-category="stress"]': {
         backgroundColor: "red",
-        backgroundImage: "none",
+        [v1CardLayer]: "none",
       },
-      // its own image stays
-      '&[data-category="clue"]': { backgroundImage: "x" },
+      '&[data-category="clue"]': { background: "green" },
     });
   });
 });
