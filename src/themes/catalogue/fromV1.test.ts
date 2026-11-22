@@ -2,9 +2,6 @@ import type { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
 import { describe, expect, test } from "vitest";
 
 import { themeFactory } from "../functions";
-import { mutantCityBlueTheme } from "../mutantCityBlueTheme";
-import { highContrastTheme } from "../highContrastTheme";
-import { fearTheme } from "../fearTheme";
 import {
   catalogueFromV1,
   fontsFromV1,
@@ -41,10 +38,63 @@ const seed: ThemeSeedV1 = {
 const catalogue = (overrides: Partial<ThemeSeedV1> = {}) =>
   catalogueFromV1(themeFactory({ ...seed, ...overrides }));
 
-test.each([highContrastTheme, fearTheme, mutantCityBlueTheme])(
+// Every style a V1 seed can have, so the catalogue it makes reaches every
+// part. (Not a built-in theme: those become ThemeV2 one by one.)
+const everything: ThemeSeedV1 = {
+  ...seed,
+  displayName: "Everything",
+  global: "@import url('https://example.com/font.css');",
+  bodyFont: "1.1em sans-serif",
+  displayFont: "normal normal normal 1.2em serif",
+  displayFontTextTransform: "uppercase",
+  largeSheetRootStyle: { backgroundImage: "linear-gradient(#fff, #eee)" },
+  smallSheetRootStyle: { backgroundColor: "#eee" },
+  appWindowStyle: { boxShadow: "0 0 20px #f00" },
+  tabStyle: { border: "1px solid", ":hover": { textShadow: "none" } },
+  tabActiveStyle: { background: "white" },
+  tabSpacerStyle: { borderBottom: "1px solid" },
+  tabContentStyle: { border: "1px solid" },
+  tabWrappedStyle: { borderRadius: "0.2em" },
+  tabWrappedActiveStyle: { background: "white" },
+  tabContentWrappedStyle: { borderStyle: "solid" },
+  panelStylePrimary: { border: "1px solid" },
+  panelStyleSecondary: { backgroundColor: "#fff3" },
+  logo: {
+    frontTextElementStyle: { color: "#000", fontSize: "1.2em" },
+    frontTextElementWrapperStyle: { filter: "blur(0.5px)" },
+    rearTextElementStyle: { textShadow: "0 0 10px white" },
+    rearTextElementWrapperStyle: { opacity: 0.5 },
+    textElementsStyle: { transform: "scale(0.8)" },
+    backdropStyle: { background: "white" },
+  },
+  cards: {
+    base: {
+      backdropStyle: {
+        border: "3px solid #999",
+        "@container (width > 400px)": { "--shadow-rotate": "3deg" },
+        ":before, :after": { content: '""' },
+      },
+      supertitleStyle: { fontSize: "0.8em" },
+      titleStyle: { fontWeight: "bold" },
+      subtitleStyle: { fontStyle: "italic" },
+      descriptionStyle: { opacity: 0.8 },
+      effectStyle: { color: "red" },
+      hoverStyle: { border: "3px solid #666" },
+    },
+    categories: {
+      stress: {
+        backdropStyle: { borderColor: "#057" },
+        hoverStyle: { borderColor: "#068" },
+      },
+    },
+    area: { horizontalSpacing: "0.5em", verticalSpacing: "1em" },
+  },
+};
+
+test.each([seed, everything])(
   "$displayName: the catalogue knows every name it makes",
   (theme) => {
-    catalogueRules(catalogueFromV1(theme), (message) => {
+    catalogueRules(catalogueFromV1(themeFactory(theme)), (message) => {
       throw new Error(message);
     });
   },
