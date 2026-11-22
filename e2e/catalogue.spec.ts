@@ -291,6 +291,15 @@ const resolve = (near: Locator, color: string) =>
     return resolved;
   }, color);
 
+/** A V1 callout's tint of its tone: a layer over the wallpaper. */
+const tinted = async (callout: Locator, tone: string) => {
+  const tint = await resolve(
+    callout,
+    `color-mix(in srgb, var(--inv-${tone}) 30%, var(--inv-surface))`,
+  );
+  return `linear-gradient(${tint} 0px, ${tint} 0px)`;
+};
+
 test("a callout takes its tone, and a drop target shows when it's ready and when something's over it", async ({
   page,
 }) => {
@@ -336,15 +345,12 @@ test("a callout takes its tone, and a drop target shows when it's ready and when
   await expect(callout).toHaveRole("status");
   await expect(callout).toHaveCSS("border-left-color", danger);
   await expect(callout).toHaveCSS("border-left-style", "solid");
-  // text ink on a tint of the tone over the surface (V1's flattened one,
-  // which for this theme's opaque surface is the same)
+  // text ink on a tint of the tone over the surface (a V1 theme's, over
+  // its wallpaper)
   await expect(callout).toHaveCSS("color", colors.text);
   await expect(callout).toHaveCSS(
-    "background-color",
-    await resolve(
-      callout,
-      "color-mix(in srgb, var(--inv-danger) 30%, var(--inv-surface))",
-    ),
+    "background-image",
+    await tinted(callout, "danger"),
   );
 
   // its action is as wide as its content, not the whole row
@@ -373,11 +379,8 @@ test("a callout takes its tone, and a drop target shows when it's ready and when
   const advice = sheet.locator(".inv-callout--tone_warning").first();
   await expect(advice).toHaveCSS("border-left-color", warning);
   await expect(advice).toHaveCSS(
-    "background-color",
-    await resolve(
-      advice,
-      "color-mix(in srgb, var(--inv-warning) 30%, var(--inv-surface))",
-    ),
+    "background-image",
+    await tinted(advice, "warning"),
   );
 
   // a Bond's actor row is always ready for an actor
@@ -909,7 +912,10 @@ test("cards: a V1 category's style patches the base, whatever its key", async ({
       cards: {
         base: { titleStyle: { color: "rgb(200, 0, 0)" } },
         categories: {
-          "mental stress": { titleStyle: { color: "rgb(0, 0, 200)" } },
+          "mental stress": {
+            titleStyle: { color: "rgb(0, 0, 200)" },
+            backdropStyle: { backgroundColor: "rgb(0, 200, 0)" },
+          },
         },
       },
     });
@@ -961,6 +967,64 @@ test("cards: a V1 category's style patches the base, whatever its key", async ({
   await expect(
     sheet.locator(".inv-card__title", { hasText: "Lead" }),
   ).toHaveCSS("color", "rgb(200, 0, 0)");
+  // the base's backdrop is the surface layered over the wallpaper, and a
+  // category's own colour replaces it
+  const root = (name: string) =>
+    sheet.locator(".inv-card__root", { hasText: name });
+  await expect(root("Lead")).toHaveCSS(
+    "background-image",
+    /^linear-gradient\(/,
+  );
+  await expect(root("Shaken")).toHaveCSS("background-image", "none, none");
+  await expect(root("Shaken")).toHaveCSS("background-color", "rgb(0, 200, 0)");
+});
+
+test("a V1 theme's polarity is measured from its text, and what overlaps is on its surface over the wallpaper", async ({
+  page,
+}) => {
+  const install = (name: string, text: string) =>
+    page.evaluate(
+      ({ colors, name, text }) => {
+        CONFIG.Investigator!.installTheme(name, {
+          schemaVersion: "v1" as const,
+          displayName: name,
+          largeSheetRootStyle: {},
+          logo: {
+            frontTextElementStyle: {},
+            rearTextElementStyle: {},
+            textElementsStyle: {},
+            backdropStyle: {},
+          },
+          colors: {
+            ...colors,
+            text,
+            // translucent, but what overlaps is opaque all the same
+            wallpaper: "rgb(20 40 60 / 0.5)",
+            backgroundPrimary: "rgba(255, 255, 255, 0.5)",
+          },
+        });
+      },
+      { colors, name, text },
+    );
+  await install("lightInkTheme", "oklch(0.9 0.02 80)");
+  await install("darkInkTheme", "#433");
+  await setSettings(page, { defaultThemeName: "lightInkTheme" });
+  const partyId = await createActor(page, { name: "Crew", type: "party" });
+  const sheet = await openSheet(page, `Actor.${partyId}`);
+  const root = sheet.locator("[data-inv-theme]").first();
+  await expect(root).toHaveCSS("color-scheme", "dark");
+  const message = sheet.locator(".inv-floating--kind_overlay");
+  await expect(message).toHaveCSS(
+    "background-color",
+    await resolve(message, "rgb(from rgb(20 40 60) r g b / 1)"),
+  );
+  await expect(message).toHaveCSS(
+    "background-image",
+    "linear-gradient(rgba(255, 255, 255, 0.5) 0px, rgba(255, 255, 255, 0.5) 0px)",
+  );
+
+  await setSettings(page, { defaultThemeName: "darkInkTheme" });
+  await expect(root).toHaveCSS("color-scheme", "light");
 });
 
 test("surfaces: the party sheet's empty message floats, and an ability nobody has is on the danger surface", async ({
@@ -976,8 +1040,7 @@ test("surfaces: the party sheet's empty message floats, and an ability nobody ha
   await expect(message).toHaveCount(1);
   await expect(message).toContainText("No actors in this party yet");
   await expect(message).toHaveCSS("border-top-left-radius", /px$/);
-  // a V1 theme's overlapping things are on its surface flattened over the
-  // wallpaper: opaque, though the surface isn't
+  // on the solid surface: opaque, though the surface isn't
   await expect(message).toHaveCSS("background-color", /^rgb\(/);
   await expect(sheet.locator(".inv-sheet-root").first()).toHaveCSS(
     "border-top-left-radius",

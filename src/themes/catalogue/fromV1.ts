@@ -8,10 +8,12 @@ import type {
   ThemeV2,
 } from "@lumphammer/investigator-fvtt-types";
 
-import { irid } from "../../irid/irid";
 import { displayFontSize, displaySizeVar, textStyleCss } from "../fonts";
+import { paletteVar } from "../palette";
+import { v1CardLayer } from "../functions";
 import type { ThemeV1 } from "../types";
 import { logoDefaults } from "./logoDefaults";
+import { type Tone, tones } from "./tones";
 
 /*
  * V1 themes (`ThemeSeedV1`, filled in by `themeFactory`) as V2 themes that
@@ -94,35 +96,41 @@ const replacing = (style: Style): Style => ({
   ...style,
 });
 
-/** Light ink means a dark theme. */
-function polarityOf(text: string): ThemePalette["polarity"] {
-  try {
-    // where black starts to read better than white on it (WCAG)
-    return irid(text).relativeLuminance() > 0.179 ? "dark" : "light";
-  } catch {
-    // not a colour Irid can read: the lightness of oklch(), oklab(), lch()
-    // and lab(), or light
-    const [, ok, lightness, percent] =
-      /^(ok)?l(?:ch|ab)\(\s*([\d.]+)(%?)/.exec(text.trim().toLowerCase()) ?? [];
-    const scale = ok && !percent ? 1 : 100;
-    return Number(lightness) / scale > 0.5 ? "dark" : "light";
-  }
+/**
+ * Light ink means a dark theme: the text's relative luminance (WCAG's, which
+ * is XYZ's Y), as the browser reads it, so it's measured as a theme is
+ * installed, not converted. Light if it can't be read here (a `var()`, which
+ * only means something inside a themed root).
+ */
+export function polarityOf(text: string): ThemePalette["polarity"] {
+  if (/var\(/i.test(text)) return "light";
+  const probe = document.createElement("div");
+  probe.style.color = `color(from ${text} xyz y y y)`;
+  if (!probe.style.color) return "light";
+  document.documentElement.append(probe);
+  const [, luminance] =
+    /^color\(xyz-d65 (\S+)/.exec(getComputedStyle(probe).color) ?? [];
+  probe.remove();
+  // where black starts to read better than white on it
+  return Number(luminance) > 0.179 ? "dark" : "light";
 }
 
 /**
- * A V1 theme's palette. V1's surfaces can be translucent, and things that
- * overlap other content were on them flattened over the wallpaper
- * (`bgOpaque*`): those are the solid surfaces.
+ * A V1 theme's palette. V1's surfaces can be translucent, so it has no solid
+ * surfaces: `palette.css` mixes with the translucent ones, which is the same
+ * once it's over the wallpaper, and the parts on the solid surfaces are
+ * layered over the wallpaper (`solidsFromV1`).
  */
-export function paletteFromV1(theme: ThemeV1): ThemePalette {
+export function paletteFromV1(
+  theme: ThemeV1,
+  polarity: ThemePalette["polarity"],
+): ThemePalette {
   const { colors } = theme;
   return {
-    polarity: polarityOf(colors.text),
+    polarity,
     wallpaper: colors.wallpaper,
     surface: colors.backgroundPrimary,
     surfaceNested: colors.backgroundSecondary,
-    surfaceSolid: colors.bgOpaquePrimary,
-    surfaceNestedSolid: colors.bgOpaqueSecondary,
     control: colors.backgroundButton,
     text: colors.text,
     accent: colors.accent,
@@ -384,6 +392,22 @@ const attributeValue = (key: string) =>
   `"${key.replace(/[^\w-]/g, (c) => `\\${c.codePointAt(0)!.toString(16)} `)}"`;
 
 /**
+ * A background colour alone (in any rule) replaced the card's default
+ * background, which is a layer over the wallpaper now (`themeFactory`): it
+ * clears that layer, and not any image of the theme's own.
+ */
+function colourReplacesLayers(style: Style): Style {
+  const result: Style = {};
+  for (const [key, value] of Object.entries(style)) {
+    result[key] = isStyle(value) ? colourReplacesLayers(value) : value;
+  }
+  if ("backgroundColor" in style && !("background" in style)) {
+    result[v1CardLayer] ??= "none";
+  }
+  return result;
+}
+
+/**
  * In V1, each part of a card was its `themeFactory` style (the defaults, or
  * the seed's `cards.base` style for that part, replacing them whole), with
  * its category's (`cards.categories`, by the card's style key) spread over
@@ -393,16 +417,17 @@ const attributeValue = (key: string) =>
 function cardsFromV1({ cards }: ThemeV1): ThemeCatalogue {
   const slot = (slot: keyof typeof v1CardStyleNames) => {
     const name = v1CardStyleNames[slot];
-    const part = (styles: Partial<typeof cards.base>): Style => ({
-      ...fromEmotion(styles[name]),
-      ...(slot === "root" && styles.hoverStyle
-        ? {
-            "&.investigator-card-array-card:hover": fromEmotion(
-              styles.hoverStyle,
-            ),
-          }
-        : {}),
-    });
+    const part = (styles: Partial<typeof cards.base>): Style =>
+      colourReplacesLayers({
+        ...fromEmotion(styles[name]),
+        ...(slot === "root" && styles.hoverStyle
+          ? {
+              "&.investigator-card-array-card:hover": fromEmotion(
+                styles.hoverStyle,
+              ),
+            }
+          : {}),
+      });
     const style = replacing(part(cards.base));
     for (const [key, category] of Object.entries(cards.categories)) {
       const own = part(category);
@@ -422,6 +447,68 @@ function cardsFromV1({ cards }: ThemeV1): ThemeCatalogue {
         subtitle: slot("subtitle"),
         description: slot("description"),
         effect: slot("effect"),
+      },
+    },
+  };
+}
+
+/**
+ * A surface over the wallpaper: opaque, as V1 flattened them (`bgOpaque*`),
+ * even on a translucent wallpaper.
+ */
+const onWallpaper = (surface: string) =>
+  themeStyle({
+    backgroundColor: `rgb(from var(${paletteVar("wallpaper")}) r g b / 1)`,
+    backgroundImage: `linear-gradient(${surface} 0 0)`,
+  });
+
+/**
+ * The parts on the solid surfaces, which a V1 palette doesn't have: on its
+ * surfaces over the wallpaper. `fromV1.test.ts` checks that it has them all.
+ */
+function solidsFromV1(): ThemeCatalogue {
+  const top = onWallpaper(`var(${paletteVar("surface")})`);
+  const nested = onWallpaper(`var(${paletteVar("surfaceNested")})`);
+  // a tint of a surface, as the catalogue mixes it with a solid one
+  const tint = (
+    color: Exclude<Tone, "neutral"> | "line",
+    percent: number,
+    surface: "surface" | "surfaceNested" = "surface",
+  ) =>
+    onWallpaper(
+      `color-mix(in srgb, var(${paletteVar(color)}) ${percent}%, var(${paletteVar(surface)}))`,
+    );
+  return {
+    surface: {
+      compoundVariants: [
+        { depth: "top", solid: true, css: top },
+        { depth: "nested", solid: true, css: nested },
+      ],
+    },
+    floating: { base: top },
+    partyCell: {
+      compoundVariants: [
+        { odd: true, zero: false, header: true, css: top },
+        { odd: false, zero: false, header: true, css: nested },
+        { odd: true, zero: true, header: true, css: tint("danger", 50) },
+        {
+          odd: false,
+          zero: true,
+          header: true,
+          css: tint("danger", 50, "surfaceNested"),
+        },
+      ],
+    },
+    dragHandle: { base: top },
+    select: { base: nested },
+    callout: {
+      variants: {
+        tone: Object.fromEntries(
+          tones.map((tone) => [
+            tone,
+            tint(tone === "neutral" ? "line" : tone, 30),
+          ]),
+        ) as Record<Tone, ThemeStyle>,
       },
     },
   };
@@ -455,6 +542,7 @@ export function catalogueFromV1(theme: ThemeV1): ThemeCatalogue {
     ...cardsFromV1(theme),
     ...panelsFromV1(theme),
     ...tabsFromV1(theme),
+    ...solidsFromV1(),
   };
 }
 
@@ -525,12 +613,15 @@ export function globalCssFromV1(global: ThemeV1["global"]) {
 }
 
 /** A V1 theme (as `themeFactory` made it from its seed) as a V2 theme. */
-export function themeFromV1(theme: ThemeV1): ThemeV2 {
+export function themeFromV1(
+  theme: ThemeV1,
+  polarity: ThemePalette["polarity"],
+): ThemeV2 {
   const globalCss = globalCssFromV1(theme.global);
   return {
     schemaVersion: "v2",
     displayName: theme.displayName,
-    palette: paletteFromV1(theme),
+    palette: paletteFromV1(theme, polarity),
     fonts: fontsFromV1(theme),
     catalogue: catalogueFromV1(theme),
     layout: "standard",

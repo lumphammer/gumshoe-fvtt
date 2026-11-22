@@ -527,20 +527,18 @@ then `themeFromV1` (`src/themes/catalogue/fromV1.ts`, which holds everything
 V1) makes a ThemeV2. A V1 seed can't write catalogue overrides of its own:
 that's ThemeV2. Its values are CSS as written.
 
-| V1                                                    | Palette                                               |
-| ----------------------------------------------------- | ----------------------------------------------------- |
-| `backgroundPrimary` / `backgroundSecondary`           | `surface` / `surfaceNested`                           |
-| `bgOpaquePrimary` / `bgOpaqueSecondary`               | `surfaceSolid` / `surfaceNestedSolid`                 |
-| `bgOpaqueDanger*`, `bgTransDanger*`                   | none: the recipes derive their own danger tints       |
-| `backgroundButton`                                    | `control`                                             |
-| `accent`                                              | `accent` (and `link`, by default)                     |
-| `accentContrast`                                      | `onAccent`                                            |
-| `glow`                                                | `feedback`                                            |
-| `controlBorder`                                       | `line`                                                |
-| `danger`, `warning`, `success`                        | The same. `info` is always `#2b6cb0`                  |
-| `bodyFont`, `displayFont`, `displayFontTextTransform` | `fonts` (below)                                       |
-| `cards.area`                                          | `cardGap` (the vertical spacing, then the horizontal) |
-| (from `text`)                                         | `polarity`: light text means a dark theme             |
+| V1                                                    | Palette                                                             |
+| ----------------------------------------------------- | ------------------------------------------------------------------- |
+| `backgroundPrimary` / `backgroundSecondary`           | `surface` / `surfaceNested`                                         |
+| `backgroundButton`                                    | `control`                                                           |
+| `accent`                                              | `accent` (and `link`, by default)                                   |
+| `accentContrast`                                      | `onAccent`                                                          |
+| `glow`                                                | `feedback`                                                          |
+| `controlBorder`                                       | `line`                                                              |
+| `danger`, `warning`, `success`                        | The same. `info` is always `#2b6cb0`                                |
+| `bodyFont`, `displayFont`, `displayFontTextTransform` | `fonts` (below)                                                     |
+| `cards.area`                                          | `cardGap` (the vertical spacing, then the horizontal)               |
+| (from `text`)                                         | `polarity`: light text (measured in the browser) means a dark theme |
 
 V1's fonts were `font` shorthands (`fontsFromV1` takes them apart): body's size
 becomes `baseSize`, display's (in `em` or `%`, or `px` over a body size in
@@ -548,6 +546,15 @@ becomes `baseSize`, display's (in `em` or `%`, or `px` over a body size in
 leaves out is `normal`, as the shorthand reset it, and a size keyword is a
 length. A system font (`caption`) can't be taken apart, so it's dropped. A V1
 tab keeps V1's size, without the scale (V1's tab style sets `1.2em`).
+
+A V1 palette has no solid surfaces: its surfaces can be translucent, and V1
+flattened them over the wallpaper where something overlapped other content.
+Instead, every part the catalogue puts on a solid surface, or on a tint of one,
+is overridden with the surface (or the same tint of it) layered over the
+wallpaper (`solidsFromV1`; a test checks it has them all). `color-mix()` takes
+alpha into account, so a tint of the translucent surface over the wallpaper is
+the tint of the flattened one. Muted text, which can't be layered, mixes with
+the translucent surface, and native `<option>`s are on it.
 
 How its styles map:
 

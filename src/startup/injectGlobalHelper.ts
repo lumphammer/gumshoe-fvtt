@@ -8,7 +8,7 @@ import * as constants from "../constants";
 import { getCallingModuleId } from "../functions/getCallingModuleId";
 import { assertNotNull } from "../functions/utilities";
 import { runtimeConfig, type InstallSource } from "../runtime";
-import { themeFromV1 } from "../themes/catalogue/fromV1";
+import { polarityOf, themeFromV1 } from "../themes/catalogue/fromV1";
 import { themeFactory } from "../themes/functions";
 import { type Theme, validateThemeV2 } from "../themes/theme";
 
@@ -19,7 +19,10 @@ import { type Theme, validateThemeV2 } from "../themes/theme";
  */
 export function resolveTheme(theme: ThemeSeedV1 | ThemeV2): Theme {
   const version = (theme as { schemaVersion?: unknown } | null)?.schemaVersion;
-  if (version === "v1") return themeFromV1(themeFactory(theme as ThemeSeedV1));
+  if (version === "v1") {
+    const seed = theme as ThemeSeedV1;
+    return themeFromV1(themeFactory(seed), polarityOf(seed.colors.text));
+  }
   return validateThemeV2(theme);
 }
 

@@ -1,4 +1,7 @@
-import type { ThemeV2 } from "@lumphammer/investigator-fvtt-types";
+import type {
+  ThemePalette,
+  ThemeV2,
+} from "@lumphammer/investigator-fvtt-types";
 
 import * as constants from "../constants";
 import { themeFromV1 } from "./catalogue/fromV1";
@@ -20,16 +23,18 @@ import { cthulhuByCandlelightTheme } from "./cthulhuByCandlelightTheme";
 import type { ThemeV1 } from "./types";
 
 // The themes that are still V1, converted here until each gets its makeover.
-const v1Themes: { [themeName: string]: ThemeV1 } = {
-  highContrastTheme,
-  fearTheme,
-  pallidTheme,
-  deltaGroovyTheme,
-  greenTriangleTheme,
-  antiquarianTheme,
-  olderThanMemoryTheme,
-  unsafeRealityTheme,
-  mutantCityBlueTheme,
+// Their polarity is given, as it's measured in a browser (`polarityOf`), and
+// this also runs in Node (tests, scripts).
+const v1Themes: { [themeName: string]: [ThemeV1, ThemePalette["polarity"]] } = {
+  highContrastTheme: [highContrastTheme, "light"],
+  fearTheme: [fearTheme, "light"],
+  pallidTheme: [pallidTheme, "dark"],
+  deltaGroovyTheme: [deltaGroovyTheme, "light"],
+  greenTriangleTheme: [greenTriangleTheme, "light"],
+  antiquarianTheme: [antiquarianTheme, "light"],
+  olderThanMemoryTheme: [olderThanMemoryTheme, "dark"],
+  unsafeRealityTheme: [unsafeRealityTheme, "dark"],
+  mutantCityBlueTheme: [mutantCityBlueTheme, "light"],
 };
 
 // remember to update the HMR setup below any time you modify this export.
@@ -39,7 +44,10 @@ export const baseThemes: { [themeName: string]: ThemeV2 } = {
   niceTheme,
   niceThemeDark,
   ...Object.fromEntries(
-    Object.entries(v1Themes).map(([id, theme]) => [id, themeFromV1(theme)]),
+    Object.entries(v1Themes).map(([id, [theme, polarity]]) => [
+      id,
+      themeFromV1(theme, polarity),
+    ]),
   ),
   fogTheme,
   nightFogTheme,

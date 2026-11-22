@@ -174,8 +174,8 @@ translations, adding fields and settings, releases).
 - Our CSS goes in sub-layers of Foundry's `system` layer (`src/panda.css`),
   never directly in `system`: rules there beat every sub-layer.
 - Theme colours include `danger`, `warning` and `success` (seeded, with
-  defaults). Plain CSS `color-mix(...)` is fine for blending; the vendored Irid
-  library is legacy.
+  defaults). Blend colours in CSS (`color-mix()`, relative colours), not in
+  JS.
 
 ## Settings
 

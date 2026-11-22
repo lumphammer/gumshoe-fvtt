@@ -1,7 +1,9 @@
 import type { ThemeSeedV1 } from "@lumphammer/investigator-fvtt-types";
 import { describe, expect, test } from "vitest";
 
-import { themeFactory } from "../functions";
+import config from "../../../panda.config";
+
+import { themeFactory, v1CardLayer } from "../functions";
 import {
   catalogueFromV1,
   fontsFromV1,
@@ -101,36 +103,73 @@ test.each([seed, everything])(
 );
 
 describe("paletteFromV1", () => {
-  test("maps V1 colours to their new names, the flattened ones to the solid surfaces", () => {
+  test("maps V1 colours to their new names, with no solid surfaces", () => {
     const theme = themeFactory(seed);
     const { colors } = theme;
-    expect(paletteFromV1(theme)).toMatchObject({
-      polarity: "light",
+    const palette = paletteFromV1(theme, "dark");
+    expect(palette).toMatchObject({
+      polarity: "dark",
       surface: colors.backgroundPrimary,
       surfaceNested: colors.backgroundSecondary,
-      surfaceSolid: colors.bgOpaquePrimary,
-      surfaceNestedSolid: colors.bgOpaqueSecondary,
       control: colors.backgroundButton,
       onAccent: colors.accentContrast,
       feedback: colors.glow,
       line: colors.controlBorder,
       cardGap: "0.5em 0.5em",
     });
+    expect(palette).not.toHaveProperty("surfaceSolid");
+    expect(palette).not.toHaveProperty("surfaceNestedSolid");
   });
+});
 
-  test.each([
-    ["#eee", "dark"],
-    ["#433", "light"],
-    // by lightness, for the colours Irid can't read
-    ["oklch(0.9 0.02 80)", "dark"],
-    ["oklch(25% 0.02 80)", "light"],
-    ["lab(85 0 0)", "dark"],
-    // not a colour it can read
-    ["var(--some-text)", "light"],
-  ])("text %s means a %s theme", (text, polarity) => {
-    const theme = themeFactory({ ...seed, colors: { ...seed.colors, text } });
-    expect(paletteFromV1(theme).polarity).toBe(polarity);
-  });
+type Css = Record<string, unknown>;
+const isCss = (value: unknown): value is Css =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
+
+// A V1 palette has no solid surfaces (paletteFromV1), so wherever the
+// catalogue paints one as a background, a V1 theme has to paint it instead
+test("every part on a solid surface is on V1's surface over the wallpaper", () => {
+  const solid = /surface(Nested)?Solid|--inv-surface(-nested)?-solid/;
+  const overrides = catalogueFromV1(themeFactory(seed)) as Css;
+  const missing: string[] = [];
+  // a style (a slot's, a variant's, a nested rule's) and V1's override of
+  // it, side by side
+  const walk = (where: string, style: unknown, override: unknown) => {
+    if (!isCss(style)) return;
+    const own = isCss(override) ? override : {};
+    if (own["all"] === "revert-layer") return;
+    for (const [key, value] of Object.entries(style)) {
+      if (isCss(value)) {
+        walk(`${where} ${key}`, value, own[key]);
+      } else if (
+        /^background(Color)?$/.test(key) &&
+        solid.test(String(value)) &&
+        own["backgroundImage"] === undefined
+      ) {
+        missing.push(where);
+      }
+    }
+  };
+  const { recipes = {}, slotRecipes = {} } = config.theme ?? {};
+  for (const [name, recipe] of Object.entries<Css>({
+    ...recipes,
+    ...slotRecipes,
+  })) {
+    const own = isCss(overrides[name]) ? overrides[name] : {};
+    walk(`${name} base`, recipe["base"], own["base"]);
+    walk(`${name} variants`, recipe["variants"], own["variants"]);
+    const compounds = (value: unknown) =>
+      (Array.isArray(value) ? value : []) as Css[];
+    for (const { css, ...variants } of compounds(recipe["compoundVariants"])) {
+      const override = compounds(own["compoundVariants"]).find((c) =>
+        Object.entries(variants).every(([key, value]) => c[key] === value),
+      );
+      walk(`${name} ${JSON.stringify(variants)}`, css, override?.["css"]);
+    }
+  }
+  // a native dropdown's options can't have a background image: they're on
+  // the translucent surface, over the dropdown's own background
+  expect(missing).toEqual(["select base & option"]);
 });
 
 describe("panels", () => {
@@ -285,8 +324,10 @@ describe("fonts", () => {
 
   test("the theme has them", () => {
     expect(
-      themeFromV1(themeFactory({ ...seed, bodyFont: "1.1em sans-serif" }))
-        .fonts,
+      themeFromV1(
+        themeFactory({ ...seed, bodyFont: "1.1em sans-serif" }),
+        "light",
+      ).fonts,
     ).toEqual({ baseSize: "1.1em", body: { ...reset, family: "sans-serif" } });
   });
 });
@@ -403,6 +444,35 @@ describe("cards", () => {
       color: "blue",
     });
   });
+
+  // the default backdrop is the surface layered over the wallpaper
+  test("a background colour alone, anywhere, clears the default's layer, not the theme's images", () => {
+    const card = catalogue({
+      cards: {
+        base: {
+          backdropStyle: { backgroundImage: "url(art.png)" },
+          hoverStyle: { backgroundColor: "blue" },
+        },
+        categories: {
+          stress: { backdropStyle: { backgroundColor: "red" } },
+          clue: { backdropStyle: { background: "green" } },
+        },
+      },
+    }).card!.base!;
+    expect(card.root).toEqual({
+      all: "revert-layer",
+      backgroundImage: "url(art.png)",
+      "&.investigator-card-array-card:hover": {
+        backgroundColor: "blue",
+        [v1CardLayer]: "none",
+      },
+      '&[data-category="stress"]': {
+        backgroundColor: "red",
+        [v1CardLayer]: "none",
+      },
+      '&[data-category="clue"]': { background: "green" },
+    });
+  });
 });
 
 describe("globalCssFromV1", () => {
@@ -411,7 +481,8 @@ describe("globalCssFromV1", () => {
   test("a string is used as it is, and goes on the theme", () => {
     expect(globalCssFromV1(fontImport)).toBe(fontImport);
     expect(
-      themeFromV1(themeFactory({ ...seed, global: fontImport })).globalCss,
+      themeFromV1(themeFactory({ ...seed, global: fontImport }), "light")
+        .globalCss,
     ).toBe(fontImport);
   });
 
