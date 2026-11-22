@@ -28,12 +28,11 @@ export const WeaponLethalityField = memo(function WeaponLethalityField({
   const onChangeText = useCallback(
     (newText: string) => {
       if (newText.trim() === "") {
-        void setLethality(null);
-        return;
+        return setLethality(null);
       }
       const newLethality = parseLethality(newText);
       if (newLethality) {
-        void setLethality(newLethality);
+        return setLethality(newLethality);
       }
     },
     [setLethality],

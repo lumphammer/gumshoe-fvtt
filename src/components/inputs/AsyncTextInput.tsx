@@ -5,7 +5,7 @@ import { TextInput } from "./TextInput";
 
 export type AsyncTextInputProps = {
   value: undefined | string;
-  onChange: (newValue: string) => void;
+  onChange: (newValue: string) => void | PromiseLike<unknown>;
   className?: string;
   style?: CSSProperties;
   disabled?: boolean;

@@ -1,4 +1,4 @@
-import { renderHook } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
 
 import { inputThrottleTime } from "../constants";
@@ -81,4 +81,35 @@ it("saves a waiting change straight away on unmount", () => {
   unmount();
   expect(onChangeSpy).toHaveBeenCalledTimes(1);
   expect(onChangeSpy).toHaveBeenCalledWith("foo");
+});
+
+it("saves each change with the callback it was made with", async () => {
+  vi.useFakeTimers();
+  const saved: string[] = [];
+  let finishFirst = () => undefined as void;
+  const saveTo = (target: string) => (value: string) => {
+    saved.push(`${target}:${value}`);
+    if (saved.length === 1) {
+      return new Promise<void>((resolve) => {
+        finishFirst = resolve;
+      });
+    }
+  };
+  const { result, rerender } = renderHook(
+    ({ save }) => useAsyncUpdate("", save),
+    { initialProps: { save: saveTo("a") } },
+  );
+  result.current.onChange("one");
+  await act(() => vi.advanceTimersByTimeAsync(inputThrottleTime));
+  // the first save is out, so this one waits for it
+  result.current.onChange("two");
+  await act(() => vi.advanceTimersByTimeAsync(inputThrottleTime));
+  // e.g. the input now edits another document
+  rerender({ save: saveTo("b") });
+  await act(async () => {
+    finishFirst();
+    await vi.advanceTimersByTimeAsync(0);
+  });
+  expect(saved).toEqual(["a:one", "a:two"]);
+  vi.useRealTimers();
 });

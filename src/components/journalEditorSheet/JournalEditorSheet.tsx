@@ -83,18 +83,15 @@ export const JournalEditorSheet = () => {
   );
 
   const handleTitleChange = useCallback(
-    (name: string) => {
-      void journalEntry.update({ name });
-    },
+    (name: string) => journalEntry.update({ name }),
     [journalEntry],
   );
 
   const globalClasses = view.globalClasses;
 
   const handleGlobalClassesChange = useCallback(
-    (classes: string) => {
-      void journalEntry.setFlag(systemId, extraCssClasses, classes);
-    },
+    (classes: string) =>
+      journalEntry.setFlag(systemId, extraCssClasses, classes),
     [journalEntry],
   );
 

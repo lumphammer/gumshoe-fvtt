@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { inputThrottleTime } from "../constants";
 import { throttle } from "../functions/utilities";
@@ -46,20 +46,105 @@ const insertAtSelection = (element: HTMLElement, text: string) => {
 };
 
 /**
+ * How long to wait for a save before giving up on hearing back, so a lost
+ * reply can't leave an input ignoring the server for good.
+ */
+const saveTimeout = 10_000;
+
+type Save = (newValue: string) => void | PromiseLike<unknown>;
+
+/**
+ * Throttles saves (see `throttle`), sends them one at a time, and keeps track
+ * of whether any are still to do.
+ *
+ * One at a time because Foundry compares an update with its copy of the
+ * document, which doesn't change until a save comes back: after + then -
+ * quickly, the - would match the old value, be dropped as no change, and the
+ * + would win. So a save made while one is out waits for it (only the newest
+ * waits).
+ *
+ * Each change is saved with the function given with it, so a change made
+ * before the input moved to another document still goes to the first.
+ *
+ * A save is out until the promise it returns settles (if it returns none, it's
+ * done straight away). `onIdle` is called when there's nothing left to do.
+ */
+const createThrottledSaver = (period: number, onIdle: () => void) => {
+  let waiting = false;
+  let sending = false;
+  let queued: { value: string; save: Save } | null = null;
+
+  const send = (value: string, save: Save) => {
+    sending = true;
+    let done = false;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(timeout);
+      sending = false;
+      if (queued) {
+        const next = queued;
+        queued = null;
+        send(next.value, next.save);
+      } else if (!waiting) {
+        onIdle();
+      }
+    };
+    let result: void | PromiseLike<unknown>;
+    try {
+      result = save(value);
+    } catch (e) {
+      finish();
+      throw e;
+    }
+    if (result && typeof result.then === "function") {
+      timeout = setTimeout(finish, saveTimeout);
+      result.then(finish, finish);
+    } else {
+      finish();
+    }
+  };
+
+  const throttled = throttle((value: string, save: Save) => {
+    waiting = false;
+    if (sending) {
+      queued = { value, save };
+    } else {
+      send(value, save);
+    }
+  }, period);
+
+  return {
+    save: (value: string, save: Save) => {
+      waiting = true;
+      throttled(value, save);
+    },
+    /** send a waiting change now (or as soon as the one out is back) */
+    flush: () => throttled.flush(),
+    isBusy: () => waiting || sending || queued !== null,
+  };
+};
+
+/**
  * Hook for handling async updates, e,g, where you want to be calling an
  * external onChange every so often but you can't be relying on it updating
  * fast enough to handle your react state.
+ *
+ * What's shown is the local value while there's any change of ours not yet
+ * saved: one waiting in the throttle, or a save not yet finished (when
+ * `onChange` returns a promise). Values coming in meanwhile are echoes of our
+ * own earlier saves, and showing them would make the number bounce, and lose
+ * changes (+ adds to what's shown). Once everything's saved, it shows `value`
+ * again, so a save the server clamped or refused shows what was stored.
  */
-export const useAsyncUpdate = (
-  value: string,
-  onChangeOrig: (newValue: string) => void,
-) => {
-  // many shenanigans to handle slow updates
-  // first up, state to handle the actual text we show so we can update it in a
-  // timely fashion
+export const useAsyncUpdate = (value: string, onChangeOrig: Save) => {
+  // the text we show, updated straight away
   const [display, setDisplay] = useState(value || "");
-  // state to track focus
+  // while focused, incoming values never replace what's being typed
   const focusedRef = useRef(false);
+  // bumped when the saves are all done, to show `value` again
+  const [settledCount, setSettledCount] = useState(0);
 
   // callback for focus
   const onFocus = useCallback(() => {
@@ -67,28 +152,30 @@ export const useAsyncUpdate = (
   }, []);
 
   // we only fire the update event every so often to avoid spamming the
-  // network
-  const onChangeThrottled = useMemo(() => {
-    return throttle(onChangeOrig, inputThrottleTime);
-  }, [onChangeOrig]);
+  // network. One for the input's lifetime, even if the callback changes (e.g.
+  // a new one each render): a new one would forget the saves still out
+  const [saver] = useState(() =>
+    createThrottledSaver(inputThrottleTime, () => {
+      setSettledCount((count) => count + 1);
+    }),
+  );
 
   // callback for blur. Save any change that's waiting, so it's in before
   // whatever took the focus (e.g. a Save button) acts
   const onBlur = useCallback(() => {
     focusedRef.current = false;
-    onChangeThrottled.flush();
-  }, [onChangeThrottled]);
+    saver.flush();
+  }, [saver]);
 
-  // and don't lose a waiting change when the input goes away, or stops using
-  // this callback
-  useEffect(() => () => onChangeThrottled.flush(), [onChangeThrottled]);
+  // and don't lose a waiting change when the input goes away
+  useEffect(() => () => saver.flush(), [saver]);
 
   const onChange = useCallback(
     (value: string) => {
       setDisplay(value);
-      onChangeThrottled(value);
+      saver.save(value, onChangeOrig);
     },
-    [onChangeThrottled],
+    [saver, onChangeOrig],
   );
 
   // stuff for handling content-editable - first, a ref to attach to the element
@@ -137,16 +224,18 @@ export const useAsyncUpdate = (
     [onChange],
   );
 
-  // update the display text when the value changes, but only if we're not
-  // focused.
+  // show the value when it changes, or once our saves are done, unless
+  // something of ours is still on its way (see above)
   useEffect(() => {
-    if (!focusedRef.current) {
-      setDisplay(value);
-      if (contentEditableRef.current) {
-        contentEditableRef.current.textContent = value;
-      }
+    if (focusedRef.current || saver.isBusy()) return;
+    setDisplay(value);
+    if (
+      contentEditableRef.current &&
+      contentEditableRef.current.textContent !== value
+    ) {
+      contentEditableRef.current.textContent = value;
     }
-  }, [value]);
+  }, [value, settledCount, saver]);
 
   return {
     onChange,

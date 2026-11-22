@@ -197,9 +197,7 @@ export const HTMLEditor = ({ page }: HTMLEditorProps) => {
   );
 
   const handleChangeClasses = useCallback(
-    (classes: string) => {
-      page.setFlag(systemId, extraCssClasses, classes);
-    },
+    (classes: string) => page.setFlag(systemId, extraCssClasses, classes),
     [page],
   );
 

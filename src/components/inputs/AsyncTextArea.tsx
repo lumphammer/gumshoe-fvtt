@@ -4,7 +4,7 @@ import { TextArea } from "./TextArea";
 type AsyncTextAreaProps = {
   className?: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: string) => void | PromiseLike<unknown>;
   disabled?: boolean;
 };
 

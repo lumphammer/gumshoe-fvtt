@@ -36,9 +36,7 @@ export const AbilitySlugEdit = memo(function AbilitySlugEdit({
   const { setRatingAndRefreshPool, setOccupational } =
     useSystemMethods(ability);
   const updateRating = useCallback(
-    (rating: number) => {
-      void setRatingAndRefreshPool(rating);
-    },
+    (rating: number) => setRatingAndRefreshPool(rating),
     [setRatingAndRefreshPool],
   );
 

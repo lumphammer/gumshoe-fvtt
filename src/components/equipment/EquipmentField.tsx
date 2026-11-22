@@ -23,9 +23,8 @@ export const EquipmentField = memo(function EquipmentField({
   equipment,
 }: EquipmentFieldProps) {
   const onChange = useCallback(
-    (newValue: string | number | boolean) => {
-      void equipment.system.setField(fieldId, newValue);
-    },
+    (newValue: string | number | boolean) =>
+      equipment.system.setField(fieldId, newValue),
     [equipment, fieldId],
   );
 
