@@ -133,6 +133,9 @@ The fonts' licences are next to them, in fonts/fontsource/. Longdon Decorative
 (fonts/LongdonDecorative.woff2) is by Roger White, who released it into the
 public domain (https://web.archive.org/web/20120416090521/http://www.rogersfonts.org.uk/);
 we use a fixed version (https://github.com/n3dst4/longdon-decorative-fixed).
+Nova Square (fonts/nova-square/) is by Wojciech Kalinowski
+(https://github.com/wmk69/Nova), under the SIL Open Font License 1.1: its
+licence is next to it.
 
 Credits for the images, the game-icons.net icons and the GUMSHOE SRD are in
 the README: https://github.com/lumphammer/gumshoe-fvtt#credits
