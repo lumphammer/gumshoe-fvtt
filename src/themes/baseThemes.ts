@@ -26,7 +26,6 @@ import type { ThemeV1 } from "./types";
 // Their polarity is given, as it's measured in a browser (`polarityOf`), and
 // this also runs in Node (tests, scripts).
 const v1Themes: { [themeName: string]: [ThemeV1, ThemePalette["polarity"]] } = {
-  highContrastTheme: [highContrastTheme, "light"],
   fearTheme: [fearTheme, "light"],
   pallidTheme: [pallidTheme, "dark"],
   deltaGroovyTheme: [deltaGroovyTheme, "light"],
@@ -43,6 +42,7 @@ export const baseThemes: { [themeName: string]: ThemeV2 } = {
   niceTheme,
   niceThemeDark,
   olderThanMemoryTheme,
+  highContrastTheme,
   ...Object.fromEntries(
     Object.entries(v1Themes).map(([id, [theme, polarity]]) => [
       id,
