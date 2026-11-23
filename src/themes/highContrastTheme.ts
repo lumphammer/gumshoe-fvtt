@@ -82,6 +82,7 @@ export const highContrastTheme = defineThemeV2({
         disabled: {
           backgroundColor: "transparent",
           opacity: "0.6",
+          color: "var(--inv-text)",
         },
       },
     },
