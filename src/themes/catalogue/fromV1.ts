@@ -529,12 +529,15 @@ export function catalogueFromV1(theme: ThemeV1): ThemeCatalogue {
           },
         }
       : {}),
-    // V1 spread these over the root's defaults: a patch of the size variants
+    // V1 spread these over the root's defaults: a patch of the sheet
+    // variants. V1's large root was the character sheets'; its small one the
+    // others' (the journal editor's was large, but small suits anything)
     sheetRoot: {
       variants: {
-        size: {
-          large: themeStyle(fromEmotion(theme.largeSheetRootStyle)),
-          small: themeStyle(fromEmotion(theme.smallSheetRootStyle)),
+        sheet: {
+          character: themeStyle(fromEmotion(theme.largeSheetRootStyle)),
+          item: themeStyle(fromEmotion(theme.smallSheetRootStyle)),
+          freeform: themeStyle(fromEmotion(theme.smallSheetRootStyle)),
         },
       },
     },

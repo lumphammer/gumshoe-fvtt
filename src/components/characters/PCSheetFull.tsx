@@ -61,7 +61,7 @@ export const PCSheetFull = memo(function PCSheetFull() {
   return (
     <CSSReset
       theme={theme}
-      mode="large"
+      sheet="character"
       className={css({
         position: "absolute",
         top: 0,

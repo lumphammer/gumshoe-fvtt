@@ -26,7 +26,7 @@ export const TeamCrisisWindow = () => {
   return (
     <CSSReset
       theme={theme}
-      mode="small"
+      sheet="freeform"
       clearsTitlebar
       className={css({
         position: "absolute",

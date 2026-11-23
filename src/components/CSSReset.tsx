@@ -5,7 +5,7 @@ import { css, cx } from "../styled-system/css";
 import { sheetRoot } from "../styled-system/recipes";
 import { themeCss } from "../themes/catalogue/themeCss";
 import { rootStyle, themeSlug } from "../themes/palette";
-import type { Theme } from "../themes/theme";
+import type { SheetKind, Theme } from "../themes/theme";
 import { claimFrame, type FrameClaim } from "./frame";
 import { ErrorBoundary } from "./ErrorBoundary";
 
@@ -39,7 +39,11 @@ const titlebarClearance = css({
 type CSSResetProps = PropsWithChildren<{
   className?: string;
   theme: Theme;
-  mode: "large" | "small" | "none";
+  /**
+   * What kind of window this is (`sheetRoot`), each with its own promise
+   * about what's on the wallpaper, so a theme can style each its own way.
+   */
+  sheet: SheetKind;
   noStyleAppWindow?: boolean;
   /**
    * The content leaves room for the full-frame layout's see-through titlebar
@@ -55,7 +59,7 @@ export const CSSReset = ({
   className,
   children,
   theme,
-  mode,
+  sheet,
   noStyleAppWindow = false,
   clearsTitlebar = false,
 }: CSSResetProps) => {
@@ -81,8 +85,8 @@ export const CSSReset = ({
   useEffect(() => {
     // the palette, without colorScheme (Foundry's window has its own)
     const { colorScheme: _, ...properties } = palette;
-    frameClaim.current?.update(slug, properties, layout);
-  }, [noStyleAppWindow, slug, palette, layout]);
+    frameClaim.current?.update(slug, properties, layout, sheet);
+  }, [noStyleAppWindow, slug, palette, layout, sheet]);
   // the theme's overrides of catalogue classes, as a <style> inside the
   // root: its rules are scoped to the root by being there (themeCss), and it
   // goes wherever the root goes, detached windows included
@@ -93,7 +97,7 @@ export const CSSReset = ({
       <div
         ref={ref}
         className={cx(
-          sheetRoot({ size: mode }),
+          sheetRoot({ sheet }),
           logoTuning,
           titlebarClearance,
           className,

@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 
+import type { SheetKind } from "../themes/theme";
 import { claimFrame } from "./frame";
 
 /** Claim a root's window and style it, as CSSReset does; returns release. */
@@ -8,9 +9,10 @@ function styleFrame(
   slug: string,
   style: Record<string, string>,
   layout: "standard" | "full-frame" = "standard",
+  sheet: SheetKind = "character",
 ) {
   const claim = claimFrame(root);
-  claim?.update(slug, style, layout);
+  claim?.update(slug, style, layout, sheet);
   return claim && (() => claim.release());
 }
 
@@ -75,9 +77,9 @@ describe("styleFrame", () => {
   test("a root whose theme changes keeps its place", () => {
     const { frame, addRoot } = makeWindow();
     const first = claimFrame(addRoot())!;
-    first.update("first", { "--inv-text": "red" }, "standard");
+    first.update("first", { "--inv-text": "red" }, "standard", "character");
     const second = styleFrame(addRoot(), "second", {});
-    first.update("changed", { "--inv-text": "green" }, "standard");
+    first.update("changed", { "--inv-text": "green" }, "standard", "character");
     expect(frame.dataset["invFrame"]).toBe("second");
     expect(frame.style.getPropertyValue("--inv-text")).toBe("");
     second!();
@@ -110,5 +112,20 @@ test("the full-frame layout is the latest owner's, and goes with it", () => {
   expect(header.className).not.toContain("layout_full-frame");
   expect(header.className).toContain("inv-app-frame__header--layout_standard");
   standard!();
+  expect(header.className).toBe("window-header");
+});
+
+test("the kind of sheet is the latest owner's, and goes with it", () => {
+  const { frame, addRoot } = makeWindow();
+  const header = frame.querySelector(".window-header")!;
+  const item = styleFrame(addRoot(), "plain", {}, "standard", "item");
+  expect(header.className).toContain("inv-app-frame__header--sheet_item");
+  const freeform = styleFrame(addRoot(), "plain", {}, "full-frame", "freeform");
+  expect(header.className).toContain("inv-app-frame__header--sheet_freeform");
+  expect(header.className).not.toContain("sheet_item");
+  freeform!();
+  expect(header.className).toContain("inv-app-frame__header--sheet_item");
+  expect(header.className).not.toContain("sheet_freeform");
+  item!();
   expect(header.className).toBe("window-header");
 });

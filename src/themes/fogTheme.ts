@@ -49,8 +49,8 @@ export const fogTheme = defineThemeV2({
     },
     sheetRoot: {
       variants: {
-        size: {
-          large: {
+        sheet: {
+          character: {
             background: "none",
           },
         },

@@ -10,7 +10,7 @@ export interface CatalogueRecipeShapes {
   appFrame: {
     slots: "root" | "header" | "content";
     states: never;
-    variants: { layout: "standard" | "full-frame" };
+    variants: { layout: "standard" | "full-frame"; sheet: "character" | "item" | "freeform" };
   };
   badge: {
     slots: never;
@@ -137,7 +137,7 @@ export interface CatalogueRecipeShapes {
   sheetRoot: {
     slots: never;
     states: never;
-    variants: { size: "large" | "small" | "none" };
+    variants: { sheet: "character" | "item" | "freeform" };
   };
   surface: {
     slots: never;

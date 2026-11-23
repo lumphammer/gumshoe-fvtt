@@ -52,6 +52,15 @@ const textShadow = [
 ].join(",");
 // "linear-gradient(135deg, #efb183 0%,#222 30%,#efb183 90%)"
 
+// item and freeform sheets' backdrop
+const smallBackdrop = {
+  backgroundImage: [
+    // `linear-gradient(to top, #0000 0%, #0000 70%, #000f 100%)`,
+    "linear-gradient(oklch(from var(--accent) 0.05 0.1 h / 50%))",
+    `url(systems/${systemId}/assets/wallpaper/annie-spratt-osuiatBDTww-unsplash.webp)`,
+  ].join(","),
+};
+
 export const cthulhuByCandlelightTheme = defineThemeV2({
   schemaVersion: "v2",
   displayName: "Cthulhu by Candlelight",
@@ -106,8 +115,8 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
     },
     sheetRoot: {
       variants: {
-        size: {
-          large: {
+        sheet: {
+          character: {
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundBlendMode: "normal",
@@ -118,13 +127,8 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
               // `url(systems/${systemId}/assets/wallpaper/annie-spratt-osuiatBDTww-unsplash.webp)`,
             ].join(","),
           },
-          small: {
-            backgroundImage: [
-              // `linear-gradient(to top, #0000 0%, #0000 70%, #000f 100%)`,
-              "linear-gradient(oklch(from var(--accent) 0.05 0.1 h / 50%))",
-              `url(systems/${systemId}/assets/wallpaper/annie-spratt-osuiatBDTww-unsplash.webp)`,
-            ].join(","),
-          },
+          item: smallBackdrop,
+          freeform: smallBackdrop,
         },
       },
     },

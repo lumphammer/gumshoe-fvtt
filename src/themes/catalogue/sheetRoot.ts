@@ -7,11 +7,25 @@ import { bodyFontSize } from "../fonts";
  * the wallpaper behind everything. It's the element that carries
  * `data-inv-theme` and the palette's custom properties (`CSSReset`).
  *
- * Variants: `size`: `large` (a full sheet) and `small` (a small window, like
- * a dialog) are on `wallpaper`; `none` (a themed area inside something else)
- * is transparent. *Expected override:* a theme's backdrop image goes in its
- * `size` variants.
+ * Variant `sheet`: what kind of window it is, each with its own promise about
+ * what's on the wallpaper (docs/theming.md), so a theme can give each its
+ * own backdrop:
+ * - `character`: a PC's or NPC's sheet. On the wallpaper, only regions, tabs,
+ *   the portrait and the logo.
+ * - `item`: an item's sheet (`ItemSheetFramework`, or a card). A header (the
+ *   image and the name) on the wallpaper, over a region, though an item's
+ *   sheet may have text and controls straight on the wallpaper too.
+ * - `freeform`: anything else (the party sheet, the settings, the journal
+ *   editor, the Team Crisis window). Assume nothing about the layout.
+ *
+ * *Expected override:* a theme's backdrop image goes in the `sheet` variants.
  */
+const wallpaper = {
+  backgroundColor: "wallpaper",
+  padding: "0.5em",
+  height: "100%",
+} as const;
+
 export const sheetRoot = defineRecipe({
   className: "inv-sheet-root",
   description: "The themed root of a window.",
@@ -22,14 +36,14 @@ export const sheetRoot = defineRecipe({
     color: "text",
     accentColor: "accent",
   },
-  // padding and height are layout, but in the size variants, so a V1 theme's
-  // root style (a patch of them) can still set them, as it could in V1
+  // padding and height are layout, but in the variants, so a V1 theme's root
+  // style (a patch of them) can still set them, as it could in V1
   variants: {
-    size: {
-      large: { backgroundColor: "wallpaper", padding: "0.5em", height: "100%" },
-      small: { backgroundColor: "wallpaper", padding: "0em", height: "100%" },
-      none: { backgroundColor: "transparent", padding: "0", height: "100%" },
+    sheet: {
+      character: wallpaper,
+      item: wallpaper,
+      freeform: wallpaper,
     },
   },
-  defaultVariants: { size: "large" },
+  defaultVariants: { sheet: "freeform" },
 });

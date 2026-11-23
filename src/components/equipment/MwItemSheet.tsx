@@ -15,6 +15,7 @@ import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { InputGrid } from "../inputs/InputGrid";
 import { RichTextEditor } from "../inputs/RichTextEditor";
+import { Region } from "../Region";
 import { Select } from "../inputs/Select";
 import { css } from "../../styled-system/css";
 
@@ -101,53 +102,54 @@ export const MwItemSheet = memo(function MwItemSheet() {
         <i className={"fa fa-trash"} />
       </a>
 
-      {/* Body */}
-      <InputGrid
-        className={css({
-          gridArea: "body",
-          gridTemplateRows: "auto 1fr",
-          gridAutoRows: "auto",
-        })}
-      >
-        <GridField label="MwType">
-          <Select
-            value={system.mwType}
-            onChange={onChangeType}
-            className={css({
-              width: "100%",
-            })}
-          >
-            <option value="tweak">Tweak</option>
-            <option value="spell">Spell</option>
-            <option value="cantrap">Cantrap</option>
-            <option value="enchantedItem">Enchanted item</option>
-            <option value="meleeWeapon">Melee weapon</option>
-            <option value="missileWeapon">Missile weapon</option>
-            <option value="manse">Manse</option>
-            <option value="sandestin">Sandestin</option>
-            <option value="retainer">Retainer</option>
-          </Select>
-        </GridField>
-        <div
+      {/* Body, in a region, as an item sheet's is */}
+      <Region className={css({ gridArea: "body" })}>
+        <InputGrid
           className={css({
-            flex: "[1]",
-            position: "relative",
-            gridColumn: "1/-1",
+            height: "100%",
+            gridTemplateRows: "auto 1fr",
+            gridAutoRows: "auto",
           })}
         >
-          <RichTextEditor
-            name="notes"
-            html={system.notes}
-            onSave={methods.setNotes}
+          <GridField label="MwType">
+            <Select
+              value={system.mwType}
+              onChange={onChangeType}
+              className={css({
+                width: "100%",
+              })}
+            >
+              <option value="tweak">Tweak</option>
+              <option value="spell">Spell</option>
+              <option value="cantrap">Cantrap</option>
+              <option value="enchantedItem">Enchanted item</option>
+              <option value="meleeWeapon">Melee weapon</option>
+              <option value="missileWeapon">Missile weapon</option>
+              <option value="manse">Manse</option>
+              <option value="sandestin">Sandestin</option>
+              <option value="retainer">Retainer</option>
+            </Select>
+          </GridField>
+          <div
             className={css({
-              height: "100%",
-              "&&": {
-                resize: "none",
-              },
+              flex: "[1]",
+              position: "relative",
+              gridColumn: "1/-1",
             })}
-          />
-        </div>
-        {/* <GridFieldStacked label="Notes">
+          >
+            <RichTextEditor
+              name="notes"
+              html={system.notes}
+              onSave={methods.setNotes}
+              className={css({
+                height: "100%",
+                "&&": {
+                  resize: "none",
+                },
+              })}
+            />
+          </div>
+          {/* <GridFieldStacked label="Notes">
           <AsyncTextArea
             value={item.getNotes().source}
             onChange={item.setNotesSource}
@@ -159,65 +161,72 @@ export const MwItemSheet = memo(function MwItemSheet() {
             })}
           />
         </GridFieldStacked> */}
-        {system.mwType === "enchantedItem" && (
-          <GridField label="Charges">
-            <AsyncNumberInput
-              onChange={methods.setCharges}
-              value={system.charges}
-              min={0}
-            />
-          </GridField>
-        )}
-        {system.mwType === "missileWeapon" && (
-          <GridFieldStacked label="Ranges">
-            <div
-              className={css({
-                display: "flex",
-                flexDirection: "row",
-              })}
-            >
-              <GridFieldStacked label="Short" className={css({ flex: "[1]" })}>
-                <AsyncNumberInput
-                  onChange={setRange(0)}
-                  value={system.ranges[0]}
-                  min={0}
-                />
-              </GridFieldStacked>
-              <GridFieldStacked label="Medium" className={css({ flex: "[1]" })}>
-                <AsyncNumberInput
-                  onChange={setRange(1)}
-                  value={system.ranges[1]}
-                  min={0}
-                />
-              </GridFieldStacked>
-            </div>
-            <div
-              className={css({
-                display: "flex",
-                flexDirection: "row",
-              })}
-            >
-              <GridFieldStacked label="Long" className={css({ flex: "[1]" })}>
-                <AsyncNumberInput
-                  onChange={setRange(2)}
-                  value={system.ranges[2]}
-                  min={0}
-                />
-              </GridFieldStacked>
-              <GridFieldStacked
-                label="Extreme"
-                className={css({ flex: "[1]" })}
+          {system.mwType === "enchantedItem" && (
+            <GridField label="Charges">
+              <AsyncNumberInput
+                onChange={methods.setCharges}
+                value={system.charges}
+                min={0}
+              />
+            </GridField>
+          )}
+          {system.mwType === "missileWeapon" && (
+            <GridFieldStacked label="Ranges">
+              <div
+                className={css({
+                  display: "flex",
+                  flexDirection: "row",
+                })}
               >
-                <AsyncNumberInput
-                  onChange={setRange(3)}
-                  value={system.ranges[3]}
-                  min={0}
-                />
-              </GridFieldStacked>
-            </div>
-          </GridFieldStacked>
-        )}
-      </InputGrid>
+                <GridFieldStacked
+                  label="Short"
+                  className={css({ flex: "[1]" })}
+                >
+                  <AsyncNumberInput
+                    onChange={setRange(0)}
+                    value={system.ranges[0]}
+                    min={0}
+                  />
+                </GridFieldStacked>
+                <GridFieldStacked
+                  label="Medium"
+                  className={css({ flex: "[1]" })}
+                >
+                  <AsyncNumberInput
+                    onChange={setRange(1)}
+                    value={system.ranges[1]}
+                    min={0}
+                  />
+                </GridFieldStacked>
+              </div>
+              <div
+                className={css({
+                  display: "flex",
+                  flexDirection: "row",
+                })}
+              >
+                <GridFieldStacked label="Long" className={css({ flex: "[1]" })}>
+                  <AsyncNumberInput
+                    onChange={setRange(2)}
+                    value={system.ranges[2]}
+                    min={0}
+                  />
+                </GridFieldStacked>
+                <GridFieldStacked
+                  label="Extreme"
+                  className={css({ flex: "[1]" })}
+                >
+                  <AsyncNumberInput
+                    onChange={setRange(3)}
+                    value={system.ranges[3]}
+                    min={0}
+                  />
+                </GridFieldStacked>
+              </div>
+            </GridFieldStacked>
+          )}
+        </InputGrid>
+      </Region>
     </div>
   );
 });

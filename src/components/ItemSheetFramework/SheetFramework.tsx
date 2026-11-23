@@ -49,8 +49,7 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
     <ModeContext.Provider
       value={configMode ? ItemSheetMode.Config : ItemSheetMode.Main}
     >
-      {/* everything (header and body) in one region */}
-      <Region
+      <div
         className={css({
           display: "grid",
           gap: "0.3em",
@@ -63,8 +62,8 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
       >
         {/* Title: just below the full-frame layout's see-through titlebar
             (`--inv-titlebar-clearance`, `CSSReset`), clear of its buttons
-            (the region's padding is already part of the way), while the
-            image runs up under it */}
+            (the root's padding is already part of the way), while the image
+            runs up under it */}
         <ItemSheetTitle
           className={css({
             gridArea: "title",
@@ -79,7 +78,7 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
           className={css({
             gridArea: "image",
             // at the top of the root, under the titlebar's strip in the
-            // full-frame layout, past the region's padding
+            // full-frame layout, past its padding
             "--inv-image-pickle-clearance":
               "max(0px, calc(var(--inv-titlebar-clearance) - 0.5em))",
             transform: "rotateZ(-2deg)",
@@ -91,8 +90,9 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
           })}
         />
 
-        {/* regular editing stuff */}
-        <div
+        {/* regular editing stuff, in a region: the header above is on the
+            wallpaper */}
+        <Region
           className={css({
             gridArea: "body",
             display: "flex",
@@ -102,8 +102,8 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
           })}
         >
           {children}
-        </div>
-      </Region>
+        </Region>
+      </div>
     </ModeContext.Provider>
   );
 };

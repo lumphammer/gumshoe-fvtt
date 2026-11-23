@@ -157,7 +157,7 @@ export const ThemeSpecimen = ({
       data-inv-frame={themeSlug(theme)}
       data-inv-layout={layout === "full-frame" ? "full-frame" : undefined}
       className={cx(
-        appFrame({ layout }).root,
+        appFrame({ layout, sheet: "freeform" }).root,
         css({
           width: "var(--farm-column-width)",
           flex: "none",
@@ -171,7 +171,8 @@ export const ThemeSpecimen = ({
     >
       <CSSReset
         noStyleAppWindow
-        mode="large"
+        // all sorts, on the wallpaper
+        sheet="freeform"
         theme={theme}
         className={css({
           // a column, not a window

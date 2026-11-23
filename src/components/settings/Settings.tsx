@@ -222,7 +222,7 @@ export const Settings = () => {
         <StateContext.Provider value={tempState}>
           <DirtyContext.Provider value={isDirty}>
             <CSSReset
-              mode="small"
+              sheet="freeform"
               theme={theme}
               clearsTitlebar
               className={css({

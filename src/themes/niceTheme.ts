@@ -46,13 +46,14 @@ export const niceTheme = defineThemeV2({
   catalogue: {
     sheetRoot: {
       variants: {
-        size: {
-          large: {
+        sheet: {
+          character: {
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundImage: wallpaper,
           },
-          small: { backgroundImage: wallpaper },
+          item: { backgroundImage: wallpaper },
+          freeform: { backgroundImage: wallpaper },
         },
       },
     },
