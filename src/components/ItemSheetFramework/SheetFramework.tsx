@@ -92,7 +92,7 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
 
         {/* regular editing stuff, in a region: the header above is on the
             wallpaper */}
-        <Region
+        <div
           className={css({
             gridArea: "body",
             display: "flex",
@@ -102,7 +102,7 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
           })}
         >
           {children}
-        </Region>
+        </div>
       </div>
     </ModeContext.Provider>
   );

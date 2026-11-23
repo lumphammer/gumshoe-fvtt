@@ -1,12 +1,19 @@
 import { systemId } from "../constants";
+import { underlineTabs } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 const glow = "#7be9e9";
 const starlight = "#cdf6ff";
 // brushed steel, clipped to the logo's text
 const steel = {
-  background:
-    "linear-gradient(135deg, #000 0%, #6c6c6c 24%, #949494 34%, #6a6a6a 44%, #000 87%, #8f8f8f 100%)",
+  background: `linear-gradient(135deg,
+      #000 0%,
+      #6c6c6c 24%,
+      #949494 34%,
+      #6a6a6a 44%,
+      #000 87%,
+      #8f8f8f 100%
+    )`,
   backgroundClip: "text",
 };
 
@@ -18,16 +25,16 @@ export const pallidTheme = defineThemeV2({
     polarity: "dark",
     wallpaper: "#152938",
     // translucent, over the wallpaper...
-    surface: "#16181c7f",
-    surfaceNested: "#4249567f",
+    surface: "oklch(0.2086 0.0085 264 / 80%)",
+    surfaceNested: "oklch(0.3 0.03 264 / 80.8%)",
     // ...and flattened over it, for things that overlap content
     surfaceSolid: "#16212a",
     surfaceNestedSolid: "#2b3947",
     control: "rgba(255,255,255,0.1)",
-    text: "#ddd",
+    text: "oklch(0.95 0.02 212)",
     accent: "#aff2f2",
     onAccent: "#333",
-    line: "#ddd",
+    line: "oklch(0.6 0.03 264)",
     feedback: glow,
     danger: "red",
     warning: "#d68a00",
@@ -36,31 +43,55 @@ export const pallidTheme = defineThemeV2({
   },
   fonts: {
     baseSize: "16px",
-    body: { family: "'Roboto Flex', sans-serif" },
-    display: { family: "'Nova Square', serif", caps: "small-caps", scale: 1.1 },
+    body: { family: "'Nova Square', sans-serif" },
+    display: {
+      family: "'Nova Square', serif",
+      caps: "small-caps",
+      scale: 1.1,
+    },
   },
   catalogue: {
     sheetRoot: {
       base: {
-        backgroundImage: `url(systems/${systemId}/assets/wallpaper/guille-pozzi-sbcIAn4Mn14-unsplash.webp)`,
+        backgroundImage: `
+          url(systems/${systemId}/assets/wallpaper/guille-pozzi-sbcIAn4Mn14-unsplash.webp)
+        `,
         backgroundPosition: "center",
         backgroundSize: "cover",
+        boxShadow: `
+          0 0 10px oklch(from ${starlight} l c h / 50%)
+        `,
+        border: `1px solid ${starlight}`,
+        borderStyle: "inset",
+      },
+      variants: {
+        sheet: {
+          character: {
+            // a nebula behind the logo, fading out down the sheet
+            "&:before": {
+              backgroundImage: `
+                url(systems/${systemId}/assets/wallpaper/philipp-trubchenko-jObj_p885Gg-unsplash.webp)
+              `,
+              content: "''",
+              position: "absolute",
+              top: "0",
+              left: "0",
+              right: "0",
+              height: "300px",
+              maskImage: "linear-gradient(#0007, transparent)",
+            },
+          },
+        },
       },
     },
     logo: {
       base: {
-        // a nebula behind the logo, fading out down the sheet
-        backdrop: {
-          background: `url(systems/${systemId}/assets/wallpaper/philipp-trubchenko-jObj_p885Gg-unsplash.webp)`,
-          backgroundSize: "cover",
-          transform: "scale(1.1)",
-          height: "400%",
-          width: "150%",
-          zIndex: -1,
-          maskImage: "linear-gradient(#000, transparent)",
-        },
         // turned away into the distance
-        text: { transform: "rotateY(21deg) translateX(4%) scale(0.8)" },
+        text: {
+          transform: "rotateY(16deg) translateX(4%) scale(1.0)",
+          fontWeight: "bold",
+          caretColor: "white",
+        },
         // steel, over a starlight halo
         front_wrapper: { color: "transparent" },
         front: steel,
@@ -84,21 +115,23 @@ export const pallidTheme = defineThemeV2({
         },
       },
     },
-    tabs: {
+    tabs: underlineTabs,
+    region: {
       base: {
-        // accent ink on every tab, the others on the nested surface, and a
-        // glow on the text under the pointer
-        tab: {
-          color: "var(--inv-accent)",
-          background: "var(--inv-surface-nested)",
-          "&:hover": { textShadow: `0 0 0.3em ${glow}` },
-        },
+        borderRadius: "6px",
+        // boxShadow: `
+        //   0 0 10px oklch(from ${starlight} l c h / 50%)
+        // `,
+        border: `1px solid oklch(from ${starlight} l c h / 50%)`,
       },
-      // the selected tab is the catalogue's, and neither it nor a disabled
-      // one glows
-      states: {
-        selected: { tab: { "&:hover": { textShadow: "none" } } },
-        disabled: { tab: { "&:hover": { textShadow: "none" } } },
+    },
+    panel: {
+      base: {
+        borderRadius: "6px",
+        boxShadow: `
+          0 0 10px oklch(from ${starlight} l c h / 100%) inset
+        `,
+        border: `1px solid ${starlight}`,
       },
     },
   },
