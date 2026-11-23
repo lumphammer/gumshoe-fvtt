@@ -19,7 +19,7 @@ const steel = {
 
 export const pallidTheme = defineThemeV2({
   schemaVersion: "v2",
-  displayName: "Aching Stars",
+  displayName: "Pallid Stars",
   layout: "full-frame",
   palette: {
     polarity: "dark",
