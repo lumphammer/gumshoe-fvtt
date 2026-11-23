@@ -13,7 +13,7 @@ export const highContrastTheme = defineThemeV2({
     // ...and opaque surfaces: there's no image to show through
     surface: "#efefef",
     surfaceNested: "#d1d1d1",
-    control: "#00000019",
+    control: "#ddf8",
     text: "#000",
     accent: "#005",
     onAccent: "#fff",
@@ -31,6 +31,14 @@ export const highContrastTheme = defineThemeV2({
   },
   catalogue: {
     sheetRoot: {
+      base: {
+        background: `linear-gradient(
+
+          to bottom,
+          #eee 0%,
+          #999 100%
+        )`,
+      },
       variants: {
         // item and freeform sheets have text on the wallpaper: a light one
         sheet: {
@@ -39,7 +47,7 @@ export const highContrastTheme = defineThemeV2({
         },
       },
     },
-    logo: { base: { backdrop: { background: "#fff" } } },
+    // logo: { base: { backdrop: { background: "#fff" } } },
     card: {
       base: {
         root: {
@@ -64,6 +72,17 @@ export const highContrastTheme = defineThemeV2({
       states: {
         selected: { tab: { "&:hover": { textShadow: "none" } } },
         disabled: { tab: { "&:hover": { textShadow: "none" } } },
+      },
+    },
+    button: {
+      base: {
+        // background: ""
+      },
+      states: {
+        disabled: {
+          backgroundColor: "transparent",
+          opacity: "0.6",
+        },
       },
     },
   },
