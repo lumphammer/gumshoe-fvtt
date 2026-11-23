@@ -292,8 +292,8 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0(@svgr/core@8.1.0(supports-color@10.2.2)(typescript@7.0.2))(typescript@7.0.2)
       '@testing-library/jest-dom':
-        specifier: ^7.0.1
-        version: 7.0.1(@testing-library/dom@10.4.0)(vitest@3.2.4)
+        specifier: ^8.0.0
+        version: 8.0.0(@testing-library/dom@10.4.0)(vitest@3.2.4)
       '@testing-library/react':
         specifier: ^16.3.3
         version: 16.3.3(@testing-library/dom@10.4.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -434,8 +434,8 @@ importers:
   packages/minirouter:
     devDependencies:
       '@testing-library/jest-dom':
-        specifier: ^7.0.1
-        version: 7.0.1(@testing-library/dom@10.4.0)(vitest@3.2.4)
+        specifier: ^8.0.0
+        version: 8.0.0(@testing-library/dom@10.4.0)(vitest@3.2.4)
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0
@@ -3031,6 +3031,16 @@ packages:
 
   '@testing-library/jest-dom@7.0.1':
     resolution: {integrity: sha512-oMDTC3oA+6CXSO2JZnvOI7CA6oVub6kij5ggk9ohwye5slmkwxYDXcPOVxgMw/RQlticjtO0C1RZkR97HgrWMw==}
+    engines: {node: '>=22', npm: '>=6', yarn: '>=1'}
+    peerDependencies:
+      '@testing-library/dom': '>=10 <11'
+      vitest: ^3.2.4
+    peerDependenciesMeta:
+      vitest:
+        optional: true
+
+  '@testing-library/jest-dom@8.0.0':
+    resolution: {integrity: sha512-Nu45KEeFgP/ydCMipnisMblq6YHViqEFi3fKN0a40s+zdKDDD7vEPCEavS0i7i4RxmclcEIL8q2o42pu+WgNgg==}
     engines: {node: '>=22', npm: '>=6', yarn: '>=1'}
     peerDependencies:
       '@testing-library/dom': '>=10 <11'
@@ -7307,6 +7317,18 @@ snapshots:
       pretty-format: 27.5.1
 
   '@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.0)(vitest@3.2.4)':
+    dependencies:
+      '@adobe/css-tools': 4.4.3
+      '@testing-library/dom': 10.4.0
+      aria-query: 5.3.2
+      css.escape: 1.5.1
+      dom-accessibility-api: 0.6.3
+      picocolors: 1.1.1
+      redent: 3.0.0
+    optionalDependencies:
+      vitest: 3.2.4(@types/node@25.5.0)(@vitest/ui@5.1.1)(esbuild@0.28.0)(happy-dom@21.0.4)(jiti@2.7.0)(less@4.4.1)(supports-color@10.2.2)(tsx@4.23.15)(yaml@2.9.1)
+
+  '@testing-library/jest-dom@8.0.0(@testing-library/dom@10.4.0)(vitest@3.2.4)':
     dependencies:
       '@adobe/css-tools': 4.4.3
       '@testing-library/dom': 10.4.0
