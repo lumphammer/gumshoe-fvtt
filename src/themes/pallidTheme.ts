@@ -28,8 +28,9 @@ export const pallidTheme = defineThemeV2({
     surface: "oklch(0.2086 0.0085 264 / 80%)",
     surfaceNested: "oklch(0.3 0.03 264 / 80.8%)",
     // ...and flattened over it, for things that overlap content
-    surfaceSolid: "#16212a",
-    surfaceNestedSolid: "#2b3947",
+    surfaceSolid: "color-mix(in srgb, oklch(0.2086 0.0085 264) 80%, #152938)",
+    surfaceNestedSolid:
+      "color-mix(in srgb, oklch(0.3 0.03 264) 80.8%, #152938)",
     control: "rgba(255,255,255,0.1)",
     text: "oklch(0.95 0.02 212)",
     accent: "#aff2f2",
@@ -45,7 +46,7 @@ export const pallidTheme = defineThemeV2({
     baseSize: "16px",
     body: { family: "'Nova Square', sans-serif" },
     display: {
-      family: "'Nova Square', serif",
+      family: "'Nova Square', sans-serif",
       caps: "small-caps",
       scale: 1.1,
     },
@@ -61,8 +62,7 @@ export const pallidTheme = defineThemeV2({
         boxShadow: `
           0 0 10px oklch(from ${starlight} l c h / 50%)
         `,
-        border: `1px solid ${starlight}`,
-        borderStyle: "inset",
+        border: `1px inset ${starlight}`,
       },
       variants: {
         sheet: {
@@ -72,6 +72,7 @@ export const pallidTheme = defineThemeV2({
               backgroundImage: `
                 url(systems/${systemId}/assets/wallpaper/philipp-trubchenko-jObj_p885Gg-unsplash.webp)
               `,
+              backgroundSize: "cover",
               content: "''",
               position: "absolute",
               top: "0",
@@ -79,6 +80,8 @@ export const pallidTheme = defineThemeV2({
               right: "0",
               height: "300px",
               maskImage: "linear-gradient(#0007, transparent)",
+              // it's over the sheet's content: clicks go through it
+              pointerEvents: "none",
             },
           },
         },
@@ -88,7 +91,7 @@ export const pallidTheme = defineThemeV2({
       base: {
         // turned away into the distance
         text: {
-          transform: "rotateY(16deg) translateX(4%) scale(1.0)",
+          transform: "rotateY(16deg) translateX(4%)",
           fontWeight: "bold",
           caretColor: "white",
         },
@@ -119,18 +122,13 @@ export const pallidTheme = defineThemeV2({
     region: {
       base: {
         borderRadius: "6px",
-        // boxShadow: `
-        //   0 0 10px oklch(from ${starlight} l c h / 50%)
-        // `,
         border: `1px solid oklch(from ${starlight} l c h / 50%)`,
       },
     },
     panel: {
       base: {
         borderRadius: "6px",
-        boxShadow: `
-          0 0 10px oklch(from ${starlight} l c h / 100%) inset
-        `,
+        boxShadow: `0 0 10px ${starlight} inset`,
         border: `1px solid ${starlight}`,
       },
     },
