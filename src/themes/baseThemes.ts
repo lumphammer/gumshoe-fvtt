@@ -29,7 +29,6 @@ const v1Themes: { [themeName: string]: [ThemeV1, ThemePalette["polarity"]] } = {
   fearTheme: [fearTheme, "light"],
   pallidTheme: [pallidTheme, "dark"],
   deltaGroovyTheme: [deltaGroovyTheme, "light"],
-  greenTriangleTheme: [greenTriangleTheme, "light"],
   antiquarianTheme: [antiquarianTheme, "light"],
   unsafeRealityTheme: [unsafeRealityTheme, "dark"],
   mutantCityBlueTheme: [mutantCityBlueTheme, "light"],
@@ -43,6 +42,7 @@ export const baseThemes: { [themeName: string]: ThemeV2 } = {
   niceThemeDark,
   olderThanMemoryTheme,
   highContrastTheme,
+  greenTriangleTheme,
   ...Object.fromEntries(
     Object.entries(v1Themes).map(([id, [theme, polarity]]) => [
       id,
@@ -74,10 +74,10 @@ if (import.meta.hot) {
         "./niceThemeDark.ts",
         "./olderThanMemoryTheme.ts",
         "./highContrastTheme.ts",
+        "./greenTriangleTheme.ts",
         "./fearTheme.ts",
         "./pallidTheme.ts",
         "./deltaGroovyTheme.ts",
-        "./greenTriangleTheme.ts",
         "./antiquarianTheme.ts",
         "./unsafeRealityTheme.ts",
         "./mutantCityBlueTheme.ts",
