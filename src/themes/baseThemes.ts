@@ -27,7 +27,6 @@ import type { ThemeV1 } from "./types";
 // this also runs in Node (tests, scripts).
 const v1Themes: { [themeName: string]: [ThemeV1, ThemePalette["polarity"]] } = {
   fearTheme: [fearTheme, "light"],
-  pallidTheme: [pallidTheme, "dark"],
   deltaGroovyTheme: [deltaGroovyTheme, "light"],
   antiquarianTheme: [antiquarianTheme, "light"],
   unsafeRealityTheme: [unsafeRealityTheme, "dark"],
@@ -43,6 +42,7 @@ export const baseThemes: { [themeName: string]: ThemeV2 } = {
   olderThanMemoryTheme,
   highContrastTheme,
   greenTriangleTheme,
+  pallidTheme,
   ...Object.fromEntries(
     Object.entries(v1Themes).map(([id, [theme, polarity]]) => [
       id,
@@ -75,8 +75,8 @@ if (import.meta.hot) {
         "./olderThanMemoryTheme.ts",
         "./highContrastTheme.ts",
         "./greenTriangleTheme.ts",
-        "./fearTheme.ts",
         "./pallidTheme.ts",
+        "./fearTheme.ts",
         "./deltaGroovyTheme.ts",
         "./antiquarianTheme.ts",
         "./unsafeRealityTheme.ts",
