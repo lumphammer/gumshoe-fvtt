@@ -51,7 +51,6 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
     >
       <div
         className={css({
-          paddingBottom: "1em",
           display: "grid",
           gap: "0.3em",
           height: "100%",
