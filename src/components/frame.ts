@@ -1,10 +1,11 @@
 import { appFrame } from "../styled-system/recipes";
-import type { Layout } from "../themes/theme";
+import type { Layout, SheetKind } from "../themes/theme";
 
 type FrameOwner = {
   slug?: string;
   style: Record<string, string>;
   layout: Layout;
+  sheet: SheetKind;
 };
 
 /** The themed roots claiming each window: the latest one styles it. */
@@ -20,11 +21,22 @@ function frameParts(frame: HTMLElement) {
   ] as const;
 }
 
-/** Each part's classes, for a layout. */
-const partClasses = (layout: Layout) => {
-  const classes = appFrame({ layout });
+/** Each part's classes, for a layout and a kind of sheet. */
+const partClasses = (layout: Layout, sheet: SheetKind) => {
+  const classes = appFrame({ layout, sheet });
   return parts.map((part) => classes[part].split(" "));
 };
+
+/** Every part's classes, whatever the layout and sheet: to take them off. */
+const allPartClasses = parts.map((_, i) => [
+  ...new Set(
+    (["standard", "full-frame"] as const).flatMap((layout) =>
+      (["character", "item", "freeform"] as const).flatMap(
+        (sheet) => partClasses(layout, sheet)[i],
+      ),
+    ),
+  ),
+]);
 
 /**
  * Style a window for its latest owner (one that has said what with), or
@@ -36,15 +48,12 @@ function applyFrame(frame: HTMLElement, previous: Record<string, string>) {
     frame.style.removeProperty(property);
   }
   const elements = frameParts(frame);
-  const all = [...partClasses("standard"), ...partClasses("full-frame")];
-  elements.forEach((el, i) => {
-    el?.classList.remove(...all[i], ...all[i + parts.length]);
-  });
+  elements.forEach((el, i) => el?.classList.remove(...allPartClasses[i]));
   const fullFrame = owner?.slug !== undefined && owner.layout === "full-frame";
   if (fullFrame) frame.dataset["invLayout"] = "full-frame";
   else delete frame.dataset["invLayout"];
   if (owner?.slug !== undefined) {
-    const classes = partClasses(owner.layout);
+    const classes = partClasses(owner.layout, owner.sheet);
     elements.forEach((el, i) => el?.classList.add(...classes[i]));
     frame.dataset["invFrame"] = owner.slug;
     for (const [property, value] of Object.entries(owner.style)) {
@@ -63,7 +72,12 @@ function current(frame: HTMLElement) {
 
 export type FrameClaim = {
   /** Style the window with this theme, when this claim is the latest. */
-  update: (slug: string, style: Record<string, string>, layout: Layout) => void;
+  update: (
+    slug: string,
+    style: Record<string, string>,
+    layout: Layout,
+    sheet: SheetKind,
+  ) => void;
   release: () => void;
 };
 
@@ -79,14 +93,19 @@ export type FrameClaim = {
 export function claimFrame(root: HTMLElement): FrameClaim | undefined {
   const frame = root.closest<HTMLElement>(".application");
   if (!frame || root.parentElement?.closest("[data-inv-theme]")) return;
-  const owner: FrameOwner = { style: {}, layout: "standard" };
+  const owner: FrameOwner = {
+    style: {},
+    layout: "standard",
+    sheet: "freeform",
+  };
   frameOwners.set(frame, [...(frameOwners.get(frame) ?? []), owner]);
   return {
-    update: (slug, style, layout) => {
+    update: (slug, style, layout, sheet) => {
       const previous = current(frame);
       owner.slug = slug;
       owner.style = style;
       owner.layout = layout;
+      owner.sheet = sheet;
       applyFrame(frame, previous);
     },
     release: () => {

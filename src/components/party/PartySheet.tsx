@@ -63,7 +63,7 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
 
   return (
     <CSSReset
-      mode="small"
+      sheet="freeform"
       theme={theme}
       clearsTitlebar
       className={css({

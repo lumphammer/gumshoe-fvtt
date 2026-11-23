@@ -177,7 +177,30 @@ and no title (shown when minimized). The portrait and sidebar move left, and
 the logo's text keeps below the strip (`LogoEditable`, `--inv-logo-overlap` less
 `--inv-logo-strip-tuck`, 15px from `CSSReset`). The sheets' grids follow
 `data-inv-layout` on the themed root. The strip's look is the `appFrame`
-`layout: full-frame` variant, which a theme can patch.
+`layout: full-frame` variant, which a theme can patch. Its buttons, and its
+tint on hover, are in `--inv-titlebar-ink` (`text` unless a theme sets it on
+the `header` slot): what's under the strip is the theme's backdrop, so the ink
+that reads on it is the theme's to choose, kind of sheet by kind of sheet
+(below).
+
+**Kinds of sheet.** Every themed window is one of three kinds, the `sheet`
+variant of `sheetRoot` and of `appFrame`, and each makes a promise about what's
+on the wallpaper, so a theme can give each the backdrop (and titlebar ink) it
+needs:
+
+| `sheet`     | Windows                                                                         | On the wallpaper                                                                                                                |
+| ----------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `character` | a PC's or NPC's sheet, full or limited                                          | only regions, tabs (their strip and content), the portrait and the logo                                                         |
+| `item`      | an item's sheet: `ItemSheetFramework` (equipment, weapons, bonds...), or a card | its header (the image and the name) over a region with the body; an item's sheet may put text and controls on the wallpaper too |
+| `freeform`  | anything else: the party sheet, the settings, the journal editor, Team Crisis   | anything: assume nothing about the layout                                                                                       |
+
+So a bold, bright wallpaper can suit character sheets, with smoky regions and
+tab content to keep them legible, while item sheets get the same image under a
+gradient that mutes it, and freeform ones a wash over all of it. A theme's
+`appFrame` can follow, with the strip's ink in a compound variant:
+`{ layout: "full-frame", sheet: "character", css: { header: { "--inv-titlebar-ink": "#2c1a1b" } } }`.
+A sheet that breaks its kind's promise is a bug in the sheet, not the theme.
+The loading spinner (`Suspense`) is the kind of the sheet it stands in for.
 
 **Types and checks.** `pnpm generate:catalogue` writes each recipe's slots and
 variants from `panda.config.ts`, as types for `ThemeCatalogue`
@@ -382,9 +405,9 @@ things switched off). `outcome`: the result of something in its tone's ink.
 
 **`sheetRoot`**: the themed root of a window, applied by `CSSReset` to the
 element with `data-inv-theme` and the palette: `body` style, `text` ink, and the
-wallpaper. `size`: `large` and `small` are on `wallpaper`; `none` (a themed area
-inside something else) is transparent. Padding and height are in the variants
-too, so a theme can set them. _Expected override:_ the backdrop image, in `size`.
+wallpaper. Variant `sheet` (`character`, `item`, `freeform`: Kinds of sheet,
+above), each on `wallpaper`, with its padding and height, so a theme can set
+them. _Expected override:_ the backdrop image, in `sheet`.
 
 **`appFrame`**: Foundry's window around a themed root. Slots `root` (the
 `.application` element), `header` (the titlebar) and `content` (the
@@ -394,7 +417,8 @@ mounted, if it's the outermost themed root in the window and not
 The window gets the palette and `data-inv-frame`, not `data-inv-theme`, so it
 has no element defaults or state layers. Empty by default, so a window looks
 like Foundry's. _Expected override:_ a glow or border on `root`. Variant
-`layout` is the theme's, not a call site's.
+`layout` is the theme's, not a call site's; `sheet` is the themed root's
+(Kinds of sheet, above).
 
 **`logo`**: the character sheet's logo (`LogoEditable`): name and subtext in
 large display text, drawn twice, a front copy over a rear one, on a backdrop,
@@ -572,8 +596,10 @@ How its styles map:
   `tabWrappedActiveStyle` for a wrapped tab) become the tab's `selected` state,
   starting from nothing, as in V1 the active style went over the tab's own
   look.
-- `largeSheetRootStyle` and `smallSheetRootStyle` patch the `sheetRoot` `size`
-  variants; `appWindowStyle` goes in the `appFrame` `root`.
+- `largeSheetRootStyle` patches the `sheetRoot` `character` variant, and
+  `smallSheetRootStyle` the `item` and `freeform` ones (V1's journal editor
+  was large, but the small style suits a freeform window better);
+  `appWindowStyle` goes in the `appFrame` `root`.
 - Each `logo` style goes on its slots, spread over `logoDefaults.ts` (a relative
   font size on the text is divided by 4, as it's inherited from 4em now).
 - Each `card` slot is V1's style for it, after `all: "revert-layer"`; each of
@@ -602,8 +628,8 @@ ThemeV2 with a makeover is not.
 
 Still to do:
 
-- Check every theme for legibility now that an item's sheet has a region: its
-  fields used to sit on the wallpaper, and its boxes of controls were
+- Check every theme for legibility on item sheets, whose body is a region:
+  its fields used to sit on the wallpaper, and its boxes of controls were
   `surface`, not `surfaceNested`.
 - The `surface` recipe's `depth` is still chosen by its call sites. Work out
   whether it should follow regions and panels instead.

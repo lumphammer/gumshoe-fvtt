@@ -72,7 +72,7 @@ export const NPCSheetFull = memo(function NPCSheetFull() {
   return (
     <CSSReset
       theme={theme}
-      mode="large"
+      sheet="character"
       className={css({
         position: "absolute",
         top: 0,

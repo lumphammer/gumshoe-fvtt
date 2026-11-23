@@ -15,6 +15,13 @@ export type Theme = ThemeV2;
 /** How the character sheets are laid out (`ThemeV2.layout`). */
 export type Layout = NonNullable<ThemeV2["layout"]>;
 
+/**
+ * What kind of window a themed root is (`sheetRoot`'s and `appFrame`'s
+ * `sheet` variant), each with its own promise about what's on the wallpaper:
+ * see docs/theming.md.
+ */
+export type SheetKind = "character" | "item" | "freeform";
+
 /** Type-checks a V2 theme: the built-in themes are defined with it. */
 export const defineThemeV2 = (theme: ThemeV2) => theme;
 

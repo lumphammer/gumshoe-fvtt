@@ -28,7 +28,7 @@ class NPCSheetClassBase extends ActorSheetV2 {
 
 const render = () => {
   return (
-    <Suspense>
+    <Suspense sheet="character">
       <NPCSheet />
     </Suspense>
   );

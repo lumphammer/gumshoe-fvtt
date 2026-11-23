@@ -19,7 +19,7 @@ const InvestigatorItemSheet = React.lazy(() =>
 
 const render = () => {
   return (
-    <Suspense>
+    <Suspense sheet="item">
       <InvestigatorItemSheet />
     </Suspense>
   );

@@ -9,7 +9,10 @@ export const recipeShapes = {
   appFrame: {
     className: "inv-app-frame",
     slots: ["root", "header", "content"],
-    variants: { layout: ["standard", "full-frame"] },
+    variants: {
+      layout: ["standard", "full-frame"],
+      sheet: ["character", "item", "freeform"],
+    },
     states: [],
   },
   badge: {
@@ -148,7 +151,7 @@ export const recipeShapes = {
   sheetRoot: {
     className: "inv-sheet-root",
     slots: [],
-    variants: { size: ["large", "small", "none"] },
+    variants: { sheet: ["character", "item", "freeform"] },
     states: [],
   },
   surface: {

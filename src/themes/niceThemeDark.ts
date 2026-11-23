@@ -6,6 +6,14 @@ const wallpaper = `url(systems/${systemId}/assets/wallpaper/nice_red_agents.webp
 
 const text = "oklch(0.95 0.04 80)";
 
+// item and freeform sheets' backdrop
+const smallBackdrop = {
+  backgroundImage: `
+    radial-gradient(farthest-corner at top right, #0004 0%, #000 100%),
+    ${wallpaper}
+  `,
+};
+
 export const niceThemeDark = defineThemeV2({
   schemaVersion: "v2",
   displayName: "Nice Dark Red Agents",
@@ -50,22 +58,14 @@ export const niceThemeDark = defineThemeV2({
   catalogue: {
     sheetRoot: {
       variants: {
-        size: {
-          large: {
+        sheet: {
+          character: {
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundImage: `radial-gradient(ellipse, #0006 0%, #000a 100%), ${wallpaper}`,
           },
-          small: {
-            backgroundImage: `
-              radial-gradient(
-                farthest-corner at top right,
-                #0004 0%,
-                #000 100%
-              ),
-              ${wallpaper}
-            `,
-          },
+          item: smallBackdrop,
+          freeform: smallBackdrop,
         },
       },
     },

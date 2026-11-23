@@ -20,7 +20,13 @@ const overlaid =
  * Foundry's own titlebar; `full-frame`'s is a see-through strip across the
  * top of the content, still the titlebar (it drags the window, and a double
  * click minimizes it), with no title, and a faint tint on hover to show where
- * it is. The sheet's logo keeps its text below it (`LogoEditable`).
+ * it is. The sheet's logo keeps its text below it (`LogoEditable`). The
+ * strip's buttons and tint are in `--inv-titlebar-ink`, `text` unless a theme
+ * sets it on `header`, as what's under the strip is the theme's backdrop.
+ *
+ * Variant `sheet` is the themed root's (`sheetRoot`): what kind of window it
+ * is, so a theme can style each one's frame to go with its backdrop (the
+ * strip's ink, say, in a compound variant with `layout: full-frame`).
  *
  * Empty by default: a window looks like Foundry's own. *Expected override:* a
  * theme's glow or border goes on `root`; its titlebar's tint on `header`.
@@ -50,13 +56,15 @@ export const appFrame = defineSlotRecipe({
             transition: "[background-color 0.2s]",
             "&:hover": {
               backgroundColor:
-                "[color-mix(in srgb, var(--inv-text) 8%, transparent)]",
+                "[color-mix(in srgb, var(--inv-titlebar-ink, var(--inv-text)) 8%, transparent)]",
             },
             // keeping its place, so the buttons stay at the right
             "& .window-title": { visibility: "hidden" },
             "& .window-icon": { display: "none" },
             // on the sheet's wallpaper, not Foundry's header
-            "& .header-control": { color: "text" },
+            "& .header-control": {
+              color: "[var(--inv-titlebar-ink, var(--inv-text))]",
+            },
           },
         },
         content: {
@@ -66,6 +74,11 @@ export const appFrame = defineSlotRecipe({
         },
       },
     },
+    sheet: {
+      character: {},
+      item: {},
+      freeform: {},
+    },
   },
-  defaultVariants: { layout: "standard" },
+  defaultVariants: { layout: "standard", sheet: "freeform" },
 });

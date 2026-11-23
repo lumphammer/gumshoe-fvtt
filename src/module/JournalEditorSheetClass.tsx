@@ -34,7 +34,7 @@ export class JournalEntryHTMLEditorSheetClassBase extends JournalEntrySheet {
 
 const render = () => {
   return (
-    <Suspense>
+    <Suspense sheet="freeform">
       <JournalEditorSheet />
     </Suspense>
   );

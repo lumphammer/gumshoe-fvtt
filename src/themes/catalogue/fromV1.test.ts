@@ -367,19 +367,20 @@ test("tabs replace the catalogue's, with V1's selected styles as the tabs' selec
   });
 });
 
-test("the sheet root's styles patch its size variants", () => {
+test("the large root's style patches character sheets; the small one's the others", () => {
   expect(
     catalogue({
       largeSheetRootStyle: { fontSize: "1.1em" },
       smallSheetRootStyle: { ":before": { content: "''" } },
-    }).sheetRoot?.variants?.size,
+    }).sheetRoot?.variants?.sheet,
   ).toEqual({
-    large: {
+    character: {
       backgroundSize: "cover",
       backgroundPosition: "center",
       fontSize: "1.1em",
     },
-    small: { "&:before": { content: "''" } },
+    item: { "&:before": { content: "''" } },
+    freeform: { "&:before": { content: "''" } },
   });
 });
 

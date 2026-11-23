@@ -290,6 +290,6 @@ test("every built-in theme's catalogue fits the catalogue, with no warnings (V1 
 });
 
 test("themeCss is worked out once per theme", () => {
-  expect(themeCss(tealTheme)).toContain(".inv-sheet-root--size_large");
+  expect(themeCss(tealTheme)).toContain(".inv-sheet-root--sheet_character");
   expect(themeCss(tealTheme)).toBe(themeCss(tealTheme));
 });

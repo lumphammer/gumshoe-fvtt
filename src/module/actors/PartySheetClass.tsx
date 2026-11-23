@@ -29,7 +29,7 @@ class PartySheetClassBase extends ActorSheetV2 {
 
 const render = () => {
   return (
-    <Suspense>
+    <Suspense sheet="freeform">
       <PartySheet />
     </Suspense>
   );

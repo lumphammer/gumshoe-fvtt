@@ -6,7 +6,7 @@ import { CSSReset } from "../CSSReset";
 import { ImagePickle } from "../ImagePickle";
 import { NotesDisplay } from "../inputs/NotesDisplay";
 import { LogoEditable } from "./LogoEditable";
-import { surface } from "../../styled-system/recipes";
+import { region } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
 
 type CharacterSheetSimpleProps = {
@@ -40,7 +40,7 @@ export const CharacterSheetSimple = ({
   return (
     <CSSReset
       theme={theme}
-      mode="large"
+      sheet="character"
       className={css({
         position: "absolute",
         top: 0,
@@ -102,7 +102,7 @@ export const CharacterSheetSimple = ({
         {hasNotes && (
           <NotesDisplay
             className={cx(
-              surface(),
+              region(),
               css({
                 flex: "[1]",
                 overflow: "auto",

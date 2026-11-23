@@ -45,7 +45,7 @@ export class SettingsClassBase extends ApplicationV2 {
 const render = () => {
   // $(sheet.element).find(".header-button.close").hide();
   return (
-    <Suspense>
+    <Suspense sheet="freeform">
       <Settings />
     </Suspense>
   );

@@ -100,7 +100,7 @@ export const JournalEditorSheet = () => {
       <MagicToolbarProvider>
         <CSSReset
           theme={theme}
-          mode="large"
+          sheet="freeform"
           clearsTitlebar
           className={css({
             ...absoluteCover,
