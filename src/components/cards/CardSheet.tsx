@@ -7,7 +7,6 @@ import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { assertCardItem } from "../../module/items/card";
 import { absoluteCover } from "../absoluteCover";
 import { BelowTitlebar } from "../BelowTitlebar";
-import { Region } from "../Region";
 import { ToolbarButton } from "../inputs/Button";
 import { ArrowLink } from "../nestedPanels/ArrowLink";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
@@ -62,12 +61,13 @@ export const CardSheet = memo(function CardSheet() {
 
   return (
     <Router>
-      <Region
+      <div
         className={css({
           ...absoluteCover,
-          // the region runs up under the full-frame layout's see-through
-          // titlebar; its content starts below it (`CSSReset`)
-          paddingTop: "[max(0.5em, var(--inv-titlebar-clearance))]",
+          margin: "0.5em",
+          // below the full-frame layout's see-through titlebar, not as well
+          // (`CSSReset`)
+          marginTop: "[max(0.5em, var(--inv-titlebar-clearance))]",
           display: "flex",
           flexDirection: "column",
         })}
@@ -108,7 +108,7 @@ export const CardSheet = memo(function CardSheet() {
         >
           <CardDisplay card={item} viewMode="full" />
         </div>
-      </Region>
+      </div>
       <BelowTitlebar>
         <SlideInNestedPanelRoute
           direction={edit}

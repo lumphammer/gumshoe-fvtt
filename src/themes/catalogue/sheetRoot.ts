@@ -27,7 +27,7 @@ export const sheetRoot = defineRecipe({
   variants: {
     size: {
       large: { backgroundColor: "wallpaper", padding: "0.5em", height: "100%" },
-      small: { backgroundColor: "wallpaper", padding: "0em", height: "100%" },
+      small: { backgroundColor: "wallpaper", padding: "0.5em", height: "100%" },
       none: { backgroundColor: "transparent", padding: "0", height: "100%" },
     },
   },
