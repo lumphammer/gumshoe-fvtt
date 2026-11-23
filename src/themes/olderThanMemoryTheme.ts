@@ -2,7 +2,15 @@ import { systemId } from "../constants";
 import { defineThemeV2 } from "./theme";
 
 const glow = "#fda994";
-const wallpaper = `url(systems/${systemId}/assets/wallpaper/red_sands.jpg)`;
+const sands = {
+  backgroundImage: `url(systems/${systemId}/assets/wallpaper/red_sands.jpg)`,
+  backgroundPosition: "center",
+  backgroundSize: "cover",
+};
+const dimSands = {
+  ...sands,
+  backgroundImage: `linear-gradient(#0009 0 0), ${sands.backgroundImage}`,
+};
 
 export const olderThanMemoryTheme = defineThemeV2({
   schemaVersion: "v2",
@@ -39,29 +47,23 @@ export const olderThanMemoryTheme = defineThemeV2({
   },
   catalogue: {
     appFrame: {
-      base: {
-        root: { boxShadow: `0 0 20px ${glow}` },
-        header: {
-          //
-          "--colors-text": "#2c1a1b",
+      base: { root: { boxShadow: `0 0 20px ${glow}` } },
+      // on a character sheet the strip is over the bright sands
+      compoundVariants: [
+        {
+          layout: "full-frame",
+          sheet: "character",
+          css: { header: { "--inv-titlebar-ink": "#2c1a1b" } },
         },
-      },
+      ],
     },
     sheetRoot: {
       variants: {
-        size: {
-          large: {
-            backgroundImage: wallpaper,
-            backgroundPosition: "top",
-            backgroundSize: "cover",
-          },
-          small: {
-            backgroundImage: `
-              ${wallpaper}
-            `,
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-          },
+        sheet: {
+          character: { ...sands, backgroundPosition: "top" },
+          // the others have text on the wallpaper, so the sands are dimmed
+          item: dimSands,
+          freeform: dimSands,
         },
       },
     },
