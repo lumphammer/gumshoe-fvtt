@@ -188,11 +188,11 @@ variant of `sheetRoot` and of `appFrame`, and each makes a promise about what's
 on the wallpaper, so a theme can give each the backdrop (and titlebar ink) it
 needs:
 
-| `sheet`     | Windows                                                                         | On the wallpaper                                                                                                                |
-| ----------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `character` | a PC's or NPC's sheet, full or limited                                          | only regions, tabs (their strip and content), the portrait and the logo                                                         |
-| `item`      | an item's sheet: `ItemSheetFramework` (equipment, weapons, bonds...), or a card | its header (the image and the name) over a region with the body; an item's sheet may put text and controls on the wallpaper too |
-| `freeform`  | anything else: the party sheet, the settings, the journal editor, Team Crisis   | anything: assume nothing about the layout                                                                                       |
+| `sheet`     | Windows                                                                                                    | On the wallpaper                                                                                                                                          |
+| ----------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `character` | a PC's or NPC's sheet, full or limited                                                                     | only regions, tabs (their strip and content), the portrait and the logo                                                                                   |
+| `item`      | an item's sheet: `ItemSheetFramework` (equipment, weapons, bonds...), a Moribund World item's, or a card's | its header (the image and the name) over a region with the body; a card's sheet is a toolbar over the card. Text and controls may be on the wallpaper too |
+| `freeform`  | anything else: the party sheet, the settings, the journal editor, Team Crisis                              | anything: assume nothing about the layout                                                                                                                 |
 
 So a bold, bright wallpaper can suit character sheets, with smoky regions and
 tab content to keep them legible, while item sheets get the same image under a

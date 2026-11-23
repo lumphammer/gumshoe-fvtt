@@ -7,6 +7,7 @@ import { useActorTheme } from "../hooks/useActorTheme";
 import type { SheetKind } from "../themes/theme";
 import { absoluteCover } from "./absoluteCover";
 import { CSSReset } from "./CSSReset";
+import { region } from "../styled-system/recipes";
 import { css, cx } from "../styled-system/css";
 
 /**
@@ -36,18 +37,23 @@ const Fallback = ({ sheet }: { sheet: SheetKind }) => {
       clearsTitlebar
       className={css(absoluteCover)}
     >
-      <i
+      {/* in a region, as nothing but regions (and tabs, the portrait and
+          the logo) is promised to read on a character sheet's wallpaper */}
+      <div
         className={cx(
-          "fas fa-spinner fa-spin",
+          region(),
           css({
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
             fontSize: "3em",
+            lineHeight: "1",
           }),
         )}
-      />
+      >
+        <i className="fas fa-spinner fa-spin" />
+      </div>
     </CSSReset>
   );
 };

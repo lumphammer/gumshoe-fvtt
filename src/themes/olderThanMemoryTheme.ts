@@ -60,7 +60,12 @@ export const olderThanMemoryTheme = defineThemeV2({
     sheetRoot: {
       variants: {
         sheet: {
-          character: { ...sands, backgroundPosition: "top" },
+          // the top of the sands while they load, so the strip's dark ink reads
+          character: {
+            ...sands,
+            backgroundPosition: "top",
+            backgroundColor: "#ca6445",
+          },
           // the others have text on the wallpaper, so the sands are dimmed
           item: dimSands,
           freeform: dimSands,
