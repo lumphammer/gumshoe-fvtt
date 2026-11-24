@@ -46,7 +46,10 @@ export const fearTheme = defineThemeV2({
     },
     logo: {
       base: {
-        text: { transform: "scale(0.8)" },
+        text: {
+          transform: "scale(0.8)",
+          caretColor: "var(--inv-text)",
+        },
         // typewritten ink, over a white haze
         front_wrapper: { color: "transparent" },
         front: ink,
