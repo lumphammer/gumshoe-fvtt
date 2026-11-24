@@ -233,6 +233,11 @@ who released his fonts into the public domain, asking only that commercial users
 acknowledge the source ([his site, archived](https://web.archive.org/web/20120416090521/http://www.rogersfonts.org.uk/)).
 We use [a fixed version](https://github.com/n3dst4/longdon-decorative-fixed).
 
+Nova Square (`public/fonts/nova-square/`) is by Wojciech Kalinowski, under the
+[SIL Open Font License 1.1](public/fonts/nova-square/OFL.txt). It's version
+3.1.0 [from his repository](https://github.com/wmk69/Nova), with the bold and
+oblique styles, converted to WOFF2 and otherwise unchanged.
+
 Huge thanks to Nick van Oosten/NickEast for [Foundry Project Creator](https://gitlab.com/foundry-projects/foundry-pc/create-foundry-project) and the original [the Typescript types to go with it](https://gitlab.com/foundry-projects/foundry-pc/foundry-pc-types).
 
 Current types are provided by the excellent [League of Foundry Developers](https://github.com/League-of-Foundry-Developers/foundry-vtt-types).

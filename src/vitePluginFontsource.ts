@@ -41,7 +41,6 @@ export const fontsourceFamilies: FontsourceFamily[] = [
     pkg: "@fontsource-variable/roboto-flex",
     css: ["wght"],
   },
-  { family: "Nova Square", pkg: "@fontsource/nova-square", css: ["400"] },
   {
     family: "Fira Sans Condensed",
     pkg: "@fontsource/fira-sans-condensed",

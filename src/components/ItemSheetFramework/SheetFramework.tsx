@@ -6,7 +6,6 @@ import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useIsLimited } from "../../hooks/useIsEditable";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { ImagePickle } from "../ImagePickle";
-import { Region } from "../Region";
 import { useSettingsButton } from "../useSettingsButton";
 import { ItemSheetTitle } from "./ItemSheetTitle";
 import { ModeContext } from "./modeContext";
@@ -90,9 +89,8 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
           })}
         />
 
-        {/* regular editing stuff, in a region: the header above is on the
-            wallpaper */}
-        <Region
+        {/* regular editing stuff, on the wallpaper like the header above */}
+        <div
           className={css({
             gridArea: "body",
             display: "flex",
@@ -102,7 +100,7 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
           })}
         >
           {children}
-        </Region>
+        </div>
       </div>
     </ModeContext.Provider>
   );

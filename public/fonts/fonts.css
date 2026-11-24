@@ -8,3 +8,35 @@ separately via the system manifest.
   font-family: "Longdon Decorative Regular";
   src: url(./LongdonDecorative.woff2) format("woff2");
 }
+
+/*
+Nova Square 3.1.0, from its designer (https://github.com/wmk69/Nova): Fontsource
+only has the 2011 version, which has no bold or oblique. The TTFs are only
+compressed to WOFF2, nothing else changed, so they keep their name under the
+OFL (https://openfontlicense.org/webfonts-and-reserved-font-names/). Licence:
+nova-square/OFL.txt.
+*/
+@font-face {
+  font-family: "Nova Square";
+  src: url(./nova-square/NovaSquare-Book.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Nova Square";
+  src: url(./nova-square/NovaSquare-BookOblique.woff2) format("woff2");
+  font-weight: 400;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Nova Square";
+  src: url(./nova-square/NovaSquare-Bold.woff2) format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Nova Square";
+  src: url(./nova-square/NovaSquare-BoldOblique.woff2) format("woff2");
+  font-weight: 700;
+  font-style: italic;
+}

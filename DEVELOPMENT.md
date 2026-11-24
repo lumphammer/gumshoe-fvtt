@@ -206,7 +206,7 @@ A setting which has never been in a release can be renamed or removed without a 
 
 ## Theme fonts
 
-The themes' fonts are self-hosted (not loaded from Google Fonts, which would send every user's IP address to Google). They come from [Fontsource](https://fontsource.org/) packages: [`src/vitePluginFontsource.ts`](src/vitePluginFontsource.ts) writes `fonts/fontsource.css` (listed in `system.json`) and the Latin `woff2` files it needs. Browsers only download a font file when a page uses it.
+The themes' fonts are self-hosted (not loaded from Google Fonts, which would send every user's IP address to Google). They come from [Fontsource](https://fontsource.org/) packages: [`src/vitePluginFontsource.ts`](src/vitePluginFontsource.ts) writes `fonts/fontsource.css` (listed in `system.json`) and the Latin `woff2` files it needs. Browsers only download a font file when a page uses it. A font Fontsource doesn't have whole goes in `public/fonts/`, declared in `public/fonts/fonts.css` with its licence beside it (Longdon Decorative, and Nova Square, whose bold and oblique styles only its designer publishes).
 
 To add a font, `pnpm add @fontsource/<name>` (or `@fontsource-variable/<name>`, if it's a variable font and you want several weights), and add it to `fontsourceFamilies` in that file. Don't `import` Fontsource's CSS from the code: Vite's library mode would inline every font into the bundle as base64.
 

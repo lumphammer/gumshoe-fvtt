@@ -433,6 +433,10 @@ changes (`text: { transform: "scale(0.7)" }` is a whole restyle):
 - The text inherits the display font, case and letter spacing at 4em, in `text`;
   the rear copy's text is transparent, so only what a theme gives it (a shadow,
   or a colour on `rear`) shows.
+- A shadow or anything else sized in `em` goes on the name and the subtext
+  (`rear`, `rear_sub`), not their `_wrapper`: an `em` is resolved where it's
+  declared, so on the wrapper it's the name's, and the subtext gets the same
+  offsets at half the size.
 - The layout (the box sized by the call site, the backdrop and `text` filling it,
   each copy centred) is in a cascade layer after the theme's, so it wins, unless
   a theme says `!important`.

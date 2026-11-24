@@ -237,9 +237,6 @@ importers:
       '@fontsource/im-fell-english':
         specifier: ^5.3.0
         version: 5.3.0
-      '@fontsource/nova-square':
-        specifier: ^5.3.0
-        version: 5.3.0
       '@fontsource/protest-guerrilla':
         specifier: ^5.3.0
         version: 5.3.0
@@ -254,7 +251,7 @@ importers:
         version: 5.3.0
       '@lumphammer/fvtt-telemetry-schema':
         specifier: github:lumphammer/fvtt-telemetry#path:/packages/schema
-        version: https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/209ba9634a4cafaf67b7658bfddef5afff6d5ccd#path:/packages/schema(typescript@7.0.2)
+        version: https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/64451cd68d038b47373597f29962fab678adcd19#path:/packages/schema(typescript@7.0.2)
       '@lumphammer/investigator-fvtt-types':
         specifier: workspace:^
         version: link:packages/investigator-fvtt-types
@@ -975,9 +972,6 @@ packages:
   '@fontsource/im-fell-english@5.3.0':
     resolution: {integrity: sha512-FcgdWfY9WeUM2gQkfmwhn4Ed9LVtlll8LSSZvHfbsUrnHK5tHHnGg6BgwAfHogp52adU3eE89J/3B52qV3b+Vw==}
 
-  '@fontsource/nova-square@5.3.0':
-    resolution: {integrity: sha512-+IL9rCBQNb/Ei12mctNsQcO56fNxLHVuy5paLvJJMJLzg7jZLCYe8SGFLLh2R2m1JH7JDk+8wGs8LArYVdd+Aw==}
-
   '@fontsource/protest-guerrilla@5.3.0':
     resolution: {integrity: sha512-Lgcirvo3mR/jGQRzdNbpuaybbd+xSmcQBSbHSMcK1/OHb2XbEjaHA7nG8gaUvxFQeFpTCUJ2OfOfgeT8bylh6Q==}
 
@@ -1050,8 +1044,8 @@ packages:
   '@lezer/markdown@1.4.3':
     resolution: {integrity: sha512-kfw+2uMrQ/wy/+ONfrH83OkdFNM0ye5Xq96cLlaCy7h5UT9FO54DU4oRoIc0CSBh5NWmWuiIJA7NGLMJbQ+Oxg==}
 
-  '@lumphammer/fvtt-telemetry-schema@https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/209ba9634a4cafaf67b7658bfddef5afff6d5ccd#path:/packages/schema':
-    resolution: {gitHosted: true, integrity: sha512-y+kjVema5Q0DKwopULM2q/X2yhK5/qFwEihipvRD/D5QpLYJoYOL1Wg3V52C14nFEgrg0yAFMVtkrJwA6VUbeg==, path: /packages/schema, tarball: https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/209ba9634a4cafaf67b7658bfddef5afff6d5ccd}
+  '@lumphammer/fvtt-telemetry-schema@https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/64451cd68d038b47373597f29962fab678adcd19#path:/packages/schema':
+    resolution: {gitHosted: true, integrity: sha512-tqdhFumoLm8ahiBgbtGWSVNZ0/9QQFxEgA+YBNKv5hn1Fesf0znc3edjRwYx+w/LIrHg+wiXHgoYvRw2TLYygw==, path: /packages/schema, tarball: https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/64451cd68d038b47373597f29962fab678adcd19}
     version: 0.1.0
 
   '@lumphammer/investigator-fvtt-types@1.13.2':
@@ -5852,8 +5846,6 @@ snapshots:
 
   '@fontsource/im-fell-english@5.3.0': {}
 
-  '@fontsource/nova-square@5.3.0': {}
-
   '@fontsource/protest-guerrilla@5.3.0': {}
 
   '@fontsource/russo-one@5.3.0': {}
@@ -5937,7 +5929,7 @@ snapshots:
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
 
-  '@lumphammer/fvtt-telemetry-schema@https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/209ba9634a4cafaf67b7658bfddef5afff6d5ccd#path:/packages/schema(typescript@7.0.2)':
+  '@lumphammer/fvtt-telemetry-schema@https://codeload.github.com/lumphammer/fvtt-telemetry/tar.gz/64451cd68d038b47373597f29962fab678adcd19#path:/packages/schema(typescript@7.0.2)':
     dependencies:
       valibot: 1.5.0(typescript@7.0.2)
     transitivePeerDependencies:
