@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { type KeyboardEvent, memo } from "react";
 
 import { openSheet } from "../../functions/openSheet";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
@@ -42,6 +42,44 @@ export const PoolTracker = memo(function PoolTracker({
   }));
   const methods = useSystemMethods(ability);
   const vals = range(tracker.min, tracker.max);
+  // the pip in the Tab order: the pool's, or the first if the pool is out of
+  // range
+  const tabStop = vals.includes(tracker.pool) ? tracker.pool : vals[0];
+
+  /**
+   * The WAI-ARIA radio group pattern: the arrow keys move to the next or
+   * previous value and set the pool to it. They don't wrap round, which would
+   * turn a full pool empty in one press.
+   */
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const step = {
+      ArrowRight: 1,
+      ArrowDown: 1,
+      ArrowLeft: -1,
+      ArrowUp: -1,
+    }[event.key];
+    const pip = (event.target as HTMLElement).closest<HTMLElement>(
+      "[role=radio]",
+    );
+    if (
+      step === undefined ||
+      !pip ||
+      pip.getAttribute("aria-disabled") === "true"
+    ) {
+      return;
+    }
+    event.preventDefault();
+    const pips = Array.from(
+      event.currentTarget.querySelectorAll<HTMLElement>(
+        ":scope > [role=radio]",
+      ),
+    );
+    const next = pips[pips.indexOf(pip) + step];
+    if (next) {
+      next.focus();
+      void methods.setPool(Number(next.dataset["value"]));
+    }
+  };
 
   return (
     <div
@@ -74,14 +112,26 @@ export const PoolTracker = memo(function PoolTracker({
         />
       )}
 
-      {vals.map((value) => (
-        <PoolCheckbox
-          key={value}
-          value={value}
-          onClick={methods.setPool}
-          selected={value === tracker.pool}
-        />
-      ))}
+      <div
+        role="radiogroup"
+        aria-label={tracker.name}
+        onKeyDown={onKeyDown}
+        className={css({
+          gridColumn: "start / end",
+          display: "grid",
+          gridTemplateColumns: "subgrid",
+        })}
+      >
+        {vals.map((value) => (
+          <PoolCheckbox
+            key={value}
+            value={value}
+            onClick={methods.setPool}
+            selected={value === tracker.pool}
+            tabStop={value === tabStop}
+          />
+        ))}
+      </div>
       {tracker.isPushPool && (
         <Button
           className={css({

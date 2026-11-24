@@ -43,27 +43,38 @@ test("Tab moves on through a PC sheet, and reaches its links", async ({
   const content = sheet.locator(".window-content");
   await content.getByRole("textbox").first().focus();
 
-  const visited: string[] = [];
-  const reached = new Set<string>();
-  for (let i = 0; i < 80; i++) {
+  let last = await focused(page);
+  const reached: string[] = [];
+  // until it leaves the sheet's content
+  for (let i = 0; i < 200; i++) {
     await page.keyboard.press("Tab");
+    const inSheet = await content.evaluate((element) =>
+      element.contains(document.activeElement),
+    );
+    if (!inSheet) break;
     const now = await focused(page);
     // Foundry cancelling the Tab leaves focus where it was
-    expect(now, `Tab number ${i + 1} didn't move`).not.toBe(visited.at(-1));
-    visited.push(now);
-    const role = await page.evaluate(() => {
-      const element = document.activeElement as HTMLElement;
-      if (element.closest("[data-testid=pool-tracker] h2")) return "tracker";
-      if (element.matches("[data-testid=pool-tracker] [role=button]")) {
-        return "pip";
-      }
-      if (element.matches(".tab-strip > label")) return "tab";
-      if (element.matches(".inv-default-ability-name-link")) return "ability";
-      return "other";
-    });
-    reached.add(role);
+    expect(now, `Tab number ${i + 1} didn't move`).not.toBe(last);
+    last = now;
+    reached.push(
+      await page.evaluate(() => {
+        const element = document.activeElement as HTMLElement;
+        if (element.closest("[data-testid=pool-tracker] h2")) return "tracker";
+        if (element.matches("[data-testid=pool-tracker] [role=radio]")) {
+          return "pip";
+        }
+        if (element.matches(".tab-strip > label")) return "tab";
+        if (element.matches(".inv-default-ability-name-link")) {
+          return "ability";
+        }
+        return "other";
+      }),
+    );
   }
-  expect([...reached].sort()).toEqual(
+  // every tracker is one stop, not one per pip
+  const trackers = await sheet.getByTestId("pool-tracker").count();
+  expect(reached.filter((stop) => stop === "pip")).toHaveLength(trackers);
+  expect([...new Set(reached)].sort()).toEqual(
     ["ability", "other", "pip", "tab", "tracker"].sort(),
   );
 });
@@ -128,6 +139,60 @@ test("a sheet's tabs are one tab stop, moved along with the arrow keys", async (
     .toBe(true);
 });
 
+test("a pool tracker is one tab stop, set with the arrow keys", async ({
+  page,
+}) => {
+  const { actorId, sheet } = await pcSheet(page, "Arrowed Pools");
+  const tracker = sheet
+    .getByTestId("pool-tracker")
+    .filter({ hasText: "Health" });
+  const group = tracker.getByRole("radiogroup", { name: "Health" });
+  const pip = (value: number) =>
+    group.getByRole("radio", { name: String(value), exact: true });
+  const pool = () =>
+    page.evaluate(
+      (actorId) =>
+        (
+          game.actors.get(actorId)!.items.getName("Health")!.system as {
+            pool: number;
+          }
+        ).pool,
+      actorId,
+    );
+  const start = await pool();
+  const max = Number(await group.getByRole("radio").last().innerText());
+
+  // only the pool's pip is in the Tab order
+  await expect(group.locator("[tabindex='0']")).toHaveCount(1);
+  await expect(pip(start)).toHaveAttribute("tabindex", "0");
+  await expect(pip(start)).toHaveAttribute("aria-checked", "true");
+
+  await pip(start).focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(pip(start - 1)).toBeFocused();
+  await expect.poll(pool).toBe(start - 1);
+  await expect(pip(start - 1)).toHaveAttribute("aria-checked", "true");
+  await expect(pip(start - 1)).toHaveAttribute("tabindex", "0");
+  await page.keyboard.press("ArrowDown");
+  await expect.poll(pool).toBe(start);
+
+  // the top doesn't wrap round to the bottom
+  await pip(max).focus();
+  await page.keyboard.press("Space");
+  await expect.poll(pool).toBe(max);
+  await page.keyboard.press("ArrowRight");
+  await expect(pip(max)).toBeFocused();
+  await expect.poll(pool).toBe(max);
+
+  // Tab goes on past the rest of the pips
+  await page.keyboard.press("Tab");
+  await expect
+    .poll(() =>
+      group.evaluate((element) => element.contains(document.activeElement)),
+    )
+    .toBe(false);
+});
+
 test("Enter sets a pool from its pip, and Space opens an ability", async ({
   page,
 }) => {
@@ -135,7 +200,7 @@ test("Enter sets a pool from its pip, and Space opens an ability", async ({
   const pausedBefore = await paused(page);
   const tracker: Locator = sheet.getByTestId("pool-tracker").first();
   const name = (await tracker.locator("h2").innerText()).trim();
-  const pip = tracker.getByRole("button", { name: "1", exact: true });
+  const pip = tracker.getByRole("radio", { name: "1", exact: true });
 
   await pip.focus();
   await page.keyboard.press("Enter");
