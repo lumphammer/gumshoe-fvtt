@@ -7,6 +7,7 @@ import { absoluteCover } from "../absoluteCover";
 import Cross from "./no_image_cross.svg?react";
 import { floating, row } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
+import { clickedByKeys } from "../clickable";
 
 interface ImageAreaProps {
   page: any;
@@ -58,6 +59,7 @@ export const ImageArea = ({ page }: ImageAreaProps) => {
           margin: "auto",
           ...absoluteCover,
         })}
+        {...clickedByKeys}
         onClick={handleClickImage}
       >
         {src ? (

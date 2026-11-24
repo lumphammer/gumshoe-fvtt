@@ -27,6 +27,7 @@ import type { PartyAbilityView } from "./types";
 import { isCategoryHeader, isTypeHeader } from "./types";
 import { floating, partyCell } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
+import { clickedByKeys } from "../clickable";
 
 const PartySheetBody = ({ party }: { party: PartyActor }) => {
   const header = useActorSnapshot(party, (snapshot) => ({
@@ -200,6 +201,7 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
                   // shenanigans, and overflow hidden)
                   lineClamp: "2",
                 })}
+                {...clickedByKeys}
                 onClick={(e) => {
                   e.preventDefault();
                   openSheet(game.actors?.get(actor.id));

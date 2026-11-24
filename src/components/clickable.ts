@@ -37,3 +37,20 @@ export const buttonKeys = (onActivate: () => void) => ({
  */
 export const clickable = (onClick: (() => void) | undefined) =>
   onClick === undefined ? {} : { ...buttonKeys(onClick), onClick };
+
+/**
+ * Props which make an element that isn't a `<button>` work as one with the
+ * `onClick` it already has: focusable, announced as a button, and clicked
+ * by Enter and Space. For a click handler which wants the event.
+ */
+export const clickedByKeys = {
+  role: "button",
+  tabIndex: 0,
+  ...keyboardFocus,
+  onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
+    if (isActivationKey(event) && !event.repeat) {
+      event.preventDefault();
+      event.currentTarget.click();
+    }
+  },
+} as const;

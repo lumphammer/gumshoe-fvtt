@@ -2,6 +2,7 @@ import type { Locator, Page } from "@playwright/test";
 
 import {
   createActor,
+  createOwnedItem,
   createSceneWithTokens,
   expect,
   openSheet,
@@ -278,4 +279,55 @@ test("Tab and Space carry on from anything focused in a sheet, like a box Firefo
 
   // and the tab panel isn't a stop of its own
   await expect(sheet.getByRole("tabpanel")).toHaveAttribute("tabindex", "-1");
+});
+
+/** Whether a document's sheet is open */
+function sheetOpen(page: Page, uuid: string) {
+  return page.evaluate(
+    (uuid) =>
+      !!(fromUuidSync(uuid) as { sheet?: { rendered: boolean } } | null)?.sheet
+        ?.rendered,
+    uuid,
+  );
+}
+
+test("an equipment row and a party's member open from the keyboard", async ({
+  page,
+}) => {
+  const { actorId, sheet } = await pcSheet(page, "Kit Bag");
+  const itemId = await createOwnedItem(page, actorId, {
+    name: "Lantern",
+    type: "equipment",
+  });
+  await sheet.getByRole("tab", { name: "Equipment" }).click();
+  const row = sheet.getByRole("button", { name: "Lantern" });
+  await row.focus();
+  await page.keyboard.press("Enter");
+  await expect
+    .poll(() => sheetOpen(page, `Actor.${actorId}.Item.${itemId}`))
+    .toBe(true);
+
+  // a handler which wants the click's event
+  const partyId = await createActor(page, {
+    name: "Keyed Party",
+    type: "party",
+  });
+  await page.evaluate(
+    async ({ partyId, actorId }) => {
+      const party = game.actors.get(partyId)! as unknown as {
+        system: { addActorIds: (ids: string[]) => Promise<unknown> };
+      };
+      await party.system.addActorIds([actorId]);
+    },
+    { partyId, actorId },
+  );
+  const partySheet = await openSheet(page, `Actor.${partyId}`);
+  await page.evaluate(
+    (actorId) => game.actors.get(actorId)!.sheet!.close(),
+    actorId,
+  );
+  await expect.poll(() => sheetOpen(page, `Actor.${actorId}`)).toBe(false);
+  await partySheet.getByRole("button", { name: "Kit Bag" }).first().focus();
+  await page.keyboard.press("Space");
+  await expect.poll(() => sheetOpen(page, `Actor.${actorId}`)).toBe(true);
 });

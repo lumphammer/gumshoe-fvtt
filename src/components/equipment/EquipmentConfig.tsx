@@ -15,6 +15,7 @@ import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
 import { OrphanedField } from "./OrphanedField";
 import { css } from "../../styled-system/css";
+import { clickedByKeys } from "../clickable";
 
 interface EquipmentConfigProps {
   /** Only to write through (and for its actor, when deleting): read from `system`. */
@@ -75,6 +76,7 @@ export const EquipmentConfig = memo(function EquipmentConfig({
               className={css({
                 gridArea: "cog",
               })}
+              {...clickedByKeys}
               onClick={async () => {
                 await game.clipboard?.copyPlainText(system.categoryId);
                 ui.notifications?.info(

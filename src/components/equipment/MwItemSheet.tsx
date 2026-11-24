@@ -18,6 +18,7 @@ import { RichTextEditor } from "../inputs/RichTextEditor";
 import { Region } from "../Region";
 import { Select } from "../inputs/Select";
 import { css } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 /**
  * Reads the item through its snapshot (the item itself only to write
@@ -95,9 +96,9 @@ export const MwItemSheet = memo(function MwItemSheet() {
         className={css({
           gridArea: "trash",
         })}
-        onClick={() => {
+        {...clickable(() => {
           void onClickDelete();
-        }}
+        })}
       >
         <i className={"fa fa-trash"} />
       </a>

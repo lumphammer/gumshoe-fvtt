@@ -8,6 +8,7 @@ import { isAbilityItem } from "../../module/items/exports";
 import type { AbilityRowData, PartyMemberView } from "./types";
 import { partyCell } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
+import { clickedByKeys } from "../clickable";
 
 type AbilityRowProps = {
   abilityRowData: AbilityRowData;
@@ -102,6 +103,7 @@ export const AbilityRow = ({
         return (
           <a
             key={actor.id}
+            {...clickedByKeys}
             onClick={(e) => {
               e.preventDefault();
               void openOrAddAbility(

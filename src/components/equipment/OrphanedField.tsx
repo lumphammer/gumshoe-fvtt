@@ -3,6 +3,7 @@ import { Fragment } from "react";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
 import { css } from "../../styled-system/css";
+import { clickedByKeys } from "../clickable";
 
 interface OrphanedFieldProps {
   fieldId: string;
@@ -46,6 +47,7 @@ export const OrphanedField = ({
           gridColumn: 3,
         })}
         style={{ gridRow: index * gridRowsPerField + 1 }}
+        {...clickedByKeys}
         onClick={async () => {
           await game.clipboard?.copyPlainText(fieldId);
           ui.notifications?.info(`Copied field ID "${fieldId}" to clipboard`);
@@ -78,6 +80,7 @@ export const OrphanedField = ({
           gridColumn: 3,
         })}
         style={{ gridRow: index * gridRowsPerField + 2 }}
+        {...clickedByKeys}
         onClick={async () => {
           await game.clipboard?.copyPlainText(String(fieldValue));
           ui.notifications?.info("Copied value to clipboard");

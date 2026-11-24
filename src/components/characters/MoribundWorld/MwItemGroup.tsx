@@ -8,6 +8,7 @@ import { Button } from "../../inputs/Button";
 import { Translate } from "../../Translate";
 import { row } from "../../../styled-system/recipes";
 import { css, cx } from "../../../styled-system/css";
+import { clickable } from "../../clickable";
 
 /** An item, as the group shows it */
 export type MwItemSummary = { id: string; name: string };
@@ -96,7 +97,7 @@ export const MwItemGroup = memo(function MwItemGroup({
               display: "block",
               position: "relative",
             })}
-            onClick={() => openItemSheet(item.id)}
+            {...clickable(() => openItemSheet(item.id))}
             data-item-id={item.id}
             onDragStart={onDragStart}
             draggable="true"

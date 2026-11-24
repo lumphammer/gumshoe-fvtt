@@ -14,6 +14,7 @@ import { getWorldActorsStore } from "../../module/snapshots/documentStores";
 import { parseFoundryDragData } from "../inputs/parseFoundryDragData";
 import { Translate } from "../Translate";
 import { css } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 /**
  * Which actors a Bond can be linked to: another character, not a party, and
@@ -113,11 +114,11 @@ export const BondActor = ({ bond, actorUuid }: BondActorProps) => {
       {actorUuid !== null && linkedName !== null ? (
         <a
           className={css({ flex: "[1]" })}
-          onClick={() => {
+          {...clickable(() => {
             const linked = fromUuidSync(actorUuid);
             if (!(linked instanceof Actor)) return;
             openSheet(linked);
-          }}
+          })}
         >
           {linkedName}
         </a>
@@ -129,7 +130,7 @@ export const BondActor = ({ bond, actorUuid }: BondActorProps) => {
         </i>
       )}
       {actorUuid && (
-        <a title={getTranslated("Unlink")} onClick={methods.unlinkActor}>
+        <a title={getTranslated("Unlink")} {...clickable(methods.unlinkActor)}>
           <i className="fa fa-unlink" />
         </a>
       )}

@@ -10,6 +10,7 @@ import { DeleteItemButton } from "../inputs/DeleteItemButton";
 import { BondBadges } from "./BondBadges";
 import { row as rowClass } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 /**
  * One Bond on the Bonds tab: name, badges and rating, and a delete button.
@@ -61,7 +62,7 @@ export const BondRow = memo(function BondRow({
           "&&:hover": { textDecoration: "none" },
           "& > *": { paddingInline: "0.25em" },
         })}
-        onClick={openBondSheet}
+        {...clickable(openBondSheet)}
         data-item-id={bond.id}
         onDragStart={onDragStart}
         draggable="true"
