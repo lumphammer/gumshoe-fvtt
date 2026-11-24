@@ -1,8 +1,8 @@
-import { nanoid } from "nanoid";
-import type { ChangeEvent, ReactNode } from "react";
+import type { ChangeEvent, KeyboardEvent, ReactNode } from "react";
 import {
   Fragment,
   useCallback,
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -14,6 +14,7 @@ import { css, cx } from "../styled-system/css";
 import { tabs } from "../styled-system/recipes";
 import { chooseTabColumns } from "./chooseTabColumns";
 import { isActivationKey, keyboardFocus } from "./clickable";
+import { getTranslated } from "../functions/getTranslated";
 import { Translate } from "./Translate";
 
 // gap between the tabs when they're in a grid
@@ -122,28 +123,56 @@ export const TabContainer = ({
 
   const stripTabDefs = tabDefs.filter((t) => !t.hidden);
 
-  // would love to do this point-free, but react compiler wants to see a
-  // function literal
-  const radioGroup = useMemo(() => nanoid(), []);
+  // the radio group's name, and the start of the tabs' and panel's ids
+  const baseId = useId();
+  const tabId = (id: string) => `${baseId}-tab-${id}`;
+  const panelId = `${baseId}-panel`;
+  // the tab in the Tab order: the selected one, or the first while a tab
+  // that isn't in the strip is showing
+  const selectedInStrip = stripTabDefs.some((t) => t.id === selected);
+  const tabStop = selectedInStrip ? selected : stripTabDefs[0]?.id;
+
+  /**
+   * The WAI-ARIA tabs pattern, with manual activation: the arrow keys, Home
+   * and End move focus along the strip, and Enter or Space choose the
+   * focused tab. Only the selected tab is in the Tab order. (The radios can't
+   * be focused, so their labels take the keys.)
+   */
+  const onTabKeyDown = (event: KeyboardEvent<HTMLLabelElement>, id: string) => {
+    if (isActivationKey(event)) {
+      event.preventDefault();
+      if (id !== selected) {
+        select(id);
+      }
+      return;
+    }
+    const tabs = Array.from(
+      event.currentTarget.parentElement?.querySelectorAll<HTMLElement>(
+        ":scope > [role=tab]",
+      ) ?? [],
+    );
+    const index = tabs.indexOf(event.currentTarget);
+    const next = {
+      ArrowRight: index + 1,
+      ArrowLeft: index - 1,
+      Home: 0,
+      End: tabs.length - 1,
+    }[event.key];
+    if (next === undefined) {
+      return;
+    }
+    event.preventDefault();
+    tabs.at(next % tabs.length)?.focus();
+  };
 
   // fit the strip when it's created, resized, a font loads, or the theme
   // changes (its fonts can change the tabs' widths but not the strip's, so
-  // the ResizeObserver won't notice). It's replaced when the selected tab
-  // changes (see the `key` below)
+  // the ResizeObserver won't notice)
   const stripRef = useRef<HTMLDivElement | null>(null);
-  // a tab chosen from the keyboard: the new strip focuses it, as focus went
-  // with the old one
-  const refocusSelected = useRef(false);
   const observeStrip = useCallback((strip: HTMLDivElement | null) => {
     stripRef.current = strip;
     if (!strip) {
       return;
-    }
-    if (refocusSelected.current) {
-      refocusSelected.current = false;
-      strip
-        .querySelector<HTMLElement>(":scope > label[data-selected]")
-        ?.focus();
     }
     fitTabStrip(strip);
     let lastWidth = strip.offsetWidth;
@@ -176,7 +205,8 @@ export const TabContainer = ({
 
   // and when the tabs or their labels change (Bonds and Adapted to share an
   // id): that can change the tabs' widths but not the strip's, so the
-  // ResizeObserver won't notice
+  // ResizeObserver won't notice. And when the selected tab changes, as the
+  // content is replaced (see its `key`), and needs `data-wrapped` again
   const fitKey = stripTabDefs
     .map(({ id, label }) => `${id}:${typeof label === "string" ? label : ""}`)
     .join("\n");
@@ -184,7 +214,7 @@ export const TabContainer = ({
     if (stripRef.current) {
       fitTabStrip(stripRef.current);
     }
-  }, [fitKey]);
+  }, [fitKey, selected]);
 
   const classes = tabs();
 
@@ -201,7 +231,6 @@ export const TabContainer = ({
           "& input[type=radio]": { display: "none" },
         }),
       )}
-      key={selected}
     >
       <div
         className={cx(
@@ -220,33 +249,29 @@ export const TabContainer = ({
           }),
         )}
         ref={observeStrip}
+        role="tablist"
       >
         {stripTabDefs.map(({ id, label, translate = true }, index) => {
-          const htmlId = nanoid();
+          const radioId = `${baseId}-radio-${id}`;
           return (
             <Fragment key={id}>
               <input
-                name={radioGroup}
-                id={htmlId}
+                name={baseId}
+                id={radioId}
                 type="radio"
                 value={id}
                 checked={id === selected}
                 onChange={onChange}
               />
               <label
-                htmlFor={htmlId}
-                tabIndex={0}
+                htmlFor={radioId}
+                id={tabId(id)}
+                role="tab"
+                aria-selected={id === selected}
+                aria-controls={id === selected ? panelId : undefined}
+                tabIndex={id === tabStop ? 0 : -1}
                 {...keyboardFocus}
-                // the radio can't be focused, so its label takes the keys
-                onKeyDown={(event) => {
-                  if (isActivationKey(event)) {
-                    event.preventDefault();
-                    if (id !== selected) {
-                      refocusSelected.current = true;
-                      select(id);
-                    }
-                  }
-                }}
+                onKeyDown={(event) => onTabKeyDown(event, id)}
                 data-interactive={id === selected ? undefined : true}
                 // the selected tab's state, for its look (the tabs recipe)
                 data-selected={id === selected ? true : undefined}
@@ -281,6 +306,19 @@ export const TabContainer = ({
         })}
       </div>
       <div
+        // a new panel for each tab, so each starts scrolled to the top
+        key={selected}
+        id={panelId}
+        role="tabpanel"
+        // a tab not in the strip (e.g. Settings) has no tab to name it
+        aria-labelledby={selectedInStrip ? tabId(selected) : undefined}
+        aria-label={
+          !selectedInStrip && typeof activeTabDef?.label === "string"
+            ? activeTabDef.translate === false
+              ? activeTabDef.label
+              : getTranslated(activeTabDef.label)
+            : undefined
+        }
         className={cx(
           "tab-content",
           classes.content,

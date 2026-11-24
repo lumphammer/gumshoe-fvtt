@@ -88,6 +88,46 @@ test("Enter and Space choose a tab, keep focus on it, and don't pause the game",
   expect(await paused(page)).toBe(pausedBefore);
 });
 
+test("a sheet's tabs are one tab stop, moved along with the arrow keys", async ({
+  page,
+}) => {
+  const { sheet } = await pcSheet(page, "Arrowed Tabs");
+  const tablist = sheet.getByRole("tablist");
+  const tab = (name: string) => tablist.getByRole("tab", { name });
+  const panel = sheet.getByRole("tabpanel");
+
+  await expect(tab("Abilities")).toHaveAttribute("aria-selected", "true");
+  await expect(panel).toHaveAccessibleName("Abilities");
+  // only the selected tab is in the Tab order
+  await expect(tablist.locator("[role=tab][tabindex='0']")).toHaveCount(1);
+
+  await tab("Abilities").focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(tab("Combat")).toBeFocused();
+  // moving focus doesn't choose the tab
+  await expect(tab("Abilities")).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("ArrowLeft");
+  await page.keyboard.press("ArrowLeft");
+  // round to the last
+  await expect(tab("Notes")).toBeFocused();
+  await page.keyboard.press("Home");
+  await expect(tab("Abilities")).toBeFocused();
+  await page.keyboard.press("End");
+  await page.keyboard.press("Enter");
+  await expect(tab("Notes")).toHaveAttribute("aria-selected", "true");
+  await expect(tab("Notes")).toHaveAttribute("tabindex", "0");
+  await expect(panel).toHaveAccessibleName("Notes");
+  await expect(tab("Notes")).toBeFocused();
+
+  // Tab leaves the strip for the panel
+  await page.keyboard.press("Tab");
+  await expect
+    .poll(() =>
+      panel.evaluate((element) => element.contains(document.activeElement)),
+    )
+    .toBe(true);
+});
+
 test("Enter sets a pool from its pip, and Space opens an ability", async ({
   page,
 }) => {
