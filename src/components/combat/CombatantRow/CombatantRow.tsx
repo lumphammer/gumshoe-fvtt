@@ -75,7 +75,6 @@ const RowListItem = () => {
           shell.defeated && "defeated",
           css({ alignItems: "start" }),
         )}
-        {...attributes}
         data-combatant-id={shell.id}
         style={{
           transform: shell.transform,
@@ -88,6 +87,7 @@ const RowListItem = () => {
         <Content
           setActivatorNodeRef={setActivatorNodeRef}
           listeners={listeners}
+          attributes={attributes}
         />
       </li>
     </NativeContextMenuTrigger>
