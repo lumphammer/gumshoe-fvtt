@@ -32,10 +32,10 @@ it("should show input value and call onChange eventually", async () => {
   const { getByRole } = render(
     <AsyncNumberInput value={2} onChange={onChange} />,
   );
-  const input = getByRole("text-input");
+  const input = getByRole("textbox");
   input.focus();
   await user.keyboard("{backspace}123");
-  expect(getByRole("text-input").getAttribute("value")).toBe("123");
+  expect(getByRole("textbox").getAttribute("value")).toBe("123");
   expect(onChange).toHaveBeenCalledTimes(0);
   vi.advanceTimersByTime(inputThrottleTime - 1);
   expect(onChange).toHaveBeenCalledTimes(0);
@@ -68,7 +68,7 @@ describe.each<[string, string, string | undefined, string | undefined]>([
         className="test"
       />,
     );
-    const inputEl = getByRole("text-input");
+    const inputEl = getByRole("textbox");
     inputEl.focus();
     await user.keyboard("{backspace}" + input);
     return { inputEl, onChange };
@@ -133,7 +133,7 @@ function renderWithServer({
   const advance = async (ms: number) => {
     for (let t = 0; t < ms; t += 50) {
       await act(() => vi.advanceTimersByTimeAsync(50));
-      const value = result.getByRole("text-input").getAttribute("value")!;
+      const value = result.getByRole("textbox").getAttribute("value")!;
       if (shown.at(-1) !== value) shown.push(value);
     }
   };
@@ -194,7 +194,7 @@ it("follows changes from elsewhere when it has none of its own", () => {
     <AsyncNumberInput value={2} onChange={onChange} />,
   );
   rerender(<AsyncNumberInput value={5} onChange={onChange} />);
-  expect(getByRole("text-input").getAttribute("value")).toBe("5");
+  expect(getByRole("textbox").getAttribute("value")).toBe("5");
 });
 
 it("undoes a change that's still being saved", async () => {
@@ -220,7 +220,7 @@ it("stops waiting for a save that never comes back", async () => {
   await act(() => vi.advanceTimersByTimeAsync(inputThrottleTime));
   expect(onChange).toHaveBeenCalledWith(3);
   rerender(<AsyncNumberInput value={7} onChange={onChange} />);
-  expect(getByRole("text-input").getAttribute("value")).toBe("3");
+  expect(getByRole("textbox").getAttribute("value")).toBe("3");
   await act(() => vi.advanceTimersByTimeAsync(10_000));
-  expect(getByRole("text-input").getAttribute("value")).toBe("7");
+  expect(getByRole("textbox").getAttribute("value")).toBe("7");
 });

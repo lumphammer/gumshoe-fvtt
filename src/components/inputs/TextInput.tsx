@@ -49,7 +49,6 @@ export const TextInput = ({
 
   return (
     <input
-      role="text-input"
       size={3}
       id={id}
       aria-invalid={invalid || undefined}

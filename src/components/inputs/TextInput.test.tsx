@@ -11,13 +11,13 @@ it("should should show input value", () => {
     <TextInput value={"foobar"} onChange={vi.fn()} />,
   );
 
-  expect(getByRole("text-input").getAttribute("value")).toBe("foobar");
+  expect(getByRole("textbox").getAttribute("value")).toBe("foobar");
 });
 
 it("should trigger the callback when the value changes", async () => {
   const onChange = vi.fn();
   const { getByRole } = render(<TextInput onChange={onChange} />);
-  const input = getByRole("text-input");
+  const input = getByRole("textbox");
 
   input.focus();
   await user.keyboard("foo");
