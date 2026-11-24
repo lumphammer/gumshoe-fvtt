@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   isActiveCharacterActor: vi.fn(),
   isNullOrEmptyString: vi.fn(),
   nanoid: vi.fn(),
+  pcStats: { get: vi.fn(), set: vi.fn() },
   systemLogger: { info: vi.fn(), log: vi.fn() },
   useTurnPassingInitiative: { get: vi.fn() },
 }));
@@ -28,6 +29,7 @@ vi.mock("../module/combat/InvestigatorCombat", () => ({
 vi.mock("../settings/settings", () => ({
   settings: {
     combatAbilities: mocks.combatAbilities,
+    pcStats: mocks.pcStats,
     useTurnPassingInitiative: mocks.useTurnPassingInitiative,
   },
 }));
@@ -180,6 +182,42 @@ describe("flagged migrations", () => {
       null,
     );
     expect(set).not.toHaveBeenCalled();
+  });
+
+  it("places a world's PC Hit threshold on the combat tab, once", async () => {
+    let pcStats: Record<string, any> = {
+      hitThreshold: { name: "Hit threshold", default: 3 },
+      credit: { name: "Credit Rating", default: 0 },
+    };
+    mocks.pcStats.get.mockImplementation(() => pcStats);
+    mocks.pcStats.set.mockImplementation((value) => {
+      pcStats = value;
+      return Promise.resolve();
+    });
+    const migrate = () =>
+      flaggedMigrations.world["placeHitThresholdOnCombatTab"](null, null);
+
+    await migrate();
+    expect(pcStats).toEqual({
+      hitThreshold: { name: "Hit threshold", default: 3, placement: "combat" },
+      credit: { name: "Credit Rating", default: 0 },
+    });
+
+    mocks.pcStats.set.mockClear();
+    await migrate();
+    expect(mocks.pcStats.set).not.toHaveBeenCalled();
+  });
+
+  it("leaves a Hit threshold placed in the header, and worlds without one", async () => {
+    mocks.pcStats.set.mockClear();
+    for (const pcStats of [
+      { hitThreshold: { name: "HT", default: 3, placement: "header" } },
+      { credit: { name: "Credit Rating", default: 0 } },
+    ]) {
+      mocks.pcStats.get.mockReturnValue(pcStats);
+      await flaggedMigrations.world["placeHitThresholdOnCombatTab"](null, null);
+    }
+    expect(mocks.pcStats.set).not.toHaveBeenCalled();
   });
 
   it("reuses an interrupted combat replacement instead of creating a duplicate", async () => {

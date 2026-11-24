@@ -1,4 +1,4 @@
-import type { PersonalDetail } from "@lumphammer/investigator-fvtt-types";
+import type { PersonalDetail, Stat } from "@lumphammer/investigator-fvtt-types";
 import { nanoid } from "nanoid";
 
 import * as c from "../constants";
@@ -208,6 +208,22 @@ export const flaggedMigrations: FlaggedMigrations = {
         personalDetails,
       );
       await game.settings.set("investigator", "shortNotes", []);
+    },
+    /**
+     * PC stats moved from the sidebar to the header, unless placed on the
+     * combat tab, as the presets now place Hit threshold. Keep a world's Hit
+     * threshold there too, unless it's been placed already.
+     */
+    placeHitThresholdOnCombatTab: async () => {
+      const pcStats = settings.pcStats.get();
+      const hitThreshold = pcStats["hitThreshold"] as Stat | undefined;
+      if (hitThreshold === undefined || hitThreshold.placement !== undefined) {
+        return;
+      }
+      await settings.pcStats.set({
+        ...pcStats,
+        hitThreshold: { ...hitThreshold, placement: "combat" },
+      });
     },
     convertCombats: async () => {
       assertGame(game);
