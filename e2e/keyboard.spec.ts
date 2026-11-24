@@ -233,3 +233,26 @@ test("Enter sets a pool from its pip, and Space opens an ability", async ({
     .toBe(true);
   expect(await paused(page)).toBe(pausedBefore);
 });
+
+test("clicking a tab or a pip leaves focus on it, to carry on with the arrow keys", async ({
+  page,
+}) => {
+  const { sheet } = await pcSheet(page, "Clicked Into");
+  const tab = sheet.getByRole("tab", { name: "Combat" });
+  await tab.click();
+  await expect(tab).toHaveAttribute("aria-selected", "true");
+  await expect(tab).toBeFocused();
+  await page.keyboard.press("ArrowLeft");
+  await expect(sheet.getByRole("tab", { name: "Abilities" })).toBeFocused();
+
+  await page.keyboard.press("Enter");
+  const group = sheet.getByRole("radiogroup", { name: "Health" });
+  const pip = group.getByRole("radio", { name: "0", exact: true });
+  await pip.click();
+  await expect(pip).toHaveAttribute("aria-checked", "true");
+  await expect(pip).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+  await expect(
+    group.getByRole("radio", { name: "1", exact: true }),
+  ).toHaveAttribute("aria-checked", "true");
+});
