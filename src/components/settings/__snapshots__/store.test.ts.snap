@@ -44,7 +44,7 @@ exports[`reducer > should add a stat 1`] = `
 `;
 
 exports[`reducer > should apply a preset 1`] = `
-"@@ -1,54 +1,56 @@
+"@@ -1,54 +1,57 @@
   Object {
     "settings": Object {
       "pcStats": Object {
@@ -55,6 +55,7 @@ exports[`reducer > should apply a preset 1`] = `
 +         "name": "Hit threshold",
           "default": 3,
 -         "name": "PC Statisitic Zero",
++         "placement": "combat",
         },
       },
       "npcStats": Object {
@@ -130,7 +131,7 @@ exports[`reducer > should apply a preset 1`] = `
       "migrationFlags": Object {
         "actor": Object {},
         "item": Object {},
-@@ -63,25 +65,48 @@
+@@ -63,25 +66,48 @@
       "migrationAttempts": 0,
       "migrationLastError": "",
       "useTurnPassingInitiative": false,
@@ -190,7 +191,7 @@ exports[`reducer > should apply a preset 1`] = `
       "showEmptyInvestigativeCategories": false,
       "systemMigrationVersion": "",
       "shortNotes": Array [],
-@@ -89,34 +114,59 @@
+@@ -89,34 +115,59 @@
       "offeredTrailOfCthulhuRules": false,
       "journalMemories": Object {},
       "cardCategories": Array [],

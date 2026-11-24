@@ -130,10 +130,11 @@ it("should validate an empty object", () => {
   expect(validatedResult).toEqual({});
 });
 
-it("should preserve stat bounds through an export/import round trip", () => {
+it("should preserve stat bounds and placement through an export/import round trip", () => {
   const exportedSettings = {
     pcStats: {
       health: { name: "Health", default: 10, min: 0, max: 20 },
+      hitThreshold: { name: "Hit threshold", default: 3, placement: "combat" },
     },
     npcStats: {
       alertness: { name: "Alertness", default: 0, min: -5, max: 5 },
@@ -231,4 +232,14 @@ it("should throw an error if the text is not JSON", () => {
   ).toThrowErrorMatchingInlineSnapshot(
     `[SyntaxError: Unexpected token 'o', "not json" is not valid JSON]`,
   );
+});
+
+it("should reject an unknown stat placement", () => {
+  expect(() =>
+    validateImportedSettings(
+      JSON.stringify({
+        pcStats: { foo: { name: "Foo", default: 0, placement: "sidebar" } },
+      }),
+    ),
+  ).toThrow();
 });

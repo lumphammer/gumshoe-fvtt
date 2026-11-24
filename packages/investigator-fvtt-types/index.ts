@@ -361,7 +361,14 @@ export interface Stat {
   max?: number;
   default: number;
   name: string;
+  /**
+   * Where a PC's sheet shows this stat: with the name and personal details
+   * (the default), or on the combat tab (e.g. Hit threshold). NPCs ignore it.
+   */
+  placement?: StatPlacement;
 }
+
+export type StatPlacement = "header" | "combat";
 
 export type EquipmentFieldMetadata = {
   name: string;

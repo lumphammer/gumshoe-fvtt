@@ -1,0 +1,157 @@
+import type { Stat } from "@lumphammer/investigator-fvtt-types";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+
+import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useIsEditable } from "../../hooks/useIsEditable";
+import { useSettings } from "../../hooks/useSettings";
+import { useActorSheetContext } from "../../hooks/useSheetContexts";
+import { assertPCActor } from "../../module/actors/pc";
+import { css, cx } from "../../styled-system/css";
+import { badge } from "../../styled-system/recipes";
+import { clickable } from "../clickable";
+import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
+
+/**
+ * The stats shown with the name and personal details: those not placed on the
+ * combat tab, and those too when there's no combat tab (Moribund World's
+ * alternative item types, PCSheetFull).
+ */
+export const useHeaderStatIds = () =>
+  useSettings((s) =>
+    Object.keys(s.pcStats).filter(
+      (id) =>
+        s.mwUseAlternativeItemTypes || s.pcStats[id].placement !== "combat",
+    ),
+  );
+
+const HeaderStatBadge = ({ id, stat }: { id: string; stat: Stat }) => {
+  const { actor } = useActorSheetContext();
+  assertPCActor(actor);
+  const isEditable = useIsEditable();
+  const value =
+    useActorSnapshot(
+      actor,
+      (snapshot): number | undefined => snapshot.system.stats[id],
+    ) ?? stat.default;
+  const [editing, setEditing] = useState(false);
+  const badgeRef = useRef<HTMLElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+  // whether closing the editor should put focus back on the badge: yes when
+  // closed from the keyboard, no when focus has moved somewhere else
+  const refocus = useRef(false);
+
+  const onChange = useCallback(
+    (newVal: number) =>
+      actor.update({
+        system: { stats: { ...actor.system.stats, [id]: newVal } },
+      }),
+    [actor, id],
+  );
+
+  useEffect(() => {
+    if (editing) {
+      const input = editorRef.current?.querySelector("input");
+      input?.focus();
+      input?.select();
+    } else if (refocus.current) {
+      refocus.current = false;
+      badgeRef.current?.focus();
+    }
+  }, [editing]);
+
+  const label = (
+    <span className={css({ color: "[inherit]", opacity: "[0.8]" })}>
+      {stat.name}
+    </span>
+  );
+
+  if (editing && isEditable) {
+    return (
+      <div
+        ref={editorRef}
+        className={cx(
+          badge(),
+          css({
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5em",
+            paddingBlock: "0",
+          }),
+        )}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) {
+            setEditing(false);
+          }
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === "Escape") {
+            event.preventDefault();
+            event.stopPropagation();
+            refocus.current = true;
+            setEditing(false);
+          }
+        }}
+      >
+        {label}
+        <AsyncNumberInput
+          className={css({ width: "6em" })}
+          min={stat.min ?? 0}
+          max={stat.max}
+          value={value}
+          onChange={onChange}
+          label={stat.name}
+          smallButtons
+        />
+      </div>
+    );
+  }
+
+  const content = (
+    <>
+      {label} <strong>{value}</strong>
+    </>
+  );
+
+  if (!isEditable) {
+    return <span className={badge()}>{content}</span>;
+  }
+
+  return (
+    <a
+      ref={badgeRef as React.RefObject<HTMLAnchorElement>}
+      {...clickable(() => setEditing(true))}
+      data-interactive
+      className={badge()}
+    >
+      {content}
+    </a>
+  );
+};
+
+/**
+ * A PC's stats as a line of badges, under the personal details. They're set
+ * once and read now and then, unlike the pools in the sidebar, so each shows
+ * its value, and becomes an input when clicked.
+ */
+export const HeaderStats = memo(function HeaderStats() {
+  const ids = useHeaderStatIds();
+  const stats = useSettings((s) => s.pcStats);
+  if (ids.length === 0) {
+    return null;
+  }
+  return (
+    <div
+      className={css({
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: "0.25em 0.5em",
+        marginTop: "0.5em",
+      })}
+    >
+      {ids.map((id) => (
+        <HeaderStatBadge key={id} id={id} stat={stats[id]} />
+      ))}
+    </div>
+  );
+});

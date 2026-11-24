@@ -39,6 +39,7 @@ export const defaultSettings: Required<PresetV1> = {
     hitThreshold: {
       name: "Hit threshold",
       default: 3,
+      placement: "combat",
     },
   },
   npcStats: {
@@ -448,6 +449,7 @@ export const mutantCityBluesPreset: PresetV1 = {
     hitThreshold: {
       name: "Hit threshold",
       default: 3,
+      placement: "combat",
     },
   },
   npcStats: {

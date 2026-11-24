@@ -9,9 +9,11 @@ import { InitiativeAbilityPicker } from "../InitiativeAbilityPicker";
 import { StatField } from "../StatField";
 
 /**
- * A PC's stats (e.g. Hit threshold) and initiative ability: a strip along the
- * top of the combat tab, or a column in the pools panel when there's no combat
- * tab. (An NPC's stay in its sidebar, as a stat block.)
+ * A PC's combat stats (those placed on the combat tab, e.g. Hit threshold) and
+ * initiative ability: a strip along the top of the combat tab, or a column in
+ * the pools panel when there's no combat tab (where the stats go with the
+ * personal details instead, `useHeaderStatIds`). (An NPC's stay in its
+ * sidebar, as a stat block.)
  */
 export const CombatStats = memo(function CombatStats({
   inColumn = false,
@@ -21,6 +23,9 @@ export const CombatStats = memo(function CombatStats({
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const stats = useSettings((s) => s.pcStats);
+  const ids = inColumn
+    ? []
+    : Object.keys(stats).filter((id) => stats[id].placement === "combat");
 
   return (
     <Panel
@@ -36,7 +41,7 @@ export const CombatStats = memo(function CombatStats({
             },
       )}
     >
-      {Object.keys(stats).map((key) => (
+      {ids.map((key) => (
         <StatField key={key} id={key} stat={stats[key]} inline={!inColumn} />
       ))}
       <InitiativeAbilityPicker actor={actor} inline={!inColumn} />

@@ -1,3 +1,4 @@
+import type { StatPlacement } from "@lumphammer/investigator-fvtt-types";
 import { useNavigationContext, useParams } from "@lumphammer/minirouter";
 import { useCallback, useContext } from "react";
 
@@ -5,6 +6,7 @@ import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
 import { AsyncTextInput } from "../../inputs/AsyncTextInput";
 import { Button } from "../../inputs/Button";
+import { Select } from "../../inputs/Select";
 import { SettingsGridField } from "../SettingsGridField";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Translate } from "../../Translate";
@@ -67,6 +69,17 @@ export const StatSettings = ({ which }: { which: PcOrNpc }) => {
     (newMax: number | undefined) => {
       if (statId === undefined) return;
       dispatch(store.creators.setStatMax({ which, statId, newMax }));
+    },
+    [dispatch, statId, which],
+  );
+
+  const handleChangePlacement = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      if (statId === undefined) return;
+      const newPlacement = e.currentTarget.value as StatPlacement;
+      dispatch(
+        store.creators.setStatPlacement({ which, statId, newPlacement }),
+      );
     },
     [dispatch, statId, which],
   );
@@ -150,6 +163,21 @@ export const StatSettings = ({ which }: { which: PcOrNpc }) => {
           min={stat.min}
         />
       </SettingsGridField>
+      {which === "pcStats" && (
+        <SettingsGridField label="Shown">
+          <Select
+            value={stat.placement ?? "header"}
+            onChange={handleChangePlacement}
+          >
+            <option value="header">
+              <Translate>With personal details</Translate>
+            </option>
+            <option value="combat">
+              <Translate>On the combat tab</Translate>
+            </option>
+          </Select>
+        </SettingsGridField>
+      )}
       <SettingsGridField label="Delete">
         <Button className={css({ width: "auto" })} onClick={handleClickDelete}>
           <i className="fas fa-trash" /> <Translate>Delete</Translate>

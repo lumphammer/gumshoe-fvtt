@@ -20,6 +20,7 @@ import { LogoEditable } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { PersonalDetailField } from "./PersonalDetailField";
 import { CombatStats } from "./Weapons/CombatStats";
+import { HeaderStats } from "./HeaderStats";
 import { TrackersArea } from "./TrackersArea";
 import { Region } from "../Region";
 import { css } from "../../styled-system/css";
@@ -94,7 +95,7 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
   );
 });
 
-/** Name, occupation, personal details and short notes */
+/** Name, occupation, personal details, short notes and stats */
 export const PCSheetStats = memo(function PCSheetStats() {
   assertGame(game);
   const { actor } = useActorSheetContext();
@@ -170,6 +171,7 @@ export const PCSheetStats = memo(function PCSheetStats() {
             </GridField>
           ))}
       </InputGrid>
+      <HeaderStats />
     </Region>
   );
 });
@@ -217,8 +219,8 @@ export const PCSheetRefreshButtons = memo(function PCSheetRefreshButtons() {
 });
 
 /**
- * The pool trackers (and Moribund World's injury status). The stats and
- * initiative ability join them when there's no combat tab to hold them.
+ * The pool trackers (and Moribund World's injury status). The initiative
+ * ability joins them when there's no combat tab to hold it.
  */
 export const PCSheetPools = memo(function PCSheetPools() {
   const { actor } = useActorSheetContext();
