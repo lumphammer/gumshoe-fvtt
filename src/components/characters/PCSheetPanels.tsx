@@ -10,7 +10,6 @@ import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
 import type { PersonalDetailItem } from "../../module/items/personalDetail";
 import { ImagePickle } from "../ImagePickle";
-import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { IndexedAsyncTextInput } from "../inputs/IndexedAsyncTextInput";
@@ -20,6 +19,7 @@ import { LogoEditable } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { PersonalDetailField } from "./PersonalDetailField";
 import { CombatStats } from "./Weapons/CombatStats";
+import { HeaderStats } from "./HeaderStats";
 import { TrackersArea } from "./TrackersArea";
 import { Region } from "../Region";
 import { css } from "../../styled-system/css";
@@ -94,13 +94,15 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
   );
 });
 
-/** Name, occupation, personal details and short notes */
+/**
+ * Occupation, personal details, short notes and stats (the name is the
+ * title's, in the header)
+ */
 export const PCSheetStats = memo(function PCSheetStats() {
   assertGame(game);
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const stats = useActorSnapshot(actor, (snapshot) => ({
-    name: snapshot.name,
     shortNotes: snapshot.system.shortNotes,
     hiddenShortNotes: snapshot.system.hiddenShortNotes,
   }));
@@ -133,9 +135,6 @@ export const PCSheetStats = memo(function PCSheetStats() {
       })}
     >
       <InputGrid>
-        <GridField label="Person Name">
-          <AsyncTextInput value={stats.name} onChange={actor.setName} />
-        </GridField>
         <PersonalDetailField
           name={occupationLabel}
           actor={actor}
@@ -170,6 +169,7 @@ export const PCSheetStats = memo(function PCSheetStats() {
             </GridField>
           ))}
       </InputGrid>
+      <HeaderStats />
     </Region>
   );
 });
@@ -217,8 +217,8 @@ export const PCSheetRefreshButtons = memo(function PCSheetRefreshButtons() {
 });
 
 /**
- * The pool trackers (and Moribund World's injury status). The stats and
- * initiative ability join them when there's no combat tab to hold them.
+ * The pool trackers (and Moribund World's injury status). The initiative
+ * ability joins them when there's no combat tab to hold it.
  */
 export const PCSheetPools = memo(function PCSheetPools() {
   const { actor } = useActorSheetContext();

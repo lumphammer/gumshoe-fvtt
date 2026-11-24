@@ -434,7 +434,8 @@ export const LogoEditable = ({
                 className={classes.front}
                 // announced as the text box it is
                 role="textbox"
-                // apart from the sheet's Name field
+                // like the subtext, whose field (Occupation, say) is in the
+                // sheet too
                 aria-label={getTranslated("InTitle", {
                   Label: getTranslated("Name"),
                 })}

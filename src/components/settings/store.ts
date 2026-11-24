@@ -1,6 +1,7 @@
 import type {
   CardCategory,
   PresetV1,
+  StatPlacement,
 } from "@lumphammer/investigator-fvtt-types";
 import { nanoid } from "nanoid";
 
@@ -324,6 +325,16 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
       }: { which: PcOrNpc; statId: string; newDefault: number },
     ) => {
       draft.settings[which][statId].default = newDefault;
+    },
+    setStatPlacement: (
+      draft: State,
+      {
+        which,
+        statId,
+        newPlacement,
+      }: { which: PcOrNpc; statId: string; newPlacement: StatPlacement },
+    ) => {
+      draft.settings[which][statId].placement = newPlacement;
     },
     setStatName: (
       draft: State,

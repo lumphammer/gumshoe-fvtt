@@ -7,6 +7,7 @@ export const statsValidator = z.record(
     default: z.number(),
     min: z.number().optional(),
     max: z.number().optional(),
+    placement: z.enum(["header", "combat"]).optional(),
   }),
 );
 
