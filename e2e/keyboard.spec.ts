@@ -5,6 +5,7 @@ import {
   createOwnedItem,
   createSceneWithTokens,
   expect,
+  lastChatMessage,
   openSheet,
   test,
 } from "./foundry.ts";
@@ -330,4 +331,44 @@ test("an equipment row and a party's member open from the keyboard", async ({
   await partySheet.getByRole("button", { name: "Kit Bag" }).first().focus();
   await page.keyboard.press("Space");
   await expect.poll(() => sheetOpen(page, `Actor.${actorId}`)).toBe(true);
+});
+
+test("a chat card's links and buttons open from the keyboard, and Tab moves on from them", async ({
+  page,
+}) => {
+  const { actorId } = await pcSheet(page, "Card Player");
+  const pausedBefore = await paused(page);
+  const abilityId = await page.evaluate(async (actorId) => {
+    const ability = game.actors.get(actorId)!.items.getName("Athletics")!;
+    await (
+      ability.system as unknown as { testAbility: (spend: number) => unknown }
+    ).testAbility(0);
+    return ability.id;
+  }, actorId);
+  const card = lastChatMessage(page);
+  const name = card.getByRole("button", { name: "Athletics" });
+  await expect(name).toBeVisible();
+
+  // the chat log isn't a form: without the card saying it takes its own
+  // keys, Foundry would cancel the Tab
+  await name.focus();
+  await page.keyboard.press("Tab");
+  await expect(name).not.toBeFocused();
+  // and from anything else in a card which takes focus (a button, say: the
+  // result stands in for one here)
+  const total = card.locator(".dice-total").first();
+  await total.evaluate((element: HTMLElement) => {
+    element.tabIndex = -1;
+    element.focus();
+  });
+  await expect(total).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(total).not.toBeFocused();
+
+  await name.focus();
+  await page.keyboard.press("Space");
+  await expect
+    .poll(() => sheetOpen(page, `Actor.${actorId}.Item.${abilityId}`))
+    .toBe(true);
+  expect(await paused(page)).toBe(pausedBefore);
 });

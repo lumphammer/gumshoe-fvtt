@@ -31,6 +31,7 @@ import type { MWDifficulty } from "../types";
 import { createCardRootTracker } from "./createCardRootTracker";
 import { isAttackMessage } from "../module/attacks/attackTargets";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
+import { markKeyboardFocus } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 
 // a timeout is late enough for Foundry to have swapped a re-rendered message's
 // old element for its new one
@@ -44,6 +45,9 @@ const cardRoots = createCardRootTracker((callback) => setTimeout(callback, 0));
  * of view - and every update re-renders the message from empty.
  */
 function renderCardNow(el: HTMLElement, content: ReactNode) {
+  // the chat log isn't a form, so Foundry would take Tab and Space even from
+  // a card's buttons
+  el.addEventListener("focusin", markKeyboardFocus);
   const root = createRoot(el);
   flushSync(() => {
     root.render(content);

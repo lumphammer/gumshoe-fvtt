@@ -37,6 +37,7 @@ import type { TargetView } from "./useAttackSnapshots";
 import { useResolveOptions, useTargetViews } from "./useAttackSnapshots";
 import { WalkingFireActions } from "./WalkingFireActions";
 import { css } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 /** how long to wait for the GM to apply damage before re-enabling buttons */
 const gmRequestTimeoutMs = 5000;
@@ -270,7 +271,7 @@ const AttackTargetRow = ({
         </div>
         <div>
           {canEdit && (
-            <a onClick={onRemove} title={getTranslated("Remove target")}>
+            <a {...clickable(onRemove)} title={getTranslated("Remove target")}>
               <i className="fas fa-times" />
             </a>
           )}

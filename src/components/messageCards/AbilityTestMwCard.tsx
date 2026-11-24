@@ -9,6 +9,7 @@ import { MwButton } from "./MwButton";
 import { MwCostSlug } from "./MwCostSlug";
 import type { MWResult } from "./types";
 import { css, cx } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 interface AbilityTestMwCardProps {
   msg: ChatMessage;
@@ -107,7 +108,7 @@ export const AbilityTestMwCard = React.memo(
           })}
         >
           <b>
-            <a onClick={onClickAbilityName}>
+            <a {...clickable(onClickAbilityName)}>
               {name ?? header?.name ?? "Missing"}
             </a>
           </b>{" "}

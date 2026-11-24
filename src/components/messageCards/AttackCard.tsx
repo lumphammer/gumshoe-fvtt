@@ -11,6 +11,7 @@ import { Translate } from "../Translate";
 import { AttackTargets } from "./AttackTargets";
 import { DiceTerms } from "./DiceTerms";
 import { css, cx } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 const fireModeText: Record<FireMode, string> = {
   single: "FireModeSingle",
@@ -104,7 +105,7 @@ export const AttackCard = React.memo(
           >
             <b>
               {header ? (
-                <a onClick={onClickWeaponName}>{name ?? header.name}</a>
+                <a {...clickable(onClickWeaponName)}>{name ?? header.name}</a>
               ) : (
                 name
               )}

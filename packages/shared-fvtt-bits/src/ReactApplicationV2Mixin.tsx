@@ -24,7 +24,7 @@ type ApplicationV2Constructor = Constructor<ApplicationV2>;
  * element made focusable, but also any which a browser makes focusable itself,
  * like a box that scrolls in Firefox.
  */
-function markKeyboardFocus(event: FocusEvent) {
+export function markKeyboardFocus(event: FocusEvent) {
   // not `instanceof HTMLElement`: a detached window's elements have their own
   const target = event.target as Partial<HTMLElement> | null;
   if (target?.dataset && !("keyboardFocus" in target.dataset)) {
