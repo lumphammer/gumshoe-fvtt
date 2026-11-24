@@ -1,8 +1,6 @@
-import React, { useCallback, useContext, useId } from "react";
+import React, { useCallback } from "react";
 
-import { getTranslated } from "../../functions/getTranslated";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
-import { IdContext, labelIdFor } from "../IdContext";
 import { Button } from "./Button";
 import { TextInput } from "./TextInput";
 import type { ValidationResult } from "./types";
@@ -21,10 +19,7 @@ type AsyncNumberInputProps = {
   disabled?: boolean;
   noPlusMinus?: boolean;
   smallButtons?: boolean;
-  /**
-   * Its name, for one with no label (in a `GridField`, say) to name it
-   * already
-   */
+  /** its name, for one with no label (in a `GridField`, say) to name it */
   label?: string;
 };
 
@@ -113,13 +108,31 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
     }, [display, max, min, onChange]);
 
     const validationResult = validate(display);
-    // the buttons are "Decrease" and "Increase", described by what they
-    // change: the label, or else the field's (a `GridField`'s). Described
-    // rather than named, so the field's label names only the input
-    const id = useContext(IdContext);
-    const ownLabelId = useId();
-    const describedBy =
-      label !== undefined ? ownLabelId : id ? labelIdFor(id) : undefined;
+
+    /**
+     * The WAI-ARIA spin button pattern: the input is the one control, and Up
+     * and Down change it (Shift, or Page Up and Page Down, by ten). The
+     * buttons are for the mouse, out of the Tab order and hidden from
+     * screen readers, which hear the value change instead.
+     */
+    const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      const step = event.shiftKey ? 10 : 1;
+      const by = {
+        ArrowUp: step,
+        ArrowDown: -step,
+        PageUp: 10,
+        PageDown: -10,
+      }[event.key];
+      if (by === undefined) {
+        return;
+      }
+      event.preventDefault();
+      onChange(adjust(display, by, min, max));
+    };
+
+    const showButtons = noPlusMinus === undefined || !noPlusMinus;
+    // clicking a button leaves focus where it was (in the input, say)
+    const keepFocus = (event: React.MouseEvent) => event.preventDefault();
 
     return (
       <div
@@ -139,29 +152,26 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
         )}
         style={style}
       >
-        {label !== undefined && (
-          <span id={ownLabelId} hidden>
-            {label}
-          </span>
-        )}
-        {(noPlusMinus === undefined || !noPlusMinus) && (
+        {showButtons && (
           <Button
             onClick={onClickDec}
             disabled={disabled}
-            aria-label={getTranslated("Decrease")}
-            aria-describedby={describedBy}
+            tabIndex={-1}
+            aria-hidden="true"
+            onMouseDown={keepFocus}
           >
-            <i className="fa fa-minus" aria-hidden="true" />
+            <i className="fa fa-minus" />
           </Button>
         )}
-        {(noPlusMinus === undefined || !noPlusMinus) && (
+        {showButtons && (
           <Button
             onClick={onClickInc}
             disabled={disabled}
-            aria-label={getTranslated("Increase")}
-            aria-describedby={describedBy}
+            tabIndex={-1}
+            aria-hidden="true"
+            onMouseDown={keepFocus}
           >
-            <i className="fa fa-plus" aria-hidden="true" />
+            <i className="fa fa-plus" />
           </Button>
         )}
         <TextInput
@@ -175,8 +185,18 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
           onChange={onChange}
           onFocus={onFocus}
           onBlur={onBlur}
+          onKeyDown={onKeyDown}
           disabled={disabled}
           ariaLabel={label}
+          role="spinbutton"
+          aria={{
+            "aria-valuenow":
+              validationResult.state === "succeeded"
+                ? validationResult.value
+                : undefined,
+            "aria-valuemin": min,
+            "aria-valuemax": max,
+          }}
         />
       </div>
     );

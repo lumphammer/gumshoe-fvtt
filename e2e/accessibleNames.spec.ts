@@ -41,12 +41,10 @@ test("a PC sheet's controls all have names", async ({ page }) => {
   }
   await content.getByRole("tab", { name: "Abilities" }).click();
   await content.getByRole("switch", { name: "Edit mode" }).click();
-  // a number field's buttons, described by what they change
+  // a number field is a spin button, named by its label; its ± buttons are
+  // only for the mouse
   await expect(
-    content.getByRole("button", {
-      name: "Increase",
-      description: "Athletics rating",
-    }),
+    content.getByRole("spinbutton", { name: "Athletics rating" }),
   ).toBeVisible();
   expect(await unnamedControls(content), "in edit mode").toEqual([]);
 });
@@ -66,12 +64,9 @@ test("an NPC sheet's and a weapon sheet's controls all have names", async ({
     type: "weapon",
   });
   const weaponSheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
-  // a number field's buttons, named by its label
+  // a number field in a `GridField`, named by the field's label
   await expect(
-    weaponSheet.getByRole("button", {
-      name: "Increase",
-      description: "Bonus pool",
-    }),
+    weaponSheet.getByRole("spinbutton", { name: "Bonus pool" }),
   ).toBeVisible();
   expect(await unnamedControls(weaponSheet.locator(".window-content"))).toEqual(
     [],

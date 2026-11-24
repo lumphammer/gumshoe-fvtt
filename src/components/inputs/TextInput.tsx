@@ -1,4 +1,10 @@
-import type { ChangeEvent, CSSProperties } from "react";
+import type {
+  AriaAttributes,
+  AriaRole,
+  ChangeEvent,
+  CSSProperties,
+  KeyboardEvent,
+} from "react";
 import { useCallback, useContext } from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
@@ -20,6 +26,10 @@ type TextInputProps = {
   validation?: ValidationResult;
   /** its name, when no label names it */
   ariaLabel?: string;
+  /** for an input which is more than text (a number's spin button) */
+  role?: AriaRole;
+  aria?: AriaAttributes;
+  onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
 };
 
 export const TextInput = ({
@@ -34,6 +44,9 @@ export const TextInput = ({
   placeholder,
   validation,
   ariaLabel,
+  role,
+  aria,
+  onKeyDown,
 }: TextInputProps) => {
   const id = useContext(IdContext);
   const isEditable = useIsEditable();
@@ -51,6 +64,8 @@ export const TextInput = ({
     <input
       size={3}
       id={id}
+      role={role}
+      {...aria}
       aria-invalid={invalid || undefined}
       aria-label={ariaLabel}
       className={cx(input(), "inv-default-text-input", className)}
@@ -61,6 +76,7 @@ export const TextInput = ({
       onChange={onChangeCb}
       onFocus={onFocus}
       onBlur={onBlur}
+      onKeyDown={onKeyDown}
       disabled={disabled || !isEditable}
       placeholder={placeholder}
     />

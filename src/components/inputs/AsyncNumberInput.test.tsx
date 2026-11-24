@@ -32,10 +32,10 @@ it("should show input value and call onChange eventually", async () => {
   const { getByRole } = render(
     <AsyncNumberInput value={2} onChange={onChange} />,
   );
-  const input = getByRole("textbox");
+  const input = getByRole("spinbutton");
   input.focus();
   await user.keyboard("{backspace}123");
-  expect(getByRole("textbox").getAttribute("value")).toBe("123");
+  expect(getByRole("spinbutton").getAttribute("value")).toBe("123");
   expect(onChange).toHaveBeenCalledTimes(0);
   vi.advanceTimersByTime(inputThrottleTime - 1);
   expect(onChange).toHaveBeenCalledTimes(0);
@@ -68,7 +68,7 @@ describe.each<[string, string, string | undefined, string | undefined]>([
         className="test"
       />,
     );
-    const inputEl = getByRole("textbox");
+    const inputEl = getByRole("spinbutton");
     inputEl.focus();
     await user.keyboard("{backspace}" + input);
     return { inputEl, onChange };
@@ -133,7 +133,7 @@ function renderWithServer({
   const advance = async (ms: number) => {
     for (let t = 0; t < ms; t += 50) {
       await act(() => vi.advanceTimersByTimeAsync(50));
-      const value = result.getByRole("textbox").getAttribute("value")!;
+      const value = result.getByRole("spinbutton").getAttribute("value")!;
       if (shown.at(-1) !== value) shown.push(value);
     }
   };
@@ -194,7 +194,7 @@ it("follows changes from elsewhere when it has none of its own", () => {
     <AsyncNumberInput value={2} onChange={onChange} />,
   );
   rerender(<AsyncNumberInput value={5} onChange={onChange} />);
-  expect(getByRole("textbox").getAttribute("value")).toBe("5");
+  expect(getByRole("spinbutton").getAttribute("value")).toBe("5");
 });
 
 it("undoes a change that's still being saved", async () => {
@@ -220,7 +220,61 @@ it("stops waiting for a save that never comes back", async () => {
   await act(() => vi.advanceTimersByTimeAsync(inputThrottleTime));
   expect(onChange).toHaveBeenCalledWith(3);
   rerender(<AsyncNumberInput value={7} onChange={onChange} />);
-  expect(getByRole("textbox").getAttribute("value")).toBe("3");
+  expect(getByRole("spinbutton").getAttribute("value")).toBe("3");
   await act(() => vi.advanceTimersByTimeAsync(10_000));
-  expect(getByRole("textbox").getAttribute("value")).toBe("7");
+  expect(getByRole("spinbutton").getAttribute("value")).toBe("7");
+});
+
+describe("as a spin button", () => {
+  it("is one, with its value and limits", () => {
+    const { getByRole } = render(
+      <AsyncNumberInput value={3} min={0} max={8} onChange={vi.fn()} />,
+    );
+    const input = getByRole("spinbutton");
+    expect(input.getAttribute("aria-valuenow")).toBe("3");
+    expect(input.getAttribute("aria-valuemin")).toBe("0");
+    expect(input.getAttribute("aria-valuemax")).toBe("8");
+  });
+
+  it("goes up and down with the arrow keys, by ten with Shift or Page keys, within its limits", async () => {
+    const { getByRole } = render(
+      <AsyncNumberInput value={3} min={0} max={20} onChange={vi.fn()} />,
+    );
+    const input = getByRole("spinbutton");
+    input.focus();
+    const shown = () => input.getAttribute("value");
+    await user.keyboard("{ArrowUp}");
+    expect(shown()).toBe("4");
+    await user.keyboard("{ArrowDown}{ArrowDown}");
+    expect(shown()).toBe("2");
+    await user.keyboard("{Shift>}{ArrowUp}{/Shift}");
+    expect(shown()).toBe("12");
+    await user.keyboard("{PageUp}");
+    expect(shown()).toBe("20");
+    await user.keyboard("{PageDown}{PageDown}{PageDown}");
+    expect(shown()).toBe("0");
+  });
+
+  it("saves the value the keys set", async () => {
+    const onChange = vi.fn();
+    const { getByRole } = render(
+      <AsyncNumberInput value={3} onChange={onChange} />,
+    );
+    getByRole("spinbutton").focus();
+    await user.keyboard("{ArrowUp}{ArrowUp}{ArrowUp}");
+    vi.advanceTimersByTime(inputThrottleTime);
+    expect(onChange).toHaveBeenLastCalledWith(6);
+  });
+
+  it("keeps its buttons out of the Tab order and away from screen readers", () => {
+    const { container } = render(
+      <AsyncNumberInput value={3} onChange={vi.fn()} />,
+    );
+    const buttons = Array.from(container.querySelectorAll("button"));
+    expect(buttons).toHaveLength(2);
+    for (const button of buttons) {
+      expect(button.tabIndex).toBe(-1);
+      expect(button.getAttribute("aria-hidden")).toBe("true");
+    }
+  });
 });

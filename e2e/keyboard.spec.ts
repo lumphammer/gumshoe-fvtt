@@ -463,3 +463,36 @@ test("the portrait's Show and Edit work from the keyboard", async ({
   await page.waitForTimeout(300);
   await expect(sheet.getByRole("button", { name: "Show" })).toHaveCount(0);
 });
+
+test("a number field is one tab stop, changed with the arrow keys", async ({
+  page,
+}) => {
+  const { actorId, sheet } = await pcSheet(page, "Spun");
+  await sheet.getByRole("switch", { name: "Edit mode" }).click();
+  const rating = sheet.getByRole("spinbutton", { name: "Athletics rating" });
+  const saved = () =>
+    page.evaluate(
+      (actorId) =>
+        (
+          game.actors.get(actorId)!.items.getName("Athletics")!.system as {
+            rating: number;
+          }
+        ).rating,
+      actorId,
+    );
+  const start = await saved();
+  await rating.focus();
+  await page.keyboard.press("ArrowUp");
+  await page.keyboard.press("ArrowUp");
+  await expect(rating).toHaveValue(String(start + 2));
+  await expect(rating).toHaveAttribute("aria-valuenow", String(start + 2));
+  await expect.poll(saved).toBe(start + 2);
+  await page.keyboard.press("ArrowDown");
+  await expect.poll(saved).toBe(start + 1);
+
+  // Tab goes on to the next field, past the buttons
+  await page.keyboard.press("Tab");
+  await expect(
+    sheet.getByRole("checkbox", { name: "Athletics is occupational" }),
+  ).toBeFocused();
+});
