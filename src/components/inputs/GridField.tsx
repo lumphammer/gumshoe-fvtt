@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 import type { DragEventHandler, ReactNode } from "react";
 import { useMemo } from "react";
 
-import { IdContext } from "../IdContext";
+import { IdContext, labelIdFor } from "../IdContext";
 import { Translate } from "../Translate";
 import { css, cx } from "../../styled-system/css";
 import { fieldGrid } from "../../styled-system/recipes";
@@ -39,6 +39,7 @@ export const GridField = ({
     <IdContext.Provider value={id}>
       <label
         title={labelTitle}
+        id={labelIdFor(id)}
         htmlFor={noLabel ? undefined : id}
         className={cx(
           classes.label,

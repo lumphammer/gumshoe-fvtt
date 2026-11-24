@@ -1,6 +1,8 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext, useId } from "react";
 
+import { getTranslated } from "../../functions/getTranslated";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
+import { IdContext, labelIdFor } from "../IdContext";
 import { Button } from "./Button";
 import { TextInput } from "./TextInput";
 import type { ValidationResult } from "./types";
@@ -19,6 +21,11 @@ type AsyncNumberInputProps = {
   disabled?: boolean;
   noPlusMinus?: boolean;
   smallButtons?: boolean;
+  /**
+   * Its name, for one with no label (in a `GridField`, say) to name it
+   * already
+   */
+  label?: string;
 };
 
 const adjust = (display: string, by: number, min?: number, max?: number) => {
@@ -47,6 +54,7 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
     disabled,
     noPlusMinus = false,
     smallButtons = false,
+    label,
   }) => {
     const validate = useCallback(
       (text: string): ValidationResult => {
@@ -105,6 +113,13 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
     }, [display, max, min, onChange]);
 
     const validationResult = validate(display);
+    // the buttons are "Decrease" and "Increase", described by what they
+    // change: the label, or else the field's (a `GridField`'s). Described
+    // rather than named, so the field's label names only the input
+    const id = useContext(IdContext);
+    const ownLabelId = useId();
+    const describedBy =
+      label !== undefined ? ownLabelId : id ? labelIdFor(id) : undefined;
 
     return (
       <div
@@ -124,14 +139,29 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
         )}
         style={style}
       >
+        {label !== undefined && (
+          <span id={ownLabelId} hidden>
+            {label}
+          </span>
+        )}
         {(noPlusMinus === undefined || !noPlusMinus) && (
-          <Button onClick={onClickDec} disabled={disabled}>
-            <i className="fa fa-minus" />
+          <Button
+            onClick={onClickDec}
+            disabled={disabled}
+            aria-label={getTranslated("Decrease")}
+            aria-describedby={describedBy}
+          >
+            <i className="fa fa-minus" aria-hidden="true" />
           </Button>
         )}
         {(noPlusMinus === undefined || !noPlusMinus) && (
-          <Button onClick={onClickInc} disabled={disabled}>
-            <i className="fa fa-plus" />
+          <Button
+            onClick={onClickInc}
+            disabled={disabled}
+            aria-label={getTranslated("Increase")}
+            aria-describedby={describedBy}
+          >
+            <i className="fa fa-plus" aria-hidden="true" />
           </Button>
         )}
         <TextInput
@@ -146,6 +176,7 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
           onFocus={onFocus}
           onBlur={onBlur}
           disabled={disabled}
+          ariaLabel={label}
         />
       </div>
     );

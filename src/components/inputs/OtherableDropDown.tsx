@@ -5,6 +5,8 @@ import { css, cx } from "../../styled-system/css";
 import { badge, select } from "../../styled-system/recipes";
 import { Translate } from "../Translate";
 import { AsyncTextInput } from "./AsyncTextInput";
+import { useContext } from "react";
+import { IdContext, labelIdFor } from "../IdContext";
 
 type OtherableDropDownProps = {
   value: string;
@@ -12,6 +14,8 @@ type OtherableDropDownProps = {
   className?: string;
   pickerValues: readonly string[];
   validValues?: readonly string[];
+  /** its name, for one with no label (in a `GridField`, say) to name it */
+  label?: string;
 };
 
 export const OtherableDropDown = ({
@@ -20,7 +24,9 @@ export const OtherableDropDown = ({
   className,
   pickerValues,
   validValues,
+  label,
 }: OtherableDropDownProps) => {
+  const id = useContext(IdContext);
   const {
     customValueToken,
     effectiveValue,
@@ -43,6 +49,10 @@ export const OtherableDropDown = ({
       )}
     >
       <select
+        aria-label={label}
+        // in a `GridField`, by its label (the id is the text input's, for an
+        // "Other" value)
+        aria-labelledby={label === undefined && id ? labelIdFor(id) : undefined}
         className={select()}
         value={effectiveValue}
         onChange={handleChange}
@@ -54,7 +64,11 @@ export const OtherableDropDown = ({
         <option value={customValueToken}>{getTranslated("Other")}</option>
       </select>
       {showCustomValue && (
-        <AsyncTextInput value={selectedValue} onChange={onChange} />
+        <AsyncTextInput
+          value={selectedValue}
+          onChange={onChange}
+          ariaLabel={label}
+        />
       )}
       {notFound && (
         <span

@@ -8,6 +8,7 @@ import { useDocumentSheetContext } from "../../hooks/useSheetContexts";
 import { NotesDisplay } from "./NotesDisplay";
 import { css, cx } from "../../styled-system/css";
 import { richText } from "../../styled-system/recipes";
+import { getTranslated } from "../../functions/getTranslated";
 
 type RichTextEditorProps = {
   /** optional class */
@@ -92,6 +93,11 @@ const EditableRichTextEditor = ({
     });
     // attach to DOM
     divRef.current?.appendChild(editor);
+    // Foundry's edit button is only an icon: name it (it's made when the
+    // editor is attached)
+    const toggle = editor.querySelector("button.toggle");
+    toggle?.setAttribute("aria-label", getTranslated("Edit"));
+    toggle?.querySelector("i")?.setAttribute("aria-hidden", "true");
 
     const div = divRef.current;
     // teardown function

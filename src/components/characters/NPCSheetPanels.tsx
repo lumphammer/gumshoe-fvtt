@@ -16,6 +16,7 @@ import { StatField } from "./StatField";
 import { TrackersArea } from "./TrackersArea";
 import { Region } from "../Region";
 import { css } from "../../styled-system/css";
+import { getTranslated } from "../../functions/getTranslated";
 
 // The NPC sheet's panels subscribe independently to the data they display.
 // Foundry root re-renders are disabled; descendants keep themselves current.
@@ -135,6 +136,7 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
           <AsyncNumberInput
             value={npc.combatBonus}
             onChange={methods.setCombatBonus}
+            label={getTranslated("Combat bonus")}
           />
           <h3 className={css({ gridColumn: "start / end" })}>
             <Translate>Damage bonus</Translate>
@@ -142,6 +144,7 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
           <AsyncNumberInput
             value={npc.damageBonus}
             onChange={methods.setDamageBonus}
+            label={getTranslated("Damage bonus")}
           />
         </>
       )}
@@ -157,6 +160,7 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
           <AsyncNumberInput
             value={npc.initiativePassingTurns}
             onChange={methods.setPassingTurns}
+            label={getTranslated("Number of turns")}
           />
         </>
       )}
@@ -167,7 +171,11 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
           <h3 className={css({ gridColumn: "start / end" })}>
             <Translate>Human?</Translate>
           </h3>
-          <Toggle checked={npc.isHuman} onChange={methods.setIsHuman} />
+          <Toggle
+            checked={npc.isHuman}
+            onChange={methods.setIsHuman}
+            label={getTranslated("Human?")}
+          />
         </>
       )}
       {s.showImmuneToLethality && (
@@ -178,6 +186,7 @@ export const NPCSheetSidebar = memo(function NPCSheetSidebar() {
           <Toggle
             checked={npc.immuneToLethality}
             onChange={methods.setImmuneToLethality}
+            label={getTranslated("Immune to Lethality?")}
           />
         </>
       )}

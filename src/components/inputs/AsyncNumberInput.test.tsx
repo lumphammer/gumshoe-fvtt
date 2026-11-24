@@ -6,6 +6,11 @@ import { inputThrottleTime } from "../../constants";
 import { isNullOrEmptyString } from "../../functions/utilities";
 import { AsyncNumberInput } from "./AsyncNumberInput";
 
+// the buttons' names
+vi.mock("../../functions/getTranslated", () => ({
+  getTranslated: (text: string) => text,
+}));
+
 // set up uiser interactions
 const user = userEvent.setup({
   // this *should* be how you tell user-event to use vitest's fake timers, but

@@ -18,6 +18,8 @@ type TextInputProps = {
   disabled?: boolean;
   placeholder?: string;
   validation?: ValidationResult;
+  /** its name, when no label names it */
+  ariaLabel?: string;
 };
 
 export const TextInput = ({
@@ -31,6 +33,7 @@ export const TextInput = ({
   disabled,
   placeholder,
   validation,
+  ariaLabel,
 }: TextInputProps) => {
   const id = useContext(IdContext);
   const isEditable = useIsEditable();
@@ -50,6 +53,7 @@ export const TextInput = ({
       size={3}
       id={id}
       aria-invalid={invalid || undefined}
+      aria-label={ariaLabel}
       className={cx(input(), "inv-default-text-input", className)}
       style={style}
       data-lpignore="true"

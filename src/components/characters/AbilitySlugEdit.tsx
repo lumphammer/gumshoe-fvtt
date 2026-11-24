@@ -12,6 +12,7 @@ import { SpecialityList } from "../abilities/SpecialityList";
 import { AsyncCheckbox } from "../inputs/AsyncCheckbox";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 import { css } from "../../styled-system/css";
+import { getTranslated } from "../../functions/getTranslated";
 
 type AbilitySlugEditProps = {
   /** The live ability: the row reads it through a snapshot */
@@ -54,6 +55,7 @@ export const AbilitySlugEdit = memo(function AbilitySlugEdit({
           value={row.rating}
           onChange={updateRating}
           smallButtons
+          label={getTranslated("AbilityRatingOf", { AbilityName: row.name })}
         />
       </div>
       {showOcc && (
@@ -62,6 +64,9 @@ export const AbilitySlugEdit = memo(function AbilitySlugEdit({
             checked={row.occupational}
             onChange={setOccupational}
             title="Occupational Ability?"
+            ariaLabel={getTranslated("AbilityIsOccupational", {
+              AbilityName: row.name,
+            })}
           />
         </div>
       )}

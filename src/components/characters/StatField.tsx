@@ -53,6 +53,7 @@ export const StatField = ({ stat, id, inline = false }: StatFieldProps) => {
         max={stat.max}
         value={value ?? stat.default}
         onChange={onChange}
+        label={stat.name}
       />
     </div>
   );
