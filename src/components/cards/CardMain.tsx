@@ -15,7 +15,6 @@ import { editCategoryMemberships } from "./directions";
 import { EditCategoryMemberships } from "./EditCategoryMemberships";
 import { summarizeCategoryMemberships } from "./functions";
 import { css, cx } from "../../styled-system/css";
-import { UnderPanels } from "../nestedPanels/UnderPanels";
 
 /** Editing a card: it reads the card and its categories through snapshots */
 export const CardMain = ({ item }: { item: CardItem }) => {
@@ -34,102 +33,112 @@ export const CardMain = ({ item }: { item: CardItem }) => {
 
   return (
     <>
-      <UnderPanels>
-        <InputGrid>
-          <GridField label="Categories">
-            <ArrowLink to={editCategoryMemberships()}>
-              {categoryText}
-              {"  "}
-            </ArrowLink>
-          </GridField>
-          <GridField label="Item Name">
-            <AsyncTextInput value={view.name} onChange={item.setName} />
-          </GridField>
-          <GridField label="Supertitle">
-            <AsyncTextInput
-              value={system.supertitle}
-              onChange={methods.setSupertitle}
-            />
-          </GridField>
-          <GridField label="Subtitle">
-            <AsyncTextInput
-              value={system.subtitle}
-              onChange={methods.setSubtitle}
-            />
-          </GridField>
-
-          <GridField label="Continuity">
-            <Toggle
-              checked={system.continuity}
-              onChange={methods.setContinuity}
-            />
-          </GridField>
-        </InputGrid>
-        <div
-          className={cx(
-            "notes-container",
-            css({
-              flex: "[1]",
-              position: "relative",
-              marginTop: "0.5em",
-            }),
-          )}
-        >
-          <TabContainer
-            defaultTab="description"
-            tabs={[
-              {
-                id: "description",
-                label: "Description",
-                content: (
-                  <InputGrid
-                    className={css({
-                      ...absoluteCover,
-                      gridTemplateRows: "1fr",
-                      margin: "0.5em",
-                    })}
-                  >
-                    <RichTextEditor
-                      name="description"
-                      html={system.description}
-                      className=""
-                      onSave={methods.setDescription}
-                    />
-                  </InputGrid>
-                ),
-              },
-              {
-                id: "effects",
-                label: "Effects",
-                content: (
-                  <InputGrid
-                    className={css({
-                      ...absoluteCover,
-                      gridTemplateRows: "1fr",
-                      margin: "0.5em",
-                    })}
-                  >
-                    <RichTextEditor
-                      name="effects"
-                      html={system.effects}
-                      className=""
-                      onSave={methods.setEffects}
-                    />
-                  </InputGrid>
-                ),
-              },
-            ]}
+      <InputGrid>
+        <GridField label="Categories">
+          <ArrowLink to={editCategoryMemberships()}>
+            {categoryText}
+            {"  "}
+          </ArrowLink>
+        </GridField>
+        <GridField label="Item Name">
+          <AsyncTextInput value={view.name} onChange={item.setName} />
+        </GridField>
+        <GridField label="Supertitle">
+          <AsyncTextInput
+            value={system.supertitle}
+            onChange={methods.setSupertitle}
           />
-        </div>
-      </UnderPanels>
-      <SlideInNestedPanelRoute direction={editCategoryMemberships}>
-        <EditCategoryMemberships
-          card={item}
-          memberships={system.cardCategoryMemberships}
-          styleKeyCategoryId={system.styleKeyCategoryId}
-          categories={categories}
+        </GridField>
+        <GridField label="Subtitle">
+          <AsyncTextInput
+            value={system.subtitle}
+            onChange={methods.setSubtitle}
+          />
+        </GridField>
+
+        <GridField label="Continuity">
+          <Toggle
+            checked={system.continuity}
+            onChange={methods.setContinuity}
+          />
+        </GridField>
+      </InputGrid>
+      <div
+        className={cx(
+          "notes-container",
+          css({
+            flex: "[1]",
+            position: "relative",
+            marginTop: "0.5em",
+          }),
+        )}
+      >
+        <TabContainer
+          defaultTab="description"
+          tabs={[
+            {
+              id: "description",
+              label: "Description",
+              content: (
+                <InputGrid
+                  className={css({
+                    ...absoluteCover,
+                    gridTemplateRows: "1fr",
+                    margin: "0.5em",
+                  })}
+                >
+                  <RichTextEditor
+                    name="description"
+                    html={system.description}
+                    className=""
+                    onSave={methods.setDescription}
+                  />
+                </InputGrid>
+              ),
+            },
+            {
+              id: "effects",
+              label: "Effects",
+              content: (
+                <InputGrid
+                  className={css({
+                    ...absoluteCover,
+                    gridTemplateRows: "1fr",
+                    margin: "0.5em",
+                  })}
+                >
+                  <RichTextEditor
+                    name="effects"
+                    html={system.effects}
+                    className=""
+                    onSave={methods.setEffects}
+                  />
+                </InputGrid>
+              ),
+            },
+          ]}
         />
-      </SlideInNestedPanelRoute>
+      </div>
     </>
+  );
+};
+
+/**
+ * The card's categories, as a panel over the Edit panel. A sibling of the
+ * Edit panel (its `childRoutes`), not inside it: the Edit panel goes inert
+ * while it's covered, and would take this one with it.
+ */
+export const CardCategoriesRoute = ({ item }: { item: CardItem }) => {
+  const system = useItemSelector(item, (snapshot) => snapshot.system);
+  const categories = useSettings((s) => s.cardCategories);
+  return (
+    <SlideInNestedPanelRoute direction={editCategoryMemberships}>
+      <EditCategoryMemberships
+        card={item}
+        memberships={system.cardCategoryMemberships}
+        styleKeyCategoryId={system.styleKeyCategoryId}
+        categories={categories}
+      />
+    </SlideInNestedPanelRoute>
   );
 };

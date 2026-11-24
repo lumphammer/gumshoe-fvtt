@@ -12,7 +12,7 @@ import { ArrowLink } from "../nestedPanels/ArrowLink";
 import { SlideInNestedPanelRoute } from "../nestedPanels/SlideInNestedPanelRoute";
 import { Translate } from "../Translate";
 import { CardDisplay } from "./CardDisplay";
-import { CardMain } from "./CardMain";
+import { CardCategoriesRoute, CardMain } from "./CardMain";
 import { edit } from "./directions";
 import { css, cx } from "../../styled-system/css";
 import { UnderPanels } from "../nestedPanels/UnderPanels";
@@ -116,6 +116,7 @@ export const CardSheet = memo(function CardSheet() {
         <SlideInNestedPanelRoute
           direction={edit}
           className={css({ display: "flex", flexDirection: "column" })}
+          childRoutes={<CardCategoriesRoute item={item} />}
         >
           <div
             className={cx(
