@@ -266,17 +266,15 @@ test("regions and panels, and V1 panel and root styles still apply", async ({
   await expect(attack).toContainText(/Fire Revolver/);
   await expect(attack).toHaveCSS("display", "grid");
 
-  // an item's sheet: its body is a region, and its box of controls a panel
-  // in it, as on the character's
+  // an item's sheet: its body is on the wallpaper (no region), and its box of
+  // controls a panel, styled as on the character's
   const weaponSheet = await openSheet(
     page,
     `Actor.${actorId}.Item.${revolverId}`,
   );
-  const body = weaponSheet.locator(".inv-region");
-  await expect(body).toHaveCount(1);
-  await expect(body).toHaveCSS("background-color", primary);
-  const weaponAttack = body.locator(".inv-panel");
+  const weaponAttack = weaponSheet.locator(".inv-panel");
   await expect(weaponAttack).toHaveCount(1);
+  await expect(weaponSheet.locator(".inv-region")).toHaveCount(0);
   await expect(weaponAttack).toHaveCSS("border-top-color", secondary);
 });
 
