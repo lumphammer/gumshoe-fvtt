@@ -12,21 +12,32 @@ import {
 // the actor through snapshots: these check that changes made elsewhere still
 // reach them.
 
-test("the stats panel follows the name, notes and details changed elsewhere", async ({
+test("the header and stats panel follow the name, notes and details changed elsewhere", async ({
   page,
 }) => {
+  await setSettings(page, {
+    personalDetails: [
+      { name: "Alias", type: "text" },
+      { name: "Drive", type: "item" },
+    ],
+  });
   const actorId = await createActor(page, { name: "Before", type: "pc" });
   const sheet = await openSheet(page, `Actor.${actorId}`);
-  const personName = sheet
-    .locator("label", { hasText: /^Name$/ })
-    .locator("xpath=following-sibling::div[1]")
-    .locator("input");
-  await expect(personName).toHaveValue("Before");
+  // the name is the title's: the stats panel has no field for it
+  const title = sheet.getByRole("textbox", { name: "Name (title)" });
+  await expect(title).toHaveText("Before");
+  await expect(sheet.getByLabel("Name", { exact: true })).toHaveCount(0);
+  const alias = sheet.getByLabel("Alias", { exact: true });
+  await expect(alias).toHaveValue("");
 
   await page.evaluate(async (actorId) => {
-    await game.actors.get(actorId)!.update({ name: "After" });
+    await game.actors.get(actorId)!.update({
+      name: "After",
+      system: { shortNotes: ["The Professor"] },
+    });
   }, actorId);
-  await expect(personName).toHaveValue("After");
+  await expect(title).toHaveText("After");
+  await expect(alias).toHaveValue("The Professor");
 
   const driveField = sheet
     .locator("label", { hasText: /^Drive$/ })
@@ -35,7 +46,7 @@ test("the stats panel follows the name, notes and details changed elsewhere", as
   await createOwnedItem(page, actorId, {
     name: "Curiosity",
     type: "personalDetail",
-    system: { slotIndex: 0 },
+    system: { slotIndex: 1 },
   });
   await expect(driveField).toContainText("Curiosity");
 });

@@ -63,7 +63,11 @@ test("a detached sheet keeps its palette, catalogue classes, overrides and state
 }) => {
   await installTheme(page, "detachedTheme", colors, "rgb(0, 150, 0)");
   await installTheme(page, "detachedLaterTheme", later, "rgb(150, 0, 0)");
-  await setSettings(page, { defaultThemeName: "detachedTheme" });
+  await setSettings(page, {
+    defaultThemeName: "detachedTheme",
+    // a text field, for an input on the sheet as it opens
+    personalDetails: [{ name: "Alias", type: "text" }],
+  });
   const actorId = await createActor(page, { name: "Detached", type: "pc" });
   const sheet = await openSheet(page, `Actor.${actorId}`);
   const sheetId = (await sheet.getAttribute("id"))!;

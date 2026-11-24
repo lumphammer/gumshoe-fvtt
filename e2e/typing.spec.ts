@@ -8,21 +8,31 @@ import {
 import type { Page } from "@playwright/test";
 
 // Text fields save as you type, a little at a time, and ignore the saves
-// coming back while you're still typing.
+// coming back while you're still typing. These type into a PC's text
+// personal detail.
+
+const shortNote = (page: Page, actorId: string) =>
+  page.evaluate((id) => {
+    const actor = game.actors.get(id)!;
+    return actor.type === "pc" ? actor.system.shortNotes[0] : undefined;
+  }, actorId);
 
 test("typing slowly into a field saves everything, in the end", async ({
   page,
 }) => {
+  await setSettings(page, {
+    personalDetails: [{ name: "Alias", type: "text" }],
+  });
   const actorId = await createActor(page, { name: "A", type: "pc" });
   const sheet = await openSheet(page, `Actor.${actorId}`);
-  const name = sheet.getByLabel("Name", { exact: true });
+  const name = sheet.getByLabel("Alias", { exact: true });
 
   await name.fill("");
   // slow enough that several saves (and their echoes) happen while typing
   await name.pressSequentially("Professor Henry Armitage", { delay: 80 });
   await expect(name).toHaveValue("Professor Henry Armitage");
   await expect
-    .poll(() => page.evaluate((id) => game.actors.get(id)!.name, actorId))
+    .poll(() => shortNote(page, actorId))
     .toBe("Professor Henry Armitage");
   // and the echoes didn't put anything back in the field
   await expect(name).toHaveValue("Professor Henry Armitage");
@@ -31,14 +41,15 @@ test("typing slowly into a field saves everything, in the end", async ({
 test("closing the sheet straight after typing keeps the change", async ({
   page,
 }) => {
+  await setSettings(page, {
+    personalDetails: [{ name: "Alias", type: "text" }],
+  });
   const actorId = await createActor(page, { name: "B", type: "pc" });
   const sheet = await openSheet(page, `Actor.${actorId}`);
-  const name = sheet.getByLabel("Name", { exact: true });
+  const name = sheet.getByLabel("Alias", { exact: true });
   await name.fill("Wilbur Whateley");
   await page.evaluate((id) => game.actors.get(id)!.sheet!.close(), actorId);
-  await expect
-    .poll(() => page.evaluate((id) => game.actors.get(id)!.name, actorId))
-    .toBe("Wilbur Whateley");
+  await expect.poll(() => shortNote(page, actorId)).toBe("Wilbur Whateley");
 });
 
 test("editing a title in a theme with uppercase titles keeps its case", async ({

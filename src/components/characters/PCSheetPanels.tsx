@@ -10,7 +10,6 @@ import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
 import type { PersonalDetailItem } from "../../module/items/personalDetail";
 import { ImagePickle } from "../ImagePickle";
-import { AsyncTextInput } from "../inputs/AsyncTextInput";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
 import { IndexedAsyncTextInput } from "../inputs/IndexedAsyncTextInput";
@@ -95,13 +94,15 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
   );
 });
 
-/** Name, occupation, personal details, short notes and stats */
+/**
+ * Occupation, personal details, short notes and stats (the name is the
+ * title's, in the header)
+ */
 export const PCSheetStats = memo(function PCSheetStats() {
   assertGame(game);
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const stats = useActorSnapshot(actor, (snapshot) => ({
-    name: snapshot.name,
     shortNotes: snapshot.system.shortNotes,
     hiddenShortNotes: snapshot.system.hiddenShortNotes,
   }));
@@ -134,9 +135,6 @@ export const PCSheetStats = memo(function PCSheetStats() {
       })}
     >
       <InputGrid>
-        <GridField label="Person Name">
-          <AsyncTextInput value={stats.name} onChange={actor.setName} />
-        </GridField>
         <PersonalDetailField
           name={occupationLabel}
           actor={actor}
