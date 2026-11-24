@@ -16,6 +16,22 @@ type RenderOptions = foundry.applications.api.ApplicationV2.RenderOptions;
 // so Constructor<Application> is any class which is an Application
 type ApplicationV2Constructor = Constructor<ApplicationV2>;
 
+/**
+ * Mark whatever takes focus in the app as taking its own keys
+ * (`data-keyboard-focus`), unless it says otherwise. Foundry only leaves keys
+ * alone on text inputs and buttons in forms: on anything else, Tab cycles
+ * tokens and Space pauses the game, so the keyboard gets stuck. That's any
+ * element made focusable, but also any which a browser makes focusable itself,
+ * like a box that scrolls in Firefox.
+ */
+function markKeyboardFocus(event: FocusEvent) {
+  // not `instanceof HTMLElement`: a detached window's elements have their own
+  const target = event.target as Partial<HTMLElement> | null;
+  if (target?.dataset && !("keyboardFocus" in target.dataset)) {
+    target.dataset["keyboardFocus"] = "";
+  }
+}
+
 export type ReactApplicationV2Options = {
   /**
    * Re-render the React tree from its root every time Foundry renders the
@@ -74,6 +90,7 @@ export function ReactApplicationV2Mixin<TBase extends ApplicationV2Constructor>(
     // (given the current API) to bind the content div to your react component.
     override async _renderFrame(options: DeepPartial<RenderOptions>) {
       const element = await super._renderFrame(options);
+      element.addEventListener("focusin", markKeyboardFocus);
       const target = this.hasFrame
         ? element.querySelector(".window-content")
         : element;

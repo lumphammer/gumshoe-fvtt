@@ -15,16 +15,6 @@ import {
 // canvas, as in play.
 test.use({ canvas: true });
 
-/** A short description of the focused element, to tell them apart */
-function focused(page: Page) {
-  return page.evaluate(() => {
-    const element = document.activeElement as HTMLElement | null;
-    if (!element || element === document.body) return "(nothing)";
-    const all = Array.from(document.querySelectorAll("*"));
-    return `${all.indexOf(element)} ${element.tagName} ${element.innerText?.trim().slice(0, 20) ?? ""}`;
-  });
-}
-
 async function pcSheet(page: Page, name: string) {
   const actorId = await createActor(page, { name, type: "pc" });
   await createSceneWithTokens(page, [actorId]);
@@ -39,37 +29,40 @@ function paused(page: Page) {
 test("Tab moves on through a PC sheet, and reaches its links", async ({
   page,
 }) => {
+  // a hundred or so presses, with the canvas on
+  test.slow();
   const { sheet } = await pcSheet(page, "Tabbed Through");
   const content = sheet.locator(".window-content");
   await content.getByRole("textbox").first().focus();
 
-  let last = await focused(page);
   const reached: string[] = [];
-  // until it leaves the sheet's content
+  // until it leaves the sheet's content: one call to the page per press, as
+  // there are a lot of them
   for (let i = 0; i < 200; i++) {
     await page.keyboard.press("Tab");
-    const inSheet = await content.evaluate((element) =>
-      element.contains(document.activeElement),
-    );
-    if (!inSheet) break;
-    const now = await focused(page);
+    const stop = await content.evaluate((content) => {
+      const element = document.activeElement as HTMLElement;
+      const store = window as { lastFocused?: Element };
+      const moved = element !== store.lastFocused;
+      store.lastFocused = element;
+      if (!content.contains(element)) {
+        return { inSheet: false, moved, role: "" };
+      }
+      const role = element.closest("[data-testid=pool-tracker] h2")
+        ? "tracker"
+        : element.matches("[data-testid=pool-tracker] [role=radio]")
+          ? "pip"
+          : element.matches(".tab-strip > label")
+            ? "tab"
+            : element.matches(".inv-default-ability-name-link")
+              ? "ability"
+              : "other";
+      return { inSheet: true, moved, role };
+    });
     // Foundry cancelling the Tab leaves focus where it was
-    expect(now, `Tab number ${i + 1} didn't move`).not.toBe(last);
-    last = now;
-    reached.push(
-      await page.evaluate(() => {
-        const element = document.activeElement as HTMLElement;
-        if (element.closest("[data-testid=pool-tracker] h2")) return "tracker";
-        if (element.matches("[data-testid=pool-tracker] [role=radio]")) {
-          return "pip";
-        }
-        if (element.matches(".tab-strip > label")) return "tab";
-        if (element.matches(".inv-default-ability-name-link")) {
-          return "ability";
-        }
-        return "other";
-      }),
-    );
+    expect(stop.moved, `Tab number ${i + 1} didn't move`).toBe(true);
+    if (!stop.inSheet) break;
+    reached.push(stop.role);
   }
   // every tracker is one stop, not one per pip
   const trackers = await sheet.getByTestId("pool-tracker").count();
@@ -255,4 +248,34 @@ test("clicking a tab or a pip leaves focus on it, to carry on with the arrow key
   await expect(
     group.getByRole("radio", { name: "1", exact: true }),
   ).toHaveAttribute("aria-checked", "true");
+});
+
+test("Tab and Space carry on from anything focused in a sheet, like a box Firefox lets you scroll", async ({
+  page,
+}) => {
+  const { sheet } = await pcSheet(page, "Scrolled Through");
+  const pausedBefore = await paused(page);
+  // Firefox focuses a box that scrolls, as Chromium doesn't: the pools
+  // column, say, standing in for one here
+  const pools = sheet.getByTestId("pool-tracker").first().locator("..");
+  await pools.evaluate((element) => {
+    element.tabIndex = -1;
+    element.focus();
+  });
+  await expect(pools).toBeFocused();
+  await page.keyboard.press("Space");
+  await page.keyboard.press("Tab");
+  await expect
+    .poll(() =>
+      pools.evaluate(
+        (element) =>
+          element.contains(document.activeElement) &&
+          document.activeElement !== element,
+      ),
+    )
+    .toBe(true);
+  expect(await paused(page)).toBe(pausedBefore);
+
+  // and the tab panel isn't a stop of its own
+  await expect(sheet.getByRole("tabpanel")).toHaveAttribute("tabindex", "-1");
 });

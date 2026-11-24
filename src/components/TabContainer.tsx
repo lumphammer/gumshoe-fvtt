@@ -310,6 +310,9 @@ export const TabContainer = ({
         key={selected}
         id={panelId}
         role="tabpanel"
+        // out of the Tab order: Firefox puts a box that scrolls in it, but
+        // the panel's contents are reached by tabbing anyway
+        tabIndex={-1}
         // a tab not in the strip (e.g. Settings) has no tab to name it
         aria-labelledby={selectedInStrip ? tabId(selected) : undefined}
         aria-label={
