@@ -20,6 +20,7 @@ import type { CardLayoutView } from "./functions";
 import type { CardsAreaSettings } from "./types";
 import { UncategorizedCardArray } from "./UncategorizedCardArray";
 import { css, cx } from "../../styled-system/css";
+import { UnderPanels } from "../nestedPanels/UnderPanels";
 
 const settingsDirection = createDirection("settings");
 
@@ -123,50 +124,52 @@ export const CardsArea = memo(function CardsArea() {
   return (
     <CardsAreaSettingsContext.Provider value={cardsAreaSettings}>
       <Router>
-        <div
-          className={css({
-            ...absoluteCover,
-            display: "flex",
-            flexDirection: "column",
-            padding: "0.5em",
-          })}
-        >
+        <UnderPanels>
           <div
             className={css({
+              ...absoluteCover,
               display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "end",
-              flexDirection: "row",
-              flexBasis: "",
-              gap: "0.5em",
+              flexDirection: "column",
+              padding: "0.5em",
             })}
           >
-            <ToolbarButton onClick={handleClickCreateCard}>
-              {getTranslated("Create card")}
-            </ToolbarButton>
-            <ToolbarButton onClick={handleClickEndScenario}>
-              {getTranslated("End scenario")}
-            </ToolbarButton>
-            <div className={css({ flex: "[1]" })} />
-            <ArrowLink to={settingsDirection()}>Settings</ArrowLink>
+            <div
+              className={css({
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "end",
+                flexDirection: "row",
+                flexBasis: "",
+                gap: "0.5em",
+              })}
+            >
+              <ToolbarButton onClick={handleClickCreateCard}>
+                {getTranslated("Create card")}
+              </ToolbarButton>
+              <ToolbarButton onClick={handleClickEndScenario}>
+                {getTranslated("End scenario")}
+              </ToolbarButton>
+              <div className={css({ flex: "[1]" })} />
+              <ArrowLink to={settingsDirection()}>Settings</ArrowLink>
+            </div>
+            <div
+              className={cx(
+                "container-ref-haver",
+                css({
+                  flex: "[1]",
+                  overflow: "auto",
+                }),
+              )}
+              ref={containerRef}
+            >
+              {cardsAreaSettings.category === "categorized" ? (
+                <CategorizedCardArray cards={cards} />
+              ) : (
+                <UncategorizedCardArray cards={cards} />
+              )}
+            </div>
           </div>
-          <div
-            className={cx(
-              "container-ref-haver",
-              css({
-                flex: "[1]",
-                overflow: "auto",
-              }),
-            )}
-            ref={containerRef}
-          >
-            {cardsAreaSettings.category === "categorized" ? (
-              <CategorizedCardArray cards={cards} />
-            ) : (
-              <UncategorizedCardArray cards={cards} />
-            )}
-          </div>
-        </div>
+        </UnderPanels>
         <SlideInNestedPanelRoute
           margin={"10em"}
           direction={settingsDirection}

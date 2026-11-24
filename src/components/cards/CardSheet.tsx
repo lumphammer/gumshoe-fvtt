@@ -15,6 +15,7 @@ import { CardDisplay } from "./CardDisplay";
 import { CardMain } from "./CardMain";
 import { edit } from "./directions";
 import { css, cx } from "../../styled-system/css";
+import { UnderPanels } from "../nestedPanels/UnderPanels";
 
 /**
  * Reads the card through snapshots (`CardDisplay` and `CardMain` read their
@@ -61,54 +62,56 @@ export const CardSheet = memo(function CardSheet() {
 
   return (
     <Router>
-      <div
-        className={css({
-          ...absoluteCover,
-          margin: "0.5em",
-          // below the full-frame layout's see-through titlebar, not as well
-          // (`CSSReset`)
-          marginTop: "[max(0.5em, var(--inv-titlebar-clearance))]",
-          display: "flex",
-          flexDirection: "column",
-        })}
-      >
+      <UnderPanels>
         <div
           className={css({
-            display: "flex",
-            flexDirection: "row",
-            paddingBottom: "0.5em",
-          })}
-        >
-          <ToolbarButton onClick={handleClickDiscard}>
-            <Translate>{isOwned ? "Discard" : "Delete"}</Translate>
-          </ToolbarButton>{" "}
-          {active ? (
-            <ToolbarButton onClick={handleClickDeactivate}>
-              <Translate>Deactivate</Translate>
-            </ToolbarButton>
-          ) : (
-            <ToolbarButton onClick={handleClickActivate}>
-              <Translate>Activate</Translate>
-            </ToolbarButton>
-          )}
-          <div className={css({ flex: "[1]" })} />
-          <ArrowLink to={edit()}>Edit</ArrowLink>
-        </div>
-        <div
-          className={css({
-            flex: "[1]",
-            opacity: active ? 1 : 0.5,
-            transition: "[opacity 200ms ease-in-out]",
+            ...absoluteCover,
+            margin: "0.5em",
+            // below the full-frame layout's see-through titlebar, not as well
+            // (`CSSReset`)
+            marginTop: "[max(0.5em, var(--inv-titlebar-clearance))]",
             display: "flex",
             flexDirection: "column",
-            overflow: "auto",
-            // create a containment context so the card can read themes
-            containerType: "inline-size",
           })}
         >
-          <CardDisplay card={item} viewMode="full" />
+          <div
+            className={css({
+              display: "flex",
+              flexDirection: "row",
+              paddingBottom: "0.5em",
+            })}
+          >
+            <ToolbarButton onClick={handleClickDiscard}>
+              <Translate>{isOwned ? "Discard" : "Delete"}</Translate>
+            </ToolbarButton>{" "}
+            {active ? (
+              <ToolbarButton onClick={handleClickDeactivate}>
+                <Translate>Deactivate</Translate>
+              </ToolbarButton>
+            ) : (
+              <ToolbarButton onClick={handleClickActivate}>
+                <Translate>Activate</Translate>
+              </ToolbarButton>
+            )}
+            <div className={css({ flex: "[1]" })} />
+            <ArrowLink to={edit()}>Edit</ArrowLink>
+          </div>
+          <div
+            className={css({
+              flex: "[1]",
+              opacity: active ? 1 : 0.5,
+              transition: "[opacity 200ms ease-in-out]",
+              display: "flex",
+              flexDirection: "column",
+              overflow: "auto",
+              // create a containment context so the card can read themes
+              containerType: "inline-size",
+            })}
+          >
+            <CardDisplay card={item} viewMode="full" />
+          </div>
         </div>
-      </div>
+      </UnderPanels>
       <BelowTitlebar>
         <SlideInNestedPanelRoute
           direction={edit}

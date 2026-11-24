@@ -71,6 +71,8 @@ export const NestedPanel = memo<NestedPanelProps>(
             }),
           )}
           onKeyDown={handleKeyDown}
+          // a panel open over this one: only that one can be reached
+          inert={currentStep !== undefined}
           style={
             {
               "--drawer-shadow-size": `min(${margin}, ${defaultPanelMargin})`,

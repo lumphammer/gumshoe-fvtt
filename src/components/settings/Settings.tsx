@@ -70,6 +70,7 @@ import { StabilitySettingsRoutes } from "./Stability/StabilitySettingsRoutes";
 import { Region } from "../Region";
 import { outcome, surface } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
+import { UnderPanels } from "../nestedPanels/UnderPanels";
 
 /** the height of the back button and the status, beside the breadcrumbs */
 const headerFloatHeight = "1.75em";
@@ -288,15 +289,20 @@ export const Settings = () => {
                       position: "relative",
                     })}
                   >
-                    <Region
-                      className={css({
-                        ...absoluteCover,
-                        overflow: "auto",
-                        padding: 0,
-                      })}
-                    >
-                      <SettingsMenu data-testid="settings-menu" pages={pages} />
-                    </Region>
+                    <UnderPanels>
+                      <Region
+                        className={css({
+                          ...absoluteCover,
+                          overflow: "auto",
+                          padding: 0,
+                        })}
+                      >
+                        <SettingsMenu
+                          data-testid="settings-menu"
+                          pages={pages}
+                        />
+                      </Region>
+                    </UnderPanels>
                     {pages.map(({ direction, label, content, childRoutes }) => (
                       <SlideInNestedPanelRoute
                         key={label}
