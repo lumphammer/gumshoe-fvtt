@@ -76,7 +76,9 @@ export const greenTriangleTheme = defineThemeV2({
         },
         // white, over a glow
         front_wrapper: { color: "#fff" },
-        rear_wrapper: { textShadow: `0 0 0.2em ${glow}` },
+        // (on each text: an em in a text-shadow is the declaring element's)
+        rear: { textShadow: `0 0 0.2em ${glow}` },
+        rear_sub: { textShadow: `0 0 0.2em ${glow}` },
       },
     },
     card: {
