@@ -11,6 +11,7 @@ import { ItemNameWithIcon } from "../ItemNameWithIcon";
 import { CheckOrCross } from "./CheckOrCross";
 import { row as rowClass } from "../../../styled-system/recipes";
 import { css, cx } from "../../../styled-system/css";
+import { clickable } from "../../clickable";
 
 interface EquipmentItemRowProps {
   /** The live item: the row reads it through a snapshot */
@@ -67,7 +68,7 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
           minWidth: 0,
         })}
         style={{ gridRow }}
-        onClick={openItemSheet}
+        {...clickable(openItemSheet)}
         data-item-id={item.id}
         onDragStart={(e) => onDragStart(e, item)}
         onDragEnd={onDragEnd}
@@ -82,6 +83,7 @@ export const EquipmentItemRow = memo(function EquipmentItemRow({
           <a
             key={fieldId}
             style={{ gridColumn: j + 2, gridRow }}
+            // the name opens it from the keyboard: one stop per row
             onMouseOver={handleMouseOver}
             onMouseOut={handleMouseOut}
             onClick={openItemSheet}

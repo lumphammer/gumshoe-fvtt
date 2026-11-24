@@ -8,6 +8,7 @@ import { OtherableDropDown } from "../inputs/OtherableDropDown";
 import { Translate } from "../Translate";
 import { css } from "../../styled-system/css";
 import { inlineField, inlineLabel } from "./StatField";
+import { getTranslated } from "../../functions/getTranslated";
 
 export function InitiativeAbilityPicker({
   actor,
@@ -37,6 +38,7 @@ export function InitiativeAbilityPicker({
         onChange={setInitiativeAbility}
         pickerValues={combatAbilities}
         validValues={generalAbilityNames}
+        label={getTranslated("Initiative")}
       />
     </div>
   );

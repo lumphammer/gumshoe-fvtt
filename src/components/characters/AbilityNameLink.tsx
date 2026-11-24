@@ -2,6 +2,7 @@ import { openSheet } from "../../functions/openSheet";
 import { useDragStart } from "../../hooks/useDragStart";
 import type { AbilityItem } from "../../module/items/exports";
 import { cx } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 type AbilityNameLinkProps = {
   /** the live ability, to open and drag */
@@ -22,7 +23,7 @@ export const AbilityNameLink = ({
   const onDragStart = useDragStart();
   return (
     <a
-      onClick={() => openSheet(ability)}
+      {...clickable(() => openSheet(ability))}
       data-item-id={ability.id}
       onDragStart={onDragStart}
       draggable="true"

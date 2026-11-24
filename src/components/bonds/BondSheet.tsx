@@ -20,6 +20,7 @@ import type { BondOwner } from "./BondMain";
 import { BondMain } from "./BondMain";
 import { rebuild } from "./directions";
 import { RebuildBondPanel } from "./RebuildBondPanel";
+import { UnderPanels } from "../nestedPanels/UnderPanels";
 
 /**
  * Reads the Bond, and what it needs from its PC (their Stability ability and
@@ -47,14 +48,16 @@ export const BondSheet = memo(function BondSheet() {
 
   return (
     <Router>
-      <ItemSheetFramework>
-        <ModeSelect mode={ItemSheetMode.Main}>
-          <BondMain item={item} system={view.system} owner={owner} />
-        </ModeSelect>
-        <ModeSelect mode={ItemSheetMode.Config}>
-          <BondConfig item={item} />
-        </ModeSelect>
-      </ItemSheetFramework>
+      <UnderPanels>
+        <ItemSheetFramework>
+          <ModeSelect mode={ItemSheetMode.Main}>
+            <BondMain item={item} system={view.system} owner={owner} />
+          </ModeSelect>
+          <ModeSelect mode={ItemSheetMode.Config}>
+            <BondConfig item={item} />
+          </ModeSelect>
+        </ItemSheetFramework>
+      </UnderPanels>
       <BelowTitlebar>
         <SlideInNestedPanelRoute direction={rebuild}>
           <RebuildBondPanel bond={item} />

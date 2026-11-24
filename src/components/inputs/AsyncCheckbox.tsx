@@ -7,10 +7,17 @@ type AsyncCheckboxProps = {
   onChange: (checked: boolean) => void;
   className?: string;
   title?: string;
+  ariaLabel?: string;
 };
 
 export const AsyncCheckbox = React.memo<AsyncCheckboxProps>(
-  ({ checked: checkedProp, onChange: onChangeProp, className, title }) => {
+  ({
+    checked: checkedProp,
+    onChange: onChangeProp,
+    className,
+    title,
+    ariaLabel,
+  }) => {
     const [checked, setChecked] = useState(checkedProp);
     useEffect(() => {
       setChecked(checkedProp);
@@ -27,6 +34,7 @@ export const AsyncCheckbox = React.memo<AsyncCheckboxProps>(
     return (
       <Checkbox
         title={title}
+        ariaLabel={ariaLabel}
         checked={checked}
         onChange={onChange}
         className={className}

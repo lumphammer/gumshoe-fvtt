@@ -8,6 +8,7 @@ import { MwButton } from "./MwButton";
 import { MwCostSlug } from "./MwCostSlug";
 import type { MWResult } from "./types";
 import { css, cx } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 type WallopNegateMode =
   | typeof constants.htmlDataModeMwNegate
@@ -69,7 +70,7 @@ export const AbilityNegateOrWallopMwCard = React.memo(
           })}
         >
           <b>
-            <a onClick={onClickAbilityName}>
+            <a {...clickable(onClickAbilityName)}>
               {name ?? header?.name ?? "Missing"}
             </a>
           </b>

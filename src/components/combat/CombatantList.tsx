@@ -74,15 +74,15 @@ export const CombatantList = memo(function CombatantList() {
         over,
         delta: { y },
       } = event;
-      // event.
-      if (over === null) return;
-      if (active.id !== over.id) {
-        void combat?.system.moveCombatant(
-          active.id.toString(),
-          over.id.toString(),
-          y < 0 ? "up" : "down",
-        );
-      }
+      // dropped where it started (or nowhere): nothing moves. (Going on would
+      // look for `over` after taking `active` out, and put it back in the
+      // wrong place)
+      if (over === null || active.id === over.id) return;
+      void combat?.system.moveCombatant(
+        active.id.toString(),
+        over.id.toString(),
+        y < 0 ? "up" : "down",
+      );
       const newIds = ids.filter((id) => id !== active.id);
       const modifier = y < 0 ? 0 : 1;
       const insertionIndex = newIds.indexOf(over.id.toString()) + modifier;

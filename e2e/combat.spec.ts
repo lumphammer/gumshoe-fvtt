@@ -123,6 +123,45 @@ test("the GM reorders a classic combat by dragging a row", async ({ page }) => {
     .toEqual([last, first, second]);
 });
 
+test("the GM reorders a classic combat from the keyboard", async ({ page }) => {
+  await setSettings(page, { useTurnPassingInitiative: false });
+  const tracker = await openCombatTracker(page);
+  await tracker.getByRole("button", { name: "Create Combat" }).click();
+  await expect.poll(() => getCombat(page)).toMatchObject({ type: "classic" });
+  const ids: string[] = [];
+  for (const name of ["Delta", "Echo"]) {
+    ids.push(await createActor(page, { name, type: "pc" }));
+  }
+  await addCombatants(page, ids);
+  const names = tracker.locator("li.combatant .name");
+  await expect(names).toHaveCount(2);
+  const [first, last] = (await names.allTextContents()).map((name) =>
+    name.trim(),
+  );
+
+  // the grip is the drag handle, from the keyboard too, and the row isn't
+  // a button of its own around the row's other controls
+  const row = tracker.locator("li.combatant", { hasText: last });
+  await expect(row).not.toHaveAttribute("role");
+  const grip = row.getByRole("button", { name: "Drag to reorder" });
+  await grip.focus();
+  // dnd-kit picks up, moves and drops a frame or so after each key
+  await page.keyboard.press("Space");
+  await page.waitForTimeout(200);
+  await page.keyboard.press("ArrowUp");
+  await page.waitForTimeout(200);
+  await page.keyboard.press("Space");
+
+  await expect(names).toHaveText([last, first]);
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        game.combat!.turns.map((combatant) => combatant.name),
+      ),
+    )
+    .toEqual([last, first]);
+});
+
 test("the tracker follows turns and initiative changed elsewhere", async ({
   page,
 }) => {

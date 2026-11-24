@@ -5,6 +5,7 @@ import { Translate } from "../Translate";
 import { useAbilityCardHeader } from "./useAbilityCardHeader";
 import type { AbilityCardMode } from "./types";
 import { css, cx } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 interface PushCardProps {
   msg: ChatMessage;
@@ -56,7 +57,7 @@ export const PushCard = React.memo(
         />
         {/* TERMS */}
         <a
-          onClick={onClickAbilityName}
+          {...clickable(onClickAbilityName)}
           className={css({
             gridArea: "headline",
             fontSize: "1.5em",

@@ -7,14 +7,17 @@ import { useCombatantContext } from "./CombatantContext";
 import { Grip } from "./Grip";
 import { TopRow } from "./TopRow";
 import { css } from "../../../styled-system/css";
+import type { DraggableAttributes } from "@dnd-kit/core";
 
 interface ContentProps {
   setActivatorNodeRef: (node: HTMLElement | null) => void;
   listeners: SyntheticListenerMap | undefined;
+  /** dnd-kit's (role, tab stop, description), for the grip */
+  attributes: DraggableAttributes;
 }
 
 export const Content = memo(
-  ({ setActivatorNodeRef, listeners }: ContentProps) => {
+  ({ setActivatorNodeRef, listeners, attributes }: ContentProps) => {
     assertGame(game);
     const { combatantState } = useCombatantContext();
 
@@ -23,6 +26,7 @@ export const Content = memo(
         {combatantState.type === "classic" && game.user.isGM && (
           <Grip
             listeners={listeners}
+            attributes={attributes}
             setActivatorNodeRef={setActivatorNodeRef}
           />
         )}

@@ -79,6 +79,8 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps<"a">>(
     return (
       <a
         tabIndex={0}
+        // no href: say what it is
+        role="link"
         onClick={onClick}
         onKeyDown={onKeyDown}
         ref={ref}

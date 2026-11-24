@@ -5,6 +5,8 @@ import { assertGame } from "../functions/isGame";
 import { FilePicker, ImagePopout } from "../fvtt-exports";
 import { useIsDocumentOwner } from "../hooks/useIsDocumentOwner";
 import { useDocumentSheetContext } from "../hooks/useSheetContexts";
+import { getTranslated } from "../functions/getTranslated";
+import { buttonKeys } from "./clickable";
 import { ImagePickerLink } from "./ImagePickerLink";
 import { surface } from "../styled-system/recipes";
 import { css, cx } from "../styled-system/css";
@@ -34,6 +36,8 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
     throw new Error("ImagePickle must be used within an Actor or Item");
   }
   const [showOverlay, setShowOverlay] = useState(false);
+  // to put focus on the overlay's buttons, opened from the keyboard
+  const [openedFromKeys, setOpenedFromKeys] = useState(false);
   assertGame(game);
   const isOwner = useIsDocumentOwner();
 
@@ -84,6 +88,7 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
     (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       event.stopPropagation();
       if (isOwner) {
+        setOpenedFromKeys(false);
         setShowOverlay(true);
         const clickListener = () => {
           setShowOverlay(false);
@@ -100,8 +105,36 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
     [isOwner, showImage],
   );
 
+  // from the keyboard, the overlay closes when focus leaves it instead. While
+  // it's open the portrait isn't a button itself (its Show and Edit are, and
+  // buttons don't nest), so focus moves to the first of them
+  // given to the overlay's buttons when they appear, if the keyboard opened
+  // it (a stable function, so it only runs then)
+  const focusFirst = useCallback((buttons: HTMLElement | null) => {
+    buttons?.querySelector<HTMLElement>("[role=button]")?.focus();
+  }, []);
+  const keyboardProps = showOverlay
+    ? {}
+    : {
+        ...buttonKeys(() => {
+          if (isOwner) {
+            setOpenedFromKeys(true);
+            setShowOverlay(true);
+          } else {
+            showImage();
+          }
+        }),
+        "aria-label": getTranslated("Image"),
+      };
+
   return (
     <div
+      {...keyboardProps}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setShowOverlay(false);
+        }
+      }}
       className={cx(
         className,
         css({
@@ -152,10 +185,13 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
         )}
       >
         {showOverlay && (
-          <>
+          <span
+            className={css({ display: "contents" })}
+            ref={openedFromKeys ? focusFirst : undefined}
+          >
             <ImagePickerLink onClick={onClickShow}>Show</ImagePickerLink>
             <ImagePickerLink onClick={onClickEdit}>Edit</ImagePickerLink>
-          </>
+          </span>
         )}
       </div>
     </div>

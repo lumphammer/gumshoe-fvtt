@@ -11,6 +11,7 @@ import { useToolbarContent } from "./magicToolbar";
 import { ToolbarButton } from "./magicToolbar/ToolbarButton";
 import { richText, row } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
+import { clickedByKeys } from "../clickable";
 
 const pageIdDataAttribute = "data-page-id";
 const pageIdDatasetName = "pageId";
@@ -171,6 +172,7 @@ export const PageNavigation = ({
           <Fragment key={page.id}>
             <a
               {...{ [pageIdDataAttribute]: page.id }}
+              {...clickedByKeys}
               onClick={handlePageClick}
               onDragStart={handleDragStart}
               draggable

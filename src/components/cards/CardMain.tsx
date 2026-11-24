@@ -119,14 +119,26 @@ export const CardMain = ({ item }: { item: CardItem }) => {
           ]}
         />
       </div>
-      <SlideInNestedPanelRoute direction={editCategoryMemberships}>
-        <EditCategoryMemberships
-          card={item}
-          memberships={system.cardCategoryMemberships}
-          styleKeyCategoryId={system.styleKeyCategoryId}
-          categories={categories}
-        />
-      </SlideInNestedPanelRoute>
     </>
+  );
+};
+
+/**
+ * The card's categories, as a panel over the Edit panel. A sibling of the
+ * Edit panel (its `childRoutes`), not inside it: the Edit panel goes inert
+ * while it's covered, and would take this one with it.
+ */
+export const CardCategoriesRoute = ({ item }: { item: CardItem }) => {
+  const system = useItemSelector(item, (snapshot) => snapshot.system);
+  const categories = useSettings((s) => s.cardCategories);
+  return (
+    <SlideInNestedPanelRoute direction={editCategoryMemberships}>
+      <EditCategoryMemberships
+        card={item}
+        memberships={system.cardCategoryMemberships}
+        styleKeyCategoryId={system.styleKeyCategoryId}
+        categories={categories}
+      />
+    </SlideInNestedPanelRoute>
   );
 };

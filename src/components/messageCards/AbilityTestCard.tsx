@@ -10,6 +10,7 @@ import { useAbilityCardHeader } from "./useAbilityCardHeader";
 import { DiceTerms } from "./DiceTerms";
 import type { AbilityCardMode } from "./types";
 import { css, cx } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 interface AbilityTestCardProps {
   msg: ChatMessage;
@@ -75,7 +76,7 @@ export const AbilityTestCard = React.memo(
           })}
         >
           <b>
-            <a onClick={onClickAbilityName}>
+            <a {...clickable(onClickAbilityName)}>
               {name ?? header?.name ?? "Missing"}
             </a>
           </b>

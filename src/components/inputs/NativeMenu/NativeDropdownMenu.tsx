@@ -11,15 +11,20 @@ type NativeDropdownMenuProps = {
   className?: string;
   children: React.ReactNode;
   label?: React.ReactNode;
+  /** the trigger's name, when its label is only an icon */
+  ariaLabel?: string;
 };
 
 export const NativeDropdownMenu = memo(
-  ({ className, children, label }: NativeDropdownMenuProps) => {
+  ({ className, children, label, ariaLabel }: NativeDropdownMenuProps) => {
     const [theme, ref] = useLocalFoundryTheme();
 
     return (
       <DropdownMenu.Root modal={false}>
-        <DropdownMenu.Trigger className={cx("inline-control", className)}>
+        <DropdownMenu.Trigger
+          className={cx("inline-control", className)}
+          aria-label={ariaLabel}
+        >
           {label ?? <FaEllipsisV />}
         </DropdownMenu.Trigger>
 

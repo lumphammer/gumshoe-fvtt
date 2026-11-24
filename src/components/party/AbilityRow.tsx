@@ -8,6 +8,7 @@ import { isAbilityItem } from "../../module/items/exports";
 import type { AbilityRowData, PartyMemberView } from "./types";
 import { partyCell } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
+import { clickedByKeys } from "../clickable";
 
 type AbilityRowProps = {
   abilityRowData: AbilityRowData;
@@ -102,6 +103,19 @@ export const AbilityRow = ({
         return (
           <a
             key={actor.id}
+            {...clickedByKeys}
+            aria-label={
+              actorInfo?.abilityUuid
+                ? getTranslated("PartyMemberAbility", {
+                    ActorName: actor.name,
+                    AbilityName: abilityRowData.ability.name,
+                    Rating: String(actorInfo.rating ?? "–"),
+                  })
+                : getTranslated("AddAbilityToMember", {
+                    ActorName: actor.name,
+                    AbilityName: abilityRowData.ability.name,
+                  })
+            }
             onClick={(e) => {
               e.preventDefault();
               void openOrAddAbility(

@@ -48,6 +48,7 @@ const TurnPassingMenu = memo(function TurnPassingMenu({
   return (
     <NativeDualFunctionMenu
       className={css({ flex: "[0]", padding: "0 0.3em" })}
+      ariaLabel={getTranslated("CombatantOptions", { Name: name })}
     >
       <NativeMenuLabel>{name}</NativeMenuLabel>
       <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>

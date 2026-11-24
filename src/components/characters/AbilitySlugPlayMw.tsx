@@ -8,6 +8,7 @@ import { isGeneralAbilitySnapshot } from "../../module/items/abilitySnapshots";
 import type { AbilityItem } from "../../module/items/exports";
 import { Button } from "../inputs/Button";
 import { css, cx } from "../../styled-system/css";
+import { getTranslated } from "../../functions/getTranslated";
 
 type AbilitySlugPlayMwProps = {
   /** The live ability: the row reads it through a snapshot */
@@ -50,7 +51,15 @@ export const AbilitySlugPlayMw = memo(function AbilitySlugPlayMw({
         className={css({ lineHeight: 0.9 })}
       />
       <div className={css({ gridColumn: "rating", justifySelf: "right" })}>
-        {row.pool}/{row.rating}
+        <span aria-hidden="true">
+          {row.pool}/{row.rating}
+        </span>
+        <span className={css({ srOnly: true })}>
+          {getTranslated("PoolOfRating", {
+            Pool: String(row.pool),
+            Rating: String(row.rating),
+          })}
+        </span>
       </div>
       <div
         className={css({
@@ -63,21 +72,41 @@ export const AbilitySlugPlayMw = memo(function AbilitySlugPlayMw({
           className={css({ gridColumn: "1" })}
           onClick={onClickDec}
           disabled={boonLevy <= -2}
+          aria-label={getTranslated("LowerBoonLevyOnAbility", {
+            AbilityName: row.name,
+          })}
         >
-          <i className={cx("fa fa-minus", css({ fontSize: "x-small" }))} />
+          <i
+            className={cx("fa fa-minus", css({ fontSize: "x-small" }))}
+            aria-hidden="true"
+          />
         </Button>
         <Button
           className={css({ gridColumn: "2" })}
           onClick={onClickInc}
           disabled={boonLevy >= 2}
+          aria-label={getTranslated("RaiseBoonLevyOnAbility", {
+            AbilityName: row.name,
+          })}
         >
-          <i className={cx("fa fa-plus", css({ fontSize: "x-small" }))} />
+          <i
+            className={cx("fa fa-plus", css({ fontSize: "x-small" }))}
+            aria-hidden="true"
+          />
         </Button>
       </div>
       <div className={css({ gridColumn: "spend" })}>
         {row.isGeneral && (
-          <Button className={css({ width: "4.1em" })} onClick={onTest}>
-            <i className="fa fa-dice" title="Test" />+{boonLevy}
+          <Button
+            className={css({ width: "4.1em" })}
+            onClick={onTest}
+            aria-label={getTranslated("TestAbilityPlus", {
+              AbilityName: row.name,
+              Spend: String(boonLevy),
+            })}
+          >
+            <i className="fa fa-dice" title="Test" aria-hidden="true" />+
+            {boonLevy}
           </Button>
         )}
       </div>

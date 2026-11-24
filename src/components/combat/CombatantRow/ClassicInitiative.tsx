@@ -12,6 +12,7 @@ import { NativeMenuLabel } from "../../inputs/NativeMenu/NativeMenuLabel";
 import { useCombatantContext } from "./CombatantContext";
 import { useInititative } from "./useInititative";
 import { css } from "../../../styled-system/css";
+import { getTranslated } from "../../../functions/getTranslated";
 
 export const ClassicInitiative = memo(function ClassicInitiative() {
   assertGame(game);
@@ -93,6 +94,9 @@ export const ClassicInitiative = memo(function ClassicInitiative() {
         <>
           <NativeDualFunctionMenu
             className={css({ flex: "[0]", padding: "0 0.3em" })}
+            ariaLabel={getTranslated("CombatantOptions", {
+              Name: combatantState.name,
+            })}
           >
             <NativeMenuLabel>{combatantState.name}</NativeMenuLabel>
             <NativeMenuItem icon={<FaEdit />} onSelect={onConfigureCombatant}>

@@ -50,7 +50,10 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
     name: snapshot.name,
     img: snapshot.img,
   }));
-  const genericOccupation = useSettings((s) => s.genericOccupation);
+  const { genericOccupation, occupationLabel } = useSettings((s) => ({
+    genericOccupation: s.genericOccupation,
+    occupationLabel: s.occupationLabel,
+  }));
   const occupationData = usePersonalDetails().find(
     (item) => item.slotIndex === occupationSlotIndex,
   );
@@ -73,6 +76,7 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
           defaultSubText={genericOccupation}
           onChangeMainText={actor.setName}
           onChangeSubText={occupation?.setName}
+          subTextLabel={occupationLabel}
         />
       </div>
       <ImagePickle

@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 
 import { CloseContext } from "./Dropdown";
 import { css, cx } from "../../styled-system/css";
+import { clickedByKeys } from "../clickable";
 
 interface MenuProps {
   className?: string;
@@ -11,6 +12,7 @@ interface MenuProps {
 export const Menu = ({ children, className }: PropsWithChildren<MenuProps>) => {
   return (
     <div
+      role="menu"
       className={cx(
         `menu-outer ${className}`,
         css({
@@ -48,6 +50,8 @@ export const MenuItem = ({
 
   return (
     <a
+      {...clickedByKeys}
+      role="menuitem"
       onClick={onClick}
       className={css({
         display: "flex",

@@ -7,6 +7,8 @@ import { absoluteCover } from "../absoluteCover";
 import Cross from "./no_image_cross.svg?react";
 import { floating, row } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
+import { clickedByKeys } from "../clickable";
+import { getTranslated } from "../../functions/getTranslated";
 
 interface ImageAreaProps {
   page: any;
@@ -58,6 +60,8 @@ export const ImageArea = ({ page }: ImageAreaProps) => {
           margin: "auto",
           ...absoluteCover,
         })}
+        {...clickedByKeys}
+        aria-label={getTranslated("ChangeImage")}
         onClick={handleClickImage}
       >
         {src ? (

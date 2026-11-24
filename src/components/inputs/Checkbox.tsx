@@ -10,6 +10,8 @@ type CheckboxProps = {
   onChange: (checked: boolean) => void;
   className?: string;
   title?: string;
+  /** its name, when no label names it (or the title, if there's one) */
+  ariaLabel?: string;
 };
 
 /**
@@ -19,7 +21,7 @@ type CheckboxProps = {
  * Inspired by https://jsfiddle.net/maxshuty/2cs0dj54/
  */
 export const Checkbox = React.memo<CheckboxProps>(
-  ({ checked, onChange, className, title }) => {
+  ({ checked, onChange, className, title, ariaLabel = title }) => {
     const id = useContext(IdContext);
     const isEditable = useIsEditable();
     const classes = checkbox();
@@ -32,6 +34,8 @@ export const Checkbox = React.memo<CheckboxProps>(
         <input
           id={id}
           type="checkbox"
+          // the label has no text of its own (the tick is an icon)
+          aria-label={ariaLabel}
           checked={checked}
           disabled={!isEditable}
           className={css({ position: "absolute", opacity: 0, zIndex: -1 })}

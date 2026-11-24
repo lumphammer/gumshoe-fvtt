@@ -110,7 +110,9 @@ test("an NPC's abilities and weapons each switch between play and edit mode", as
   ]);
 
   // NPCs' ratings are only inputs for editing
-  const ratingInputs = sheet.locator(".tab-content input[role=text-input]");
+  const ratingInputs = sheet
+    .getByRole("tabpanel")
+    .getByRole("spinbutton", { name: / rating$/ });
   await expect(ratingInputs).toHaveCount(0);
   await sheet.getByLabel("Edit mode").click();
   await expect(ratingInputs.first()).toBeVisible();

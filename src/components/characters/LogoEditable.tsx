@@ -4,6 +4,7 @@ import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
 import { useIsEditable } from "../../hooks/useIsEditable";
 import { css, cx } from "../../styled-system/css";
 import { logo } from "../../styled-system/recipes";
+import { getTranslated } from "../../functions/getTranslated";
 
 type LogoEditableProps = {
   className?: string;
@@ -12,6 +13,8 @@ type LogoEditableProps = {
   defaultSubText?: string;
   onChangeMainText: (newValue: string) => void | PromiseLike<unknown>;
   onChangeSubText?: (newValue: string) => void | PromiseLike<unknown>;
+  /** what the subtext is, for screen readers (e.g. "Occupation") */
+  subTextLabel?: string;
 };
 
 /**
@@ -236,6 +239,7 @@ export const LogoEditable = ({
   defaultSubText = "",
   onChangeMainText,
   onChangeSubText,
+  subTextLabel,
 }: LogoEditableProps) => {
   const classes = logo();
 
@@ -428,6 +432,14 @@ export const LogoEditable = ({
             <div className={fit}>
               <div
                 className={classes.front}
+                // announced as the text box it is
+                role="textbox"
+                // apart from the sheet's Name field
+                aria-label={getTranslated("InTitle", {
+                  Label: getTranslated("Name"),
+                })}
+                // a textbox role is editable unless it says otherwise
+                aria-readonly={!isEditable || undefined}
                 contentEditable={isEditable}
                 spellCheck={false}
                 ref={contentEditableRefText}
@@ -442,6 +454,15 @@ export const LogoEditable = ({
               <div className={fitHeight}>
                 <div
                   className={classes.front_sub}
+                  role="textbox"
+                  aria-label={
+                    subTextLabel === undefined
+                      ? getTranslated("Subtitle")
+                      : getTranslated("InTitle", { Label: subTextLabel })
+                  }
+                  aria-readonly={
+                    !isEditable || onChangeSubText === undefined || undefined
+                  }
                   contentEditable={isEditable && onChangeSubText !== undefined}
                   spellCheck={false}
                   ref={contentEditableRefSubtext}

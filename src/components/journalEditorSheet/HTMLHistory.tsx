@@ -12,6 +12,7 @@ import { ToolbarButton, useToolbarContent } from "./magicToolbar";
 import { notifyJournalSaveError } from "./notifyJournalSaveError";
 import { savePage } from "./savePage";
 import { css } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 interface HTMLHistoryProps {
   page: any;
@@ -120,7 +121,7 @@ export const HTMLHistory = ({
               textDecoration: activeDiffIndex === i ? "underline" : "none",
             })}
           >
-            <a onClick={() => setActiveDiffIndex(i)}>
+            <a {...clickable(() => setActiveDiffIndex(i))}>
               {edit.serial}: {new Date(edit.timestamp * 1000).toLocaleString()}
             </a>
           </div>

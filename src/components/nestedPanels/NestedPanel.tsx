@@ -5,6 +5,7 @@ import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
 import { ArrowLink } from "./ArrowLink";
 import { focusableSelector } from "./focusableSelector";
 import { ShowBackLinkContext } from "./ShowBackLinkContext";
+import { useReturnFocus } from "./UnderPanels";
 import { floating } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
 import type { CSSProperties } from "react";
@@ -34,11 +35,16 @@ export const NestedPanel = memo<NestedPanelProps>(
       [navigate],
     );
 
+    // back from a panel over this one: focus goes back to what opened it
+    // (this runs first, being declared first)
+    const { onFocus, returned } = useReturnFocus(currentStep !== undefined);
+
     // focus the first element in the panel when it's a leaf route
     useEffect(() => {
       // if there's anything below us (currentStep is a little confusing, it's
-      // the step that will be routed if we mount a `<Route>`), we bail out.
-      if (currentStep) {
+      // the step that will be routed if we mount a `<Route>`), or focus has
+      // gone back to what opened the panel that was, we bail out.
+      if (currentStep || returned.current) {
         return;
       }
       const firstElement =
@@ -50,7 +56,7 @@ export const NestedPanel = memo<NestedPanelProps>(
       // to bring the focused element into view while it's already animating
       // into position
       firstElement?.focus({ preventScroll: true });
-    }, [currentStep]);
+    }, [currentStep, returned]);
 
     return (
       <>
@@ -71,6 +77,9 @@ export const NestedPanel = memo<NestedPanelProps>(
             }),
           )}
           onKeyDown={handleKeyDown}
+          onFocus={onFocus}
+          // a panel open over this one: only that one can be reached
+          inert={currentStep !== undefined}
           style={
             {
               "--drawer-shadow-size": `min(${margin}, ${defaultPanelMargin})`,

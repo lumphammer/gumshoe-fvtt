@@ -222,3 +222,60 @@ test("the Cards tab re-sorts and regroups cards changed elsewhere", async ({
   });
   await expect(headings).toHaveText(["Stresses (1/3)", "Wounds (1/2)"]);
 });
+
+test("a card's categories can be edited from its Edit panel", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    useCards: true,
+    cardCategories: [
+      {
+        id: "stress",
+        singleName: "Stress",
+        pluralName: "Stresses",
+        styleKey: "stress",
+        threshold: 3,
+        thresholdType: "limit",
+      },
+    ],
+  });
+  const actorId = await createActor(page, { name: "Categorist", type: "pc" });
+  const cardId = await createOwnedItem(page, actorId, {
+    name: "Uncategorised",
+    type: "card",
+  });
+  const sheet = await openSheet(page, `Actor.${actorId}.Item.${cardId}`);
+  await sheet.getByRole("link", { name: "Edit" }).click();
+  await sheet
+    .locator("label", { hasText: "Categories" })
+    .locator("xpath=following-sibling::*[1]")
+    .getByRole("link")
+    .click();
+
+  // the Categories panel is over the Edit panel, which goes inert: the
+  // Categories panel mustn't go with it
+  const active = sheet.getByRole("switch", { name: "Active" });
+  await expect(active).toBeVisible();
+  await expect(
+    sheet.locator("[inert]").getByRole("switch", { name: "Active" }),
+  ).toHaveCount(0);
+  // while the Edit panel's own controls are out of reach underneath
+  await expect(
+    sheet.locator("[inert]").getByRole("switch", { name: "Continuity" }),
+  ).toHaveCount(1);
+  // it works: switching it changes the card's categories
+  const memberships = () =>
+    page.evaluate(
+      ({ actorId, cardId }) =>
+        (
+          game.actors.get(actorId)!.items.get(cardId)!.system as {
+            cardCategoryMemberships: { categoryId: string }[];
+          }
+        ).cardCategoryMemberships.map((m) => m.categoryId),
+      { actorId, cardId },
+    );
+  const wasActive = await active.isChecked();
+  await active.click();
+  await expect(active).toBeChecked({ checked: !wasActive });
+  await expect.poll(memberships).toEqual(wasActive ? [] : ["stress"]);
+});

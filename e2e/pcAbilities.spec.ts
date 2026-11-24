@@ -17,10 +17,12 @@ import {
 // made elsewhere still reach it.
 
 /** An ability's pool/rating on the Abilities tab */
+/** The pool and rating as shown ("2/4"; screen readers get them in words) */
 const poolAndRating = (sheet: Locator, name: string) =>
   sheet
     .locator("a", { hasText: new RegExp(`^${name}$`) })
-    .locator("xpath=following-sibling::div[1]");
+    .locator("xpath=following-sibling::div[1]")
+    .locator("[aria-hidden=true]");
 
 async function renameItem(
   page: Page,

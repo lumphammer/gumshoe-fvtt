@@ -3,6 +3,7 @@ import React, { useCallback } from "react";
 
 import { displayText, floating } from "../styled-system/recipes";
 import { css, cx } from "../styled-system/css";
+import { buttonKeys } from "./clickable";
 
 type ImagePickerLinkProps = PropsWithChildren<{
   onClick: () => void;
@@ -22,6 +23,7 @@ export const ImagePickerLink = ({
 
   return (
     <a
+      {...buttonKeys(onClick)}
       onClick={onClickCb}
       className={cx(floating({ kind: "chip" }), css({ padding: "0 0.5em" }))}
     >

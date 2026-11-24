@@ -10,6 +10,8 @@ export type AsyncTextInputProps = {
   style?: CSSProperties;
   disabled?: boolean;
   placeholder?: string;
+  /** its name, when no label names it */
+  ariaLabel?: string;
 };
 
 export const AsyncTextInput = ({
@@ -19,6 +21,7 @@ export const AsyncTextInput = ({
   style,
   disabled,
   placeholder,
+  ariaLabel,
 }: AsyncTextInputProps) => {
   const { onChange, onFocus, onBlur, display } = useAsyncUpdate(
     value,
@@ -35,6 +38,7 @@ export const AsyncTextInput = ({
       onBlur={onBlur}
       disabled={disabled}
       placeholder={placeholder}
+      ariaLabel={ariaLabel}
     />
   );
 };

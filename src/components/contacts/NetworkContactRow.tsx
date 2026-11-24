@@ -8,6 +8,7 @@ import { ItemNameWithIcon } from "../characters/ItemNameWithIcon";
 import { DeleteItemButton } from "../inputs/DeleteItemButton";
 import { row as rowClass } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 /**
  * One contact on the Contacts tab: name, location and pool, and a delete
@@ -64,7 +65,7 @@ export const NetworkContactRow = memo(function NetworkContactRow({
             textOverflow: "ellipsis",
           },
         })}
-        onClick={openContactSheet}
+        {...clickable(openContactSheet)}
         data-item-id={contact.id}
         data-testid="network-contact-row"
         onDragStart={onDragStart}

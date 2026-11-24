@@ -1,14 +1,15 @@
 import { openSheet } from "../functions/openSheet";
 import { useItemSelector } from "../hooks/useItemSnapshot";
+import { clickable } from "./clickable";
 
 /** An item's name, as a link which opens its sheet */
 export const ItemSheetLink = ({ item }: { item: Item.Implementation }) => {
   const name = useItemSelector(item, (snapshot) => snapshot.name);
   return (
     <a
-      onClick={() => {
+      {...clickable(() => {
         openSheet(item);
-      }}
+      })}
     >
       {name}
     </a>
@@ -32,9 +33,9 @@ export const EmbeddedItemSheetLink = ({
 }) => {
   return (
     <a
-      onClick={() => {
+      {...clickable(() => {
         openSheet(actor?.items.get(id ?? ""));
-      }}
+      })}
     >
       {name}
     </a>

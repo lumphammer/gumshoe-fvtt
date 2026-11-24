@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
 
-import { IdContext } from "../IdContext";
+import { IdContext, labelIdFor } from "../IdContext";
 import { Translate } from "../Translate";
 import { css, cx } from "../../styled-system/css";
 import { fieldGrid } from "../../styled-system/recipes";
@@ -32,7 +32,11 @@ export const GridFieldStacked = ({
           flexDirection: "column",
         })}
       >
-        <label htmlFor={htmlId} className={classes.label}>
+        <label
+          htmlFor={htmlId}
+          id={labelIdFor(htmlId)}
+          className={classes.label}
+        >
           {label &&
             (noTranslate || typeof label !== "string" ? (
               label

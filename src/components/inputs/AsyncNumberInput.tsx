@@ -19,6 +19,8 @@ type AsyncNumberInputProps = {
   disabled?: boolean;
   noPlusMinus?: boolean;
   smallButtons?: boolean;
+  /** its name, for one with no label (in a `GridField`, say) to name it */
+  label?: string;
 };
 
 const adjust = (display: string, by: number, min?: number, max?: number) => {
@@ -47,6 +49,7 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
     disabled,
     noPlusMinus = false,
     smallButtons = false,
+    label,
   }) => {
     const validate = useCallback(
       (text: string): ValidationResult => {
@@ -106,6 +109,31 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
 
     const validationResult = validate(display);
 
+    /**
+     * The WAI-ARIA spin button pattern: the input is the one control, and Up
+     * and Down change it (Shift, or Page Up and Page Down, by ten). The
+     * buttons are for the mouse, out of the Tab order and hidden from
+     * screen readers, which hear the value change instead.
+     */
+    const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      const step = event.shiftKey ? 10 : 1;
+      const by = {
+        ArrowUp: step,
+        ArrowDown: -step,
+        PageUp: 10,
+        PageDown: -10,
+      }[event.key];
+      if (by === undefined) {
+        return;
+      }
+      event.preventDefault();
+      onChange(adjust(display, by, min, max));
+    };
+
+    const showButtons = noPlusMinus === undefined || !noPlusMinus;
+    // clicking a button leaves focus where it was (in the input, say)
+    const keepFocus = (event: React.MouseEvent) => event.preventDefault();
+
     return (
       <div
         className={cx(
@@ -124,13 +152,25 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
         )}
         style={style}
       >
-        {(noPlusMinus === undefined || !noPlusMinus) && (
-          <Button onClick={onClickDec} disabled={disabled}>
+        {showButtons && (
+          <Button
+            onClick={onClickDec}
+            disabled={disabled}
+            tabIndex={-1}
+            aria-hidden="true"
+            onMouseDown={keepFocus}
+          >
             <i className="fa fa-minus" />
           </Button>
         )}
-        {(noPlusMinus === undefined || !noPlusMinus) && (
-          <Button onClick={onClickInc} disabled={disabled}>
+        {showButtons && (
+          <Button
+            onClick={onClickInc}
+            disabled={disabled}
+            tabIndex={-1}
+            aria-hidden="true"
+            onMouseDown={keepFocus}
+          >
             <i className="fa fa-plus" />
           </Button>
         )}
@@ -145,7 +185,18 @@ export const AsyncNumberInput = React.memo<AsyncNumberInputProps>(
           onChange={onChange}
           onFocus={onFocus}
           onBlur={onBlur}
+          onKeyDown={onKeyDown}
           disabled={disabled}
+          ariaLabel={label}
+          role="spinbutton"
+          aria={{
+            "aria-valuenow":
+              validationResult.state === "succeeded"
+                ? validationResult.value
+                : undefined,
+            "aria-valuemin": min,
+            "aria-valuemax": max,
+          }}
         />
       </div>
     );

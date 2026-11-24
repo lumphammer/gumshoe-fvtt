@@ -10,6 +10,7 @@ import { Toggle } from "../../inputs/Toggle";
 import { ItemNameWithIcon } from "../ItemNameWithIcon";
 import { row as rowClass } from "../../../styled-system/recipes";
 import { css, cx } from "../../../styled-system/css";
+import { clickable } from "../../clickable";
 
 type WeaponRowProps = {
   /** The live weapon: the row reads it through a snapshot */
@@ -59,8 +60,7 @@ export const WeaponRow = memo(function WeaponRow({
         />
       </div>
       <div
-        role="button"
-        tabIndex={0}
+        {...clickable(openWeaponSheet)}
         className={cx(
           rowClass({ interactive: true }),
           css({
@@ -73,13 +73,6 @@ export const WeaponRow = memo(function WeaponRow({
             "& > *": { paddingInline: "0.25em" },
           }),
         )}
-        onClick={openWeaponSheet}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            openWeaponSheet();
-          }
-        }}
         data-item-id={weapon.id}
         draggable="true"
         onDragStart={onDragStart}
