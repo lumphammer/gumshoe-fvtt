@@ -104,6 +104,18 @@ export const AbilityRow = ({
           <a
             key={actor.id}
             {...clickedByKeys}
+            aria-label={
+              actorInfo?.abilityUuid
+                ? getTranslated("PartyMemberAbility", {
+                    ActorName: actor.name,
+                    AbilityName: abilityRowData.ability.name,
+                    Rating: String(actorInfo.rating ?? "–"),
+                  })
+                : getTranslated("AddAbilityToMember", {
+                    ActorName: actor.name,
+                    AbilityName: abilityRowData.ability.name,
+                  })
+            }
             onClick={(e) => {
               e.preventDefault();
               void openOrAddAbility(

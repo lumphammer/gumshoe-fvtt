@@ -19,6 +19,7 @@ import { Region } from "../Region";
 import { Select } from "../inputs/Select";
 import { css } from "../../styled-system/css";
 import { clickable } from "../clickable";
+import { getTranslated } from "../../functions/getTranslated";
 
 /**
  * Reads the item through its snapshot (the item itself only to write
@@ -99,6 +100,8 @@ export const MwItemSheet = memo(function MwItemSheet() {
         {...clickable(() => {
           void onClickDelete();
         })}
+        aria-label={getTranslated("DeleteItem")}
+        title={getTranslated("DeleteItem")}
       >
         <i className={"fa fa-trash"} />
       </a>

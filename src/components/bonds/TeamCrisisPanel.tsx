@@ -327,6 +327,8 @@ export const TeamCrisisPanel = ({
                     <>
                       {" "}
                       <FaHeartCrack
+                        aria-hidden={false}
+                        role="img"
                         title={getTranslated("Broken")}
                         className={css({ verticalAlign: "middle" })}
                       />
