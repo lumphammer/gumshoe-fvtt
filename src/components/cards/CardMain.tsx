@@ -15,6 +15,7 @@ import { editCategoryMemberships } from "./directions";
 import { EditCategoryMemberships } from "./EditCategoryMemberships";
 import { summarizeCategoryMemberships } from "./functions";
 import { css, cx } from "../../styled-system/css";
+import { UnderPanels } from "../nestedPanels/UnderPanels";
 
 /** Editing a card: it reads the card and its categories through snapshots */
 export const CardMain = ({ item }: { item: CardItem }) => {
@@ -33,92 +34,94 @@ export const CardMain = ({ item }: { item: CardItem }) => {
 
   return (
     <>
-      <InputGrid>
-        <GridField label="Categories">
-          <ArrowLink to={editCategoryMemberships()}>
-            {categoryText}
-            {"  "}
-          </ArrowLink>
-        </GridField>
-        <GridField label="Item Name">
-          <AsyncTextInput value={view.name} onChange={item.setName} />
-        </GridField>
-        <GridField label="Supertitle">
-          <AsyncTextInput
-            value={system.supertitle}
-            onChange={methods.setSupertitle}
-          />
-        </GridField>
-        <GridField label="Subtitle">
-          <AsyncTextInput
-            value={system.subtitle}
-            onChange={methods.setSubtitle}
-          />
-        </GridField>
+      <UnderPanels>
+        <InputGrid>
+          <GridField label="Categories">
+            <ArrowLink to={editCategoryMemberships()}>
+              {categoryText}
+              {"  "}
+            </ArrowLink>
+          </GridField>
+          <GridField label="Item Name">
+            <AsyncTextInput value={view.name} onChange={item.setName} />
+          </GridField>
+          <GridField label="Supertitle">
+            <AsyncTextInput
+              value={system.supertitle}
+              onChange={methods.setSupertitle}
+            />
+          </GridField>
+          <GridField label="Subtitle">
+            <AsyncTextInput
+              value={system.subtitle}
+              onChange={methods.setSubtitle}
+            />
+          </GridField>
 
-        <GridField label="Continuity">
-          <Toggle
-            checked={system.continuity}
-            onChange={methods.setContinuity}
+          <GridField label="Continuity">
+            <Toggle
+              checked={system.continuity}
+              onChange={methods.setContinuity}
+            />
+          </GridField>
+        </InputGrid>
+        <div
+          className={cx(
+            "notes-container",
+            css({
+              flex: "[1]",
+              position: "relative",
+              marginTop: "0.5em",
+            }),
+          )}
+        >
+          <TabContainer
+            defaultTab="description"
+            tabs={[
+              {
+                id: "description",
+                label: "Description",
+                content: (
+                  <InputGrid
+                    className={css({
+                      ...absoluteCover,
+                      gridTemplateRows: "1fr",
+                      margin: "0.5em",
+                    })}
+                  >
+                    <RichTextEditor
+                      name="description"
+                      html={system.description}
+                      className=""
+                      onSave={methods.setDescription}
+                    />
+                  </InputGrid>
+                ),
+              },
+              {
+                id: "effects",
+                label: "Effects",
+                content: (
+                  <InputGrid
+                    className={css({
+                      ...absoluteCover,
+                      gridTemplateRows: "1fr",
+                      margin: "0.5em",
+                    })}
+                  >
+                    <RichTextEditor
+                      name="effects"
+                      html={system.effects}
+                      className=""
+                      onSave={methods.setEffects}
+                    />
+                  </InputGrid>
+                ),
+              },
+            ]}
           />
-        </GridField>
-      </InputGrid>
-      <div
-        className={cx(
-          "notes-container",
-          css({
-            flex: "[1]",
-            position: "relative",
-            marginTop: "0.5em",
-          }),
-        )}
-      >
-        <TabContainer
-          defaultTab="description"
-          tabs={[
-            {
-              id: "description",
-              label: "Description",
-              content: (
-                <InputGrid
-                  className={css({
-                    ...absoluteCover,
-                    gridTemplateRows: "1fr",
-                    margin: "0.5em",
-                  })}
-                >
-                  <RichTextEditor
-                    name="description"
-                    html={system.description}
-                    className=""
-                    onSave={methods.setDescription}
-                  />
-                </InputGrid>
-              ),
-            },
-            {
-              id: "effects",
-              label: "Effects",
-              content: (
-                <InputGrid
-                  className={css({
-                    ...absoluteCover,
-                    gridTemplateRows: "1fr",
-                    margin: "0.5em",
-                  })}
-                >
-                  <RichTextEditor
-                    name="effects"
-                    html={system.effects}
-                    className=""
-                    onSave={methods.setEffects}
-                  />
-                </InputGrid>
-              ),
-            },
-          ]}
-        />
-      </div>
+        </div>
+      </UnderPanels>
       <SlideInNestedPanelRoute direction={editCategoryMemberships}>
         <EditCategoryMemberships
           card={item}

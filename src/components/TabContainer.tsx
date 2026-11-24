@@ -16,6 +16,7 @@ import { chooseTabColumns } from "./chooseTabColumns";
 import { isActivationKey, keyboardFocus } from "./clickable";
 import { getTranslated } from "../functions/getTranslated";
 import { Translate } from "./Translate";
+import { focusableSelector } from "./nestedPanels/focusableSelector";
 
 // gap between the tabs when they're in a grid
 const wrappedGapEm = 0.25;
@@ -130,7 +131,15 @@ export const TabContainer = ({
   // the tab in the Tab order: the selected one, or the first while a tab
   // that isn't in the strip is showing
   const selectedInStrip = stripTabDefs.some((t) => t.id === selected);
-  const tabStop = selectedInStrip ? selected : stripTabDefs[0]?.id;
+  // the tab with focus while the strip has it, so Tab and Shift+Tab leave the
+  // strip from there, rather than stopping again at the selected tab
+  const [focusedTab, setFocusedTab] = useState<string | null>(null);
+  const tabStop =
+    focusedTab !== null && stripTabDefs.some((t) => t.id === focusedTab)
+      ? focusedTab
+      : selectedInStrip
+        ? selected
+        : stripTabDefs[0]?.id;
 
   /**
    * The WAI-ARIA tabs pattern, with manual activation: the arrow keys, Home
@@ -216,6 +225,28 @@ export const TabContainer = ({
     }
   }, [fitKey, selected]);
 
+  // whether anything in the panel can take focus, followed as it changes
+  // (an editor loading, edit mode). A callback ref: the panel is new for each
+  // tab
+  const [panelHasFocusable, setPanelHasFocusable] = useState(true);
+  const observePanel = useCallback((panel: HTMLDivElement | null) => {
+    if (!panel) {
+      return;
+    }
+    const check = () => {
+      setPanelHasFocusable(panel.querySelector(focusableSelector) !== null);
+    };
+    check();
+    const observer = new MutationObserver(check);
+    observer.observe(panel, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["tabindex", "disabled", "contenteditable", "inert"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
   const classes = tabs();
 
   return (
@@ -250,6 +281,15 @@ export const TabContainer = ({
         )}
         ref={observeStrip}
         role="tablist"
+        onFocus={(event) => {
+          const tab = event.target.closest<HTMLElement>("[role=tab]");
+          setFocusedTab(tab?.dataset["tabId"] ?? null);
+        }}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) {
+            setFocusedTab(null);
+          }
+        }}
       >
         {stripTabDefs.map(({ id, label, translate = true }, index) => {
           const radioId = `${baseId}-radio-${id}`;
@@ -270,6 +310,7 @@ export const TabContainer = ({
                 aria-selected={id === selected}
                 aria-controls={id === selected ? panelId : undefined}
                 tabIndex={id === tabStop ? 0 : -1}
+                data-tab-id={id}
                 {...keyboardFocus}
                 onKeyDown={(event) => onTabKeyDown(event, id)}
                 data-interactive={id === selected ? undefined : true}
@@ -310,9 +351,11 @@ export const TabContainer = ({
         key={selected}
         id={panelId}
         role="tabpanel"
-        // out of the Tab order: Firefox puts a box that scrolls in it, but
-        // the panel's contents are reached by tabbing anyway
-        tabIndex={-1}
+        ref={observePanel}
+        // out of the Tab order when what's in it can be tabbed to (Firefox
+        // would put a box that scrolls in it); in it when nothing can (a
+        // read-only Notes tab), so the keyboard can still reach the content
+        tabIndex={panelHasFocusable ? -1 : 0}
         // a tab not in the strip (e.g. Settings) has no tab to name it
         aria-labelledby={selectedInStrip ? tabId(selected) : undefined}
         aria-label={

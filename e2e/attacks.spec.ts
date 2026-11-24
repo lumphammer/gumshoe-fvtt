@@ -281,3 +281,28 @@ test("the spend is labelled with a link to the weapon's ability", async ({
     )
     .toBe(true);
 });
+
+test("changing a target's cover from the keyboard keeps focus on it", async ({
+  page,
+}) => {
+  const {
+    pcId,
+    weaponId,
+    npcTokenIds: [npcTokenId],
+  } = await setUpFight(page, { weapon: knife });
+  await targetTokens(page, [npcTokenId]);
+  await forceDice(page, 6);
+  const weaponSheet = await openSheet(page, `Actor.${pcId}.Item.${weaponId}`);
+  await weaponSheet
+    .getByRole("button", { name: "Attack Cultist 1 with Weapon" })
+    .click();
+
+  // Foundry replaces the card's element when the cover changes
+  const card = lastChatMessage(page);
+  const cover = card.getByLabel("Cover for Cultist 1");
+  await expect(cover).toHaveValue("partial");
+  await cover.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(cover).toHaveValue("full");
+  await expect(cover).toBeFocused();
+});

@@ -120,13 +120,16 @@ test("a settings page which slides in leaves the one under it out of reach", asy
   );
   await menuLink.evaluate((link: HTMLElement) => link.focus());
   await expect(menuLink).not.toBeFocused();
-  // and the page on top takes focus
-  await expect
-    .poll(() =>
-      app.evaluate((app) => {
-        const active = app.ownerDocument.activeElement;
-        return !!active && app.contains(active) && !active.closest("[inert]");
-      }),
-    )
-    .toBe(true);
+  // the page on top takes focus, on its first link
+  await expect(
+    app.getByRole("link", { name: /^Combat options/ }),
+  ).toBeFocused();
+  // and closing it gives focus back to what opened it
+  await page.keyboard.press("Escape");
+  await expect(app.locator("[inert]").getByTestId("settings-menu")).toHaveCount(
+    0,
+  );
+  await expect(
+    app.getByTestId("settings-menu").getByRole("link", { name: /^Combat/ }),
+  ).toBeFocused();
 });

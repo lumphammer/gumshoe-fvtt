@@ -92,7 +92,8 @@ export const CardDisplay = memo(function CardDisplay({
       draggable={draggable}
       onDragStart={onDragStart}
       data-item-id={card.id}
-      {...clickable(handleClick)}
+      // a button which opens the card, in a list (not on its own sheet)
+      {...clickable(interactive ? handleClick : undefined)}
       style={style}
       className={cx(
         "investigator-card-display",

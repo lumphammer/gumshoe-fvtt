@@ -32,6 +32,7 @@ import { createCardRootTracker } from "./createCardRootTracker";
 import { isAttackMessage } from "../module/attacks/attackTargets";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
 import { markKeyboardFocus } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
+import { rememberCardFocus } from "./keepCardFocus";
 
 // a timeout is late enough for Foundry to have swapped a re-rendered message's
 // old element for its new one
@@ -69,6 +70,17 @@ export const installAbilityCardChatWrangler = () => {
       );
       if (el === null) {
         return;
+      }
+
+      // a card re-rendered from the keyboard (its cover, a removed target)
+      // keeps focus on the same control
+      const restoreFocus = rememberCardFocus(
+        chatMessage.id,
+        `.${constants.abilityChatMessageClassName}`,
+      );
+      if (restoreFocus) {
+        // once Foundry has swapped the new element in
+        setTimeout(() => restoreFocus(el), 0);
       }
 
       // attack messages carry their data in `system`, so we don't need to

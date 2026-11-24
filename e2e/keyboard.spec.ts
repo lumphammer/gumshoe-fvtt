@@ -3,6 +3,8 @@ import type { Locator, Page } from "@playwright/test";
 import {
   createActor,
   createOwnedItem,
+  createPlayer,
+  giveOwnership,
   createSceneWithTokens,
   expect,
   lastChatMessage,
@@ -171,7 +173,10 @@ test("a pool tracker is one tab stop, set with the arrow keys", async ({
   await page.keyboard.press("ArrowDown");
   await expect.poll(pool).toBe(start);
 
-  // the top doesn't wrap round to the bottom
+  // the top doesn't wrap round to the bottom (from below it, so Space
+  // changes something)
+  await page.keyboard.press("ArrowLeft");
+  await expect.poll(pool).toBe(start - 1);
   await pip(max).focus();
   await page.keyboard.press("Space");
   await expect.poll(pool).toBe(max);
@@ -371,4 +376,90 @@ test("a chat card's links and buttons open from the keyboard, and Tab moves on f
     .poll(() => sheetOpen(page, `Actor.${actorId}.Item.${abilityId}`))
     .toBe(true);
   expect(await paused(page)).toBe(pausedBefore);
+});
+
+test("Tab leaves the tab strip from the focused tab, not the selected one", async ({
+  page,
+}) => {
+  const { sheet } = await pcSheet(page, "Tabbed Away");
+  const tab = (name: string) =>
+    sheet.getByRole("tablist").getByRole("tab", { name });
+  const panel = sheet.getByRole("tabpanel");
+  const inPanel = () =>
+    panel.evaluate((element) => element.contains(document.activeElement));
+
+  // Notes is selected; arrow back to Equipment and Tab: into the panel, not
+  // back to Notes
+  await tab("Notes").click();
+  await page.keyboard.press("ArrowLeft");
+  await expect(tab("Equipment")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect.poll(inPanel).toBe(true);
+  // and back into the strip lands on the selected tab
+  await page.keyboard.press("Shift+Tab");
+  await expect(tab("Notes")).toBeFocused();
+
+  // Abilities selected; arrow on to Combat and Shift+Tab: out of the strip,
+  // not to Abilities
+  await tab("Abilities").click();
+  await page.keyboard.press("ArrowRight");
+  await expect(tab("Combat")).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect
+    .poll(() =>
+      sheet
+        .getByRole("tablist")
+        .evaluate((element) => element.contains(document.activeElement)),
+    )
+    .toBe(false);
+});
+
+test("a tab panel with nothing to focus in it is a tab stop itself", async ({
+  page,
+  joinAs,
+}) => {
+  // an Observer's Notes tab: the notes are only text
+  const actorId = await createActor(page, { name: "Read Only", type: "pc" });
+  const playerId = await createPlayer(page, "Note Reader");
+  await giveOwnership(page, actorId, playerId, "OBSERVER");
+  const player = await joinAs("Note Reader");
+  const sheet = await openSheet(player, `Actor.${actorId}`);
+  await sheet.getByRole("tab", { name: "Notes" }).click();
+  const panel = sheet.getByRole("tabpanel");
+  await expect(panel).toHaveAttribute("tabindex", "0");
+  await sheet.getByRole("tab", { name: "Notes" }).focus();
+  await player.keyboard.press("Tab");
+  await expect(panel).toBeFocused();
+
+  // one with something in it leaves that to the keyboard
+  await sheet.getByRole("tab", { name: "Abilities" }).click();
+  await expect(sheet.getByRole("tabpanel")).toHaveAttribute("tabindex", "-1");
+});
+
+test("the portrait's Show and Edit work from the keyboard", async ({
+  page,
+}) => {
+  const { sheet } = await pcSheet(page, "Portrayed");
+  const portrait = sheet.getByRole("button", { name: "Image" });
+  await portrait.focus();
+  await page.keyboard.press("Enter");
+  // focus goes to the overlay's buttons; the portrait isn't a button around
+  // them meanwhile
+  const show = sheet.getByRole("button", { name: "Show" });
+  await expect(show).toBeFocused();
+  await expect(sheet.getByRole("button", { name: "Image" })).toHaveCount(0);
+  await page.keyboard.press("Enter");
+  // the image pops out, and the overlay closes, staying closed
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        foundry.applications.instances
+          .values()
+          .some((app) => app.constructor.name.includes("ImagePopout")),
+      ),
+    )
+    .toBe(true);
+  await expect(sheet.getByRole("button", { name: "Show" })).toHaveCount(0);
+  await page.waitForTimeout(300);
+  await expect(sheet.getByRole("button", { name: "Show" })).toHaveCount(0);
 });

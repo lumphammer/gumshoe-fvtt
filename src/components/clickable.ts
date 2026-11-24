@@ -13,6 +13,15 @@ export const isActivationKey = (event: KeyboardEvent) =>
   event.key === "Enter" || event.key === " ";
 
 /**
+ * Enter or Space on the element itself, not bubbling up from something inside
+ * it (a link in a card's text, say, which handles its own keys)
+ */
+const isOwnActivation = (event: KeyboardEvent) =>
+  isActivationKey(event) &&
+  !event.repeat &&
+  event.target === event.currentTarget;
+
+/**
  * The keyboard half of `clickable`: focusable, announced as a button, and
  * activated by Enter and Space. For an element whose clicks do something
  * else, or need the event.
@@ -22,7 +31,7 @@ export const buttonKeys = (onActivate: () => void) => ({
   tabIndex: 0,
   ...keyboardFocus,
   onKeyDown: (event: KeyboardEvent) => {
-    if (isActivationKey(event) && !event.repeat) {
+    if (isOwnActivation(event)) {
       event.preventDefault();
       onActivate();
     }
@@ -48,7 +57,7 @@ export const clickedByKeys = {
   tabIndex: 0,
   ...keyboardFocus,
   onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
-    if (isActivationKey(event) && !event.repeat) {
+    if (isOwnActivation(event)) {
       event.preventDefault();
       event.currentTarget.click();
     }
