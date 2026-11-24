@@ -43,13 +43,11 @@ const HeaderStatBadge = ({ id, stat }: { id: string; stat: Stat }) => {
   // The editor comes and goes, so a save can still be on its way when it's
   // opened again, showing the old value. Undoing to that value would then
   // match the actor's data, and Foundry would drop it as no change: so every
-  // save is sent, in order, without comparing.
+  // save is sent, in order, without comparing. Only this stat is sent (the
+  // field merges), so a save can't carry another badge's old value back.
   const onChange = useCallback(
     (newVal: number) =>
-      actor.update(
-        { system: { stats: { ...actor.system.stats, [id]: newVal } } },
-        { diff: false },
-      ),
+      actor.update({ system: { stats: { [id]: newVal } } }, { diff: false }),
     [actor, id],
   );
 
@@ -138,6 +136,8 @@ const HeaderStatBadge = ({ id, stat }: { id: string; stat: Stat }) => {
       onMouseDown={(event) => {
         if (event.button === 0) open();
       }}
+      // and on a click alone, as screen readers and voice control send
+      onClick={open}
       data-interactive
       className={badge()}
     >
