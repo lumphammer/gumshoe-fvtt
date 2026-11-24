@@ -175,7 +175,6 @@
   "investigator.PoolOfRating": "pool {Pool}, rating {Rating}",
   "investigator.Yes": "Yes",
   "investigator.ChangeImage": "Change image",
-  "investigator.DeleteItem": "Delete item",
   "investigator.CopyCategoryID": "Copy category ID",
   "investigator.PartyMemberAbility": "{ActorName}'s {AbilityName}: {Rating}",
   "investigator.AddAbilityToMember": "{ActorName} has no {AbilityName}: add it",
