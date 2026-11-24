@@ -64,7 +64,15 @@ export const AbilitySlugPlayNormal = memo(function AbilitySlugPlayNormal({
         className={css({ lineHeight: 0.9 })}
       />
       <div className={css({ gridColumn: "rating", justifySelf: "right" })}>
-        {row.pool}/{row.rating}
+        <span aria-hidden="true">
+          {row.pool}/{row.rating}
+        </span>
+        <span className={css({ srOnly: true })}>
+          {getTranslated("PoolOfRating", {
+            Pool: String(row.pool),
+            Rating: String(row.rating),
+          })}
+        </span>
       </div>
       <div
         className={css({

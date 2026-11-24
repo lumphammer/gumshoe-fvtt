@@ -32,7 +32,9 @@ export const SituationalModifierBadge = memo(function SituationalModifierBadge({
     >
       {situation}: {modifier >= 0 && "+"}
       {modifier}
+      {/* aria-pressed says it already */}
       <span
+        aria-hidden="true"
         className={css({
           display: "inline-block",
           paddingLeft: "0.25em",

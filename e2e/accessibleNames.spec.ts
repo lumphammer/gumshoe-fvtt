@@ -5,8 +5,10 @@ import {
   createOwnedItem,
   expect,
   openSheet,
+  setSettings,
   test,
 } from "./foundry.ts";
+import { goTo, openSystemSettings } from "./systemSettings.ts";
 
 // Every control should have a name for a screen reader to announce: an
 // icon-only button needs an `aria-label`, and an input a label.
@@ -74,4 +76,57 @@ test("an NPC sheet's and a weapon sheet's controls all have names", async ({
   expect(await unnamedControls(weaponSheet.locator(".window-content"))).toEqual(
     [],
   );
+});
+
+test("with the optional rules on, a PC sheet's controls all have names", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    useMwInjuryStatus: true,
+    useBonds: true,
+    useNetworkContacts: true,
+    useCards: true,
+    useStabilityRules: true,
+    stabilityAbility: "Stability",
+  });
+  const actorId = await createActor(page, { name: "Ruled PC", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const content = sheet.locator(".window-content");
+  await expect(
+    content.getByRole("combobox", { name: "Injury Status" }),
+  ).toBeVisible();
+  for (const tab of ["Abilities", "Bonds", "Contacts", "Cards"]) {
+    await content.getByRole("tab", { name: tab }).click();
+    await expect(content.getByRole("tab", { name: tab })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(await unnamedControls(content), `on the ${tab} tab`).toEqual([]);
+  }
+  // the Cards tab's way into its settings is a link
+  await expect(content.getByRole("link", { name: "Settings" })).toBeVisible();
+});
+
+test("a settings page which slides in leaves the one under it out of reach", async ({
+  page,
+}) => {
+  const app = await openSystemSettings(page);
+  const menuLink = app.getByTestId("settings-menu").getByRole("link").first();
+  await expect(menuLink).toBeVisible();
+  await goTo(app, "Combat");
+  // inert: not focusable, and hidden from screen readers
+  await expect(app.locator("[inert]").getByTestId("settings-menu")).toHaveCount(
+    1,
+  );
+  await menuLink.evaluate((link: HTMLElement) => link.focus());
+  await expect(menuLink).not.toBeFocused();
+  // and the page on top takes focus
+  await expect
+    .poll(() =>
+      app.evaluate((app) => {
+        const active = app.ownerDocument.activeElement;
+        return !!active && app.contains(active) && !active.closest("[inert]");
+      }),
+    )
+    .toBe(true);
 });

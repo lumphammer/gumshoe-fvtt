@@ -13,6 +13,7 @@ import { systemLogger } from "./functions/utilities";
 import { handleMwItemType } from "./startup/disableMwItemType";
 import { injectGlobalHelper } from "./startup/injectGlobalHelper";
 import { installAbilityCardChatWrangler } from "./startup/installAbilityCardChatWrangler";
+import { hideDecorativeIcons } from "./startup/hideDecorativeIcons";
 import { installEditAttackHandler } from "./startup/installEditAttackHandler";
 import { installChatLogScrollKeeper } from "./startup/installChatLogScrollKeeper";
 import { installAbilityCategoryHookHandler } from "./startup/installAbilityCategoryHookHandler";
@@ -75,6 +76,7 @@ Hooks.once("ready", async () => {
   }
 });
 
+hideDecorativeIcons();
 installAbilityCategoryHookHandler();
 installItemImageHookHandler();
 installRenderSettingsHandler();

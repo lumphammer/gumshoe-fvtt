@@ -8,6 +8,7 @@ import { isTurnPassingCombat } from "../../module/combat/turnPassingCombat";
 import { NativeDropdownMenu, NativeMenuItem } from "../inputs/NativeMenu";
 import { localize } from "./functions";
 import { css, cx } from "../../styled-system/css";
+import { getTranslated } from "../../functions/getTranslated";
 
 export const EncounterNav = memo(
   ({
@@ -51,6 +52,7 @@ export const EncounterNav = memo(
                 paddingRight: "0.1em",
               })}
               label={<FaChevronDown />}
+              ariaLabel={getTranslated("EncounterTypes")}
             >
               <NativeMenuItem
                 icon={<LuSwords />}

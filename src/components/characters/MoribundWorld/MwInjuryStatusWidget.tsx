@@ -4,6 +4,7 @@ import { useIsEditable } from "../../../hooks/useIsEditable";
 import type { MwInjuryStatus } from "../../../types";
 import { select } from "../../../styled-system/recipes";
 import { css, cx } from "../../../styled-system/css";
+import { useId } from "react";
 
 interface MwInjuryStatusWidgetProps {
   status: MwInjuryStatus;
@@ -14,6 +15,7 @@ export const MwInjuryStatusWidget = ({
   status,
   setStatus,
 }: MwInjuryStatusWidgetProps) => {
+  const labelId = useId();
   assertGame(game);
 
   const isEditable = useIsEditable();
@@ -38,6 +40,7 @@ export const MwInjuryStatusWidget = ({
       }}
     >
       <div
+        id={labelId}
         className={css({
           fontSize: "0.8em",
         })}
@@ -45,6 +48,7 @@ export const MwInjuryStatusWidget = ({
         Injury Status
       </div>
       <select
+        aria-labelledby={labelId}
         className={cx(
           select(),
           css({

@@ -1,9 +1,10 @@
 import { nanoid } from "nanoid";
-import React, { Fragment, useCallback, useMemo } from "react";
+import React, { Fragment, useCallback, useContext, useMemo } from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
 import { css, cx } from "../../styled-system/css";
 import { button } from "../../styled-system/recipes";
+import { IdContext, labelIdFor } from "../IdContext";
 
 type CheckButtonsProps = {
   options: Array<{
@@ -33,9 +34,13 @@ export const CheckButtons = ({
   );
 
   const radioGroup = useMemo(() => nanoid(), []);
+  const fieldId = useContext(IdContext);
 
   return (
     <div
+      role="radiogroup"
+      // named by the field it's in (a `GridField`'s label)
+      aria-labelledby={fieldId ? labelIdFor(fieldId) : undefined}
       className={css({
         display: "flex",
         flexDirection: "row",
