@@ -12,6 +12,7 @@ import { Translate } from "../Translate";
 import { AbilityBadges } from "./AbilityBadges";
 import { PoolCheckbox } from "./PoolCheckbox";
 import { css } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 const range = (from: number, to: number): number[] => {
   if (to < from) {
@@ -52,9 +53,9 @@ export const PoolTracker = memo(function PoolTracker({
     >
       <h2 className={css({ gridColumn: "start / end" })}>
         <a
-          onClick={() => {
+          {...clickable(() => {
             openSheet(ability);
-          }}
+          })}
         >
           {tracker.name}
         </a>

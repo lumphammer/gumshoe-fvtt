@@ -13,6 +13,7 @@ import {
 import { css, cx } from "../styled-system/css";
 import { tabs } from "../styled-system/recipes";
 import { chooseTabColumns } from "./chooseTabColumns";
+import { isActivationKey, keyboardFocus } from "./clickable";
 import { Translate } from "./Translate";
 
 // gap between the tabs when they're in a grid
@@ -102,9 +103,8 @@ export const TabContainer = ({
     () => tabDefs.find((t) => t.id === selected),
     [selected, tabDefs],
   );
-  const onChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const id = e.currentTarget.value;
+  const select = useCallback(
+    (id: string) => {
       setOptimistic(id);
       startTransition(() => {
         setSelected(id);
@@ -112,6 +112,12 @@ export const TabContainer = ({
       });
     },
     [onSelect],
+  );
+  const onChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      select(e.currentTarget.value);
+    },
+    [select],
   );
 
   const stripTabDefs = tabDefs.filter((t) => !t.hidden);
@@ -125,10 +131,19 @@ export const TabContainer = ({
   // the ResizeObserver won't notice). It's replaced when the selected tab
   // changes (see the `key` below)
   const stripRef = useRef<HTMLDivElement | null>(null);
+  // a tab chosen from the keyboard: the new strip focuses it, as focus went
+  // with the old one
+  const refocusSelected = useRef(false);
   const observeStrip = useCallback((strip: HTMLDivElement | null) => {
     stripRef.current = strip;
     if (!strip) {
       return;
+    }
+    if (refocusSelected.current) {
+      refocusSelected.current = false;
+      strip
+        .querySelector<HTMLElement>(":scope > label[data-selected]")
+        ?.focus();
     }
     fitTabStrip(strip);
     let lastWidth = strip.offsetWidth;
@@ -221,6 +236,17 @@ export const TabContainer = ({
               <label
                 htmlFor={htmlId}
                 tabIndex={0}
+                {...keyboardFocus}
+                // the radio can't be focused, so its label takes the keys
+                onKeyDown={(event) => {
+                  if (isActivationKey(event)) {
+                    event.preventDefault();
+                    if (id !== selected) {
+                      refocusSelected.current = true;
+                      select(id);
+                    }
+                  }
+                }}
                 data-interactive={id === selected ? undefined : true}
                 // the selected tab's state, for its look (the tabs recipe)
                 data-selected={id === selected ? true : undefined}

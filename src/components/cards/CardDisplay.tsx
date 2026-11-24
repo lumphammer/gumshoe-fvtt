@@ -10,6 +10,7 @@ import { useSettings } from "../../hooks/useSettings";
 import { cx } from "../../styled-system/css";
 import { summarizeCategoryMemberships } from "./functions";
 import type { CardsViewMode } from "./types";
+import { clickable } from "../clickable";
 import { card as cardClass } from "../../styled-system/recipes";
 
 interface CardDisplayProps {
@@ -91,8 +92,7 @@ export const CardDisplay = memo(function CardDisplay({
       draggable={draggable}
       onDragStart={onDragStart}
       data-item-id={card.id}
-      tabIndex={0}
-      onClick={handleClick}
+      {...clickable(handleClick)}
       style={style}
       className={cx(
         "investigator-card-display",

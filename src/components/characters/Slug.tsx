@@ -3,6 +3,7 @@ import React from "react";
 import { useDragStart } from "../../hooks/useDragStart";
 import { badge } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
+import { clickable } from "../clickable";
 
 interface SlugProps {
   onClick?: () => void;
@@ -16,11 +17,7 @@ export const Slug = ({ onClick, item, children }: SlugProps) => {
 
   return (
     <a
-      onClick={() => {
-        if (onClick !== undefined) {
-          onClick();
-        }
-      }}
+      {...clickable(onClick)}
       data-item-id={item?.id}
       onDragStart={onDragStart}
       draggable="true"

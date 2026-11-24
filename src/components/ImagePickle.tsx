@@ -5,6 +5,8 @@ import { assertGame } from "../functions/isGame";
 import { FilePicker, ImagePopout } from "../fvtt-exports";
 import { useIsDocumentOwner } from "../hooks/useIsDocumentOwner";
 import { useDocumentSheetContext } from "../hooks/useSheetContexts";
+import { getTranslated } from "../functions/getTranslated";
+import { buttonKeys } from "./clickable";
 import { ImagePickerLink } from "./ImagePickerLink";
 import { surface } from "../styled-system/recipes";
 import { css, cx } from "../styled-system/css";
@@ -100,8 +102,24 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
     [isOwner, showImage],
   );
 
+  // from the keyboard, the overlay closes when focus leaves it instead
+  const keyboardProps = buttonKeys(() => {
+    if (isOwner) {
+      setShowOverlay(true);
+    } else {
+      showImage();
+    }
+  });
+
   return (
     <div
+      {...keyboardProps}
+      aria-label={getTranslated("Image")}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setShowOverlay(false);
+        }
+      }}
       className={cx(
         className,
         css({

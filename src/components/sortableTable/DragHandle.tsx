@@ -5,6 +5,7 @@ import { FaGripLines } from "react-icons/fa6";
 import { getTranslated } from "../../functions/getTranslated";
 import { dragHandle } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
+import { keyboardFocus } from "../clickable";
 
 type DragHandleProps = {
   setActivatorNodeRef?: (node: HTMLDivElement) => void;
@@ -22,6 +23,8 @@ export const DragHandle = ({
     <div
       tabIndex={0}
       {...attributes}
+      // dnd-kit picks up with Space or Enter, which Foundry would take
+      {...keyboardFocus}
       aria-label={getTranslated("Drag to reorder")}
       className={cx(
         dragHandle(),

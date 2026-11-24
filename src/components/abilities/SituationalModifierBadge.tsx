@@ -5,6 +5,7 @@ import type { DeepReadonly } from "../../module/snapshots/createSnapshotStore";
 import { css, cx } from "../../styled-system/css";
 import { badge } from "../../styled-system/recipes";
 import type { SituationalModifier } from "../../types";
+import { clickable } from "../clickable";
 
 interface SituationalModifierBadgeProps {
   situationalModifier: DeepReadonly<SituationalModifier>;
@@ -24,17 +25,9 @@ export const SituationalModifierBadge = memo(function SituationalModifierBadge({
   };
   return (
     <a
-      role="button"
-      tabIndex={0}
+      {...clickable(toggle)}
       aria-pressed={isActive}
       data-interactive
-      onClick={toggle}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          toggle();
-        }
-      }}
       className={cx(badge(), css({ marginInline: "0.25em" }))}
     >
       {situation}: {modifier >= 0 && "+"}

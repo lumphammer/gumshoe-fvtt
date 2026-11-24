@@ -2,6 +2,7 @@ import { memo, useCallback } from "react";
 
 import { useIsEditable } from "../../hooks/useIsEditable";
 import { button } from "../../styled-system/recipes";
+import { clickable } from "../clickable";
 
 type PoolCheckboxProps = {
   value: number;
@@ -21,8 +22,7 @@ export const PoolCheckbox = memo(function PoolCheckbox({
 
   return (
     <a
-      tabIndex={isEditable ? 0 : undefined}
-      onClick={isEditable ? onClick : undefined}
+      {...clickable(isEditable ? onClick : undefined)}
       aria-disabled={!isEditable}
       // a pip, pressed when it's the pool's value
       data-interactive

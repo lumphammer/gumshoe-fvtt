@@ -171,6 +171,7 @@
   "investigator.ExportSettingsToFile": "Export settings to file",
   "investigator.ImportSettingsFromFile": "Import settings from file",
   "investigator.Import": "Import",
+  "investigator.Image": "Image",
   "investigator.Export": "Export",
   "investigator.GMNotes": "GM Notes",
   "investigator.HideSecret": "Hide secret",

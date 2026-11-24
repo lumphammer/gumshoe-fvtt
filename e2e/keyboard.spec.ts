@@ -1,0 +1,130 @@
+import type { Locator, Page } from "@playwright/test";
+
+import {
+  createActor,
+  createSceneWithTokens,
+  expect,
+  openSheet,
+  test,
+} from "./foundry.ts";
+
+// Foundry takes Tab (cycling tokens) and Space (pause) unless the focused
+// element is a text input, a button in a form, or says it takes keys itself
+// (`data-keyboard-focus`). Everything we make focusable has to, or the
+// keyboard gets stuck on it. Foundry only takes Tab with a scene on the
+// canvas, as in play.
+test.use({ canvas: true });
+
+/** A short description of the focused element, to tell them apart */
+function focused(page: Page) {
+  return page.evaluate(() => {
+    const element = document.activeElement as HTMLElement | null;
+    if (!element || element === document.body) return "(nothing)";
+    const all = Array.from(document.querySelectorAll("*"));
+    return `${all.indexOf(element)} ${element.tagName} ${element.innerText?.trim().slice(0, 20) ?? ""}`;
+  });
+}
+
+async function pcSheet(page: Page, name: string) {
+  const actorId = await createActor(page, { name, type: "pc" });
+  await createSceneWithTokens(page, [actorId]);
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  return { actorId, sheet };
+}
+
+function paused(page: Page) {
+  return page.evaluate(() => game.paused);
+}
+
+test("Tab moves on through a PC sheet, and reaches its links", async ({
+  page,
+}) => {
+  const { sheet } = await pcSheet(page, "Tabbed Through");
+  const content = sheet.locator(".window-content");
+  await content.getByRole("textbox").first().focus();
+
+  const visited: string[] = [];
+  const reached = new Set<string>();
+  for (let i = 0; i < 80; i++) {
+    await page.keyboard.press("Tab");
+    const now = await focused(page);
+    // Foundry cancelling the Tab leaves focus where it was
+    expect(now, `Tab number ${i + 1} didn't move`).not.toBe(visited.at(-1));
+    visited.push(now);
+    const role = await page.evaluate(() => {
+      const element = document.activeElement as HTMLElement;
+      if (element.closest("[data-testid=pool-tracker] h2")) return "tracker";
+      if (element.matches("[data-testid=pool-tracker] [role=button]")) {
+        return "pip";
+      }
+      if (element.matches(".tab-strip > label")) return "tab";
+      if (element.matches(".inv-default-ability-name-link")) return "ability";
+      return "other";
+    });
+    reached.add(role);
+  }
+  expect([...reached].sort()).toEqual(
+    ["ability", "other", "pip", "tab", "tracker"].sort(),
+  );
+});
+
+test("Enter and Space choose a tab, keep focus on it, and don't pause the game", async ({
+  page,
+}) => {
+  const { sheet } = await pcSheet(page, "Keyed Tabs");
+  const pausedBefore = await paused(page);
+  const tab = (name: string) =>
+    sheet.locator(".tab-strip > label", { hasText: name });
+
+  for (const [key, name] of [
+    ["Enter", "Equipment"],
+    [" ", "Notes"],
+  ] as const) {
+    await tab(name).focus();
+    await page.keyboard.press(key === " " ? "Space" : key);
+    await expect(tab(name)).toHaveAttribute("data-selected");
+    await expect(tab(name)).toBeFocused();
+  }
+  expect(await paused(page)).toBe(pausedBefore);
+});
+
+test("Enter sets a pool from its pip, and Space opens an ability", async ({
+  page,
+}) => {
+  const { actorId, sheet } = await pcSheet(page, "Keyed Pools");
+  const pausedBefore = await paused(page);
+  const tracker: Locator = sheet.getByTestId("pool-tracker").first();
+  const name = (await tracker.locator("h2").innerText()).trim();
+  const pip = tracker.getByRole("button", { name: "1", exact: true });
+
+  await pip.focus();
+  await page.keyboard.press("Enter");
+  await expect
+    .poll(() =>
+      page.evaluate(
+        ({ actorId, name }) =>
+          (
+            game.actors.get(actorId)!.items.getName(name)!.system as {
+              pool: number;
+            }
+          ).pool,
+        { actorId, name },
+      ),
+    )
+    .toBe(1);
+
+  const link = sheet.locator(".inv-default-ability-name-link").first();
+  const itemId = await link.getAttribute("data-item-id");
+  await link.focus();
+  await page.keyboard.press("Space");
+  await expect
+    .poll(() =>
+      page.evaluate(
+        ({ actorId, itemId }) =>
+          game.actors.get(actorId)!.items.get(itemId!)!.sheet!.rendered,
+        { actorId, itemId },
+      ),
+    )
+    .toBe(true);
+  expect(await paused(page)).toBe(pausedBefore);
+});
