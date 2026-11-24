@@ -8,7 +8,7 @@ import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { assertPCActor } from "../../module/actors/pc";
 import { css, cx } from "../../styled-system/css";
 import { badge } from "../../styled-system/recipes";
-import { clickable } from "../clickable";
+import { buttonKeys } from "../clickable";
 import { AsyncNumberInput } from "../inputs/AsyncNumberInput";
 
 /**
@@ -40,13 +40,24 @@ const HeaderStatBadge = ({ id, stat }: { id: string; stat: Stat }) => {
   // closed from the keyboard, no when focus has moved somewhere else
   const refocus = useRef(false);
 
+  // The editor comes and goes, so a save can still be on its way when it's
+  // opened again, showing the old value. Undoing to that value would then
+  // match the actor's data, and Foundry would drop it as no change: so every
+  // save is sent, in order, without comparing.
   const onChange = useCallback(
     (newVal: number) =>
-      actor.update({
-        system: { stats: { ...actor.system.stats, [id]: newVal } },
-      }),
+      actor.update(
+        { system: { stats: { ...actor.system.stats, [id]: newVal } } },
+        { diff: false },
+      ),
     [actor, id],
   );
+
+  // losing permission removes the editor without a blur: end the edit, so
+  // getting it back doesn't bring back an unfocused editor
+  if (editing && !isEditable) {
+    setEditing(false);
+  }
 
   useEffect(() => {
     if (editing) {
@@ -59,11 +70,7 @@ const HeaderStatBadge = ({ id, stat }: { id: string; stat: Stat }) => {
     }
   }, [editing]);
 
-  const label = (
-    <span className={css({ color: "[inherit]", opacity: "[0.8]" })}>
-      {stat.name}
-    </span>
-  );
+  const label = <span>{stat.name}</span>;
 
   if (editing && isEditable) {
     return (
@@ -84,7 +91,11 @@ const HeaderStatBadge = ({ id, stat }: { id: string; stat: Stat }) => {
           }
         }}
         onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === "Escape") {
+          if (
+            (event.key === "Enter" || event.key === "Escape") &&
+            // not while an input method is composing: its Enter commits it
+            !event.nativeEvent.isComposing
+          ) {
             event.preventDefault();
             event.stopPropagation();
             refocus.current = true;
@@ -112,6 +123,8 @@ const HeaderStatBadge = ({ id, stat }: { id: string; stat: Stat }) => {
     </>
   );
 
+  const open = () => setEditing(true);
+
   if (!isEditable) {
     return <span className={badge()}>{content}</span>;
   }
@@ -119,7 +132,12 @@ const HeaderStatBadge = ({ id, stat }: { id: string; stat: Stat }) => {
   return (
     <a
       ref={badgeRef as React.RefObject<HTMLAnchorElement>}
-      {...clickable(() => setEditing(true))}
+      {...buttonKeys(open)}
+      // on press, not click: pressing here closes another badge's editor,
+      // which shifts the row, so the release can land somewhere else
+      onMouseDown={(event) => {
+        if (event.button === 0) open();
+      }}
       data-interactive
       className={badge()}
     >
