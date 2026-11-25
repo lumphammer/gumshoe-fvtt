@@ -80,7 +80,6 @@ export const ItemSheetFramework = ({ children }: PropsWithChildren) => {
             // full-frame layout, past its padding
             "--inv-image-pickle-clearance":
               "max(0px, calc(var(--inv-titlebar-clearance) - 0.5em))",
-            transform: "rotateZ(-2deg)",
             // as tall as the title (and the titlebar, in the full-frame
             // layout), down to the body
             width: "6em",

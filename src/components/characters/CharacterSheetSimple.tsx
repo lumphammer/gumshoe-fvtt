@@ -94,8 +94,6 @@ export const CharacterSheetSimple = ({
                 width: "auto",
                 height: "100%",
               },
-
-              transform: "rotateZ(-1deg)",
             })}
           />
         </div>

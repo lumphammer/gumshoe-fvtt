@@ -392,6 +392,19 @@ test("the layout is the seed's, standard by default", () => {
   ).toBe("full-frame");
 });
 
+test("portraits are tilted: items one way, actors towards the nearer diagonal", () => {
+  const tilts = (layout?: "full-frame") =>
+    catalogue(layout ? { layout } : {}).portrait?.variants?.kind;
+  expect(tilts()).toEqual({
+    actor: { transform: "rotateZ(2deg)" },
+    item: { transform: "rotateZ(-2deg)" },
+  });
+  expect(tilts("full-frame")).toEqual({
+    actor: { transform: "rotateZ(-2deg)" },
+    item: { transform: "rotateZ(-2deg)" },
+  });
+});
+
 test("a window style goes on the app frame", () => {
   expect(
     catalogue({ appWindowStyle: { boxShadow: "0 0 20px red" } }).appFrame,

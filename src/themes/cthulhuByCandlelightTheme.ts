@@ -1,5 +1,5 @@
 import { systemId } from "../constants";
-import { underlineTabs } from "./helpers";
+import { tiltedPortrait, underlineTabs } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 // const gradient =
@@ -90,6 +90,7 @@ export const cthulhuByCandlelightTheme = defineThemeV2({
     display: { family: "'Federo', serif", caps: "small-caps" },
   },
   catalogue: {
+    portrait: tiltedPortrait,
     appFrame: {
       base: {
         root: {

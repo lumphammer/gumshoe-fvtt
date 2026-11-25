@@ -1,3 +1,4 @@
+import { tiltedPortrait } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 const glow = "#bbf";
@@ -30,6 +31,7 @@ export const highContrastTheme = defineThemeV2({
     display: { scale: 1.1 },
   },
   catalogue: {
+    portrait: tiltedPortrait,
     sheetRoot: {
       base: {
         background: `linear-gradient(

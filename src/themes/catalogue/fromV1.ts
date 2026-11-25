@@ -515,6 +515,25 @@ function solidsFromV1(): ThemeCatalogue {
 }
 
 /**
+ * V1 tilted portraits, like photos resting on the sheet: items one way, and
+ * actors the other in the standard layout, but towards the sheet's nearer
+ * diagonal in the full-frame one, where the portrait is at the top left.
+ */
+function portraitsFromV1({ layout }: ThemeV1): ThemeCatalogue {
+  const actorTilt = layout === "full-frame" ? "-2deg" : "2deg";
+  return {
+    portrait: {
+      variants: {
+        kind: {
+          actor: { transform: `rotateZ(${actorTilt})` },
+          item: { transform: "rotateZ(-2deg)" },
+        },
+      },
+    },
+  };
+}
+
+/**
  * The catalogue a V1 theme's styles become. `theme` is the seed as
  * `themeFactory` filled it in: V1's defaults for the fields a seed leaves
  * out are part of the V1 contract too, so they become overrides as well.
@@ -542,6 +561,7 @@ export function catalogueFromV1(theme: ThemeV1): ThemeCatalogue {
       },
     },
     ...logoFromV1(theme),
+    ...portraitsFromV1(theme),
     ...cardsFromV1(theme),
     ...panelsFromV1(theme),
     ...tabsFromV1(theme),

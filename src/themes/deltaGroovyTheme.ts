@@ -1,5 +1,6 @@
 import { systemId } from "../constants";
 import { createStarburstGradient } from "./functions";
+import { tiltedPortrait } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 const colors = [
@@ -72,6 +73,7 @@ export const deltaGroovyTheme = defineThemeV2({
     display: { family: "'Spicy Rice', serif", scale: 1.1 },
   },
   catalogue: {
+    portrait: tiltedPortrait,
     sheetRoot: {
       base: {
         backgroundImage: paper,

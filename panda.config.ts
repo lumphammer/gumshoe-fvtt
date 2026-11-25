@@ -19,6 +19,7 @@ import {
 } from "./src/themes/catalogue/lists";
 import { logo } from "./src/themes/catalogue/logo";
 import { panel } from "./src/themes/catalogue/panel";
+import { portrait } from "./src/themes/catalogue/portrait";
 import { region } from "./src/themes/catalogue/region";
 import { select } from "./src/themes/catalogue/select";
 import { sheetRoot } from "./src/themes/catalogue/sheetRoot";
@@ -101,6 +102,7 @@ export default defineConfig({
       outcome,
       panel,
       partyCell,
+      portrait,
       region,
       richText,
       row,

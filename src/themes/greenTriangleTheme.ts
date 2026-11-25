@@ -1,4 +1,5 @@
 import { systemId } from "../constants";
+import { tiltedPortrait } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 const glow = "#cfffc2";
@@ -39,6 +40,7 @@ export const greenTriangleTheme = defineThemeV2({
     },
   },
   catalogue: {
+    portrait: tiltedPortrait,
     appFrame: {
       // on a character sheet the strip is over the dark canvas
       compoundVariants: [

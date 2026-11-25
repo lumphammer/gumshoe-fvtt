@@ -1,4 +1,5 @@
 import { systemId } from "../constants";
+import { tiltedPortrait } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 const wallpaper = `url(systems/${systemId}/assets/wallpaper/marjanblan-5Ft4NWTmeJE-unsplash.webp)`;
@@ -35,6 +36,7 @@ export const tealTheme = defineThemeV2({
     display: { family: "'Federo', serif", caps: "small-caps" },
   },
   catalogue: {
+    portrait: tiltedPortrait,
     sheetRoot: {
       variants: {
         sheet: {

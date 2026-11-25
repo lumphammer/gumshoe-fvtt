@@ -123,6 +123,12 @@ export const recipeShapes = {
     },
     states: [],
   },
+  portrait: {
+    className: "inv-portrait",
+    slots: [],
+    variants: { kind: ["actor", "item"] },
+    states: [],
+  },
   region: { className: "inv-region", slots: [], variants: {}, states: [] },
   richText: { className: "inv-rich-text", slots: [], variants: {}, states: [] },
   row: {

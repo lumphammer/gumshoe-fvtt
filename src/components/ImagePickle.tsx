@@ -8,7 +8,7 @@ import { useDocumentSheetContext } from "../hooks/useSheetContexts";
 import { getTranslated } from "../functions/getTranslated";
 import { buttonKeys, keyboardFocus } from "./clickable";
 import { ImagePickerLink } from "./ImagePickerLink";
-import { surface } from "../styled-system/recipes";
+import { portrait, surface } from "../styled-system/recipes";
 import { css, cx } from "../styled-system/css";
 
 const cover = {
@@ -146,12 +146,9 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
         }
       }}
       className={cx(
+        portrait({ kind: doc instanceof Actor ? "actor" : "item" }),
+        css({ position: "relative" }),
         className,
-        css({
-          borderRadius: "[0.2em]",
-          boxShadow: "[0em 0em 0.5em 0.1em rgba(0,0,0,0.5)]",
-          position: "relative",
-        }),
       )}
       data-testid="image-pickle"
       onClick={(e) => onClickImage(e)}
