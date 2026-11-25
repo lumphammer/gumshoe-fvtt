@@ -4,7 +4,8 @@
  * `pnpm generate:catalogue`.
  *
  * Each state's defaults, in its layer (states.css has the order), where a
- * theme's changes to them go too.
+ * theme's changes to them go too. Then a recipe's own defaults for a state
+ * layer, in its `default` sub-layer (a theme's changes go after them).
  */
 @layer system.states.selected {
   .inv-row:is(
@@ -121,5 +122,28 @@
   input:disabled + :is(label, span) > .inv-toggle__track {
     opacity: 0.5;
     cursor: default;
+  }
+}
+@layer system.states.hover.default {
+  [data-inv-theme]
+    .inv-logo__front[data-interactive]:not(
+      :disabled,
+      [aria-disabled="true"],
+      [data-disabled]
+    ):hover {
+    box-shadow: inset 0 0 0 100vmax
+      color-mix(in srgb, var(--inv-feedback) 15%, transparent);
+    border-radius: 0.1em;
+    cursor: text;
+  }
+  [data-inv-theme]
+    .inv-logo__front_sub[data-interactive]:not(
+      :disabled,
+      [aria-disabled="true"],
+      [data-disabled]
+    ):hover {
+    box-shadow: inset 0 0 0 100vmax
+      color-mix(in srgb, var(--inv-feedback) 15%, transparent);
+    border-radius: 0.1em;
   }
 }

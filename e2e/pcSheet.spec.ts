@@ -246,3 +246,172 @@ test("open PC and party sheets follow themes installed and replaced at runtime",
     }
   }
 });
+
+test("the occupation is a button in the title, which opens its sheet, or makes one", async ({
+  page,
+}) => {
+  const actorId = await createActor(page, { name: "Armitage", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  // the stats panel has no field for it
+  await expect(sheet.locator("label", { hasText: /^Occupation$/ })).toHaveCount(
+    0,
+  );
+  // named for what it is, as well as what it says
+  const occupation = sheet.getByRole("button", {
+    name: "Occupation: Investigator",
+  });
+  const occupationId = await page.evaluate(
+    (id) =>
+      game.actors.get(id)!.items.find((i) => i.type === "personalDetail")!.id,
+    actorId,
+  );
+
+  // a tint when hovered, as for the name (logoStates)
+  const tint = (locator: typeof occupation) =>
+    locator.evaluate((el) => getComputedStyle(el).boxShadow);
+  expect(await tint(occupation)).toBe("none");
+  await occupation.hover();
+  await expect.poll(() => tint(occupation)).toContain("inset");
+  const title = sheet.getByRole("textbox", { name: "Name (title)" });
+  await title.hover();
+  await expect.poll(() => tint(title)).toContain("inset");
+
+  await occupation.click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        ([actorId, itemId]) =>
+          game.actors.get(actorId)!.items.get(itemId)!.sheet!.rendered,
+        [actorId, occupationId] as const,
+      ),
+    )
+    .toBe(true);
+  await page.evaluate(
+    ([actorId, itemId]) =>
+      game.actors.get(actorId)!.items.get(itemId)!.sheet!.close(),
+    [actorId, occupationId] as const,
+  );
+
+  // with none, clicking it makes one
+  await page.evaluate(
+    async ([actorId, itemId]) => {
+      await game.actors.get(actorId)!.items.get(itemId)!.delete();
+    },
+    [actorId, occupationId] as const,
+  );
+  await occupation.click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (id) =>
+          game.actors.get(id)!.items.filter((i) => i.type === "personalDetail")
+            .length,
+        actorId,
+      ),
+    )
+    .toBe(1);
+});
+
+test("with no personal details, hidden notes or stats in it, the stats region isn't drawn", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    personalDetails: [],
+    mwHiddenShortNotes: [],
+    pcStats: {
+      hitThreshold: { name: "Hit threshold", default: 3, placement: "combat" },
+    },
+  });
+  const actorId = await createActor(page, { name: "Bare", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const region = sheet.locator(".grid-area_stats");
+  await expect(region).toHaveCount(0);
+
+  // any one of them brings it back: a stat in the header...
+  await setSettings(page, {
+    pcStats: { sanity: { name: "Sanity", default: 10 } },
+  });
+  await expect(region).toBeVisible();
+  // ...a hidden note, for the GM...
+  await setSettings(page, {
+    pcStats: {},
+    mwHiddenShortNotes: ["Secret"],
+  });
+  await expect(region).toBeVisible();
+  await setSettings(page, { mwHiddenShortNotes: [] });
+  await expect(region).toHaveCount(0);
+  // ...or a personal detail
+  await setSettings(page, {
+    personalDetails: [{ name: "Alias", type: "text" }],
+  });
+  await expect(region).toBeVisible();
+});
+
+test("several occupations are all shown in the title, and all opened", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    personalDetails: [{ name: "Drive", type: "item" }],
+  });
+  const actorId = await createActor(page, { name: "Wilmarth", type: "pc" });
+  // moved into the occupation slot (adding one there asks what to do)
+  const folkloristId = await createOwnedItem(page, actorId, {
+    name: "Folklorist",
+    type: "personalDetail",
+    system: { slotIndex: 0 },
+  });
+  await page.evaluate(
+    async ([actorId, itemId]) => {
+      await game.actors
+        .get(actorId)!
+        .items.get(itemId)!
+        .update({ system: { slotIndex: -1 } });
+    },
+    [actorId, folkloristId] as const,
+  );
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  const occupation = sheet.getByRole("button", {
+    name: "Occupation: Investigator / Folklorist",
+  });
+  await occupation.click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        (id) =>
+          game.actors
+            .get(id)!
+            .items.filter(
+              (i) => i.type === "personalDetail" && i.sheet!.rendered,
+            ).length,
+        actorId,
+      ),
+    )
+    .toBe(2);
+});
+
+test("with no occupation and a blank generic one, the title says what it's for", async ({
+  page,
+}) => {
+  await setSettings(page, { genericOccupation: "" });
+  const actorId = await createActor(page, { name: "Peaslee", type: "pc" });
+  // the one a new PC gets is named for the slot, too
+  expect(
+    await page.evaluate(
+      (id) =>
+        game.actors.get(id)!.items.find((i) => i.type === "personalDetail")!
+          .name,
+      actorId,
+    ),
+  ).toBe("Occupation");
+  await page.evaluate(async (id) => {
+    const actor = game.actors.get(id)!;
+    await actor.deleteEmbeddedDocuments(
+      "Item",
+      actor.items.filter((i) => i.type === "personalDetail").map((i) => i.id),
+    );
+  }, actorId);
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  await expect(
+    sheet.getByRole("button", { name: "Occupation: Occupation" }),
+  ).toHaveText("Occupation");
+});

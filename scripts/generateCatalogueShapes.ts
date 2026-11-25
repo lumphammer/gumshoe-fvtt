@@ -1,6 +1,9 @@
 // Writes the catalogue's shapes, from its recipes (the ones registered in
 // panda.config.ts) and their element states (elementStateDefaults.ts): each
 // recipe's class name, slots, variants with their values, and states.
+// (A recipe can also have its own default for a state layer, as the logo has
+// for hover feedback: that goes in the CSS, and not in its shape, as any
+// recipe's elements can have the state layers.)
 // ThemeV2's overrides are typed and checked against them (docs/theming.md,
 // "Themes (ThemeV2)"). And from the states, their defaults as CSS, in each
 // state's layer, and the table of them in docs/theming.md.
@@ -13,6 +16,7 @@ import { join } from "node:path";
 
 import type {
   ElementState,
+  StateLayer,
   ThemeStyle,
 } from "@lumphammer/investigator-fvtt-types";
 
@@ -25,6 +29,8 @@ import {
   elementStates,
   elementStateTells,
   isElementState,
+  isStateLayer,
+  stateLayers,
 } from "../src/themes/catalogue/stateLayers";
 import { styleCss } from "../src/themes/catalogue/styleCss";
 
@@ -66,7 +72,7 @@ for (const [name, states] of Object.entries(elementStateDefaults)) {
     fail(`elementStateDefaults: no such recipe "${name}"`);
   }
   for (const state of Object.keys(states)) {
-    if (!isElementState(state)) {
+    if (!isElementState(state) && !isStateLayer(state)) {
       fail(`elementStateDefaults.${name}: no such state "${state}"`);
     }
   }
@@ -150,7 +156,7 @@ export const recipeShapes = ${JSON.stringify(Object.fromEntries(shapes))} as con
 /** A state's default for each part: its slot (none, for a plain recipe). */
 const defaultParts = (
   name: string,
-  state: ElementState,
+  state: ElementState | StateLayer,
   shape: Shape,
   style: StateDefault,
 ): [string | undefined, ThemeStyle][] => {
@@ -163,15 +169,24 @@ const defaultParts = (
   });
 };
 
-/** One state's defaults, for every recipe that has it, in its layer. */
-const stateBlock = (state: ElementState) => {
-  const { defaultLayer, selectors } = elementStates[state];
+/**
+ * One state's defaults, for every recipe that has it, in its layer. A state
+ * layer's are in its `default` sub-layer, with its default for everything
+ * (states.css), and scoped as that is, so they're more specific than it.
+ */
+const stateBlock = (state: ElementState | StateLayer) => {
+  const { defaultLayer, selectors } = isStateLayer(state)
+    ? stateLayers[state]
+    : elementStates[state];
+  const scope = isStateLayer(state) ? "[data-inv-theme] " : "";
   const rules = shapes.flatMap(([name, shape]) => {
     const style = elementStateDefaults[name]?.[state];
     if (!style) return [];
     return defaultParts(name, state, shape, style).map(([slot, part]) => {
       const element = `.${shape.className}${slot ? `__${slot}` : ""}`;
-      return `${selectors(element).join(", ")} { ${styleCss(part)} }`;
+      return `${selectors(element)
+        .map((selector) => `${scope}${selector}`)
+        .join(", ")} { ${styleCss(part)} }`;
     });
   });
   return rules.length > 0
@@ -186,9 +201,13 @@ const statesCss = `/*
  * \`pnpm generate:catalogue\`.
  *
  * Each state's defaults, in its layer (states.css has the order), where a
- * theme's changes to them go too.
+ * theme's changes to them go too. Then a recipe's own defaults for a state
+ * layer, in its \`default\` sub-layer (a theme's changes go after them).
  */
-${elementStateOrder.map(stateBlock).filter(Boolean).join("\n")}
+${[...elementStateOrder, ...(Object.keys(stateLayers) as StateLayer[])]
+  .map(stateBlock)
+  .filter(Boolean)
+  .join("\n")}
 `;
 
 const code = (text: string) => `\`${text}\``;

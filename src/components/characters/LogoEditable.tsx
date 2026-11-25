@@ -5,6 +5,7 @@ import { useIsEditable } from "../../hooks/useIsEditable";
 import { css, cx } from "../../styled-system/css";
 import { logo } from "../../styled-system/recipes";
 import { getTranslated } from "../../functions/getTranslated";
+import { clickable } from "../clickable";
 
 type LogoEditableProps = {
   className?: string;
@@ -12,7 +13,8 @@ type LogoEditableProps = {
   subText?: string;
   defaultSubText?: string;
   onChangeMainText: (newValue: string) => void | PromiseLike<unknown>;
-  onChangeSubText?: (newValue: string) => void | PromiseLike<unknown>;
+  /** makes the subtext a button (e.g. to open the occupation's sheet) */
+  onClickSubText?: () => void;
   /** what the subtext is, for screen readers (e.g. "Occupation") */
   subTextLabel?: string;
 };
@@ -213,7 +215,8 @@ const useTitlebarOverlap = (rootRef: RefObject<HTMLElement | null>) => {
  *
  * This component is a bit tricksy and is made up of several elements.
  *
- * There are two strings displayed: `mainText` and "subText". Both strings are
+ * There are two strings displayed: `mainText`, which can be edited, and
+ * `subText`, which can be a button (`onClickSubText`). Both strings are
  * rendered twice, to allow for various CSS shenanigans, so there is a
  * "front text element" and a "rear text element".
  *
@@ -238,7 +241,7 @@ export const LogoEditable = ({
   subText,
   defaultSubText = "",
   onChangeMainText,
-  onChangeSubText,
+  onClickSubText,
   subTextLabel,
 }: LogoEditableProps) => {
   const classes = logo();
@@ -255,24 +258,8 @@ export const LogoEditable = ({
   } = useAsyncUpdate(mainText, onChangeMainText);
   const isEditable = useIsEditable();
 
-  // shown if there's anything to show; editable if there's a way to save it
-  const hasSubtext = subText !== undefined || onChangeSubText !== undefined;
-
-  const {
-    onInput: onInputSubtext,
-    onKeyDown: onKeyDownSubtext,
-    onPaste: onPasteSubtext,
-    onFocus: onFocusSubtext,
-    onBlur: onBlurSubtext,
-    contentEditableRef: contentEditableRefSubtext,
-    display: displaySubtext,
-  } = useAsyncUpdate(
-    subText || defaultSubText,
-    onChangeSubText ||
-      (() => {
-        // do nothing if no onChangeSubText
-      }),
-  );
+  const hasSubtext = subText !== undefined;
+  const displaySubtext = subText || defaultSubText;
 
   const rootRef = useRef<HTMLDivElement>(null);
   useTitlebarOverlap(rootRef);
@@ -434,14 +421,14 @@ export const LogoEditable = ({
                 className={classes.front}
                 // announced as the text box it is
                 role="textbox"
-                // like the subtext, whose field (Occupation, say) is in the
-                // sheet too
                 aria-label={getTranslated("InTitle", {
                   Label: getTranslated("Name"),
                 })}
                 // a textbox role is editable unless it says otherwise
                 aria-readonly={!isEditable || undefined}
                 contentEditable={isEditable}
+                // hover feedback, while it can be edited (logoStates)
+                data-interactive={isEditable || undefined}
                 spellCheck={false}
                 ref={contentEditableRefText}
                 onInput={onInputText}
@@ -455,24 +442,21 @@ export const LogoEditable = ({
               <div className={fitHeight}>
                 <div
                   className={classes.front_sub}
-                  role="textbox"
+                  // a button, if it does something
+                  {...clickable(onClickSubText)}
+                  // what it is, as well as what it says
                   aria-label={
                     subTextLabel === undefined
-                      ? getTranslated("Subtitle")
-                      : getTranslated("InTitle", { Label: subTextLabel })
+                      ? undefined
+                      : getTranslated("LabelAndValue", {
+                          Label: subTextLabel,
+                          Value: displaySubtext,
+                        })
                   }
-                  aria-readonly={
-                    !isEditable || onChangeSubText === undefined || undefined
-                  }
-                  contentEditable={isEditable && onChangeSubText !== undefined}
-                  spellCheck={false}
-                  ref={contentEditableRefSubtext}
-                  onInput={onInputSubtext}
-                  onKeyDown={onKeyDownSubtext}
-                  onPaste={onPasteSubtext}
-                  onFocus={onFocusSubtext}
-                  onBlur={onBlurSubtext}
-                />
+                  data-interactive={onClickSubText !== undefined || undefined}
+                >
+                  {displaySubtext}
+                </div>
               </div>
             )}
           </div>

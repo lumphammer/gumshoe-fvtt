@@ -1,14 +1,15 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useRef } from "react";
 
 import * as c from "../../constants";
 import { occupationSlotIndex } from "../../constants";
-import { assertGame } from "../../functions/isGame";
+import { openSheet } from "../../functions/openSheet";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
+import { useIsEditable } from "../../hooks/useIsEditable";
+import { useIsGM } from "../../hooks/useIsGM";
 import { useSettings } from "../../hooks/useSettings";
 import { useActorSheetContext } from "../../hooks/useSheetContexts";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { assertPCActor } from "../../module/actors/pc";
-import type { PersonalDetailItem } from "../../module/items/personalDetail";
 import { ImagePickle } from "../ImagePickle";
 import { Button } from "../inputs/Button";
 import { GridField } from "../inputs/GridField";
@@ -19,7 +20,7 @@ import { LogoEditable } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { PersonalDetailField } from "./PersonalDetailField";
 import { CombatStats } from "./Weapons/CombatStats";
-import { HeaderStats } from "./HeaderStats";
+import { HeaderStats, useHeaderStatIds } from "./HeaderStats";
 import { TrackersArea } from "./TrackersArea";
 import { Region } from "../Region";
 import { css } from "../../styled-system/css";
@@ -42,7 +43,12 @@ const usePersonalDetails = () => {
   );
 };
 
-/** The name and occupation, and the portrait */
+/**
+ * The name and occupation, and the portrait. The occupation is a button,
+ * which opens its sheet (or makes one, if there's none and the sheet can be
+ * edited): the stats panel has no field for it. With several (a detail moved
+ * into the occupation slot), it shows them all, and opens them all.
+ */
 export const PCSheetHeader = memo(function PCSheetHeader() {
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
@@ -54,12 +60,40 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
     genericOccupation: s.genericOccupation,
     occupationLabel: s.occupationLabel,
   }));
-  const occupationData = usePersonalDetails().find(
+  const isEditable = useIsEditable();
+  const occupations = usePersonalDetails().filter(
     (item) => item.slotIndex === occupationSlotIndex,
   );
-  const occupation = occupationData
-    ? (actor.items.get(occupationData.id) as PersonalDetailItem | undefined)
-    : undefined;
+  // never an empty button: the slot's name, if even the generic one is blank
+  const fallback = genericOccupation || occupationLabel;
+  const occupationText =
+    occupations
+      .map((item) => item.name)
+      .filter(Boolean)
+      .join(" / ") || fallback;
+  // a second click while the first is still making one doesn't make another
+  const creating = useRef(false);
+  const onClickOccupation =
+    occupations.length > 0
+      ? () => {
+          for (const { id } of occupations) {
+            // the live item, only when it's clicked
+            openSheet(actor.items.get(id));
+          }
+        }
+      : isEditable
+        ? () => {
+            if (creating.current || actor.system.getOccupations().length > 0) {
+              return;
+            }
+            creating.current = true;
+            void actor.system
+              .createPersonalDetail(occupationSlotIndex)
+              .finally(() => {
+                creating.current = false;
+              });
+          }
+        : undefined;
 
   return (
     <>
@@ -72,10 +106,10 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
       >
         <LogoEditable
           mainText={header.name}
-          subText={occupationData?.name ?? genericOccupation}
-          defaultSubText={genericOccupation}
+          subText={occupationText}
+          defaultSubText={fallback}
           onChangeMainText={actor.setName}
-          onChangeSubText={occupation?.setName}
+          onClickSubText={onClickOccupation}
           subTextLabel={occupationLabel}
         />
       </div>
@@ -94,24 +128,24 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
 });
 
 /**
- * Occupation, personal details, short notes and stats (the name is the
- * title's, in the header)
+ * Personal details, short notes and stats (the name and occupation are the
+ * title's, in the header). Nothing at all when there are none of them, rather
+ * than an empty region.
  */
 export const PCSheetStats = memo(function PCSheetStats() {
-  assertGame(game);
   const { actor } = useActorSheetContext();
   assertPCActor(actor);
   const stats = useActorSnapshot(actor, (snapshot) => ({
     shortNotes: snapshot.system.shortNotes,
     hiddenShortNotes: snapshot.system.hiddenShortNotes,
   }));
-  const { personalDetails, shortHiddenNotesNames, occupationLabel } =
-    useSettings((s) => ({
-      personalDetails: s.personalDetails,
-      shortHiddenNotesNames: s.mwHiddenShortNotes,
-      occupationLabel: s.occupationLabel,
-    }));
+  const { personalDetails, shortHiddenNotesNames } = useSettings((s) => ({
+    personalDetails: s.personalDetails,
+    shortHiddenNotesNames: s.mwHiddenShortNotes,
+  }));
   const { setShortNote, setMwHiddenShortNote } = useSystemMethods(actor);
+  const hasHeaderStats = useHeaderStatIds().length > 0;
+  const isGM = useIsGM();
 
   const updateShortNote = useCallback(
     async (value: string, index: number) => {
@@ -126,6 +160,11 @@ export const PCSheetStats = memo(function PCSheetStats() {
     [setMwHiddenShortNote],
   );
 
+  const showHiddenNotes = isGM && shortHiddenNotesNames.length > 0;
+  if (personalDetails.length === 0 && !showHiddenNotes && !hasHeaderStats) {
+    return null;
+  }
+
   return (
     <Region
       className={css({
@@ -134,11 +173,6 @@ export const PCSheetStats = memo(function PCSheetStats() {
       })}
     >
       <InputGrid>
-        <PersonalDetailField
-          name={occupationLabel}
-          actor={actor}
-          slotIndex={occupationSlotIndex}
-        />
         {personalDetails.map(({ name, type }, i) =>
           type === "text" ? (
             <GridField noTranslate key={`${name}--${i}`} label={name}>
@@ -157,7 +191,7 @@ export const PCSheetStats = memo(function PCSheetStats() {
             />
           ),
         )}
-        {game.user.isGM &&
+        {showHiddenNotes &&
           shortHiddenNotesNames.map((name, i) => (
             <GridField noTranslate key={`${name}--${i}`} label={name}>
               <IndexedAsyncTextInput

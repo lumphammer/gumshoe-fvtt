@@ -66,8 +66,9 @@
     width: auto;
   }
 
-  /* its name and subtext are text boxes: an I-beam where they can be edited,
-     the arrow where they can't (or around them) */
+  /* its name is a text box: an I-beam where it can be edited, the arrow
+     where it can't (or around it). The subtext, when it's a button, gets the
+     pointer ([data-inv-clickable], above) */
   .inv-default-logo {
     cursor: default;
   }

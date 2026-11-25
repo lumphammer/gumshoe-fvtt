@@ -1,3 +1,4 @@
+import type { ThemeStyle } from "@lumphammer/investigator-fvtt-types";
 import { defineSlotRecipe } from "@pandacss/dev";
 
 import { logoDefaults } from "./logoDefaults";
@@ -14,6 +15,10 @@ import { logoDefaults } from "./logoDefaults";
  * The layout, the fit and the text's look by default are `LogoEditable`'s,
  * so a slot's override is only what the theme changes.
  * *Expected override, every slot:* a theme's logo is its own.
+ *
+ * States (`logoStates`): the name, when it can be edited, and the subtext,
+ * when it can be clicked, have `data-interactive`, so `hoverFeedback` shows
+ * on their front copies.
  */
 export const logo = defineSlotRecipe({
   className: "inv-logo",
@@ -37,3 +42,22 @@ export const logo = defineSlotRecipe({
     front_wrapper: {},
   },
 });
+
+/**
+ * A tint over the hovered part, not a glow around it: an inset shadow, which
+ * goes over the part's background, so a theme's gradient, clipped to the
+ * text (on the part, or its wrapper), still shows, tinted. The name is a text
+ * box, so it keeps the text cursor.
+ */
+const tint: ThemeStyle = {
+  boxShadow:
+    "inset 0 0 0 100vmax color-mix(in srgb, var(--inv-feedback) 15%, transparent)",
+  borderRadius: "0.1em",
+};
+
+export const logoStates = {
+  hoverFeedback: {
+    front: { ...tint, cursor: "text" },
+    front_sub: tint,
+  },
+} satisfies Record<string, Record<string, ThemeStyle>>;

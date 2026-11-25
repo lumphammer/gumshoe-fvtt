@@ -179,6 +179,7 @@
   "investigator.PartyMemberAbility": "{ActorName}'s {AbilityName}: {Rating}",
   "investigator.AddAbilityToMember": "{ActorName} has no {AbilityName}: add it",
   "investigator.InTitle": "{Label} (title)",
+  "investigator.LabelAndValue": "{Label}: {Value}",
   "investigator.CombatantOptions": "Options for {Name}",
   "investigator.EncounterTypes": "Create an encounter of another kind",
   "investigator.No": "No",

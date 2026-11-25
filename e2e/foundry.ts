@@ -91,6 +91,9 @@ async function watchForErrors(page: Page, sink: ErrorSink, who: string) {
 async function waitForGameAndWatchNotifications(page: Page) {
   await waitForGameReady(page);
   await page.evaluate(() => {
+    // with the canvas on, the "no hardware acceleration" warning stays over
+    // the top of the screen, where a sheet's portrait can be
+    ui.notifications.clear();
     ui.sidebar.changeTab("chat", "primary");
     ui.sidebar.expand();
     const original = ui.notifications.error.bind(ui.notifications);

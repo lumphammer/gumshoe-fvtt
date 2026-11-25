@@ -7,7 +7,8 @@
  * (elementStates.generated.css), and a theme's changes to them, which patch
  * them as a theme's changes to a recipe do. Then the state layers: feedback
  * that looks the same on anything, whatever its catalogue class, so classes
- * don't each draw their own, with their defaults here.
+ * don't each draw their own, with their defaults here (and a recipe's own,
+ * where it has one, the logo's hover, in elementStates.generated.css).
  *
  * Each is a layer of its own, with the defaults in its `default` sub-layer
  * and a theme's overrides (the catalogue's `states`) in `theme`, after it.
