@@ -8,6 +8,12 @@ import type { KeyboardEvent } from "react";
  */
 export const keyboardFocus = { "data-keyboard-focus": "" } as const;
 
+/**
+ * Marks an element that works as a button, for the pointer cursor
+ * (componentDefaults.css). Browsers only give one to links with an `href`.
+ */
+const clickableMarker = { "data-inv-clickable": "" } as const;
+
 /** Whether a key press should activate a button: Enter or Space */
 export const isActivationKey = (event: KeyboardEvent) =>
   event.key === "Enter" || event.key === " ";
@@ -30,6 +36,7 @@ export const buttonKeys = (onActivate: () => void) => ({
   role: "button",
   tabIndex: 0,
   ...keyboardFocus,
+  ...clickableMarker,
   onKeyDown: (event: KeyboardEvent) => {
     if (isOwnActivation(event)) {
       event.preventDefault();
@@ -56,6 +63,7 @@ export const clickedByKeys = {
   role: "button",
   tabIndex: 0,
   ...keyboardFocus,
+  ...clickableMarker,
   onKeyDown: (event: KeyboardEvent<HTMLElement>) => {
     if (isOwnActivation(event)) {
       event.preventDefault();
