@@ -14,7 +14,7 @@ import {
   reorderKeys,
   systemLogger,
 } from "../../functions/utilities";
-import { defaultSettings } from "../../presets";
+import { resolvePresetSettings } from "../../settings/resolvePresetSettings";
 import type { SettingsDict } from "../../settings/settings";
 import type { EquipmentFieldType } from "../../types";
 import { assertNumericFieldOkayness } from "./functions";
@@ -266,12 +266,8 @@ export const createSystemSlice = (args: CreateSliceArgs) =>
         // start with the current temp settings - this way we keep any values
         // not handled by the presets
         ...draft.settings,
-        // now we layer in a safe default. This is typed as Required<> so it
-        // will always contain one of everything that can be controlled by a
-        // preset.
-        ...defaultSettings,
-        // now layer in the actual preset
-        ...payload.preset,
+        // now the preset, over defaults for everything it leaves out
+        ...resolvePresetSettings(payload.preset),
         // and finally, set the actual preset id
         systemPreset: payload.presetId,
       };

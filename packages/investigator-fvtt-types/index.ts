@@ -638,15 +638,31 @@ export interface PresetV1 {
  * Type for the global CONFIG.Investigator
  */
 interface InvestigatorConfig {
-  /**
-   * Install a theme.
-   */
   /** Install a theme, V1 or V2 (by its `schemaVersion`), or replace one. */
   installTheme: (id: string, theme: ThemeSeedV1 | ThemeV2) => void;
   /**
-   * Install a preset.
+   * Install a preset, or replace one, so it can be chosen in the system
+   * settings. This doesn't change any settings: see `applyPreset`.
    */
   installPreset: (id: string, preset: PresetV1) => void;
+  /**
+   * Apply an installed preset to the world, as choosing it in the system
+   * settings and saving would. Every setting a preset controls is written:
+   * those it leaves out are reset to their defaults, so nothing carries over
+   * from the world's last preset. The preset becomes the world's preset.
+   *
+   * Every value is checked first: if any is invalid, nothing is written and
+   * the promise rejects. It also rejects if no preset is installed with that
+   * id, or the user isn't a Gamemaster. If a write fails, it rejects saying
+   * which settings were and weren't written.
+   *
+   * Call it in response to something the GM does, not during startup: in a
+   * new world, INVESTIGATOR writes its default preset's values during `ready`.
+   *
+   * Optional because INVESTIGATOR versions before 10.132 don't have it: check
+   * for it before calling.
+   */
+  applyPreset?: (id: string) => Promise<void>;
 }
 
 export interface HasId {
