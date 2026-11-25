@@ -68,7 +68,6 @@ export const NPCSheetHeader = memo(function NPCSheetHeader() {
         img={header.img}
         className={css({
           gridArea: "image",
-          transform: "rotateZ(2deg)",
           // over the sidebar (NPCSheetFull)
           "[data-inv-layout=full-frame] > &": {
             aspectRatio: "1",

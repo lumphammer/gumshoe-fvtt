@@ -27,7 +27,8 @@ write layout; none reads a theme's colours. Themes are written as ThemeV2
    own makes a usable theme. Themes may override any class: an override adds
    declarations over the default, part by part (below). Some parts are
    _expected_ to be overridden, because that's where a theme's personality
-   lives: `sheetRoot`, `appFrame`, `tabs.tab`, `logo` and `card.root`.
+   lives: `sheetRoot`, `appFrame`, `tabs.tab`, `logo`, `portrait` and
+   `card.root`.
 5. **States are attributes; variants are design choices.** Selected, disabled,
    invalid, expanded and drag states come from attributes the markup should
    have anyway (`aria-selected`, `aria-disabled`, `aria-invalid`,
@@ -447,6 +448,12 @@ changes (`text: { transform: "scale(0.7)" }` is a whole restyle):
   overflows. A transform on `text` applies after the fit: shrinking is fine,
   enlarging can overflow. `front` mustn't set a `width`.
 
+**`portrait`**: a document's image on its sheet (`ImagePickle`), the box
+around the picture: its frame, shadow and transform. Variant `kind`, `actor`
+(character and party sheets) or `item`, from the document. No transform by
+default; its size and place are the call site's. _Expected override:_ a tilt
+(most built-ins use `tiltedPortrait`, `rotateZ(-2deg)`, from `helpers.ts`).
+
 **`card`**: a card (Cards rules), applied by `CardDisplay`. Slots `root`,
 `supertitle`, `title`, `subtitle`, `description`, `effect`. The root is
 `surfaceSolid` with a `line` border, as cards can be laid over other content. It
@@ -606,6 +613,9 @@ How its styles map:
   `appWindowStyle` goes in the `appFrame` `root`.
 - Each `logo` style goes on its slots, spread over `logoDefaults.ts` (a relative
   font size on the text is divided by 4, as it's inherited from 4em now).
+- Portraits are tilted, as they were in V1: an item's `rotateZ(-2deg)`, an
+  actor's `rotateZ(2deg)` in the standard layout and `rotateZ(-2deg)` in the
+  full-frame one (towards the sheet's nearer diagonal).
 - Each `card` slot is V1's style for it, after `all: "revert-layer"`; each of
   `cards.categories` is a nested `[data-category="…"]` rule on the slot,
   patching the base; a `hoverStyle` is a `:hover` rule on the root.

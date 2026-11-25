@@ -1,4 +1,5 @@
 import { systemId } from "../constants";
+import { tiltedPortrait } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 // worn ink, fading to the right, clipped to the logo's text
@@ -37,6 +38,7 @@ export const fearTheme = defineThemeV2({
     display: { family: "'Special Elite', serif", scale: 1.1 },
   },
   catalogue: {
+    portrait: tiltedPortrait,
     sheetRoot: {
       base: {
         backgroundImage: `url(systems/${systemId}/assets/wallpaper/annie-spratt-xvU-X0GV9-o-unsplash.webp)`,

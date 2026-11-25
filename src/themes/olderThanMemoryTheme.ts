@@ -1,4 +1,5 @@
 import { systemId } from "../constants";
+import { tiltedPortrait } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 const glow = "#fda994";
@@ -46,6 +47,7 @@ export const olderThanMemoryTheme = defineThemeV2({
     },
   },
   catalogue: {
+    portrait: tiltedPortrait,
     appFrame: {
       base: { root: { boxShadow: `0 0 20px ${glow}` } },
       // on a character sheet the strip is over the bright sands

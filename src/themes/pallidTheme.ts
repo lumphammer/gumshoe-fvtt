@@ -1,5 +1,5 @@
 import { systemId } from "../constants";
-import { underlineTabs } from "./helpers";
+import { tiltedPortrait, underlineTabs } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 const glow = "#7be9e9";
@@ -52,6 +52,7 @@ export const pallidTheme = defineThemeV2({
     },
   },
   catalogue: {
+    portrait: tiltedPortrait,
     sheetRoot: {
       base: {
         backgroundImage: `

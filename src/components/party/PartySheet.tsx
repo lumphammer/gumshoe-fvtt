@@ -167,7 +167,6 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
             className={css({
               height: "5em",
               width: "4em",
-              transform: "rotateZ(-2deg)",
               margin: "0 auto",
             })}
           />

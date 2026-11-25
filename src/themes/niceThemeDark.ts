@@ -1,5 +1,5 @@
 import { systemId } from "../constants";
-import { underlineTabs } from "./helpers";
+import { tiltedPortrait, underlineTabs } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 const wallpaper = `url(systems/${systemId}/assets/wallpaper/nice_red_agents.webp)`;
@@ -56,6 +56,7 @@ export const niceThemeDark = defineThemeV2({
     },
   },
   catalogue: {
+    portrait: tiltedPortrait,
     sheetRoot: {
       variants: {
         sheet: {

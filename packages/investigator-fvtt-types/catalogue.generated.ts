@@ -104,6 +104,11 @@ export interface CatalogueRecipeShapes {
     states: never;
     variants: { odd: "true" | "false"; zero: "true" | "false"; header: "true" | "false" };
   };
+  portrait: {
+    slots: never;
+    states: never;
+    variants: { kind: "actor" | "item" };
+  };
   region: {
     slots: never;
     states: never;

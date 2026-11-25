@@ -1,5 +1,5 @@
 import { systemId } from "../constants";
-import { underlineTabs } from "./helpers";
+import { tiltedPortrait, underlineTabs } from "./helpers";
 import { defineThemeV2 } from "./theme";
 
 const wallpaper = `url(systems/${systemId}/assets/wallpaper/marjanblan-5Ft4NWTmeJE-unsplash.webp)`;
@@ -44,6 +44,7 @@ export const niceTheme = defineThemeV2({
     },
   },
   catalogue: {
+    portrait: tiltedPortrait,
     sheetRoot: {
       variants: {
         sheet: {

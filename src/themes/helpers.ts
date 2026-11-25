@@ -5,6 +5,14 @@ import type {
 
 import { displayFontSize, displaySizeVar, textStyleCss } from "./fonts";
 
+/**
+ * Portraits tilted towards the sheet's nearer diagonal, like a photo resting
+ * on it (the portrait is at the top left).
+ */
+export const tiltedPortrait: ThemeCatalogue["portrait"] = {
+  base: { transform: "rotateZ(-2deg)" },
+};
+
 export const underlineTabs: ThemeCatalogue["tabs"] = {
   states: {
     hoverFeedback: {

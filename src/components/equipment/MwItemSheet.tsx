@@ -85,7 +85,6 @@ export const MwItemSheet = memo(function MwItemSheet() {
         img={snapshot.img}
         className={css({
           gridArea: "image",
-          transform: "rotateZ(-2deg)",
           width: "4em",
           height: "4em",
           margin: "0 1em 0.5em 0",
