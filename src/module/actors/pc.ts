@@ -960,9 +960,10 @@ export class PCModel extends ActiveCharacterModel<
     slotIndex: number,
     renderSheet = true,
   ): Promise<void> => {
+    // never blank (Foundry won't take an item without a name)
     const name =
       slotIndex === c.occupationSlotIndex
-        ? settings.genericOccupation.get()
+        ? settings.genericOccupation.get() || settings.occupationLabel.get()
         : `New ${settings.personalDetails.get()[slotIndex]?.name ?? "detail"}`;
     await this.parent.createEmbeddedDocuments(
       "Item",

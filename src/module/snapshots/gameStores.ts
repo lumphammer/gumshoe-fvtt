@@ -100,3 +100,14 @@ export const getUserTargetsStore = once(() =>
     ],
   ),
 );
+
+/**
+ * Whether this user is a GM: changes when their role does (which Foundry
+ * applies without a reload).
+ */
+export const getIsGMStore = once(() =>
+  createHookStore(
+    (): boolean => (game as foundry.Game).user?.isGM ?? false,
+    [onHook("updateUser", (user) => user.isSelf)],
+  ),
+);

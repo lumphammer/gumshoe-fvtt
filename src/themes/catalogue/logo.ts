@@ -1,3 +1,4 @@
+import type { ThemeStyle } from "@lumphammer/investigator-fvtt-types";
 import { defineSlotRecipe } from "@pandacss/dev";
 
 import { logoDefaults } from "./logoDefaults";
@@ -10,10 +11,16 @@ import { logoDefaults } from "./logoDefaults";
  * Slots: `root` (the outer box, with the perspective for the text's 3D
  * transforms; its size is the call site's), `backdrop`, `text` (the wrapper
  * of both copies), `front_wrapper`,
- * `front` (the name), `front_sub` (the subtext), and the same for `rear`.
+ * `front` (the name), `front_sub` (the subtext), `front_sub_part` (each part
+ * of the subtext, e.g. an occupation, inline in it), and the same for `rear`
+ * (but the parts, which are only on the front).
  * The layout, the fit and the text's look by default are `LogoEditable`'s,
  * so a slot's override is only what the theme changes.
  * *Expected override, every slot:* a theme's logo is its own.
+ *
+ * States (`logoStates`): the name, when it can be edited, and a part of the
+ * subtext, when it can be clicked, have `data-interactive`, so
+ * `hoverFeedback` shows on their front copies.
  */
 export const logo = defineSlotRecipe({
   className: "inv-logo",
@@ -25,6 +32,7 @@ export const logo = defineSlotRecipe({
     "front_wrapper",
     "front",
     "front_sub",
+    "front_sub_part",
     "rear_wrapper",
     "rear",
     "rear_sub",
@@ -37,3 +45,27 @@ export const logo = defineSlotRecipe({
     front_wrapper: {},
   },
 });
+
+/**
+ * A tint over the hovered part, not a glow around it: an inset shadow, which
+ * goes over the part's background, so a theme's gradient, clipped to the
+ * text (on the part, or its wrapper), still shows, tinted. The name is a text
+ * box, so it keeps the text cursor.
+ */
+const tintColour = "color-mix(in srgb, var(--inv-feedback) 15%, transparent)";
+const tint: ThemeStyle = {
+  boxShadow: `inset 0 0 0 100vmax ${tintColour}`,
+  borderRadius: "0.1em",
+};
+
+export const logoStates = {
+  hoverFeedback: {
+    front: { ...tint, cursor: "text" },
+    // a part is inline, and as wide as its text: a ring of the tint, outside
+    // it, gives it some room without moving anything
+    front_sub_part: {
+      ...tint,
+      boxShadow: `inset 0 0 0 100vmax ${tintColour}, 0 0 0 0.15em ${tintColour}`,
+    },
+  },
+} satisfies Record<string, Record<string, ThemeStyle>>;

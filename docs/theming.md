@@ -426,7 +426,8 @@ large display text, drawn twice, a front copy over a rear one, on a backdrop,
 for 3D, shadows and gradients. Slots `root` (the outer box, with the
 `perspective` for the text's 3D transforms), `backdrop`, `text` (wraps both
 copies), and for each of `front` and `rear` a `_wrapper`, the name (`front`,
-`rear`) and the subtext (`front_sub`, `rear_sub`). Defaults are in
+`rear`) and the subtext (`front_sub`, `rear_sub`), and each part of the front
+subtext, inline in it (`front_sub_part`: a PC's occupations). Defaults are in
 `logoDefaults.ts`. _Expected override, every slot._ What the logo needs to work
 is `LogoEditable`'s, outside the slots, so an override is only what the theme
 changes (`text: { transform: "scale(0.7)" }` is a whole restyle):
@@ -438,6 +439,11 @@ changes (`text: { transform: "scale(0.7)" }` is a whole restyle):
   (`rear`, `rear_sub`), not their `_wrapper`: an `em` is resolved where it's
   declared, so on the wrapper it's the name's, and the subtext gets the same
   offsets at half the size.
+- The name, when it can be edited, and a part of the subtext, when it's a
+  button (a PC's occupation, which opens its sheet), have `hoverFeedback`. The
+  logo's own default for it is a `feedback` tint over the front copy (an inset
+  `boxShadow`, over a gradient clipped to the text; and a ring of it around a
+  part), not the glow; change it in `logo.states.hoverFeedback`.
 - The layout (the box sized by the call site, the backdrop and `text` filling it,
   each copy centred) is in a cascade layer after the theme's, so it wins, unless
   a theme says `!important`.
@@ -536,7 +542,10 @@ so classes don't each draw their own. Their defaults are plain CSS in
 its `theme` sub-layer, after it, so they win whatever their specificity (one
 for everything is less specific than its default). A recipe's `base` or `variants` can't change one by accident
 (a static `boxShadow` doesn't hide the hover glow, nor `outline: none` the
-focus ring).
+focus ring). A recipe can have its own default for a state layer, over the
+default for everything, next to its element states (the logo's
+`hoverFeedback`, `logoStates`); it's generated into
+`elementStates.generated.css`, in the layer's `default` sub-layer.
 
 | Layer           | When                                                                                   | Look                                               |
 | --------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------- |
