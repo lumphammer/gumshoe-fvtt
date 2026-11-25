@@ -2,6 +2,17 @@
 
 (Skipped version numbers are testing releases.)
 
+## Unreleased
+
+Looks & accessibility
+
+- **Completely overhauled keyboard and screenreader interaction (#1552).** Tabbing between fields should work correctly now; number inputs, trackets, and tabs work with cursor keys.
+- **"Detached" sheets look right (#1537).** I'll be real - I didn't even know Foundry had added detached sheets as a core feature. They work the way you'd expect, now.
+- **+/- buttons on number inputs are less "bouncy" (#1565).** The annoying flickering between values is gone.
+- **Overhauled character sheet layout (#1534).** The new layout is cleaner and puts things where they're needed. The PC sheet sidebar is now just for trackers.
+- **New theming engine (#1533).** For those that like to customise their themes! Your old V1 themes will continue to work, but I'll shortly be publishing schemas for the new V2 theme engine, which is far more expressive and powerful.
+- **New and improved themes (#1534).** Several themes have been tweaked for legibility, and there are three new themes: "Fog" and "Night Fog" are plain, simple themes in light and dark palettes, mainly to demo the new engine. "Cthulhu by Candlelight" is a moody, 1920s black-marble dark theme.
+
 ## 10.131 (2026-11-06)
 
 The theme of this release is "death by a thousand papercuts", so it's mainly bug fixes and small improvements.

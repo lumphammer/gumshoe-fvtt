@@ -464,6 +464,39 @@ test("the portrait's Show and Edit work from the keyboard", async ({
   await expect(sheet.getByRole("button", { name: "Show" })).toHaveCount(0);
 });
 
+test("clicking the portrait opens its overlay, and it stays open", async ({
+  page,
+}) => {
+  const { sheet } = await pcSheet(page, "Clicked Portrait");
+  const portrait = sheet.getByTestId("image-pickle");
+  await portrait.click();
+  const show = sheet.getByRole("button", { name: "Show" });
+  await expect(show).toBeVisible();
+  // the click's focus stays on it: losing it (its tab stop going as the
+  // overlay opens) would close the overlay, in browsers which say so in time
+  await expect(portrait).toBeFocused();
+  await page.waitForTimeout(300);
+  await expect(show).toBeVisible();
+  // the keyboard carries on from there, onto its buttons
+  await page.keyboard.press("Tab");
+  await expect(show).toBeFocused();
+  // a click elsewhere closes it
+  await sheet.locator(".window-header").click();
+  await expect(show).toHaveCount(0);
+  // and it opens again, and Show shows the image
+  await portrait.click();
+  await sheet.getByRole("button", { name: "Show" }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        foundry.applications.instances
+          .values()
+          .some((app) => app.constructor.name.includes("ImagePopout")),
+      ),
+    )
+    .toBe(true);
+});
+
 test("a number field is one tab stop, changed with the arrow keys", async ({
   page,
 }) => {

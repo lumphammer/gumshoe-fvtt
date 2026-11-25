@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { getTokenizer } from "../functions/getTokenizer";
 import { assertGame } from "../functions/isGame";
@@ -6,7 +6,7 @@ import { FilePicker, ImagePopout } from "../fvtt-exports";
 import { useIsDocumentOwner } from "../hooks/useIsDocumentOwner";
 import { useDocumentSheetContext } from "../hooks/useSheetContexts";
 import { getTranslated } from "../functions/getTranslated";
-import { buttonKeys } from "./clickable";
+import { buttonKeys, keyboardFocus } from "./clickable";
 import { ImagePickerLink } from "./ImagePickerLink";
 import { surface } from "../styled-system/recipes";
 import { css, cx } from "../styled-system/css";
@@ -90,20 +90,21 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
       if (isOwner) {
         setOpenedFromKeys(false);
         setShowOverlay(true);
-        const clickListener = () => {
-          setShowOverlay(false);
-        };
-        document.addEventListener("click", clickListener);
-
-        return () => {
-          document.removeEventListener("click", clickListener);
-        };
       } else {
         showImage();
       }
     },
     [isOwner, showImage],
   );
+
+  // a click anywhere else closes it (clicks on the portrait and its links
+  // don't reach the document)
+  useEffect(() => {
+    if (!showOverlay) return;
+    const close = () => setShowOverlay(false);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, [showOverlay]);
 
   // from the keyboard, the overlay closes when focus leaves it instead. While
   // it's open the portrait isn't a button itself (its Show and Edit are, and
@@ -113,8 +114,17 @@ export const ImagePickle = ({ className, img }: ImagePickleProps) => {
   const focusFirst = useCallback((buttons: HTMLElement | null) => {
     buttons?.querySelector<HTMLElement>("[role=button]")?.focus();
   }, []);
+  // it stays focusable (tabIndex -1) while open: a mouse click focuses it, and
+  // taking its tabIndex away would blur it, and the blur would close the
+  // overlay again at once. Still taking its own keys, so Tab reaches Show and
+  // Edit; a group, named, around them
   const keyboardProps = showOverlay
-    ? {}
+    ? {
+        tabIndex: -1,
+        ...keyboardFocus,
+        role: "group",
+        "aria-label": getTranslated("Image"),
+      }
     : {
         ...buttonKeys(() => {
           if (isOwner) {
