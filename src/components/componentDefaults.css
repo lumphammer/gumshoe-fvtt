@@ -9,8 +9,12 @@
 @layer system.defaults {
   /* something that isn't a <button> or a link with an href, but works as one
      (clickable.ts): sheets and chat cards alike */
-  [data-inv-clickable]:not([aria-disabled="true"], [data-disabled]) {
+  [data-inv-clickable] {
     cursor: pointer;
+  }
+  /* the arrow when it's disabled (Foundry gives every <a> a pointer) */
+  [data-inv-clickable]:is([disabled], [aria-disabled="true"], [data-disabled]) {
+    cursor: default;
   }
 
   .inv-default-text-input {

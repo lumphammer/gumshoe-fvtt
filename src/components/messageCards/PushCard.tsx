@@ -22,6 +22,8 @@ export const PushCard = React.memo(
   ({ msg, ability, mode, name, imageUrl }: PushCardProps) => {
     const { header, openSheet: onClickAbilityName } =
       useAbilityCardHeader(ability);
+    // plain text if it's gone (Foundry gives every <a> a pointer)
+    const AbilityName = onClickAbilityName ? "a" : "span";
 
     return (
       <div
@@ -56,7 +58,7 @@ export const PushCard = React.memo(
           style={{ backgroundImage: `url(${imageUrl})` }}
         />
         {/* TERMS */}
-        <a
+        <AbilityName
           {...clickable(onClickAbilityName)}
           className={css({
             gridArea: "headline",
@@ -66,7 +68,7 @@ export const PushCard = React.memo(
             -${shadowOffset} -${shadowOffset} ${shadowBlur} #0007,
             ${shadowOffset} ${shadowOffset} ${shadowBlur} #fff
           ]`,
-            "&:hover": {
+            "&[data-inv-clickable]:hover": {
               textShadow: `[
               0 0 10px #fff,
               0 0 10px #fff,
@@ -79,7 +81,7 @@ export const PushCard = React.memo(
           <Translate values={{ AbilityName: header?.name ?? "" }}>
             AbilityNamePush
           </Translate>
-        </a>
+        </AbilityName>
       </div>
     );
   },
