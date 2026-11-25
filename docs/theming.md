@@ -613,9 +613,10 @@ How its styles map:
   `appWindowStyle` goes in the `appFrame` `root`.
 - Each `logo` style goes on its slots, spread over `logoDefaults.ts` (a relative
   font size on the text is divided by 4, as it's inherited from 4em now).
-- Portraits are tilted, as they were in V1: an item's `rotateZ(-2deg)`, an
+- Portraits are tilted by `kind`, by the layout: an item's `rotateZ(-2deg)`, an
   actor's `rotateZ(2deg)` in the standard layout and `rotateZ(-2deg)` in the
-  full-frame one (towards the sheet's nearer diagonal).
+  full-frame one (towards the sheet's nearer diagonal). These aren't V1's
+  angles exactly, which were each sheet's own.
 - Each `card` slot is V1's style for it, after `all: "revert-layer"`; each of
   `cards.categories` is a nested `[data-category="…"]` rule on the slot,
   patching the base; a `hoverStyle` is a `:hover` rule on the root.
