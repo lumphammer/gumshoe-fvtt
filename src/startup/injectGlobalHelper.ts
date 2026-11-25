@@ -11,6 +11,7 @@ import { runtimeConfig, type InstallSource } from "../runtime";
 import { polarityOf, themeFromV1 } from "../themes/catalogue/fromV1";
 import { themeFactory } from "../themes/functions";
 import { type Theme, validateThemeV2 } from "../themes/theme";
+import { applyPreset } from "./applyPreset";
 
 /**
  * A theme, V1 or V2 (by its `schemaVersion`), as a theme. A V2 theme from
@@ -70,5 +71,6 @@ export const injectGlobalHelper = () => {
       setSource(runtimeConfig.presetSources, id, getCallerSource());
       Hooks.callAll(constants.runtimeConfigChanged);
     },
+    applyPreset,
   };
 };
