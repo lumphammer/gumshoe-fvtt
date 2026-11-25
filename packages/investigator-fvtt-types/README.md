@@ -96,16 +96,19 @@ CONFIG.Investigator?.installPreset("my-module", preset);
 - those it leaves out are reset to their defaults
 - the preset becomes the world's preset (the `systemPreset` setting).
 
-It returns a promise, which rejects without changing anything if no preset is installed with the given id, if the user isn't a Gamemaster, or if any of the preset's values are invalid.
+It returns a promise, which rejects without changing anything if no preset is installed with the given id, if the user isn't a Gamemaster, or if any of the preset's values are invalid. If a setting can't be saved (e.g. the connection to the server drops), it rejects with an error listing which settings were and weren't written.
 
-`applyPreset` was released as part of INVESTIGATOR 10.132, so it won't be preset under older versions. For that reason, it's optional in `InvestigatorConfig`: check for it, and fall back on something else if it's
+Call `applyPreset` in response to something the GM does (a button, a dialog), not while the world is starting up: in a new world, INVESTIGATOR writes its own default preset's values during `ready`, and could overwrite yours.
+
+`applyPreset` was released as part of INVESTIGATOR 10.132, so it won't be present under older versions. For that reason, it's optional in `InvestigatorConfig`: check for it, and fall back on something else if it's
 missing.
 
 ```ts
 if (CONFIG.Investigator?.applyPreset) {
   await CONFIG.Investigator.applyPreset("my-module");
 } else {
-  // an older INVESTIGATOR: write the settings yourself
+  // an older INVESTIGATOR: write the settings yourself, including the
+  // ones your preset leaves out (see below)
 }
 ```
 
