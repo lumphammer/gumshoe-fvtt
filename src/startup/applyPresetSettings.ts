@@ -8,20 +8,24 @@ type WritableSettings = Record<
   { set: (value: unknown) => Promise<unknown> }
 >;
 
+export const listKeys = (keys: readonly string[]) =>
+  keys.map((key) => `"${key}"`).join(", ") || "none";
+
 /**
  * Write a preset's values for `keys` (by default, every setting it sets) into
  * the world's settings.
  *
  * The writes go out together (each is a socket round trip). If any fail, this
  * waits for the rest to finish, then throws, saying which were written and
- * which weren't: a failed write can't be rolled back.
+ * which weren't: a failed write can't be rolled back. Otherwise, it returns
+ * the keys it wrote.
  */
 export const applyPresetSettings = async (
   preset: PresetV1,
   keys: readonly string[] = Object.keys(preset).filter((key) =>
     Object.hasOwn(settings, key),
   ),
-) => {
+): Promise<string[]> => {
   const changes = Object.entries(
     getPresetSettingChanges(preset, keys, getSettingsDict()),
   );
@@ -30,13 +34,13 @@ export const applyPresetSettings = async (
       (settings as unknown as WritableSettings)[key].set(value),
     ),
   );
-  const failed = changes.filter((_, i) => results[i].status === "rejected");
+  const keysWhere = (status: PromiseSettledResult<unknown>["status"]) =>
+    changes.filter((_, i) => results[i].status === status).map(([key]) => key);
+  const failed = keysWhere("rejected");
+  const written = keysWhere("fulfilled");
   if (failed.length > 0) {
-    const written = changes.filter((_, i) => results[i].status === "fulfilled");
-    const list = (entries: typeof changes) =>
-      entries.map(([key]) => `"${key}"`).join(", ") || "none";
     throw new Error(
-      `Could not write settings ${list(failed)}. Settings written: ${list(
+      `Could not write settings ${listKeys(failed)}. Settings written: ${listKeys(
         written,
       )}.`,
       {
@@ -48,4 +52,5 @@ export const applyPresetSettings = async (
       },
     );
   }
+  return written;
 };

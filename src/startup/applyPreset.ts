@@ -3,7 +3,7 @@ import { assertGame } from "../functions/isGame";
 import { runtimeConfig } from "../runtime";
 import { resolvePresetSettings } from "../settings/resolvePresetSettings";
 import { settings } from "../settings/settings";
-import { applyPresetSettings } from "./applyPresetSettings";
+import { applyPresetSettings, listKeys } from "./applyPresetSettings";
 
 const applyPresetNow = async (presetId: string): Promise<void> => {
   assertGame(game);
@@ -40,9 +40,18 @@ const applyPresetNow = async (presetId: string): Promise<void> => {
     );
   }
 
-  await applyPresetSettings(resolved, keys);
+  const written = await applyPresetSettings(resolved, keys);
   if (settings.systemPreset.get() !== presetId) {
-    await settings.systemPreset.set(presetId);
+    try {
+      await settings.systemPreset.set(presetId);
+    } catch (cause) {
+      throw new Error(
+        `Could not write setting "systemPreset". Settings written: ${listKeys(
+          written,
+        )}.`,
+        { cause },
+      );
+    }
   }
   // as the settings window does after saving (e.g. to show or hide the
   // alternative item type)
