@@ -37,6 +37,8 @@ export const AbilityNegateOrWallopMwCard = React.memo(
   ({ msg, ability, pool, mode, name }: AbilityNegateOrWallopMwCardProps) => {
     const { header, openSheet: onClickAbilityName } =
       useAbilityCardHeader(ability);
+    // plain text if it's gone (Foundry gives every <a> a pointer)
+    const AbilityName = onClickAbilityName ? "a" : "span";
 
     const costFactor =
       mode === constants.htmlDataModeMwNegate ? (
@@ -70,9 +72,9 @@ export const AbilityNegateOrWallopMwCard = React.memo(
           })}
         >
           <b>
-            <a {...clickable(onClickAbilityName)}>
+            <AbilityName {...clickable(onClickAbilityName)}>
               {name ?? header?.name ?? "Missing"}
-            </a>
+            </AbilityName>
           </b>
         </div>
         {/* POOL */}

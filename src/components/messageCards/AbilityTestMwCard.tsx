@@ -60,6 +60,8 @@ export const AbilityTestMwCard = React.memo(
   }: AbilityTestMwCardProps) => {
     const { header, openSheet: onClickAbilityName } =
       useAbilityCardHeader(ability);
+    // plain text if it's gone (Foundry gives every <a> a pointer)
+    const AbilityName = onClickAbilityName ? "a" : "span";
 
     const cappedResult = Math.max(Math.min(msg.rolls?.[0]?.total ?? 1, 6), 1);
     const effectiveResult =
@@ -108,9 +110,9 @@ export const AbilityTestMwCard = React.memo(
           })}
         >
           <b>
-            <a {...clickable(onClickAbilityName)}>
+            <AbilityName {...clickable(onClickAbilityName)}>
               {name ?? header?.name ?? "Missing"}
-            </a>
+            </AbilityName>
           </b>{" "}
           <DiceTerms terms={msg.rolls?.[0]?.terms} />
           {difficulty === "easy" && (

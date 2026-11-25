@@ -37,6 +37,8 @@ export const AbilityTestCard = React.memo(
     const stateName = useStabilityStateName(stabilityState);
     const { header, openSheet: onClickAbilityName } =
       useAbilityCardHeader(ability);
+    // plain text if it's gone (Foundry gives every <a> a pointer)
+    const AbilityName = onClickAbilityName ? "a" : "span";
 
     return (
       <div
@@ -76,9 +78,9 @@ export const AbilityTestCard = React.memo(
           })}
         >
           <b>
-            <a {...clickable(onClickAbilityName)}>
+            <AbilityName {...clickable(onClickAbilityName)}>
               {name ?? header?.name ?? "Missing"}
-            </a>
+            </AbilityName>
           </b>
         </div>
         {/* TERMS */}
