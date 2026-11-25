@@ -30,6 +30,15 @@ describe("resolvePresetSettings", () => {
     expect(resolved.useCards).toBe(false);
   });
 
+  it("drops anything that isn't part of a preset", () => {
+    const resolved = resolvePresetSettings({
+      ...defaultSettings,
+      firstRun: false,
+      systemPreset: "somethingElse",
+    } as PresetV1);
+    expect(resolved).toEqual(defaultSettings);
+  });
+
   it("keeps the preset's values over the defaults", () => {
     const resolved = resolvePresetSettings({
       ...defaultSettings,

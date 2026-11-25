@@ -653,7 +653,11 @@ interface InvestigatorConfig {
    *
    * Every value is checked first: if any is invalid, nothing is written and
    * the promise rejects. It also rejects if no preset is installed with that
-   * id, or the user isn't a Gamemaster.
+   * id, or the user isn't a Gamemaster. If a write fails, it rejects saying
+   * which settings were and weren't written.
+   *
+   * Call it in response to something the GM does, not during startup: in a
+   * new world, INVESTIGATOR writes its default preset's values during `ready`.
    *
    * Optional because INVESTIGATOR versions before 10.132 don't have it: check
    * for it before calling.

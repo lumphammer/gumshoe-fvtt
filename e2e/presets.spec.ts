@@ -124,6 +124,26 @@ test.describe("CONFIG.Investigator.applyPreset", () => {
     ).toEqual(before);
   });
 
+  test("changes nothing if the schema isn't v1", async ({ page }) => {
+    await setSettings(page, { useCards: true });
+    const before = await getSettings(page, ["useCards", "systemPreset"]);
+    const error = await page.evaluate(() => {
+      // what a module written in JS could do
+      CONFIG.Investigator!.installPreset("e2eV2Preset", {
+        schemaVersion: "v2",
+        displayName: "Not a V1 preset",
+      } as never);
+      return CONFIG.Investigator!.applyPreset!("e2eV2Preset").then(
+        () => null,
+        (error: Error) => error.message,
+      );
+    });
+    expect(error).toContain("schemaVersion");
+    expect(await getSettings(page, ["useCards", "systemPreset"])).toEqual(
+      before,
+    );
+  });
+
   test("rejects an id that isn't installed", async ({ page }) => {
     const error = await page.evaluate(() =>
       CONFIG.Investigator!.applyPreset!("e2eNoSuchPreset").then(
