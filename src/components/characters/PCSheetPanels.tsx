@@ -16,7 +16,8 @@ import { GridField } from "../inputs/GridField";
 import { IndexedAsyncTextInput } from "../inputs/IndexedAsyncTextInput";
 import { InputGrid } from "../inputs/InputGrid";
 import { Translate } from "../Translate";
-import { LogoEditable } from "./LogoEditable";
+import { getTranslated } from "../../functions/getTranslated";
+import { LogoEditable, type LogoSubTextPart } from "./LogoEditable";
 import { MwInjuryStatusWidget } from "./MoribundWorld/MwInjuryStatusWidget";
 import { PersonalDetailField } from "./PersonalDetailField";
 import { CombatStats } from "./Weapons/CombatStats";
@@ -45,9 +46,10 @@ const usePersonalDetails = () => {
 
 /**
  * The name and occupation, and the portrait. The occupation is a button,
- * which opens its sheet (or makes one, if there's none and the sheet can be
- * edited): the stats panel has no field for it. With several (a detail moved
- * into the occupation slot), it shows them all, and opens them all.
+ * which opens its sheet, and can be dragged to another (or makes one, if
+ * there's none and the sheet can be edited): the stats panel has no field for
+ * it. With several (a detail moved into the occupation slot), each is a
+ * button of its own.
  */
 export const PCSheetHeader = memo(function PCSheetHeader() {
   const { actor } = useActorSheetContext();
@@ -66,34 +68,40 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
   );
   // never an empty button: the slot's name, if even the generic one is blank
   const fallback = genericOccupation || occupationLabel;
-  const occupationText =
-    occupations
-      .map((item) => item.name)
-      .filter(Boolean)
-      .join(" / ") || fallback;
+  const labelled = (text: string) =>
+    getTranslated("LabelAndValue", { Label: occupationLabel, Value: text });
   // a second click while the first is still making one doesn't make another
   const creating = useRef(false);
-  const onClickOccupation =
+  const createOccupation = () => {
+    if (creating.current || actor.system.getOccupations().length > 0) {
+      return;
+    }
+    creating.current = true;
+    void actor.system.createPersonalDetail(occupationSlotIndex).finally(() => {
+      creating.current = false;
+    });
+  };
+  const occupationParts: LogoSubTextPart[] =
     occupations.length > 0
-      ? () => {
-          for (const { id } of occupations) {
+      ? occupations.map(({ id, name }) => {
+          const text = name || fallback;
+          return {
+            key: id,
+            text,
+            label: labelled(text),
+            itemId: id,
             // the live item, only when it's clicked
-            openSheet(actor.items.get(id));
-          }
-        }
-      : isEditable
-        ? () => {
-            if (creating.current || actor.system.getOccupations().length > 0) {
-              return;
-            }
-            creating.current = true;
-            void actor.system
-              .createPersonalDetail(occupationSlotIndex)
-              .finally(() => {
-                creating.current = false;
-              });
-          }
-        : undefined;
+            onClick: () => openSheet(actor.items.get(id)),
+          };
+        })
+      : [
+          {
+            key: "none",
+            text: fallback,
+            label: labelled(fallback),
+            onClick: isEditable ? createOccupation : undefined,
+          },
+        ];
 
   return (
     <>
@@ -106,11 +114,8 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
       >
         <LogoEditable
           mainText={header.name}
-          subText={occupationText}
-          defaultSubText={fallback}
+          subText={occupationParts}
           onChangeMainText={actor.setName}
-          onClickSubText={onClickOccupation}
-          subTextLabel={occupationLabel}
         />
       </div>
       <ImagePickle

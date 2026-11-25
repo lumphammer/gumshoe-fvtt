@@ -93,6 +93,7 @@ export const recipeShapes = {
       "front_wrapper",
       "front",
       "front_sub",
+      "front_sub_part",
       "rear_wrapper",
       "rear",
       "rear_sub",

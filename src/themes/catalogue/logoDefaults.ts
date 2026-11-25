@@ -39,4 +39,6 @@ export const logoDefaults = {
   // the subtext, under it
   front_sub: { fontSize: "0.5em", padding: "0 1em", minHeight: "1em" },
   rear_sub: { fontSize: "0.5em", padding: "0 1em", minHeight: "1em" },
+  // a part of the subtext (an occupation), inline in it
+  front_sub_part: {},
 } as const;

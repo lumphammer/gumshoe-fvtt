@@ -347,7 +347,7 @@ test("with no personal details, hidden notes or stats in it, the stats region is
   await expect(region).toBeVisible();
 });
 
-test("several occupations are all shown in the title, and all opened", async ({
+test("several occupations are each a button in the title, opening only its own sheet", async ({
   page,
 }) => {
   await setSettings(page, {
@@ -370,23 +370,36 @@ test("several occupations are all shown in the title, and all opened", async ({
     [actorId, folkloristId] as const,
   );
   const sheet = await openSheet(page, `Actor.${actorId}`);
-  const occupation = sheet.getByRole("button", {
-    name: "Occupation: Investigator / Folklorist",
+  await expect(
+    sheet.getByRole("button", { name: "Occupation: Investigator" }),
+  ).toBeVisible();
+  const folklorist = sheet.getByRole("button", {
+    name: "Occupation: Folklorist",
   });
-  await occupation.click();
-  await expect
-    .poll(() =>
-      page.evaluate(
-        (id) =>
-          game.actors
-            .get(id)!
-            .items.filter(
-              (i) => i.type === "personalDetail" && i.sheet!.rendered,
-            ).length,
-        actorId,
-      ),
-    )
-    .toBe(2);
+  // each can be dragged to another sheet, as the item it is
+  await expect(folklorist).toHaveAttribute("draggable", "true");
+  const dataTransfer = await page.evaluateHandle(() => new DataTransfer());
+  await folklorist.dispatchEvent("dragstart", { dataTransfer });
+  expect(
+    JSON.parse(
+      await dataTransfer.evaluate((data) => data.getData("text/plain")),
+    ),
+  ).toMatchObject({
+    type: "Item",
+    uuid: `Actor.${actorId}.Item.${folkloristId}`,
+  });
+
+  await folklorist.click();
+  const openOccupations = () =>
+    page.evaluate(
+      (id) =>
+        game.actors
+          .get(id)!
+          .items.filter((i) => i.type === "personalDetail" && i.sheet!.rendered)
+          .map((i) => i.name),
+      actorId,
+    );
+  await expect.poll(openOccupations).toEqual(["Folklorist"]);
 });
 
 test("with no occupation and a blank generic one, the title says what it's for", async ({

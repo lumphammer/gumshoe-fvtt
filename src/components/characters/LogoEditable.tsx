@@ -1,6 +1,7 @@
-import { type RefObject, useEffect, useRef } from "react";
+import { Fragment, type RefObject, useEffect, useRef } from "react";
 
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
+import { useDragStart } from "../../hooks/useDragStart";
 import { useIsEditable } from "../../hooks/useIsEditable";
 import { css, cx } from "../../styled-system/css";
 import { logo } from "../../styled-system/recipes";
@@ -10,14 +11,25 @@ import { clickable } from "../clickable";
 type LogoEditableProps = {
   className?: string;
   mainText: string;
-  subText?: string;
-  defaultSubText?: string;
+  /** the subtext: plain text, or parts which can each be a button */
+  subText?: string | readonly LogoSubTextPart[];
   onChangeMainText: (newValue: string) => void | PromiseLike<unknown>;
-  /** makes the subtext a button (e.g. to open the occupation's sheet) */
-  onClickSubText?: () => void;
-  /** what the subtext is, for screen readers (e.g. "Occupation") */
-  subTextLabel?: string;
 };
+
+/** A part of the logo's subtext (e.g. one of a PC's occupations) */
+export type LogoSubTextPart = {
+  key: string;
+  text: string;
+  /** makes it a button (e.g. to open the occupation's sheet) */
+  onClick?: () => void;
+  /** what it is, as well as what it says, for screen readers */
+  label?: string;
+  /** an owned item it can be dragged as (to another sheet) */
+  itemId?: string;
+};
+
+/** Between the subtext's parts */
+const subTextSeparator = " / ";
 
 /**
  * Run `setup` (observers, say) with `element`'s window, and again, after
@@ -216,7 +228,8 @@ const useTitlebarOverlap = (rootRef: RefObject<HTMLElement | null>) => {
  * This component is a bit tricksy and is made up of several elements.
  *
  * There are two strings displayed: `mainText`, which can be edited, and
- * `subText`, which can be a button (`onClickSubText`). Both strings are
+ * `subText`, whose parts can each be a button, and dragged as an item. Both
+ * strings are
  * rendered twice, to allow for various CSS shenanigans, so there is a
  * "front text element" and a "rear text element".
  *
@@ -239,10 +252,7 @@ export const LogoEditable = ({
   className,
   mainText,
   subText,
-  defaultSubText = "",
   onChangeMainText,
-  onClickSubText,
-  subTextLabel,
 }: LogoEditableProps) => {
   const classes = logo();
 
@@ -259,7 +269,15 @@ export const LogoEditable = ({
   const isEditable = useIsEditable();
 
   const hasSubtext = subText !== undefined;
-  const displaySubtext = subText || defaultSubText;
+  const subTextParts: readonly LogoSubTextPart[] =
+    typeof subText === "string"
+      ? [{ key: "text", text: subText }]
+      : (subText ?? []);
+  // the copies (rear, measured) are the whole string
+  const displaySubtext = subTextParts
+    .map((part) => part.text)
+    .join(subTextSeparator);
+  const onDragStart = useDragStart();
 
   const rootRef = useRef<HTMLDivElement>(null);
   useTitlebarOverlap(rootRef);
@@ -440,22 +458,32 @@ export const LogoEditable = ({
             </div>
             {hasSubtext && (
               <div className={fitHeight}>
-                <div
-                  className={classes.front_sub}
-                  // a button, if it does something
-                  {...clickable(onClickSubText)}
-                  // what it is, as well as what it says
-                  aria-label={
-                    subTextLabel === undefined
-                      ? undefined
-                      : getTranslated("LabelAndValue", {
-                          Label: subTextLabel,
-                          Value: displaySubtext,
-                        })
-                  }
-                  data-interactive={onClickSubText !== undefined || undefined}
-                >
-                  {displaySubtext}
+                <div className={classes.front_sub}>
+                  {subTextParts.map((part, i) => (
+                    <Fragment key={part.key}>
+                      {i > 0 && subTextSeparator}
+                      <span
+                        className={classes.front_sub_part}
+                        // a button, if it does something
+                        {...clickable(part.onClick)}
+                        // (only a button can be named)
+                        aria-label={
+                          part.onClick === undefined ? undefined : part.label
+                        }
+                        // hover feedback (logoStates)
+                        data-interactive={
+                          part.onClick !== undefined || undefined
+                        }
+                        {...(part.itemId !== undefined && {
+                          "data-item-id": part.itemId,
+                          draggable: true,
+                          onDragStart,
+                        })}
+                      >
+                        {part.text}
+                      </span>
+                    </Fragment>
+                  ))}
                 </div>
               </div>
             )}

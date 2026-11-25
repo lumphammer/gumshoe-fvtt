@@ -137,13 +137,15 @@
     cursor: text;
   }
   [data-inv-theme]
-    .inv-logo__front_sub[data-interactive]:not(
+    .inv-logo__front_sub_part[data-interactive]:not(
       :disabled,
       [aria-disabled="true"],
       [data-disabled]
     ):hover {
-    box-shadow: inset 0 0 0 100vmax
-      color-mix(in srgb, var(--inv-feedback) 15%, transparent);
+    box-shadow:
+      inset 0 0 0 100vmax
+        color-mix(in srgb, var(--inv-feedback) 15%, transparent),
+      0 0 0 0.15em color-mix(in srgb, var(--inv-feedback) 15%, transparent);
     border-radius: 0.1em;
   }
 }
