@@ -6,9 +6,10 @@
  * stylesheet, so a component's own layout is here instead, in a layer under
  * `system.utilities`. See docs/theming.md, "Writing a component".
  */
-@layer system.defaults {
-  /* something that isn't a <button> or a link with an href, but works as one
-     (clickable.ts): sheets and chat cards alike */
+/* something that isn't a <button> or a link with an href, but works as one
+   (clickable.ts): sheets and chat cards alike. In `system.base`, under the
+   recipes, so a theme can give a catalogue part its own cursor */
+@layer system.base {
   [data-inv-clickable] {
     cursor: pointer;
   }
@@ -16,7 +17,9 @@
   [data-inv-clickable]:is([disabled], [aria-disabled="true"], [data-disabled]) {
     cursor: default;
   }
+}
 
+@layer system.defaults {
   .inv-default-text-input {
     flex: 1;
     width: 100%;

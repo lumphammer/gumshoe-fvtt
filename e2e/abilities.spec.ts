@@ -30,7 +30,7 @@ test("testing a general ability spends from its pool and rolls", async ({
     .filter({ hasText: "Test Investigator" })
     .filter({ has: page.locator("h1", { hasText: /^Athletics$/ }) });
   await abilitySheet.locator("label", { hasText: /^2$/ }).click();
-  await abilitySheet.getByRole("button", { name: "Test" }).click();
+  await abilitySheet.getByRole("button", { name: "Test", exact: true }).click();
 
   const card = lastChatMessage(page);
   await expect(card).toContainText("Athletics");

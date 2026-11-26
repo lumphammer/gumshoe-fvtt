@@ -140,7 +140,7 @@ test("while Shaken, Investigative spends ask first, and tests remind", async ({
   // a General test is at +1 Difficulty; tests don't have one yet, so the card
   // reminds
   const athletics = await openAbilitySheet(page, actorId, "Athletics");
-  await athletics.getByRole("button", { name: "Test" }).click();
+  await athletics.getByRole("button", { name: "Test", exact: true }).click();
   await expect(lastChatMessage(page).getByTestId("shaken-reminder")).toHaveText(
     "Shaken: Difficulty +1",
   );
@@ -167,7 +167,7 @@ test("a Stability test against Violence leaves the Agent Shaken", async ({
   );
 
   await forceDice(page, 1);
-  await sheet.getByRole("button", { name: "Test" }).click();
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
   const card = lastChatMessage(page).getByTestId("trauma-test-card");
   await expect(card).toContainText("Violence: a 3-point Stability test");
   await expect(card.getByTestId("trauma-outcome")).toHaveText("Loses 3");
@@ -206,7 +206,7 @@ test("a third loss to Violence adapts the Agent", async ({ page }) => {
   await sheet.getByLabel("Potential loss").selectOption("2");
   await pickSpend(sheet, "Spend", 1);
   await forceDice(page, 1);
-  await sheet.getByRole("button", { name: "Test" }).click();
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
 
   const card = lastChatMessage(page).getByTestId("trauma-test-card");
   await expect(card).toContainText("Spent: Stability 1");
@@ -243,7 +243,7 @@ test("an Unnatural shock that Shatters costs Stability and Sanity", async ({
     "(Difficulty 5)",
   );
   await forceDice(page, 1);
-  await sheet.getByRole("button", { name: "Test" }).click();
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
 
   const card = lastChatMessage(page).getByTestId("trauma-test-card");
   await expect(card.getByTestId("trauma-stability")).toHaveText(
@@ -298,7 +298,7 @@ test("burning a Bond straight after a loss undoes becoming Shattered", async ({
   await sheet.getByLabel("Trauma").selectOption("unnatural");
   await sheet.getByLabel("Potential loss").selectOption("2");
   await forceDice(page, 1);
-  await sheet.getByRole("button", { name: "Test" }).click();
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
   // the card comes once everything's recorded
   await expect(
     lastChatMessage(page).getByTestId("trauma-test-card"),
@@ -358,7 +358,7 @@ test("a later burn doesn't undo an earlier loss", async ({ page }) => {
   await sheet.getByLabel("Trauma").selectOption("unnatural");
   await sheet.getByLabel("Potential loss").selectOption("2");
   await forceDice(page, 1);
-  await sheet.getByRole("button", { name: "Test" }).click();
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
   // the card comes once everything's recorded
   await expect(
     lastChatMessage(page).getByTestId("trauma-test-card"),
