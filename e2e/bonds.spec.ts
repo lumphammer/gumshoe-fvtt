@@ -42,7 +42,7 @@ async function burn(page: Page, button: Locator, expectedText: string) {
   await button.click();
   const dialog = page.locator(".application.dialog");
   await expect(dialog).toContainText(expectedText);
-  await dialog.getByRole("button", { name: "Burn" }).click();
+  await dialog.getByRole("button", { name: "Burn", exact: true }).click();
   await expect(dialog).toHaveCount(0);
 }
 
@@ -99,7 +99,7 @@ test("adding, editing and breaking a Bond", async ({ page }) => {
   await expect(area.getByTestId("bond-name")).toHaveText(["Mom", "Bob"]);
   await expect(area.getByTestId("bond-rating")).toHaveText(["1", "2"]);
   // just the table: editing and burning are on the Bond's sheet
-  await expect(area.getByRole("button", { name: "Burn" })).toHaveCount(0);
+  await expect(area.getByRole("button", { name: "Burn", exact: true })).toHaveCount(0);
   // (the only inputs are the adaptation tracker's boxes)
   await expect(
     area.locator("input:not([data-testid^=adaptation] input)"),
@@ -178,7 +178,7 @@ test("spending Bond points on a Stability test", async ({ page }) => {
   const messages = page.locator("#chat .chat-message");
   const messageCount = await messages.count();
   const dialog = page.locator(".application.dialog");
-  await sheet.getByRole("button", { name: "Test" }).click();
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
   await expect(dialog).toContainText("break your Bond with Mom");
   await dialog.getByRole("button", { name: "Cancel" }).click();
   await expect(dialog).toHaveCount(0);
@@ -186,8 +186,8 @@ test("spending Bond points on a Stability test", async ({ page }) => {
   expect(await messages.count()).toBe(messageCount);
 
   await forceDice(page, 6);
-  await sheet.getByRole("button", { name: "Test" }).click();
-  await dialog.getByRole("button", { name: "Test" }).click();
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
+  await dialog.getByRole("button", { name: "Test", exact: true }).click();
   await expect(dialog).toHaveCount(0);
   const card = lastChatMessage(page);
   await expect(card.getByTestId("bond-spends")).toHaveText("Bonds: Mom 2");
@@ -223,7 +223,7 @@ test("burning a Bond for Stability", async ({ page }) => {
     has: page.locator(".window-title", { hasText: "Jerome" }),
   });
   await expect(bondSheet).toBeVisible();
-  const burnButton = bondSheet.getByRole("button", { name: "Burn" });
+  const burnButton = bondSheet.getByRole("button", { name: "Burn", exact: true });
   await burn(
     page,
     burnButton,
@@ -269,7 +269,7 @@ test("burning a Bond from its sheet", async ({ page }) => {
   });
 
   const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
-  const burnButton = bondSheet.getByRole("button", { name: "Burn" });
+  const burnButton = bondSheet.getByRole("button", { name: "Burn", exact: true });
   await burn(page, burnButton, "(4 → 2)");
   await expect
     .poll(() => getBonds(page, actorId))
