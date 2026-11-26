@@ -48,6 +48,31 @@ test("changing a setting and saving it", async ({ page }) => {
   ).toBe(true);
 });
 
+test("applying a setting keeps the window open", async ({ page }) => {
+  await setSettings(page, { useDamageApplication: false });
+  const app = await openSystemSettings(page);
+  await goTo(app, "Combat", "Combat options");
+  await app.getByLabel("Use damage application?").click();
+  await expect(app.getByRole("status")).toHaveText("Unsaved changes");
+  await app.getByRole("button", { name: "Apply changes" }).click();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          game.settings.get(
+            "investigator",
+            "useDamageApplication" as never,
+          ) as unknown,
+      ),
+    )
+    .toBe(true);
+  await expect(app).toBeVisible();
+  await expect(app.getByRole("status")).toBeHidden();
+  // nothing left to save, so cancelling closes without asking
+  await app.getByRole("button", { name: "Cancel" }).click();
+  await expect(app).toBeHidden();
+});
+
 test("an equipment category's fields show up on equipment", async ({
   page,
 }) => {

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useReducer } from "react";
+import { useCallback, useMemo, useReducer, useRef, useState } from "react";
 
 import { useRefStash } from "../../hooks/useRefStash";
 import type { SettingsDict } from "../../settings/settings";
@@ -15,6 +15,10 @@ import type { Setters } from "./types";
 export const useSettingsState = () => {
   const initialState = useMemo(() => ({ settings: getSettingsDict() }), []);
   const [tempState, dispatch] = useReducer(store.reducer, initialState);
+  // what's been saved: the state "unsaved changes" compares against. It moves
+  // on when changes are applied without closing.
+  const [savedState, setSavedState] = useState(initialState);
+  const savedStateRef = useRef(savedState);
   const tempStateRef = useRefStash(tempState);
   const setters = useMemo(() => {
     const setters: Partial<Setters> = {};
@@ -29,14 +33,20 @@ export const useSettingsState = () => {
   }, [initialState]);
   const isDirty = useCallback(() => {
     return (
-      JSON.stringify(tempStateRef.current) !== JSON.stringify(initialState)
+      JSON.stringify(tempStateRef.current) !==
+      JSON.stringify(savedStateRef.current)
     );
-  }, [initialState, tempStateRef]);
+  }, [tempStateRef]);
+
+  const markSaved = useCallback((state: typeof initialState) => {
+    savedStateRef.current = state;
+    setSavedState(state);
+  }, []);
 
   // a reactive version of isDirty, for showing in the UI
   const hasChanges = useMemo(
-    () => JSON.stringify(tempState) !== JSON.stringify(initialState),
-    [initialState, tempState],
+    () => JSON.stringify(tempState) !== JSON.stringify(savedState),
+    [savedState, tempState],
   );
 
   function modify(fn: (state: SettingsDict) => void) {
@@ -50,6 +60,7 @@ export const useSettingsState = () => {
     dispatch,
     isDirty,
     hasChanges,
+    markSaved,
     modify,
   };
 };
