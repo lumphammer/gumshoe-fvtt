@@ -1,6 +1,6 @@
 import { Router } from "@lumphammer/minirouter";
 import { FoundryAppContext } from "@lumphammer/shared-fvtt-bits/src/FoundryAppContext";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   FaCircle,
   FaBrain,
@@ -88,6 +88,7 @@ export const Settings = () => {
     dispatch,
     isDirty,
     hasChanges,
+    markSaved,
     modify,
   } = useSettingsState();
   const theme = useTheme(tempState.settings.defaultThemeName);
@@ -113,19 +114,44 @@ export const Settings = () => {
     return handleClose();
   }, [handleClose]);
 
-  const handleClickSave = useCallback(async () => {
+  // one save at a time, so an older one can't land after a newer one
+  const savingRef = useRef(false);
+  const [saving, setSaving] = useState(false);
+
+  /** save the changes, returning whether it worked */
+  const save = useCallback(async () => {
+    if (savingRef.current) return false;
+    savingRef.current = true;
+    setSaving(true);
+    const state = tempStateRef.current;
     try {
-      await saveSettings(tempStateRef.current.settings, settings);
+      await saveSettings(state.settings, settings);
+      markSaved(state);
       Hooks.call(settingsSaved);
-      await foundryApplication.close({ submitted: true });
+      return true;
     } catch (error) {
       const message =
         error instanceof SettingsSaveError
           ? getSettingsSaveErrorMessage(error)
           : `Could not save settings: ${String(error)}`;
       ui.notifications?.error(message, { permanent: true });
+      return false;
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
     }
-  }, [foundryApplication, tempStateRef]);
+  }, [markSaved, tempStateRef]);
+
+  const handleClickApply = useCallback(async () => {
+    await save();
+  }, [save]);
+
+  const handleClickSave = useCallback(async () => {
+    if (await save()) {
+      // asks first if anything changed while it was saving
+      await handleClose();
+    }
+  }, [handleClose, save]);
 
   const pages = [
     {
@@ -350,7 +376,20 @@ export const Settings = () => {
                     paddingTop: "0.5em",
                     paddingBottom: "0.5em",
                   })}
+                  onClick={handleClickApply}
+                  disabled={saving}
+                >
+                  <i className="fas fa-check" />{" "}
+                  <Translate>Apply Changes</Translate>
+                </Button>
+                <Button
+                  className={css({
+                    flex: "[1]",
+                    paddingTop: "0.5em",
+                    paddingBottom: "0.5em",
+                  })}
                   onClick={handleClickSave}
+                  disabled={saving}
                 >
                   <i className="fas fa-save" />{" "}
                   <Translate>Save Changes</Translate>
