@@ -1,6 +1,7 @@
 // Foundry glue for rebuilding a Bond between operations (Fall of DELTA GREEN,
 // p. 128). The rules are in `rebuild.ts`.
 
+import { getTestOutcome } from "../abilityTests/outcome";
 import * as constants from "../../constants";
 import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
 import { getTranslated } from "../../functions/getTranslated";
@@ -11,7 +12,6 @@ import type { InvestigativeAbilityItem } from "../items/investigativeAbility";
 import {
   doesRebuildRefreshStability,
   getBondAfterRebuild,
-  getRebuildOutcome,
   getRebuildStabilityRefresh,
   getStabilityAfterRebuild,
   rebuildDifficulty,
@@ -67,7 +67,7 @@ export async function rebuildBond(
   await testRoll.evaluate();
   const die = testRoll.dice[0]?.total ?? 0;
   const total = testRoll.total ?? 0;
-  const outcome = getRebuildOutcome({ die, total, difficulty });
+  const outcome = getTestOutcome({ die, total, difficulty });
 
   let refreshRoll: Roll | null = null;
   if (doesRebuildRefreshStability(outcome)) {

@@ -3,6 +3,9 @@
 
 export type StabilityState = "steady" | "shaken" | "shattered" | "gone";
 
+/** Shaken (or worse) adds this to General tests */
+export const shakenDifficultyPenalty = 1;
+
 /** The states which have a status effect */
 export type StabilityStatusState = Exclude<StabilityState, "steady">;
 

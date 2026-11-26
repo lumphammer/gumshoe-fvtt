@@ -4,7 +4,7 @@ import type { BondSpendRecord } from "../../module/bonds/bondSpends";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
 import type { StabilityState } from "../../module/stability/states";
 import { useStabilityStateName } from "../../hooks/useStabilityStateName";
-import { shakenDifficultyPenalty } from "../../module/stability/trauma";
+import { shakenDifficultyPenalty } from "../../module/stability/states";
 import { Translate } from "../Translate";
 import { useAbilityCardHeader } from "./useAbilityCardHeader";
 import { DiceTerms } from "./DiceTerms";

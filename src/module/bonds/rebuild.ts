@@ -1,31 +1,14 @@
 // Rebuilding a Bond between operations (Fall of DELTA GREEN, p. 128). Pure
 // functions: keep Foundry out of this file.
 
+import type { TestOutcome } from "../abilityTests/outcome";
+import { isSuccessfulOutcome, testOutcomes } from "../abilityTests/outcome";
 import { addBondPoints, maxBondPoints } from "./rules";
 
 /** The Stability test to rebuild a Bond is at Difficulty 4 */
 export const rebuildDifficulty = 4;
 
-export type RebuildOutcome = "successful6" | "success" | "failure" | "failed1";
-
-/**
- * A successful 6 is a success where the die shows 6; a failed 1 is a failure
- * where it shows 1 (p. 080).
- */
-export function getRebuildOutcome({
-  die,
-  total,
-  difficulty = rebuildDifficulty,
-}: {
-  die: number;
-  total: number;
-  difficulty?: number;
-}): RebuildOutcome {
-  if (total >= difficulty) {
-    return die === 6 ? "successful6" : "success";
-  }
-  return die === 1 ? "failed1" : "failure";
-}
+export type RebuildOutcome = TestOutcome;
 
 /** How the Bond changes: +2 on a successful 6, +1 on a success, -1 on a failed 1 */
 export function getRebuildBondChange(outcome: RebuildOutcome): number {
@@ -43,7 +26,7 @@ export function getRebuildBondChange(outcome: RebuildOutcome): number {
 
 /** Whether the outcome refreshes some Stability, which needs another die */
 export function doesRebuildRefreshStability(outcome: RebuildOutcome): boolean {
-  return outcome === "successful6" || outcome === "success";
+  return isSuccessfulOutcome(outcome);
 }
 
 /**
@@ -115,13 +98,6 @@ export type RebuildRecord = {
   spends: { name: string; spend: number }[];
 };
 
-const outcomes: RebuildOutcome[] = [
-  "successful6",
-  "success",
-  "failure",
-  "failed1",
-];
-
 export function serializeRebuildRecord(record: RebuildRecord): string {
   return JSON.stringify(record);
 }
@@ -156,7 +132,7 @@ export function parseRebuildRecord(text: string | null): RebuildRecord | null {
   if (
     typeof record["bondName"] !== "string" ||
     typeof record["stabilityName"] !== "string" ||
-    !outcomes.includes(record["outcome"] as RebuildOutcome) ||
+    !testOutcomes.includes(record["outcome"] as RebuildOutcome) ||
     numbers.some((key) => typeof record[key] !== "number") ||
     (record["refreshDie"] !== null &&
       typeof record["refreshDie"] !== "number") ||

@@ -1,4 +1,5 @@
 import type { RebuildOutcome, RebuildRecord } from "../../module/bonds/rebuild";
+import { isSuccessfulOutcome } from "../../module/abilityTests/outcome";
 import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
 import { DieFace } from "./DiceTerms";
@@ -21,8 +22,7 @@ const outcomeText: Record<RebuildOutcome, string> = {
  * all settled when the test is rolled, so it just shows the record.
  */
 export const RebuildBondCard = ({ record, imageUrl }: RebuildBondCardProps) => {
-  const succeeded =
-    record.outcome === "successful6" || record.outcome === "success";
+  const succeeded = isSuccessfulOutcome(record.outcome);
   const spendTotal = record.total - record.die;
 
   return (

@@ -1,6 +1,7 @@
 // Foundry glue for forming DELTA GREEN Bonds after a team crisis (Fall of
 // DELTA GREEN, p. 046). The rules are in `crisis.ts`.
 
+import { doesTestSucceed } from "../abilityTests/outcome";
 import * as constants from "../../constants";
 import { buildAbilityCardContent } from "../../functions/buildAbilityCardContent";
 import { getTranslated } from "../../functions/getTranslated";
@@ -134,7 +135,7 @@ export async function teamCrisis(
   await roll.evaluate();
   const die = roll.dice[0]?.total ?? 0;
   const total = roll.total ?? 0;
-  const succeeded = total >= difficulty;
+  const succeeded = doesTestSucceed(total, difficulty);
 
   // every Bond's points, as they go: spends come off first (they're part of
   // the test), then on a failure the changes and the losses
