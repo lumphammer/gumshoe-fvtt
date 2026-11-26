@@ -2,8 +2,11 @@
   "name": "@lumphammer/minirouter",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
   "type": "module",
+  "main": "index.js",
   "exports": {
     ".": {
       "import": "./src/index.ts"
@@ -21,9 +24,6 @@
     "lint:check": "oxlint --type-aware --report-unused-disable-directives-severity=error",
     "lint:fix": "oxlint --type-aware --report-unused-disable-directives-severity=error --fix"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@testing-library/jest-dom": "^8.0.0",
     "@types/react": "catalog:",

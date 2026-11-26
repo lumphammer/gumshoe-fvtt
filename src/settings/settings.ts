@@ -134,6 +134,21 @@ export const settings = {
     name: "Use Boost",
     default: defaultSettings.useBoost,
   }),
+  useTestDifficulty: createSettingBoolean({
+    key: "useTestDifficulty",
+    name: "Use test Difficulty",
+    default: defaultSettings.useTestDifficulty,
+  }),
+  secretTestDifficulty: createSettingBoolean({
+    key: "secretTestDifficulty",
+    name: "Secret test Difficulty",
+    default: defaultSettings.secretTestDifficulty,
+  }),
+  defaultTestDifficulty: createSetting<number>()(Number, z.number())({
+    key: "defaultTestDifficulty",
+    name: "Default test Difficulty",
+    default: defaultSettings.defaultTestDifficulty,
+  }),
   useMwInjuryStatus: createSettingBoolean({
     key: "useMwInjuryStatus",
     name: "Use injury status",

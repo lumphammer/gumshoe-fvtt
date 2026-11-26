@@ -1,7 +1,5 @@
 # Minirouter
 
-
-
 ## TL;DR
 
 **Minirouter** is a router for React. It works **in-memory only**, **cannot interact with the browser history**, and **does not use string-based URIs**. It offers **partial type safety**, uses **TSX for routing**, and is designed to be used in situation where you are creating a routable UI as a smaller piece of a larger application.
@@ -26,7 +24,6 @@ The key React components are `Router`, `Link`, and `Route`.
 
 We also have various hooks, but we'll get to them later.
 
-
 ## The Basics
 
 A Direction is an identifier for the types of way a user can navigate your app. You create a Direction by calling `createDirection` and passing it a description. The description is purely for debugging and errors, and is not otherwise used by the router.
@@ -41,7 +38,7 @@ Notice that a direction doesn't specify any content. That's because it's just a 
 Here's where we win some type safety. You can specify the parameter types of the directions, and the router will enforce that.
 
 ```ts
-const values = createDirection<{id: string}>("product");
+const values = createDirection<{ id: string }>("product");
 ```
 
 Okay, so how do we use the directions?
@@ -83,33 +80,33 @@ So how do we navigate? You can use the `Link` component to create navigation lin
 </Router>
 ```
 
-Note that the `to` prop of the `Link` component is a `Step`, not a `Direction`. You can tell because we *call* the direction rather than pass it directly. That how we create a step from a direction.
+Note that the `to` prop of the `Link` component is a `Step`, not a `Direction`. You can tell because we _call_ the direction rather than pass it directly. That how we create a step from a direction.
 
-Why this extra calling step? So that we can have directions that require *parameters*. Look at this:
+Why this extra calling step? So that we can have directions that require _parameters_. Look at this:
 
 ```tsx
-const product = createDirection<{id: string}>("product");
+const product = createDirection<{ id: string }>("product");
 
 <Router>
   <h1>Our products</h1>
   <p>
-    <Link to={product({id: "foo"})}>Foo</Link>
-    <Link to={product({id: "bar"})}>Bar</Link>
+    <Link to={product({ id: "foo" })}>Foo</Link>
+    <Link to={product({ id: "bar" })}>Bar</Link>
   </p>
 
   <Route direction={product}>
     <Product />
   </Route>
-</Router>
+</Router>;
 ```
 
-The `product` direction takes a parameter, and the `Product` component can use that parameter to render the product. In the example, the type of the parameter is `{id: string}`, but you can pass any type you want. We could have just used  `string` here, and then we would call it like `product("foo")` instead of `product({id: "foo"})`.
+The `product` direction takes a parameter, and the `Product` component can use that parameter to render the product. In the example, the type of the parameter is `{id: string}`, but you can pass any type you want. We could have just used `string` here, and then we would call it like `product("foo")` instead of `product({id: "foo"})`.
 
 Here's what it looks like in the `Product` component:
 
 ```tsx
 const Product: React.FC = () => {
-  const {id} = useParams(product);
+  const { id } = useParams(product);
   return (
     <div>
       <h1>Product {id}</h1>
@@ -208,7 +205,6 @@ export const Team: React.FC = () => {
 };
 ```
 
-
 ### Deep linking
 
 The `to` prop of `Link` can also take an array of steps...
@@ -231,7 +227,7 @@ const member = createDirection<string>("member");
       <Member />
     </Route>
   </Route>
-</Router>
+</Router>;
 ```
 
 ### Linking from somewhere higher up the router
@@ -248,13 +244,15 @@ const member = createDirection<string>("member");
   <p>
     <Link to={products()}>Products</Link>
     <Link to={contact()}>Contact</Link>
-
   </p>
 
   <Route direction={products}>
     <h2>Our products</h2>
     We are a great company. You can
-    <Link from="root" to={contact()}>contact us here</Link>.
+    <Link from="root" to={contact()}>
+      contact us here
+    </Link>
+    .
   </Route>
   <Route direction={contact}>
     <h2>Contact</h2>
@@ -274,7 +272,6 @@ Otherwise if `from` is a `Direction`, it means "go to the parent step of the cur
   <p>
     <Link to={products()}>Products</Link>
     <Link to={contact()}>Contact</Link>
-
   </p>
 
   <Route direction={products}>
@@ -291,7 +288,8 @@ Otherwise if `from` is a `Direction`, it means "go to the parent step of the cur
       The Geegaw goes great with a
       <Link from={products} to={thingy()}>
         Thingy
-      </Link>.
+      </Link>
+      .
     </Route>
   </Route>
 </Router>
@@ -331,7 +329,6 @@ const Member: React.FC = () => {
     </div>
   );
 ```
-
 
 ## Animation and Outlets
 
@@ -389,7 +386,7 @@ const cardsDetailsDirection = createDirection<number>("cardsDetails");
 
 <SlideInRoute direction={cardsDetailsDirection}>
   <CardDetails />
-</SlideInRoute>
+</SlideInRoute>;
 ```
 
 Every time the user navigates to a new card, the active step changes, and therefore the `currentStep.id` changes, and Framer Motion knows to animate the new content in and the old content out.
@@ -415,7 +412,7 @@ const contact = createDirection("contact");
   <SlideInRoute direction={contact}>
     <Contact />
   </SlideInRoute>
-</Router>
+</Router>;
 ```
 
 In this example, the `About` and `Contact` components are rendered when the user navigates to the "about" or "contact" steps. It works! Ish. But there's a problem.
@@ -428,12 +425,12 @@ In `SlideInRoute` we have this line:
 
 That `mode="wait"` tells Framer Motion to orchestrate the animations so that new content does not enter until the old content has exited. That works fine in the `CardDetails` example above because there's one one instance of `AnimatePresence`, and it's just animating between steps with different params.
 
-But in our new example, we now have *two* `AnimatePresence` components, one for the `About` and one for the `Contact`. That means that there's no way to orchestrate the transitions between the two.
+But in our new example, we now have _two_ `AnimatePresence` components, one for the `About` and one for the `Contact`. That means that there's no way to orchestrate the transitions between the two.
 
 Step in `useOutletProvider`. Conceptually, `useOutletProvider` takes your regular JSX children, and returns two things:
 
-* Some `content`, which is just something you can render wherever you want. It shouldn't create any on-screen content as long as your `children` only contains `Route`s.
-* A `registry` which is a map of string ids to routed content. This map will contain one entry for each child `Route` that is active.
+- Some `content`, which is just something you can render wherever you want. It shouldn't create any on-screen content as long as your `children` only contains `Route`s.
+- A `registry` which is a map of string ids to routed content. This map will contain one entry for each child `Route` that is active.
 
 You can use the content in the `registry` to render the active content and the ids to differentiate between children for purposes of orchestrating transitions.
 
@@ -474,10 +471,10 @@ const contact = createDirection("contact");
       <Contact />
     </Route>
   </Outlet>
-</Router>
+</Router>;
 ```
 
-*The end result of this example works exactly the same as before, when we just had bare routes without an `Outlet`* The only difference is that under the hood, instead of each route rendering its own content, they're reporting up the to the `Outlet` component, which is responsible for rendering the active content.
+_The end result of this example works exactly the same as before, when we just had bare routes without an `Outlet`_ The only difference is that under the hood, instead of each route rendering its own content, they're reporting up the to the `Outlet` component, which is responsible for rendering the active content.
 
 So what's the point? The point is that you're not meant to use `Outlet`, it's just a minimal example of how you can use the `useOutletProvider` hook.
 
@@ -518,7 +515,7 @@ This just like our `SlideInRoute` frome above, but now we can orchestrate betwee
 
 You's use it like this:
 
-```tsx
+````tsx
 ```tsx
 const about = createDirection("about");
 const contact = createDirection("contact");
@@ -539,7 +536,7 @@ const contact = createDirection("contact");
     </Route>
   </SlideInOutlet>
 </Router>
-```
+````
 
 Now, the "about" and "contact" will animate in and out as you navigate between them, and crucially, they will wait for the previous one to clear before coming in.
 
@@ -547,10 +544,9 @@ Now, the "about" and "contact" will animate in and out as you navigate between t
 
 There are two caveats to this approach.
 
-One, you *must* render the `content` that you get from the `useOutletProvider` hook. If you don't, nothing will happen.
+One, you _must_ render the `content` that you get from the `useOutletProvider` hook. If you don't, nothing will happen.
 
-Two, if you put anything inside the `Outlet` that isn't a `Route`, it will get rendered as part of said `content`. That probably isn't what you want. So the rule is: ***only put `Route`s inside an `Outlet`***.
-
+Two, if you put anything inside the `Outlet` that isn't a `Route`, it will get rendered as part of said `content`. That probably isn't what you want. So the rule is: _**only put `Route`s inside an `Outlet`**_.
 
 ## Background and motivation
 
@@ -562,7 +558,7 @@ For example, there's a "TabContainer" component that works much like you might e
 
 It gets worse in the Settings UI. INVESTIGATOR is a very configurable system, by design - the whole idea is that you can jerry-rig it to run almost any GUMSHOE-style system you want. Early on this means some checkboxes, some list editors, and some text fields. But when I added configurable PC Stats, I now had a need to be able to edit a list of non-trivial objects. The UI pattern I chose was was a cramped list of mini-forms, each with a dropdown menu for various operations. It's usable, but ugly... 6/10.
 
-When I added equipment categories, hoo boy. There's a list of categories, each with a bunch of editable fields. And then each category has a list of fields that will exist on all equipment in said category. So now we have list of mini-forms, each of which also contains a sub-list of even more mini-forms. It's a disgrace. 3/10. Only saved from a worse score because it's  actually pretty quick to use.
+When I added equipment categories, hoo boy. There's a list of categories, each with a bunch of editable fields. And then each category has a list of fields that will exist on all equipment in said category. So now we have list of mini-forms, each of which also contains a sub-list of even more mini-forms. It's a disgrace. 3/10. Only saved from a worse score because it's actually pretty quick to use.
 
 There's also the issue that the settings app uses the tab container, but as the system grows, we are going to run out of space for tabs. It just about works right now with the latest addition, "Cards", but in other languages i.e. German where the word for card is "Kaartengefinkelschaft" [^1] we're going to have an issue.
 
@@ -576,7 +572,7 @@ So Attempt #1 was based on [Tanstack Router](https://tanstack.com/router/v2/docs
 
 So Attempt #2 was based on [React Router](https://reactrouter.com/). It's the granddaddy of routers in React, but it keeps evolving. v6 doesn't quite offer the level of safety that TSR does, but it too is moving to a "define everything in one place" approach.
 
-The weirdly hard thing with TSR and RRD is that it's super hard to get routing information about the level of the route tree that you're rendering at. I.e. you can get the whole current path, but if you're rendering a page that's halfway down the tree, it's really hard to say "okay, but where am *I*? In fact RRD only allows you to do this if you accept the "define all your routes in one place" approach.
+The weirdly hard thing with TSR and RRD is that it's super hard to get routing information about the level of the route tree that you're rendering at. I.e. you can get the whole current path, but if you're rendering a page that's halfway down the tree, it's really hard to say "okay, but where am _I_? In fact RRD only allows you to do this if you accept the "define all your routes in one place" approach.
 
 I really, really want to be able to define child routes inside parent routes. I am willing to sacrifice 100% type safety for that. I also really like defining routes in TSX rather than a big old config object.
 

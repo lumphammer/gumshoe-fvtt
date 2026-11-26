@@ -456,6 +456,20 @@ export interface PresetV1 {
    */
   useBoost?: boolean;
   /**
+   * Do ability tests have a Difficulty, and say whether they succeed? The GM
+   * can always change a test's Difficulty on its card, and reveal or hide it.
+   */
+  useTestDifficulty?: boolean;
+  /**
+   * Are tests' Difficulties (and so whether they succeed) hidden from players
+   * until the GM reveals them?
+   */
+  secretTestDifficulty?: boolean;
+  /**
+   * The Difficulty of a test unless someone says otherwise. Defaults to 4.
+   */
+  defaultTestDifficulty?: number;
+  /**
    * What string to use when a PC's occupation is empty
    * Defaults to "Investigator"
    */
