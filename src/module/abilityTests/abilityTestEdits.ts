@@ -5,17 +5,20 @@
 import { assertGame } from "../../functions/isGame";
 import { isAbilityTestMessage } from "./AbilityTestMessageModel";
 
-/** Change the Difficulty a test is against (before its modifiers) */
+/**
+ * Change the Difficulty a test is against (before its modifiers), or unset it
+ * (null) to leave the test waiting for one
+ */
 export async function setAbilityTestDifficulty(
   message: ChatMessage,
-  base: number,
+  base: number | null,
 ): Promise<void> {
   assertGame(game);
   if (
     !game.user.isGM ||
     !isAbilityTestMessage(message) ||
     message.system.difficulty === null ||
-    !Number.isInteger(base)
+    (base !== null && !Number.isInteger(base))
   ) {
     return;
   }

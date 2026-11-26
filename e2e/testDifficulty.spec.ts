@@ -147,3 +147,46 @@ test("a secret Difficulty is the GM's to change and reveal", async ({
     .click();
   await expect(playerCard.getByTestId("test-difficulty-secret")).toBeVisible();
 });
+
+test("an open test can leave its Difficulty for the GM to set", async ({
+  page,
+  joinAs,
+}) => {
+  await setSettings(page, {
+    useTestDifficulty: true,
+    secretTestDifficulty: false,
+    defaultTestDifficulty: 4,
+  });
+  const actorId = await createActor(page, { name: "Hopeful", type: "pc" });
+  await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
+  const playerId = await createPlayer(page, "Waiter");
+  await giveOwnership(page, actorId, playerId);
+
+  const player = await joinAs("Waiter");
+  const sheet = await openAbilitySheet(player, actorId, "Athletics");
+  await sheet
+    .getByTestId("test-difficulty-picker")
+    .selectOption({ label: "Let the GM set it" });
+  await forceDice(player, 3);
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
+
+  const playerCard = lastChatMessage(player);
+  await expect(playerCard.locator(".dice-total")).toHaveText("3");
+  await expect(playerCard.getByTestId("test-difficulty-awaited")).toHaveText(
+    "Waiting for the GM to set the Difficulty",
+  );
+  await expect(playerCard.getByTestId("test-outcome")).toHaveCount(0);
+
+  const gmCard = lastChatMessage(page);
+  const input = gmCard.getByTestId("test-difficulty-input");
+  await expect(input).toHaveValue("");
+  await expect(gmCard.getByTestId("test-outcome")).toHaveCount(0);
+  await input.fill("3");
+  await input.press("Enter");
+
+  // open, so the player sees it as soon as it's set
+  await expect(playerCard.getByTestId("test-difficulty")).toHaveText(
+    "Difficulty 3",
+  );
+  await expect(playerCard.getByTestId("test-outcome")).toHaveText("Success");
+});

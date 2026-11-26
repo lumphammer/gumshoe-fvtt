@@ -59,12 +59,13 @@ export abstract class AbilityModel<
    * too.
    *
    * @param difficulty the test's Difficulty before modifiers, if tests have
-   * one; otherwise the default
+   * one: null leaves it for the GM to set on the card, and undefined means
+   * the default
    */
   async testAbility(
     spend: number,
     bondSpends: { bond: BondItem; spend: number }[] = [],
-    difficulty?: number,
+    difficulty?: number | null,
   ): Promise<void> {
     if (this.parent.parent === null) {
       return;
@@ -144,7 +145,10 @@ export abstract class AbilityModel<
         difficultyModifiers,
         difficulty: settings.useTestDifficulty.get()
           ? {
-              base: difficulty ?? settings.defaultTestDifficulty.get(),
+              base:
+                difficulty === undefined
+                  ? settings.defaultTestDifficulty.get()
+                  : difficulty,
               revealed: !settings.secretTestDifficulty.get(),
             }
           : null,

@@ -40,6 +40,9 @@ import { css, cx } from "../../styled-system/css";
 /** the book's losses run from 1 to 8; a little room beyond */
 const potentialLosses = Array.from({ length: 12 }, (_, i) => i + 1);
 
+/** the Difficulty picker's choice to leave it for the GM to set on the card */
+const unsetDifficulty = "unset";
+
 /** the book's Difficulties run from 2 to 8; room either side */
 const difficulties = Array.from({ length: 13 }, (_, i) => i);
 
@@ -61,8 +64,11 @@ export const AbilityTest = memo(function AbilityTest({
   // by trauma type id
   const [traumaId, setTraumaId] = useState("");
   const [potentialLoss, setPotentialLoss] = useState(1);
-  // null for the default
-  const [pickedDifficulty, setPickedDifficulty] = useState<number | null>(null);
+  // a number, "unset" for the GM to set it on the card, or null for the
+  // default
+  const [pickedDifficulty, setPickedDifficulty] = useState<
+    number | typeof unsetDifficulty | null
+  >(null);
   const isGM = useIsGM();
   const testDifficulty = useSettings((s) => ({
     use: s.useTestDifficulty,
@@ -152,7 +158,11 @@ export const AbilityTest = memo(function AbilityTest({
       void methods.testAbility(
         spend,
         spends,
-        canPickDifficulty ? (pickedDifficulty ?? undefined) : undefined,
+        !canPickDifficulty || pickedDifficulty === null
+          ? undefined
+          : pickedDifficulty === unsetDifficulty
+            ? null
+            : pickedDifficulty,
       );
     }
     setSpend(0);
@@ -226,9 +236,17 @@ export const AbilityTest = memo(function AbilityTest({
         <GridField label="Difficulty">
           <Select
             value={pickedDifficulty ?? testDifficulty.default}
-            onChange={(e) => setPickedDifficulty(Number(e.currentTarget.value))}
+            onChange={(e) => {
+              const value = e.currentTarget.value;
+              setPickedDifficulty(
+                value === unsetDifficulty ? unsetDifficulty : Number(value),
+              );
+            }}
             data-testid="test-difficulty-picker"
           >
+            <option value={unsetDifficulty}>
+              {getTranslated("Let the GM set it")}
+            </option>
             {/* the default may be outside the usual range */}
             {[...new Set([...difficulties, testDifficulty.default])]
               .sort((a, b) => a - b)

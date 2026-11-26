@@ -46,9 +46,12 @@ export const abilityTestMessageSchema = {
   /** null if tests had no Difficulty when this one was made */
   difficulty: new SchemaField(
     {
-      /** the Difficulty before modifiers: the GM can change it */
+      /**
+       * the Difficulty before modifiers: the GM can change it. null until the
+       * GM sets one: then the card waits to say how the test went.
+       */
       base: new NumberField({
-        nullable: false,
+        nullable: true,
         required: true,
         integer: true,
         initial: 4,

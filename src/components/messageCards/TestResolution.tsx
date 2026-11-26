@@ -55,7 +55,8 @@ export const DifficultyReminder = ({
 
 type TestResolutionProps = {
   msg: ChatMessage;
-  difficulty: { base: number; revealed: boolean };
+  /** base is null until the GM sets it */
+  difficulty: { base: number | null; revealed: boolean };
   modifiers: readonly DifficultyModifier[];
   /** the GM: can see a secret Difficulty, change it, and reveal it */
   canEdit: boolean;
@@ -63,7 +64,7 @@ type TestResolutionProps = {
 
 /**
  * A test's Difficulty and whether it succeeded. Players only see them once
- * the GM reveals them.
+ * the GM reveals them, and nobody sees how it went until there's a Difficulty.
  */
 export const TestResolution = ({
   msg,
@@ -74,8 +75,14 @@ export const TestResolution = ({
   const roll = msg.rolls?.[0];
   const die = roll?.dice[0]?.total ?? 0;
   const total = roll?.total ?? 0;
-  const finalDifficulty = getTestDifficulty(difficulty.base, modifiers);
-  const outcome = getTestOutcome({ die, total, difficulty: finalDifficulty });
+  const finalDifficulty =
+    difficulty.base === null
+      ? null
+      : getTestDifficulty(difficulty.base, modifiers);
+  const outcome =
+    finalDifficulty === null
+      ? null
+      : getTestOutcome({ die, total, difficulty: finalDifficulty });
 
   if (!canEdit && !difficulty.revealed) {
     return (
@@ -85,10 +92,21 @@ export const TestResolution = ({
     );
   }
 
+  if (!canEdit && difficulty.base === null) {
+    return (
+      <div data-testid="test-difficulty-awaited">
+        <Translate>Waiting for the GM to set the Difficulty</Translate>
+      </div>
+    );
+  }
+
   const onChangeBase = (e: React.FocusEvent<HTMLInputElement>) => {
-    const base = Number(e.currentTarget.value);
-    if (e.currentTarget.value === "" || !Number.isInteger(base)) {
-      e.currentTarget.value = String(difficulty.base);
+    const text = e.currentTarget.value;
+    // blank unsets it
+    const base = text === "" ? null : Number(text);
+    if (base !== null && !Number.isInteger(base)) {
+      e.currentTarget.value =
+        difficulty.base === null ? "" : String(difficulty.base);
       return;
     }
     if (base !== difficulty.base) {
@@ -110,10 +128,11 @@ export const TestResolution = ({
         {canEdit ? (
           <input
             // remount when the value changes underneath us
-            key={difficulty.base}
+            key={difficulty.base ?? "unset"}
             type="number"
             step={1}
-            defaultValue={difficulty.base}
+            defaultValue={difficulty.base ?? ""}
+            placeholder="?"
             onBlur={onChangeBase}
             onKeyDown={(e) => {
               if (e.key === "Enter") e.currentTarget.blur();
@@ -131,22 +150,32 @@ export const TestResolution = ({
             {modifiers.map((modifier, i) => (
               <ModifierLabel key={i} modifier={modifier} />
             ))}
-            {" = "}
-            <b>{finalDifficulty}</b>
+            {finalDifficulty !== null && (
+              <>
+                {" = "}
+                <b>{finalDifficulty}</b>
+              </>
+            )}
           </>
         )}
       </div>
-      <div
-        data-testid="test-outcome"
-        className={cx(
-          nativeStatus({
-            tone: isSuccessfulOutcome(outcome) ? "success" : "danger",
-          }),
-          css({ fontWeight: "bold", fontSize: "1.2em" }),
-        )}
-      >
-        <Translate>{outcomeText[outcome]}</Translate>
-      </div>
+      {outcome === null ? (
+        <div data-testid="test-difficulty-awaited">
+          <Translate>Set a Difficulty to see how it went</Translate>
+        </div>
+      ) : (
+        <div
+          data-testid="test-outcome"
+          className={cx(
+            nativeStatus({
+              tone: isSuccessfulOutcome(outcome) ? "success" : "danger",
+            }),
+            css({ fontWeight: "bold", fontSize: "1.2em" }),
+          )}
+        >
+          <Translate>{outcomeText[outcome]}</Translate>
+        </div>
+      )}
       {canEdit && (
         <button
           type="button"
