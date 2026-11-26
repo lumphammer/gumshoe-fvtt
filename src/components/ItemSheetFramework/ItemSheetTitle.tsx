@@ -1,3 +1,4 @@
+import { openSheet } from "../../functions/openSheet";
 import { assertGame } from "../../functions/isGame";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
@@ -6,11 +7,12 @@ import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { css, cx } from "../../styled-system/css";
 import { mutedText } from "../../styled-system/recipes";
+import { clickable } from "../clickable";
 
 /**
  * The top of an item's sheet: what type of item it is, who owns it (if
- * anyone), and its name, which can be edited in place. Reads the item and its
- * owner through snapshots.
+ * anyone, as a link to their sheet), and its name, which can be edited in
+ * place. Reads the item and its owner through snapshots.
  */
 export const ItemSheetTitle = ({ className }: { className?: string }) => {
   const { item } = useItemSheetContext();
@@ -28,18 +30,54 @@ export const ItemSheetTitle = ({ className }: { className?: string }) => {
   return (
     <div
       className={cx(
-        css({ display: "flex", flexDirection: "column", gap: "0.1em" }),
+        // `minWidth: 0` lets the grid column shrink below a long unbroken
+        // owner or item name, rather than the name widening the sheet
+        css({
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.1em",
+          minWidth: "0",
+        }),
         className,
       )}
     >
       {typeLabel}
       {ownerName !== undefined && (
-        <div className={mutedText({ size: "sm" })}>{ownerName}</div>
+        <div className={mutedText({ size: "sm" })}>
+          {/* truncated on the link itself, not the row, so the row's
+              overflow doesn't clip the link's focus ring */}
+          <a
+            {...clickable(() => {
+              openSheet(item.actor);
+            })}
+            title={ownerName}
+            className={css({
+              display: "inline-block",
+              maxWidth: "100%",
+              verticalAlign: "top",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            })}
+          >
+            {ownerName}
+          </a>
+        </div>
       )}
-      <h1 className={css({ "&&": { marginBottom: "0" } })}>
+      <h1
+        className={css({
+          "&&": { marginBottom: "0" },
+          overflowWrap: "anywhere",
+        })}
+      >
         <span
           contentEditable={isEditable}
-          className={css({ minWidth: "1em", display: "inline-block" })}
+          spellCheck={false}
+          className={css({
+            minWidth: "1em",
+            maxWidth: "100%",
+            display: "inline-block",
+          })}
           ref={contentEditableRef}
           onInput={onInput}
           onKeyDown={onKeyDown}
