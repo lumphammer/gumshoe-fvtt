@@ -43,20 +43,21 @@ export const ItemSheetTitle = ({ className }: { className?: string }) => {
     >
       {typeLabel}
       {ownerName !== undefined && (
-        <div
-          className={cx(
-            mutedText({ size: "sm" }),
-            css({
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }),
-          )}
-          title={ownerName}
-        >
+        <div className={mutedText({ size: "sm" })}>
+          {/* truncated on the link itself, not the row, so the row's
+              overflow doesn't clip the link's focus ring */}
           <a
             {...clickable(() => {
               openSheet(item.actor);
+            })}
+            title={ownerName}
+            className={css({
+              display: "inline-block",
+              maxWidth: "100%",
+              verticalAlign: "top",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             })}
           >
             {ownerName}
