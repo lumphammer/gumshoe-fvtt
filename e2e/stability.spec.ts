@@ -116,8 +116,6 @@ test("Shaken, Shattered and Gone follow the Stability pool", async ({
 test("while Shaken, Investigative spends ask first, and tests are harder", async ({
   page,
 }) => {
-  // not asking the GM first
-  await setSettings(page, { defaultTestDifficulty: 4 });
   const actorId = await createActor(page, { name: "Jittery", type: "pc" });
   await updateAbility(page, actorId, "Stability", { rating: 6, pool: -1 });
   await updateAbility(page, actorId, "Reassurance", { rating: 2, pool: 2 });

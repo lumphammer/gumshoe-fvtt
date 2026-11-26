@@ -14,12 +14,15 @@ type DifficultySelectProps = Omit<
   /** null to ask the GM */
   value: number | null;
   onChange: (value: number | null) => void;
+  /** offer to ask the GM (not to the GM) */
+  canAskTheGM?: boolean;
 };
 
 /** Pick a test's Difficulty, or ask the GM for it */
 export const DifficultySelect = ({
   value,
   onChange,
+  canAskTheGM = true,
   ...props
 }: DifficultySelectProps) => (
   <Select
@@ -30,7 +33,9 @@ export const DifficultySelect = ({
       onChange(picked === askTheGM ? null : Number(picked));
     }}
   >
-    <option value={askTheGM}>{getTranslated("Ask the GM")}</option>
+    {canAskTheGM && (
+      <option value={askTheGM}>{getTranslated("Ask the GM")}</option>
+    )}
     {difficultyChoices(value ?? undefined).map((difficulty) => (
       <option key={difficulty} value={difficulty}>
         {difficulty}

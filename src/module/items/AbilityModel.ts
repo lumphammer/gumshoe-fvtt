@@ -1,4 +1,7 @@
-import { getGeneralTestDifficultyModifiers } from "../abilityTests/outcome";
+import {
+  getGeneralTestDifficultyModifiers,
+  standardDifficulty,
+} from "../abilityTests/outcome";
 import { assertGame } from "../../functions/isGame";
 import { nanoid } from "nanoid";
 
@@ -65,7 +68,8 @@ export abstract class AbilityModel<
    * a Difficulty.
    *
    * @param difficulty the test's Difficulty before modifiers, or null to ask
-   * the GM for it; undefined for the default (which may be null too)
+   * the GM for it; undefined for the default (which may be null too). The
+   * GM's own tests never ask: they start at the usual Difficulty.
    */
   async testAbility(
     spend: number,
@@ -130,10 +134,12 @@ export abstract class AbilityModel<
       rollValues[situationalModifier.id] = situationalModifier.modifier;
     }
 
-    const base =
+    const asked =
       difficulty === undefined
         ? settings.defaultTestDifficulty.get()
         : difficulty;
+    // the GM can't ask themselves
+    const base = asked === null && game.user.isGM ? standardDifficulty : asked;
     const system = {
       abilityUuid: this.parent.uuid,
       abilityName: this.parent.name,

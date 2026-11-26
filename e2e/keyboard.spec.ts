@@ -9,7 +9,6 @@ import {
   expect,
   lastChatMessage,
   openSheet,
-  setSettings,
   test,
 } from "./foundry.ts";
 
@@ -342,8 +341,6 @@ test("an equipment row and a party's member open from the keyboard", async ({
 test("a chat card's links and buttons open from the keyboard, and Tab moves on from them", async ({
   page,
 }) => {
-  // not asking the GM first
-  await setSettings(page, { defaultTestDifficulty: 4 });
   const { actorId } = await pcSheet(page, "Card Player");
   const pausedBefore = await paused(page);
   const abilityId = await page.evaluate(async (actorId) => {

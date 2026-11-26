@@ -27,6 +27,8 @@ import {
 import { traumaTest } from "../../module/stability/traumaTest";
 import { Button } from "../inputs/Button";
 import { DifficultySelect } from "./DifficultySelect";
+import { useIsGM } from "../../hooks/useIsGM";
+import { standardDifficulty } from "../../module/abilityTests/outcome";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { inputGridClassName } from "../inputs/InputGrid";
@@ -60,7 +62,13 @@ export const AbilityTest = memo(function AbilityTest({
   const [potentialLoss, setPotentialLoss] = useState(1);
   // a number, null to ask the GM, or undefined for the default
   const [pickedDifficulty, setPickedDifficulty] = useState<number | null>();
-  const defaultDifficulty = useSettings((s) => s.defaultTestDifficulty);
+  const isGM = useIsGM();
+  // the GM can't ask themselves: their tests start at the usual Difficulty
+  const defaultDifficulty = useSettings((s) =>
+    isGM
+      ? (s.defaultTestDifficulty ?? standardDifficulty)
+      : s.defaultTestDifficulty,
+  );
 
   const isGeneral = isGeneralAbilitySnapshot(ability);
   const actor = item.actor;
@@ -209,6 +217,7 @@ export const AbilityTest = memo(function AbilityTest({
       {isGeneral && trauma === undefined && (
         <GridField label="Difficulty">
           <DifficultySelect
+            canAskTheGM={!isGM}
             value={
               pickedDifficulty === undefined
                 ? defaultDifficulty

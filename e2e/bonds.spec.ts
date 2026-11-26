@@ -121,8 +121,7 @@ test("adding, editing and breaking a Bond", async ({ page }) => {
 });
 
 test("spending Bond points on a Stability test", async ({ page }) => {
-  // not asking the GM first
-  await setSettings(page, { useBonds: true, defaultTestDifficulty: 4 });
+  await setSettings(page, { useBonds: true });
   const actorId = await createActor(page, { name: "Steady", type: "pc" });
   await updateAbility(page, actorId, "Stability", { rating: 6, pool: 6 });
   await createOwnedItem(page, actorId, {

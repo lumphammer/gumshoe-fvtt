@@ -230,7 +230,7 @@ test("a player can withdraw a request, or roll it without a Difficulty", async (
   await expect(dialog).toHaveCount(0);
 });
 
-test("the GM's own test with a Difficulty rolls straight away", async ({
+test("the GM can't ask themselves: their tests start at 4 and roll straight away", async ({
   page,
 }) => {
   await setSettings(page, {
@@ -241,6 +241,9 @@ test("the GM's own test with a Difficulty rolls straight away", async ({
   await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
   const sheet = await openAbilitySheet(page, actorId, "Athletics");
   const picker = sheet.getByTestId("test-difficulty-picker");
+  // asking is the default, but not for the GM
+  await expect(picker).toHaveValue("4");
+  await expect(picker.locator('option[value="ask"]')).toHaveCount(0);
   // 0 and 1 can't be failed
   await expect(
     picker.locator('option[value="0"], option[value="1"]'),
@@ -252,5 +255,17 @@ test("the GM's own test with a Difficulty rolls straight away", async ({
   const card = lastChatMessage(page);
   await expect(card.getByTestId("test-difficulty-input")).toHaveValue("6");
   await expect(card.getByTestId("test-outcome")).toHaveText("Failure");
+  await expect(page.locator(".application.dialog")).toHaveCount(0);
+
+  // nor from a quick test, which takes the default
+  await page.evaluate(async (actorId) => {
+    const ability = game.actors.get(actorId)!.items.getName("Athletics")!;
+    await (
+      ability.system as unknown as { testAbility: (spend: number) => unknown }
+    ).testAbility(0);
+  }, actorId);
+  await expect(
+    lastChatMessage(page).getByTestId("test-difficulty-input"),
+  ).toHaveValue("4");
   await expect(page.locator(".application.dialog")).toHaveCount(0);
 });
