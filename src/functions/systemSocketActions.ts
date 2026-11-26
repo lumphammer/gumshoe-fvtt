@@ -1,5 +1,6 @@
 import * as constants from "../constants";
 import type {
+  EditAbilityTestArgs,
   EditAttackArgs,
   RequestTurnPassArgs,
   SystemSocketAction,
@@ -9,6 +10,7 @@ export type SystemSocketActionHandlers = {
   requestNextTurn(requestingUserId: string): void;
   requestTurnPass(args: RequestTurnPassArgs, requestingUserId: string): void;
   editAttack(args: EditAttackArgs, requestingUserId: string): void;
+  editAbilityTest(args: EditAbilityTestArgs, requestingUserId: string): void;
 };
 
 export function dispatchSystemSocketAction(
@@ -32,6 +34,12 @@ export function dispatchSystemSocketAction(
         requestingUserId,
       );
       break;
+    case "editAbilityTest":
+      handlers.editAbilityTest(
+        { messageId: action.messageId, edit: action.edit },
+        requestingUserId,
+      );
+      break;
   }
 }
 
@@ -45,5 +53,7 @@ export function dispatchSystemSocketActionToHooks(
       Hooks.call(constants.requestTurnPass, args, userId),
     editAttack: (args, userId) =>
       Hooks.call(constants.editAttack, args, userId),
+    editAbilityTest: (args, userId) =>
+      Hooks.call(constants.editAbilityTest, args, userId),
   });
 }

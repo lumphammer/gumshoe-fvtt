@@ -43,7 +43,11 @@ import { MwItemModel } from "./module/items/mwItem";
 import { PersonalDetailModel } from "./module/items/personalDetail";
 import { WeaponModel } from "./module/items/weapon";
 import { JournalEntryHTMLEditorSheetClass } from "./module/JournalEditorSheetClass";
-import type { EditAttackArgs, RequestTurnPassArgs } from "./types";
+import type {
+  EditAbilityTestArgs,
+  EditAttackArgs,
+  RequestTurnPassArgs,
+} from "./types";
 
 // types configuration
 declare module "fvtt-types/configuration" {
@@ -84,6 +88,10 @@ declare module "fvtt-types/configuration" {
       [constants.nextTurn]: (requestingUserId: string) => void;
       [constants.editAttack]: (
         args: EditAttackArgs,
+        requestingUserId: string,
+      ) => void;
+      [constants.editAbilityTest]: (
+        args: EditAbilityTestArgs,
         requestingUserId: string,
       ) => void;
 

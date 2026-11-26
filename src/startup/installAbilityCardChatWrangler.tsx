@@ -106,9 +106,11 @@ export const installAbilityCardChatWrangler = () => {
       // so do ability tests
       if (isAbilityTestMessage(chatMessage)) {
         const {
+          status,
           abilityUuid,
           abilityName,
           abilityImg,
+          spend,
           bondSpends,
           difficultyModifiers,
           difficulty,
@@ -125,10 +127,13 @@ export const installAbilityCardChatWrangler = () => {
               mode={constants.htmlDataModeTest}
               name={abilityName}
               imageUrl={abilityImg}
+              status={status}
+              spend={spend}
               bondSpends={bondSpends}
               difficultyModifiers={difficultyModifiers}
               difficulty={difficulty}
-              canEditDifficulty={game.user.isGM}
+              isGM={game.user.isGM}
+              isRequester={chatMessage.author?.id === game.user.id}
             />
           </StrictMode>,
         );

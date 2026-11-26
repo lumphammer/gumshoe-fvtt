@@ -39,7 +39,8 @@ it("should accept an older export without the damage application settings", () =
     "traumaTypes",
     "useNetworkContacts",
     "networkAbility",
-    "secretTestDifficulty",
+    "askGMForTestDifficulty",
+    "hideTestDifficulty",
     "defaultTestDifficulty",
   ]) {
     expect(validatedResult).not.toHaveProperty(key);
@@ -248,17 +249,10 @@ it("should reject an unknown stat placement", () => {
 
 it("should preserve the test Difficulty settings through a round trip", () => {
   const exportedSettings = {
-    secretTestDifficulty: true,
+    askGMForTestDifficulty: true,
+    hideTestDifficulty: true,
     defaultTestDifficulty: 3,
   };
-
-  expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
-    exportedSettings,
-  );
-});
-
-it("should keep a default Difficulty left for the GM", () => {
-  const exportedSettings = { defaultTestDifficulty: null };
 
   expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
     exportedSettings,

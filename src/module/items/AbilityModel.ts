@@ -1,4 +1,5 @@
 import { getGeneralTestDifficultyModifiers } from "../abilityTests/outcome";
+import { assertGame } from "../../functions/isGame";
 import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
@@ -58,15 +59,19 @@ export abstract class AbilityModel<
    * to a d6. Points from Bonds (Fall of DELTA GREEN, p. 120) add to the roll
    * too.
    *
-   * @param difficulty the test's Difficulty before modifiers, if tests have
-   * one: null leaves it for the GM to set on the card, and undefined means
-   * the default (which may be null too)
+   * A player's test can ask the GM for its Difficulty first (the
+   * `askGMForTestDifficulty` setting): then the points are spent now, and the
+   * GM rolls it once they've set one (see `editAbilityTest`).
+   *
+   * @param difficulty the test's Difficulty before modifiers, if the tester
+   * picked one; otherwise the default
    */
   async testAbility(
     spend: number,
     bondSpends: { bond: BondItem; spend: number }[] = [],
-    difficulty?: number | null,
+    difficulty?: number,
   ): Promise<void> {
+    assertGame(game);
     if (this.parent.parent === null) {
       return;
     }
@@ -124,34 +129,66 @@ export abstract class AbilityModel<
       rollValues[situationalModifier.id] = situationalModifier.modifier;
     }
 
-    const roll = new Roll(rollExpression, rollValues);
-    await roll.evaluate();
-    await roll.toMessage({
-      type: "abilityTest",
+    const askGM =
+      settings.askGMForTestDifficulty.get() &&
+      !game.user.isGM &&
+      // with no GM to ask, it's the default
+      game.users.activeGM !== null;
+    const system = {
+      abilityUuid: this.parent.uuid,
+      abilityName: this.parent.name,
+      abilityImg: this.parent.img ?? "",
+      formula: rollExpression,
+      params: rollValues,
+      spend,
+      bondSpends: usedBondSpends.map(({ bond, spend }) => ({
+        id: bond.id ?? "",
+        name: bond.name ?? "",
+        spend,
+      })),
+      difficultyModifiers,
+    };
+    const hidden =
+      settings.askGMForTestDifficulty.get() &&
+      settings.hideTestDifficulty.get();
+    const messageData = {
+      type: "abilityTest" as const,
       speaker: ChatMessage.getSpeaker({
         actor: this.parent.actor as Actor.Stored,
       }),
       // a bare marker for the card to render into. Without some content,
       // Foundry would fill the message with its own roll display.
       content: buildAbilityCardContent({}),
-      system: {
-        abilityUuid: this.parent.uuid,
-        abilityName: this.parent.name,
-        abilityImg: this.parent.img ?? "",
-        bondSpends: usedBondSpends.map(({ bond, spend }) => ({
-          name: bond.name ?? "",
-          spend,
-        })),
-        difficultyModifiers,
-        difficulty: {
-          base:
-            difficulty === undefined
-              ? settings.defaultTestDifficulty.get()
-              : difficulty,
-          revealed: !settings.secretTestDifficulty.get(),
+    };
+    if (askGM) {
+      // nothing's rolled until the GM has set the Difficulty
+      const message = new ChatMessage.implementation({
+        ...messageData,
+        system: {
+          ...system,
+          status: "requested",
+          difficulty: { base: null, hidden },
         },
-      },
-    });
+      });
+      message.applyMode(
+        game.settings.get("core", "messageMode") as ChatMessage.Mode,
+      );
+      await ChatMessage.implementation.create(message.toObject());
+    } else {
+      const roll = new Roll(rollExpression, rollValues);
+      await roll.evaluate();
+      await roll.toMessage({
+        ...messageData,
+        system: {
+          ...system,
+          status: "rolled",
+          difficulty: {
+            base: difficulty ?? settings.defaultTestDifficulty.get(),
+            hidden,
+          },
+        },
+      });
+    }
     // they were for this test
     clearActiveSituationalModifiers(this.parent.uuid);
     const pool = this.pool - (Number(spend) || 0);

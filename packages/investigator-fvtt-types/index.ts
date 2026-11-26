@@ -456,16 +456,19 @@ export interface PresetV1 {
    */
   useBoost?: boolean;
   /**
-   * Are tests' Difficulties (and so whether they succeed) hidden from players
-   * until the GM reveals them? Either way, the GM can change a test's
-   * Difficulty on its card, and reveal or hide it.
+   * Does a player's test ask the GM for its Difficulty before it's rolled? If
+   * not, the player picks it. Either way, the GM can change it on the card.
    */
-  secretTestDifficulty?: boolean;
+  askGMForTestDifficulty?: boolean;
   /**
-   * The Difficulty of a test unless someone says otherwise, or null for the GM
-   * to set each one on its card. Defaults to 4.
+   * When the GM sets a test's Difficulty, do players see only whether it
+   * succeeded, and not the number?
    */
-  defaultTestDifficulty?: number | null;
+  hideTestDifficulty?: boolean;
+  /**
+   * The Difficulty of a test unless someone says otherwise. Defaults to 4.
+   */
+  defaultTestDifficulty?: number;
   /**
    * What string to use when a PC's occupation is empty
    * Defaults to "Investigator"

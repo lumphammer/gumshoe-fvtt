@@ -134,16 +134,17 @@ export const settings = {
     name: "Use Boost",
     default: defaultSettings.useBoost,
   }),
-  secretTestDifficulty: createSettingBoolean({
-    key: "secretTestDifficulty",
-    name: "Secret test Difficulty",
-    default: defaultSettings.secretTestDifficulty,
+  askGMForTestDifficulty: createSettingBoolean({
+    key: "askGMForTestDifficulty",
+    name: "Ask the GM for test Difficulty",
+    default: defaultSettings.askGMForTestDifficulty,
   }),
-  // Foundry passes null through, rather than casting it to 0
-  defaultTestDifficulty: createSetting<number | null>()(
-    Number,
-    z.number().int().nullable(),
-  )({
+  hideTestDifficulty: createSettingBoolean({
+    key: "hideTestDifficulty",
+    name: "Hide test Difficulty",
+    default: defaultSettings.hideTestDifficulty,
+  }),
+  defaultTestDifficulty: createSetting<number>()(Number, z.number().int())({
     key: "defaultTestDifficulty",
     name: "Default test Difficulty",
     default: defaultSettings.defaultTestDifficulty,

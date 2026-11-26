@@ -1,17 +1,19 @@
+import { useState } from "react";
+
+import { useSettings } from "../../hooks/useSettings";
+import { useStabilityStateName } from "../../hooks/useStabilityStateName";
+import type { AbilityTestEdit } from "../../module/abilityTests/abilityTestEdits";
+import { editAbilityTest } from "../../module/abilityTests/editAbilityTest";
 import type {
   DifficultyModifier,
   TestOutcome,
 } from "../../module/abilityTests/outcome";
 import {
+  difficultyChoices,
   getTestDifficulty,
   getTestOutcome,
   isSuccessfulOutcome,
 } from "../../module/abilityTests/outcome";
-import {
-  setAbilityTestDifficulty,
-  setAbilityTestRevealed,
-} from "../../module/abilityTests/abilityTestEdits";
-import { useStabilityStateName } from "../../hooks/useStabilityStateName";
 import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
 import { css, cx } from "../../styled-system/css";
@@ -35,7 +37,10 @@ const ModifierLabel = ({ modifier }: { modifier: DifficultyModifier }) => {
   );
 };
 
-/** A reminder of what would change the Difficulty, for tests without one */
+/**
+ * What changes the Difficulty, as a reminder: on a request, and on cards from
+ * before tests had a Difficulty
+ */
 export const DifficultyReminder = ({
   modifier,
 }: {
@@ -53,24 +58,118 @@ export const DifficultyReminder = ({
   );
 };
 
+const columnClass = css({
+  display: "flex",
+  flexDirection: "column",
+  gap: "0.25em",
+  marginTop: "0.25em",
+});
+
+/** Make an edit, with the buttons disabled until it's been sent */
+const useEdit = (msg: ChatMessage) => {
+  const [busy, setBusy] = useState(false);
+  const edit = (edit: AbilityTestEdit) => {
+    setBusy(true);
+    void editAbilityTest(msg, edit).then((result) => {
+      // "requested" settles when the card changes, which remounts it
+      if (result === "failed") setBusy(false);
+    });
+  };
+  return { busy, edit };
+};
+
+type TestRequestProps = {
+  msg: ChatMessage;
+  /** the GM: sets the Difficulty */
+  isGM: boolean;
+  /** whoever asked: can roll without a Difficulty, or withdraw */
+  isRequester: boolean;
+};
+
+/** A test waiting for the GM to set its Difficulty */
+export const TestRequest = ({ msg, isGM, isRequester }: TestRequestProps) => {
+  const defaultDifficulty = useSettings((s) => s.defaultTestDifficulty);
+  const [base, setBase] = useState(defaultDifficulty);
+  const { busy, edit } = useEdit(msg);
+
+  return (
+    <div className={columnClass}>
+      <div data-testid="test-requested">
+        <i className="fas fa-hourglass-half" />{" "}
+        <Translate>Waiting for the GM's Difficulty</Translate>
+      </div>
+      {isGM && (
+        <div
+          className={css({
+            display: "flex",
+            gap: "0.25em",
+            alignItems: "center",
+          })}
+        >
+          <Translate>Difficulty</Translate>
+          <select
+            value={base}
+            onChange={(e) => setBase(Number(e.currentTarget.value))}
+            aria-label="Difficulty"
+            data-testid="test-request-difficulty"
+            className={css({ width: "auto" })}
+          >
+            {difficultyChoices(base).map((difficulty) => (
+              <option key={difficulty} value={difficulty}>
+                {difficulty}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => edit({ kind: "roll", base })}
+          >
+            <i className="fas fa-dice" /> <Translate>Roll</Translate>
+          </button>
+        </div>
+      )}
+      {(isGM || isRequester) && (
+        <div className={css({ display: "flex", gap: "0.25em" })}>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => edit({ kind: "roll", base: null })}
+          >
+            <i className="fas fa-dice-d6" />{" "}
+            <Translate>Roll without a Difficulty</Translate>
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => edit({ kind: "cancel" })}
+          >
+            <i className="fas fa-ban" /> <Translate>Cancel test</Translate>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 type TestResolutionProps = {
   msg: ChatMessage;
-  /** base is null until the GM sets it */
-  difficulty: { base: number | null; revealed: boolean };
+  /** base is null if it was rolled without one */
+  difficulty: { base: number | null; hidden: boolean };
   modifiers: readonly DifficultyModifier[];
-  /** the GM: can see a secret Difficulty, change it, and reveal it */
-  canEdit: boolean;
+  /** the GM: always sees the Difficulty, and can change it */
+  isGM: boolean;
 };
 
 /**
- * A test's Difficulty and whether it succeeded. Players only see them once
- * the GM reveals them, and nobody sees how it went until there's a Difficulty.
+ * A rolled test's Difficulty and whether it succeeded. With the Difficulty
+ * hidden, players only see whether it succeeded.
  */
 export const TestResolution = ({
   msg,
   difficulty,
   modifiers,
-  canEdit,
+  isGM,
 }: TestResolutionProps) => {
   const roll = msg.rolls?.[0];
   const die = roll?.dice[0]?.total ?? 0;
@@ -83,26 +182,11 @@ export const TestResolution = ({
     finalDifficulty === null
       ? null
       : getTestOutcome({ die, total, difficulty: finalDifficulty });
-
-  if (!canEdit && !difficulty.revealed) {
-    return (
-      <div data-testid="test-difficulty-secret">
-        <Translate>SecretDifficulty</Translate>
-      </div>
-    );
-  }
-
-  if (!canEdit && difficulty.base === null) {
-    return (
-      <div data-testid="test-difficulty-awaited">
-        <Translate>Waiting for the GM to set the Difficulty</Translate>
-      </div>
-    );
-  }
+  const showNumber = isGM || !difficulty.hidden;
 
   const onChangeBase = (e: React.FocusEvent<HTMLInputElement>) => {
     const text = e.currentTarget.value;
-    // blank unsets it
+    // blank takes it away
     const base = text === "" ? null : Number(text);
     if (base !== null && !Number.isInteger(base)) {
       e.currentTarget.value =
@@ -110,29 +194,22 @@ export const TestResolution = ({
       return;
     }
     if (base !== difficulty.base) {
-      void setAbilityTestDifficulty(msg, base);
+      void editAbilityTest(msg, { kind: "setDifficulty", base });
     }
   };
 
   return (
-    <div
-      className={css({
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.25em",
-        marginTop: "0.25em",
-      })}
-    >
-      <div data-testid="test-difficulty">
-        <Translate>Difficulty</Translate>{" "}
-        {canEdit ? (
+    <div className={columnClass}>
+      {isGM ? (
+        <div data-testid="test-difficulty">
+          <Translate>Difficulty</Translate>{" "}
           <input
             // remount when the value changes underneath us
-            key={difficulty.base ?? "unset"}
+            key={difficulty.base ?? "none"}
             type="number"
             step={1}
             defaultValue={difficulty.base ?? ""}
-            placeholder="?"
+            placeholder="–"
             onBlur={onChangeBase}
             onKeyDown={(e) => {
               if (e.key === "Enter") e.currentTarget.blur();
@@ -141,27 +218,36 @@ export const TestResolution = ({
             data-testid="test-difficulty-input"
             className={css({ width: "3em", height: "auto" })}
           />
-        ) : (
-          modifiers.length === 0 && <b>{difficulty.base}</b>
-        )}
-        {modifiers.length > 0 && (
-          <>
-            {!canEdit && difficulty.base}
+          {modifiers.map((modifier, i) => (
+            <ModifierLabel key={i} modifier={modifier} />
+          ))}
+          {finalDifficulty !== null && modifiers.length > 0 && (
+            <>
+              {" = "}
+              <b>{finalDifficulty}</b>
+            </>
+          )}
+        </div>
+      ) : (
+        showNumber &&
+        difficulty.base !== null && (
+          <div data-testid="test-difficulty">
+            <Translate>Difficulty</Translate> {difficulty.base}
             {modifiers.map((modifier, i) => (
               <ModifierLabel key={i} modifier={modifier} />
             ))}
-            {finalDifficulty !== null && (
+            {modifiers.length > 0 && (
               <>
                 {" = "}
                 <b>{finalDifficulty}</b>
               </>
             )}
-          </>
-        )}
-      </div>
+          </div>
+        )
+      )}
       {outcome === null ? (
-        <div data-testid="test-difficulty-awaited">
-          <Translate>Set a Difficulty to see how it went</Translate>
+        <div data-testid="test-no-difficulty">
+          <Translate>No Difficulty</Translate>
         </div>
       ) : (
         <div
@@ -175,27 +261,6 @@ export const TestResolution = ({
         >
           <Translate>{outcomeText[outcome]}</Translate>
         </div>
-      )}
-      {canEdit && (
-        <button
-          type="button"
-          data-testid="test-difficulty-reveal"
-          onClick={() => {
-            void setAbilityTestRevealed(msg, !difficulty.revealed);
-          }}
-        >
-          {difficulty.revealed ? (
-            <>
-              <i className="fas fa-eye-slash" />{" "}
-              <Translate>Hide from players</Translate>
-            </>
-          ) : (
-            <>
-              <i className="fas fa-eye" />{" "}
-              <Translate>Reveal to players</Translate>
-            </>
-          )}
-        </button>
       )}
     </div>
   );

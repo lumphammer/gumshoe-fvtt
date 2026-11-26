@@ -77,6 +77,7 @@ export const themeHMR = `${systemId}:themeHMR`;
 export const runtimeConfigChanged = `${systemId}.runtimeConfigChanged`;
 export const nextTurn = `${systemId}.nextTurn`;
 export const editAttack = `${systemId}.editAttack`;
+export const editAbilityTest = `${systemId}.editAbilityTest`;
 
 // css classes
 export const abilityChatMessageClassName = "investigator-ability-test";

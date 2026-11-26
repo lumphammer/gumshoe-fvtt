@@ -59,19 +59,15 @@ export const AbilityTest = memo(function AbilityTest({
   // by trauma type id
   const [traumaId, setTraumaId] = useState("");
   const [potentialLoss, setPotentialLoss] = useState(1);
-  // a number, null for the GM to set it on the card, or undefined for the
-  // default
-  const [pickedDifficulty, setPickedDifficulty] = useState<
-    number | null | undefined
-  >(undefined);
+  // undefined for the default
+  const [pickedDifficulty, setPickedDifficulty] = useState<number>();
   const isGM = useIsGM();
   const testDifficulty = useSettings((s) => ({
-    secret: s.secretTestDifficulty,
+    askGM: s.askGMForTestDifficulty,
     default: s.defaultTestDifficulty,
   }));
-  // a secret Difficulty is the GM's to set: players test against the default,
-  // and the GM can change it on the card
-  const canPickDifficulty = isGM || !testDifficulty.secret;
+  // when the GM's asked for the Difficulty, players don't pick it
+  const canPickDifficulty = isGM || !testDifficulty.askGM;
 
   const isGeneral = isGeneralAbilitySnapshot(ability);
   const actor = item.actor;
@@ -224,11 +220,7 @@ export const AbilityTest = memo(function AbilityTest({
       {isGeneral && canPickDifficulty && trauma === undefined && (
         <GridField label="Difficulty">
           <DifficultySelect
-            value={
-              pickedDifficulty === undefined
-                ? testDifficulty.default
-                : pickedDifficulty
-            }
+            value={pickedDifficulty ?? testDifficulty.default}
             onChange={setPickedDifficulty}
             data-testid="test-difficulty-picker"
           />

@@ -1,4 +1,5 @@
 import { hasOwnProperty } from "./functions/utilities";
+import { isAbilityTestEdit } from "./module/abilityTests/abilityTestEdits";
 import { isAttackEdit } from "./module/attacks/attackEdits";
 import type { EquipmentFieldType, SystemSocketAction } from "./types";
 
@@ -25,6 +26,16 @@ export function isSystemSocketAction(x: unknown): x is SystemSocketAction {
       x["messageId"].length > 0 &&
       hasOwnProperty(x, "edit") &&
       isAttackEdit(x["edit"])
+    );
+  }
+  if (x["type"] === "editAbilityTest") {
+    return (
+      Object.keys(x).length === 3 &&
+      hasOwnProperty(x, "messageId") &&
+      typeof x["messageId"] === "string" &&
+      x["messageId"].length > 0 &&
+      hasOwnProperty(x, "edit") &&
+      isAbilityTestEdit(x["edit"])
     );
   }
   return false;

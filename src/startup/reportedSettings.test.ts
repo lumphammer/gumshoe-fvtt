@@ -55,6 +55,7 @@ describe("buildReportedSettings", () => {
   it("reports a world set up from a preset", () => {
     expect(report()).toMatchInlineSnapshot(`
       {
+        "askGMForTestDifficulty": true,
         "changed.combatAbilities": false,
         "changed.equipmentCategories": false,
         "changed.fullAutoSpendAbilities": false,
@@ -69,10 +70,10 @@ describe("buildReportedSettings", () => {
         "changed.stabilityStates": false,
         "changed.traumaTypes": false,
         "changed.walkingFireSpendAbilities": false,
+        "hideTestDifficulty": true,
         "mwUseAlternativeItemTypes": false,
         "notifyItemAddedToActor": false,
         "preset": "fallOfDeltaGreenPreset",
-        "secretTestDifficulty": true,
         "showEmptyInvestigativeCategories": true,
         "theme": "deltaGroovyTheme",
         "useBonds": true,

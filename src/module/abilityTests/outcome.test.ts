@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  difficultyChoices,
   getGeneralTestDifficultyModifiers,
   getTestDifficulty,
   getTestOutcome,
@@ -59,5 +60,17 @@ describe("getGeneralTestDifficultyModifiers", () => {
     expect(getGeneralTestDifficultyModifiers(state)).toEqual([
       { kind: "stabilityState", state, amount: 1 },
     ]);
+  });
+});
+
+describe("difficultyChoices", () => {
+  it("runs from 2 to 12", () => {
+    expect(difficultyChoices()).toEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+  });
+  it("keeps a current value outside that", () => {
+    expect(difficultyChoices(1)).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    ]);
+    expect(difficultyChoices(4)).toHaveLength(11);
   });
 });

@@ -7,6 +7,18 @@ import { isShakenOrWorse, shakenDifficultyPenalty } from "../stability/states";
 /** The usual Difficulty of a test */
 export const standardDifficulty = 4;
 
+/**
+ * The Difficulties to choose from: the book's run from 2 to 8, with some room
+ * above. 0 and 1 can't be failed, so they're not offered. A current value from
+ * elsewhere (an imported setting) is kept, even if it's out of range.
+ */
+export function difficultyChoices(current?: number): number[] {
+  const choices = Array.from({ length: 11 }, (_, i) => i + 2);
+  return current === undefined || choices.includes(current)
+    ? choices
+    : [...choices, current].sort((a, b) => a - b);
+}
+
 export type TestOutcome = "successful6" | "success" | "failure" | "failed1";
 
 export const testOutcomes: readonly TestOutcome[] = [

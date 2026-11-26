@@ -1,41 +1,48 @@
-// The GM's changes to an ability test's card. Only GMs make them, and each
-// writes one field, so unlike attack edits they don't need to go through one
-// client.
-
-import { assertGame } from "../../functions/isGame";
-import { isAbilityTestMessage } from "./AbilityTestMessageModel";
+// Changes to an ability test's card. Pure: keep Foundry out of this file (the
+// glue is `editAbilityTest.ts`).
 
 /**
- * Change the Difficulty a test is against (before its modifiers), or unset it
- * (null) to leave the test waiting for one
+ * - roll: answer a request, with a Difficulty or without one (null)
+ * - cancel: withdraw a request, giving the points back
+ * - setDifficulty: change the Difficulty after the roll (or take it away)
  */
-export async function setAbilityTestDifficulty(
-  message: ChatMessage,
-  base: number | null,
-): Promise<void> {
-  assertGame(game);
-  if (
-    !game.user.isGM ||
-    !isAbilityTestMessage(message) ||
-    (base !== null && !Number.isInteger(base))
-  ) {
-    return;
+export type AbilityTestEdit =
+  | { kind: "roll"; base: number | null }
+  | { kind: "cancel" }
+  | { kind: "setDifficulty"; base: number | null };
+
+const isBase = (x: unknown): x is number | null =>
+  x === null || (typeof x === "number" && Number.isInteger(x));
+
+export function isAbilityTestEdit(x: unknown): x is AbilityTestEdit {
+  if (x === null || typeof x !== "object" || Array.isArray(x)) return false;
+  const record = x as Record<string, unknown>;
+  switch (record["kind"]) {
+    case "roll":
+    case "setDifficulty":
+      return Object.keys(record).length === 2 && isBase(record["base"]);
+    case "cancel":
+      return Object.keys(record).length === 1;
+    default:
+      return false;
   }
-  await message.update({ system: { difficulty: { base } } });
 }
 
-/** Show or hide a test's Difficulty and outcome from players */
-export async function setAbilityTestRevealed(
-  message: ChatMessage,
-  revealed: boolean,
-): Promise<void> {
-  assertGame(game);
-  if (
-    !game.user.isGM ||
-    !isAbilityTestMessage(message) ||
-    message.system.difficulty === null
-  ) {
-    return;
-  }
-  await message.update({ system: { difficulty: { revealed } } });
+/**
+ * Whether someone may make this change. Setting the Difficulty is the GM's
+ * job; whoever asked for the test can withdraw it, or roll it without a
+ * Difficulty.
+ */
+export function canMakeAbilityTestEdit({
+  edit,
+  isGM,
+  isRequester,
+}: {
+  edit: AbilityTestEdit;
+  isGM: boolean;
+  isRequester: boolean;
+}): boolean {
+  if (isGM) return true;
+  if (!isRequester) return false;
+  return edit.kind === "cancel" || (edit.kind === "roll" && edit.base === null);
 }
