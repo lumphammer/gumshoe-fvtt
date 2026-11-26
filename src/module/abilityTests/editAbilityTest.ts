@@ -14,43 +14,14 @@ import { canMakeAbilityTestEdit } from "./abilityTestEdits";
 import type { AbilityTestMessage } from "./AbilityTestMessageModel";
 import { isAbilityTestMessage } from "./AbilityTestMessageModel";
 
-/** our rolls carry data, which plain `Roll` doesn't allow for */
-type TestRoll = Roll<Record<string, number>>;
-
-type DiceSoNice = {
-  showForRoll(
-    roll: TestRoll,
-    user?: User,
-    synchronize?: boolean,
-    users?: string[] | null,
-    blind?: boolean,
-    messageId?: string | null,
-    speaker?: unknown,
-  ): Promise<boolean>;
-};
-
 /**
- * Show the dice. A roll added to a message which already exists doesn't get
- * Dice So Nice's animation by itself, so ask for it, in the dice of whoever
- * made the test.
+ * Without Dice So Nice, nothing makes a sound for a roll added to a message
+ * which already exists. Dice So Nice (6.x) does animate added rolls, in the
+ * dice it would use for any roll in that message, so it needs nothing from us.
  */
-async function showDice(message: AbilityTestMessage, roll: TestRoll) {
-  const dice3d = (game as { dice3d?: DiceSoNice }).dice3d;
-  if (dice3d) {
-    await dice3d.showForRoll(
-      roll,
-      message.author ?? undefined,
-      true,
-      message.whisper.length > 0
-        ? message.whisper.flatMap((user) => (user ? [String(user)] : []))
-        : null,
-      message.blind,
-      message.id,
-      message.speaker,
-    );
-  } else {
-    void foundry.audio.AudioHelper.play({ src: CONFIG.sounds.dice }, true);
-  }
+function playDiceSound() {
+  if ("dice3d" in game && game.dice3d) return;
+  void foundry.audio.AudioHelper.play({ src: CONFIG.sounds.dice }, true);
 }
 
 /** Give back the points a request took */
@@ -89,9 +60,9 @@ async function performAbilityTestEditNow(
     case "roll": {
       if (status !== "requested") return;
       const { formula, params } = message.system;
-      const roll: TestRoll = new Roll(formula, { ...params });
+      const roll = new Roll(formula, { ...params });
       await roll.evaluate();
-      await showDice(message, roll);
+      playDiceSound();
       await message.update({
         rolls: [JSON.stringify(roll)],
         system: { status: "rolled", difficulty: { base: edit.base } },
