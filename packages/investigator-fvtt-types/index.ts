@@ -456,19 +456,15 @@ export interface PresetV1 {
    */
   useBoost?: boolean;
   /**
-   * Does a player's test ask the GM for its Difficulty before it's rolled? If
-   * not, the player picks it. Either way, the GM can change it on the card.
-   */
-  askGMForTestDifficulty?: boolean;
-  /**
    * When the GM sets a test's Difficulty, do players see only whether it
    * succeeded, and not the number?
    */
   hideTestDifficulty?: boolean;
   /**
-   * The Difficulty of a test unless someone says otherwise. Defaults to 4.
+   * The Difficulty a test starts with, which the tester can change: a number,
+   * or null to ask the GM for it before the dice are rolled. Defaults to 4.
    */
-  defaultTestDifficulty?: number;
+  defaultTestDifficulty?: number | null;
   /**
    * What string to use when a PC's occupation is empty
    * Defaults to "Investigator"

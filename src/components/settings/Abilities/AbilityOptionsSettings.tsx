@@ -5,8 +5,6 @@ import { InputGrid } from "../../inputs/InputGrid";
 import { Toggle } from "../../inputs/Toggle";
 import { StateContext } from "../contexts";
 import { SettingsGridField } from "../SettingsGridField";
-import { SettingsNote } from "../SettingsNote";
-import { Translate } from "../../Translate";
 import type { Setters } from "../types";
 
 export const AbilityOptionsSettings = ({ setters }: { setters: Setters }) => {
@@ -23,20 +21,12 @@ export const AbilityOptionsSettings = ({ setters }: { setters: Setters }) => {
             onChange={setters.defaultTestDifficulty}
           />
         </SettingsGridField>
-        <SettingsGridField label="Ask the GM for the Difficulty before rolling?">
+        <SettingsGridField label="Hide the Difficulty from players when the GM sets it?">
           <Toggle
-            checked={settings.askGMForTestDifficulty}
-            onChange={setters.askGMForTestDifficulty}
+            checked={settings.hideTestDifficulty}
+            onChange={setters.hideTestDifficulty}
           />
         </SettingsGridField>
-        {settings.askGMForTestDifficulty && (
-          <SettingsGridField label="Hide the Difficulty from players?">
-            <Toggle
-              checked={settings.hideTestDifficulty}
-              onChange={setters.hideTestDifficulty}
-            />
-          </SettingsGridField>
-        )}
         <SettingsGridField label="Show empty Investigative categories?">
           <Toggle
             checked={settings.showEmptyInvestigativeCategories}
@@ -44,11 +34,6 @@ export const AbilityOptionsSettings = ({ setters }: { setters: Setters }) => {
           />
         </SettingsGridField>
       </InputGrid>
-      {settings.askGMForTestDifficulty && (
-        <SettingsNote mode="info">
-          <Translate>AskTheGMForTheDifficultyNote</Translate>
-        </SettingsNote>
-      )}
     </>
   );
 };

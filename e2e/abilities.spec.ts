@@ -6,6 +6,7 @@ import {
   forceDice,
   lastChatMessage,
   openSheet,
+  setSettings,
   test,
   updateAbility,
 } from "./foundry.ts";
@@ -13,6 +14,8 @@ import {
 test("testing a general ability spends from its pool and rolls", async ({
   page,
 }) => {
+  // not asking the GM first
+  await setSettings(page, { defaultTestDifficulty: 4 });
   const actorId = await createActor(page, {
     name: "Test Investigator",
     type: "pc",

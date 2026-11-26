@@ -134,17 +134,16 @@ export const settings = {
     name: "Use Boost",
     default: defaultSettings.useBoost,
   }),
-  askGMForTestDifficulty: createSettingBoolean({
-    key: "askGMForTestDifficulty",
-    name: "Ask the GM for test Difficulty",
-    default: defaultSettings.askGMForTestDifficulty,
-  }),
   hideTestDifficulty: createSettingBoolean({
     key: "hideTestDifficulty",
     name: "Hide test Difficulty",
     default: defaultSettings.hideTestDifficulty,
   }),
-  defaultTestDifficulty: createSetting<number>()(Number, z.number().int())({
+  // null (ask the GM) survives: Foundry doesn't cast null
+  defaultTestDifficulty: createSetting<number | null>()(
+    Number,
+    z.number().int().nullable(),
+  )({
     key: "defaultTestDifficulty",
     name: "Default test Difficulty",
     default: defaultSettings.defaultTestDifficulty,

@@ -13,6 +13,7 @@ import {
   getTestDifficulty,
   getTestOutcome,
   isSuccessfulOutcome,
+  standardDifficulty,
 } from "../../module/abilityTests/outcome";
 import { nativeStatus } from "../native/nativeStatus";
 import { Translate } from "../Translate";
@@ -88,7 +89,10 @@ type TestRequestProps = {
 
 /** A test waiting for the GM to set its Difficulty */
 export const TestRequest = ({ msg, isGM, isRequester }: TestRequestProps) => {
-  const defaultDifficulty = useSettings((s) => s.defaultTestDifficulty);
+  // if the default is to ask, start from the usual
+  const defaultDifficulty = useSettings(
+    (s) => s.defaultTestDifficulty ?? standardDifficulty,
+  );
   const [base, setBase] = useState(defaultDifficulty);
   const { busy, edit } = useEdit(msg);
 

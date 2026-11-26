@@ -6,7 +6,7 @@ import { settings } from "../../settings/settings";
 import { getStabilityStateName } from "../stability/settings";
 import type { AbilityTestMessage } from "./AbilityTestMessageModel";
 import { editAbilityTest } from "./editAbilityTest";
-import { difficultyChoices } from "./outcome";
+import { difficultyChoices, standardDifficulty } from "./outcome";
 
 /** one prompt per request */
 const openDialogs = new Map<string, DialogV2>();
@@ -60,7 +60,9 @@ function buildContent(message: AbilityTestMessage): string {
   label.append(element("span", getTranslated("Difficulty")));
   const select = element("select");
   select.name = "difficulty";
-  const defaultDifficulty = settings.defaultTestDifficulty.get();
+  // if the default is to ask, start from the usual
+  const defaultDifficulty =
+    settings.defaultTestDifficulty.get() ?? standardDifficulty;
   for (const difficulty of difficultyChoices(defaultDifficulty)) {
     const option = element("option", String(difficulty));
     option.value = String(difficulty);

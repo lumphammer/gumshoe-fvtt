@@ -5,7 +5,6 @@ import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import { useActorAndSettings } from "../../hooks/useActorSnapshot";
-import { useIsGM } from "../../hooks/useIsGM";
 import { useSettings } from "../../hooks/useSettings";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { isPCActor } from "../../module/actors/pc";
@@ -59,15 +58,9 @@ export const AbilityTest = memo(function AbilityTest({
   // by trauma type id
   const [traumaId, setTraumaId] = useState("");
   const [potentialLoss, setPotentialLoss] = useState(1);
-  // undefined for the default
-  const [pickedDifficulty, setPickedDifficulty] = useState<number>();
-  const isGM = useIsGM();
-  const testDifficulty = useSettings((s) => ({
-    askGM: s.askGMForTestDifficulty,
-    default: s.defaultTestDifficulty,
-  }));
-  // when the GM's asked for the Difficulty, players don't pick it
-  const canPickDifficulty = isGM || !testDifficulty.askGM;
+  // a number, null to ask the GM, or undefined for the default
+  const [pickedDifficulty, setPickedDifficulty] = useState<number | null>();
+  const defaultDifficulty = useSettings((s) => s.defaultTestDifficulty);
 
   const isGeneral = isGeneralAbilitySnapshot(ability);
   const actor = item.actor;
@@ -144,11 +137,7 @@ export const AbilityTest = memo(function AbilityTest({
         bondSpends: spends,
       });
     } else {
-      void methods.testAbility(
-        spend,
-        spends,
-        canPickDifficulty ? pickedDifficulty : undefined,
-      );
+      void methods.testAbility(spend, spends, pickedDifficulty);
     }
     setSpend(0);
     setBondSpends({});
@@ -217,10 +206,14 @@ export const AbilityTest = memo(function AbilityTest({
           )}
         </>
       )}
-      {isGeneral && canPickDifficulty && trauma === undefined && (
+      {isGeneral && trauma === undefined && (
         <GridField label="Difficulty">
           <DifficultySelect
-            value={pickedDifficulty ?? testDifficulty.default}
+            value={
+              pickedDifficulty === undefined
+                ? defaultDifficulty
+                : pickedDifficulty
+            }
             onChange={setPickedDifficulty}
             data-testid="test-difficulty-picker"
           />

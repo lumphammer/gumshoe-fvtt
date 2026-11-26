@@ -26,7 +26,6 @@ test("an open Difficulty is picked on the sheet, and the card says how it went",
   page,
 }) => {
   await setSettings(page, {
-    askGMForTestDifficulty: false,
     defaultTestDifficulty: 4,
   });
   const actorId = await createActor(page, { name: "Sprinter", type: "pc" });
@@ -61,7 +60,6 @@ test("Shaken adds to the Difficulty of a General test", async ({ page }) => {
   await setSettings(page, {
     ...stabilityRulesOn,
     useStabilityStates: true,
-    askGMForTestDifficulty: false,
     defaultTestDifficulty: 4,
   });
   const actorId = await createActor(page, { name: "Jumpy", type: "pc" });
@@ -108,7 +106,6 @@ test("a player's test asks the GM for the Difficulty before it's rolled", async 
   joinAs,
 }) => {
   await setSettings(page, {
-    askGMForTestDifficulty: true,
     hideTestDifficulty: false,
     defaultTestDifficulty: 4,
   });
@@ -117,8 +114,10 @@ test("a player's test asks the GM for the Difficulty before it's rolled", async 
     joinAs,
     "Asker",
   );
-  // the GM picks it
-  await expect(sheet.getByTestId("test-difficulty-picker")).toHaveCount(0);
+  // the player could pick it, but leaves it to the GM
+  const picker = sheet.getByTestId("test-difficulty-picker");
+  await expect(picker).toHaveValue("4");
+  await picker.selectOption({ label: "Ask the GM" });
   await sheet.locator("label", { hasText: /^1$/ }).click();
   await sheet.getByRole("button", { name: "Test", exact: true }).click();
 
@@ -149,6 +148,8 @@ test("a player's test asks the GM for the Difficulty before it's rolled", async 
   );
   await expect(playerCard.getByTestId("test-outcome")).toHaveText("Success");
   await expect(playerCard.getByTestId("test-requested")).toHaveCount(0);
+  // back to the default for the next test
+  await expect(picker).toHaveValue("4");
 });
 
 test("a hidden Difficulty: players see only how it went", async ({
@@ -156,11 +157,12 @@ test("a hidden Difficulty: players see only how it went", async ({
   joinAs,
 }) => {
   await setSettings(page, {
-    askGMForTestDifficulty: true,
     hideTestDifficulty: true,
-    defaultTestDifficulty: 4,
+    defaultTestDifficulty: null,
   });
   const { player, sheet } = await setUpPlayerTest(page, joinAs, "Hider");
+  // asking the GM is the default
+  await expect(sheet.getByTestId("test-difficulty-picker")).toHaveValue("ask");
   await sheet.getByRole("button", { name: "Test", exact: true }).click();
 
   // answered from the card, which closes the prompt
@@ -190,9 +192,8 @@ test("a player can withdraw a request, or roll it without a Difficulty", async (
   joinAs,
 }) => {
   await setSettings(page, {
-    askGMForTestDifficulty: true,
     hideTestDifficulty: false,
-    defaultTestDifficulty: 4,
+    defaultTestDifficulty: null,
   });
   const { actorId, player, sheet } = await setUpPlayerTest(
     page,
@@ -229,11 +230,12 @@ test("a player can withdraw a request, or roll it without a Difficulty", async (
   await expect(dialog).toHaveCount(0);
 });
 
-test("the GM's own tests roll straight away", async ({ page }) => {
+test("the GM's own test with a Difficulty rolls straight away", async ({
+  page,
+}) => {
   await setSettings(page, {
-    askGMForTestDifficulty: true,
     hideTestDifficulty: true,
-    defaultTestDifficulty: 4,
+    defaultTestDifficulty: null,
   });
   const actorId = await createActor(page, { name: "Bystander", type: "pc" });
   await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });

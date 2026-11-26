@@ -1,17 +1,22 @@
 import type { ComponentProps } from "react";
 
+import { getTranslated } from "../../functions/getTranslated";
 import { difficultyChoices } from "../../module/abilityTests/outcome";
 import { Select } from "../inputs/Select";
+
+/** the choice to ask the GM for the Difficulty before rolling */
+const askTheGM = "ask";
 
 type DifficultySelectProps = Omit<
   ComponentProps<typeof Select>,
   "value" | "onChange"
 > & {
-  value: number;
-  onChange: (value: number) => void;
+  /** null to ask the GM */
+  value: number | null;
+  onChange: (value: number | null) => void;
 };
 
-/** Pick a test's Difficulty */
+/** Pick a test's Difficulty, or ask the GM for it */
 export const DifficultySelect = ({
   value,
   onChange,
@@ -19,10 +24,14 @@ export const DifficultySelect = ({
 }: DifficultySelectProps) => (
   <Select
     {...props}
-    value={value}
-    onChange={(e) => onChange(Number(e.currentTarget.value))}
+    value={value ?? askTheGM}
+    onChange={(e) => {
+      const picked = e.currentTarget.value;
+      onChange(picked === askTheGM ? null : Number(picked));
+    }}
   >
-    {difficultyChoices(value).map((difficulty) => (
+    <option value={askTheGM}>{getTranslated("Ask the GM")}</option>
+    {difficultyChoices(value ?? undefined).map((difficulty) => (
       <option key={difficulty} value={difficulty}>
         {difficulty}
       </option>

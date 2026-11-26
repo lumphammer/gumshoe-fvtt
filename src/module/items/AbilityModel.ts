@@ -59,17 +59,18 @@ export abstract class AbilityModel<
    * to a d6. Points from Bonds (Fall of DELTA GREEN, p. 120) add to the roll
    * too.
    *
-   * A player's test can ask the GM for its Difficulty first (the
-   * `askGMForTestDifficulty` setting): then the points are spent now, and the
-   * GM rolls it once they've set one (see `editAbilityTest`).
+   * A test can ask the GM for its Difficulty first: then the points are spent
+   * now, and the GM rolls it once they've set one (see `editAbilityTest`).
+   * With no GM around, it waits for one, or for the tester to roll it without
+   * a Difficulty.
    *
-   * @param difficulty the test's Difficulty before modifiers, if the tester
-   * picked one; otherwise the default
+   * @param difficulty the test's Difficulty before modifiers, or null to ask
+   * the GM for it; undefined for the default (which may be null too)
    */
   async testAbility(
     spend: number,
     bondSpends: { bond: BondItem; spend: number }[] = [],
-    difficulty?: number,
+    difficulty?: number | null,
   ): Promise<void> {
     assertGame(game);
     if (this.parent.parent === null) {
@@ -129,11 +130,10 @@ export abstract class AbilityModel<
       rollValues[situationalModifier.id] = situationalModifier.modifier;
     }
 
-    const askGM =
-      settings.askGMForTestDifficulty.get() &&
-      !game.user.isGM &&
-      // with no GM to ask, it's the default
-      game.users.activeGM !== null;
+    const base =
+      difficulty === undefined
+        ? settings.defaultTestDifficulty.get()
+        : difficulty;
     const system = {
       abilityUuid: this.parent.uuid,
       abilityName: this.parent.name,
@@ -148,9 +148,9 @@ export abstract class AbilityModel<
       })),
       difficultyModifiers,
     };
+    // the GM's Difficulty, whether asked for or on their own test
     const hidden =
-      settings.askGMForTestDifficulty.get() &&
-      settings.hideTestDifficulty.get();
+      settings.hideTestDifficulty.get() && (base === null || game.user.isGM);
     const messageData = {
       type: "abilityTest" as const,
       speaker: ChatMessage.getSpeaker({
@@ -160,7 +160,7 @@ export abstract class AbilityModel<
       // Foundry would fill the message with its own roll display.
       content: buildAbilityCardContent({}),
     };
-    if (askGM) {
+    if (base === null) {
       // nothing's rolled until the GM has set the Difficulty
       const message = new ChatMessage.implementation({
         ...messageData,
@@ -182,10 +182,7 @@ export abstract class AbilityModel<
         system: {
           ...system,
           status: "rolled",
-          difficulty: {
-            base: difficulty ?? settings.defaultTestDifficulty.get(),
-            hidden,
-          },
+          difficulty: { base, hidden },
         },
       });
     }

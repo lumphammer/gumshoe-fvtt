@@ -54,7 +54,6 @@ const initialState: State = {
     },
     debugTranslations: false,
     useBoost: false,
-    askGMForTestDifficulty: false,
     hideTestDifficulty: false,
     defaultTestDifficulty: 4,
     defaultThemeName: "",

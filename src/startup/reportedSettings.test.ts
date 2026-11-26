@@ -55,7 +55,6 @@ describe("buildReportedSettings", () => {
   it("reports a world set up from a preset", () => {
     expect(report()).toMatchInlineSnapshot(`
       {
-        "askGMForTestDifficulty": true,
         "changed.combatAbilities": false,
         "changed.equipmentCategories": false,
         "changed.fullAutoSpendAbilities": false,
