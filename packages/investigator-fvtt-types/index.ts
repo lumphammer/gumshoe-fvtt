@@ -456,13 +456,9 @@ export interface PresetV1 {
    */
   useBoost?: boolean;
   /**
-   * Do ability tests have a Difficulty, and say whether they succeed? The GM
-   * can always change a test's Difficulty on its card, and reveal or hide it.
-   */
-  useTestDifficulty?: boolean;
-  /**
    * Are tests' Difficulties (and so whether they succeed) hidden from players
-   * until the GM reveals them?
+   * until the GM reveals them? Either way, the GM can change a test's
+   * Difficulty on its card, and reveal or hide it.
    */
   secretTestDifficulty?: boolean;
   /**

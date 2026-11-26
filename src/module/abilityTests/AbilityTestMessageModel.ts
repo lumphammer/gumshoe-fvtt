@@ -23,10 +23,7 @@ export const abilityTestMessageSchema = {
     }),
     { nullable: false, required: true, initial: () => [] },
   ),
-  /**
-   * What changed the Difficulty when the test was made (e.g. Shaken). With no
-   * Difficulty, these are shown as reminders.
-   */
+  /** What changed the Difficulty when the test was made (e.g. Shaken) */
   difficultyModifiers: new ArrayField(
     new SchemaField({
       kind: new StringField({
@@ -43,7 +40,6 @@ export const abilityTestMessageSchema = {
     }),
     { nullable: false, required: true, initial: () => [] },
   ),
-  /** null if tests had no Difficulty when this one was made */
   difficulty: new SchemaField(
     {
       /**
@@ -63,7 +59,7 @@ export const abilityTestMessageSchema = {
         initial: true,
       }),
     },
-    { nullable: true, required: true, initial: null },
+    { nullable: false, required: true },
   ),
 };
 

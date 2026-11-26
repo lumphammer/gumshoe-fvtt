@@ -143,15 +143,13 @@ export abstract class AbilityModel<
           spend,
         })),
         difficultyModifiers,
-        difficulty: settings.useTestDifficulty.get()
-          ? {
-              base:
-                difficulty === undefined
-                  ? settings.defaultTestDifficulty.get()
-                  : difficulty,
-              revealed: !settings.secretTestDifficulty.get(),
-            }
-          : null,
+        difficulty: {
+          base:
+            difficulty === undefined
+              ? settings.defaultTestDifficulty.get()
+              : difficulty,
+          revealed: !settings.secretTestDifficulty.get(),
+        },
       },
     });
     // they were for this test

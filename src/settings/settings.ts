@@ -134,11 +134,6 @@ export const settings = {
     name: "Use Boost",
     default: defaultSettings.useBoost,
   }),
-  useTestDifficulty: createSettingBoolean({
-    key: "useTestDifficulty",
-    name: "Use test Difficulty",
-    default: defaultSettings.useTestDifficulty,
-  }),
   secretTestDifficulty: createSettingBoolean({
     key: "secretTestDifficulty",
     name: "Secret test Difficulty",

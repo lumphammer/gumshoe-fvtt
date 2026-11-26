@@ -39,7 +39,6 @@ it("should accept an older export without the damage application settings", () =
     "traumaTypes",
     "useNetworkContacts",
     "networkAbility",
-    "useTestDifficulty",
     "secretTestDifficulty",
     "defaultTestDifficulty",
   ]) {
@@ -249,7 +248,6 @@ it("should reject an unknown stat placement", () => {
 
 it("should preserve the test Difficulty settings through a round trip", () => {
   const exportedSettings = {
-    useTestDifficulty: true,
     secretTestDifficulty: true,
     defaultTestDifficulty: 3,
   };

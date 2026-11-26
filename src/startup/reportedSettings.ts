@@ -17,8 +17,7 @@ type BooleanSetting = {
  */
 const reportedSwitches = {
   useBoost: null,
-  useTestDifficulty: null,
-  secretTestDifficulty: "useTestDifficulty",
+  secretTestDifficulty: null,
   useCards: null,
   useNetworkContacts: null,
   useNpcCombatBonuses: null,

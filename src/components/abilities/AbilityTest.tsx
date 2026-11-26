@@ -71,14 +71,12 @@ export const AbilityTest = memo(function AbilityTest({
   >(null);
   const isGM = useIsGM();
   const testDifficulty = useSettings((s) => ({
-    use: s.useTestDifficulty,
     secret: s.secretTestDifficulty,
     default: s.defaultTestDifficulty,
   }));
   // a secret Difficulty is the GM's to set: players test against the default,
   // and the GM can change it on the card
-  const canPickDifficulty =
-    testDifficulty.use && (isGM || !testDifficulty.secret);
+  const canPickDifficulty = isGM || !testDifficulty.secret;
 
   const isGeneral = isGeneralAbilitySnapshot(ability);
   const actor = item.actor;

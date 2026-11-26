@@ -26,7 +26,6 @@ test("an open Difficulty is picked on the sheet, and the card says how it went",
   page,
 }) => {
   await setSettings(page, {
-    useTestDifficulty: true,
     secretTestDifficulty: false,
     defaultTestDifficulty: 4,
   });
@@ -62,7 +61,6 @@ test("Shaken adds to the Difficulty of a General test", async ({ page }) => {
   await setSettings(page, {
     ...stabilityRulesOn,
     useStabilityStates: true,
-    useTestDifficulty: true,
     secretTestDifficulty: false,
     defaultTestDifficulty: 4,
   });
@@ -79,21 +77,6 @@ test("Shaken adds to the Difficulty of a General test", async ({ page }) => {
     "Difficulty Shaken +1 = 5",
   );
   await expect(card.getByTestId("test-outcome")).toHaveText("Failure");
-  await expect(card.getByTestId("shaken-reminder")).toHaveCount(0);
-});
-
-test("without Difficulties, a test just rolls", async ({ page }) => {
-  await setSettings(page, { useTestDifficulty: false });
-  const actorId = await createActor(page, { name: "Plain", type: "pc" });
-  await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
-  const sheet = await openAbilitySheet(page, actorId, "Athletics");
-  await expect(sheet.getByTestId("test-difficulty-picker")).toHaveCount(0);
-
-  await forceDice(page, 6);
-  await sheet.getByRole("button", { name: "Test", exact: true }).click();
-  const card = lastChatMessage(page);
-  await expect(card.locator(".dice-total")).toHaveText("6");
-  await expect(card.getByTestId("test-outcome")).toHaveCount(0);
 });
 
 test("a secret Difficulty is the GM's to change and reveal", async ({
@@ -101,7 +84,6 @@ test("a secret Difficulty is the GM's to change and reveal", async ({
   joinAs,
 }) => {
   await setSettings(page, {
-    useTestDifficulty: true,
     secretTestDifficulty: true,
     defaultTestDifficulty: 4,
   });
@@ -153,7 +135,6 @@ test("an open test can leave its Difficulty for the GM to set", async ({
   joinAs,
 }) => {
   await setSettings(page, {
-    useTestDifficulty: true,
     secretTestDifficulty: false,
     defaultTestDifficulty: 4,
   });

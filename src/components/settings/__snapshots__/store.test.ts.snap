@@ -44,7 +44,7 @@ exports[`reducer > should add a stat 1`] = `
 `;
 
 exports[`reducer > should apply a preset 1`] = `
-"@@ -1,57 +1,60 @@
+"@@ -1,56 +1,59 @@
   Object {
     "settings": Object {
       "pcStats": Object {
@@ -119,9 +119,7 @@ exports[`reducer > should apply a preset 1`] = `
       },
       "debugTranslations": false,
       "useBoost": false,
--     "useTestDifficulty": false,
 -     "secretTestDifficulty": false,
-+     "useTestDifficulty": true,
 +     "secretTestDifficulty": true,
       "defaultTestDifficulty": 4,
 -     "defaultThemeName": "",
@@ -136,7 +134,7 @@ exports[`reducer > should apply a preset 1`] = `
       "migrationFlags": Object {
         "actor": Object {},
         "item": Object {},
-@@ -66,25 +69,48 @@
+@@ -65,25 +68,48 @@
       "migrationAttempts": 0,
       "migrationLastError": "",
       "useTurnPassingInitiative": false,
@@ -196,7 +194,7 @@ exports[`reducer > should apply a preset 1`] = `
       "showEmptyInvestigativeCategories": false,
       "systemMigrationVersion": "",
       "shortNotes": Array [],
-@@ -92,34 +118,59 @@
+@@ -91,34 +117,59 @@
       "offeredTrailOfCthulhuRules": false,
       "journalMemories": Object {},
       "cardCategories": Array [],
@@ -662,7 +660,7 @@ exports[`reducer > should set a stat name 1`] = `
 `;
 
 exports[`reducer > should set a value using setSome 1`] = `
-"@@ -76,7 +76,7 @@
+"@@ -75,7 +75,7 @@
       "useWoundStatusEffects": false,
       "walkingFireSpendAbilities": Array [],
       "fullAutoSpendAbilities": Array [],

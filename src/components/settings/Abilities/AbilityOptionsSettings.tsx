@@ -14,29 +14,19 @@ export const AbilityOptionsSettings = ({ setters }: { setters: Setters }) => {
       <SettingsGridField label="Can Abilities be Boosted?">
         <Toggle checked={settings.useBoost} onChange={setters.useBoost} />
       </SettingsGridField>
-      <SettingsGridField label="Do tests have a Difficulty?">
-        <Toggle
-          checked={settings.useTestDifficulty}
-          onChange={setters.useTestDifficulty}
+      <SettingsGridField label="Default Difficulty">
+        <AsyncNumberInput
+          min={0}
+          value={settings.defaultTestDifficulty}
+          onChange={setters.defaultTestDifficulty}
         />
       </SettingsGridField>
-      {settings.useTestDifficulty && (
-        <>
-          <SettingsGridField label="Default Difficulty">
-            <AsyncNumberInput
-              min={0}
-              value={settings.defaultTestDifficulty}
-              onChange={setters.defaultTestDifficulty}
-            />
-          </SettingsGridField>
-          <SettingsGridField label="Keep Difficulties secret from players?">
-            <Toggle
-              checked={settings.secretTestDifficulty}
-              onChange={setters.secretTestDifficulty}
-            />
-          </SettingsGridField>
-        </>
-      )}
+      <SettingsGridField label="Keep Difficulties secret from players?">
+        <Toggle
+          checked={settings.secretTestDifficulty}
+          onChange={setters.secretTestDifficulty}
+        />
+      </SettingsGridField>
       <SettingsGridField label="Show empty Investigative categories?">
         <Toggle
           checked={settings.showEmptyInvestigativeCategories}

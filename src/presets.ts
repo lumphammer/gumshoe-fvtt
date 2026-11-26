@@ -30,7 +30,6 @@ export const defaultSettings: Required<PresetV1> = {
   newPCPacks: [`${systemId}.${packNames.pathOfCthulhuAbilities}`],
   newNPCPacks: [`${systemId}.${npcPackName}`],
   useBoost: false,
-  useTestDifficulty: false,
   secretTestDifficulty: false,
   defaultTestDifficulty: standardDifficulty,
   useMwStyleAbilities: false,
@@ -127,7 +126,6 @@ export const defaultSettings: Required<PresetV1> = {
 export const pathOfCthulhuPreset: Required<PresetV1> = {
   ...defaultSettings,
   displayName: "Trail of Cthulhu (built-in)",
-  useTestDifficulty: true,
   secretTestDifficulty: true,
   newNPCPacks: [`${systemId}.${packNames.pathOfCthulhuNPCAbilities}`],
   useWoundStatusEffects: true,
@@ -490,7 +488,6 @@ export const mutantCityBluesPreset: PresetV1 = {
 export const fallOfDeltaGreenPreset: PresetV1 = {
   schemaVersion: "v1",
   displayName: "Fall of DELTA GREEN (built-in)",
-  useTestDifficulty: true,
   secretTestDifficulty: true,
   defaultThemeName: "deltaGroovyTheme",
   investigativeAbilityCategories: ["Academic", "Interpersonal", "Technical"],

@@ -17,7 +17,6 @@ export async function setAbilityTestDifficulty(
   if (
     !game.user.isGM ||
     !isAbilityTestMessage(message) ||
-    message.system.difficulty === null ||
     (base !== null && !Number.isInteger(base))
   ) {
     return;

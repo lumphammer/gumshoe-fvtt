@@ -21,7 +21,8 @@ interface AbilityTestCardProps {
   bondSpends?: readonly BondSpendRecord[];
   /** what changed the Difficulty when tested (e.g. Shaken) */
   difficultyModifiers?: readonly DifficultyModifier[];
-  /** null if the test had no Difficulty: then the modifiers are reminders */
+  /** null on cards from before tests had a Difficulty: then the modifiers
+   * are reminders */
   difficulty?: { base: number | null; revealed: boolean } | null;
   /** the GM: can see a secret Difficulty, change it, and reveal it */
   canEditDifficulty?: boolean;

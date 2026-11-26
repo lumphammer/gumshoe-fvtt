@@ -54,7 +54,7 @@ Rules in `src/module/stability/` (pure, tested); Foundry glue alongside.
 
 - Spending from an Investigative ability while Shaken (or worse) asks first.
 - A General test made while Shaken (or worse) is at +1 Difficulty, shown on
-  its card (#1428). With test Difficulties off, the card reminds instead.
+  its card (#1428). Cards from before then remind instead.
 
 ### Phase 3: trauma tests (done)
 
@@ -83,7 +83,7 @@ Rules in `src/module/stability/` (pure, tested); Foundry glue alongside.
 ### Decisions
 
 - The +1 for being Shaken is built into every General test's Difficulty
-  (trauma tests' too); only with test Difficulties off is it a reminder.
+  (trauma tests' too).
 - "Made you Shaken" means the loss moved the Agent into a worse state than
   they were in after spending.
 - Becoming Gone without passing through Shattered doesn't take a rating

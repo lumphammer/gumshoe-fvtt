@@ -91,7 +91,6 @@ describe("buildReportedSettings", () => {
         "useShotDryAndJams": true,
         "useStabilityRules": true,
         "useStabilityStates": true,
-        "useTestDifficulty": true,
         "useTrauma": true,
         "useTurnPassingInitiative": false,
         "useWalkingFire": true,
