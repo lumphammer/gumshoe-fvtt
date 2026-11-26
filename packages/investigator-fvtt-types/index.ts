@@ -462,9 +462,10 @@ export interface PresetV1 {
    */
   secretTestDifficulty?: boolean;
   /**
-   * The Difficulty of a test unless someone says otherwise. Defaults to 4.
+   * The Difficulty of a test unless someone says otherwise, or null for the GM
+   * to set each one on its card. Defaults to 4.
    */
-  defaultTestDifficulty?: number;
+  defaultTestDifficulty?: number | null;
   /**
    * What string to use when a PC's occupation is empty
    * Defaults to "Investigator"

@@ -171,3 +171,25 @@ test("an open test can leave its Difficulty for the GM to set", async ({
   );
   await expect(playerCard.getByTestId("test-outcome")).toHaveText("Success");
 });
+
+test("the default can leave every Difficulty for the GM", async ({ page }) => {
+  await setSettings(page, {
+    secretTestDifficulty: false,
+    defaultTestDifficulty: null,
+  });
+  const actorId = await createActor(page, { name: "Patient", type: "pc" });
+  await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
+  const sheet = await openAbilitySheet(page, actorId, "Athletics");
+  const picker = sheet.getByTestId("test-difficulty-picker");
+  await expect(picker).toHaveValue("unset");
+  // they can't be failed
+  await expect(
+    picker.locator('option[value="0"], option[value="1"]'),
+  ).toHaveCount(0);
+
+  await forceDice(page, 6);
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
+  const card = lastChatMessage(page);
+  await expect(card.getByTestId("test-difficulty-input")).toHaveValue("");
+  await expect(card.getByTestId("test-outcome")).toHaveCount(0);
+});

@@ -27,6 +27,7 @@ import {
 } from "../../module/stability/settings";
 import { traumaTest } from "../../module/stability/traumaTest";
 import { Button } from "../inputs/Button";
+import { DifficultySelect } from "./DifficultySelect";
 import { GridField } from "../inputs/GridField";
 import { GridFieldStacked } from "../inputs/GridFieldStacked";
 import { inputGridClassName } from "../inputs/InputGrid";
@@ -39,12 +40,6 @@ import { css, cx } from "../../styled-system/css";
 
 /** the book's losses run from 1 to 8; a little room beyond */
 const potentialLosses = Array.from({ length: 12 }, (_, i) => i + 1);
-
-/** the Difficulty picker's choice to leave it for the GM to set on the card */
-const unsetDifficulty = "unset";
-
-/** the book's Difficulties run from 2 to 8; room either side */
-const difficulties = Array.from({ length: 13 }, (_, i) => i);
 
 interface AbilityTestProps {
   /** Only to write through: read from `ability`. */
@@ -64,11 +59,11 @@ export const AbilityTest = memo(function AbilityTest({
   // by trauma type id
   const [traumaId, setTraumaId] = useState("");
   const [potentialLoss, setPotentialLoss] = useState(1);
-  // a number, "unset" for the GM to set it on the card, or null for the
+  // a number, null for the GM to set it on the card, or undefined for the
   // default
   const [pickedDifficulty, setPickedDifficulty] = useState<
-    number | typeof unsetDifficulty | null
-  >(null);
+    number | null | undefined
+  >(undefined);
   const isGM = useIsGM();
   const testDifficulty = useSettings((s) => ({
     secret: s.secretTestDifficulty,
@@ -156,16 +151,12 @@ export const AbilityTest = memo(function AbilityTest({
       void methods.testAbility(
         spend,
         spends,
-        !canPickDifficulty || pickedDifficulty === null
-          ? undefined
-          : pickedDifficulty === unsetDifficulty
-            ? null
-            : pickedDifficulty,
+        canPickDifficulty ? pickedDifficulty : undefined,
       );
     }
     setSpend(0);
     setBondSpends({});
-    setPickedDifficulty(null);
+    setPickedDifficulty(undefined);
   };
 
   const { confirmSpendAbility } = methods;
@@ -232,28 +223,15 @@ export const AbilityTest = memo(function AbilityTest({
       )}
       {isGeneral && canPickDifficulty && trauma === undefined && (
         <GridField label="Difficulty">
-          <Select
-            value={pickedDifficulty ?? testDifficulty.default}
-            onChange={(e) => {
-              const value = e.currentTarget.value;
-              setPickedDifficulty(
-                value === unsetDifficulty ? unsetDifficulty : Number(value),
-              );
-            }}
+          <DifficultySelect
+            value={
+              pickedDifficulty === undefined
+                ? testDifficulty.default
+                : pickedDifficulty
+            }
+            onChange={setPickedDifficulty}
             data-testid="test-difficulty-picker"
-          >
-            <option value={unsetDifficulty}>
-              {getTranslated("Let the GM set it")}
-            </option>
-            {/* the default may be outside the usual range */}
-            {[...new Set([...difficulties, testDifficulty.default])]
-              .sort((a, b) => a - b)
-              .map((difficulty) => (
-                <option key={difficulty} value={difficulty}>
-                  {difficulty}
-                </option>
-              ))}
-          </Select>
+          />
         </GridField>
       )}
       <GridField

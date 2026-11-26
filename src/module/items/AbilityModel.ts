@@ -60,7 +60,7 @@ export abstract class AbilityModel<
    *
    * @param difficulty the test's Difficulty before modifiers, if tests have
    * one: null leaves it for the GM to set on the card, and undefined means
-   * the default
+   * the default (which may be null too)
    */
   async testAbility(
     spend: number,

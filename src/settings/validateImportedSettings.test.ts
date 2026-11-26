@@ -256,3 +256,11 @@ it("should preserve the test Difficulty settings through a round trip", () => {
     exportedSettings,
   );
 });
+
+it("should keep a default Difficulty left for the GM", () => {
+  const exportedSettings = { defaultTestDifficulty: null };
+
+  expect(validateImportedSettings(JSON.stringify(exportedSettings))).toEqual(
+    exportedSettings,
+  );
+});

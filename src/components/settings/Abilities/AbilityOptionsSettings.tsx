@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { AsyncNumberInput } from "../../inputs/AsyncNumberInput";
+import { DifficultySelect } from "../../abilities/DifficultySelect";
 import { InputGrid } from "../../inputs/InputGrid";
 import { Toggle } from "../../inputs/Toggle";
 import { StateContext } from "../contexts";
@@ -15,8 +15,7 @@ export const AbilityOptionsSettings = ({ setters }: { setters: Setters }) => {
         <Toggle checked={settings.useBoost} onChange={setters.useBoost} />
       </SettingsGridField>
       <SettingsGridField label="Default Difficulty">
-        <AsyncNumberInput
-          min={0}
+        <DifficultySelect
           value={settings.defaultTestDifficulty}
           onChange={setters.defaultTestDifficulty}
         />

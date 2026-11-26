@@ -139,7 +139,11 @@ export const settings = {
     name: "Secret test Difficulty",
     default: defaultSettings.secretTestDifficulty,
   }),
-  defaultTestDifficulty: createSetting<number>()(Number, z.number())({
+  // Foundry passes null through, rather than casting it to 0
+  defaultTestDifficulty: createSetting<number | null>()(
+    Number,
+    z.number().int().nullable(),
+  )({
     key: "defaultTestDifficulty",
     name: "Default test Difficulty",
     default: defaultSettings.defaultTestDifficulty,
