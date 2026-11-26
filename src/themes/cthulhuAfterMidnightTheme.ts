@@ -61,9 +61,9 @@ const smallBackdrop = {
   ].join(","),
 };
 
-export const cthulhuByCandlelightTheme = defineThemeV2({
+export const cthulhuAfterMidnightTheme = defineThemeV2({
   schemaVersion: "v2",
-  displayName: "Cthulhu by Candlelight",
+  displayName: "Cthulhu after midnight",
   layout: "full-frame",
   palette: {
     polarity: "dark",
