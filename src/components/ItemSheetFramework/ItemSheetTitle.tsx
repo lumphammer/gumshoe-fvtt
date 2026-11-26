@@ -1,3 +1,4 @@
+import { openSheet } from "../../functions/openSheet";
 import { assertGame } from "../../functions/isGame";
 import { useActorSnapshot } from "../../hooks/useActorSnapshot";
 import { useAsyncUpdate } from "../../hooks/useAsyncUpdate";
@@ -6,11 +7,12 @@ import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
 import { css, cx } from "../../styled-system/css";
 import { mutedText } from "../../styled-system/recipes";
+import { clickable } from "../clickable";
 
 /**
  * The top of an item's sheet: what type of item it is, who owns it (if
- * anyone), and its name, which can be edited in place. Reads the item and its
- * owner through snapshots.
+ * anyone, as a link to their sheet), and its name, which can be edited in
+ * place. Reads the item and its owner through snapshots.
  */
 export const ItemSheetTitle = ({ className }: { className?: string }) => {
   const { item } = useItemSheetContext();
@@ -52,7 +54,13 @@ export const ItemSheetTitle = ({ className }: { className?: string }) => {
           )}
           title={ownerName}
         >
-          {ownerName}
+          <a
+            {...clickable(() => {
+              openSheet(item.actor);
+            })}
+          >
+            {ownerName}
+          </a>
         </div>
       )}
       <h1
