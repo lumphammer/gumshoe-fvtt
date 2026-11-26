@@ -90,6 +90,8 @@ export function askForDifficulty(message: AbilityTestMessage): void {
         action: "roll",
         label: getTranslated("Roll"),
         icon: "fas fa-dice",
+        // Foundry's primary button
+        class: "bright",
         default: true,
         callback: (_event, button) => {
           const select = button.form?.elements.namedItem("difficulty");

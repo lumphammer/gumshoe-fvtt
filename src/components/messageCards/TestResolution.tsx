@@ -126,6 +126,8 @@ export const TestRequest = ({ msg, isGM, isRequester }: TestRequestProps) => {
           </select>
           <button
             type="button"
+            // Foundry's primary button
+            className="bright"
             disabled={busy}
             onClick={() => edit({ kind: "roll", base })}
           >
