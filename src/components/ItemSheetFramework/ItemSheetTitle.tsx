@@ -71,6 +71,7 @@ export const ItemSheetTitle = ({ className }: { className?: string }) => {
       >
         <span
           contentEditable={isEditable}
+          spellCheck={false}
           className={css({
             minWidth: "1em",
             maxWidth: "100%",
