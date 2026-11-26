@@ -5,6 +5,7 @@ import * as c from "../../constants";
 import { confirmADoodleDo } from "../../functions/confirmADoodleDo";
 import { getTranslated } from "../../functions/getTranslated";
 import { useActorAndSettings } from "../../hooks/useActorSnapshot";
+import { useIsGM } from "../../hooks/useIsGM";
 import { useSettings } from "../../hooks/useSettings";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import { isPCActor } from "../../module/actors/pc";
@@ -39,6 +40,9 @@ import { css, cx } from "../../styled-system/css";
 /** the book's losses run from 1 to 8; a little room beyond */
 const potentialLosses = Array.from({ length: 12 }, (_, i) => i + 1);
 
+/** the book's Difficulties run from 2 to 8; room either side */
+const difficulties = Array.from({ length: 13 }, (_, i) => i);
+
 interface AbilityTestProps {
   /** Only to write through: read from `ability`. */
   item: AbilityItem;
@@ -57,6 +61,18 @@ export const AbilityTest = memo(function AbilityTest({
   // by trauma type id
   const [traumaId, setTraumaId] = useState("");
   const [potentialLoss, setPotentialLoss] = useState(1);
+  // null for the default
+  const [pickedDifficulty, setPickedDifficulty] = useState<number | null>(null);
+  const isGM = useIsGM();
+  const testDifficulty = useSettings((s) => ({
+    use: s.useTestDifficulty,
+    secret: s.secretTestDifficulty,
+    default: s.defaultTestDifficulty,
+  }));
+  // a secret Difficulty is the GM's to set: players test against the default,
+  // and the GM can change it on the card
+  const canPickDifficulty =
+    testDifficulty.use && (isGM || !testDifficulty.secret);
 
   const isGeneral = isGeneralAbilitySnapshot(ability);
   const actor = item.actor;
@@ -133,10 +149,15 @@ export const AbilityTest = memo(function AbilityTest({
         bondSpends: spends,
       });
     } else {
-      void methods.testAbility(spend, spends);
+      void methods.testAbility(
+        spend,
+        spends,
+        canPickDifficulty ? (pickedDifficulty ?? undefined) : undefined,
+      );
     }
     setSpend(0);
     setBondSpends({});
+    setPickedDifficulty(null);
   };
 
   const { confirmSpendAbility } = methods;
@@ -200,6 +221,24 @@ export const AbilityTest = memo(function AbilityTest({
             </GridField>
           )}
         </>
+      )}
+      {isGeneral && canPickDifficulty && trauma === undefined && (
+        <GridField label="Difficulty">
+          <Select
+            value={pickedDifficulty ?? testDifficulty.default}
+            onChange={(e) => setPickedDifficulty(Number(e.currentTarget.value))}
+            data-testid="test-difficulty-picker"
+          >
+            {/* the default may be outside the usual range */}
+            {[...new Set([...difficulties, testDifficulty.default])]
+              .sort((a, b) => a - b)
+              .map((difficulty) => (
+                <option key={difficulty} value={difficulty}>
+                  {difficulty}
+                </option>
+              ))}
+          </Select>
+        </GridField>
       )}
       <GridField
         label={spendLabel ?? "Spend"}

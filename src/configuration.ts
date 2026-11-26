@@ -12,6 +12,7 @@ import {
 } from "./fvtt-exports";
 import { InvestigatorActor } from "./module/actors/InvestigatorActor";
 import { AttackMessageModel } from "./module/attacks/AttackMessageModel";
+import { AbilityTestMessageModel } from "./module/abilityTests/AbilityTestMessageModel";
 import { NPCModel } from "./module/actors/npc";
 import { NPCSheetClass } from "./module/actors/NPCSheetClass";
 import { PartyModel } from "./module/actors/party";
@@ -118,6 +119,7 @@ declare module "fvtt-types/configuration" {
     };
     ChatMessage: {
       attack: typeof AttackMessageModel;
+      abilityTest: typeof AbilityTestMessageModel;
     };
     Combat: {
       classic: typeof ClassicCombatModel;
@@ -214,6 +216,7 @@ Hooks.once("init", function () {
   CONFIG.Item.dataModels.networkContact = NetworkContactModel;
 
   CONFIG.ChatMessage.dataModels.attack = AttackMessageModel;
+  CONFIG.ChatMessage.dataModels.abilityTest = AbilityTestMessageModel;
 
   CONFIG.Combat.dataModels.classic = ClassicCombatModel;
   CONFIG.Combat.dataModels.turnPassing = TurnPassingCombatModel;

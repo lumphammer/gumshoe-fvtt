@@ -113,7 +113,7 @@ test("Shaken, Shattered and Gone follow the Stability pool", async ({
   await expect(sheet.getByTestId("stability-state-badge")).toHaveCount(0);
 });
 
-test("while Shaken, Investigative spends ask first, and tests remind", async ({
+test("while Shaken, Investigative spends ask first, and tests without Difficulties remind", async ({
   page,
 }) => {
   const actorId = await createActor(page, { name: "Jittery", type: "pc" });
@@ -137,8 +137,9 @@ test("while Shaken, Investigative spends ask first, and tests remind", async ({
     .poll(async () => (await getAbility(page, actorId, "Reassurance")).pool)
     .toBe(1);
 
-  // a General test is at +1 Difficulty; tests don't have one yet, so the card
+  // a General test is at +1 Difficulty; without Difficulties, the card
   // reminds
+  await setSettings(page, { useTestDifficulty: false });
   const athletics = await openAbilitySheet(page, actorId, "Athletics");
   await athletics.getByRole("button", { name: "Test", exact: true }).click();
   await expect(lastChatMessage(page).getByTestId("shaken-reminder")).toHaveText(

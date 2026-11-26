@@ -1,3 +1,4 @@
+import { getGeneralTestDifficultyModifiers } from "../abilityTests/outcome";
 import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
@@ -16,7 +17,6 @@ import type {
 } from "../../types";
 import type { PCModel } from "../actors/pc";
 import { getCappedRating, getRefreshedPool } from "../bonds/adaptation";
-import { serializeBondSpends } from "../bonds/bondSpends";
 import type { StabilityState } from "../stability/states";
 import { isShakenOrWorse } from "../stability/states";
 import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
@@ -57,10 +57,14 @@ export abstract class AbilityModel<
    * classic gumshoe test: spend a number of points from the pool, and add that
    * to a d6. Points from Bonds (Fall of DELTA GREEN, p. 120) add to the roll
    * too.
+   *
+   * @param difficulty the test's Difficulty before modifiers, if tests have
+   * one; otherwise the default
    */
   async testAbility(
     spend: number,
     bondSpends: { bond: BondItem; spend: number }[] = [],
+    difficulty?: number,
   ): Promise<void> {
     if (this.parent.parent === null) {
       return;
@@ -87,14 +91,11 @@ export abstract class AbilityModel<
       0,
     );
     // Shaken (or worse): General tests are at +1 Difficulty (Fall of DELTA
-    // GREEN, p. 113). Tests don't have a Difficulty yet, so the card says so.
-    const stabilityState = this.getOwnerStabilityState();
-    const shakenState =
-      this.parent.type === constants.generalAbility &&
-      stabilityState !== null &&
-      isShakenOrWorse(stabilityState)
-        ? stabilityState
-        : null;
+    // GREEN, p. 113)
+    const difficultyModifiers =
+      this.parent.type === constants.generalAbility
+        ? getGeneralTestDifficultyModifiers(this.getOwnerStabilityState())
+        : [];
     const isBoosted = settings.useBoost.get() && this.boost;
     const boost = isBoosted ? 1 : 0;
     const situationalModifiers = this.activeSituationalModifiers.map((id) => {
@@ -125,24 +126,29 @@ export abstract class AbilityModel<
     const roll = new Roll(rollExpression, rollValues);
     await roll.evaluate();
     await roll.toMessage({
+      type: "abilityTest",
       speaker: ChatMessage.getSpeaker({
         actor: this.parent.actor as Actor.Stored,
       }),
-      content: buildAbilityCardContent({
-        [constants.htmlDataItemId]: this.parent.id,
-        [constants.htmlDataActorId]: this.parent.parent?.id,
-        [constants.htmlDataMode]: constants.htmlDataModeTest,
-        [constants.htmlDataName]: this.parent.name,
-        [constants.htmlDataImageUrl]: this.parent.img,
-        [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
-        [constants.htmlDataStabilityState]: shakenState,
-        [constants.htmlDataBondSpends]: serializeBondSpends(
-          usedBondSpends.map(({ bond, spend }) => ({
-            name: bond.name ?? "",
-            spend,
-          })),
-        ),
-      }),
+      // a bare marker for the card to render into. Without some content,
+      // Foundry would fill the message with its own roll display.
+      content: buildAbilityCardContent({}),
+      system: {
+        abilityUuid: this.parent.uuid,
+        abilityName: this.parent.name,
+        abilityImg: this.parent.img ?? "",
+        bondSpends: usedBondSpends.map(({ bond, spend }) => ({
+          name: bond.name ?? "",
+          spend,
+        })),
+        difficultyModifiers,
+        difficulty: settings.useTestDifficulty.get()
+          ? {
+              base: difficulty ?? settings.defaultTestDifficulty.get(),
+              revealed: !settings.secretTestDifficulty.get(),
+            }
+          : null,
+      },
     });
     // they were for this test
     clearActiveSituationalModifiers(this.parent.uuid);

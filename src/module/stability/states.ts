@@ -45,6 +45,10 @@ export const stabilityStateLabels: Record<StabilityState, string> = {
   gone: "StabilityStateGone",
 };
 
+export const stabilityStates = Object.keys(
+  stabilityStateLabels,
+) as StabilityState[];
+
 /**
  * The state for a pool. Thresholds are checked from the worst up, so if
  * they're out of order, the worse state wins.
