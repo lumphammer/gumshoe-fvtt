@@ -11,7 +11,7 @@ Looks & accessibility
 - **+/- buttons on number inputs are less "bouncy" (#1565).** The annoying flickering between values is gone.
 - **Overhauled character sheet layout (#1534).** The new layout is cleaner and puts things where they're needed. The PC sheet sidebar is now just for trackers.
 - **New theming engine (#1533).** For those that like to customise their themes! Your old V1 themes will continue to work, but I'll shortly be publishing schemas for the new V2 theme engine, which is far more expressive and powerful.
-- **New and improved themes (#1534).** Several themes have been tweaked for legibility, and there are three new themes: "Fog" and "Night Fog" are plain, simple themes in light and dark palettes, mainly to demo the new engine. "Cthulhu by Candlelight" is a moody, 1920s black-marble dark theme.
+- **New and improved themes (#1534).** Several themes have been tweaked for legibility, and there are three new themes: "Fog" and "Night Fog" are plain, simple themes in light and dark palettes, mainly to demo the new engine. "Cthulhu after midnight" is a moody, 1920s black-marble dark theme.
 
 ## 10.131 (2026-11-06)
 
