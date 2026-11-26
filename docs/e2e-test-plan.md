@@ -11,7 +11,8 @@ any page, so each one is also a smoke test of whatever it touches.
 - Every actor and item sheet, every tab, in the world and owned; every
   built-in preset's new PC and NPC sheets; every settings page.
 - Abilities: tests and spends from sheets, Full Refresh, Dying Earth tests
-  (difficulty, boon/levy, re-rolls).
+  (difficulty, boon/levy, re-rolls); test Difficulty, open and secret (the
+  GM changing and revealing it), and Shaken's +1.
 - Attacks: damage application and undo (GM, and a player via the GM); NPC
   bonuses; bursts, full-auto, Lethality, jams, walking fire, critical hits,
   Shot Dry; two people editing one card at once.
