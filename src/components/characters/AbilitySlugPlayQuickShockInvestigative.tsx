@@ -45,7 +45,6 @@ export const AbilitySlugPlayQuickShockInvestigative = memo(
           <span
             className={css({
               gridColumn: "1 / -1",
-              textAlign: "end",
               lineHeight: 0.9,
             })}
           >
@@ -61,7 +60,12 @@ export const AbilitySlugPlayQuickShockInvestigative = memo(
         </Button>
         <AbilityBadges
           ability={ability}
-          className={css({ gridColumn: "1/-1" })}
+          // under the name, like its specialities
+          className={css({
+            gridColumn: "1/-1",
+            justifyContent: "start",
+            paddingLeft: "1em",
+          })}
         />
         <AbilitySpecialities ability={ability} />
       </>

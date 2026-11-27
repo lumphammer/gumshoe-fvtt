@@ -5,9 +5,11 @@ import { openSheet } from "../../functions/openSheet";
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
 import type { AbilityItem } from "../../module/items/exports";
 import { css, cx } from "../../styled-system/css";
-import { displayText, mutedText } from "../../styled-system/recipes";
+import { displayText } from "../../styled-system/recipes";
+import { AbilityBadges } from "../abilities/AbilityBadges";
 import { AbilityRollControls } from "../abilities/AbilityRollControls";
 import { Button } from "../inputs/Button";
+import { SpecialityTags } from "./AbilitySpecialities";
 
 interface AbilityRollPanelProps {
   /** The live ability: read through a snapshot */
@@ -18,7 +20,7 @@ interface AbilityRollPanelProps {
 
 /**
  * What an ability row's popover holds: the ability's name and pool, its
- * specialities, and the same controls as its sheet, which close the popover
+ * specialities and badges, and the same controls as its sheet, which close the popover
  * once something has been rolled or spent.
  */
 export const AbilityRollPanel = memo(function AbilityRollPanel({
@@ -66,16 +68,17 @@ export const AbilityRollPanel = memo(function AbilityRollPanel({
           <i className="fa fa-xmark" aria-hidden="true" />
         </Button>
       </div>
-      {system.hasSpecialities && system.specialities.length > 0 && (
-        <div
-          className={cx(
-            mutedText({ size: "sm" }),
-            css({ marginBottom: "0.5em" }),
-          )}
-        >
-          {system.specialities.map((x) => x.trim()).join(", ")}
-        </div>
+      {system.hasSpecialities && system.specialities.some((x) => x.trim()) && (
+        <SpecialityTags
+          specialities={system.specialities}
+          className={css({ marginBottom: "0.5em" })}
+        />
       )}
+      {/* hidden when there are none (componentDefaults.css) */}
+      <AbilityBadges
+        ability={item}
+        className={css({ justifyContent: "start", marginBottom: "0.5em" })}
+      />
       <AbilityRollControls item={item} ability={ability} onDone={onClose} />
     </div>
   );

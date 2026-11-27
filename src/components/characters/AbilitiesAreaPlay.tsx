@@ -59,7 +59,8 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
       <div
         className={css({
           display: "grid",
-          gridTemplateColumns: "minmax(33%, auto) minmax(33%, auto)",
+          // half each, whatever is in them
+          gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
           columnGap: "1em",
           marginBottom: "1em",
         })}
@@ -76,7 +77,7 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
             // the name, the pool, and a Push button (Quick Shock)
             gridTemplateColumns: "1fr max-content max-content",
             columnGap: "0.2em",
-            rowGap: "0.4em",
+            rowGap: "0.25em",
             alignItems: "center",
             alignContent: "start",
           })}
@@ -121,7 +122,7 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
             // the name, the pool, and a Push button (Quick Shock)
             gridTemplateColumns: "1fr max-content max-content",
             columnGap: "0.2em",
-            rowGap: "0.4em",
+            rowGap: "0.25em",
             alignItems: "center",
             alignContent: "start",
           })}

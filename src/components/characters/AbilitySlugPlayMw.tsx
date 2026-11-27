@@ -29,9 +29,7 @@ export const AbilitySlugPlayMw = memo(function AbilitySlugPlayMw({
   return (
     <>
       <AbilityRollRow ability={ability}>
-        <span className={css({ textAlign: "end", lineHeight: 0.9 })}>
-          {row.name}
-        </span>
+        <span className={css({ lineHeight: 0.9 })}>{row.name}</span>
         <AbilityPoolCell pool={row.pool} rating={row.rating} />
       </AbilityRollRow>
       <AbilitySpecialities ability={ability} />

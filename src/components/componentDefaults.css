@@ -57,6 +57,11 @@
     gap: 0.1em;
   }
 
+  /* no badges: no row, so no gap for it in a grid */
+  .inv-default-ability-badges:empty {
+    display: none;
+  }
+
   .inv-default-ability-badges[data-unlocks] {
     margin-bottom: 0.25em;
   }

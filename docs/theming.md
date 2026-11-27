@@ -311,7 +311,9 @@ they're layout.
 ("Boosted", an unlock). _Not for_ messages (`callout`) or links. Fully rounded.
 Variants `tone` and `weight`: `subtle` (default) is an outline in the tone's
 colour, `strong` is filled with it (`control` for neutral) and its `on-` ink.
-`data-interactive` if clickable; `aria-pressed` makes it a toggle: `pressed`
+`kind`: `label` (default), or `tag` for a free-form tag the user wrote (an
+ability's specialities), square-cornered (`radius`) with a dashed outline, so
+it doesn't read as a state. `data-interactive` if clickable; `aria-pressed` makes it a toggle: `pressed`
 is selected (`accent` fill, `onAccent` ink), whatever the tone. `Translate` sets an inline
 `background`, so put a badge on a wrapper around it.
 

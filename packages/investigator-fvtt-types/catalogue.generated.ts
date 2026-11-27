@@ -18,6 +18,7 @@ export interface CatalogueRecipeShapes {
     variants: {
       tone: "neutral" | "danger" | "warning" | "success" | "info";
       weight: "subtle" | "strong";
+      kind: "label" | "tag";
     };
   };
   button: {

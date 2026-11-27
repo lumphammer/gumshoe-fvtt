@@ -17,7 +17,7 @@ export const AbilitiesColumnMW = ({ abilities }: AbilitiesColumnMWProps) => {
         gridTemplateColumns: "1fr max-content max-content",
         gridAutoRows: "min-content",
         columnGap: "0.2em",
-        rowGap: "0.4em",
+        rowGap: "0.25em",
         alignItems: "center",
         gridColumn: "auto",
       })}
