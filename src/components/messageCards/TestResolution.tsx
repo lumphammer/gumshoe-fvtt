@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { systemLogger } from "../../functions/utilities";
+
 import { useSettings } from "../../hooks/useSettings";
 import { useStabilityStateName } from "../../hooks/useStabilityStateName";
 import type { AbilityTestEdit } from "../../module/abilityTests/abilityTestEdits";
@@ -71,10 +73,17 @@ const useEdit = (msg: ChatMessage) => {
   const [busy, setBusy] = useState(false);
   const edit = (edit: AbilityTestEdit) => {
     setBusy(true);
-    void editAbilityTest(msg, edit).then((result) => {
-      // "requested" settles when the card changes, which remounts it
-      if (result === "failed") setBusy(false);
-    });
+    editAbilityTest(msg, edit).then(
+      (result) => {
+        // "requested" settles when the card changes, which remounts it
+        if (result === "failed") setBusy(false);
+      },
+      (error: unknown) => {
+        setBusy(false);
+        systemLogger.error(error);
+        ui.notifications?.error(String(error));
+      },
+    );
   };
   return { busy, edit };
 };

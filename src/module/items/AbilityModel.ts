@@ -169,21 +169,27 @@ export abstract class AbilityModel<
     };
     // they were for this test
     clearActiveSituationalModifiers(this.parent.uuid);
-    // take the points before anyone can act on the card, and give them back
-    // if it never appears
-    const pool = this.pool - (Number(spend) || 0);
-    await this.parent.update({ system: { pool } });
-    const actor = this.parent.parent;
-    if (usedBondSpends.length > 0) {
-      await actor.updateEmbeddedDocuments(
-        "Item",
-        usedBondSpends.map(({ bond, spend }) => ({
-          _id: bond.id,
-          system: { points: clampBondPoints(bond.system.points - spend) },
-        })),
-      );
-    }
+    // take the points before anyone can act on the card, and give back
+    // whatever was taken if it never appears
+    const taken = {
+      spend: 0,
+      bondSpends: [] as typeof system.bondSpends,
+    };
     try {
+      await this.parent.update({
+        system: { pool: this.pool - (Number(spend) || 0) },
+      });
+      taken.spend = spend;
+      if (usedBondSpends.length > 0) {
+        await this.parent.parent.updateEmbeddedDocuments(
+          "Item",
+          usedBondSpends.map(({ bond, spend }) => ({
+            _id: bond.id,
+            system: { points: clampBondPoints(bond.system.points - spend) },
+          })),
+        );
+        taken.bondSpends = system.bondSpends;
+      }
       if (base === null) {
         // nothing's rolled until the GM has set the Difficulty
         const mode = game.settings.get(
@@ -217,11 +223,7 @@ export abstract class AbilityModel<
         });
       }
     } catch (error) {
-      await refundSpends({
-        ability: this.parent,
-        spend,
-        bondSpends: system.bondSpends,
-      });
+      await refundSpends({ ability: this.parent, ...taken });
       throw error;
     }
   }
