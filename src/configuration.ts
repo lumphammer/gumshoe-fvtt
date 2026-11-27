@@ -167,6 +167,12 @@ declare module "fvtt-types/configuration" {
         migratedFromActiveCombat: boolean;
       };
     };
+    ChatMessage: {
+      "dice-so-nice": {
+        /** Dice So Nice leaves the message's rolls alone */
+        skip: boolean;
+      };
+    };
     JournalEntry: {
       investigator: {
         extraCssClasses: string;

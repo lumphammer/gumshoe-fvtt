@@ -13,11 +13,13 @@ import { difficultyModifierKinds } from "./outcome";
 /**
  * - requested: waiting for the GM to set the Difficulty, with the points
  *   already spent. Nothing's been rolled.
+ * - rolling: the GM's client is rolling it (and showing the dice).
  * - rolled: the message has its roll.
  * - cancelled: never rolled, and the points went back.
  */
 export const abilityTestStatuses = [
   "requested",
+  "rolling",
   "rolled",
   "cancelled",
 ] as const;

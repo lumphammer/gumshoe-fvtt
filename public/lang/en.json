@@ -500,6 +500,7 @@
   "investigator.RollWithoutADifficulty": "Roll without a Difficulty",
   "investigator.CancelTest": "Cancel test",
   "investigator.WaitingForTheGMsDifficulty": "Waiting for the GM’s Difficulty…",
+  "investigator.Rolling": "Rolling…",
   "investigator.TestCancelled": "Test cancelled: points returned",
   "investigator.NoDifficulty": "No Difficulty",
   "investigator.MinusTwoMinimumOne": " − 2, minimum 1",

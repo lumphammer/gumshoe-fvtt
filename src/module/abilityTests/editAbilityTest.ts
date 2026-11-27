@@ -14,14 +14,48 @@ import type { AbilityTestMessage } from "./AbilityTestMessageModel";
 import { isAbilityTestMessage } from "./AbilityTestMessageModel";
 import { refundSpends } from "./refundSpends";
 
+/** our rolls carry data, which plain `Roll` doesn't allow for */
+type TestRoll = Roll<Record<string, number>>;
+
+type DiceSoNice = {
+  showForRoll(
+    roll: TestRoll,
+    user?: User,
+    synchronize?: boolean,
+    users?: string[] | null,
+    blind?: boolean,
+    messageId?: string | null,
+    speaker?: unknown,
+  ): Promise<boolean>;
+};
+
+function getDiceSoNice(): DiceSoNice | undefined {
+  return (game as { dice3d?: DiceSoNice }).dice3d;
+}
+
 /**
- * Without Dice So Nice, nothing makes a sound for a roll added to a message
- * which already exists. Dice So Nice (6.x) does animate added rolls, in the
- * dice it would use for any roll in that message, so it needs nothing from us.
+ * Show the dice before the roll goes on the card. Left to itself, Dice So
+ * Nice would animate the roll once it's on the card, hiding the whole card
+ * (one `.dice-roll`) until it's done; this way the request stays on show.
+ * The dice are whoever made the test's.
  */
-function playDiceSound() {
-  if ("dice3d" in game && game.dice3d) return;
-  void foundry.audio.AudioHelper.play({ src: CONFIG.sounds.dice }, true);
+async function showDice(message: AbilityTestMessage, roll: TestRoll) {
+  const dice3d = getDiceSoNice();
+  if (!dice3d) {
+    void foundry.audio.AudioHelper.play({ src: CONFIG.sounds.dice }, true);
+    return;
+  }
+  await dice3d.showForRoll(
+    roll,
+    message.author ?? undefined,
+    true,
+    message.whisper.length > 0
+      ? message.whisper.flatMap((user) => (user ? [String(user)] : []))
+      : null,
+    message.blind || message.system.blindRoll,
+    message.id,
+    message.speaker,
+  );
 }
 
 /** Give back the points a request took */
@@ -55,21 +89,33 @@ async function performAbilityTestEditNow(
   switch (edit.kind) {
     case "roll": {
       if (status !== "requested") return;
-      const { formula, params } = message.system;
-      const roll = new Roll(formula, { ...params });
-      await roll.evaluate();
-      playDiceSound();
-      await message.update({
-        rolls: [JSON.stringify(roll)],
-        ...(message.system.blindRoll ? { blind: true } : {}),
-        system: {
-          status: "rolled",
-          difficulty: {
-            base: edit.base,
-            hidden: isDifficultyHidden(message, edit.base),
+      // the card shows the request, with nothing to click, while the dice roll
+      await message.update({ system: { status: "rolling" } });
+      try {
+        const { formula, params } = message.system;
+        const roll: TestRoll = new Roll(formula, { ...params });
+        await roll.evaluate();
+        await showDice(message, roll);
+        await message.update({
+          rolls: [JSON.stringify(roll)],
+          ...(message.system.blindRoll ? { blind: true } : {}),
+          // we've shown the dice already
+          ...(getDiceSoNice()
+            ? { flags: { "dice-so-nice": { skip: true } } }
+            : {}),
+          system: {
+            status: "rolled",
+            difficulty: {
+              base: edit.base,
+              hidden: isDifficultyHidden(message, edit.base),
+            },
           },
-        },
-      });
+        });
+      } catch (error) {
+        // back to waiting, so it can be rolled again or withdrawn
+        await message.update({ system: { status: "requested" } });
+        throw error;
+      }
       return;
     }
     case "cancel": {

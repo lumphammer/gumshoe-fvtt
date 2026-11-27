@@ -98,23 +98,37 @@ type TestRequestProps = {
   isGM: boolean;
   /** whoever asked: can roll without a Difficulty, or withdraw */
   isRequester: boolean;
+  /** the GM's client is rolling it: nothing to do but wait */
+  rolling: boolean;
 };
 
 /** A test waiting for the GM to set its Difficulty */
-export const TestRequest = ({ msg, isGM, isRequester }: TestRequestProps) => {
+export const TestRequest = ({
+  msg,
+  isGM,
+  isRequester,
+  rolling,
+}: TestRequestProps) => {
   // if the default is to ask, start from the usual
   const defaultDifficulty = useSettings(
     (s) => s.defaultTestDifficulty ?? standardDifficulty,
   );
   const [base, setBase] = useState(defaultDifficulty);
-  const { busy, edit } = useEdit(msg);
+  const { busy: sending, edit } = useEdit(msg);
+  const busy = sending || rolling;
 
   return (
     <div className={columnClass}>
-      <div data-testid="test-requested">
-        <i className="fas fa-hourglass-half" />{" "}
-        <Translate>Waiting for the GM's Difficulty</Translate>
-      </div>
+      {rolling ? (
+        <div data-testid="test-rolling">
+          <i className="fas fa-dice" /> <Translate>Rolling</Translate>
+        </div>
+      ) : (
+        <div data-testid="test-requested">
+          <i className="fas fa-hourglass-half" />{" "}
+          <Translate>Waiting for the GM's Difficulty</Translate>
+        </div>
+      )}
       {isGM && (
         <div
           className={css({
@@ -127,6 +141,7 @@ export const TestRequest = ({ msg, isGM, isRequester }: TestRequestProps) => {
           <select
             value={base}
             onChange={(e) => setBase(Number(e.currentTarget.value))}
+            disabled={busy}
             aria-label="Difficulty"
             data-testid="test-request-difficulty"
             className={css({ flex: "1", minWidth: "0", width: "auto" })}

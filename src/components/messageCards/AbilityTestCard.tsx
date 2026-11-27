@@ -138,7 +138,9 @@ export const AbilityTestCard = React.memo(
                     .join(", ")}
                 </div>
               )}
-              {(difficulty === null || status === "requested") &&
+              {(difficulty === null ||
+                status === "requested" ||
+                status === "rolling") &&
                 difficultyModifiers.map((modifier, i) => (
                   <DifficultyReminder key={i} modifier={modifier} />
                 ))}
@@ -171,8 +173,13 @@ export const AbilityTestCard = React.memo(
         )}
         {mode === "test" && (
           <div className={css({ gridArea: "resolution" })}>
-            {status === "requested" && (
-              <TestRequest msg={msg} isGM={isGM} isRequester={isRequester} />
+            {(status === "requested" || status === "rolling") && (
+              <TestRequest
+                msg={msg}
+                isGM={isGM}
+                isRequester={isRequester}
+                rolling={status === "rolling"}
+              />
             )}
             {status === "rolled" && difficulty !== null && (
               <TestResolution

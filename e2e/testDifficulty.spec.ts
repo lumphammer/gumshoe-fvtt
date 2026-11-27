@@ -342,3 +342,59 @@ test("a blind request goes to the GM, who rolls it blind", async ({
     game.settings.set("core", "messageMode", "public"),
   );
 });
+
+test("while Dice So Nice shows the dice, the request stays up with nothing to click", async ({
+  page,
+  joinAs,
+}) => {
+  await setSettings(page, {
+    hideTestDifficulty: false,
+    defaultTestDifficulty: null,
+  });
+  const { player, sheet } = await setUpPlayerTest(page, joinAs, "Patient");
+  // a stand-in Dice So Nice on the GM's client, whose dice roll until we say
+  await page.evaluate(() => {
+    const w = window as unknown as { releaseDice?: () => void };
+    (game as unknown as { dice3d: unknown }).dice3d = {
+      showForRoll: () =>
+        new Promise<boolean>((resolve) => {
+          w.releaseDice = () => resolve(true);
+        }),
+    };
+  });
+  try {
+    const dialog = page.locator(".application.dialog", {
+      hasText: "Patient is testing Athletics.",
+    });
+    await sheet.getByRole("button", { name: "Test", exact: true }).click();
+    await expect(dialog).toBeVisible();
+    await forceDice(page, 5);
+    await dialog.getByRole("button", { name: "Roll", exact: true }).click();
+
+    const playerCard = lastChatMessage(player);
+    await expect(playerCard.getByTestId("test-rolling")).toBeVisible();
+    await expect(
+      playerCard.getByRole("button", { name: "Cancel test" }),
+    ).toBeDisabled();
+    const gmCard = lastChatMessage(page);
+    await expect(gmCard.getByTestId("test-request-difficulty")).toBeDisabled();
+    await expect(
+      gmCard.getByRole("button", { name: "Roll", exact: true }),
+    ).toBeDisabled();
+
+    await page.evaluate(() =>
+      (window as unknown as { releaseDice: () => void }).releaseDice(),
+    );
+    await expect(playerCard.getByTestId("test-outcome")).toHaveText("Success");
+    // Dice So Nice mustn't roll them again
+    expect(
+      await page.evaluate(
+        () => game.messages.contents.at(-1)!.flags["dice-so-nice"]?.skip,
+      ),
+    ).toBe(true);
+  } finally {
+    await page.evaluate(() => {
+      delete (game as unknown as { dice3d?: unknown }).dice3d;
+    });
+  }
+});
