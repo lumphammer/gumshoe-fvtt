@@ -19,7 +19,11 @@ import {
 
 /** The pool and rating as shown ("2/4"; screen readers get them in words) */
 const poolAndRating = (sheet: Locator, name: string) =>
-  abilityRow(sheet, name).locator("[aria-hidden=true]");
+  abilityRow(sheet, name).getByText(/^-?\d+\/-?\d+$/);
+
+/** How many of an ability's pips are filled: one per point left */
+const filledPips = (sheet: Locator, name: string) =>
+  abilityRow(sheet, name).locator(".inv-pool-pips__pip--filled_true");
 
 async function renameItem(
   page: Page,
@@ -41,8 +45,14 @@ test("the Abilities tab follows pools spent elsewhere", async ({ page }) => {
   const sheet = await openSheet(page, `Actor.${actorId}`);
   await expect(poolAndRating(sheet, "Athletics")).toHaveText("4/4");
 
+  await expect(filledPips(sheet, "Athletics")).toHaveCount(4);
+
   await updateAbility(page, actorId, "Athletics", { pool: 1 });
   await expect(poolAndRating(sheet, "Athletics")).toHaveText("1/4");
+  await expect(filledPips(sheet, "Athletics")).toHaveCount(1);
+  await expect(
+    abilityRow(sheet, "Athletics").locator(".inv-pool-pips__pip"),
+  ).toHaveCount(4);
 });
 
 test("the Abilities tab follows abilities added, renamed and removed elsewhere", async ({

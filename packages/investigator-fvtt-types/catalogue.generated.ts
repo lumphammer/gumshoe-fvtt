@@ -106,6 +106,11 @@ export interface CatalogueRecipeShapes {
     states: never;
     variants: { odd: "true" | "false"; zero: "true" | "false"; header: "true" | "false" };
   };
+  poolPips: {
+    slots: "root" | "pip";
+    states: never;
+    variants: { filled: "true" | "false" };
+  };
   portrait: {
     slots: never;
     states: never;

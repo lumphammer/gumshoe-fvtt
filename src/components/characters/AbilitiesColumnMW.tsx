@@ -13,8 +13,8 @@ export const AbilitiesColumnMW = ({ abilities }: AbilitiesColumnMWProps) => {
     <div
       className={css({
         display: "grid",
-        // the name, the pool, and a Push button (Quick Shock)
-        gridTemplateColumns: "1fr max-content max-content",
+        // the name, the pool's pips and number, and a Push button (Quick Shock)
+        gridTemplateColumns: "1fr max-content max-content max-content",
         gridAutoRows: "min-content",
         columnGap: "0.2em",
         rowGap: "0.25em",

@@ -2,6 +2,7 @@ import { memo } from "react";
 
 import { AbilityRollRow } from "./AbilityRollRow";
 import { AbilityPoolCell } from "./AbilityPoolCell";
+import { PoolPips } from "./PoolPips";
 import { AbilitySpecialities } from "./AbilitySpecialities";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
@@ -31,6 +32,11 @@ export const AbilitySlugPlayNormal = memo(function AbilitySlugPlayNormal({
     <>
       <AbilityRollRow ability={ability}>
         <span className={css({ lineHeight: 0.9 })}>{row.name}</span>
+        <PoolPips
+          pool={row.pool}
+          rating={row.rating}
+          className={css({ justifySelf: "end", marginInlineEnd: "0.3em" })}
+        />
         <AbilityPoolCell pool={row.pool} rating={row.rating} />
       </AbilityRollRow>
       <AbilityBadges

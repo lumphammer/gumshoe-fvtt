@@ -125,6 +125,12 @@ export const recipeShapes = {
     },
     states: [],
   },
+  poolPips: {
+    className: "inv-pool-pips",
+    slots: ["root", "pip"],
+    variants: { filled: ["true", "false"] },
+    states: [],
+  },
   portrait: {
     className: "inv-portrait",
     slots: [],

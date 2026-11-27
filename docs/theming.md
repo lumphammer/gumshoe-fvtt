@@ -399,6 +399,12 @@ under it). `selected` (`aria-current`, `aria-selected`, `data-selected`) is
 `surfaceSolid`, `accent` when hovered. `emptyState`: stands in for a list with
 nothing in it: dashed `line` border, italic `textMuted` (_not for_ warnings).
 
+**`poolPips`**: a pool drawn as a row of pips beside its number, one per point
+of its rating (an ability's row on a character sheet). _Not for_ picking a
+value (the pool trackers' pips are `button`s, `kind: pip`). Slots `root` and
+`pip`; `filled` (a point that's left) is `text`, a spent one an outline in
+`line`.
+
 **Text.** Element defaults (`elements.css`, in `system.base`, in `:where()` so
 any class beats them) style plain `h1`–`h4` (the `display` style), `label`, `a`
 (`link` ink), `hr` and scrollbars in a themed root. `displayText`: display-style
