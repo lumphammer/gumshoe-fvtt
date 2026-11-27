@@ -9,6 +9,6 @@
     "emitDeclarationOnly": true,
     "outDir": "dist",
     "jsxImportSource": "react",
-    "paths": {},
-  },
+    "paths": {}
+  }
 }

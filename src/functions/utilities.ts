@@ -1,5 +1,9 @@
 import * as constants from "../constants";
-import type { EditAttackArgs, SystemSocketAction } from "../types";
+import type {
+  EditAbilityTestArgs,
+  EditAttackArgs,
+  SystemSocketAction,
+} from "../types";
 import { dispatchSystemSocketActionToHooks } from "./systemSocketActions";
 
 interface NameHaver {
@@ -191,6 +195,13 @@ export function requestTurnPass(combatantId: string | null | undefined) {
  */
 export function requestEditAttack(args: EditAttackArgs) {
   broadcastSystemSocketAction({ type: "editAttack", ...args });
+}
+
+/**
+ * request the GM's client to make a change to an ability test card
+ */
+export function requestEditAbilityTest(args: EditAbilityTestArgs) {
+  broadcastSystemSocketAction({ type: "editAbilityTest", ...args });
 }
 
 export function requestNextTurn() {

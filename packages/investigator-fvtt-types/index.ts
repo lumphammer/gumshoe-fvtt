@@ -456,6 +456,16 @@ export interface PresetV1 {
    */
   useBoost?: boolean;
   /**
+   * When the GM sets a test's Difficulty, do players see only whether it
+   * succeeded, and not the number?
+   */
+  hideTestDifficulty?: boolean;
+  /**
+   * The Difficulty a test starts with, which the tester can change: a number,
+   * or null to ask the GM for it before the dice are rolled. Defaults to 4.
+   */
+  defaultTestDifficulty?: number | null;
+  /**
    * What string to use when a PC's occupation is empty
    * Defaults to "Investigator"
    */

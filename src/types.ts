@@ -1,6 +1,7 @@
 import type { EquipmentFieldMetadata } from "@lumphammer/investigator-fvtt-types";
 
 import type * as constants from "./constants";
+import type { AbilityTestEdit } from "./module/abilityTests/abilityTestEdits";
 import type { AttackEdit } from "./module/attacks/attackEdits";
 // SOCKET STUFF ----------------------------------------------------------------
 
@@ -23,6 +24,16 @@ export type EditAttackArgs = {
   edit: AttackEdit;
 };
 
+/**
+ * args passed to the `editAbilityTest` hook: everyone but the active GM sends
+ * this to get the GM's client to change an ability test card (see
+ * `editAbilityTest`).
+ */
+export type EditAbilityTestArgs = {
+  messageId: string;
+  edit: AbilityTestEdit;
+};
+
 export type SystemSocketAction =
   | {
       type: "requestNextTurn";
@@ -33,7 +44,10 @@ export type SystemSocketAction =
     }
   | ({
       type: "editAttack";
-    } & EditAttackArgs);
+    } & EditAttackArgs)
+  | ({
+      type: "editAbilityTest";
+    } & EditAbilityTestArgs);
 
 // FOUNDRY STUFF ---------------------------------------------------------------
 

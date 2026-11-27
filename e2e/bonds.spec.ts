@@ -99,7 +99,9 @@ test("adding, editing and breaking a Bond", async ({ page }) => {
   await expect(area.getByTestId("bond-name")).toHaveText(["Mom", "Bob"]);
   await expect(area.getByTestId("bond-rating")).toHaveText(["1", "2"]);
   // just the table: editing and burning are on the Bond's sheet
-  await expect(area.getByRole("button", { name: "Burn", exact: true })).toHaveCount(0);
+  await expect(
+    area.getByRole("button", { name: "Burn", exact: true }),
+  ).toHaveCount(0);
   // (the only inputs are the adaptation tracker's boxes)
   await expect(
     area.locator("input:not([data-testid^=adaptation] input)"),
@@ -223,7 +225,10 @@ test("burning a Bond for Stability", async ({ page }) => {
     has: page.locator(".window-title", { hasText: "Jerome" }),
   });
   await expect(bondSheet).toBeVisible();
-  const burnButton = bondSheet.getByRole("button", { name: "Burn", exact: true });
+  const burnButton = bondSheet.getByRole("button", {
+    name: "Burn",
+    exact: true,
+  });
   await burn(
     page,
     burnButton,
@@ -269,7 +274,10 @@ test("burning a Bond from its sheet", async ({ page }) => {
   });
 
   const bondSheet = await openSheet(page, `Actor.${actorId}.Item.${bondId}`);
-  const burnButton = bondSheet.getByRole("button", { name: "Burn", exact: true });
+  const burnButton = bondSheet.getByRole("button", {
+    name: "Burn",
+    exact: true,
+  });
   await burn(page, burnButton, "(4 → 2)");
   await expect
     .poll(() => getBonds(page, actorId))

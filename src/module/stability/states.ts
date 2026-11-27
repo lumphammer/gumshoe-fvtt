@@ -3,6 +3,9 @@
 
 export type StabilityState = "steady" | "shaken" | "shattered" | "gone";
 
+/** Shaken (or worse) adds this to General tests */
+export const shakenDifficultyPenalty = 1;
+
 /** The states which have a status effect */
 export type StabilityStatusState = Exclude<StabilityState, "steady">;
 
@@ -41,6 +44,10 @@ export const stabilityStateLabels: Record<StabilityState, string> = {
   shattered: "StabilityStateShattered",
   gone: "StabilityStateGone",
 };
+
+export const stabilityStates = Object.keys(
+  stabilityStateLabels,
+) as StabilityState[];
 
 /**
  * The state for a pool. Thresholds are checked from the worst up, so if

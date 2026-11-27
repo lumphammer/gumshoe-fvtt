@@ -3,30 +3,11 @@ import { describe, expect, it } from "vitest";
 import type { RebuildRecord } from "./rebuild";
 import {
   getBondAfterRebuild,
-  getRebuildOutcome,
   getRebuildStabilityRefresh,
   getStabilityAfterRebuild,
   parseRebuildRecord,
   serializeRebuildRecord,
 } from "./rebuild";
-
-describe("getRebuildOutcome", () => {
-  it.each([
-    // die, total
-    [6, 6, "successful6"],
-    // a 6 that only succeeds with points spent is still a successful 6
-    [6, 9, "successful6"],
-    [4, 4, "success"],
-    // a total of 6 or more without a 6 on the die is an ordinary success
-    [5, 8, "success"],
-    [3, 3, "failure"],
-    [1, 1, "failed1"],
-    // a 1 that succeeds with points spent isn't a failed 1
-    [1, 4, "success"],
-  ] as const)("die %i, total %i: %s", (die, total, expected) => {
-    expect(getRebuildOutcome({ die, total })).toBe(expected);
-  });
-});
 
 describe("getRebuildStabilityRefresh", () => {
   it.each([

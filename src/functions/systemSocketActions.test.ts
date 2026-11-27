@@ -54,6 +54,7 @@ it("dispatches only the requested command with the authenticated user ID", () =>
     requestNextTurn: vi.fn(),
     requestTurnPass: vi.fn(),
     editAttack: vi.fn(),
+    editAbilityTest: vi.fn(),
   };
 
   dispatchSystemSocketAction(
@@ -74,6 +75,7 @@ it("dispatches an attack edit without extra properties", () => {
     requestNextTurn: vi.fn(),
     requestTurnPass: vi.fn(),
     editAttack: vi.fn(),
+    editAbilityTest: vi.fn(),
   };
   const edit = {
     kind: "applyDamage" as const,

@@ -1,3 +1,8 @@
+import {
+  getGeneralTestDifficultyModifiers,
+  standardDifficulty,
+} from "../abilityTests/outcome";
+import { assertGame } from "../../functions/isGame";
 import { nanoid } from "nanoid";
 
 import * as constants from "../../constants";
@@ -16,9 +21,9 @@ import type {
 } from "../../types";
 import type { PCModel } from "../actors/pc";
 import { getCappedRating, getRefreshedPool } from "../bonds/adaptation";
-import { serializeBondSpends } from "../bonds/bondSpends";
 import type { StabilityState } from "../stability/states";
 import { isShakenOrWorse } from "../stability/states";
+import { refundSpends } from "../abilityTests/refundSpends";
 import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
 import type { BondItem } from "./bond";
 import type { AbilitySchema } from "./createAbilitySchema";
@@ -57,11 +62,22 @@ export abstract class AbilityModel<
    * classic gumshoe test: spend a number of points from the pool, and add that
    * to a d6. Points from Bonds (Fall of DELTA GREEN, p. 120) add to the roll
    * too.
+   *
+   * A test can ask the GM for its Difficulty first: then the points are spent
+   * now, and the GM rolls it once they've set one (see `editAbilityTest`).
+   * With no GM around, it waits for one, or for the tester to roll it without
+   * a Difficulty.
+   *
+   * @param difficulty the test's Difficulty before modifiers, or null to ask
+   * the GM for it; undefined for the default (which may be null too). The
+   * GM's own tests never ask: they start at the usual Difficulty.
    */
   async testAbility(
     spend: number,
     bondSpends: { bond: BondItem; spend: number }[] = [],
+    difficulty?: number | null,
   ): Promise<void> {
+    assertGame(game);
     if (this.parent.parent === null) {
       return;
     }
@@ -87,14 +103,11 @@ export abstract class AbilityModel<
       0,
     );
     // Shaken (or worse): General tests are at +1 Difficulty (Fall of DELTA
-    // GREEN, p. 113). Tests don't have a Difficulty yet, so the card says so.
-    const stabilityState = this.getOwnerStabilityState();
-    const shakenState =
-      this.parent.type === constants.generalAbility &&
-      stabilityState !== null &&
-      isShakenOrWorse(stabilityState)
-        ? stabilityState
-        : null;
+    // GREEN, p. 113)
+    const difficultyModifiers =
+      this.parent.type === constants.generalAbility
+        ? getGeneralTestDifficultyModifiers(this.getOwnerStabilityState())
+        : [];
     const isBoosted = settings.useBoost.get() && this.boost;
     const boost = isBoosted ? 1 : 0;
     const situationalModifiers = this.activeSituationalModifiers.map((id) => {
@@ -122,40 +135,96 @@ export abstract class AbilityModel<
       rollValues[situationalModifier.id] = situationalModifier.modifier;
     }
 
-    const roll = new Roll(rollExpression, rollValues);
-    await roll.evaluate();
-    await roll.toMessage({
+    const asked =
+      difficulty === undefined
+        ? settings.defaultTestDifficulty.get()
+        : difficulty;
+    // the GM can't ask themselves
+    const base = asked === null && game.user.isGM ? standardDifficulty : asked;
+    const system = {
+      abilityUuid: this.parent.uuid,
+      abilityName: this.parent.name,
+      abilityImg: this.parent.img ?? "",
+      formula: rollExpression,
+      params: rollValues,
+      spend,
+      bondSpends: usedBondSpends.map(({ bond, spend }) => ({
+        id: bond.id ?? "",
+        name: bond.name ?? "",
+        spend,
+      })),
+      difficultyModifiers,
+    };
+    // the GM's Difficulty, whether asked for or on their own test
+    const hidden =
+      settings.hideTestDifficulty.get() && (base === null || game.user.isGM);
+    const messageData = {
+      type: "abilityTest" as const,
       speaker: ChatMessage.getSpeaker({
         actor: this.parent.actor as Actor.Stored,
       }),
-      content: buildAbilityCardContent({
-        [constants.htmlDataItemId]: this.parent.id,
-        [constants.htmlDataActorId]: this.parent.parent?.id,
-        [constants.htmlDataMode]: constants.htmlDataModeTest,
-        [constants.htmlDataName]: this.parent.name,
-        [constants.htmlDataImageUrl]: this.parent.img,
-        [constants.htmlDataTokenId]: this.parent.parent?.token?.id,
-        [constants.htmlDataStabilityState]: shakenState,
-        [constants.htmlDataBondSpends]: serializeBondSpends(
-          usedBondSpends.map(({ bond, spend }) => ({
-            name: bond.name ?? "",
-            spend,
-          })),
-        ),
-      }),
-    });
+      // a bare marker for the card to render into. Without some content,
+      // Foundry would fill the message with its own roll display.
+      content: buildAbilityCardContent({}),
+    };
     // they were for this test
     clearActiveSituationalModifiers(this.parent.uuid);
-    const pool = this.pool - (Number(spend) || 0);
-    await this.parent.update({ system: { pool } });
-    if (usedBondSpends.length > 0) {
-      await this.parent.parent.updateEmbeddedDocuments(
-        "Item",
-        usedBondSpends.map(({ bond, spend }) => ({
-          _id: bond.id,
-          system: { points: clampBondPoints(bond.system.points - spend) },
-        })),
-      );
+    // take the points before anyone can act on the card, and give back
+    // whatever was taken if it never appears
+    const taken = {
+      spend: 0,
+      bondSpends: [] as typeof system.bondSpends,
+    };
+    try {
+      await this.parent.update({
+        system: { pool: this.pool - (Number(spend) || 0) },
+      });
+      taken.spend = spend;
+      if (usedBondSpends.length > 0) {
+        await this.parent.parent.updateEmbeddedDocuments(
+          "Item",
+          usedBondSpends.map(({ bond, spend }) => ({
+            _id: bond.id,
+            system: { points: clampBondPoints(bond.system.points - spend) },
+          })),
+        );
+        taken.bondSpends = system.bondSpends;
+      }
+      if (base === null) {
+        // nothing's rolled until the GM has set the Difficulty
+        const mode = game.settings.get(
+          "core",
+          "messageMode",
+        ) as ChatMessage.Mode;
+        const message = new ChatMessage.implementation({
+          ...messageData,
+          system: {
+            ...system,
+            status: "requested",
+            blindRoll: mode === "blind",
+            difficulty: { base: null, hidden },
+          },
+        });
+        // the GM has to see a request, and whoever asked has to be able to
+        // withdraw it: a blind or private one goes to the GM, and a blind
+        // one's roll is blind
+        message.applyMode(mode === "blind" || mode === "self" ? "gm" : mode);
+        await ChatMessage.implementation.create(message.toObject());
+      } else {
+        const roll = new Roll(rollExpression, rollValues);
+        await roll.evaluate();
+        await roll.toMessage({
+          ...messageData,
+          system: {
+            ...system,
+            status: "rolled",
+            difficulty: { base, hidden },
+          },
+        });
+      }
+    } catch (error) {
+      await refundSpends({ ability: this.parent, ...taken });
+      throw error;
     }
   }
 

@@ -116,8 +116,8 @@ Rough priority order.
    permanently insane, and the other Personal Life vignettes.
 2. **Stability states** (p. 113): done, see
    [`fodg-stability-plan.md`](fodg-stability-plan.md). Shaken, Shattered and
-   Gone as statuses, Shaken's effects (asking before Investigative spends, a
-   reminder of +1 Difficulty: #1428), and Stability tests against trauma.
+   Gone as statuses, Shaken's effects (asking before Investigative spends, +1
+   to General tests' Difficulty), and Stability tests against trauma.
 3. **Sanity** (pp. 070, 121–122): the cap (10 minus The Unnatural) is done,
    see [`stability-settings-plan.md`](stability-settings-plan.md). The rest
    is left to the table: the book's rules are vague enough that tables will

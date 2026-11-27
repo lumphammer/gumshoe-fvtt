@@ -134,6 +134,20 @@ export const settings = {
     name: "Use Boost",
     default: defaultSettings.useBoost,
   }),
+  hideTestDifficulty: createSettingBoolean({
+    key: "hideTestDifficulty",
+    name: "Hide test Difficulty",
+    default: defaultSettings.hideTestDifficulty,
+  }),
+  // null (ask the GM) survives: Foundry doesn't cast null
+  defaultTestDifficulty: createSetting<number | null>()(
+    Number,
+    z.number().int().nullable(),
+  )({
+    key: "defaultTestDifficulty",
+    name: "Default test Difficulty",
+    default: defaultSettings.defaultTestDifficulty,
+  }),
   useMwInjuryStatus: createSettingBoolean({
     key: "useMwInjuryStatus",
     name: "Use injury status",

@@ -3,12 +3,15 @@
 // trauma types (see docs/stability-settings-plan.md). Pure functions: keep
 // Foundry out of this file.
 
+import { doesTestSucceed } from "../abilityTests/outcome";
 import { adaptationThreshold, isAdapted } from "../bonds/adaptation";
 import type { StabilityState, StabilityThresholds } from "./states";
-import { getStabilityState, isShakenOrWorse, isWorseState } from "./states";
-
-/** Shaken (or worse) adds this to General tests */
-export const shakenDifficultyPenalty = 1;
+import {
+  getStabilityState,
+  isShakenOrWorse,
+  isWorseState,
+  shakenDifficultyPenalty,
+} from "./states";
 
 /** Stability rating lost on becoming Shattered */
 export const shatteredRatingLoss = 1;
@@ -149,7 +152,7 @@ export function getTraumaConsequences({
 
 /** Work out everything a Stability test against trauma does */
 export function resolveTraumaTest(input: TraumaTestInput): TraumaTestResult {
-  const succeeded = input.total >= input.difficulty;
+  const succeeded = doesTestSucceed(input.total, input.difficulty);
   const afterSpend = input.pool - input.spend;
   const loss = succeeded ? 0 : Math.max(0, input.potentialLoss);
   const poolAfter = afterSpend - loss;

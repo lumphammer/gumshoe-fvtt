@@ -69,6 +69,7 @@ describe("buildReportedSettings", () => {
         "changed.stabilityStates": false,
         "changed.traumaTypes": false,
         "changed.walkingFireSpendAbilities": false,
+        "hideTestDifficulty": true,
         "mwUseAlternativeItemTypes": false,
         "notifyItemAddedToActor": false,
         "preset": "fallOfDeltaGreenPreset",

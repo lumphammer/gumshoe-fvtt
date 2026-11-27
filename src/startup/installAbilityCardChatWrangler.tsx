@@ -30,6 +30,8 @@ import { isAbilityItem } from "../module/items/exports";
 import type { MWDifficulty } from "../types";
 import { createCardRootTracker } from "./createCardRootTracker";
 import { isAttackMessage } from "../module/attacks/attackTargets";
+import { isAbilityTestMessage } from "../module/abilityTests/AbilityTestMessageModel";
+import { getGeneralTestDifficultyModifiers } from "../module/abilityTests/outcome";
 import { InvestigatorItem } from "../module/items/InvestigatorItem";
 import { markKeyboardFocus } from "@lumphammer/shared-fvtt-bits/src/ReactApplicationV2Mixin";
 import { rememberCardFocus } from "./keepCardFocus";
@@ -98,6 +100,42 @@ export const installAbilityCardChatWrangler = () => {
             name={weaponName}
             imageUrl={weaponImg}
           />,
+        );
+        return;
+      }
+      // so do ability tests
+      if (isAbilityTestMessage(chatMessage)) {
+        const {
+          status,
+          abilityUuid,
+          abilityName,
+          abilityImg,
+          spend,
+          bondSpends,
+          difficultyModifiers,
+          difficulty,
+        } = chatMessage.system;
+        const ability = fromUuidSync(abilityUuid);
+        renderCardNow(
+          el,
+          <StrictMode>
+            <AbilityTestCard
+              msg={chatMessage}
+              ability={
+                ability instanceof InvestigatorItem ? ability : undefined
+              }
+              mode={constants.htmlDataModeTest}
+              name={abilityName}
+              imageUrl={abilityImg}
+              status={status}
+              spend={spend}
+              bondSpends={bondSpends}
+              difficultyModifiers={difficultyModifiers}
+              difficulty={difficulty}
+              isGM={game.user.isGM}
+              isRequester={chatMessage.author?.id === game.user.id}
+            />
+          </StrictMode>,
         );
         return;
       }
@@ -338,8 +376,12 @@ export const installAbilityCardChatWrangler = () => {
               bondSpends={parseBondSpends(
                 el.getAttribute(constants.htmlDataBondSpends),
               )}
-              stabilityState={parseStabilityState(
-                el.getAttribute(constants.htmlDataStabilityState),
+              // older cards only noted the state, for a General test when
+              // Shaken or worse
+              difficultyModifiers={getGeneralTestDifficultyModifiers(
+                parseStabilityState(
+                  el.getAttribute(constants.htmlDataStabilityState),
+                ),
               )}
             />
           </StrictMode>

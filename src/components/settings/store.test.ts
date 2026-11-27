@@ -54,6 +54,8 @@ const initialState: State = {
     },
     debugTranslations: false,
     useBoost: false,
+    hideTestDifficulty: false,
+    defaultTestDifficulty: 4,
     defaultThemeName: "",
     useMwInjuryStatus: false,
     useMwStyleAbilities: false,

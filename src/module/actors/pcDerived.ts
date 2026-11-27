@@ -22,6 +22,11 @@ import {
 } from "../bonds/adaptation";
 import { compareBonds, isBondBroken } from "../bonds/rules";
 import { findGeneralAbilityIn } from "../items/findGeneralAbility";
+import type { DifficultyModifier } from "../abilityTests/outcome";
+import {
+  getGeneralTestDifficultyModifiers,
+  getTestDifficulty,
+} from "../abilityTests/outcome";
 import { getSanityCap } from "../sanity/rules";
 import {
   getAdaptableTraumaTypesFrom,
@@ -29,12 +34,8 @@ import {
   isSanityOn,
 } from "../stability/settings";
 import type { StabilityState } from "../stability/states";
-import { getStabilityState, isShakenOrWorse } from "../stability/states";
-import {
-  getTraumaDifficulty,
-  getTraumaState,
-  shakenDifficultyPenalty,
-} from "../stability/trauma";
+import { getStabilityState } from "../stability/states";
+import { getTraumaDifficulty, getTraumaState } from "../stability/trauma";
 
 /** The rule inputs, linked to the schemas; unrelated items need only their identity. */
 type RuleSystems = {
@@ -136,6 +137,17 @@ const adaptationsOf = (pc: PCView): Readonly<Record<string, number>> =>
   pc.system.adaptations;
 
 /**
+ * What changes the Difficulty of the Agent's tests with General abilities
+ * (Stability's too): +1 while Shaken or worse (Fall of DELTA GREEN, p. 113)
+ */
+export function getGeneralTestDifficultyModifiersIn(
+  pc: PCView,
+  s: SettingsView = liveSettings,
+): DifficultyModifier[] {
+  return getGeneralTestDifficultyModifiers(getStabilityStateIn(pc, s));
+}
+
+/**
  * A Stability test's Difficulty, from its base: +1 while Shaken or worse
  * (Fall of DELTA GREEN, p. 113)
  */
@@ -144,11 +156,7 @@ export function getStabilityTestDifficultyIn(
   base: number,
   s: SettingsView = liveSettings,
 ): number {
-  const state = getStabilityStateIn(pc, s);
-  return (
-    base +
-    (state !== null && isShakenOrWorse(state) ? shakenDifficultyPenalty : 0)
-  );
+  return getTestDifficulty(base, getGeneralTestDifficultyModifiersIn(pc, s));
 }
 
 /** Whether the Agent has adapted to a trauma type */

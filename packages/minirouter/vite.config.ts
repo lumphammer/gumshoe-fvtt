@@ -19,9 +19,7 @@ const config = defineConfig(({ mode }) => {
       setupFiles: ["../vitest.setup.js"],
     },
 
-    plugins: [
-      react(),
-    ],
+    plugins: [react()],
   };
 });
 

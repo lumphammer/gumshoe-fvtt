@@ -64,7 +64,9 @@ test("Sanity's rating is capped by Cthulhu Mythos", async ({ page }) => {
     .toEqual({ rating: 3, pool: 2 });
 
   // otherwise it's an ordinary ability
-  await expect(sheet.getByRole("button", { name: "Test", exact: true })).toBeVisible();
+  await expect(
+    sheet.getByRole("button", { name: "Test", exact: true }),
+  ).toBeVisible();
 
   // and with Sanity rules off, there's no cap
   await setSettings(page, { useSanityRules: false });

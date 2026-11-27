@@ -2,12 +2,16 @@ import React from "react";
 
 import type { BondSpendRecord } from "../../module/bonds/bondSpends";
 import type { InvestigatorItem } from "../../module/items/InvestigatorItem";
-import type { StabilityState } from "../../module/stability/states";
-import { useStabilityStateName } from "../../hooks/useStabilityStateName";
-import { shakenDifficultyPenalty } from "../../module/stability/trauma";
+import type { AbilityTestStatus } from "../../module/abilityTests/AbilityTestMessageModel";
+import type { DifficultyModifier } from "../../module/abilityTests/outcome";
 import { Translate } from "../Translate";
 import { useAbilityCardHeader } from "./useAbilityCardHeader";
 import { DiceTerms } from "./DiceTerms";
+import {
+  DifficultyReminder,
+  TestRequest,
+  TestResolution,
+} from "./TestResolution";
 import type { AbilityCardMode } from "./types";
 import { css, cx } from "../../styled-system/css";
 import { clickable } from "../clickable";
@@ -19,10 +23,23 @@ interface AbilityTestCardProps {
   name: string | null;
   imageUrl: string | null;
   /** points spent from Bonds on a Stability test (Fall of DELTA GREEN) */
-  bondSpends?: BondSpendRecord[];
-  /** Shaken or worse when tested: a reminder of the +1 Difficulty */
-  stabilityState?: StabilityState | null;
+  bondSpends?: readonly BondSpendRecord[];
+  /** what changed the Difficulty when tested (e.g. Shaken) */
+  difficultyModifiers?: readonly DifficultyModifier[];
+  /** cards from before tests had a Difficulty are always rolled */
+  status?: AbilityTestStatus;
+  /** points spent from the ability's pool, shown on a request */
+  spend?: number;
+  /** null on cards from before tests had a Difficulty: then the modifiers
+   * are reminders */
+  difficulty?: { base: number | null; hidden: boolean } | null;
+  /** the GM: sets and changes the Difficulty */
+  isGM?: boolean;
+  /** whoever asked for the test: can withdraw it while it's waiting */
+  isRequester?: boolean;
 }
+
+const noModifiers: readonly DifficultyModifier[] = [];
 
 export const AbilityTestCard = React.memo(
   ({
@@ -32,9 +49,13 @@ export const AbilityTestCard = React.memo(
     name,
     imageUrl,
     bondSpends = [],
-    stabilityState = null,
+    difficultyModifiers = noModifiers,
+    status = "rolled",
+    spend = 0,
+    difficulty = null,
+    isGM = false,
+    isRequester = false,
   }: AbilityTestCardProps) => {
-    const stateName = useStabilityStateName(stabilityState);
     const { header, openSheet: onClickAbilityName } =
       useAbilityCardHeader(ability);
     // plain text if it's gone (Foundry gives every <a> a pointer)
@@ -48,9 +69,13 @@ export const AbilityTestCard = React.memo(
             position: "relative",
             display: "grid",
             gridTemplateColumns: "max-content 1fr",
-            gridTemplateRows: "max-content minmax(0, max-content) max-content",
+            gridTemplateRows:
+              "max-content minmax(0, max-content) max-content max-content",
             gridTemplateAreas:
-              '"image headline" ' + '"image terms" ' + '"image body" ',
+              '"image headline" ' +
+              '"image terms" ' +
+              '"image body" ' +
+              '"image resolution" ',
             alignItems: "center",
           }),
         )}
@@ -94,8 +119,16 @@ export const AbilityTestCard = React.memo(
             <>
               <Translate>AbilityTest</Translate>
               {": "}
-              <DiceTerms terms={msg.rolls?.[0]?.terms} />
-              {" ="}
+              {status === "rolled" ? (
+                <>
+                  <DiceTerms terms={msg.rolls?.[0]?.terms} />
+                  {" ="}
+                </>
+              ) : (
+                <span data-testid="test-spend">
+                  <Translate>Spent</Translate> {spend}
+                </span>
+              )}
               {bondSpends.length > 0 && (
                 <div data-testid="bond-spends">
                   <Translate>Bonds</Translate>
@@ -105,35 +138,59 @@ export const AbilityTestCard = React.memo(
                     .join(", ")}
                 </div>
               )}
-              {stabilityState !== null && (
-                <div data-testid="shaken-reminder">
-                  <Translate
-                    values={{
-                      State: stateName,
-                      Penalty: String(shakenDifficultyPenalty),
-                    }}
-                  >
-                    StateDifficultyReminder
-                  </Translate>
-                </div>
-              )}
+              {(difficulty === null ||
+                status === "requested" ||
+                status === "rolling") &&
+                difficultyModifiers.map((modifier, i) => (
+                  <DifficultyReminder key={i} modifier={modifier} />
+                ))}
             </>
           )}
         </div>
         {/* RESULT */}
-        <a
-          className={cx(
-            "dice-total",
-            css({
-              gridArea: "body",
-              "&&": {
-                marginTop: "0.5em",
-              },
-            }),
-          )}
-        >
-          {msg.rolls?.[0]?.total}
-        </a>
+        {status === "rolled" && (
+          <a
+            className={cx(
+              "dice-total",
+              css({
+                gridArea: "body",
+                "&&": {
+                  marginTop: "0.5em",
+                },
+              }),
+            )}
+          >
+            {msg.rolls?.[0]?.total}
+          </a>
+        )}
+        {status === "cancelled" && (
+          <div
+            data-testid="test-cancelled"
+            className={css({ gridArea: "body", marginTop: "0.5em" })}
+          >
+            <Translate>Test cancelled</Translate>
+          </div>
+        )}
+        {mode === "test" && (
+          <div className={css({ gridArea: "resolution" })}>
+            {(status === "requested" || status === "rolling") && (
+              <TestRequest
+                msg={msg}
+                isGM={isGM}
+                isRequester={isRequester}
+                rolling={status === "rolling"}
+              />
+            )}
+            {status === "rolled" && difficulty !== null && (
+              <TestResolution
+                msg={msg}
+                difficulty={difficulty}
+                modifiers={difficultyModifiers}
+                isGM={isGM}
+              />
+            )}
+          </div>
+        )}
       </div>
     );
   },

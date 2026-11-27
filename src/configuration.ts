@@ -12,6 +12,7 @@ import {
 } from "./fvtt-exports";
 import { InvestigatorActor } from "./module/actors/InvestigatorActor";
 import { AttackMessageModel } from "./module/attacks/AttackMessageModel";
+import { AbilityTestMessageModel } from "./module/abilityTests/AbilityTestMessageModel";
 import { NPCModel } from "./module/actors/npc";
 import { NPCSheetClass } from "./module/actors/NPCSheetClass";
 import { PartyModel } from "./module/actors/party";
@@ -42,7 +43,11 @@ import { MwItemModel } from "./module/items/mwItem";
 import { PersonalDetailModel } from "./module/items/personalDetail";
 import { WeaponModel } from "./module/items/weapon";
 import { JournalEntryHTMLEditorSheetClass } from "./module/JournalEditorSheetClass";
-import type { EditAttackArgs, RequestTurnPassArgs } from "./types";
+import type {
+  EditAbilityTestArgs,
+  EditAttackArgs,
+  RequestTurnPassArgs,
+} from "./types";
 
 // types configuration
 declare module "fvtt-types/configuration" {
@@ -85,6 +90,10 @@ declare module "fvtt-types/configuration" {
         args: EditAttackArgs,
         requestingUserId: string,
       ) => void;
+      [constants.editAbilityTest]: (
+        args: EditAbilityTestArgs,
+        requestingUserId: string,
+      ) => void;
 
       // third-party hooks
       devModeReady: () => void;
@@ -118,6 +127,7 @@ declare module "fvtt-types/configuration" {
     };
     ChatMessage: {
       attack: typeof AttackMessageModel;
+      abilityTest: typeof AbilityTestMessageModel;
     };
     Combat: {
       classic: typeof ClassicCombatModel;
@@ -155,6 +165,12 @@ declare module "fvtt-types/configuration" {
          * job on a retry without re-activating it forever after.
          */
         migratedFromActiveCombat: boolean;
+      };
+    };
+    ChatMessage: {
+      "dice-so-nice": {
+        /** Dice So Nice leaves the message's rolls alone */
+        skip: boolean;
       };
     };
     JournalEntry: {
@@ -214,6 +230,7 @@ Hooks.once("init", function () {
   CONFIG.Item.dataModels.networkContact = NetworkContactModel;
 
   CONFIG.ChatMessage.dataModels.attack = AttackMessageModel;
+  CONFIG.ChatMessage.dataModels.abilityTest = AbilityTestMessageModel;
 
   CONFIG.Combat.dataModels.classic = ClassicCombatModel;
   CONFIG.Combat.dataModels.turnPassing = TurnPassingCombatModel;
