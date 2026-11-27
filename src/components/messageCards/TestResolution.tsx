@@ -116,7 +116,7 @@ export const TestRequest = ({ msg, isGM, isRequester }: TestRequestProps) => {
             onChange={(e) => setBase(Number(e.currentTarget.value))}
             aria-label="Difficulty"
             data-testid="test-request-difficulty"
-            className={css({ width: "auto" })}
+            className={css({ flex: "1", minWidth: "0", width: "auto" })}
           >
             {difficultyChoices(base).map((difficulty) => (
               <option key={difficulty} value={difficulty}>
@@ -124,19 +124,21 @@ export const TestRequest = ({ msg, isGM, isRequester }: TestRequestProps) => {
               </option>
             ))}
           </select>
-          <button
-            type="button"
-            // Foundry's primary button
-            className="bright"
-            disabled={busy}
-            onClick={() => edit({ kind: "roll", base })}
-          >
-            <i className="fas fa-dice" /> <Translate>Roll</Translate>
-          </button>
         </div>
       )}
+      {isGM && (
+        <button
+          type="button"
+          // Foundry's primary button
+          className="bright"
+          disabled={busy}
+          onClick={() => edit({ kind: "roll", base })}
+        >
+          <i className="fas fa-dice" /> <Translate>Roll</Translate>
+        </button>
+      )}
       {(isGM || isRequester) && (
-        <div className={css({ display: "flex", gap: "0.25em" })}>
+        <>
           <button
             type="button"
             disabled={busy}
@@ -152,7 +154,7 @@ export const TestRequest = ({ msg, isGM, isRequester }: TestRequestProps) => {
           >
             <i className="fas fa-ban" /> <Translate>Cancel test</Translate>
           </button>
-        </div>
+        </>
       )}
     </div>
   );

@@ -224,6 +224,7 @@ export const AbilityTest = memo(function AbilityTest({
                 : pickedDifficulty
             }
             onChange={setPickedDifficulty}
+            className={css({ width: "100%" })}
             data-testid="test-difficulty-picker"
           />
         </GridField>
