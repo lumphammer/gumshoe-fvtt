@@ -27,6 +27,14 @@ export async function waitForGameReady(page: Page) {
   );
 }
 
+/** Log in as the named user from Foundry's join page. */
+export async function joinAs(page: Page, userName: string) {
+  await page.goto("/join");
+  await page.locator('select[name="userId"]').selectOption({ label: userName });
+  await page.locator('button[name="join"]').click();
+  await page.waitForURL("**/game");
+}
+
 /**
  * Console errors which aren't bugs in the system. Keep this short, and say
  * why each one is here.
@@ -351,10 +359,7 @@ export const test = base.extend<
         { report: (text) => pageErrors.push(text) },
         userName,
       );
-      await page.goto("/join");
-      await page.locator('input[name="username"]').fill(userName);
-      await page.locator('button[name="join"]').click();
-      await page.waitForURL("**/game");
+      await joinAs(page, userName);
       await waitForGameAndWatchNotifications(page);
       return page;
     });

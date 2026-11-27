@@ -16,7 +16,7 @@ import {
   foundryServers,
   worldId,
 } from "./config.ts";
-import { waitForGameReady } from "./foundry.ts";
+import { joinAs, waitForGameReady } from "./foundry.ts";
 
 /**
  * Where Foundry's front page redirects to: "setup" when no world is running,
@@ -56,10 +56,7 @@ async function postAction(
 }
 
 async function joinAsGamemaster(page: Page) {
-  await page.goto("/join");
-  await page.locator('input[name="username"]').fill("Gamemaster");
-  await page.locator('button[name="join"]').click();
-  await page.waitForURL("**/game");
+  await joinAs(page, "Gamemaster");
   await waitForGameReady(page);
 }
 
