@@ -58,19 +58,23 @@ export const confirmADoodleDo = ({
       // build the paragraph through the DOM rather than interpolating: callers
       // put document names in here, and none of them wants markup
       content: paragraph(tlMessage),
+      // Foundry's order: the action first, Cancel last. Cancel stays the
+      // default, since these prompts guard against mistakes
       buttons: [
+        {
+          label: tlConfirmText,
+          callback: onConfirm,
+          icon: `fas ${confirmIconClass}`,
+          action: "confirm",
+          // Foundry's primary button
+          class: "bright",
+        },
         {
           label: tlCancelText,
           callback: onCancel,
           icon: "fas fa-ban",
           action: "cancel",
           default: true,
-        },
-        {
-          label: tlConfirmText,
-          callback: onConfirm,
-          icon: `fas ${confirmIconClass}`,
-          action: "confirm",
         },
       ],
     });
