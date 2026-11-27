@@ -78,6 +78,15 @@ export const abilityTestMessageSchema = {
     }),
     { nullable: false, required: true, initial: () => [] },
   ),
+  /**
+   * asked for in blind mode: the request goes to the GM (so whoever asked can
+   * still withdraw it), and the roll is blind
+   */
+  blindRoll: new BooleanField({
+    nullable: false,
+    required: true,
+    initial: false,
+  }),
   difficulty: new SchemaField(
     {
       /**

@@ -6,13 +6,13 @@
 import { createKeyedQueue } from "../../functions/createKeyedQueue";
 import { assertGame } from "../../functions/isGame";
 import { requestEditAbilityTest } from "../../functions/utilities";
-import { clampBondPoints } from "../bonds/rules";
-import { isBondItem } from "../items/bond";
+import { settings } from "../../settings/settings";
 import { InvestigatorItem } from "../items/InvestigatorItem";
 import type { AbilityTestEdit } from "./abilityTestEdits";
 import { canMakeAbilityTestEdit } from "./abilityTestEdits";
 import type { AbilityTestMessage } from "./AbilityTestMessageModel";
 import { isAbilityTestMessage } from "./AbilityTestMessageModel";
+import { refundSpends } from "./refundSpends";
 
 /**
  * Without Dice So Nice, nothing makes a sound for a roll added to a message
@@ -29,26 +29,22 @@ async function refundRequest(message: AbilityTestMessage) {
   const { abilityUuid, spend, bondSpends } = message.system;
   const ability = fromUuidSync(abilityUuid);
   if (!(ability instanceof InvestigatorItem)) return;
-  const pool = (ability.system as { pool?: number }).pool;
-  if (spend > 0 && typeof pool === "number") {
-    await ability.update({ system: { pool: pool + spend } });
-  }
-  const actor = ability.parent;
-  if (!actor) return;
-  const bondUpdates = bondSpends.flatMap(({ id, spend }) => {
-    const bond = actor.items.get(id);
-    return isBondItem(bond) && spend > 0
-      ? [
-          {
-            _id: id,
-            system: { points: clampBondPoints(bond.system.points + spend) },
-          },
-        ]
-      : [];
-  });
-  if (bondUpdates.length > 0) {
-    await actor.updateEmbeddedDocuments("Item", bondUpdates);
-  }
+  // the card is its author's say-so: only give back points they could have
+  // taken themselves
+  const author = message.author;
+  if (!author || !ability.testUserPermission(author, "OWNER")) return;
+  await refundSpends({ ability, spend, bondSpends });
+}
+
+/**
+ * Whether players see the number. The GM's own Difficulty is hidden if the
+ * world says so; one a player picked stays visible until the GM changes it.
+ */
+function isDifficultyHidden(message: AbilityTestMessage, base: number | null) {
+  return (
+    message.system.difficulty.hidden ||
+    (base !== null && settings.hideTestDifficulty.get())
+  );
 }
 
 async function performAbilityTestEditNow(
@@ -65,7 +61,14 @@ async function performAbilityTestEditNow(
       playDiceSound();
       await message.update({
         rolls: [JSON.stringify(roll)],
-        system: { status: "rolled", difficulty: { base: edit.base } },
+        ...(message.system.blindRoll ? { blind: true } : {}),
+        system: {
+          status: "rolled",
+          difficulty: {
+            base: edit.base,
+            hidden: isDifficultyHidden(message, edit.base),
+          },
+        },
       });
       return;
     }
@@ -78,7 +81,14 @@ async function performAbilityTestEditNow(
     }
     case "setDifficulty": {
       if (status !== "rolled") return;
-      await message.update({ system: { difficulty: { base: edit.base } } });
+      await message.update({
+        system: {
+          difficulty: {
+            base: edit.base,
+            hidden: isDifficultyHidden(message, edit.base),
+          },
+        },
+      });
       return;
     }
   }

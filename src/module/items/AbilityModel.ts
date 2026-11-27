@@ -23,6 +23,7 @@ import type { PCModel } from "../actors/pc";
 import { getCappedRating, getRefreshedPool } from "../bonds/adaptation";
 import type { StabilityState } from "../stability/states";
 import { isShakenOrWorse } from "../stability/states";
+import { refundSpends } from "../abilityTests/refundSpends";
 import { clampBondPoints, getMaxBondSpend } from "../bonds/rules";
 import type { BondItem } from "./bond";
 import type { AbilitySchema } from "./createAbilitySchema";
@@ -166,44 +167,62 @@ export abstract class AbilityModel<
       // Foundry would fill the message with its own roll display.
       content: buildAbilityCardContent({}),
     };
-    if (base === null) {
-      // nothing's rolled until the GM has set the Difficulty
-      const message = new ChatMessage.implementation({
-        ...messageData,
-        system: {
-          ...system,
-          status: "requested",
-          difficulty: { base: null, hidden },
-        },
-      });
-      message.applyMode(
-        game.settings.get("core", "messageMode") as ChatMessage.Mode,
-      );
-      await ChatMessage.implementation.create(message.toObject());
-    } else {
-      const roll = new Roll(rollExpression, rollValues);
-      await roll.evaluate();
-      await roll.toMessage({
-        ...messageData,
-        system: {
-          ...system,
-          status: "rolled",
-          difficulty: { base, hidden },
-        },
-      });
-    }
     // they were for this test
     clearActiveSituationalModifiers(this.parent.uuid);
+    // take the points before anyone can act on the card, and give them back
+    // if it never appears
     const pool = this.pool - (Number(spend) || 0);
     await this.parent.update({ system: { pool } });
+    const actor = this.parent.parent;
     if (usedBondSpends.length > 0) {
-      await this.parent.parent.updateEmbeddedDocuments(
+      await actor.updateEmbeddedDocuments(
         "Item",
         usedBondSpends.map(({ bond, spend }) => ({
           _id: bond.id,
           system: { points: clampBondPoints(bond.system.points - spend) },
         })),
       );
+    }
+    try {
+      if (base === null) {
+        // nothing's rolled until the GM has set the Difficulty
+        const mode = game.settings.get(
+          "core",
+          "messageMode",
+        ) as ChatMessage.Mode;
+        const message = new ChatMessage.implementation({
+          ...messageData,
+          system: {
+            ...system,
+            status: "requested",
+            blindRoll: mode === "blind",
+            difficulty: { base: null, hidden },
+          },
+        });
+        // the GM has to see a request, and whoever asked has to be able to
+        // withdraw it: a blind or private one goes to the GM, and a blind
+        // one's roll is blind
+        message.applyMode(mode === "blind" || mode === "self" ? "gm" : mode);
+        await ChatMessage.implementation.create(message.toObject());
+      } else {
+        const roll = new Roll(rollExpression, rollValues);
+        await roll.evaluate();
+        await roll.toMessage({
+          ...messageData,
+          system: {
+            ...system,
+            status: "rolled",
+            difficulty: { base, hidden },
+          },
+        });
+      }
+    } catch (error) {
+      await refundSpends({
+        ability: this.parent,
+        spend,
+        bondSpends: system.bondSpends,
+      });
+      throw error;
     }
   }
 

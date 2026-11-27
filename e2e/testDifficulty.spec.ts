@@ -269,3 +269,72 @@ test("the GM can't ask themselves: their tests start at 4 and roll straight away
   ).toHaveValue("4");
   await expect(page.locator(".application.dialog")).toHaveCount(0);
 });
+
+test("cancelling a request only gives back points its author could have taken", async ({
+  page,
+  joinAs,
+}) => {
+  await setSettings(page, {
+    hideTestDifficulty: false,
+    defaultTestDifficulty: null,
+  });
+  const { player, sheet } = await setUpPlayerTest(page, joinAs, "Forger");
+  const victimId = await createActor(page, { name: "Victim", type: "pc" });
+  await updateAbility(page, victimId, "Athletics", { rating: 4, pool: 1 });
+
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
+  const playerCard = lastChatMessage(player);
+  await expect(playerCard.getByTestId("test-requested")).toBeVisible();
+  // the player wrote the card, so they can change what it says it took
+  await player.evaluate(async (victimId) => {
+    const message = game.messages.contents.at(-1)!;
+    const ability = game.actors.get(victimId)!.items.getName("Athletics")!;
+    await message.update({
+      system: { abilityUuid: ability.uuid, spend: 3 },
+    });
+  }, victimId);
+  await lastChatMessage(player)
+    .getByRole("button", { name: "Cancel test" })
+    .click();
+  await expect(
+    lastChatMessage(player).getByTestId("test-cancelled"),
+  ).toBeVisible();
+  // the refund would follow the cancellation: give it time to go wrong
+  await page.waitForTimeout(1000);
+  expect(await getPool(page, victimId)).toBe(1);
+});
+
+test("a blind request goes to the GM, who rolls it blind", async ({
+  page,
+  joinAs,
+}) => {
+  await setSettings(page, {
+    hideTestDifficulty: false,
+    defaultTestDifficulty: null,
+  });
+  const { player, sheet } = await setUpPlayerTest(page, joinAs, "Mole");
+  await player.evaluate(() =>
+    game.settings.set("core", "messageMode", "blind"),
+  );
+  const dialog = page.locator(".application.dialog", {
+    hasText: "Mole is testing Athletics.",
+  });
+
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
+  // whoever asked can still see it, so they could withdraw it
+  await expect(
+    lastChatMessage(player).getByRole("button", { name: "Cancel test" }),
+  ).toBeVisible();
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Roll", exact: true }).click();
+  await expect(lastChatMessage(page).getByTestId("test-outcome")).toBeVisible();
+  await expect
+    .poll(() => player.evaluate(() => game.messages.contents.at(-1)!.blind))
+    .toBe(true);
+  await expect(lastChatMessage(player).getByTestId("test-outcome")).toHaveCount(
+    0,
+  );
+  await player.evaluate(() =>
+    game.settings.set("core", "messageMode", "public"),
+  );
+});
