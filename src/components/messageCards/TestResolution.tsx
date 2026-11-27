@@ -216,14 +216,21 @@ export const TestResolution = ({
   return (
     <div className={columnClass}>
       {isGM ? (
-        <div data-testid="test-difficulty">
+        <div
+          data-testid="test-difficulty"
+          className={css({
+            display: "flex",
+            gap: "0.25em",
+            alignItems: "center",
+          })}
+        >
           <Translate>Difficulty</Translate>{" "}
           <select
             value={difficulty.base ?? noDifficulty}
             onChange={onChangeBase}
             aria-label="Difficulty"
             data-testid="test-difficulty-input"
-            className={css({ width: "auto" })}
+            className={css({ flex: "1", minWidth: "0", width: "auto" })}
           >
             <option value={noDifficulty}>
               {getTranslated("No Difficulty")}
