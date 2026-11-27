@@ -81,6 +81,9 @@ function isDifficultyHidden(message: AbilityTestMessage, base: number | null) {
   );
 }
 
+/** the tests this client is rolling: any other "rolling" test was interrupted */
+const rollingHere = new Set<string>();
+
 async function performAbilityTestEditNow(
   message: AbilityTestMessage,
   edit: AbilityTestEdit,
@@ -90,6 +93,7 @@ async function performAbilityTestEditNow(
     case "roll": {
       if (status !== "requested") return;
       // the card shows the request, with nothing to click, while the dice roll
+      rollingHere.add(message.id ?? "");
       await message.update({ system: { status: "rolling" } });
       try {
         const { formula, params } = message.system;
@@ -115,6 +119,8 @@ async function performAbilityTestEditNow(
         // back to waiting, so it can be rolled again or withdrawn
         await message.update({ system: { status: "requested" } });
         throw error;
+      } finally {
+        rollingHere.delete(message.id ?? "");
       }
       return;
     }
@@ -141,6 +147,39 @@ async function performAbilityTestEditNow(
 }
 
 const runExclusive = createKeyedQueue();
+
+/**
+ * Put tests whose roll was interrupted (the GM's page closed while the dice
+ * rolled) back to waiting, so they can be rolled again or withdrawn. For the
+ * active GM's client. Returns the tests it put back.
+ */
+export async function recoverInterruptedRolls(): Promise<AbilityTestMessage[]> {
+  assertGame(game);
+  if (!game.user.isActiveGM) return [];
+  const interrupted = game.messages.contents.flatMap((message) =>
+    isAbilityTestMessage(message) &&
+    message.system.status === "rolling" &&
+    !rollingHere.has(message.id ?? "")
+      ? [message]
+      : [],
+  );
+  const recovered = await Promise.all(
+    interrupted.map((message) =>
+      runExclusive(message.id ?? "", async () => {
+        // it may have moved on while it was queued
+        if (
+          message.system.status !== "rolling" ||
+          rollingHere.has(message.id ?? "")
+        ) {
+          return [];
+        }
+        await message.update({ system: { status: "requested" } });
+        return [message];
+      }),
+    ),
+  );
+  return recovered.flat();
+}
 
 /**
  * Make a change to an ability test card, on this client. This should only be

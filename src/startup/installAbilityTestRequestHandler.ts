@@ -9,6 +9,7 @@ import {
 import {
   canUserEditAbilityTest,
   performAbilityTestEdit,
+  recoverInterruptedRolls,
 } from "../module/abilityTests/editAbilityTest";
 import type { EditAbilityTestArgs } from "../types";
 
@@ -19,6 +20,19 @@ import type { EditAbilityTestArgs } from "../types";
  */
 export function installAbilityTestRequestHandler() {
   Hooks.once("ready", () => {
+    // a test whose roll was interrupted goes back to waiting, and the GM is
+    // asked again: when the GM's page loads, or when another user (perhaps
+    // the GM who was rolling it) leaves
+    const recover = async () => {
+      for (const message of await recoverInterruptedRolls()) {
+        askForDifficulty(message);
+      }
+    };
+    void recover();
+    Hooks.on("userConnected", (_user: User, connected: boolean) => {
+      if (!connected) void recover();
+    });
+
     Hooks.on("createChatMessage", (message: ChatMessage) => {
       assertGame(game);
       if (

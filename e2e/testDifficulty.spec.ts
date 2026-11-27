@@ -398,3 +398,40 @@ test("while Dice So Nice shows the dice, the request stays up with nothing to cl
     });
   }
 });
+
+test("a test left rolling by a GM who went away goes back to waiting", async ({
+  page,
+  joinAs,
+}) => {
+  await setSettings(page, {
+    hideTestDifficulty: false,
+    defaultTestDifficulty: null,
+  });
+  const { player, sheet } = await setUpPlayerTest(page, joinAs, "Stranded");
+  const dialog = page.locator(".application.dialog", {
+    hasText: "Stranded is testing Athletics.",
+  });
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
+  await expect(dialog).toBeVisible();
+  // as if another GM had started rolling it, then gone
+  await page.evaluate(async () => {
+    await game.messages.contents.at(-1)!.update({
+      system: { status: "rolling" },
+    });
+  });
+  const playerCard = lastChatMessage(player);
+  await expect(playerCard.getByTestId("test-rolling")).toBeVisible();
+  await expect(dialog).toHaveCount(0);
+  await page.evaluate(() => {
+    Hooks.callAll("userConnected", game.users.contents[0], false);
+  });
+
+  await expect(playerCard.getByTestId("test-requested")).toBeVisible();
+  await expect(
+    playerCard.getByRole("button", { name: "Cancel test" }),
+  ).toBeEnabled();
+  // and the GM is asked again
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Cancel test" }).click();
+  await expect(playerCard.getByTestId("test-cancelled")).toBeVisible();
+});
