@@ -19,6 +19,7 @@ export interface CatalogueRecipeShapes {
       tone: "neutral" | "danger" | "warning" | "success" | "info";
       weight: "subtle" | "strong";
       kind: "label" | "tag";
+      size: "sm" | "md";
     };
   };
   button: {
@@ -109,7 +110,7 @@ export interface CatalogueRecipeShapes {
   poolPips: {
     slots: "root" | "pip";
     states: never;
-    variants: { filled: "true" | "false" };
+    variants: { point: "left" | "spent" | "none" };
   };
   portrait: {
     slots: never;

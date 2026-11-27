@@ -9,8 +9,10 @@ import { defineSlotRecipe } from "@pandacss/dev";
  * Not for: picking a value (the pool trackers' pips are buttons: `button`'s
  * `pip` kind).
  *
- * Slots: `root` (the row of pips) and `pip`. Variant `filled` (on `pip`): a
- * point that's left, in `text`; one that's spent is an outline in `line`.
+ * Slots: `root` (the row of pips) and `pip`. Variant `point` (on `pip`):
+ * `left`, a point that's left, filled; `spent`, an outline; `none`, the one
+ * pip of a rating of 0, an outline struck through like an empty set (∅), the
+ * stroke running past the circle. All in `text`.
  */
 export const poolPips = defineSlotRecipe({
   className: "inv-pool-pips",
@@ -32,10 +34,28 @@ export const poolPips = defineSlotRecipe({
     },
   },
   variants: {
-    filled: {
-      true: { pip: { background: "text", borderColor: "text" } },
-      false: { pip: { background: "transparent", borderColor: "line" } },
+    point: {
+      left: { pip: { background: "text", borderColor: "text" } },
+      spent: { pip: { background: "transparent", borderColor: "text" } },
+      none: {
+        pip: {
+          position: "relative",
+          background: "transparent",
+          borderColor: "text",
+          // the stroke: bottom left to top right, a little past the circle
+          "&::after": {
+            content: "''",
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            width: "0.85em",
+            height: "1px",
+            background: "text",
+            transform: "translate(-50%, -50%) rotate(-45deg)",
+          },
+        },
+      },
     },
   },
-  defaultVariants: { filled: false },
+  defaultVariants: { point: "spent" },
 });

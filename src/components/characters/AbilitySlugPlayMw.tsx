@@ -1,9 +1,8 @@
 import { memo } from "react";
 
 import { AbilityRollRow } from "./AbilityRollRow";
-import { AbilityPoolCell } from "./AbilityPoolCell";
 import { PoolPips } from "./PoolPips";
-import { AbilitySpecialities } from "./AbilitySpecialities";
+import { AbilityRowTags } from "./AbilityRowTags";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
 import type { AbilityItem } from "../../module/items/exports";
@@ -34,11 +33,10 @@ export const AbilitySlugPlayMw = memo(function AbilitySlugPlayMw({
         <PoolPips
           pool={row.pool}
           rating={row.rating}
-          className={css({ justifySelf: "end", marginInlineEnd: "0.3em" })}
+          className={css({ justifySelf: "end" })}
         />
-        <AbilityPoolCell pool={row.pool} rating={row.rating} />
       </AbilityRollRow>
-      <AbilitySpecialities ability={ability} />
+      <AbilityRowTags ability={ability} badges={false} />
     </>
   );
 });

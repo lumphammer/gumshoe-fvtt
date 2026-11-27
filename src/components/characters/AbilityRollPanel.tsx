@@ -69,10 +69,16 @@ export const AbilityRollPanel = memo(function AbilityRollPanel({
         </Button>
       </div>
       {system.hasSpecialities && system.specialities.some((x) => x.trim()) && (
-        <SpecialityTags
-          specialities={system.specialities}
-          className={css({ marginBottom: "0.5em" })}
-        />
+        <div
+          className={css({
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.25em",
+            marginBottom: "0.5em",
+          })}
+        >
+          <SpecialityTags specialities={system.specialities} />
+        </div>
       )}
       {/* hidden when there are none (componentDefaults.css) */}
       <AbilityBadges

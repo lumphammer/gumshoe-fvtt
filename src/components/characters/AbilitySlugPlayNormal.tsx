@@ -1,13 +1,11 @@
 import { memo } from "react";
 
 import { AbilityRollRow } from "./AbilityRollRow";
-import { AbilityPoolCell } from "./AbilityPoolCell";
 import { PoolPips } from "./PoolPips";
-import { AbilitySpecialities } from "./AbilitySpecialities";
+import { AbilityRowTags } from "./AbilityRowTags";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
 import type { AbilityItem } from "../../module/items/exports";
-import { AbilityBadges } from "../abilities/AbilityBadges";
 import { css } from "../../styled-system/css";
 
 type AbilitySlugPlayNormalProps = {
@@ -17,7 +15,7 @@ type AbilitySlugPlayNormalProps = {
 
 /**
  * An ability's row in play: its name and pool, which open a popover to test or
- * spend it, with its badges and specialities under them.
+ * spend it, with its specialities and badges under them.
  */
 export const AbilitySlugPlayNormal = memo(function AbilitySlugPlayNormal({
   ability,
@@ -35,20 +33,10 @@ export const AbilitySlugPlayNormal = memo(function AbilitySlugPlayNormal({
         <PoolPips
           pool={row.pool}
           rating={row.rating}
-          className={css({ justifySelf: "end", marginInlineEnd: "0.3em" })}
+          className={css({ justifySelf: "end" })}
         />
-        <AbilityPoolCell pool={row.pool} rating={row.rating} />
       </AbilityRollRow>
-      <AbilityBadges
-        ability={ability}
-        // under the name, like its specialities
-        className={css({
-          gridColumn: "1/-1",
-          justifyContent: "start",
-          paddingLeft: "1em",
-        })}
-      />
-      <AbilitySpecialities ability={ability} />
+      <AbilityRowTags ability={ability} />
     </>
   );
 });

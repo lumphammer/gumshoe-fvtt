@@ -37,6 +37,8 @@ interface UnlockBadgesProps {
   /** The live ability: the badges read it (and its actor) through snapshots */
   ability: AbilityItem;
   className?: string;
+  /** `sm` in a dense list (an ability's row on a character sheet) */
+  size?: "sm" | "md";
 }
 
 /**
@@ -48,6 +50,7 @@ interface UnlockBadgesProps {
 export const AbilityBadges = memo(function AbilityBadges({
   ability: item,
   className,
+  size,
 }: UnlockBadgesProps) {
   // only what the badges show
   const ability = useItemSelector(item, (snapshot: AbilitySnapshot) => ({
@@ -97,14 +100,14 @@ export const AbilityBadges = memo(function AbilityBadges({
     >
       {/* Boost */}
       {ability.boost && (
-        <span className={cx(badge(), spaced)}>
+        <span className={cx(badge({ size }), spaced)}>
           <Translate>Boosted</Translate>
         </span>
       )}
 
       {/* Push pool */}
       {ability.isPushPool && (
-        <span className={cx(badge(), spaced)}>
+        <span className={cx(badge({ size }), spaced)}>
           <Translate>Push Pool</Translate>
         </span>
       )}
@@ -113,7 +116,10 @@ export const AbilityBadges = memo(function AbilityBadges({
       {woundState !== null && woundState !== "ok" && (
         <span
           data-testid="wound-state-badge"
-          className={cx(badge({ tone: "danger", weight: "strong" }), spaced)}
+          className={cx(
+            badge({ tone: "danger", weight: "strong", size }),
+            spaced,
+          )}
         >
           <Translate>{woundStateLabels[woundState]}</Translate>
         </span>
@@ -123,7 +129,10 @@ export const AbilityBadges = memo(function AbilityBadges({
       {stabilityState !== null && stabilityState !== "steady" && (
         <span
           data-testid="stability-state-badge"
-          className={cx(badge({ tone: "danger", weight: "strong" }), spaced)}
+          className={cx(
+            badge({ tone: "danger", weight: "strong", size }),
+            spaced,
+          )}
         >
           {stabilityStateName}
         </span>
@@ -131,7 +140,10 @@ export const AbilityBadges = memo(function AbilityBadges({
 
       {/* Adapted to Violence, or Sanity's cap */}
       {ratingCap !== null && (
-        <span data-testid="rating-cap-badge" className={cx(badge(), spaced)}>
+        <span
+          data-testid="rating-cap-badge"
+          className={cx(badge({ size }), spaced)}
+        >
           <Translate
             values={{ Cap: String(ratingCap) }}
             title={ratingCapReasons.join("; ")}
@@ -144,7 +156,10 @@ export const AbilityBadges = memo(function AbilityBadges({
       {/* Unlocks */}
       {unlocks.map<ReactNode>(({ description }, i) => {
         return (
-          <span key={i} className={cx(badge({ weight: "strong" }), spaced)}>
+          <span
+            key={i}
+            className={cx(badge({ weight: "strong", size }), spaced)}
+          >
             {description}
           </span>
         );
@@ -157,6 +172,7 @@ export const AbilityBadges = memo(function AbilityBadges({
             situationalModifier={situationalModifer}
             isActive={activeModifiers.includes(situationalModifer.id)}
             ability={item}
+            size={size}
           />
         );
       })}

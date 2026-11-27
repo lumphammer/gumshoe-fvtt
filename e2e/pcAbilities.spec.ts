@@ -17,13 +17,16 @@ import {
 // snapshots, and its areas and rows are memoised: these check that changes
 // made elsewhere still reach it.
 
-/** The pool and rating as shown ("2/4"; screen readers get them in words) */
+/**
+ * The pool and rating, as screen readers get them ("pool 2, rating 4"): the
+ * row shows them as pips
+ */
 const poolAndRating = (sheet: Locator, name: string) =>
-  abilityRow(sheet, name).getByText(/^-?\d+\/-?\d+$/);
+  abilityRow(sheet, name).getByText(/^pool -?\d+, rating -?\d+$/);
 
 /** How many of an ability's pips are filled: one per point left */
 const filledPips = (sheet: Locator, name: string) =>
-  abilityRow(sheet, name).locator(".inv-pool-pips__pip--filled_true");
+  abilityRow(sheet, name).locator(".inv-pool-pips__pip--point_left");
 
 async function renameItem(
   page: Page,
@@ -43,12 +46,16 @@ test("the Abilities tab follows pools spent elsewhere", async ({ page }) => {
   const actorId = await createActor(page, { name: "Spender", type: "pc" });
   await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
   const sheet = await openSheet(page, `Actor.${actorId}`);
-  await expect(poolAndRating(sheet, "Athletics")).toHaveText("4/4");
+  await expect(poolAndRating(sheet, "Athletics")).toHaveText(
+    "pool 4, rating 4",
+  );
 
   await expect(filledPips(sheet, "Athletics")).toHaveCount(4);
 
   await updateAbility(page, actorId, "Athletics", { pool: 1 });
-  await expect(poolAndRating(sheet, "Athletics")).toHaveText("1/4");
+  await expect(poolAndRating(sheet, "Athletics")).toHaveText(
+    "pool 1, rating 4",
+  );
   await expect(filledPips(sheet, "Athletics")).toHaveCount(1);
   await expect(
     abilityRow(sheet, "Athletics").locator(".inv-pool-pips__pip"),
@@ -157,16 +164,22 @@ test.describe("Moribund World abilities", () => {
     const actorId = await createActor(page, { name: "Wanderer", type: "pc" });
     await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
     const sheet = await openSheet(page, `Actor.${actorId}`);
-    await expect(poolAndRating(sheet, "Athletics")).toHaveText("4/4");
+    await expect(poolAndRating(sheet, "Athletics")).toHaveText(
+      "pool 4, rating 4",
+    );
 
     await updateAbility(page, actorId, "Athletics", { pool: 1 });
-    await expect(poolAndRating(sheet, "Athletics")).toHaveText("1/4");
+    await expect(poolAndRating(sheet, "Athletics")).toHaveText(
+      "pool 1, rating 4",
+    );
 
     await createOwnedItem(page, actorId, {
       name: "Juggling",
       type: "generalAbility",
       system: { rating: 2, pool: 2 },
     });
-    await expect(poolAndRating(sheet, "Juggling")).toHaveText("2/2");
+    await expect(poolAndRating(sheet, "Juggling")).toHaveText(
+      "pool 2, rating 2",
+    );
   });
 });

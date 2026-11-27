@@ -1,13 +1,15 @@
-import { cx } from "../../styled-system/css";
+import { getTranslated } from "../../functions/getTranslated";
+import { css, cx } from "../../styled-system/css";
 import { poolPips } from "../../styled-system/recipes";
 
 /** Beyond this many, pips are too many to count at a glance */
 const maxPips = 12;
 
 /**
- * A pool as pips: one per point of its rating, filled for the points left
- * (and more if the pool is over its rating). Nothing for a rating of 0, or
- * one too big to count. Only to look at: the number beside it is read out.
+ * A pool as pips: one per point of its rating, hollow for the points spent
+ * then filled for the points left (and more if the pool is over its rating).
+ * One struck through for a rating of 0, and the numbers ("9/14") for one too
+ * big to count. Read out in words.
  */
 export const PoolPips = ({
   pool,
@@ -19,12 +21,33 @@ export const PoolPips = ({
   className?: string;
 }) => {
   const count = Math.max(pool, rating);
-  if (count <= 0 || count > maxPips) return <span className={className} />;
   return (
-    <span aria-hidden="true" className={cx(poolPips().root, className)}>
-      {Array.from({ length: count }, (_, i) => (
-        <span key={i} className={poolPips({ filled: i < pool }).pip} />
-      ))}
+    <span className={cx(poolPips().root, className)}>
+      {count > maxPips ? (
+        <span aria-hidden="true">
+          {pool}/{rating}
+        </span>
+      ) : count <= 0 ? (
+        // a rating of 0: one pip, struck through
+        <span aria-hidden="true" className={poolPips({ point: "none" }).pip} />
+      ) : (
+        Array.from({ length: count }, (_, i) => (
+          <span
+            key={i}
+            aria-hidden="true"
+            // spent first, then the points left, against the row's end
+            className={
+              poolPips({ point: i >= count - pool ? "left" : "spent" }).pip
+            }
+          />
+        ))
+      )}
+      <span className={css({ srOnly: true })}>
+        {getTranslated("PoolOfRating", {
+          Pool: String(pool),
+          Rating: String(rating),
+        })}
+      </span>
     </span>
   );
 };

@@ -1,12 +1,11 @@
 import { memo, useCallback } from "react";
 
 import { AbilityRollRow } from "./AbilityRollRow";
-import { AbilitySpecialities } from "./AbilitySpecialities";
+import { AbilityRowTags } from "./AbilityRowTags";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
 import type { AbilityItem } from "../../module/items/exports";
-import { AbilityBadges } from "../abilities/AbilityBadges";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
 import { css } from "../../styled-system/css";
@@ -58,16 +57,7 @@ export const AbilitySlugPlayQuickShockInvestigative = memo(
         >
           <Translate>Push</Translate>
         </Button>
-        <AbilityBadges
-          ability={ability}
-          // under the name, like its specialities
-          className={css({
-            gridColumn: "1/-1",
-            justifyContent: "start",
-            paddingLeft: "1em",
-          })}
-        />
-        <AbilitySpecialities ability={ability} />
+        <AbilityRowTags ability={ability} />
       </>
     );
   },

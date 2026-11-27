@@ -37,7 +37,8 @@ const looks: Record<Tone, Record<"subtle" | "strong", Look>> = {
  * Variants: `tone`, `weight` (`subtle` is an outline, `strong` is filled),
  * and `kind`: `label` (the default, fully rounded) or `tag`, for a
  * free-form tag the user wrote (an ability's specialities): square-cornered,
- * with a dashed outline, so it doesn't read as a state.
+ * with a dashed outline, so it doesn't read as a state; and `size`: `md` (the
+ * default) or `sm`, for badges in a dense list (an ability's row).
  * States (`badgeStates`): a badge that can be clicked has
  * `data-interactive` (hover feedback), and if it's a toggle, `aria-pressed`:
  * `pressed` shows it as selected, whatever its tone.
@@ -68,6 +69,7 @@ export const badge = defineRecipe({
       label: {},
       tag: { borderRadius: "standard", borderStyle: "dashed" },
     },
+    size: { sm: { fontSize: "0.75em" }, md: {} },
   },
   compoundVariants: [
     ...tones.flatMap((tone) =>
@@ -78,7 +80,12 @@ export const badge = defineRecipe({
       })),
     ),
   ],
-  defaultVariants: { tone: "neutral", weight: "subtle", kind: "label" },
+  defaultVariants: {
+    tone: "neutral",
+    weight: "subtle",
+    kind: "label",
+    size: "md",
+  },
 });
 
 /** The badge's element states (stateLayers.ts), over every tone. */

@@ -22,6 +22,7 @@ export const recipeShapes = {
       tone: ["neutral", "danger", "warning", "success", "info"],
       weight: ["subtle", "strong"],
       kind: ["label", "tag"],
+      size: ["sm", "md"],
     },
     states: ["pressed"],
   },
@@ -128,7 +129,7 @@ export const recipeShapes = {
   poolPips: {
     className: "inv-pool-pips",
     slots: ["root", "pip"],
-    variants: { filled: ["true", "false"] },
+    variants: { point: ["left", "spent", "none"] },
     states: [],
   },
   portrait: {

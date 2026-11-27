@@ -83,7 +83,7 @@ export const refused: ThemeCatalogue[] = [
   // @ts-expect-error -- no such variant value
   { badge: { variants: { tone: { scary: {} } } } },
   // @ts-expect-error -- no such variant
-  { badge: { variants: { size: {} } } },
+  { badge: { variants: { shape: {} } } },
   // @ts-expect-error -- no such slot
   { tabs: { base: { tub: {} } } },
   // @ts-expect-error -- a slot recipe's base is by slot

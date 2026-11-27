@@ -18,7 +18,7 @@ test("a row's popover tests the ability, then closes", async ({ page }) => {
   await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
   const sheet = await openSheet(page, `Actor.${actorId}`);
   const row = abilityRow(sheet, "Athletics");
-  await expect(row).toContainText("4/4");
+  await expect(row).toContainText("pool 4, rating 4");
 
   await row.click();
   const popover = page.getByRole("dialog", { name: "Athletics" });
@@ -28,7 +28,7 @@ test("a row's popover tests the ability, then closes", async ({ page }) => {
   await popover.getByRole("button", { name: /Test/ }).click();
 
   await expect(popover).toBeHidden();
-  await expect(row).toContainText("2/4");
+  await expect(row).toContainText("pool 2, rating 4");
   await expect(lastChatMessage(page)).toContainText("Athletics");
 });
 
@@ -58,7 +58,7 @@ test("Esc closes the popover, not the sheet, and starts it afresh", async ({
   await expect(three).not.toHaveAttribute("data-pressed");
   await row.click();
   await expect(popover).toBeHidden();
-  await expect(row).toContainText("4/4");
+  await expect(row).toContainText("pool 4, rating 4");
 });
 
 test("right-clicking a row, or the popover's link, opens the ability's sheet", async ({
@@ -90,10 +90,10 @@ test("someone who can only look at the sheet gets the ability's sheet", async ({
 }) => {
   const actorId = await createActor(page, { name: "Exhibit", type: "pc" });
   await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
-  const playerId = await createPlayer(page, "Onlooker");
+  const playerId = await createPlayer(page, "Ability Onlooker");
   await giveOwnership(page, actorId, playerId, "OBSERVER");
 
-  const player = await joinAs("Onlooker");
+  const player = await joinAs("Ability Onlooker");
   const sheet = await openSheet(player, `Actor.${actorId}`);
   await abilityRow(sheet, "Athletics").click();
 

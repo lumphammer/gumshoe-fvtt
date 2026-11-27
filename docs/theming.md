@@ -313,7 +313,8 @@ Variants `tone` and `weight`: `subtle` (default) is an outline in the tone's
 colour, `strong` is filled with it (`control` for neutral) and its `on-` ink.
 `kind`: `label` (default), or `tag` for a free-form tag the user wrote (an
 ability's specialities), square-cornered (`radius`) with a dashed outline, so
-it doesn't read as a state. `data-interactive` if clickable; `aria-pressed` makes it a toggle: `pressed`
+it doesn't read as a state. `size`: `md` (default) or `sm`, for a dense list
+(an ability's row). `data-interactive` if clickable; `aria-pressed` makes it a toggle: `pressed`
 is selected (`accent` fill, `onAccent` ink), whatever the tone. `Translate` sets an inline
 `background`, so put a badge on a wrapper around it.
 
@@ -402,8 +403,9 @@ nothing in it: dashed `line` border, italic `textMuted` (_not for_ warnings).
 **`poolPips`**: a pool drawn as a row of pips beside its number, one per point
 of its rating (an ability's row on a character sheet). _Not for_ picking a
 value (the pool trackers' pips are `button`s, `kind: pip`). Slots `root` and
-`pip`; `filled` (a point that's left) is `text`, a spent one an outline in
-`line`.
+`pip`, all in `text`; `point`: `left` is filled, `spent` an outline, `none`
+(the one pip of a rating of 0) an outline struck through like an empty set
+(∅).
 
 **Text.** Element defaults (`elements.css`, in `system.base`, in `:where()` so
 any class beats them) style plain `h1`–`h4` (the `display` style), `label`, `a`
