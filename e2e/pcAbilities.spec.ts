@@ -1,6 +1,7 @@
 import type { Locator, Page } from "@playwright/test";
 
 import {
+  abilityRow,
   createActor,
   createOwnedItem,
   createPlayer,
@@ -16,13 +17,9 @@ import {
 // snapshots, and its areas and rows are memoised: these check that changes
 // made elsewhere still reach it.
 
-/** An ability's pool/rating on the Abilities tab */
 /** The pool and rating as shown ("2/4"; screen readers get them in words) */
 const poolAndRating = (sheet: Locator, name: string) =>
-  sheet
-    .locator("a", { hasText: new RegExp(`^${name}$`) })
-    .locator("xpath=following-sibling::div[1]")
-    .locator("[aria-hidden=true]");
+  abilityRow(sheet, name).locator("[aria-hidden=true]");
 
 async function renameItem(
   page: Page,
@@ -53,8 +50,7 @@ test("the Abilities tab follows abilities added, renamed and removed elsewhere",
 }) => {
   const actorId = await createActor(page, { name: "Learner", type: "pc" });
   const sheet = await openSheet(page, `Actor.${actorId}`);
-  const link = (name: string) =>
-    sheet.locator("a", { hasText: new RegExp(`^${name}$`) });
+  const link = (name: string) => abilityRow(sheet, name);
 
   const itemId = await createOwnedItem(page, actorId, {
     name: "Juggling",
@@ -86,8 +82,8 @@ test("a zero-rated ability that hides itself shows once it has a rating", async 
     system: { rating: 0, pool: 0, hideIfZeroRated: true },
   });
   const sheet = await openSheet(page, `Actor.${actorId}`);
-  const link = sheet.locator("a", { hasText: /^Juggling$/ });
-  await expect(sheet.locator("a", { hasText: /^Athletics$/ })).toBeVisible();
+  const link = abilityRow(sheet, "Juggling");
+  await expect(abilityRow(sheet, "Athletics")).toBeVisible();
   await expect(link).toHaveCount(0);
 
   await updateAbility(page, actorId, "Juggling", { rating: 1, pool: 1 });

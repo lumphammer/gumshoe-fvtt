@@ -52,8 +52,8 @@ export const surface = defineRecipe({
  * `surfaceSolid`.
  *
  * Variants: `kind`:
- * - `overlay`: a message over everything (the party sheet's "drop actors
- *   here"): rounded, with `elevation`.
+ * - `overlay`: a message or popover over everything (the party sheet's "drop
+ *   actors here", an ability row's roll popover): rounded, with `elevation`.
  * - `drawer`: a panel sliding in from the side (nested settings pages), with
  *   a `line` on its leading edge.
  * - `bar`: a bar stuck to the top of a scrolling area (build points), with a
@@ -64,7 +64,8 @@ export const surface = defineRecipe({
 export const floating = defineRecipe({
   className: "inv-floating",
   description: "Something raised above the sheet, overlapping it.",
-  base: { background: "surfaceSolid" },
+  // text ink too: a popover in the top layer gets the browser's otherwise
+  base: { background: "surfaceSolid", color: "text" },
   variants: {
     kind: {
       overlay: { borderRadius: "0.5em", boxShadow: "elevation" },

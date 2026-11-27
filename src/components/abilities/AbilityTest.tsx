@@ -46,11 +46,14 @@ interface AbilityTestProps {
   /** Only to write through: read from `ability`. */
   item: AbilityItem;
   ability: AbilitySnapshot;
+  /** Called once a test or spend has been made (not if it was cancelled) */
+  onDone?: () => void;
 }
 
 export const AbilityTest = memo(function AbilityTest({
   item,
   ability,
+  onDone,
 }: AbilityTestProps) {
   const methods = useSystemMethods(item);
   const [spend, setSpend] = useState(0);
@@ -150,13 +153,15 @@ export const AbilityTest = memo(function AbilityTest({
     setSpend(0);
     setBondSpends({});
     setPickedDifficulty(undefined);
+    onDone?.();
   };
 
   const { confirmSpendAbility } = methods;
   const handleClickSpend = useCallback(() => {
     void confirmSpendAbility(spend);
     setSpend(0);
-  }, [confirmSpendAbility, spend]);
+    onDone?.();
+  }, [confirmSpendAbility, spend, onDone]);
 
   // alongside Bonds, name the ability being spent (as the weapon sheet does)
   const spendLabel = bonds.length > 0 ? ability.name : undefined;

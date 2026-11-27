@@ -108,6 +108,25 @@
     padding: 1em;
   }
 
+  /* AbilityRollRow: a <button> without Foundry's look, its cells in the
+     area's columns */
+  .inv-default-ability-roll-trigger {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: center;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    font: inherit;
+    text-align: inherit;
+    box-shadow: none;
+    outline: none;
+  }
+
   .inv-default-ability-name-link {
     grid-column: ability;
     text-align: end;

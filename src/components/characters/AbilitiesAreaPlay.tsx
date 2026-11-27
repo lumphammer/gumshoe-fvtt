@@ -73,8 +73,8 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
           className={css({
             gridArea: "investigative",
             display: "grid",
-            gridTemplateAreas: "'ability rating set spend'",
-            gridTemplateColumns: "1fr max-content max-content max-content",
+            // the name, the pool, and a Push button (Quick Shock)
+            gridTemplateColumns: "1fr max-content max-content",
             columnGap: "0.2em",
             rowGap: "0.4em",
             alignItems: "center",
@@ -118,8 +118,8 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
           className={css({
             gridArea: "general",
             display: "grid",
-            gridTemplateColumns: "1fr max-content max-content max-content",
-            gridTemplateAreas: "'ability rating set spend'",
+            // the name, the pool, and a Push button (Quick Shock)
+            gridTemplateColumns: "1fr max-content max-content",
             columnGap: "0.2em",
             rowGap: "0.4em",
             alignItems: "center",

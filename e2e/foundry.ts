@@ -490,6 +490,14 @@ export async function openSheet(page: Page, uuid: string) {
   return sheet;
 }
 
+/**
+ * An ability's row on a character sheet's Abilities tab (in play): a button
+ * with its name and pool, which opens its roll popover.
+ */
+export function abilityRow(sheet: Locator, name: string) {
+  return sheet.getByRole("button", { name: new RegExp(`^${name}\\s*pool`) });
+}
+
 /** The newest chat message. */
 export function lastChatMessage(page: Page) {
   return page.locator("#chat .chat-message").last();

@@ -58,7 +58,7 @@ test("Tab moves on through a PC sheet, and reaches its links", async ({
           ? "pip"
           : element.matches(".tab-strip > label")
             ? "tab"
-            : element.matches(".inv-default-ability-name-link")
+            : element.matches(".inv-default-ability-roll-trigger")
               ? "ability"
               : "other";
       return { inSheet: true, moved, role };
@@ -193,7 +193,7 @@ test("a pool tracker is one tab stop, set with the arrow keys", async ({
     .toBe(false);
 });
 
-test("Enter sets a pool from its pip, and Space opens an ability", async ({
+test("Enter sets a pool from its pip, and Space opens an ability's popover", async ({
   page,
 }) => {
   const { actorId, sheet } = await pcSheet(page, "Keyed Pools");
@@ -218,19 +218,15 @@ test("Enter sets a pool from its pip, and Space opens an ability", async ({
     )
     .toBe(1);
 
-  const link = sheet.locator(".inv-default-ability-name-link").first();
-  const itemId = await link.getAttribute("data-item-id");
-  await link.focus();
+  const row = sheet.locator(".inv-default-ability-roll-trigger").first();
+  await row.focus();
   await page.keyboard.press("Space");
-  await expect
-    .poll(() =>
-      page.evaluate(
-        ({ actorId, itemId }) =>
-          game.actors.get(actorId)!.items.get(itemId!)!.sheet!.rendered,
-        { actorId, itemId },
-      ),
-    )
-    .toBe(true);
+  const popover = page.getByRole("dialog");
+  await expect(popover).toBeFocused();
+  // Tab and Space in the popover are its own, too
+  await page.keyboard.press("Space");
+  await page.keyboard.press("Tab");
+  await expect(popover.getByRole("button").first()).toBeFocused();
   expect(await paused(page)).toBe(pausedBefore);
 });
 

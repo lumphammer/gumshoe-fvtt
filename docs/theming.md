@@ -471,10 +471,10 @@ region or panel has padding; this doesn't): a notes area, a cover over a
 picture. `depth: top | nested` is `surface` or `surfaceNested`; `solid` is
 `surfaceSolid` or `surfaceNestedSolid`, for one that overlaps or scrolls over
 other content. It sets only the background colour, so it can go on an element
-with an image. `floating`: something raised above the sheet, on `surfaceSolid`;
-`kind`: `overlay` (a message over everything, with `elevation`), `drawer`
-(slides in from the side), `bar` (stuck to the top of a scrolling area), `chip`
-(a small label over a picture). `partyCell` (specialised): a cell of the party
+with an image. `floating`: something raised above the sheet, on `surfaceSolid`
+in `text` ink; `kind`: `overlay` (a message or popover over everything, with
+`elevation`), `drawer` (slides in from the side), `bar` (stuck to the top of a
+scrolling area), `chip` (a small label over a picture). `partyCell` (specialised): a cell of the party
 sheet's grid of abilities; rows alternate `surface` and `surfaceNested`, an
 ability nobody has is tinted halfway to `danger`, and `header` cells stay over
 the rest as it scrolls, so they're on the solid surfaces. `richText`: an editor
