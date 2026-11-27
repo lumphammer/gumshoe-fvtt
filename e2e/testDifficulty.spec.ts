@@ -71,9 +71,8 @@ test("Shaken adds to the Difficulty of a General test", async ({ page }) => {
   await sheet.getByRole("button", { name: "Test", exact: true }).click();
   const card = lastChatMessage(page);
   await expect(card.getByTestId("test-difficulty-input")).toHaveValue("4");
-  await expect(card.getByTestId("test-difficulty")).toHaveText(
-    "Difficulty Shaken +1 = 5",
-  );
+  await expect(card.getByTestId("difficulty-modifier")).toHaveText("Shaken +1");
+  await expect(card.getByTestId("test-difficulty")).toContainText("= 5");
   await expect(card.getByTestId("test-outcome")).toHaveText("Failure");
 });
 
@@ -182,9 +181,14 @@ test("a hidden Difficulty: players see only how it went", async ({
   // the GM still sees it, and can change it
   const input = lastChatMessage(page).getByTestId("test-difficulty-input");
   await expect(input).toHaveValue("3");
-  await input.fill("2");
-  await input.press("Enter");
+  await input.selectOption("2");
   await expect(playerCard.getByTestId("test-outcome")).toHaveText("Success");
+  // or take it away
+  await lastChatMessage(page)
+    .getByTestId("test-difficulty-input")
+    .selectOption("No Difficulty");
+  await expect(playerCard.getByTestId("test-no-difficulty")).toBeVisible();
+  await expect(playerCard.getByTestId("test-outcome")).toHaveCount(0);
 });
 
 test("a player can withdraw a request, or roll it without a Difficulty", async ({

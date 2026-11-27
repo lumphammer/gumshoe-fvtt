@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { getTranslated } from "../../functions/getTranslated";
 import { systemLogger } from "../../functions/utilities";
 
 import { useSettings } from "../../hooks/useSettings";
@@ -27,6 +28,9 @@ const outcomeText: Record<TestOutcome, string> = {
   failure: "Failure",
   failed1: "Failed 1",
 };
+
+/** the GM's choice to take a test's Difficulty away */
+const noDifficulty = "none";
 
 const signed = (amount: number) => (amount < 0 ? `${amount}` : `+${amount}`);
 
@@ -201,15 +205,9 @@ export const TestResolution = ({
       : getTestOutcome({ die, total, difficulty: finalDifficulty });
   const showNumber = isGM || !difficulty.hidden;
 
-  const onChangeBase = (e: React.FocusEvent<HTMLInputElement>) => {
-    const text = e.currentTarget.value;
-    // blank takes it away
-    const base = text === "" ? null : Number(text);
-    if (base !== null && !Number.isInteger(base)) {
-      e.currentTarget.value =
-        difficulty.base === null ? "" : String(difficulty.base);
-      return;
-    }
+  const onChangeBase = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const picked = e.currentTarget.value;
+    const base = picked === noDifficulty ? null : Number(picked);
     if (base !== difficulty.base) {
       void editAbilityTest(msg, { kind: "setDifficulty", base });
     }
@@ -220,21 +218,22 @@ export const TestResolution = ({
       {isGM ? (
         <div data-testid="test-difficulty">
           <Translate>Difficulty</Translate>{" "}
-          <input
-            // remount when the value changes underneath us
-            key={difficulty.base ?? "none"}
-            type="number"
-            step={1}
-            defaultValue={difficulty.base ?? ""}
-            placeholder="–"
-            onBlur={onChangeBase}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") e.currentTarget.blur();
-            }}
+          <select
+            value={difficulty.base ?? noDifficulty}
+            onChange={onChangeBase}
             aria-label="Difficulty"
             data-testid="test-difficulty-input"
-            className={css({ width: "3em", height: "auto" })}
-          />
+            className={css({ width: "auto" })}
+          >
+            <option value={noDifficulty}>
+              {getTranslated("No Difficulty")}
+            </option>
+            {difficultyChoices(difficulty.base ?? undefined).map((choice) => (
+              <option key={choice} value={choice}>
+                {choice}
+              </option>
+            ))}
+          </select>
           {modifiers.map((modifier, i) => (
             <ModifierLabel key={i} modifier={modifier} />
           ))}
