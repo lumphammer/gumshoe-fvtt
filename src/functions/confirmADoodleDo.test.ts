@@ -37,4 +37,23 @@ describe("confirmADoodleDo", () => {
       'Delete <img src=x onerror="alert(1)">?',
     );
   });
+
+  it("puts the bright confirm button first and keeps Cancel the default", () => {
+    vi.stubGlobal("game", {});
+    mocks.DialogV2.mockClear();
+    mocks.DialogV2.mockImplementation(() => ({ render }));
+    void confirmADoodleDo({
+      message: "Delete it?",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      confirmIconClass: "fa-trash",
+    });
+
+    const buttons = mocks.DialogV2.mock.calls[0][0].buttons;
+    expect(buttons).toMatchObject([
+      { action: "confirm", label: "Delete", class: "bright" },
+      { action: "cancel", label: "Cancel", default: true },
+    ]);
+    expect(buttons[0].default).toBeUndefined();
+  });
 });
