@@ -413,18 +413,30 @@ test("a test left rolling by a GM who went away goes back to waiting", async ({
   });
   await sheet.getByRole("button", { name: "Test", exact: true }).click();
   await expect(dialog).toBeVisible();
-  // as if another GM had started rolling it, then gone
-  await page.evaluate(async () => {
-    await game.messages.contents.at(-1)!.update({
-      system: { status: "rolling" },
+  const playerId = await player.evaluate(() => game.user.id);
+  const setRolling = (rollingUserId: string) =>
+    page.evaluate(async (rollingUserId) => {
+      await game.messages.contents.at(-1)!.update({
+        system: { status: "rolling", rollingUserId },
+      });
+    }, rollingUserId);
+  const someoneLeaves = () =>
+    page.evaluate(() => {
+      Hooks.callAll("userConnected", game.users.contents[0], false);
     });
-  });
   const playerCard = lastChatMessage(player);
+
+  // the player's still here, so they may still be rolling it
+  await setRolling(playerId);
   await expect(playerCard.getByTestId("test-rolling")).toBeVisible();
   await expect(dialog).toHaveCount(0);
-  await page.evaluate(() => {
-    Hooks.callAll("userConnected", game.users.contents[0], false);
-  });
+  await someoneLeaves();
+  await page.waitForTimeout(500);
+  await expect(playerCard.getByTestId("test-rolling")).toBeVisible();
+
+  // as if a GM who's gone had started rolling it
+  await setRolling("nobodyHere00000");
+  await someoneLeaves();
 
   await expect(playerCard.getByTestId("test-requested")).toBeVisible();
   await expect(

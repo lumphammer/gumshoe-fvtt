@@ -80,6 +80,12 @@ export const abilityTestMessageSchema = {
     }),
     { nullable: false, required: true, initial: () => [] },
   ),
+  /** while it's rolling, the user whose client is rolling it */
+  rollingUserId: new StringField({
+    nullable: true,
+    required: true,
+    initial: null,
+  }),
   /**
    * asked for in blind mode: the request goes to the GM (so whoever asked can
    * still withdraw it), and the roll is blind

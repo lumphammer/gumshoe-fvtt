@@ -81,8 +81,29 @@ function isDifficultyHidden(message: AbilityTestMessage, base: number | null) {
   );
 }
 
-/** the tests this client is rolling: any other "rolling" test was interrupted */
+/** the tests this client is rolling */
 const rollingHere = new Set<string>();
+
+/** whether this test is still rolling, on this client */
+function isRollingHere(message: AbilityTestMessage) {
+  return (
+    message.system.status === "rolling" &&
+    message.system.rollingUserId === game.user?.id
+  );
+}
+
+/**
+ * A test left rolling: by someone who's gone, or by this user before their
+ * page reloaded. (Someone who's still here may be watching the dice.)
+ */
+function isInterruptedRoll(message: AbilityTestMessage) {
+  if (message.system.status !== "rolling") return false;
+  const { rollingUserId } = message.system;
+  if (rollingUserId === game.user?.id) {
+    return !rollingHere.has(message.id ?? "");
+  }
+  return !(rollingUserId && game.users?.get(rollingUserId)?.active);
+}
 
 async function performAbilityTestEditNow(
   message: AbilityTestMessage,
@@ -94,12 +115,17 @@ async function performAbilityTestEditNow(
       if (status !== "requested") return;
       // the card shows the request, with nothing to click, while the dice roll
       rollingHere.add(message.id ?? "");
-      await message.update({ system: { status: "rolling" } });
+      await message.update({
+        system: { status: "rolling", rollingUserId: game.user?.id ?? null },
+      });
       try {
         const { formula, params } = message.system;
         const roll: TestRoll = new Roll(formula, { ...params });
         await roll.evaluate();
         await showDice(message, roll);
+        // if someone gave up on us while the dice rolled, and put the test
+        // back (or then rolled or withdrew it), it isn't ours to finish
+        if (!isRollingHere(message)) return;
         await message.update({
           rolls: [JSON.stringify(roll)],
           ...(message.system.blindRoll ? { blind: true } : {}),
@@ -109,6 +135,7 @@ async function performAbilityTestEditNow(
             : {}),
           system: {
             status: "rolled",
+            rollingUserId: null,
             difficulty: {
               base: edit.base,
               hidden: isDifficultyHidden(message, edit.base),
@@ -117,7 +144,11 @@ async function performAbilityTestEditNow(
         });
       } catch (error) {
         // back to waiting, so it can be rolled again or withdrawn
-        await message.update({ system: { status: "requested" } });
+        if (isRollingHere(message)) {
+          await message.update({
+            system: { status: "requested", rollingUserId: null },
+          });
+        }
         throw error;
       } finally {
         rollingHere.delete(message.id ?? "");
@@ -157,9 +188,7 @@ export async function recoverInterruptedRolls(): Promise<AbilityTestMessage[]> {
   assertGame(game);
   if (!game.user.isActiveGM) return [];
   const interrupted = game.messages.contents.flatMap((message) =>
-    isAbilityTestMessage(message) &&
-    message.system.status === "rolling" &&
-    !rollingHere.has(message.id ?? "")
+    isAbilityTestMessage(message) && isInterruptedRoll(message)
       ? [message]
       : [],
   );
@@ -167,13 +196,10 @@ export async function recoverInterruptedRolls(): Promise<AbilityTestMessage[]> {
     interrupted.map((message) =>
       runExclusive(message.id ?? "", async () => {
         // it may have moved on while it was queued
-        if (
-          message.system.status !== "rolling" ||
-          rollingHere.has(message.id ?? "")
-        ) {
-          return [];
-        }
-        await message.update({ system: { status: "requested" } });
+        if (!isInterruptedRoll(message)) return [];
+        await message.update({
+          system: { status: "requested", rollingUserId: null },
+        });
         return [message];
       }),
     ),
