@@ -21,10 +21,13 @@ import type { EditAbilityTestArgs } from "../types";
 export function installAbilityTestRequestHandler() {
   Hooks.once("ready", () => {
     // a test whose roll was interrupted goes back to waiting, and the GM is
-    // asked again: when the GM's page loads, or when another user (perhaps
-    // the GM who was rolling it) leaves
+    // asked again: when a page loads (so a player who reloads mid-roll, with
+    // no GM around, gets theirs back), or when another user (perhaps the one
+    // who was rolling it) leaves
     const recover = async () => {
-      for (const message of await recoverInterruptedRolls()) {
+      const recovered = await recoverInterruptedRolls();
+      if (!game.user?.isActiveGM) return;
+      for (const message of recovered) {
         askForDifficulty(message);
       }
     };

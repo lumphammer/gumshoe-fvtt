@@ -11,6 +11,7 @@ import {
   setSettings,
   test,
   updateAbility,
+  waitForGameReady,
 } from "./foundry.ts";
 import { stabilityRulesOn } from "./stabilitySettings.ts";
 
@@ -446,4 +447,51 @@ test("a test left rolling by a GM who went away goes back to waiting", async ({
   await expect(dialog).toBeVisible();
   await dialog.getByRole("button", { name: "Cancel test" }).click();
   await expect(playerCard.getByTestId("test-cancelled")).toBeVisible();
+});
+
+test("a player who reloads while rolling with no GM gets their test back", async ({
+  page,
+  joinAs,
+}) => {
+  await setSettings(page, {
+    hideTestDifficulty: false,
+    defaultTestDifficulty: null,
+  });
+  const { player, sheet } = await setUpPlayerTest(page, joinAs, "Reloader");
+  await sheet.getByRole("button", { name: "Test", exact: true }).click();
+  await expect(
+    lastChatMessage(player).getByTestId("test-requested"),
+  ).toBeVisible();
+  const playerId = await player.evaluate(() => game.user.id);
+
+  // the GM's client stands back, as if no GM were here
+  await page.evaluate(() => {
+    Object.defineProperty(game.user, "isActiveGM", {
+      get: () => false,
+      configurable: true,
+    });
+  });
+  try {
+    // the player's page was rolling it
+    await page.evaluate(async (playerId) => {
+      await game.messages.contents.at(-1)!.update({
+        system: { status: "rolling", rollingUserId: playerId },
+      });
+    }, playerId);
+    await expect(
+      lastChatMessage(player).getByTestId("test-rolling"),
+    ).toBeVisible();
+    await player.reload();
+    await waitForGameReady(player);
+
+    const playerCard = lastChatMessage(player);
+    await expect(playerCard.getByTestId("test-requested")).toBeVisible();
+    await expect(
+      playerCard.getByRole("button", { name: "Cancel test" }),
+    ).toBeEnabled();
+  } finally {
+    await page.evaluate(() => {
+      delete (game.user as { isActiveGM?: boolean }).isActiveGM;
+    });
+  }
 });

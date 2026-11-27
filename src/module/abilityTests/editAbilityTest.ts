@@ -180,15 +180,20 @@ async function performAbilityTestEditNow(
 const runExclusive = createKeyedQueue();
 
 /**
- * Put tests whose roll was interrupted (the GM's page closed while the dice
- * rolled) back to waiting, so they can be rolled again or withdrawn. For the
- * active GM's client. Returns the tests it put back.
+ * Put tests whose roll was interrupted (the page rolling them closed while the
+ * dice rolled) back to waiting, so they can be rolled again or withdrawn. The
+ * active GM's client does it for everyone; anyone else, for their own rolls
+ * (a player rolling with no GM around, who reloaded). Returns the tests it
+ * put back.
  */
 export async function recoverInterruptedRolls(): Promise<AbilityTestMessage[]> {
   assertGame(game);
-  if (!game.user.isActiveGM) return [];
+  const { user } = game;
   const interrupted = game.messages.contents.flatMap((message) =>
-    isAbilityTestMessage(message) && isInterruptedRoll(message)
+    isAbilityTestMessage(message) &&
+    (user.isActiveGM ||
+      (message.system.rollingUserId === user.id && message.isOwner)) &&
+    isInterruptedRoll(message)
       ? [message]
       : [],
   );
