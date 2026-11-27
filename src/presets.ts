@@ -1,7 +1,6 @@
 import type { PresetV1 } from "@lumphammer/investigator-fvtt-types";
 
 import { npcPackName, packNames, systemId } from "./constants";
-import { standardDifficulty } from "./module/abilityTests/outcome";
 
 /**
  * The value of every preset-controlled setting before any preset is applied.
@@ -31,7 +30,7 @@ export const defaultSettings: Required<PresetV1> = {
   newNPCPacks: [`${systemId}.${npcPackName}`],
   useBoost: false,
   hideTestDifficulty: false,
-  defaultTestDifficulty: standardDifficulty,
+  defaultTestDifficulty: null,
   useMwStyleAbilities: false,
   mwUseAlternativeItemTypes: false,
   useMwInjuryStatus: false,
@@ -126,7 +125,6 @@ export const defaultSettings: Required<PresetV1> = {
 export const pathOfCthulhuPreset: Required<PresetV1> = {
   ...defaultSettings,
   displayName: "Trail of Cthulhu (built-in)",
-  defaultTestDifficulty: null,
   hideTestDifficulty: true,
   newNPCPacks: [`${systemId}.${packNames.pathOfCthulhuNPCAbilities}`],
   useWoundStatusEffects: true,
@@ -489,7 +487,6 @@ export const mutantCityBluesPreset: PresetV1 = {
 export const fallOfDeltaGreenPreset: PresetV1 = {
   schemaVersion: "v1",
   displayName: "Fall of DELTA GREEN (built-in)",
-  defaultTestDifficulty: null,
   hideTestDifficulty: true,
   defaultThemeName: "deltaGroovyTheme",
   investigativeAbilityCategories: ["Academic", "Interpersonal", "Technical"],
