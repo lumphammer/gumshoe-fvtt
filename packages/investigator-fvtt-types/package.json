@@ -1,6 +1,6 @@
 {
   "name": "@lumphammer/investigator-fvtt-types",
-  "version": "1.15.0-alpha.0",
+  "version": "1.16.0",
   "description": "TypeScript types for themes and presets for INVESTIGATOR for Foundry VTT",
   "keywords": [],
   "homepage": "https://github.com/lumphammer/gumshoe-fvtt/tree/main/packages/investigator-fvtt-types",
