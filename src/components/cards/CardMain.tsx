@@ -41,7 +41,7 @@ export const CardMain = ({ item }: { item: CardItem }) => {
           </ArrowLink>
         </GridField>
         <GridField label="Item Name">
-          <AsyncTextInput value={view.name} onChange={item.setName} />
+          <AsyncTextInput value={view.name} onChange={item.setName} required />
         </GridField>
         <GridField label="Supertitle">
           <AsyncTextInput

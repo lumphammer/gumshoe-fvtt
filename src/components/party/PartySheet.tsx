@@ -112,6 +112,7 @@ const PartySheetBody = ({ party }: { party: PartyActor }) => {
               className={css({ flex: "[1]" })}
               value={header.name}
               onChange={party.setName}
+              required
             />
             {/* Fall of DELTA GREEN: the GM calls a crisis for those present */}
             {bondsOn && isGM && (

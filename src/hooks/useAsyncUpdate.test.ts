@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import { expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { inputThrottleTime } from "../constants";
 import { useAsyncUpdate } from "./useAsyncUpdate";
@@ -112,4 +112,103 @@ it("saves each change with the callback it was made with", async () => {
   });
   expect(saved).toEqual(["a:one", "a:two"]);
   vi.useRealTimers();
+});
+
+describe("required", () => {
+  /** a stored value which follows its saves, like a document */
+  const setup = (initial: string) => {
+    vi.useFakeTimers();
+    let stored = initial;
+    const save = vi.fn((value: string) => {
+      stored = value;
+    });
+    const hook = renderHook(() =>
+      useAsyncUpdate(stored, save, { required: true }),
+    );
+    const type = async (value: string) => {
+      act(() => hook.result.current.onChange(value));
+      await act(() => vi.advanceTimersByTimeAsync(inputThrottleTime));
+      hook.rerender();
+    };
+    return { hook, save, type, stored: () => stored };
+  };
+
+  it("shows blank text but never saves it", async () => {
+    const { hook, save, type } = setup("Jo");
+    act(() => hook.result.current.onFocus());
+    await type("J");
+    await type("");
+    await type("  ");
+    expect(hook.result.current.display).toEqual("  ");
+    expect(save.mock.calls).toEqual([["J"]]);
+    vi.useRealTimers();
+  });
+
+  it("goes back to the value from the start of the edit if left blank", async () => {
+    const { hook, save, type, stored } = setup("Jo");
+    act(() => hook.result.current.onFocus());
+    await type("J");
+    await type("");
+    act(() => hook.result.current.onBlur());
+    hook.rerender();
+    expect(hook.result.current.display).toEqual("Jo");
+    expect(save).toHaveBeenLastCalledWith("Jo");
+    expect(stored()).toEqual("Jo");
+    vi.useRealTimers();
+  });
+
+  it("saves the start value after a part-deleted one still waiting", () => {
+    const { hook, save } = setup("Jo");
+    act(() => hook.result.current.onFocus());
+    act(() => hook.result.current.onChange("J"));
+    act(() => hook.result.current.onChange(""));
+    act(() => hook.result.current.onBlur());
+    expect(save.mock.calls).toEqual([["Jo"]]);
+    vi.useRealTimers();
+  });
+
+  it("saves a new value typed after clearing", async () => {
+    const { hook, save, type, stored } = setup("Jo");
+    act(() => hook.result.current.onFocus());
+    await type("");
+    await type("Al");
+    act(() => hook.result.current.onBlur());
+    hook.rerender();
+    expect(hook.result.current.display).toEqual("Al");
+    expect(save.mock.calls).toEqual([["Al"]]);
+    expect(stored()).toEqual("Al");
+    vi.useRealTimers();
+  });
+
+  it("puts a contentEditable's text back", () => {
+    const { hook } = setup("Jo");
+    const element = document.createElement("div");
+    hook.result.current.contentEditableRef.current = element;
+    act(() => hook.result.current.onFocus());
+    element.textContent = "";
+    act(() => hook.result.current.onChange(""));
+    act(() => hook.result.current.onBlur());
+    expect(element.textContent).toEqual("Jo");
+    vi.useRealTimers();
+  });
+
+  it("goes back on unmount if left blank", () => {
+    const { hook, save } = setup("Jo");
+    act(() => hook.result.current.onFocus());
+    act(() => hook.result.current.onChange(""));
+    hook.unmount();
+    expect(save.mock.calls).toEqual([["Jo"]]);
+    vi.useRealTimers();
+  });
+
+  it("saves blank text when not required", () => {
+    vi.useFakeTimers();
+    const save = vi.fn();
+    const { result } = renderHook(() => useAsyncUpdate("Jo", save));
+    act(() => result.current.onFocus());
+    act(() => result.current.onChange(""));
+    act(() => result.current.onBlur());
+    expect(save.mock.calls).toEqual([[""]]);
+    vi.useRealTimers();
+  });
 });

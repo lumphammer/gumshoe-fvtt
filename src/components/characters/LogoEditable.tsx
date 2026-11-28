@@ -256,7 +256,8 @@ export const LogoEditable = ({
 }: LogoEditableProps) => {
   const classes = logo();
 
-  // all the editing logic is done in the hook
+  // all the editing logic is done in the hook. It's a name, which can't be
+  // blank
   const {
     onInput: onInputText,
     onKeyDown: onKeyDownText,
@@ -265,7 +266,7 @@ export const LogoEditable = ({
     onBlur: onBlurText,
     contentEditableRef: contentEditableRefText,
     display: displayText,
-  } = useAsyncUpdate(mainText, onChangeMainText);
+  } = useAsyncUpdate(mainText, onChangeMainText, { required: true });
   const isEditable = useIsEditable();
 
   const hasSubtext = subText !== undefined;

@@ -53,6 +53,19 @@ const saveTimeout = 10_000;
 
 type Save = (newValue: string) => void | PromiseLike<unknown>;
 
+type UseAsyncUpdateOptions = {
+  /**
+   * The value can't be blank (e.g. a document's name, which Foundry refuses
+   * to save empty). Blank text is shown but never saved, so the field can be
+   * cleared to type something else; if it's still blank when the edit ends,
+   * it goes back to (and saves) what it was when the edit began, rather than
+   * whatever part-deleted text was last saved on the way.
+   */
+  required?: boolean;
+};
+
+const isBlank = (text: string) => text.trim() === "";
+
 /**
  * Throttles saves (see `throttle`), sends them one at a time, and keeps track
  * of whether any are still to do.
@@ -138,17 +151,35 @@ const createThrottledSaver = (period: number, onIdle: () => void) => {
  * changes (+ adds to what's shown). Once everything's saved, it shows `value`
  * again, so a save the server clamped or refused shows what was stored.
  */
-export const useAsyncUpdate = (value: string, onChangeOrig: Save) => {
+export const useAsyncUpdate = (
+  value: string,
+  onChangeOrig: Save,
+  { required = false }: UseAsyncUpdateOptions = {},
+) => {
   // the text we show, updated straight away
-  const [display, setDisplay] = useState(value || "");
+  const [display, setDisplayState] = useState(value || "");
+  // the same, readable from callbacks without depending on it
+  const displayRef = useRef(display);
+  const setDisplay = useCallback((text: string) => {
+    displayRef.current = text;
+    setDisplayState(text);
+  }, []);
   // while focused, incoming values never replace what's being typed
   const focusedRef = useRef(false);
+  // what was shown when the current edit began (for `required`)
+  const editStartRef = useRef<string | null>(null);
+  // the latest save function, for ending an edit from a cleanup
+  const saveRef = useRef(onChangeOrig);
+  useEffect(() => {
+    saveRef.current = onChangeOrig;
+  }, [onChangeOrig]);
   // bumped when the saves are all done, to show `value` again
   const [settledCount, setSettledCount] = useState(0);
 
   // callback for focus
   const onFocus = useCallback(() => {
     focusedRef.current = true;
+    editStartRef.current = displayRef.current;
   }, []);
 
   // we only fire the update event every so often to avoid spamming the
@@ -160,26 +191,57 @@ export const useAsyncUpdate = (value: string, onChangeOrig: Save) => {
     }),
   );
 
-  // callback for blur. Save any change that's waiting, so it's in before
-  // whatever took the focus (e.g. a Save button) acts
+  // stuff for handling content-editable - first, a ref to attach to the element
+  const contentEditableRef = useRef<HTMLDivElement | null>(null);
+
+  // end the edit: if it's been left blank and can't be, put back what was
+  // there when it began, and save that (after anything already waiting, which
+  // may be part-deleted text). Then save any change that's waiting, so it's in
+  // before whatever took the focus (e.g. a Save button) acts
+  const endEdit = useCallback(
+    (save: Save) => {
+      const start = editStartRef.current;
+      editStartRef.current = null;
+      if (required && isBlank(displayRef.current)) {
+        const restored = start !== null && !isBlank(start) ? start : value;
+        if (!isBlank(restored)) {
+          setDisplay(restored);
+          if (contentEditableRef.current) {
+            contentEditableRef.current.textContent = restored;
+          }
+          saver.save(restored, save);
+        }
+      }
+      saver.flush();
+    },
+    [required, value, saver, setDisplay],
+  );
+  const endEditRef = useRef(endEdit);
+  useEffect(() => {
+    endEditRef.current = endEdit;
+  }, [endEdit]);
+
+  // callback for blur
   const onBlur = useCallback(() => {
     focusedRef.current = false;
-    saver.flush();
-  }, [saver]);
+    endEdit(onChangeOrig);
+  }, [endEdit, onChangeOrig]);
 
   // and don't lose a waiting change when the input goes away
-  useEffect(() => () => saver.flush(), [saver]);
+  useEffect(() => () => endEditRef.current(saveRef.current), []);
 
   const onChange = useCallback(
     (value: string) => {
+      if (editStartRef.current === null) {
+        editStartRef.current = displayRef.current;
+      }
       setDisplay(value);
+      // blank isn't saved, if it can't be: the edit isn't over yet
+      if (required && isBlank(value)) return;
       saver.save(value, onChangeOrig);
     },
-    [saver, onChangeOrig],
+    [saver, onChangeOrig, required, setDisplay],
   );
-
-  // stuff for handling content-editable - first, a ref to attach to the element
-  const contentEditableRef = useRef<HTMLDivElement | null>(null);
 
   // a callback for when edits happen. Use textContent, not innerText:
   // innerText is the rendered text, so it picks up any CSS text-transform
@@ -228,6 +290,8 @@ export const useAsyncUpdate = (value: string, onChangeOrig: Save) => {
   // something of ours is still on its way (see above)
   useEffect(() => {
     if (focusedRef.current || saver.isBusy()) return;
+    // a change made without focus (e.g. in tests) has ended when it's settled
+    editStartRef.current = null;
     setDisplay(value);
     if (
       contentEditableRef.current &&
