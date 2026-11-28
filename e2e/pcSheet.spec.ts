@@ -428,3 +428,34 @@ test("with no occupation and a blank generic one, the title says what it's for",
     sheet.getByRole("button", { name: "Occupation: Occupation" }),
   ).toHaveText("Occupation");
 });
+
+test("pressing a stat badge opens its editor, and pressing another moves to it", async ({
+  page,
+}) => {
+  await setSettings(page, {
+    pcStats: {
+      sanity: { name: "Sanity", default: 10 },
+      stability: { name: "Stability", default: 7 },
+    },
+  });
+  const actorId = await createActor(page, { name: "Clicky", type: "pc" });
+  const sheet = await openSheet(page, `Actor.${actorId}`);
+  // the press's own focusing came after the editor focused its input, and
+  // blurred it, closing the editor
+  await sheet.getByRole("button", { name: "Sanity 10" }).click();
+  const sanity = sheet
+    .locator("[class*=inv-badge]")
+    .getByRole("spinbutton", { name: "Sanity" });
+  await expect(sanity).toBeFocused();
+  // the next badge opens on the press, before the row shifts under the
+  // release, and closing the first editor doesn't take its focus
+  const stability = sheet
+    .locator("[class*=inv-badge]")
+    .getByRole("spinbutton", { name: "Stability" });
+  await sheet.getByRole("button", { name: "Stability 7" }).hover();
+  await page.mouse.down();
+  await expect(stability).toBeFocused();
+  await expect(sanity).toHaveCount(0);
+  await page.mouse.up();
+  await expect(stability).toBeFocused();
+});
