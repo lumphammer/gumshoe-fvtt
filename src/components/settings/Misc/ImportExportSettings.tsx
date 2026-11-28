@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 
+import { settingsExportSchemaUrl } from "../../../constants";
 import { confirmADoodleDo } from "../../../functions/confirmADoodleDo";
 import { saveAsJsonFile } from "../../../functions/saveFile";
 import { getUserFile } from "../../../functions/utilities";
@@ -39,7 +40,10 @@ export const ImportExportSettings = () => {
 
   const handleExport = () => {
     const exportableSettings = getExportableSettingsDict(settingsState);
-    saveAsJsonFile(exportableSettings, filename);
+    saveAsJsonFile(
+      { $schema: settingsExportSchemaUrl, ...exportableSettings },
+      filename,
+    );
     ui.notifications?.info("Settings exported to file");
   };
 

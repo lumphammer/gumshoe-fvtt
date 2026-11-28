@@ -53,6 +53,15 @@ describe("validateThemeV2", () => {
     ]);
   });
 
+  test("a $schema (for editors) is ignored, without a warning", () => {
+    const warnings: string[] = [];
+    validateThemeV2(
+      { ...tealTheme, $schema: "https://example.com/theme.schema.json" },
+      (message) => warnings.push(message),
+    );
+    expect(warnings).toEqual([]);
+  });
+
   test("a font's letter spacing can be 0, as its type allows", () => {
     const theme = {
       ...tealTheme,

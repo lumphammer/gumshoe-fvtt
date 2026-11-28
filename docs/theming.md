@@ -55,6 +55,12 @@ theme, by its `schemaVersion`. One palette per theme: light and dark versions
 of a design are separate themes. There's no `extends`: share code by spreading
 objects.
 
+The types package also has JSON schemas for theme files, so an editor can
+check one and complete its names (the package's README, "JSON schemas"): in
+JSON, `"$schema": "https://cdn.jsdelivr.net/npm/@lumphammer/investigator-fvtt-types@1/schemas/theme.schema.json"`
+(ignored by the system), and in YAML, a first line of
+`# yaml-language-server: $schema=` and the same URL.
+
 ```ts
 defineThemeV2({
   schemaVersion: "v2",

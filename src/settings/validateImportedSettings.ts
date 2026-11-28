@@ -3,9 +3,21 @@ import { fromZodError } from "zod-validation-error/v4";
 import type { SettingsDict } from "./settings";
 import { superValidator } from "./settings";
 
+/**
+ * What a settings file can have that isn't a setting: its `$schema`, for
+ * editors, and a preset's name and version, so a preset's file imports too.
+ */
+const ignoredKeys = ["$schema", "schemaVersion", "displayName"];
+
 export function validateImportedSettings(rawText: string) {
   // if JSON parsing fails, we get an error straight from Node
-  const candidateSettings = JSON.parse(rawText);
+  const parsed = JSON.parse(rawText);
+  const candidateSettings =
+    parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? Object.fromEntries(
+          Object.entries(parsed).filter(([key]) => !ignoredKeys.includes(key)),
+        )
+      : parsed;
 
   // otherwise we try running it through Zod
   try {

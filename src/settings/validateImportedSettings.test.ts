@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
 
+import { settingsExportSchemaUrl } from "../constants";
 import ashenStarsExport from "./test_data/ashen_stars_export.json";
 import { validateImportedSettings } from "./validateImportedSettings";
 
@@ -124,6 +125,32 @@ it("should reject duplicate trauma type ids", () => {
   };
   expect(() =>
     validateImportedSettings(JSON.stringify({ traumaTypes: [type, type] })),
+  ).toThrow();
+});
+
+it("should ignore a $schema, and a preset's name and version", () => {
+  expect(
+    validateImportedSettings(
+      JSON.stringify({
+        $schema: "https://example.com/settings-export-v1.schema.json",
+        schemaVersion: "v1",
+        displayName: "My preset",
+        useBoost: true,
+      }),
+    ),
+  ).toEqual({ useBoost: true });
+});
+
+it("should import an export, with its $schema", () => {
+  const exported = { $schema: settingsExportSchemaUrl, ...ashenStarsExport };
+  expect(validateImportedSettings(JSON.stringify(exported))).toEqual(
+    ashenStarsExport,
+  );
+});
+
+it("should still reject an unknown key", () => {
+  expect(() =>
+    validateImportedSettings(JSON.stringify({ useBoots: true })),
   ).toThrow();
 });
 

@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cdn.jsdelivr.net/npm/@lumphammer/investigator-fvtt-types@1/schemas/theme.schema.json",
+  "title": "INVESTIGATOR theme",
+  "description": "A theme for INVESTIGATOR, V1 or V2 (by its `schemaVersion`), for the custom themes folder or `CONFIG.Investigator.installTheme`.",
+  "type": "object",
+  "required": ["schemaVersion"],
+  "properties": {
+    "schemaVersion": {
+      "enum": ["v1", "v2"]
+    }
+  },
+  "if": {
+    "required": ["schemaVersion"],
+    "properties": {
+      "schemaVersion": {
+        "const": "v1"
+      }
+    }
+  },
+  "then": {
+    "$ref": "theme-v1.schema.json"
+  },
+  "else": {
+    "$ref": "theme-v2.schema.json"
+  }
+}

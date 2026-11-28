@@ -1,0 +1,3222 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cdn.jsdelivr.net/npm/@lumphammer/investigator-fvtt-types@1/schemas/theme-v2.schema.json",
+  "title": "INVESTIGATOR theme (V2)",
+  "type": "object",
+  "required": ["schemaVersion", "displayName", "palette"],
+  "additionalProperties": false,
+  "description": "A theme for INVESTIGATOR, for the custom themes folder or `CONFIG.Investigator.installTheme`.",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "The schema for this file, so an editor can check it: ignored by INVESTIGATOR."
+    },
+    "schemaVersion": {
+      "type": "string",
+      "const": "v2"
+    },
+    "displayName": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "palette": {
+      "$ref": "#/definitions/ThemePalette"
+    },
+    "fonts": {
+      "$ref": "#/definitions/ThemeFonts",
+      "description": "The theme's type: its typefaces, and the size of body text."
+    },
+    "catalogue": {
+      "$ref": "#/definitions/ThemeCatalogue",
+      "description": "Overrides of the catalogue's recipes."
+    },
+    "layout": {
+      "type": "string",
+      "enum": ["standard", "full-frame"],
+      "description": "How the character sheets are laid out. `\"standard\"` (the default) has Foundry's titlebar over the sheet. `\"full-frame\"` runs the sheet up to the window's top edge, under a see-through titlebar: a strip across the top, still the titlebar (it drags the window, and a double click on it minimizes it), with its buttons in a row at the right, a faint tint on hover, and no title. The logo runs up under it, but its text keeps below it, scaled down to fit. The portrait and the sidebar move to the left. The title shows only when the window is minimized. Windows without a logo (items, say) keep the standard titlebar. The titlebar's look is the `appFrame` recipe's `layout: full-frame` variant."
+    },
+    "globalCss": {
+      "type": "string",
+      "description": "Raw CSS, in the themed root, unscoped: an escape hatch for what the catalogue can't express (and for loading a folder theme's fonts). Not supported: it can break as the markup changes."
+    }
+  },
+  "definitions": {
+    "ThemePalette": {
+      "type": "object",
+      "properties": {
+        "polarity": {
+          "type": "string",
+          "enum": ["light", "dark"],
+          "description": "Whether the theme is light or dark. Sets `color-scheme`."
+        },
+        "wallpaper": {
+          "type": "string",
+          "description": "The colour the sheet's backdrop averages to, shown while images load."
+        },
+        "surface": {
+          "type": "string",
+          "description": "What content sits on."
+        },
+        "surfaceNested": {
+          "type": "string",
+          "description": "What content inside content sits on."
+        },
+        "control": {
+          "type": "string",
+          "description": "The fill of controls: buttons, toggle tracks."
+        },
+        "text": {
+          "type": "string",
+          "description": "The default ink. Legible on `surface`, `surfaceNested` and `control`."
+        },
+        "accent": {
+          "type": "string",
+          "description": "\"Selected\" or \"call to action\". Not for \"clickable\"."
+        },
+        "line": {
+          "type": "string",
+          "description": "Structural lines: control outlines, separators, heading rules."
+        },
+        "feedback": {
+          "type": "string",
+          "description": "The colour of hover, focus and drag-over feedback."
+        },
+        "danger": {
+          "type": "string",
+          "description": "Something bad or destructive. Legible as text on surfaces."
+        },
+        "warning": {
+          "type": "string",
+          "description": "Something that needs attention, less serious than `danger`."
+        },
+        "success": {
+          "type": "string",
+          "description": "Something that went well."
+        },
+        "info": {
+          "type": "string",
+          "description": "Neutral information."
+        },
+        "surfaceSolid": {
+          "type": "string",
+          "description": "`surface` for things that overlap or scroll over other content (menus, sticky headers, cards). Only a theme whose `surface` is translucent needs to set it, to an opaque colour. Default: `surface`."
+        },
+        "surfaceNestedSolid": {
+          "type": "string",
+          "description": "`surfaceNested`, in the same way. Default: `surfaceNested`."
+        },
+        "textMuted": {
+          "type": "string",
+          "description": "Ink for secondary information. Default: `text`, faded towards `surfaceSolid`."
+        },
+        "link": {
+          "type": "string",
+          "description": "Ink for links within prose. Default: `accent`."
+        },
+        "onAccent": {
+          "type": "string",
+          "description": "Ink on an `accent` fill. Default: black or white, by contrast."
+        },
+        "onDanger": {
+          "type": "string",
+          "description": "Ink on a `danger` fill. Default: black or white, by contrast."
+        },
+        "onWarning": {
+          "type": "string",
+          "description": "Ink on a `warning` fill. Default: black or white, by contrast."
+        },
+        "onSuccess": {
+          "type": "string",
+          "description": "Ink on a `success` fill. Default: black or white, by contrast."
+        },
+        "onInfo": {
+          "type": "string",
+          "description": "Ink on an `info` fill. Default: black or white, by contrast."
+        },
+        "radius": {
+          "type": "string",
+          "description": "The corner radius of boxes and controls. Default: `0.25em`."
+        },
+        "elevation": {
+          "type": "string",
+          "description": "The shadow of anything floating. Default: `0 0 0.5em black`."
+        },
+        "cardGap": {
+          "type": "string",
+          "description": "The spacing between cards, as a CSS `gap` value (a row gap, then a column gap, or one for both), and around a card array. Default: `0.5em`."
+        }
+      },
+      "required": [
+        "polarity",
+        "wallpaper",
+        "surface",
+        "surfaceNested",
+        "control",
+        "text",
+        "accent",
+        "line",
+        "feedback",
+        "danger",
+        "warning",
+        "success",
+        "info"
+      ],
+      "additionalProperties": false,
+      "description": "A theme's palette: the values the catalogue is built from, each with one meaning (docs/theming.md, \"Palette\"). The core is required; the rest is worked out from it unless the theme sets it."
+    },
+    "ThemeFonts": {
+      "type": "object",
+      "properties": {
+        "baseSize": {
+          "type": "string",
+          "description": "The size of the sheet's body text, which everything else is relative to, e.g. `\"16px\"`. Default: `1em` (the window's)."
+        },
+        "body": {
+          "$ref": "#/definitions/ThemeFont",
+          "description": "The `body` text style: prose and controls."
+        },
+        "display": {
+          "$ref": "#/definitions/ThemeFont",
+          "description": "The `display` text style: titles, headings, tabs, labels, buttons."
+        }
+      },
+      "additionalProperties": false,
+      "description": "A theme's type (docs/theming.md, \"Fonts\")."
+    },
+    "ThemeFont": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "$ref": "#/definitions/Property.FontFamily",
+          "description": "`font-family`, e.g. `\"'Saira', sans-serif\"`."
+        },
+        "weight": {
+          "$ref": "#/definitions/Property.FontWeight",
+          "description": "`font-weight`, e.g. `600` or `\"bold\"`. Default: `normal`."
+        },
+        "stretch": {
+          "$ref": "#/definitions/Property.FontStretch",
+          "description": "`font-stretch`, e.g. `\"condensed\"`. Default: `normal`."
+        },
+        "style": {
+          "$ref": "#/definitions/Property.FontStyle",
+          "description": "`font-style`, e.g. `\"italic\"`. Default: `normal`."
+        },
+        "caps": {
+          "$ref": "#/definitions/Property.FontVariantCaps",
+          "description": "`font-variant-caps`, e.g. `\"small-caps\"`. Default: `normal`."
+        },
+        "case": {
+          "$ref": "#/definitions/Property.TextTransform",
+          "description": "`text-transform`, e.g. `\"uppercase\"`. Default: `none`."
+        },
+        "letterSpacing": {
+          "$ref": "#/definitions/Property.LetterSpacing",
+          "description": "`letter-spacing`, e.g. `\"0.05em\"`. Default: `normal`."
+        },
+        "lineHeight": {
+          "$ref": "#/definitions/Property.LineHeight",
+          "description": "`line-height`, e.g. `1.2`. Default: `normal`."
+        },
+        "scale": {
+          "type": "number",
+          "description": "A correction for how big the typeface looks, multiplying every size the style is set at: a face that looks small at a given size (a condensed one, small caps) wants more than 1. Not a size: the catalogue says how big each kind of text is. Default: `1`."
+        }
+      },
+      "additionalProperties": false,
+      "description": "A text style's typeface, and how it's set. Every field is optional: what's left out is the window's for `body`, and `body`'s for `display` (except `scale`)."
+    },
+    "Property.FontFamily": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Globals"
+        },
+        {
+          "$ref": "#/definitions/DataType.GenericFamily"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "Globals": {
+      "type": "string",
+      "enum": ["-moz-initial", "inherit", "initial", "revert", "revert-layer", "unset"]
+    },
+    "DataType.GenericFamily": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/DataType.GenericComplete"
+        },
+        {
+          "$ref": "#/definitions/DataType.GenericIncomplete"
+        },
+        {
+          "type": "string",
+          "const": "emoji"
+        },
+        {
+          "type": "string",
+          "const": "fangsong"
+        }
+      ]
+    },
+    "DataType.GenericComplete": {
+      "type": "string",
+      "enum": [
+        "-apple-system",
+        "cursive",
+        "fantasy",
+        "math",
+        "monospace",
+        "sans-serif",
+        "serif",
+        "system-ui"
+      ]
+    },
+    "DataType.GenericIncomplete": {
+      "type": "string",
+      "enum": ["ui-monospace", "ui-rounded", "ui-sans-serif", "ui-serif"]
+    },
+    "Property.FontWeight": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Globals"
+        },
+        {
+          "$ref": "#/definitions/DataType.FontWeightAbsolute"
+        },
+        {
+          "type": "string",
+          "const": "bolder"
+        },
+        {
+          "type": "string",
+          "const": "lighter"
+        }
+      ]
+    },
+    "DataType.FontWeightAbsolute": {
+      "anyOf": [
+        {
+          "type": "string",
+          "const": "bold"
+        },
+        {
+          "type": "string",
+          "const": "normal"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "Property.FontStretch": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Globals"
+        },
+        {
+          "$ref": "#/definitions/DataType.FontStretchAbsolute"
+        }
+      ]
+    },
+    "DataType.FontStretchAbsolute": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "string",
+          "enum": [
+            "condensed",
+            "expanded",
+            "extra-condensed",
+            "extra-expanded",
+            "normal",
+            "semi-condensed",
+            "semi-expanded",
+            "ultra-condensed",
+            "ultra-expanded"
+          ]
+        }
+      ]
+    },
+    "Property.FontStyle": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Globals"
+        },
+        {
+          "type": "string",
+          "const": "italic"
+        },
+        {
+          "type": "string",
+          "const": "normal"
+        },
+        {
+          "type": "string",
+          "const": "oblique"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "Property.FontVariantCaps": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Globals"
+        },
+        {
+          "type": "string",
+          "const": "all-petite-caps"
+        },
+        {
+          "type": "string",
+          "const": "all-small-caps"
+        },
+        {
+          "type": "string",
+          "const": "normal"
+        },
+        {
+          "type": "string",
+          "const": "petite-caps"
+        },
+        {
+          "type": "string",
+          "const": "small-caps"
+        },
+        {
+          "type": "string",
+          "const": "titling-caps"
+        },
+        {
+          "type": "string",
+          "const": "unicase"
+        }
+      ]
+    },
+    "Property.TextTransform": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Globals"
+        },
+        {
+          "type": "string",
+          "const": "capitalize"
+        },
+        {
+          "type": "string",
+          "const": "full-size-kana"
+        },
+        {
+          "type": "string",
+          "const": "full-width"
+        },
+        {
+          "type": "string",
+          "const": "lowercase"
+        },
+        {
+          "type": "string",
+          "const": "math-auto"
+        },
+        {
+          "type": "string",
+          "const": "none"
+        },
+        {
+          "type": "string",
+          "const": "uppercase"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "Property.LetterSpacing": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Globals"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "number",
+          "const": 0
+        },
+        {
+          "type": "string",
+          "const": "normal"
+        }
+      ]
+    },
+    "Property.LineHeight": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Globals"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "number",
+          "const": 0
+        },
+        {
+          "type": "string",
+          "const": "normal"
+        },
+        {
+          "type": "number"
+        }
+      ]
+    },
+    "ThemeCatalogue": {
+      "type": "object",
+      "properties": {
+        "states": {
+          "type": "object",
+          "properties": {
+            "hoverFeedback": {
+              "$ref": "#/definitions/ThemeStyle"
+            },
+            "dropTarget": {
+              "$ref": "#/definitions/ThemeStyle"
+            },
+            "focusRing": {
+              "$ref": "#/definitions/ThemeStyle"
+            }
+          },
+          "additionalProperties": false
+        },
+        "appFrame": {
+          "$ref": "#/definitions/AppFrameOverride"
+        },
+        "badge": {
+          "$ref": "#/definitions/BadgeOverride"
+        },
+        "button": {
+          "$ref": "#/definitions/ButtonOverride"
+        },
+        "callout": {
+          "$ref": "#/definitions/CalloutOverride"
+        },
+        "card": {
+          "$ref": "#/definitions/CardOverride"
+        },
+        "checkbox": {
+          "$ref": "#/definitions/CheckboxOverride"
+        },
+        "columnRule": {
+          "$ref": "#/definitions/ColumnRuleOverride"
+        },
+        "displayText": {
+          "$ref": "#/definitions/DisplayTextOverride"
+        },
+        "dragHandle": {
+          "$ref": "#/definitions/DragHandleOverride"
+        },
+        "emptyState": {
+          "$ref": "#/definitions/EmptyStateOverride"
+        },
+        "fieldGrid": {
+          "$ref": "#/definitions/FieldGridOverride"
+        },
+        "floating": {
+          "$ref": "#/definitions/FloatingOverride"
+        },
+        "input": {
+          "$ref": "#/definitions/InputOverride"
+        },
+        "logo": {
+          "$ref": "#/definitions/LogoOverride"
+        },
+        "mutedText": {
+          "$ref": "#/definitions/MutedTextOverride"
+        },
+        "outcome": {
+          "$ref": "#/definitions/OutcomeOverride"
+        },
+        "panel": {
+          "$ref": "#/definitions/PanelOverride"
+        },
+        "partyCell": {
+          "$ref": "#/definitions/PartyCellOverride"
+        },
+        "poolPips": {
+          "$ref": "#/definitions/PoolPipsOverride"
+        },
+        "portrait": {
+          "$ref": "#/definitions/PortraitOverride"
+        },
+        "region": {
+          "$ref": "#/definitions/RegionOverride"
+        },
+        "richText": {
+          "$ref": "#/definitions/RichTextOverride"
+        },
+        "row": {
+          "$ref": "#/definitions/RowOverride"
+        },
+        "sectionHeading": {
+          "$ref": "#/definitions/SectionHeadingOverride"
+        },
+        "select": {
+          "$ref": "#/definitions/SelectOverride"
+        },
+        "sheetRoot": {
+          "$ref": "#/definitions/SheetRootOverride"
+        },
+        "surface": {
+          "$ref": "#/definitions/SurfaceOverride"
+        },
+        "tableHeader": {
+          "$ref": "#/definitions/TableHeaderOverride"
+        },
+        "tabs": {
+          "$ref": "#/definitions/TabsOverride"
+        },
+        "toggle": {
+          "$ref": "#/definitions/ToggleOverride"
+        }
+      },
+      "additionalProperties": false,
+      "description": "A theme's overrides of the catalogue's recipes, by recipe name, and of the state layers everywhere in the theme (`states`), which they **patch**: `&` is anything in that state. A state's default can't be beaten from a recipe's `base` or `variants` (the states come after them), only here, or in a recipe's own `states`. The element states (pressed, disabled...) are only a recipe's, not the theme's."
+    },
+    "ThemeStyle": {
+      "type": "object",
+      "additionalProperties": {},
+      "description": "A style in a theme's override: CSS properties in camelCase (a number is pixels, for properties that take a length; an array is fallbacks), custom properties, and nested rules keyed by a selector that contains `&` (`&:hover`, `&[data-selected]`) or an at-rule (`@media ...`), as in CSS nesting.\n\nValues are CSS. A palette entry is its custom property (`PaletteVar`): `color: \"var(--inv-accent)\"`."
+    },
+    "AppFrameOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/AppFrameParts"
+        },
+        "states": {
+          "$ref": "#/definitions/AppFrameStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "layout": {
+              "type": "object",
+              "properties": {
+                "standard": {
+                  "$ref": "#/definitions/AppFrameVariant"
+                },
+                "full-frame": {
+                  "$ref": "#/definitions/AppFrameVariant"
+                }
+              },
+              "additionalProperties": false
+            },
+            "sheet": {
+              "type": "object",
+              "properties": {
+                "character": {
+                  "$ref": "#/definitions/AppFrameVariant"
+                },
+                "item": {
+                  "$ref": "#/definitions/AppFrameVariant"
+                },
+                "freeform": {
+                  "$ref": "#/definitions/AppFrameVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "layout": {
+                "enum": ["standard", "full-frame"]
+              },
+              "sheet": {
+                "enum": ["character", "item", "freeform"]
+              },
+              "css": {
+                "$ref": "#/definitions/AppFrameParts"
+              },
+              "states": {
+                "$ref": "#/definitions/AppFrameStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["layout"],
+                    "properties": {
+                      "layout": {
+                        "enum": ["standard", "full-frame"]
+                      }
+                    }
+                  },
+                  {
+                    "required": ["sheet"],
+                    "properties": {
+                      "sheet": {
+                        "enum": ["character", "item", "freeform"]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/AppFrameParts"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/AppFrameStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "AppFrameParts": {
+      "type": "object",
+      "properties": {
+        "root": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "header": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "content": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AppFrameStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/AppFrameParts"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/AppFrameParts"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/AppFrameParts"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AppFrameVariant": {
+      "type": "object",
+      "properties": {
+        "root": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "header": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "content": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/AppFrameStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "BadgeOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/BadgeStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "tone": {
+              "type": "object",
+              "properties": {
+                "neutral": {
+                  "$ref": "#/definitions/BadgeVariant"
+                },
+                "danger": {
+                  "$ref": "#/definitions/BadgeVariant"
+                },
+                "warning": {
+                  "$ref": "#/definitions/BadgeVariant"
+                },
+                "success": {
+                  "$ref": "#/definitions/BadgeVariant"
+                },
+                "info": {
+                  "$ref": "#/definitions/BadgeVariant"
+                }
+              },
+              "additionalProperties": false
+            },
+            "weight": {
+              "type": "object",
+              "properties": {
+                "subtle": {
+                  "$ref": "#/definitions/BadgeVariant"
+                },
+                "strong": {
+                  "$ref": "#/definitions/BadgeVariant"
+                }
+              },
+              "additionalProperties": false
+            },
+            "kind": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "$ref": "#/definitions/BadgeVariant"
+                },
+                "tag": {
+                  "$ref": "#/definitions/BadgeVariant"
+                }
+              },
+              "additionalProperties": false
+            },
+            "size": {
+              "type": "object",
+              "properties": {
+                "sm": {
+                  "$ref": "#/definitions/BadgeVariant"
+                },
+                "md": {
+                  "$ref": "#/definitions/BadgeVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tone": {
+                "enum": ["neutral", "danger", "warning", "success", "info"]
+              },
+              "weight": {
+                "enum": ["subtle", "strong"]
+              },
+              "kind": {
+                "enum": ["label", "tag"]
+              },
+              "size": {
+                "enum": ["sm", "md"]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/BadgeStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["tone"],
+                    "properties": {
+                      "tone": {
+                        "enum": ["neutral", "danger", "warning", "success", "info"]
+                      }
+                    }
+                  },
+                  {
+                    "required": ["weight"],
+                    "properties": {
+                      "weight": {
+                        "enum": ["subtle", "strong"]
+                      }
+                    }
+                  },
+                  {
+                    "required": ["kind"],
+                    "properties": {
+                      "kind": {
+                        "enum": ["label", "tag"]
+                      }
+                    }
+                  },
+                  {
+                    "required": ["size"],
+                    "properties": {
+                      "size": {
+                        "enum": ["sm", "md"]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/BadgeStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "BadgeStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "pressed": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "BadgeVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/BadgeStates"
+        }
+      }
+    },
+    "ButtonOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/ButtonStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "object",
+              "properties": {
+                "default": {
+                  "$ref": "#/definitions/ButtonVariant"
+                },
+                "cta": {
+                  "$ref": "#/definitions/ButtonVariant"
+                },
+                "toolbar": {
+                  "$ref": "#/definitions/ButtonVariant"
+                },
+                "ghost": {
+                  "$ref": "#/definitions/ButtonVariant"
+                },
+                "pip": {
+                  "$ref": "#/definitions/ButtonVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": ["default", "cta", "toolbar", "ghost", "pip"]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/ButtonStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["kind"],
+                    "properties": {
+                      "kind": {
+                        "enum": ["default", "cta", "toolbar", "ghost", "pip"]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/ButtonStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ButtonStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "pressed": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "disabled": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ButtonVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/ButtonStates"
+        }
+      }
+    },
+    "CalloutOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/CalloutStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "tone": {
+              "type": "object",
+              "properties": {
+                "neutral": {
+                  "$ref": "#/definitions/CalloutVariant"
+                },
+                "danger": {
+                  "$ref": "#/definitions/CalloutVariant"
+                },
+                "warning": {
+                  "$ref": "#/definitions/CalloutVariant"
+                },
+                "success": {
+                  "$ref": "#/definitions/CalloutVariant"
+                },
+                "info": {
+                  "$ref": "#/definitions/CalloutVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tone": {
+                "enum": ["neutral", "danger", "warning", "success", "info"]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/CalloutStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["tone"],
+                    "properties": {
+                      "tone": {
+                        "enum": ["neutral", "danger", "warning", "success", "info"]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/CalloutStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "CalloutStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CalloutVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/CalloutStates"
+        }
+      }
+    },
+    "CardOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/CardParts"
+        },
+        "states": {
+          "$ref": "#/definitions/CardStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CardParts": {
+      "type": "object",
+      "properties": {
+        "root": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "supertitle": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "title": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "subtitle": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "description": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "effect": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CardStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/CardParts"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/CardParts"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/CardParts"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CheckboxOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/CheckboxParts"
+        },
+        "states": {
+          "$ref": "#/definitions/CheckboxStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CheckboxParts": {
+      "type": "object",
+      "properties": {
+        "box": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "tick": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CheckboxStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/CheckboxParts"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/CheckboxParts"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/CheckboxParts"
+        },
+        "checked": {
+          "$ref": "#/definitions/CheckboxParts"
+        },
+        "disabled": {
+          "$ref": "#/definitions/CheckboxParts"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ColumnRuleOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/ColumnRuleStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ColumnRuleStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DisplayTextOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/DisplayTextStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "size": {
+              "type": "object",
+              "properties": {
+                "sm": {
+                  "$ref": "#/definitions/DisplayTextVariant"
+                },
+                "md": {
+                  "$ref": "#/definitions/DisplayTextVariant"
+                },
+                "lg": {
+                  "$ref": "#/definitions/DisplayTextVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "size": {
+                "enum": ["sm", "md", "lg"]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/DisplayTextStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["size"],
+                    "properties": {
+                      "size": {
+                        "enum": ["sm", "md", "lg"]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/DisplayTextStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "DisplayTextStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DisplayTextVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/DisplayTextStates"
+        }
+      }
+    },
+    "DragHandleOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/DragHandleStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DragHandleStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "EmptyStateOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/EmptyStateStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "EmptyStateStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FieldGridOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/FieldGridParts"
+        },
+        "states": {
+          "$ref": "#/definitions/FieldGridStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "stacked": {
+              "type": "object",
+              "properties": {
+                "true": {
+                  "$ref": "#/definitions/FieldGridVariant"
+                },
+                "false": {
+                  "$ref": "#/definitions/FieldGridVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "stacked": {
+                "enum": ["true", "false", true, false]
+              },
+              "css": {
+                "$ref": "#/definitions/FieldGridParts"
+              },
+              "states": {
+                "$ref": "#/definitions/FieldGridStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["stacked"],
+                    "properties": {
+                      "stacked": {
+                        "enum": ["true", "false", true, false]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/FieldGridParts"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/FieldGridStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "FieldGridParts": {
+      "type": "object",
+      "properties": {
+        "root": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "label": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "control": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FieldGridStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/FieldGridParts"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/FieldGridParts"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/FieldGridParts"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FieldGridVariant": {
+      "type": "object",
+      "properties": {
+        "root": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "label": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "control": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/FieldGridStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FloatingOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/FloatingStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "object",
+              "properties": {
+                "overlay": {
+                  "$ref": "#/definitions/FloatingVariant"
+                },
+                "popover": {
+                  "$ref": "#/definitions/FloatingVariant"
+                },
+                "drawer": {
+                  "$ref": "#/definitions/FloatingVariant"
+                },
+                "bar": {
+                  "$ref": "#/definitions/FloatingVariant"
+                },
+                "chip": {
+                  "$ref": "#/definitions/FloatingVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": ["overlay", "popover", "drawer", "bar", "chip"]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/FloatingStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["kind"],
+                    "properties": {
+                      "kind": {
+                        "enum": ["overlay", "popover", "drawer", "bar", "chip"]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/FloatingStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "FloatingStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FloatingVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/FloatingStates"
+        }
+      }
+    },
+    "InputOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/InputStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "InputStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "invalid": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "disabled": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "LogoOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/LogoParts"
+        },
+        "states": {
+          "$ref": "#/definitions/LogoStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "LogoParts": {
+      "type": "object",
+      "properties": {
+        "root": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "backdrop": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "text": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "front_wrapper": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "front": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "front_sub": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "front_sub_part": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "rear_wrapper": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "rear": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "rear_sub": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "LogoStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/LogoParts"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/LogoParts"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/LogoParts"
+        }
+      },
+      "additionalProperties": false
+    },
+    "MutedTextOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/MutedTextStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "size": {
+              "type": "object",
+              "properties": {
+                "sm": {
+                  "$ref": "#/definitions/MutedTextVariant"
+                },
+                "md": {
+                  "$ref": "#/definitions/MutedTextVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "size": {
+                "enum": ["sm", "md"]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/MutedTextStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["size"],
+                    "properties": {
+                      "size": {
+                        "enum": ["sm", "md"]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/MutedTextStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "MutedTextStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "MutedTextVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/MutedTextStates"
+        }
+      }
+    },
+    "OutcomeOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/OutcomeStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "tone": {
+              "type": "object",
+              "properties": {
+                "neutral": {
+                  "$ref": "#/definitions/OutcomeVariant"
+                },
+                "danger": {
+                  "$ref": "#/definitions/OutcomeVariant"
+                },
+                "warning": {
+                  "$ref": "#/definitions/OutcomeVariant"
+                },
+                "success": {
+                  "$ref": "#/definitions/OutcomeVariant"
+                },
+                "info": {
+                  "$ref": "#/definitions/OutcomeVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tone": {
+                "enum": ["neutral", "danger", "warning", "success", "info"]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/OutcomeStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["tone"],
+                    "properties": {
+                      "tone": {
+                        "enum": ["neutral", "danger", "warning", "success", "info"]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/OutcomeStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "OutcomeStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "OutcomeVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/OutcomeStates"
+        }
+      }
+    },
+    "PanelOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/PanelStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PanelStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PartyCellOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/PartyCellStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "odd": {
+              "type": "object",
+              "properties": {
+                "true": {
+                  "$ref": "#/definitions/PartyCellVariant"
+                },
+                "false": {
+                  "$ref": "#/definitions/PartyCellVariant"
+                }
+              },
+              "additionalProperties": false
+            },
+            "zero": {
+              "type": "object",
+              "properties": {
+                "true": {
+                  "$ref": "#/definitions/PartyCellVariant"
+                },
+                "false": {
+                  "$ref": "#/definitions/PartyCellVariant"
+                }
+              },
+              "additionalProperties": false
+            },
+            "header": {
+              "type": "object",
+              "properties": {
+                "true": {
+                  "$ref": "#/definitions/PartyCellVariant"
+                },
+                "false": {
+                  "$ref": "#/definitions/PartyCellVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "odd": {
+                "enum": ["true", "false", true, false]
+              },
+              "zero": {
+                "enum": ["true", "false", true, false]
+              },
+              "header": {
+                "enum": ["true", "false", true, false]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/PartyCellStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["odd"],
+                    "properties": {
+                      "odd": {
+                        "enum": ["true", "false", true, false]
+                      }
+                    }
+                  },
+                  {
+                    "required": ["zero"],
+                    "properties": {
+                      "zero": {
+                        "enum": ["true", "false", true, false]
+                      }
+                    }
+                  },
+                  {
+                    "required": ["header"],
+                    "properties": {
+                      "header": {
+                        "enum": ["true", "false", true, false]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/PartyCellStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "PartyCellStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PartyCellVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/PartyCellStates"
+        }
+      }
+    },
+    "PoolPipsOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/PoolPipsParts"
+        },
+        "states": {
+          "$ref": "#/definitions/PoolPipsStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "point": {
+              "type": "object",
+              "properties": {
+                "left": {
+                  "$ref": "#/definitions/PoolPipsVariant"
+                },
+                "spent": {
+                  "$ref": "#/definitions/PoolPipsVariant"
+                },
+                "none": {
+                  "$ref": "#/definitions/PoolPipsVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "point": {
+                "enum": ["left", "spent", "none"]
+              },
+              "css": {
+                "$ref": "#/definitions/PoolPipsParts"
+              },
+              "states": {
+                "$ref": "#/definitions/PoolPipsStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["point"],
+                    "properties": {
+                      "point": {
+                        "enum": ["left", "spent", "none"]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/PoolPipsParts"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/PoolPipsStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "PoolPipsParts": {
+      "type": "object",
+      "properties": {
+        "root": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "pip": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PoolPipsStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/PoolPipsParts"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/PoolPipsParts"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/PoolPipsParts"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PoolPipsVariant": {
+      "type": "object",
+      "properties": {
+        "root": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "pip": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/PoolPipsStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PortraitOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/PortraitStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "object",
+              "properties": {
+                "actor": {
+                  "$ref": "#/definitions/PortraitVariant"
+                },
+                "item": {
+                  "$ref": "#/definitions/PortraitVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": ["actor", "item"]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/PortraitStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["kind"],
+                    "properties": {
+                      "kind": {
+                        "enum": ["actor", "item"]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/PortraitStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "PortraitStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PortraitVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/PortraitStates"
+        }
+      }
+    },
+    "RegionOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/RegionStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RegionStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RichTextOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/RichTextStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RichTextStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RowOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/RowStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "interactive": {
+              "type": "object",
+              "properties": {
+                "true": {
+                  "$ref": "#/definitions/RowVariant"
+                },
+                "false": {
+                  "$ref": "#/definitions/RowVariant"
+                }
+              },
+              "additionalProperties": false
+            },
+            "alternate": {
+              "type": "object",
+              "properties": {
+                "true": {
+                  "$ref": "#/definitions/RowVariant"
+                },
+                "false": {
+                  "$ref": "#/definitions/RowVariant"
+                }
+              },
+              "additionalProperties": false
+            },
+            "striped": {
+              "type": "object",
+              "properties": {
+                "true": {
+                  "$ref": "#/definitions/RowVariant"
+                },
+                "false": {
+                  "$ref": "#/definitions/RowVariant"
+                }
+              },
+              "additionalProperties": false
+            },
+            "divided": {
+              "type": "object",
+              "properties": {
+                "true": {
+                  "$ref": "#/definitions/RowVariant"
+                },
+                "false": {
+                  "$ref": "#/definitions/RowVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "interactive": {
+                "enum": ["true", "false", true, false]
+              },
+              "alternate": {
+                "enum": ["true", "false", true, false]
+              },
+              "striped": {
+                "enum": ["true", "false", true, false]
+              },
+              "divided": {
+                "enum": ["true", "false", true, false]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/RowStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["interactive"],
+                    "properties": {
+                      "interactive": {
+                        "enum": ["true", "false", true, false]
+                      }
+                    }
+                  },
+                  {
+                    "required": ["alternate"],
+                    "properties": {
+                      "alternate": {
+                        "enum": ["true", "false", true, false]
+                      }
+                    }
+                  },
+                  {
+                    "required": ["striped"],
+                    "properties": {
+                      "striped": {
+                        "enum": ["true", "false", true, false]
+                      }
+                    }
+                  },
+                  {
+                    "required": ["divided"],
+                    "properties": {
+                      "divided": {
+                        "enum": ["true", "false", true, false]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/RowStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "RowStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "selected": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RowVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/RowStates"
+        }
+      }
+    },
+    "SectionHeadingOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/SectionHeadingStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "centered": {
+              "type": "object",
+              "properties": {
+                "true": {
+                  "$ref": "#/definitions/SectionHeadingVariant"
+                },
+                "false": {
+                  "$ref": "#/definitions/SectionHeadingVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "centered": {
+                "enum": ["true", "false", true, false]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/SectionHeadingStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["centered"],
+                    "properties": {
+                      "centered": {
+                        "enum": ["true", "false", true, false]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/SectionHeadingStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "SectionHeadingStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SectionHeadingVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/SectionHeadingStates"
+        }
+      }
+    },
+    "SelectOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/SelectStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SelectStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "disabled": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SheetRootOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/SheetRootStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "sheet": {
+              "type": "object",
+              "properties": {
+                "character": {
+                  "$ref": "#/definitions/SheetRootVariant"
+                },
+                "item": {
+                  "$ref": "#/definitions/SheetRootVariant"
+                },
+                "freeform": {
+                  "$ref": "#/definitions/SheetRootVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "sheet": {
+                "enum": ["character", "item", "freeform"]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/SheetRootStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["sheet"],
+                    "properties": {
+                      "sheet": {
+                        "enum": ["character", "item", "freeform"]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/SheetRootStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "SheetRootStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SheetRootVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/SheetRootStates"
+        }
+      }
+    },
+    "SurfaceOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/SurfaceStates"
+        },
+        "variants": {
+          "type": "object",
+          "properties": {
+            "depth": {
+              "type": "object",
+              "properties": {
+                "top": {
+                  "$ref": "#/definitions/SurfaceVariant"
+                },
+                "nested": {
+                  "$ref": "#/definitions/SurfaceVariant"
+                }
+              },
+              "additionalProperties": false
+            },
+            "solid": {
+              "type": "object",
+              "properties": {
+                "true": {
+                  "$ref": "#/definitions/SurfaceVariant"
+                },
+                "false": {
+                  "$ref": "#/definitions/SurfaceVariant"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "compoundVariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "depth": {
+                "enum": ["top", "nested"]
+              },
+              "solid": {
+                "enum": ["true", "false", true, false]
+              },
+              "css": {
+                "$ref": "#/definitions/ThemeStyle"
+              },
+              "states": {
+                "$ref": "#/definitions/SurfaceStates"
+              }
+            },
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "anyOf": [
+                  {
+                    "required": ["depth"],
+                    "properties": {
+                      "depth": {
+                        "enum": ["top", "nested"]
+                      }
+                    }
+                  },
+                  {
+                    "required": ["solid"],
+                    "properties": {
+                      "solid": {
+                        "enum": ["true", "false", true, false]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "required": ["css"],
+                    "properties": {
+                      "css": {
+                        "$ref": "#/definitions/ThemeStyle"
+                      }
+                    }
+                  },
+                  {
+                    "required": ["states"],
+                    "properties": {
+                      "states": {
+                        "$ref": "#/definitions/SurfaceStates"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "SurfaceStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SurfaceVariant": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      ],
+      "properties": {
+        "states": {
+          "$ref": "#/definitions/SurfaceStates"
+        }
+      }
+    },
+    "TableHeaderOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "states": {
+          "$ref": "#/definitions/TableHeaderStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TableHeaderStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TabsOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/TabsParts"
+        },
+        "states": {
+          "$ref": "#/definitions/TabsStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TabsParts": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "tab": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "spacer": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "content": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TabsStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/TabsParts"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/TabsParts"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/TabsParts"
+        },
+        "selected": {
+          "$ref": "#/definitions/TabsParts"
+        },
+        "disabled": {
+          "$ref": "#/definitions/TabsParts"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ToggleOverride": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "$ref": "#/definitions/ToggleParts"
+        },
+        "states": {
+          "$ref": "#/definitions/ToggleStates"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ToggleParts": {
+      "type": "object",
+      "properties": {
+        "track": {
+          "$ref": "#/definitions/ThemeStyle"
+        },
+        "thumb": {
+          "$ref": "#/definitions/ThemeStyle"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ToggleStates": {
+      "type": "object",
+      "properties": {
+        "hoverFeedback": {
+          "$ref": "#/definitions/ToggleParts"
+        },
+        "dropTarget": {
+          "$ref": "#/definitions/ToggleParts"
+        },
+        "focusRing": {
+          "$ref": "#/definitions/ToggleParts"
+        },
+        "checked": {
+          "$ref": "#/definitions/ToggleParts"
+        },
+        "disabled": {
+          "$ref": "#/definitions/ToggleParts"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

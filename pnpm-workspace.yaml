@@ -27,6 +27,8 @@ overrides:
   typescript: "catalog:"
   react-dom: "catalog:"
   happy-dom: "catalog:"
+  # its compiler API: TypeScript 7 has none it can use
+  "ts-json-schema-generator>typescript": 5.9.3
 allowedDeprecatedVersions:
   querystring: "*"
 peerDependencyRules:

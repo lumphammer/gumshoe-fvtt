@@ -114,10 +114,75 @@ if (CONFIG.Investigator?.applyPreset) {
 
 Don't apply a preset by writing its values to the settings one by one (`game.settings.set("investigator", key, value)`): that leaves every setting your preset doesn't mention as it was.
 
+## JSON schemas
+
+The package also has JSON schemas (draft-07) for the formats people write by
+hand, generated from these types, so an editor can check a file and complete
+its names:
+
+| File | Schema |
+| --- | --- |
+| A theme, V1 or V2 (by its `schemaVersion`) | `theme.schema.json` |
+| A V2 theme | `theme-v2.schema.json` |
+| A V1 theme | `theme-v1.schema.json` |
+| A preset (`PresetV1`) | `preset-v1.schema.json` |
+| A settings export (`SettingsExportV1`), from Import/Export in the system settings | `settings-export-v1.schema.json` |
+
+Each is published at
+`https://cdn.jsdelivr.net/npm/@lumphammer/investigator-fvtt-types@1/schemas/`
+and its file name (that's its `$id`), and is in the package as
+`@lumphammer/investigator-fvtt-types/schemas/<file>`.
+
+In a JSON file, name the schema with `$schema` (INVESTIGATOR ignores it, and
+settings exports have it already):
+
+```json
+{
+  "$schema": "https://cdn.jsdelivr.net/npm/@lumphammer/investigator-fvtt-types@1/schemas/theme.schema.json",
+  "schemaVersion": "v2",
+  "displayName": "My Theme",
+  "palette": {
+    "polarity": "light",
+    "wallpaper": "#ddd",
+    "surface": "#fff",
+    "surfaceNested": "#f4f4f4",
+    "control": "#eee",
+    "text": "#222",
+    "accent": "#c00",
+    "line": "#999",
+    "feedback": "#36c",
+    "danger": "#c00",
+    "warning": "#c80",
+    "success": "#080",
+    "info": "#36c"
+  }
+}
+```
+
+In a YAML file (with an editor that uses the YAML language server, such as
+VS Code's YAML extension), name it in a comment on the first line:
+
+```yaml
+# yaml-language-server: $schema=https://cdn.jsdelivr.net/npm/@lumphammer/investigator-fvtt-types@1/schemas/theme.schema.json
+schemaVersion: v2
+displayName: My Theme
+palette:
+  polarity: light
+  wallpaper: "#ddd"
+  surface: "#fff"
+  # ...and the other required entries
+```
+
+The schemas are as strict as the types: a key that isn't part of the format
+is an error (INVESTIGATOR itself ignores some of them, with a warning), so a
+misspelling shows up. Styles are the exception: any keys and values, as the
+schemas don't check CSS.
+
 ## Release process
 
-1. Make sure everything is committed, and the catalogue's types are up to date
-   (`pnpm generate:catalogue --check` at the repository's root).
+1. Make sure everything is committed, and the catalogue's types and the JSON
+   schemas are up to date (`pnpm generate:catalogue --check` at the
+   repository's root).
 2. `npm version {major,minor,patch}` here.
 3. Check what will ship: `pnpm pack --dry-run` (`prepack` builds `dist`).
 4. `git push`.
