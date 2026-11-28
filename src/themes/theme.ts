@@ -122,7 +122,8 @@ export function validateThemeV2(
   }
   const { palette } = result.data;
   for (const key of Object.keys(result.data)) {
-    if (!(key in themeSchema.shape)) {
+    // `$schema` is for editors (the types package's JSON schemas)
+    if (!(key in themeSchema.shape) && key !== "$schema") {
       warn(`${key} isn't part of a theme, so it's ignored`);
     }
   }

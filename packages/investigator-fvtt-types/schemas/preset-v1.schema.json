@@ -1,0 +1,523 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cdn.jsdelivr.net/npm/@lumphammer/investigator-fvtt-types@1/schemas/preset-v1.schema.json",
+  "title": "INVESTIGATOR preset (V1)",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "displayName",
+    "defaultThemeName",
+    "investigativeAbilityCategories",
+    "generalAbilityCategories",
+    "combatAbilities",
+    "occupationLabel",
+    "longNotes",
+    "newPCPacks",
+    "newNPCPacks",
+    "genericOccupation",
+    "pcStats",
+    "npcStats"
+  ],
+  "additionalProperties": false,
+  "description": "A preset for INVESTIGATOR, the GUMSHOE system for Foundry VTT, as given to `CONFIG.Investigator.installPreset`.",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "The schema for this file, so an editor can check it: ignored by INVESTIGATOR."
+    },
+    "schemaVersion": {
+      "type": "string",
+      "const": "v1"
+    },
+    "displayName": {
+      "type": "string",
+      "description": "The name that this preset will appear as in the Foundry UI"
+    },
+    "defaultThemeName": {
+      "type": "string",
+      "description": "The id of the theme to use. If you are registering a custom theme, it should match the id you used."
+    },
+    "investigativeAbilityCategories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Categories for investigative abilities, e.g. \"Academic\", \"Interpersonal\""
+    },
+    "generalAbilityCategories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Categories for general abilities. For many systems, this will just be \"General\"."
+    },
+    "combatAbilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of ability names that can be used in combat. This may be removed in future in favour or just flagging abilities as \"combat usable\"."
+    },
+    "occupationLabel": {
+      "type": "string",
+      "description": "What do we call the main, short descriptive text for a PC in this system?"
+    },
+    "personalDetails": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/PersonalDetail"
+      },
+      "description": "What personalDetails do we need? This replaces the old shortNotes config."
+    },
+    "longNotes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What groups of notes to we need per character?"
+    },
+    "newPCPacks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What compendium packs should be automatically added to new PCs"
+    },
+    "newNPCPacks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What compendium packs should be automatically added to new NPCs"
+    },
+    "useBoost": {
+      "type": "boolean",
+      "description": "Can abilities be boosted in this system?"
+    },
+    "hideTestDifficulty": {
+      "type": "boolean",
+      "description": "When the GM sets a test's Difficulty, do players see only whether it succeeded, and not the number?"
+    },
+    "defaultTestDifficulty": {
+      "type": ["number", "null"],
+      "description": "The Difficulty a test starts with, which the tester can change: a number, or null to ask the GM for it before the dice are rolled. Defaults to 4."
+    },
+    "genericOccupation": {
+      "type": "string",
+      "description": "What string to use when a PC's occupation is empty Defaults to \"Investigator\""
+    },
+    "showEmptyInvestigativeCategories": {
+      "type": "boolean",
+      "description": "Should empty investigative categories be shown? Default is yes, because in most GUMSHOE games, characters will have a smattering of abuilities across all the categories. But in some, the categories represent professional specialisations and you don't want to see e.g. Warrior abilities on your Sorceror sheet."
+    },
+    "useMwStyleAbilities": {
+      "type": "boolean",
+      "description": "Ignore this unless you are doing something based on the DERPG  system."
+    },
+    "mwHiddenShortNotes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ignore this unless you are doing something based on the DERPG  system."
+    },
+    "mwUseAlternativeItemTypes": {
+      "type": "boolean",
+      "description": "Ignore this unless you are doing something based on the DERPG  system."
+    },
+    "useMwInjuryStatus": {
+      "type": "boolean",
+      "description": "Ignore this unless you are doing something based on the DERPG  system."
+    },
+    "pcStats": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Stat"
+      },
+      "description": "What stats should PCs have?"
+    },
+    "npcStats": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Stat"
+      },
+      "description": "What stats should NPCs have?"
+    },
+    "useNpcCombatBonuses": {
+      "type": "boolean",
+      "description": "Do NPCs get fix bonuses on combat abilities?"
+    },
+    "useTurnPassingInitiative": {
+      "type": "boolean",
+      "description": "Use turn-passing initiative, AKA popcorn or lancer-style."
+    },
+    "useDamageApplication": {
+      "type": "boolean",
+      "description": "Record targets on attack rolls, check hits against their Hit Thresholds, and let users apply damage to their Health from the chat card."
+    },
+    "useGunfireOnHumans": {
+      "type": "boolean",
+      "description": "Fall of DELTA GREEN: gunfire damage which would leave a human Hurt does an extra 6 points. Only applies with damage application."
+    },
+    "useCriticalHits": {
+      "type": "boolean",
+      "description": "A successful unmodified 6 with a margin of 5 or more rolls two instances of damage and adds them together. Only applies with damage application."
+    },
+    "useLethalityAndAutofire": {
+      "type": "boolean",
+      "description": "Fall of DELTA GREEN: weapons can have a Lethality rating (e.g. L1*), which can kill or wound outright, and automatic weapons can fire three-round bursts and full-auto (whose damage is Lethality). Only applies with damage application."
+    },
+    "useShotDryAndJams": {
+      "type": "boolean",
+      "description": "Fall of DELTA GREEN: an unmodified 6 on full-auto shoots the weapon dry (with extra damage), and two 1s in a row jam it. Only applies with Lethality and autofire."
+    },
+    "useExtendedRange": {
+      "type": "boolean",
+      "description": "Fall of DELTA GREEN: weapons can have an Extended range band, and any range can need a spend (which doesn't add to the roll) before you can shoot at it at all (p. 098)"
+    },
+    "useWalkingFire": {
+      "type": "boolean",
+      "description": "Fall of DELTA GREEN: after a burst or full-auto attack, pay to \"walk\" the fire onto another target the original result would hit. Only applies with Lethality and autofire."
+    },
+    "useWoundStatusEffects": {
+      "type": "boolean",
+      "description": "Keep the Hurt, Seriously Wounded and Dead status effects in step with Health: when an actor's wound state changes, the old state's status is removed and the new one's applied."
+    },
+    "walkingFireSpendAbilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Names of other abilities which can pay part of the cost of walking fire. Defaults to Athletics."
+    },
+    "fullAutoSpendAbilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Names of other abilities whose points count towards full-auto's minimum spend, without adding to the roll. Defaults to Athletics and Stability."
+    },
+    "equipmentCategories": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/EquipmentCategory"
+      },
+      "description": "What standard categories do we have for equipment?"
+    },
+    "useStabilityRules": {
+      "type": "boolean",
+      "description": "Stability rules (Fall of DELTA GREEN and others): turns on the Sanity & Stability settings below. Nothing below does anything without it."
+    },
+    "stabilityAbility": {
+      "type": "string",
+      "description": "The name of the Stability ability: Bonds are spent on it, its pool sets the Stability state, and trauma tests are made with it. Defaults to Stability."
+    },
+    "useSanityRules": {
+      "type": "boolean",
+      "description": "Sanity rules: the Sanity ability's rating is capped, and trauma types can cost Sanity."
+    },
+    "sanityAbility": {
+      "type": "string",
+      "description": "The name of the Sanity ability. Defaults to Sanity."
+    },
+    "sanityCapAbility": {
+      "type": "string",
+      "description": "The ability whose rating comes off the Sanity cap, e.g. Cthulhu Mythos."
+    },
+    "sanityCapBase": {
+      "type": "number",
+      "description": "The Sanity cap before the cap ability's rating comes off it. Defaults to 10."
+    },
+    "useStabilityStates": {
+      "type": "boolean",
+      "description": "Shaken, Shattered and Gone follow the Stability pool."
+    },
+    "stabilityStates": {
+      "$ref": "#/definitions/StabilityStatesSettings",
+      "description": "The names of the Stability states, and the highest pool in each."
+    },
+    "useBonds": {
+      "type": "boolean",
+      "description": "Should PCs have Bonds (Fall of DELTA GREEN)? If so, they appear (and they can spend on Stability), on their own tab."
+    },
+    "bondRebuildSpendCategory": {
+      "type": "string",
+      "description": "The investigative ability category whose points can be spent when rebuilding a Bond between operations. Defaults to Interpersonal."
+    },
+    "useTrauma": {
+      "type": "boolean",
+      "description": "Stability tests against trauma."
+    },
+    "traumaTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/TraumaType"
+      },
+      "description": "The kinds of trauma Stability can be tested against."
+    },
+    "useNetworkContacts": {
+      "type": "boolean",
+      "description": "Network contacts (Fall of DELTA GREEN, Night's Black Agents): PCs reveal contacts, each with a pool of points taken from the Network ability."
+    },
+    "networkAbility": {
+      "type": "string",
+      "description": "The name of the ability contacts' points come from. Defaults to Network."
+    },
+    "useCards": {
+      "type": "boolean",
+      "description": "Should we use cards?"
+    },
+    "cardCategories": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/CardCategory"
+      },
+      "description": "What categories do we have for cards?"
+    }
+  },
+  "definitions": {
+    "PersonalDetail": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/PersonalDetailType"
+        }
+      },
+      "required": ["name", "type"],
+      "additionalProperties": false
+    },
+    "PersonalDetailType": {
+      "type": "string",
+      "enum": ["text", "item"]
+    },
+    "Stat": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "default": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "placement": {
+          "$ref": "#/definitions/StatPlacement",
+          "description": "Where a PC's sheet shows this stat: with the name and personal details (the default), or on the combat tab (e.g. Hit threshold). NPCs ignore it."
+        }
+      },
+      "required": ["default", "name"],
+      "additionalProperties": false,
+      "description": "A definition for a countable value that all PCs or NPCs will have"
+    },
+    "StatPlacement": {
+      "type": "string",
+      "enum": ["header", "combat"]
+    },
+    "EquipmentCategory": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/EquipmentFieldMetadata"
+          }
+        }
+      },
+      "required": ["name", "fields"],
+      "additionalProperties": false
+    },
+    "EquipmentFieldMetadata": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "string"
+            },
+            "default": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "visibleToLimited": {
+              "type": "boolean",
+              "description": "Whether people with Limited permission on the item can see this field (default true)"
+            }
+          },
+          "required": ["default", "name", "type"]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "number"
+            },
+            "default": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "visibleToLimited": {
+              "type": "boolean",
+              "description": "Whether people with Limited permission on the item can see this field (default true)"
+            }
+          },
+          "required": ["default", "name", "type"]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "checkbox"
+            },
+            "default": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            },
+            "visibleToLimited": {
+              "type": "boolean",
+              "description": "Whether people with Limited permission on the item can see this field (default true)"
+            }
+          },
+          "required": ["default", "name", "type"]
+        }
+      ]
+    },
+    "StabilityStatesSettings": {
+      "type": "object",
+      "properties": {
+        "shaken": {
+          "$ref": "#/definitions/StabilityStateSettings"
+        },
+        "shattered": {
+          "$ref": "#/definitions/StabilityStateSettings"
+        },
+        "gone": {
+          "$ref": "#/definitions/StabilityStateSettings"
+        }
+      },
+      "required": ["shaken", "shattered", "gone"],
+      "additionalProperties": false
+    },
+    "StabilityStateSettings": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "upTo": {
+          "type": "number",
+          "description": "the highest Stability pool in this state"
+        }
+      },
+      "required": ["name", "upTo"],
+      "additionalProperties": false
+    },
+    "TraumaType": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "difficulty": {
+          "type": "number"
+        },
+        "adaptedDifficulty": {
+          "type": "number",
+          "description": "the Difficulty once adapted"
+        },
+        "causesSanityLoss": {
+          "type": "boolean",
+          "description": "shocks (getting worse) cost Sanity"
+        },
+        "useAdaptation": {
+          "type": "boolean",
+          "description": "can be adapted to"
+        },
+        "cappedAbilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "abilities whose ratings are capped once adapted"
+        },
+        "capsBonds": {
+          "type": "boolean",
+          "description": "Bonds are capped once adapted"
+        },
+        "refreshPenalty": {
+          "type": "number",
+          "description": "what comes off each refresh once adapted"
+        }
+      },
+      "required": [
+        "adaptedDifficulty",
+        "cappedAbilities",
+        "capsBonds",
+        "causesSanityLoss",
+        "difficulty",
+        "id",
+        "name",
+        "refreshPenalty",
+        "useAdaptation"
+      ],
+      "additionalProperties": false
+    },
+    "CardCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "singleName": {
+          "type": "string"
+        },
+        "pluralName": {
+          "type": "string"
+        },
+        "styleKey": {
+          "type": "string"
+        },
+        "threshold": {
+          "type": "number"
+        },
+        "thresholdType": {
+          "type": "string",
+          "enum": ["goal", "limit", "none"]
+        }
+      },
+      "required": ["id", "pluralName", "singleName", "threshold", "thresholdType"],
+      "additionalProperties": false
+    }
+  }
+}

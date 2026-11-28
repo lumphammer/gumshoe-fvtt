@@ -1,0 +1,479 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cdn.jsdelivr.net/npm/@lumphammer/investigator-fvtt-types@1/schemas/theme-v1.schema.json",
+  "title": "INVESTIGATOR theme (V1)",
+  "type": "object",
+  "required": ["schemaVersion", "displayName", "largeSheetRootStyle", "logo", "colors"],
+  "additionalProperties": false,
+  "description": "A V1 theme for INVESTIGATOR (superseded by V2), for the custom themes folder or `CONFIG.Investigator.installTheme`.",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "The schema for this file, so an editor can check it: ignored by INVESTIGATOR."
+    },
+    "schemaVersion": {
+      "type": "string",
+      "const": "v1"
+    },
+    "displayName": {
+      "type": "string",
+      "description": "The name of the theme. Use puns and allusions liberally."
+    },
+    "global": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/SerializedStyles"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "description": "CSS block which will be inserted at the top of the browser document. This is a good place for `@import` directives for loading fonts, e.g.\n\n``` global: css`  import url('https://fonts.googleapis.com/css2?family=Patrick+Hand+SC&display=swap'); `, ```\n\n(That `import` should have an"
+    },
+    "largeSheetRootStyle": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "Will be applied to the root element of the themed area. This is a good place to apply a wallpaper image. It is assumed that any window using this style will always layer `backgroundPrimary` or `backgroundSecondary` over it before adding text."
+    },
+    "smallSheetRootStyle": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "Will be applied to the root element of the themed area. This is a good place to apply a wallpaper image. Unlike `largeSheetRootStyle`, text might be applied directly onto this background. This is a good place to adjust the background to make it directly usable. Without it, the `largeSheetRootStyle` is used."
+    },
+    "appWindowStyle": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "These styles will be added to the app window for any <CSSReset> unless `noStyleAppWindow` is given."
+    },
+    "tabClass": {
+      "type": "string",
+      "deprecated": "Ignored. A class for the tabs, from before the catalogue: style\nthe tabs with `tabStyle` and the rest, or in ThemeV2, the `tabs` recipe."
+    },
+    "tabStyle": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "Base style for tabs"
+    },
+    "tabActiveStyle": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "Will be applied to active tabs"
+    },
+    "tabSpacerStyle": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "Object placed between tabs. This is a good place to add a border for the \"top\" of the content container"
+    },
+    "tabContentStyle": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "Styles for the main content area of a tab"
+    },
+    "tabWrappedStyle": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "When the tabs don't fit in one row, they're laid out as a grid of buttons instead. This is added to `tabStyle` for each of them."
+    },
+    "tabWrappedActiveStyle": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "Added to `tabStyle` and `tabWrappedStyle` for the active tab when the tabs are in a grid (`tabActiveStyle` isn't used then). By default it has the same background as `tabContentStyle`, to tie it to the content."
+    },
+    "tabContentWrappedStyle": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "Added to `tabContentStyle` when the tabs are in a grid, which doesn't join on to the content area the way a row of tabs does"
+    },
+    "panelClass": {
+      "type": "string",
+      "deprecated": "Ignored. A class for panels, from before the catalogue: style\npanels with `panelStylePrimary` and `panelStyleSecondary`, or in ThemeV2,\nthe `panel` recipe."
+    },
+    "panelStylePrimary": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "Styles for primary panels"
+    },
+    "panelStyleSecondary": {
+      "$ref": "#/definitions/CSSObject",
+      "description": "Styles for secondary panels"
+    },
+    "bodyFont": {
+      "type": "string",
+      "description": "Font string for block text."
+    },
+    "displayFont": {
+      "type": "string",
+      "description": "Font string for title or label text."
+    },
+    "displayFontTextTransform": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Property.TextTransform",
+          "description": "This feature is well established and works across many devices and browser versions. It’s been available across browsers since July 2015.\n\n**Syntax**: `none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana | math-auto`\n\n**Initial value**: `none`\n\n| Chrome | Firefox | Safari |  Edge  |  IE   | | :----: | :-----: | :----: | :----: | :---: | | **1**  |  **1**  | **1**  | **12** | **4** |"
+        },
+        {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "object",
+                "properties": {}
+              },
+              {
+                "type": "string"
+              },
+              {
+                "not": {}
+              }
+            ]
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Property.TextTransform",
+            "description": "This feature is well established and works across many devices and browser versions. It’s been available across browsers since July 2015.\n\n**Syntax**: `none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana | math-auto`\n\n**Initial value**: `none`\n\n| Chrome | Firefox | Safari |  Edge  |  IE   | | :----: | :-----: | :----: | :----: | :---: | | **1**  |  **1**  | **1**  | **12** | **4** |"
+          }
+        }
+      ],
+      "description": "Case for title or label text, e.g. \"uppercase\" (the `font` shorthand in `displayFont` can't set it). Defaults to none."
+    },
+    "logo": {
+      "type": "object",
+      "properties": {
+        "fontScaleFactor": {
+          "type": "number",
+          "deprecated": "Ignored: the logo's lettering is now sized to fit its width."
+        },
+        "frontTextElementStyle": {
+          "$ref": "#/definitions/CSSObject",
+          "description": "These styles will be applied individually to the front text elements, so you can do the `background-clip: text; color: transparent;` trick to get gradient (or other image) text."
+        },
+        "frontTextElementWrapperStyle": {
+          "$ref": "#/definitions/CSSObject",
+          "description": "These styles will be applied to the div that wraps both front text elements. This is a place to apply styles which need to \"encompass\" both elements, e.g. a border."
+        },
+        "rearTextElementStyle": {
+          "$ref": "#/definitions/CSSObject",
+          "description": "These styles will be applied to the rear text element. This is a good place to add drop shadows because if you put them on the front element while doing the `background-clip: text; color: transparent;` trick the shadow will show through the text 🥺"
+        },
+        "rearTextElementWrapperStyle": {
+          "$ref": "#/definitions/CSSObject",
+          "description": "These styles will be applied to the div that wraps both rear text elements. This is a place to apply styles which need to \"encompass\" both elements, e.g. a border."
+        },
+        "textElementsStyle": {
+          "$ref": "#/definitions/CSSObject",
+          "description": "These styles will be applied to both text elements at once (actually to a wrapper around them. This is a good place to apply `transform`s."
+        },
+        "backdropStyle": {
+          "$ref": "#/definitions/CSSObject",
+          "description": "These styles will be applied to the otherwise-empty div that goes behind the text elements."
+        }
+      },
+      "required": [
+        "frontTextElementStyle",
+        "rearTextElementStyle",
+        "textElementsStyle",
+        "backdropStyle"
+      ],
+      "additionalProperties": false,
+      "description": "Styles for the fancy character sheet logo. See the LogoEditable component for details."
+    },
+    "cards": {
+      "type": "object",
+      "properties": {
+        "base": {
+          "type": "object",
+          "properties": {
+            "backdropStyle": {
+              "$ref": "#/definitions/CSSObject",
+              "description": "The style for the card itself"
+            },
+            "supertitleStyle": {
+              "$ref": "#/definitions/CSSObject",
+              "description": "The style for the bit of text above the main card content"
+            },
+            "titleStyle": {
+              "$ref": "#/definitions/CSSObject",
+              "description": "The style for the title of the card"
+            },
+            "subtitleStyle": {
+              "$ref": "#/definitions/CSSObject",
+              "description": "The style for the subtitle of the card"
+            },
+            "descriptionStyle": {
+              "$ref": "#/definitions/CSSObject",
+              "description": "The style for the content of the card"
+            },
+            "effectStyle": {
+              "$ref": "#/definitions/CSSObject",
+              "description": "The style for the effect of the card"
+            },
+            "hoverStyle": {
+              "$ref": "#/definitions/CSSObject",
+              "description": "Styles applied when hovering over the card"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Styles that apply to all cards"
+        },
+        "area": {
+          "type": "object",
+          "properties": {
+            "horizontalSpacing": {
+              "type": "string",
+              "description": "Horizontal spacing between cards"
+            },
+            "verticalSpacing": {
+              "type": "string",
+              "description": "Vertical spacing between cards"
+            }
+          },
+          "additionalProperties": false,
+          "description": "Styles that apply to the area containing cards"
+        },
+        "categories": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "backdropStyle": {
+                "$ref": "#/definitions/CSSObject",
+                "description": "The style for the card itself"
+              },
+              "supertitleStyle": {
+                "$ref": "#/definitions/CSSObject",
+                "description": "The style for the bit of text above the main card content"
+              },
+              "titleStyle": {
+                "$ref": "#/definitions/CSSObject",
+                "description": "The style for the title of the card"
+              },
+              "subtitleStyle": {
+                "$ref": "#/definitions/CSSObject",
+                "description": "The style for the subtitle of the card"
+              },
+              "descriptionStyle": {
+                "$ref": "#/definitions/CSSObject",
+                "description": "The style for the content of the card"
+              },
+              "effectStyle": {
+                "$ref": "#/definitions/CSSObject",
+                "description": "The style for the effect of the card"
+              },
+              "hoverStyle": {
+                "$ref": "#/definitions/CSSObject",
+                "description": "Styles applied when hovering over the card"
+              }
+            },
+            "additionalProperties": false
+          },
+          "description": "Styles that apply to specific card categories"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Styles that apply to cards"
+    },
+    "colors": {
+      "$ref": "#/definitions/SeedColorsV1",
+      "description": "All the values in this collection should be parseable as CSS colors"
+    },
+    "layout": {
+      "type": "string",
+      "enum": ["standard", "full-frame"],
+      "description": "How the character sheets are laid out: `ThemeV2`'s `layout`. Defaults to `\"standard\"` (as V1 themes always were); `\"full-frame\"` gives a V1 theme the see-through titlebar without converting it to V2."
+    },
+    "notesCssClasses": {
+      "type": "object",
+      "properties": {
+        "scopingContainer": {
+          "type": "string"
+        },
+        "pcNote": {
+          "type": "string"
+        },
+        "npcNote": {
+          "type": "string"
+        },
+        "itemNote": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "deprecated": "Ignored: nothing has read it for a long time."
+    }
+  },
+  "definitions": {
+    "SerializedStyles": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "styles": {
+          "type": "string"
+        },
+        "map": {
+          "type": "string"
+        },
+        "next": {
+          "$ref": "#/definitions/SerializedStyles"
+        }
+      },
+      "required": ["name", "styles"],
+      "additionalProperties": false,
+      "description": "Emotion's serialised styles (from its `css` tag), which a theme's `global` can still be: its CSS is used, and the keyframes it refers to."
+    },
+    "CSSObject": {
+      "type": "object",
+      "additionalProperties": {}
+    },
+    "Property.TextTransform": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Globals"
+        },
+        {
+          "type": "string",
+          "const": "capitalize"
+        },
+        {
+          "type": "string",
+          "const": "full-size-kana"
+        },
+        {
+          "type": "string",
+          "const": "full-width"
+        },
+        {
+          "type": "string",
+          "const": "lowercase"
+        },
+        {
+          "type": "string",
+          "const": "math-auto"
+        },
+        {
+          "type": "string",
+          "const": "none"
+        },
+        {
+          "type": "string",
+          "const": "uppercase"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "Globals": {
+      "type": "string",
+      "enum": ["-moz-initial", "inherit", "initial", "revert", "revert-layer", "unset"]
+    },
+    "SeedColorsV1": {
+      "type": "object",
+      "properties": {
+        "accent": {
+          "type": "string",
+          "description": "callout color for clickable text and other \"hot\" items"
+        },
+        "accentContrast": {
+          "type": "string",
+          "description": "when `accent is used as a background, this color should work as text over it"
+        },
+        "glow": {
+          "type": "string",
+          "description": "used for hover effect on hot items"
+        },
+        "danger": {
+          "type": "string",
+          "description": "tinting color used to indicate danger. Should be given as a bold, opaque color, but may be blended in use.",
+          "default": "red"
+        },
+        "warning": {
+          "type": "string",
+          "description": "color used to indicate a warning, i.e. something less serious than `danger`. Should be given as a bold, opaque color, but may be blended in use.",
+          "default": "amber"
+        },
+        "success": {
+          "type": "string",
+          "description": "tinting color used to indicate success. Should be given as a bold, opaque color, but may be blended in use."
+        },
+        "wallpaper": {
+          "type": "string",
+          "description": "flat color to stand in as the background before images have loaded"
+        },
+        "text": {
+          "type": "string",
+          "description": "basic non-interactive text color"
+        },
+        "backgroundButton": {
+          "type": "string",
+          "description": "background for buttons"
+        },
+        "backgroundPrimary": {
+          "type": "string",
+          "description": "The contract for this color is: if you layer this color over the `rootElementStyle` or the `wallpaper` color, you will get a surface which can be used for text in either the `text` or `accent` colors."
+        },
+        "backgroundSecondary": {
+          "type": "string",
+          "description": "The contract for this color is 1. the same as backgroundPrimary but should look less prominent (will be used for inactive tabs) 2. can also be layered *on top of* backgroundPrimary to create a secondary panel"
+        },
+        "controlBorder": {
+          "type": "string",
+          "description": "Color used to outline controls",
+          "default": "text"
+        }
+      },
+      "required": [
+        "accent",
+        "accentContrast",
+        "glow",
+        "wallpaper",
+        "text",
+        "backgroundButton",
+        "backgroundPrimary",
+        "backgroundSecondary"
+      ],
+      "additionalProperties": false,
+      "description": "Essential colors for a theme. Some are typed as optional. If these are left out they will be inferred from the others."
+    }
+  }
+}

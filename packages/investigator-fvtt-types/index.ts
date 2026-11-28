@@ -170,8 +170,8 @@ export interface ThemeSeedV1 {
    * Will be applied to the root element of the themed area. This is a good
    * place to apply a wallpaper image. Unlike `largeSheetRootStyle`, text might
    * be applied directly onto this background. This is a good place to adjust
-   * the background to make it directly usable.
-   * @default largeSheetRootStyle
+   * the background to make it directly usable. Without it, the
+   * `largeSheetRootStyle` is used.
    */
   smallSheetRootStyle?: CSSObject;
   /**
@@ -643,6 +643,20 @@ export interface PresetV1 {
    */
   cardCategories?: CardCategory[];
 }
+
+/**
+ * A file of settings, from Import/Export in the system settings: a preset's
+ * settings, and two that aren't a preset's, every one optional (an older
+ * export leaves out what's newer).
+ */
+export type SettingsExportV1 = Partial<
+  Omit<PresetV1, "schemaVersion" | "displayName"> & {
+    /** The id of the preset the settings came from. */
+    systemPreset: string;
+    /** Tell everyone when an item is added to an actor. */
+    notifyItemAddedToActor: boolean;
+  }
+>;
 
 /**
  * Type for the global CONFIG.Investigator

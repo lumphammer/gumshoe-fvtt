@@ -13,6 +13,14 @@ export const customSystem = "customSystem";
 export const genericOccupationDefault = "Investigator";
 export const inputThrottleTime = 500;
 
+/**
+ * Where the types package's JSON schemas are published, by file name (also
+ * each one's `$id`): scripts/jsonSchemas.ts.
+ */
+export const jsonSchemaBaseUrl =
+  "https://cdn.jsdelivr.net/npm/@lumphammer/investigator-fvtt-types@1/schemas/";
+export const settingsExportSchemaUrl = `${jsonSchemaBaseUrl}settings-export-v1.schema.json`;
+
 // item types
 export const investigativeAbility = "investigativeAbility";
 export const generalAbility = "generalAbility";

@@ -125,5 +125,9 @@
       "version": "12.21.0",
       "onFail": "download"
     }
+  },
+  "devDependencies": {
+    "ajv": "^8.20.0",
+    "ts-json-schema-generator": "^2.10.0"
   }
 }
