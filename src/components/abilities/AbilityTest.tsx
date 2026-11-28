@@ -157,8 +157,12 @@ export const AbilityTest = memo(function AbilityTest({
   };
 
   const { confirmSpendAbility } = methods;
-  const handleClickSpend = useCallback(() => {
-    void confirmSpendAbility(spend);
+  const handleClickSpend = useCallback(async () => {
+    // a cancelled confirmation (spending while Shaken) keeps the spend, and
+    // the popover open
+    if (!(await confirmSpendAbility(spend))) {
+      return;
+    }
     setSpend(0);
     onDone?.();
   }, [confirmSpendAbility, spend, onDone]);

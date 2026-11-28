@@ -69,14 +69,18 @@ export function RollPopover({
         className={cx(
           floating({ kind: "popover" }),
           css({
-            inset: "auto",
-            margin: "0",
-            marginBlockStart: "0.25em",
             padding: "0.5em",
             width: "22em",
             maxWidth: "calc(100vw - 1em)",
-            positionArea: "block-end span-inline-start",
-            positionTryFallbacks: "flip-block, flip-inline",
+            // under its row where anchoring works; otherwise the browser's
+            // own placement, centred on screen (Firefox before 147)
+            "@supports (position-area: block-end)": {
+              inset: "auto",
+              margin: "0",
+              marginBlockStart: "0.25em",
+              positionArea: "block-end span-inline-start",
+              positionTryFallbacks: "flip-block, flip-inline",
+            },
           }),
         )}
         style={{ positionAnchor: anchorName }}

@@ -9,7 +9,8 @@ const maxPips = 12;
  * A pool as pips: one per point of its rating, hollow for the points spent
  * then filled for the points left (and more if the pool is over its rating).
  * One struck through for a rating of 0, and the numbers ("9/14") for one too
- * big to count. Read out in words.
+ * big to count, or below zero ("-3/8": pips can't show how far). Read out in
+ * words.
  */
 export const PoolPips = ({
   pool,
@@ -23,7 +24,7 @@ export const PoolPips = ({
   const count = Math.max(pool, rating);
   return (
     <span className={cx(poolPips().root, className)}>
-      {count > maxPips ? (
+      {count > maxPips || pool < 0 ? (
         <span aria-hidden="true">
           {pool}/{rating}
         </span>
