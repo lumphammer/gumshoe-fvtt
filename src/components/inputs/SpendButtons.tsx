@@ -1,7 +1,8 @@
-import type { ChangeEvent } from "react";
+import { type ChangeEvent, useContext } from "react";
 
 import { CheckButtons } from "./CheckButtons";
 import { useIsEditable } from "../../hooks/useIsEditable";
+import { IdContext, labelIdFor } from "../IdContext";
 import { css, cx } from "../../styled-system/css";
 import { button } from "../../styled-system/recipes";
 
@@ -29,12 +30,15 @@ const SpendOverflow = ({
   disabled,
 }: SpendOverflowProps) => {
   const chosen = value >= top;
+  // named by the field it's in, like the buttons' group
+  const fieldId = useContext(IdContext);
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
     onChange(Number(e.currentTarget.value));
   };
 
   return (
     <select
+      aria-labelledby={fieldId ? labelIdFor(fieldId) : undefined}
       value={chosen ? value : ""}
       onChange={handleChange}
       disabled={disabled}

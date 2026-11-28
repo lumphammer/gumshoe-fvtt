@@ -57,6 +57,8 @@ export const AbilityTest = memo(function AbilityTest({
 }: AbilityTestProps) {
   const methods = useSystemMethods(item);
   const [spend, setSpend] = useState(0);
+  // a spend waiting on its confirmation or the server: no second one meanwhile
+  const [spending, setSpending] = useState(false);
   // points to spend from each Bond, by id
   const [bondSpends, setBondSpends] = useState<Record<string, number>>({});
   // a Stability test against trauma, or an ordinary test
@@ -158,10 +160,15 @@ export const AbilityTest = memo(function AbilityTest({
 
   const { confirmSpendAbility } = methods;
   const handleClickSpend = useCallback(async () => {
-    // a cancelled confirmation (spending while Shaken) keeps the spend, and
-    // the popover open
-    if (!(await confirmSpendAbility(spend))) {
-      return;
+    setSpending(true);
+    try {
+      // a cancelled confirmation (spending while Shaken) keeps the spend, and
+      // the popover open
+      if (!(await confirmSpendAbility(spend))) {
+        return;
+      }
+    } finally {
+      setSpending(false);
     }
     setSpend(0);
     onDone?.();
@@ -296,7 +303,7 @@ export const AbilityTest = memo(function AbilityTest({
         >
           <Button
             className={css({ flex: "[1]" })}
-            disabled={spend === 0}
+            disabled={spend === 0 || spending}
             onClick={handleClickSpend}
           >
             <Translate>{isGeneral ? "Simple Spend" : "Spend"}</Translate>
