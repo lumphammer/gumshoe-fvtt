@@ -61,10 +61,11 @@ const rewrites: [string, RegExp, string][] = [
     "export interface CSSObject { [key: string]: unknown }\n",
   ],
   [
-    // its type, from before CSSObject was opened
+    // its type, from before CSSObject was opened, spelt out: the generator
+    // can't follow the `Extract` in CSSPropertiesWithMultiValues
     "index.ts",
     /displayFontTextTransform\?: CSSObject\["textTransform"\];/,
-    'displayFontTextTransform?: CSSPropertiesWithMultiValues["textTransform"];',
+    "displayFontTextTransform?: CSS.Property.TextTransform | ReadonlyArray<CSS.Property.TextTransform>;",
   ],
 ];
 

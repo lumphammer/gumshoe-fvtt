@@ -96,6 +96,26 @@ describe("theme-v1.schema.json", () => {
         displayFontTextTransform: { bogus: 42 },
       }),
     ).not.toEqual([]);
+    expect(
+      validate("theme-v1.schema.json", {
+        ...antiquarianTheme,
+        displayFontTextTransform: [{ bogus: 42 }],
+      }),
+    ).not.toEqual([]);
+  });
+
+  it("accepts a display text transform, or a list of fallbacks", () => {
+    for (const displayFontTextTransform of [
+      "uppercase",
+      ["uppercase", "none"],
+    ]) {
+      expect(
+        validate("theme-v1.schema.json", {
+          ...antiquarianTheme,
+          displayFontTextTransform,
+        }),
+      ).toEqual([]);
+    }
   });
 
   it.each([

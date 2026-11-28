@@ -97,79 +97,12 @@
     "displayFontTextTransform": {
       "anyOf": [
         {
-          "$ref": "#/definitions/Property.TextTransform",
-          "description": "This feature is well established and works across many devices and browser versions. It’s been available across browsers since July 2015.\n\n**Syntax**: `none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana | math-auto`\n\n**Initial value**: `none`\n\n| Chrome | Firefox | Safari |  Edge  |  IE   | | :----: | :-----: | :----: | :----: | :---: | | **1**  |  **1**  | **1**  | **12** | **4** |"
+          "$ref": "#/definitions/Property.TextTransform"
         },
         {
           "type": "array",
           "items": {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "object",
-                "properties": {}
-              },
-              {
-                "type": "string"
-              },
-              {
-                "not": {}
-              }
-            ]
-          }
-        },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Property.TextTransform",
-            "description": "This feature is well established and works across many devices and browser versions. It’s been available across browsers since July 2015.\n\n**Syntax**: `none | [ capitalize | uppercase | lowercase ] || full-width || full-size-kana | math-auto`\n\n**Initial value**: `none`\n\n| Chrome | Firefox | Safari |  Edge  |  IE   | | :----: | :-----: | :----: | :----: | :---: | | **1**  |  **1**  | **1**  | **12** | **4** |"
+            "$ref": "#/definitions/Property.TextTransform"
           }
         }
       ],
