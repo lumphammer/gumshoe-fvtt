@@ -166,20 +166,17 @@ export const useAsyncUpdate = (
   }, []);
   // while focused, incoming values never replace what's being typed
   const focusedRef = useRef(false);
-  // what was shown when the current edit began (for `required`)
-  const editStartRef = useRef<string | null>(null);
-  // the latest save function, for ending an edit from a cleanup
-  const saveRef = useRef(onChangeOrig);
-  useEffect(() => {
-    saveRef.current = onChangeOrig;
-  }, [onChangeOrig]);
+  // the current edit (for `required`): what was shown when it began, and the
+  // save its first change went to, if it's sent any (so a restore goes to the
+  // same document, even if the input has moved on to another)
+  const editRef = useRef<{ start: string; save: Save | null } | null>(null);
   // bumped when the saves are all done, to show `value` again
   const [settledCount, setSettledCount] = useState(0);
 
   // callback for focus
   const onFocus = useCallback(() => {
     focusedRef.current = true;
-    editStartRef.current = displayRef.current;
+    editRef.current = { start: displayRef.current, save: null };
   }, []);
 
   // we only fire the update event every so often to avoid spamming the
@@ -194,28 +191,34 @@ export const useAsyncUpdate = (
   // stuff for handling content-editable - first, a ref to attach to the element
   const contentEditableRef = useRef<HTMLDivElement | null>(null);
 
-  // end the edit: if it's been left blank and can't be, put back what was
-  // there when it began, and save that (after anything already waiting, which
-  // may be part-deleted text). Then save any change that's waiting, so it's in
-  // before whatever took the focus (e.g. a Save button) acts
-  const endEdit = useCallback(
-    (save: Save) => {
-      const start = editStartRef.current;
-      editStartRef.current = null;
-      if (required && isBlank(displayRef.current)) {
-        const restored = start !== null && !isBlank(start) ? start : value;
-        if (!isBlank(restored)) {
-          setDisplay(restored);
-          if (contentEditableRef.current) {
-            contentEditableRef.current.textContent = restored;
-          }
-          saver.save(restored, save);
-        }
+  const showText = useCallback(
+    (text: string) => {
+      setDisplay(text);
+      if (contentEditableRef.current) {
+        contentEditableRef.current.textContent = text;
       }
-      saver.flush();
     },
-    [required, value, saver, setDisplay],
+    [setDisplay],
   );
+
+  // end the edit. If it's been left blank and can't be: when it sent nothing,
+  // show what's stored (which may have changed meanwhile, elsewhere); when it
+  // sent part-deleted text, put back what was there when it began and save
+  // that, to the same document. Then save any change that's waiting, so it's
+  // in before whatever took the focus (e.g. a Save button) acts
+  const endEdit = useCallback(() => {
+    const edit = editRef.current;
+    editRef.current = null;
+    if (required && isBlank(displayRef.current)) {
+      if (edit?.save && !isBlank(edit.start)) {
+        showText(edit.start);
+        saver.save(edit.start, edit.save);
+      } else if (!isBlank(value)) {
+        showText(value);
+      }
+    }
+    saver.flush();
+  }, [required, value, saver, showText]);
   const endEditRef = useRef(endEdit);
   useEffect(() => {
     endEditRef.current = endEdit;
@@ -224,20 +227,19 @@ export const useAsyncUpdate = (
   // callback for blur
   const onBlur = useCallback(() => {
     focusedRef.current = false;
-    endEdit(onChangeOrig);
-  }, [endEdit, onChangeOrig]);
+    endEdit();
+  }, [endEdit]);
 
   // and don't lose a waiting change when the input goes away
-  useEffect(() => () => endEditRef.current(saveRef.current), []);
+  useEffect(() => () => endEditRef.current(), []);
 
   const onChange = useCallback(
     (value: string) => {
-      if (editStartRef.current === null) {
-        editStartRef.current = displayRef.current;
-      }
+      editRef.current ??= { start: displayRef.current, save: null };
       setDisplay(value);
       // blank isn't saved, if it can't be: the edit isn't over yet
       if (required && isBlank(value)) return;
+      editRef.current.save ??= onChangeOrig;
       saver.save(value, onChangeOrig);
     },
     [saver, onChangeOrig, required, setDisplay],
@@ -290,8 +292,6 @@ export const useAsyncUpdate = (
   // something of ours is still on its way (see above)
   useEffect(() => {
     if (focusedRef.current || saver.isBusy()) return;
-    // a change made without focus (e.g. in tests) has ended when it's settled
-    editStartRef.current = null;
     setDisplay(value);
     if (
       contentEditableRef.current &&
@@ -299,7 +299,7 @@ export const useAsyncUpdate = (
     ) {
       contentEditableRef.current.textContent = value;
     }
-  }, [value, settledCount, saver]);
+  }, [value, settledCount, saver, setDisplay]);
 
   return {
     onChange,

@@ -192,12 +192,126 @@ describe("required", () => {
     vi.useRealTimers();
   });
 
-  it("goes back on unmount if left blank", () => {
+  it("goes back on unmount if left blank", async () => {
+    const { hook, save, type } = setup("Jo");
+    act(() => hook.result.current.onFocus());
+    await type("J");
+    await type("");
+    hook.unmount();
+    expect(save.mock.calls).toEqual([["J"], ["Jo"]]);
+    vi.useRealTimers();
+  });
+
+  it("saves nothing if the edit sent nothing", () => {
     const { hook, save } = setup("Jo");
     act(() => hook.result.current.onFocus());
     act(() => hook.result.current.onChange(""));
+    act(() => hook.result.current.onBlur());
     hook.unmount();
-    expect(save.mock.calls).toEqual([["Jo"]]);
+    expect(hook.result.current.display).toEqual("Jo");
+    expect(save).not.toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+
+  it("shows a rename made elsewhere during a blank edit, not the old name", () => {
+    vi.useFakeTimers();
+    const save = vi.fn();
+    const { result, rerender } = renderHook(
+      ({ value }) => useAsyncUpdate(value, save, { required: true }),
+      { initialProps: { value: "Jo" } },
+    );
+    act(() => result.current.onFocus());
+    act(() => result.current.onChange(""));
+    // another client renames it
+    rerender({ value: "Alex" });
+    act(() => result.current.onBlur());
+    expect(save).not.toHaveBeenCalled();
+    expect(result.current.display).toEqual("Alex");
+    vi.useRealTimers();
+  });
+
+  it("restores to the document the edit was saving to", async () => {
+    vi.useFakeTimers();
+    const saved: string[] = [];
+    const saveTo = (target: string) => (value: string) => {
+      saved.push(`${target}:${value}`);
+    };
+    const { result, rerender } = renderHook(
+      ({ value, save }) => useAsyncUpdate(value, save, { required: true }),
+      { initialProps: { value: "Jo", save: saveTo("a") } },
+    );
+    act(() => result.current.onFocus());
+    act(() => result.current.onChange("J"));
+    await act(() => vi.advanceTimersByTimeAsync(inputThrottleTime));
+    act(() => result.current.onChange(""));
+    // e.g. the input now edits another document
+    rerender({ value: "Alex", save: saveTo("b") });
+    act(() => result.current.onBlur());
+    await act(() => vi.advanceTimersByTimeAsync(inputThrottleTime));
+    expect(saved).toEqual(["a:J", "a:Jo"]);
+    expect(result.current.display).toEqual("Alex");
+    vi.useRealTimers();
+  });
+
+  it("restores after a part-deleted save that's still out", async () => {
+    vi.useFakeTimers();
+    const saved: string[] = [];
+    let finishFirst = () => undefined as void;
+    const save = (value: string) => {
+      saved.push(value);
+      if (saved.length === 1) {
+        return new Promise<void>((resolve) => {
+          finishFirst = resolve;
+        });
+      }
+    };
+    const { result } = renderHook(() =>
+      useAsyncUpdate("Jo", save, { required: true }),
+    );
+    act(() => result.current.onFocus());
+    act(() => result.current.onChange("J"));
+    await act(() => vi.advanceTimersByTimeAsync(inputThrottleTime));
+    act(() => result.current.onChange(""));
+    act(() => result.current.onBlur());
+    expect(saved).toEqual(["J"]);
+    await act(async () => {
+      finishFirst();
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    expect(saved).toEqual(["J", "Jo"]);
+    vi.useRealTimers();
+  });
+
+  it("keeps an unfocused edit's start after its saves settle", async () => {
+    const { hook, save, type } = setup("Jo");
+    await type("J");
+    await type("");
+    act(() => hook.result.current.onBlur());
+    expect(save).toHaveBeenLastCalledWith("Jo");
+    vi.useRealTimers();
+  });
+
+  it("restores on Enter in a contentEditable", () => {
+    const { hook } = setup("Jo");
+    const element = document.createElement("div");
+    element.contentEditable = "true";
+    document.body.append(element);
+    hook.result.current.contentEditableRef.current = element;
+    element.addEventListener("blur", () => hook.result.current.onBlur());
+    element.focus();
+    act(() => hook.result.current.onFocus());
+    element.textContent = "";
+    act(() => hook.result.current.onChange(""));
+    act(() =>
+      hook.result.current.onKeyDown({
+        key: "Enter",
+        nativeEvent: { isComposing: false },
+        preventDefault: vi.fn(),
+        currentTarget: element,
+      } as unknown as React.KeyboardEvent<HTMLElement>),
+    );
+    expect(element.textContent).toEqual("Jo");
+    element.remove();
     vi.useRealTimers();
   });
 

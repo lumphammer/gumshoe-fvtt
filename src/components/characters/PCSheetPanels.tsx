@@ -116,6 +116,7 @@ export const PCSheetHeader = memo(function PCSheetHeader() {
           mainText={header.name}
           subText={occupationParts}
           onChangeMainText={actor.setName}
+          required
         />
       </div>
       <ImagePickle
