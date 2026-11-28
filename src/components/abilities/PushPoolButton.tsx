@@ -11,15 +11,19 @@ import { css, cx } from "../../styled-system/css";
 
 export const PushPoolButton = memo(function PushPoolButton({
   item,
+  onDone,
 }: {
   /** Only to write through */
   item: AbilityItem;
+  /** Called once the push has been made */
+  onDone?: () => void;
 }) {
   const { push } = useSystemMethods(item);
 
   const handleClickPush = useCallback(() => {
     void push();
-  }, [push]);
+    onDone?.();
+  }, [push, onDone]);
 
   return (
     <Panel className={cx(inputGridClassName, css({ marginBottom: "0.5em" }))}>

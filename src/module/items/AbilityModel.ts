@@ -231,9 +231,9 @@ export abstract class AbilityModel<
   /**
    * Spend, but ask first if it's an Investigative ability and the owner is
    * Shaken (or worse): they can't spend Investigative points (Fall of DELTA
-   * GREEN, p. 113), though the GM may allow it.
+   * GREEN, p. 113), though the GM may allow it. Resolves to whether it spent.
    */
-  confirmSpendAbility = async (spend: number): Promise<void> => {
+  confirmSpendAbility = async (spend: number): Promise<boolean> => {
     const state = this.getOwnerStabilityState();
     if (
       spend > 0 &&
@@ -253,10 +253,11 @@ export abstract class AbilityModel<
         },
       });
       if (!yes) {
-        return;
+        return false;
       }
     }
     await this.spendAbility(spend);
+    return true;
   };
 
   /**

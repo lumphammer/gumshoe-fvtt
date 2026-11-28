@@ -1,11 +1,11 @@
-import React, { Fragment, memo, useCallback } from "react";
+import { memo, useCallback } from "react";
 
-import { AbilityNameLink } from "./AbilityNameLink";
+import { AbilityRollRow } from "./AbilityRollRow";
+import { AbilityRowTags } from "./AbilityRowTags";
 import { useItemSelector } from "../../hooks/useItemSnapshot";
 import { useSystemMethods } from "../../hooks/useSystemMethods";
 import type { AbilitySnapshot } from "../../module/items/abilitySnapshots";
 import type { AbilityItem } from "../../module/items/exports";
-import { AbilityBadges } from "../abilities/AbilityBadges";
 import { Button } from "../inputs/Button";
 import { Translate } from "../Translate";
 import { css } from "../../styled-system/css";
@@ -16,16 +16,19 @@ type AbilitySlugPlayQuickShockInvestigativeProps = {
   disabled: boolean;
 };
 
+/**
+ * A Quick Shock Investigative ability's row in play: its name opens the
+ * popover like any other row's, and its Push button stays beside it.
+ */
 export const AbilitySlugPlayQuickShockInvestigative = memo(
   function AbilitySlugPlayQuickShockInvestigative({
     ability,
     disabled,
   }: AbilitySlugPlayQuickShockInvestigativeProps) {
-    const row = useItemSelector(ability, (snapshot: AbilitySnapshot) => ({
-      name: snapshot.name,
-      hasSpecialities: snapshot.system.hasSpecialities,
-      specialities: snapshot.system.specialities,
-    }));
+    const name = useItemSelector(
+      ability,
+      (snapshot: AbilitySnapshot) => snapshot.name,
+    );
     const { push } = useSystemMethods(ability);
 
     const handleClickPush = useCallback(() => {
@@ -33,33 +36,31 @@ export const AbilitySlugPlayQuickShockInvestigative = memo(
     }, [push]);
 
     return (
-      <Fragment key={ability.id}>
-        <AbilityNameLink
+      <>
+        <AbilityRollRow
           ability={ability}
-          name={row.name}
-          className={css({ lineHeight: 0.9 })}
-        />
-        <div className={css({ gridColumn: "rating/-1", justifySelf: "right" })}>
-          <Button
-            className={css({ width: "4.1em" })}
-            onClick={handleClickPush}
-            disabled={disabled}
+          className={css({ gridColumn: "1 / -2" })}
+        >
+          <span
+            className={css({
+              gridColumn: "1 / -1",
+              lineHeight: 0.9,
+              // a long name wraps anywhere, not past the column
+              overflowWrap: "anywhere",
+            })}
           >
-            <Translate>Push</Translate>
-          </Button>
-        </div>
-        <AbilityBadges
-          ability={ability}
-          className={css({ gridColumn: "1/-1" })}
-        />
-        {row.hasSpecialities && (
-          <div className={css({ paddingLeft: "1em", gridColumn: "1/-1" })}>
-            {row.specialities.map((x, i) => (
-              <div key={i}>{x.trim()}</div>
-            ))}
-          </div>
-        )}
-      </Fragment>
+            {name}
+          </span>
+        </AbilityRollRow>
+        <Button
+          className={css({ width: "4.1em" })}
+          onClick={handleClickPush}
+          disabled={disabled}
+        >
+          <Translate>Push</Translate>
+        </Button>
+        <AbilityRowTags ability={ability} />
+      </>
     );
   },
 );

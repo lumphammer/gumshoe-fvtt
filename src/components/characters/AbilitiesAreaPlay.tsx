@@ -14,7 +14,7 @@ import { assertActiveCharacterActor } from "../../module/actors/types";
 import { AbilitySlugPlayNormal } from "./AbilitySlugPlayNormal";
 import { AbilitySlugPlayQuickShockInvestigative } from "./AbilitySlugPlayQuickShockInvestigative";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
-import { sectionHeading } from "../../styled-system/recipes";
+import { columnRule, sectionHeading } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
 
 type AbilitiesAreaPlayProps = {
@@ -59,24 +59,29 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
       <div
         className={css({
           display: "grid",
-          gridTemplateColumns: "minmax(33%, auto) minmax(33%, auto)",
+          // half each, whatever is in them, with a rule between
+          gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
           columnGap: "1em",
           marginBottom: "1em",
         })}
         style={{
           gridTemplateAreas: flipLeftRight
-            ? "'general investigative'"
-            : "'investigative general'",
+            ? "'general rule investigative'"
+            : "'investigative rule general'",
         }}
       >
+        <div
+          aria-hidden="true"
+          className={cx(columnRule(), css({ gridArea: "rule" }))}
+        />
         <div
           className={css({
             gridArea: "investigative",
             display: "grid",
-            gridTemplateAreas: "'ability rating set spend'",
-            gridTemplateColumns: "1fr max-content max-content max-content",
+            // the name, the pool's pips, and a Push button (Quick Shock)
+            gridTemplateColumns: "1fr max-content max-content",
             columnGap: "0.2em",
-            rowGap: "0.4em",
+            rowGap: "0.25em",
             alignItems: "center",
             alignContent: "start",
           })}
@@ -86,7 +91,7 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
               <Fragment key={cat}>
                 <h2
                   className={cx(
-                    sectionHeading(),
+                    sectionHeading({ centered: true }),
                     css({ gridColumn: "1 / -1" }),
                   )}
                 >
@@ -118,10 +123,10 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
           className={css({
             gridArea: "general",
             display: "grid",
-            gridTemplateColumns: "1fr max-content max-content max-content",
-            gridTemplateAreas: "'ability rating set spend'",
+            // the name, the pool's pips, and a Push button (Quick Shock)
+            gridTemplateColumns: "1fr max-content max-content",
             columnGap: "0.2em",
-            rowGap: "0.4em",
+            rowGap: "0.25em",
             alignItems: "center",
             alignContent: "start",
           })}
@@ -129,7 +134,10 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
           {Object.keys(generalAbilities).map((cat) => (
             <Fragment key={cat}>
               <h2
-                className={cx(sectionHeading(), css({ gridColumn: "1 / -1" }))}
+                className={cx(
+                  sectionHeading({ centered: true }),
+                  css({ gridColumn: "1 / -1" }),
+                )}
               >
                 {cat}
               </h2>

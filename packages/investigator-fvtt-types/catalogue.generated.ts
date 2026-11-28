@@ -18,6 +18,8 @@ export interface CatalogueRecipeShapes {
     variants: {
       tone: "neutral" | "danger" | "warning" | "success" | "info";
       weight: "subtle" | "strong";
+      kind: "label" | "tag";
+      size: "sm" | "md";
     };
   };
   button: {
@@ -38,6 +40,11 @@ export interface CatalogueRecipeShapes {
   checkbox: {
     slots: "box" | "tick";
     states: "checked" | "disabled";
+    variants: Record<never, never>;
+  };
+  columnRule: {
+    slots: never;
+    states: never;
     variants: Record<never, never>;
   };
   displayText: {
@@ -63,7 +70,7 @@ export interface CatalogueRecipeShapes {
   floating: {
     slots: never;
     states: never;
-    variants: { kind: "overlay" | "drawer" | "bar" | "chip" };
+    variants: { kind: "overlay" | "popover" | "drawer" | "bar" | "chip" };
   };
   input: {
     slots: never;
@@ -105,6 +112,11 @@ export interface CatalogueRecipeShapes {
     states: never;
     variants: { odd: "true" | "false"; zero: "true" | "false"; header: "true" | "false" };
   };
+  poolPips: {
+    slots: "root" | "pip";
+    states: never;
+    variants: { point: "left" | "spent" | "none" };
+  };
   portrait: {
     slots: never;
     states: never;
@@ -133,7 +145,7 @@ export interface CatalogueRecipeShapes {
   sectionHeading: {
     slots: never;
     states: never;
-    variants: Record<never, never>;
+    variants: { centered: "true" | "false" };
   };
   select: {
     slots: never;

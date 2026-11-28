@@ -13,11 +13,11 @@ export const AbilitiesColumnMW = ({ abilities }: AbilitiesColumnMWProps) => {
     <div
       className={css({
         display: "grid",
-        gridTemplateColumns: "1fr max-content max-content max-content",
-        gridTemplateAreas: "'ability rating set spend'",
+        // the name, the pool's pips, and a Push button (Quick Shock)
+        gridTemplateColumns: "1fr max-content max-content",
         gridAutoRows: "min-content",
         columnGap: "0.2em",
-        rowGap: "0.4em",
+        rowGap: "0.25em",
         alignItems: "center",
         gridColumn: "auto",
       })}

@@ -3,10 +3,7 @@ import { memo } from "react";
 import { useItemSnapshot } from "../../hooks/useItemSnapshot";
 import { useSettings } from "../../hooks/useSettings";
 import { useItemSheetContext } from "../../hooks/useSheetContexts";
-import {
-  isGeneralAbilitySnapshot,
-  isPushOrQuickShock,
-} from "../../module/items/abilitySnapshots";
+import { isGeneralAbilitySnapshot } from "../../module/items/abilitySnapshots";
 import { assertAbilityItem } from "../../module/items/exports";
 import { ModeSelect } from "../ItemSheetFramework/ModeSelect";
 import { ItemSheetFramework } from "../ItemSheetFramework/SheetFramework";
@@ -14,9 +11,7 @@ import { ItemSheetMode } from "../ItemSheetFramework/types";
 import { AbilityConfig } from "./AbilityConfig";
 import { AbilityMainBits } from "./AbilityMainBits";
 import { AbilityMwExtraFields } from "./AbilityMwExtraFields";
-import { AbilityTest } from "./AbilityTest";
-import { AbilityTestMW } from "./AbilityTestMW";
-import { PushPoolButton } from "./PushPoolButton";
+import { AbilityRollControls } from "./AbilityRollControls";
 
 /**
  * Everything below here reads the ability (and its actor, and settings)
@@ -41,15 +36,7 @@ export const AbilitySheet = memo(function AbilitySheet() {
       </ModeSelect>
       <ModeSelect mode={ItemSheetMode.Main}>
         <>
-          {/* Spending/testing area: Moribund World's test and spend box, a
-              push pool's PUSH button, or a spend/test box */}
-          {item.isOwned && useMwStyleAbilities && isGeneral ? (
-            <AbilityTestMW item={item} pool={ability.system.pool} />
-          ) : isPushOrQuickShock(ability) ? (
-            <PushPoolButton item={item} />
-          ) : (
-            <AbilityTest item={item} ability={ability} />
-          )}
+          <AbilityRollControls item={item} ability={ability} />
 
           {/* Other bits */}
           <AbilityMainBits item={item} ability={ability} />

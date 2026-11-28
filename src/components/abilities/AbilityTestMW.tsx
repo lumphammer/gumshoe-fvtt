@@ -17,11 +17,14 @@ interface AbilityTestMWProps {
   /** Only to write through (a general ability, in Moribund World) */
   item: AbilityItem;
   pool: number;
+  /** Called once a test, wallop or negation has been made */
+  onDone?: () => void;
 }
 
 export const AbilityTestMW = memo(function AbilityTestMW({
   item,
   pool,
+  onDone,
 }: AbilityTestMWProps) {
   const { mwTestAbility, mWWallop, mWNegateIllustrious } = useSystemMethods(
     item as GeneralAbilityItem,
@@ -31,15 +34,18 @@ export const AbilityTestMW = memo(function AbilityTestMW({
 
   const onTest = useCallback(() => {
     void mwTestAbility(difficulty, boonLevy);
-  }, [mwTestAbility, boonLevy, difficulty]);
+    onDone?.();
+  }, [mwTestAbility, boonLevy, difficulty, onDone]);
 
   const onWallop = useCallback(() => {
     void mWWallop();
-  }, [mWWallop]);
+    onDone?.();
+  }, [mWWallop, onDone]);
 
   const onNegateIllustrious = useCallback(() => {
     void mWNegateIllustrious();
-  }, [mWNegateIllustrious]);
+    onDone?.();
+  }, [mWNegateIllustrious, onDone]);
 
   const onChangeDifficulty = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.currentTarget.value;

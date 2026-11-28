@@ -12,6 +12,8 @@ interface SituationalModifierBadgeProps {
   isActive: boolean;
   /** Only to toggle the modifier */
   ability: AbilityItem;
+  /** `sm` in a dense list (an ability's row) */
+  size?: "sm" | "md";
 }
 
 /** A situational modifier, as a badge that toggles it. Active is pressed. */
@@ -19,6 +21,7 @@ export const SituationalModifierBadge = memo(function SituationalModifierBadge({
   situationalModifier: { situation, modifier, id },
   isActive,
   ability,
+  size,
 }: SituationalModifierBadgeProps) {
   const toggle = () => {
     ability.system.toggleSituationalModifier(id);
@@ -28,7 +31,7 @@ export const SituationalModifierBadge = memo(function SituationalModifierBadge({
       {...clickable(toggle)}
       aria-pressed={isActive}
       data-interactive
-      className={cx(badge(), css({ marginInline: "0.25em" }))}
+      className={cx(badge({ size }), css({ marginInline: "0.25em" }))}
     >
       {situation}: {modifier >= 0 && "+"}
       {modifier}

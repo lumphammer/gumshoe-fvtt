@@ -21,6 +21,8 @@ export const recipeShapes = {
     variants: {
       tone: ["neutral", "danger", "warning", "success", "info"],
       weight: ["subtle", "strong"],
+      kind: ["label", "tag"],
+      size: ["sm", "md"],
     },
     states: ["pressed"],
   },
@@ -47,6 +49,12 @@ export const recipeShapes = {
     slots: ["box", "tick"],
     variants: {},
     states: ["checked", "disabled"],
+  },
+  columnRule: {
+    className: "inv-column-rule",
+    slots: [],
+    variants: {},
+    states: [],
   },
   displayText: {
     className: "inv-display-text",
@@ -75,7 +83,7 @@ export const recipeShapes = {
   floating: {
     className: "inv-floating",
     slots: [],
-    variants: { kind: ["overlay", "drawer", "bar", "chip"] },
+    variants: { kind: ["overlay", "popover", "drawer", "bar", "chip"] },
     states: [],
   },
   input: {
@@ -124,6 +132,12 @@ export const recipeShapes = {
     },
     states: [],
   },
+  poolPips: {
+    className: "inv-pool-pips",
+    slots: ["root", "pip"],
+    variants: { point: ["left", "spent", "none"] },
+    states: [],
+  },
   portrait: {
     className: "inv-portrait",
     slots: [],
@@ -146,7 +160,7 @@ export const recipeShapes = {
   sectionHeading: {
     className: "inv-section-heading",
     slots: [],
-    variants: {},
+    variants: { centered: ["true", "false"] },
     states: [],
   },
   select: {

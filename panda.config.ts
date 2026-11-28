@@ -11,6 +11,7 @@ import { checkbox } from "./src/themes/catalogue/checkbox";
 import { fieldGrid } from "./src/themes/catalogue/fieldGrid";
 import { input, richText } from "./src/themes/catalogue/input";
 import {
+  columnRule,
   dragHandle,
   emptyState,
   row,
@@ -19,6 +20,7 @@ import {
 } from "./src/themes/catalogue/lists";
 import { logo } from "./src/themes/catalogue/logo";
 import { panel } from "./src/themes/catalogue/panel";
+import { poolPips } from "./src/themes/catalogue/poolPips";
 import { portrait } from "./src/themes/catalogue/portrait";
 import { region } from "./src/themes/catalogue/region";
 import { select } from "./src/themes/catalogue/select";
@@ -93,6 +95,7 @@ export default defineConfig({
       badge,
       button,
       callout,
+      columnRule,
       displayText,
       dragHandle,
       emptyState,
@@ -112,7 +115,16 @@ export default defineConfig({
       surface,
       tableHeader,
     },
-    slotRecipes: { appFrame, card, checkbox, fieldGrid, logo, tabs, toggle },
+    slotRecipes: {
+      appFrame,
+      card,
+      checkbox,
+      fieldGrid,
+      logo,
+      poolPips,
+      tabs,
+      toggle,
+    },
     // names are global, so they're prefixed: Foundry has keyframes too
     keyframes: {
       invSpin: { to: { rotate: "1turn" } },

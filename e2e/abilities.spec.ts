@@ -1,6 +1,7 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 import {
+  abilityRow,
   createActor,
   expect,
   forceDice,
@@ -21,7 +22,7 @@ test("testing a general ability spends from its pool and rolls", async ({
   await forceDice(page, 6);
 
   const actorSheet = await openSheet(page, `Actor.${actorId}`);
-  await actorSheet.locator("a", { hasText: /^Athletics$/ }).click();
+  await abilityRow(actorSheet, "Athletics").click({ button: "right" });
 
   // the ability's own sheet (its window title is just its name): its type,
   // owner and name at the top
@@ -65,20 +66,6 @@ async function getPool(page: Page, actorId: string, abilityId: string) {
   );
 }
 
-/**
- * The controls in an ability's row on the character sheet: its name links
- * to it, then come its pool, the -/+ buttons, and its spend or test button.
- */
-function abilityRow(actorSheet: Locator, abilityId: string) {
-  const name = actorSheet.locator(`a[data-item-id="${abilityId}"]`);
-  const setButtons = name.locator("xpath=following-sibling::div[2]//button");
-  return {
-    minus: setButtons.nth(0),
-    plus: setButtons.nth(1),
-    action: name.locator("xpath=following-sibling::div[3]//button").first(),
-  };
-}
-
 test("spending an investigative ability from the character sheet", async ({
   page,
 }) => {
@@ -87,12 +74,11 @@ test("spending an investigative ability from the character sheet", async ({
   await updateAbility(page, actorId, ability.name, { rating: 3, pool: 3 });
 
   const actorSheet = await openSheet(page, `Actor.${actorId}`);
-  const row = abilityRow(actorSheet, ability.id);
-  await row.plus.click();
-  await row.plus.click();
-  await row.plus.click();
-  await row.minus.click();
-  await row.action.click();
+  await abilityRow(actorSheet, ability.name).click();
+  const popover = page.getByRole("dialog", { name: ability.name });
+  await popover.locator("label", { hasText: /^2$/ }).click();
+  await popover.getByRole("button", { name: "Spend", exact: true }).click();
+  await expect(popover).toBeHidden();
 
   await expect.poll(() => getPool(page, actorId, ability.id)).toBe(1);
   const card = lastChatMessage(page);

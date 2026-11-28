@@ -1,6 +1,7 @@
 import type { Locator, Page } from "@playwright/test";
 
 import {
+  abilityRow,
   createActor,
   createOwnedItem,
   createPlayer,
@@ -16,13 +17,16 @@ import {
 // snapshots, and its areas and rows are memoised: these check that changes
 // made elsewhere still reach it.
 
-/** An ability's pool/rating on the Abilities tab */
-/** The pool and rating as shown ("2/4"; screen readers get them in words) */
+/**
+ * The pool and rating, as screen readers get them ("pool 2, rating 4"): the
+ * row shows them as pips
+ */
 const poolAndRating = (sheet: Locator, name: string) =>
-  sheet
-    .locator("a", { hasText: new RegExp(`^${name}$`) })
-    .locator("xpath=following-sibling::div[1]")
-    .locator("[aria-hidden=true]");
+  abilityRow(sheet, name).getByText(/^pool -?\d+, rating -?\d+$/);
+
+/** How many of an ability's pips are filled: one per point left */
+const filledPips = (sheet: Locator, name: string) =>
+  abilityRow(sheet, name).locator(".inv-pool-pips__pip--point_left");
 
 async function renameItem(
   page: Page,
@@ -42,10 +46,20 @@ test("the Abilities tab follows pools spent elsewhere", async ({ page }) => {
   const actorId = await createActor(page, { name: "Spender", type: "pc" });
   await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
   const sheet = await openSheet(page, `Actor.${actorId}`);
-  await expect(poolAndRating(sheet, "Athletics")).toHaveText("4/4");
+  await expect(poolAndRating(sheet, "Athletics")).toHaveText(
+    "pool 4, rating 4",
+  );
+
+  await expect(filledPips(sheet, "Athletics")).toHaveCount(4);
 
   await updateAbility(page, actorId, "Athletics", { pool: 1 });
-  await expect(poolAndRating(sheet, "Athletics")).toHaveText("1/4");
+  await expect(poolAndRating(sheet, "Athletics")).toHaveText(
+    "pool 1, rating 4",
+  );
+  await expect(filledPips(sheet, "Athletics")).toHaveCount(1);
+  await expect(
+    abilityRow(sheet, "Athletics").locator(".inv-pool-pips__pip"),
+  ).toHaveCount(4);
 });
 
 test("the Abilities tab follows abilities added, renamed and removed elsewhere", async ({
@@ -53,8 +67,7 @@ test("the Abilities tab follows abilities added, renamed and removed elsewhere",
 }) => {
   const actorId = await createActor(page, { name: "Learner", type: "pc" });
   const sheet = await openSheet(page, `Actor.${actorId}`);
-  const link = (name: string) =>
-    sheet.locator("a", { hasText: new RegExp(`^${name}$`) });
+  const link = (name: string) => abilityRow(sheet, name);
 
   const itemId = await createOwnedItem(page, actorId, {
     name: "Juggling",
@@ -86,8 +99,8 @@ test("a zero-rated ability that hides itself shows once it has a rating", async 
     system: { rating: 0, pool: 0, hideIfZeroRated: true },
   });
   const sheet = await openSheet(page, `Actor.${actorId}`);
-  const link = sheet.locator("a", { hasText: /^Juggling$/ });
-  await expect(sheet.locator("a", { hasText: /^Athletics$/ })).toBeVisible();
+  const link = abilityRow(sheet, "Juggling");
+  await expect(abilityRow(sheet, "Athletics")).toBeVisible();
   await expect(link).toHaveCount(0);
 
   await updateAbility(page, actorId, "Juggling", { rating: 1, pool: 1 });
@@ -151,16 +164,22 @@ test.describe("Moribund World abilities", () => {
     const actorId = await createActor(page, { name: "Wanderer", type: "pc" });
     await updateAbility(page, actorId, "Athletics", { rating: 4, pool: 4 });
     const sheet = await openSheet(page, `Actor.${actorId}`);
-    await expect(poolAndRating(sheet, "Athletics")).toHaveText("4/4");
+    await expect(poolAndRating(sheet, "Athletics")).toHaveText(
+      "pool 4, rating 4",
+    );
 
     await updateAbility(page, actorId, "Athletics", { pool: 1 });
-    await expect(poolAndRating(sheet, "Athletics")).toHaveText("1/4");
+    await expect(poolAndRating(sheet, "Athletics")).toHaveText(
+      "pool 1, rating 4",
+    );
 
     await createOwnedItem(page, actorId, {
       name: "Juggling",
       type: "generalAbility",
       system: { rating: 2, pool: 2 },
     });
-    await expect(poolAndRating(sheet, "Juggling")).toHaveText("2/2");
+    await expect(poolAndRating(sheet, "Juggling")).toHaveText(
+      "pool 2, rating 2",
+    );
   });
 });

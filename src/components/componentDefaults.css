@@ -57,6 +57,11 @@
     gap: 0.1em;
   }
 
+  /* no badges: no row, so no gap for it in a grid */
+  .inv-default-ability-badges:empty {
+    display: none;
+  }
+
   .inv-default-ability-badges[data-unlocks] {
     margin-bottom: 0.25em;
   }
@@ -106,6 +111,25 @@
     position: absolute;
     inset: 0;
     padding: 1em;
+  }
+
+  /* AbilityRollRow: a <button> without Foundry's look, its cells in the
+     area's columns */
+  .inv-default-ability-roll-trigger {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    align-items: center;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+    font: inherit;
+    text-align: inherit;
+    box-shadow: none;
+    outline: none;
   }
 
   .inv-default-ability-name-link {

@@ -46,14 +46,19 @@ interface AbilityTestProps {
   /** Only to write through: read from `ability`. */
   item: AbilityItem;
   ability: AbilitySnapshot;
+  /** Called once a test or spend has been made (not if it was cancelled) */
+  onDone?: () => void;
 }
 
 export const AbilityTest = memo(function AbilityTest({
   item,
   ability,
+  onDone,
 }: AbilityTestProps) {
   const methods = useSystemMethods(item);
   const [spend, setSpend] = useState(0);
+  // a spend waiting on its confirmation or the server: no second one meanwhile
+  const [spending, setSpending] = useState(false);
   // points to spend from each Bond, by id
   const [bondSpends, setBondSpends] = useState<Record<string, number>>({});
   // a Stability test against trauma, or an ordinary test
@@ -150,13 +155,24 @@ export const AbilityTest = memo(function AbilityTest({
     setSpend(0);
     setBondSpends({});
     setPickedDifficulty(undefined);
+    onDone?.();
   };
 
   const { confirmSpendAbility } = methods;
-  const handleClickSpend = useCallback(() => {
-    void confirmSpendAbility(spend);
+  const handleClickSpend = useCallback(async () => {
+    setSpending(true);
+    try {
+      // a cancelled confirmation (spending while Shaken) keeps the spend, and
+      // the popover open
+      if (!(await confirmSpendAbility(spend))) {
+        return;
+      }
+    } finally {
+      setSpending(false);
+    }
     setSpend(0);
-  }, [confirmSpendAbility, spend]);
+    onDone?.();
+  }, [confirmSpendAbility, spend, onDone]);
 
   // alongside Bonds, name the ability being spent (as the weapon sheet does)
   const spendLabel = bonds.length > 0 ? ability.name : undefined;
@@ -237,6 +253,7 @@ export const AbilityTest = memo(function AbilityTest({
           value={spend}
           onChange={setSpend}
           max={ability.system.pool}
+          overflowToMax
         />
       </GridField>
       {bonds.map((bond) => (
@@ -286,7 +303,7 @@ export const AbilityTest = memo(function AbilityTest({
         >
           <Button
             className={css({ flex: "[1]" })}
-            disabled={spend === 0}
+            disabled={spend === 0 || spending}
             onClick={handleClickSpend}
           >
             <Translate>{isGeneral ? "Simple Spend" : "Spend"}</Translate>

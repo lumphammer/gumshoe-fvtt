@@ -34,10 +34,15 @@ const looks: Record<Tone, Record<"subtle" | "strong", Look>> = {
  * Use for: one or two words next to the thing they describe.
  * Not for: messages or warnings (a callout), links to documents.
  *
- * Variants: `tone`, and `weight` (`subtle` is an outline, `strong` is filled).
+ * Variants: `tone`, `weight` (`subtle` is an outline, `strong` is filled),
+ * and `kind`: `label` (the default, fully rounded) or `tag`, for a
+ * free-form tag the user wrote (an ability's specialities): square-cornered,
+ * with a dashed outline, so it doesn't read as a state; and `size`: `md` (the
+ * default) or `sm`, for badges in a dense list (an ability's row).
  * States (`badgeStates`): a badge that can be clicked has
  * `data-interactive` (hover feedback), and if it's a toggle, `aria-pressed`:
- * `pressed` shows it as selected, whatever its tone.
+ * `pressed` shows it as selected, whatever its tone. One that only says
+ * something is on (Boosted) has `data-pressed`, for the same look.
  */
 export const badge = defineRecipe({
   className: "inv-badge",
@@ -61,6 +66,11 @@ export const badge = defineRecipe({
       object
     >,
     weight: { subtle: {}, strong: {} },
+    kind: {
+      label: {},
+      tag: { borderRadius: "standard", borderStyle: "dashed" },
+    },
+    size: { sm: { fontSize: "0.75em" }, md: {} },
   },
   compoundVariants: [
     ...tones.flatMap((tone) =>
@@ -71,7 +81,12 @@ export const badge = defineRecipe({
       })),
     ),
   ],
-  defaultVariants: { tone: "neutral", weight: "subtle" },
+  defaultVariants: {
+    tone: "neutral",
+    weight: "subtle",
+    kind: "label",
+    size: "md",
+  },
 });
 
 /** The badge's element states (stateLayers.ts), over every tone. */
