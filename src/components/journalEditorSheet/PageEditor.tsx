@@ -223,6 +223,7 @@ export const PageEditor = ({ page }: PageEditorProps) => {
           key={page.id}
           value={view.name}
           onChange={handleRename}
+          required
         />
       </div>
       <div

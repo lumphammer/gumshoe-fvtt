@@ -20,7 +20,7 @@ export const ItemSheetTitle = ({ className }: { className?: string }) => {
   const ownerName = useActorSnapshot(item.actor, (actor) => actor?.name);
   const isEditable = useIsEditable();
   const { contentEditableRef, onBlur, onFocus, onInput, onKeyDown, onPaste } =
-    useAsyncUpdate(name, item.setName);
+    useAsyncUpdate(name, item.setName, { required: true });
 
   assertGame(game);
   // Foundry's own name for the type (not `CONFIG.Item.typeLabels`, which

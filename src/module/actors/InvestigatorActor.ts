@@ -11,6 +11,8 @@ export class InvestigatorActor<
    * Handy setter for the actor's name
    */
   setName = (name: string): Promise<this | undefined> => {
+    // Foundry refuses a blank name (with an error)
+    if (name.trim() === "") return Promise.resolve(undefined);
     return this.update({ name });
   };
 

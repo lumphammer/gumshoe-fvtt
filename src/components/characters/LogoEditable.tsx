@@ -14,6 +14,8 @@ type LogoEditableProps = {
   /** the subtext: plain text, or parts which can each be a button */
   subText?: string | readonly LogoSubTextPart[];
   onChangeMainText: (newValue: string) => void | PromiseLike<unknown>;
+  /** the main text can't be blank (e.g. a name): see `useAsyncUpdate` */
+  required?: boolean;
 };
 
 /** A part of the logo's subtext (e.g. one of a PC's occupations) */
@@ -253,6 +255,7 @@ export const LogoEditable = ({
   mainText,
   subText,
   onChangeMainText,
+  required,
 }: LogoEditableProps) => {
   const classes = logo();
 
@@ -265,7 +268,7 @@ export const LogoEditable = ({
     onBlur: onBlurText,
     contentEditableRef: contentEditableRefText,
     display: displayText,
-  } = useAsyncUpdate(mainText, onChangeMainText);
+  } = useAsyncUpdate(mainText, onChangeMainText, { required });
   const isEditable = useIsEditable();
 
   const hasSubtext = subText !== undefined;

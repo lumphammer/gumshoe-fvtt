@@ -58,6 +58,7 @@ export const NPCSheetHeader = memo(function NPCSheetHeader() {
         <LogoEditable
           mainText={header.name}
           onChangeMainText={actor.setName}
+          required
           className={css({
             fontSize: "0.66em",
           })}

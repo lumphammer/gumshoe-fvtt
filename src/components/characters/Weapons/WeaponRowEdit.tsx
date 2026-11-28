@@ -122,6 +122,7 @@ export const WeaponRowEdit = memo(function WeaponRowEdit({
         style={{ gridRow }}
         value={row.name}
         onChange={weapon.setName}
+        required
       />
       {damageInputs.map(
         ([column, shown, value, onChange]) =>

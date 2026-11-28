@@ -125,7 +125,11 @@ export const JournalEditorSheet = () => {
               gap: "0.5em",
             })}
           >
-            <AsyncTextInput value={view.name} onChange={handleTitleChange} />
+            <AsyncTextInput
+              value={view.name}
+              onChange={handleTitleChange}
+              required
+            />
             <AsyncTextInput
               placeholder="Journal CSS Classes"
               value={globalClasses}

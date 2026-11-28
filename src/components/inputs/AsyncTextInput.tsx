@@ -12,6 +12,8 @@ export type AsyncTextInputProps = {
   placeholder?: string;
   /** its name, when no label names it */
   ariaLabel?: string;
+  /** can't be saved blank (e.g. a name): see `useAsyncUpdate` */
+  required?: boolean;
 };
 
 export const AsyncTextInput = ({
@@ -22,10 +24,12 @@ export const AsyncTextInput = ({
   disabled,
   placeholder,
   ariaLabel,
+  required,
 }: AsyncTextInputProps) => {
   const { onChange, onFocus, onBlur, display } = useAsyncUpdate(
     value,
     onChangeOrig,
+    { required },
   );
 
   return (
