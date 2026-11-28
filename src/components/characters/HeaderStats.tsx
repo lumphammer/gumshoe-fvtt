@@ -132,9 +132,15 @@ const HeaderStatBadge = ({ id, stat }: { id: string; stat: Stat }) => {
       ref={badgeRef as React.RefObject<HTMLAnchorElement>}
       {...buttonKeys(open)}
       // on press, not click: pressing here closes another badge's editor,
-      // which shifts the row, so the release can land somewhere else
+      // which shifts the row, so the release can land somewhere else. The
+      // press's own default (focusing what was pressed) comes after the
+      // editor has opened and focused its input, and with the badge gone it
+      // would focus nothing, blurring and closing the editor: so prevent it.
       onMouseDown={(event) => {
-        if (event.button === 0) open();
+        if (event.button === 0) {
+          event.preventDefault();
+          open();
+        }
       }}
       // and on a click alone, as screen readers and voice control send
       onClick={open}
