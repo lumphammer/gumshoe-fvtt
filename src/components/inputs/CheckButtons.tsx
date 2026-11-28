@@ -16,6 +16,8 @@ type CheckButtonsProps = {
   selected: number;
   size?: number;
   onChange: (newValue: number) => void;
+  /** more controls at the end of the row (a dropdown for the rarer values) */
+  children?: React.ReactNode;
 };
 
 export const CheckButtons = ({
@@ -23,6 +25,7 @@ export const CheckButtons = ({
   selected,
   size = 1.4,
   onChange: onChangeOrig,
+  children,
 }: CheckButtonsProps) => {
   const isEditable = useIsEditable();
   const onChange = useCallback(
@@ -91,6 +94,7 @@ export const CheckButtons = ({
           </Fragment>
         );
       })}
+      {children}
     </div>
   );
 };

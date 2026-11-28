@@ -242,6 +242,7 @@ export const AbilityTest = memo(function AbilityTest({
           value={spend}
           onChange={setSpend}
           max={ability.system.pool}
+          overflowToMax
         />
       </GridField>
       {bonds.map((bond) => (
