@@ -6,6 +6,14 @@ import { paletteVar } from "../palette";
 /** A faint wash of the feedback colour, for a row under the pointer. */
 const highlight = `color-mix(in srgb, var(${paletteVar("feedback")}) 25%, transparent)`;
 
+/** `line` at this opacity, for a rule that fades out at its ends */
+const lineAt = (percent: number) =>
+  `oklch(from var(${paletteVar("line")}) l c h / ${percent}%)`;
+
+/** A rule in `line` that fades out at both ends, along this angle */
+const fadingRule = (angle: string) =>
+  `[linear-gradient(${angle}, ${lineAt(0)} 0%, ${lineAt(100)} 50%, ${lineAt(0)} 100%)]`;
+
 /**
  * **sectionHeading**: a heading that divides a sheet into sections ("Academic",
  * "Weapons"), with a `line` rule under it.
@@ -13,6 +21,9 @@ const highlight = `color-mix(in srgb, var(${paletteVar("feedback")}) 25%, transp
  * Use for: the heading of a list or area on a sheet; apply it to the heading
  * itself, or to the row that holds the heading and its buttons.
  * Not for: the column headers of a table (tableHeader).
+ *
+ * Variant `centered`: centred, with a rule that fades out at both ends, like
+ * `columnRule` (the Abilities tab's categories).
  */
 export const sectionHeading = defineRecipe({
   className: "inv-section-heading",
@@ -21,6 +32,38 @@ export const sectionHeading = defineRecipe({
     borderBottomWidth: "1px",
     borderBottomStyle: "solid",
     borderBottomColor: "line",
+  },
+  variants: {
+    centered: {
+      true: {
+        textAlign: "center",
+        borderBottomStyle: "none",
+        // the rule, 1px high along the bottom, where the border was
+        paddingBottom: "1px",
+        backgroundImage: fadingRule("90deg"),
+        backgroundSize: "100% 1px",
+        backgroundPosition: "bottom",
+        backgroundRepeat: "no-repeat",
+      },
+      false: {},
+    },
+  },
+  defaultVariants: { centered: false },
+});
+
+/**
+ * **columnRule**: a line between columns of a sheet, from top to bottom,
+ * fading out at its ends like an `hr`.
+ *
+ * Use for: between a character's investigative and general abilities.
+ * Not for: dividing sections one above another (an `hr`, or sectionHeading).
+ */
+export const columnRule = defineRecipe({
+  className: "inv-column-rule",
+  description: "A line between columns of a sheet, from top to bottom.",
+  base: {
+    width: "1px",
+    backgroundImage: fadingRule("180deg"),
   },
 });
 

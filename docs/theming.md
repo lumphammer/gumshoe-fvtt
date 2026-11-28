@@ -315,7 +315,8 @@ colour, `strong` is filled with it (`control` for neutral) and its `on-` ink.
 ability's specialities), square-cornered (`radius`) with a dashed outline, so
 it doesn't read as a state. `size`: `md` (default) or `sm`, for a dense list
 (an ability's row). `data-interactive` if clickable; `aria-pressed` makes it a toggle: `pressed`
-is selected (`accent` fill, `onAccent` ink), whatever the tone. `Translate` sets an inline
+is selected (`accent` fill, `onAccent` ink), whatever the tone; `data-pressed`
+gives the same look to a badge that only says something is on (Boosted). `Translate` sets an inline
 `background`, so put a badge on a wrapper around it.
 
 **`button`**: something you click to do something; use `Button`, which sets
@@ -388,8 +389,11 @@ is its `selected` state._
   unwrapped, so a wrapped look can change their size. The default wrapped look
   is in `:where()`, so it's no more specific than the tab's own rule.
 
-**Lists.** `sectionHeading`: a heading that divides a sheet into sections, with
-a `line` rule (_not for_ column headers). `tableHeader`: a table's column
+**Lists.** `columnRule`: a line between columns of a sheet (investigative and
+general abilities), top to bottom, in `line`, fading out at its ends like an
+`hr`. `sectionHeading`: a heading that divides a sheet into sections, with
+a `line` rule (_not for_ column headers); `centered`, centred over a rule that
+fades out at both ends, like `columnRule`. `tableHeader`: a table's column
 headers, bold, with a `line` rule. `row`: one item in a list, in `text` ink,
 even a link. Variants: `interactive` (it opens or does something: a `feedback`
 wash under the pointer, on focus, or with `data-highlighted`; rows don't use
@@ -482,9 +486,11 @@ picture. `depth: top | nested` is `surface` or `surfaceNested`; `solid` is
 `surfaceSolid` or `surfaceNestedSolid`, for one that overlaps or scrolls over
 other content. It sets only the background colour, so it can go on an element
 with an image. `floating`: something raised above the sheet, on `surfaceSolid`
-in `text` ink; `kind`: `overlay` (a message or popover over everything, with
-`elevation`), `drawer` (slides in from the side), `bar` (stuck to the top of a
-scrolling area), `chip` (a small label over a picture). `partyCell` (specialised): a cell of the party
+in `text` ink; `kind`: `overlay` (a message over everything, with
+`elevation`), `popover` (controls anchored to what opened them: like `overlay`,
+with an `accent` border on a dark theme), `drawer` (slides in from the side),
+`bar` (stuck to the top of a scrolling area), `chip` (a small label over a
+picture). `partyCell` (specialised): a cell of the party
 sheet's grid of abilities; rows alternate `surface` and `surfaceNested`, an
 ability nobody has is tinted halfway to `danger`, and `header` cells stay over
 the rest as it scrolls, so they're on the solid surfaces. `richText`: an editor

@@ -14,7 +14,7 @@ import { assertActiveCharacterActor } from "../../module/actors/types";
 import { AbilitySlugPlayNormal } from "./AbilitySlugPlayNormal";
 import { AbilitySlugPlayQuickShockInvestigative } from "./AbilitySlugPlayQuickShockInvestigative";
 import { NoAbilitiesNote } from "./NoAbilitiesNote";
-import { sectionHeading } from "../../styled-system/recipes";
+import { columnRule, sectionHeading } from "../../styled-system/recipes";
 import { css, cx } from "../../styled-system/css";
 
 type AbilitiesAreaPlayProps = {
@@ -59,17 +59,21 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
       <div
         className={css({
           display: "grid",
-          // half each, whatever is in them
-          gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+          // half each, whatever is in them, with a rule between
+          gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
           columnGap: "1em",
           marginBottom: "1em",
         })}
         style={{
           gridTemplateAreas: flipLeftRight
-            ? "'general investigative'"
-            : "'investigative general'",
+            ? "'general rule investigative'"
+            : "'investigative rule general'",
         }}
       >
+        <div
+          aria-hidden="true"
+          className={cx(columnRule(), css({ gridArea: "rule" }))}
+        />
         <div
           className={css({
             gridArea: "investigative",
@@ -87,7 +91,7 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
               <Fragment key={cat}>
                 <h2
                   className={cx(
-                    sectionHeading(),
+                    sectionHeading({ centered: true }),
                     css({ gridColumn: "1 / -1" }),
                   )}
                 >
@@ -130,7 +134,10 @@ export const AbilitiesAreaPlay = memo(function AbilitiesAreaPlay({
           {Object.keys(generalAbilities).map((cat) => (
             <Fragment key={cat}>
               <h2
-                className={cx(sectionHeading(), css({ gridColumn: "1 / -1" }))}
+                className={cx(
+                  sectionHeading({ centered: true }),
+                  css({ gridColumn: "1 / -1" }),
+                )}
               >
                 {cat}
               </h2>

@@ -67,12 +67,11 @@ export function RollPopover({
           if (isOpen) e.currentTarget.focus();
         }}
         className={cx(
-          floating({ kind: "overlay" }),
+          floating({ kind: "popover" }),
           css({
             inset: "auto",
             margin: "0",
             marginBlockStart: "0.25em",
-            border: "none",
             padding: "0.5em",
             width: "22em",
             maxWidth: "calc(100vw - 1em)",

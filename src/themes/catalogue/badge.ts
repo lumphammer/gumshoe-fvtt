@@ -41,7 +41,8 @@ const looks: Record<Tone, Record<"subtle" | "strong", Look>> = {
  * default) or `sm`, for badges in a dense list (an ability's row).
  * States (`badgeStates`): a badge that can be clicked has
  * `data-interactive` (hover feedback), and if it's a toggle, `aria-pressed`:
- * `pressed` shows it as selected, whatever its tone.
+ * `pressed` shows it as selected, whatever its tone. One that only says
+ * something is on (Boosted) has `data-pressed`, for the same look.
  */
 export const badge = defineRecipe({
   className: "inv-badge",

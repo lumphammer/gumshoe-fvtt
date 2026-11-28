@@ -50,6 +50,12 @@ export const recipeShapes = {
     variants: {},
     states: ["checked", "disabled"],
   },
+  columnRule: {
+    className: "inv-column-rule",
+    slots: [],
+    variants: {},
+    states: [],
+  },
   displayText: {
     className: "inv-display-text",
     slots: [],
@@ -77,7 +83,7 @@ export const recipeShapes = {
   floating: {
     className: "inv-floating",
     slots: [],
-    variants: { kind: ["overlay", "drawer", "bar", "chip"] },
+    variants: { kind: ["overlay", "popover", "drawer", "bar", "chip"] },
     states: [],
   },
   input: {
@@ -154,7 +160,7 @@ export const recipeShapes = {
   sectionHeading: {
     className: "inv-section-heading",
     slots: [],
-    variants: {},
+    variants: { centered: ["true", "false"] },
     states: [],
   },
   select: {

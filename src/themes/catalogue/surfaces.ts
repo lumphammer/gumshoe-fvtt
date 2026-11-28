@@ -52,8 +52,11 @@ export const surface = defineRecipe({
  * `surfaceSolid`.
  *
  * Variants: `kind`:
- * - `overlay`: a message or popover over everything (the party sheet's "drop
- *   actors here", an ability row's roll popover): rounded, with `elevation`.
+ * - `overlay`: a message over everything (the party sheet's "drop actors
+ *   here"): rounded, with `elevation`.
+ * - `popover`: a box of controls opened from something on the sheet, and
+ *   anchored to it (an ability row's roll popover): like `overlay`, with a
+ *   border in `accent` on a dark theme (none on a light one).
  * - `drawer`: a panel sliding in from the side (nested settings pages), with
  *   a `line` on its leading edge.
  * - `bar`: a bar stuck to the top of a scrolling area (build points), with a
@@ -69,6 +72,14 @@ export const floating = defineRecipe({
   variants: {
     kind: {
       overlay: { borderRadius: "0.5em", boxShadow: "elevation" },
+      popover: {
+        borderRadius: "0.5em",
+        boxShadow: "elevation",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        // `light-dark()` picks by the theme's polarity (its `color-scheme`)
+        borderColor: `[light-dark(transparent, var(${paletteVar("accent")}))]`,
+      },
       drawer: {
         borderLeftWidth: "1px",
         borderLeftStyle: "solid",

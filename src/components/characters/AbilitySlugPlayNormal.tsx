@@ -29,7 +29,10 @@ export const AbilitySlugPlayNormal = memo(function AbilitySlugPlayNormal({
   return (
     <>
       <AbilityRollRow ability={ability}>
-        <span className={css({ lineHeight: 0.9 })}>{row.name}</span>
+        {/* a long name (German, say) wraps anywhere, not past the column */}
+        <span className={css({ lineHeight: 0.9, overflowWrap: "anywhere" })}>
+          {row.name}
+        </span>
         <PoolPips
           pool={row.pool}
           rating={row.rating}

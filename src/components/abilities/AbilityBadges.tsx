@@ -100,7 +100,8 @@ export const AbilityBadges = memo(function AbilityBadges({
     >
       {/* Boost */}
       {ability.boost && (
-        <span className={cx(badge({ size }), spaced)}>
+        // on, like an active situational modifier, but not a toggle
+        <span data-pressed className={cx(badge({ size }), spaced)}>
           <Translate>Boosted</Translate>
         </span>
       )}

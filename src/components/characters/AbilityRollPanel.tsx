@@ -40,7 +40,12 @@ export const AbilityRollPanel = memo(function AbilityRollPanel({
           marginBottom: "0.25em",
         })}
       >
-        <span className={cx(displayText({ size: "md" }), css({ flex: "1" }))}>
+        <span
+          className={cx(
+            displayText({ size: "md" }),
+            css({ flex: "1", minWidth: "0", overflowWrap: "anywhere" }),
+          )}
+        >
           {name}
         </span>
         <span>

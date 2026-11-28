@@ -11,6 +11,7 @@ import { checkbox } from "./src/themes/catalogue/checkbox";
 import { fieldGrid } from "./src/themes/catalogue/fieldGrid";
 import { input, richText } from "./src/themes/catalogue/input";
 import {
+  columnRule,
   dragHandle,
   emptyState,
   row,
@@ -94,6 +95,7 @@ export default defineConfig({
       badge,
       button,
       callout,
+      columnRule,
       displayText,
       dragHandle,
       emptyState,

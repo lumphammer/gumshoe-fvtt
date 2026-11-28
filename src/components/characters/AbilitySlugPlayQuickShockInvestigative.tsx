@@ -45,6 +45,8 @@ export const AbilitySlugPlayQuickShockInvestigative = memo(
             className={css({
               gridColumn: "1 / -1",
               lineHeight: 0.9,
+              // a long name wraps anywhere, not past the column
+              overflowWrap: "anywhere",
             })}
           >
             {name}

@@ -40,7 +40,7 @@ import { paletteColorKeys, rootStyle, paletteVar, themeSlug } from "../palette";
 import type { Theme } from "../theme";
 
 const buttonKinds = ["default", "cta", "toolbar", "ghost", "pip"] as const;
-const floatingKinds = ["overlay", "drawer", "bar", "chip"] as const;
+const floatingKinds = ["overlay", "popover", "drawer", "bar", "chip"] as const;
 
 /** What a specimen is: the farm's label, not the theme's */
 const Label = ({ children }: PropsWithChildren) => (
